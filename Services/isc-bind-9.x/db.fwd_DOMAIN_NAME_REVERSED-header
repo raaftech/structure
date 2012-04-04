@@ -1,0 +1,19 @@
+; BIND data file for DOMAIN_NAME!
+$TTL 604800
+DOMAIN_NAME. IN SOA dns.DOMAIN_NAME. postmaster.DOMAIN_NAME. (
+                                    200801011   ; Serial
+                                        28800   ; Refresh 8 hours
+                                         3600   ; Retry 1 hour
+                                       604800   ; Expire 1 week
+                                        86400 ) ; Negative Cache TTL 1 day
+
+                            NS      SERVER_NAME.DOMAIN_NAME.
+                            ;NS      dns1.DOMAIN_NAME.
+                            ;NS      dns2.DOMAIN_NAME.
+                            ;MX 10   smtp1.DOMAIN_NAME.
+                            ;MX 20   smtp2.DOMAIN_NAME.
+
+
+; Network DOMAIN_NAME, DOMAIN_ADDR/DOMAIN_CIDR
+
+

@@ -1,0 +1,24 @@
+#%PAM-1.0
+# This file was placed by the universal component of openpcf.
+# User changes would be destroyed the next time authconfig is run!
+auth        required      pam_env.so
+auth        sufficient    pam_unix.so likeauth nullok
+auth        sufficient    pam_ldap.so use_first_pass
+auth        required      pam_deny.so
+
+account     required      pam_unix.so broken_shadow
+account     sufficient    pam_localuser.so
+account     sufficient    pam_succeed_if.so uid < 100 quiet
+account     [default=bad success=ok user_unknown=ignore service_err=ignore system_err=ignore authinfo_unavail=ignore] pam_ldap.so
+account     required      pam_permit.so
+
+password    requisite     pam_cracklib.so retry=3
+password    sufficient    pam_unix.so nullok use_authtok ssha shadow
+password    sufficient    pam_ldap.so use_authtok
+password    required      pam_deny.so
+
+session     required      pam_limits.so
+session     required      pam_mkhomedir.so skel=/etc/skel/ umask=0077
+session     required      pam_unix.so
+session     optional      pam_ldap.so
+

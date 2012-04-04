@@ -1,0 +1,14 @@
+# The DOMAIN_NAME network
+zone "DOMAIN_NAME" {
+	type slave;
+    masters { ALLOWED_IPS };
+	file "slave/db.fwd_DOMAIN_NAME_REVERSED";
+};
+
+zone "DOMAIN_ADDR_REVERSED.in-addr.arpa" {
+	type slave;
+    masters { ALLOWED_IPS };
+	file "slave/db.rev_DOMAIN_NAME_REVERSED";
+};
+
+

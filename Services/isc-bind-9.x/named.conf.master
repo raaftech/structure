@@ -1,0 +1,12 @@
+# The DOMAIN_NAME network
+zone "DOMAIN_NAME" {
+	type master;
+	file "master/db.fwd_DOMAIN_NAME_REVERSED";
+};
+
+zone "DOMAIN_ADDR_REVERSED.in-addr.arpa" {
+	type master;
+	file "master/db.rev_DOMAIN_NAME_REVERSED";
+};
+
+

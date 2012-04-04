@@ -1,0 +1,134 @@
+# mingw-1-i386.desc - MinGW 1.0.x i386 Platform Descriptor
+
+
+# Used by Tools/sanity
+SANITY_DO_CONFIGURATION="1"         # Do a sanity check before attempting any
+                                    # other steps. Don't touch this unless you
+                                    # know what you're doing.
+
+# Used by Tools/networking
+NETWORKING_DO_CONFIGURATION="0"     # Install networking using settings from
+                                    # Configuration/setup.conf. If set to "0",
+                                    # no setup will be done; currently running
+                                    # settings will be used instead.
+
+# Used by Tools/packaging
+PACKAGING_DO_CONFIGURATION="1"      # Install additional packaging configs on
+                                    # this platform. This is usually needed
+                                    # when not all software dependencies can be
+                                    # met by the default software installation
+                                    # methods available. If set to "0", no
+                                    # setup will be done; currently running
+                                    # settings will be used instead.
+
+# Used by Tools/certificates
+CERTIFICATES_DO_CONFIGURATION="1"   # Install and generate certificates for the
+                                    # specified servername & requested services.
+                                    # If set to "0", no certificates will be
+                                    # generated. Don't touch this unless you
+                                    # know what you're doing.
+
+# Used by Tools/utilities
+UTILITIES_DO_CONFIGURATION="0"      # Install and generate utilities which aid
+                                    # in administration of a server. Don't touch
+                                    # this unless you know what you're doing.
+
+
+# Platform Globals
+PLATFORM_INIT_TYPE="mingw"
+PLATFORM_INIT_DIRECTORY=""
+PLATFORM_MAC_TYPE=""
+PLATFORM_FW_TYPE="advfirewall"
+
+# Used by Tools/packaging
+PACKAGING_PACKAGES_REQUIRED="1"
+PACKAGING_PACKAGES_LISTING=""
+PACKAGING_DISTRIBUTION_TYPE="mgw"
+PACKAGING_CONFIG_DIRECTORY="/bin"
+PACKAGING_REPOSITORY_LIST="mingw"
+
+# Used by Tools/certificates
+CERTIFICATES_PACKAGES_REQUIRED="1"
+CERTIFICATES_PACKAGES_LISTING="openssl"
+CERTIFICATES_CONFIG_DIRECTORY="/etc"
+CERTIFICATES_DATA_DIRECTORY="/etc/certs"
+
+# Used by Tools/utilities
+UTILITIES_PACKAGES_REQUIRED="1"
+UTILITIES_PACKAGES_LISTING="bash"
+UTILITIES_CONFIG_DIRECTORY="/usr/sbin"      
+
+# Used by Services/dns/bind9
+BIND9_PACKAGES_REQUIRED="1"
+BIND9_PACKAGES_LISTING="bind"
+BIND9_SERVICE_DEPS=""
+BIND9_CONFIG_DIRECTORY="/etc"
+BIND9_DATA_DIRECTORY="/etc/bind"
+BIND9_INIT_SCRIPTS="bind"
+BIND9_INIT_CONFIG=""
+BIND9_INIT_STRING=""
+
+# Used by Services/dhcp/dhcp3
+DHCP3_PACKAGES_REQUIRED="1"
+DHCP3_PACKAGES_LISTING="dhcpd"
+DHCP3_SERVICE_DEPS=""
+DHCP3_CONFIG_DIRECTORY="/etc/dhcp"
+DHCP3_DATA_DIRECTORY="/var/lib/dhcp"
+DHCP3_INIT_SCRIPTS="dhcpd"
+DHCP3_INIT_CONFIG=""
+DHCP3_INIT_STRING=""
+
+# Used by Services/tftp/tftp1
+TFTP1_PACKAGES_REQUIRED="1"
+TFTP1_PACKAGES_LISTING="tftp-server"
+TFTP1_SERVICE_DEPS=""
+TFTP1_CONFIG_DIRECTORY="/etc"
+TFTP1_DATA_DIRECTORY="/var/lib/tftpboot"
+TFTP1_INETD_TYPE="inetd"
+TFTP1_INIT_SCRIPTS="inetd"
+TFTP1_INIT_CONFIG=""
+TFTP1_INIT_STRING=""
+
+# Used by Services/sasl/cyrus2
+CYRUS2_PACKAGES_REQUIRED="1"
+CYRUS2_PACKAGES_LISTING="cyrus-sasl"
+CYRUS2_CONFIG_DIRECTORY="/etc"
+CYRUS2_INIT_SCRIPTS="saslauthd"
+CYRUS2_INIT_CONFIG=""
+CYRUS2_INIT_STRING=""
+
+# Used by Services/ldap/openldap2
+OPENLDAP2_PACKAGES_REQUIRED="1"
+OPENLDAP2_PACKAGES_LISTING="openldap"
+OPENLDAP2_SERVICE_DEPS=""
+OPENLDAP2_CONFIG_DIRECTORY="/etc/ldap"
+OPENLDAP2_DATA_DIRECTORY="/var/lib/ldap"
+OPENLDAP2_STATE_DIRECTORY="/var/run/slapd"
+OPENLDAP2_MODULES_DIRECTORY="/usr/lib/ldap"
+OPENLDAP2_MODULAR_BACKEND="1"
+OPENLDAP2_DAEMON_USER="openldap"
+OPENLDAP2_DAEMON_GROUP="openldap"
+OPENLDAP2_BACKEND_TYPE="bdb"
+OPENLDAP2_INIT_SCRIPTS="slapd"
+OPENLDAP2_INIT_CONFIG="/etc/default/slapd"
+OPENLDAP2_INIT_STRING='SLAPD_SERVICES="ldap:/// ldaps:///"'
+
+# Used by Services/http/apache2
+APACHE2_PACKAGES_REQUIRED="1"
+APACHE2_PACKAGES_LISTING="apache2"
+APACHE2_SERVICE_DEPS=""
+APACHE2_CONFIG_DIRECTORY="/etc/apache2"
+APACHE2_DATA_DIRECTORY="/var/www/htdocs"
+APACHE2_LOGGING_DIRECTORY="/var/log/apache2"
+APACHE2_ICONS_DIRECTORY="/usr/share/apache2/icons"
+APACHE2_CGIBIN_DIRECTORY="/var/www/cgi-bin"
+APACHE2_SITES_DIRECTORY="/var/www/sites"
+APACHE2_STATE_DIRECTORY="/var/run/apache2"
+APACHE2_MODULES_DIRECTORY="/usr/lib/apache2/modules"
+APACHE2_MODULAR_BACKEND="1"
+APACHE2_DAEMON_USER="www-data"
+APACHE2_DAEMON_GROUP="www-data"
+APACHE2_INIT_SCRIPTS="apache2"
+APACHE2_INIT_CONFIG=""
+APACHE2_INIT_STRING=""
+

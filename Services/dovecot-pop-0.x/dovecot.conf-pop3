@@ -1,0 +1,4 @@
+# --- dovecot.conf-pop3 ---
+login = pop3
+pop3_listen = [::]
+

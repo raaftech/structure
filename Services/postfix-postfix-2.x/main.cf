@@ -1,0 +1,143 @@
+# /etc/postfix/main.cf
+
+
+# The queue_directory specifies the location of the Postfix queue.
+queue_directory = POSTFIX2_QUEUE_DIRECTORY
+
+# The command_directory parameter specifies the location of all
+# postXXX commands.
+command_directory = POSTFIX2_COMMAND_DIRECTORY
+
+# The daemon_directory parameter specifies the location of all Postfix
+# daemon programs (i.e. programs listed in the master.cf file).
+daemon_directory = POSTFIX2_DAEMON_DIRECTORY
+
+# The mail_owner parameter specifies the owner of the Postfix queue
+# and of most Postfix daemon processes.  Specify the name of a user
+# account THAT DOES NOT SHARE ITS USER OR GROUP ID WITH OTHER ACCOUNTS
+# AND THAT OWNS NO OTHER FILES OR PROCESSES ON THE SYSTEM.
+mail_owner = postfix
+
+# The myhostname parameter specifies the internet hostname of this
+# mail system. Use the fully-qualified domain name if at all possible.
+myhostname = smtp.DOMAIN_NAME
+
+# The mydomain parameter specifies the local internet domain name.
+mydomain = DOMAIN_NAME
+
+# The myorigin parameter specifies the domain that locally-posted
+# mail appears to come from. If you run a domain with multiple
+# machines, you should set this to $mydomain.
+myorigin = $mydomain
+
+# The inet_interfaces parameter specifies the network interface
+# addresses that this mail system receives mail on.
+inet_interfaces = all
+
+# The mydestination parameter specifies the list of domains that this
+# machine considers itself the final destination for.
+mydestination = localhost, $mydomain
+
+# The unknown_local_recipient_reject_code specifies the SMTP server
+# response code when a recipient domain matches $mydestination or
+# ${proxy,inet}_interfaces, while $local_recipient_maps is non-empty
+# and the recipient address or address local-part is not found.
+unknown_local_recipient_reject_code = 550
+
+# The mynetworks_style parameter specifies which and if "trusted"
+# SMTP clients have more privileges than "strangers".
+mynetworks_style = subnet
+
+# The alias_maps parameter specifies the list of alias databases used
+# by the local delivery agent. The default list is system dependent.
+alias_maps = hash:POSTFIX2_ALIASES_FILE
+
+# The alias_database parameter specifies the alias database(s) that
+# are built with "newaliases" or "sendmail -bi".  This is a separate
+# configuration parameter, because alias_maps (see above) may specify
+# tables that are not necessarily all under control by Postfix.
+alias_database = hash:POSTFIX2_ALIASES_FILE
+
+# The debug_peer_level parameter specifies the increment in verbose
+# logging level when an SMTP client or server host name or address
+# matches a pattern in the debug_peer_list parameter.
+debug_peer_level = 2
+
+# Teh sendmail_path: The full pathname of the Postfix sendmail command.
+sendmail_path = /usr/sbin/sendmail
+
+# The newaliases_path: The full pathname of the Postfix newaliases command.
+newaliases_path = /usr/bin/newaliases
+
+# The mailq_path: The full pathname of the Postfix mailq command.
+mailq_path = /usr/bin/mailq
+
+# The setgid_group: The group for mail submission and queue management.
+setgid_group = POSTFIX2_SETGID_GROUP
+
+# The html_directory: The location of the Postfix HTML documentation.
+html_directory = no
+
+# The manpage_directory: The location of the Postfix on-line manual pages.
+manpage_directory = /usr/share/man
+
+# Disable VRFY functionality.
+disable_vrfy_command = yes
+
+# The following options set parameters needed by Postfix to enable
+# Cyrus-SASL support for authentication of mail clients.
+smtpd_sasl_auth_enable = yes
+smtpd_sasl_type = POSTFIX2_SASL_TYPE
+smtpd_sasl_path = POSTFIX2_SASL_PATH
+smtpd_sasl_security_options = noanonymous
+smtpd_sasl_local_domain = $myhostname
+broken_sasl_auth_clients = yes
+smtpd_recipient_restrictions =
+   permit_sasl_authenticated,
+   permit_mynetworks,
+   check_relay_domains
+
+# Transport Layer Security
+smtp_use_tls = yes
+smtp_tls_note_starttls_offer = yes
+smtp_tls_key_file = CERTIFICATES_DATA_DIRECTORY/smtp.key
+smtp_tls_cert_file = CERTIFICATES_DATA_DIRECTORY/smtp.crt
+smtpd_use_tls = yes
+smtpd_tls_auth_only = yes
+smtpd_tls_key_file = CERTIFICATES_DATA_DIRECTORY/smtp.key
+smtpd_tls_cert_file = CERTIFICATES_DATA_DIRECTORY/smtp.crt
+smtpd_tls_loglevel = 0
+smtpd_tls_received_header = yes
+smtpd_tls_session_cache_timeout = 3600s
+tls_random_source = dev:/dev/urandom
+
+# Restrict smtpd rulesets.
+header_checks = regexp:POSTFIX2_CONFIG_DIRECTORY/header_checks
+#mime_header_checks=pcre:POSTFIX2_CONFIG_DIRECTORY/body_checks
+smtpd_delay_reject = no
+smtpd_sender_restrictions =
+	#reject_rhsbl_sender dsn.rfc-ignorant.org,
+	permit
+smtpd_recipient_restrictions =
+	reject_invalid_hostname,
+	reject_non_fqdn_hostname,
+	reject_non_fqdn_sender,
+	reject_non_fqdn_recipient,
+	reject_unknown_sender_domain,
+	reject_unknown_recipient_domain,
+	permit_sasl_authenticated,
+	permit_mynetworks,
+	reject_unauth_destination,
+	#check_recipient_access pcre:POSTFIX2_CONFIG_DIRECTORY/recipient_checks,
+	#check_helo_access pcre:POSTFIX2_CONFIG_DIRECTORY/helo_checks,
+	#reject_rbl_client list.dsbl.org,
+	#reject_rbl_client dnsbl.njabl.org,
+	#reject_rbl_client dul.dnsbl.sorbs.net,
+	#reject_rbl_client zombie.dnsbl.sorbs.net,
+	#reject_rbl_client zen.spamhaus.org,
+	permit
+smtpd_data_restrictions =
+    reject_unauth_pipelining,
+    permit
+hash_queue_names = deferred, defer active bounce flush incoming
+

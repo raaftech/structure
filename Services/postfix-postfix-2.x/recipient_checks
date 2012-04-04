@@ -1,0 +1,6 @@
+/^\@/		550 Invalid address format.
+/[!%\@].*\@/	550 This server disallows weird address syntax.
+/^abuse\@/	OK
+/^hostmaster\@/	OK
+/^postmaster\@/	OK
+/^webmaster\@/	OK

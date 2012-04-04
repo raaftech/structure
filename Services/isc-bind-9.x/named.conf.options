@@ -1,0 +1,24 @@
+# Specify various options.
+options {
+	directory "BIND9_DATA_DIRECTORY";
+	auth-nxdomain no; # conform to RFC1035
+	allow-query { 127.0.0.1; ALLOWED_RANGES };
+	allow-recursion { 127.0.0.1; ALLOWED_RANGES };
+	allow-transfer { 127.0.0.1; ALLOWED_RANGES };
+	listen-on { 127.0.0.1; ALLOWED_IPS };
+	notify no; # can be yes/no/explicit
+ 	#forwarders { some_nameserver1; some_nameserver2; };
+	version "riight";
+};
+
+# Disable lame server logging and config file-parsing logs.
+# Comment out "general" to see config file parse stuff.
+logging {
+    category "lame-servers" { "null"; };
+    category "general" { "null"; };
+};
+
+# Set the acl called "internal" to accept only queries from local networks.
+acl internal { 127.0.0.1; ALLOWED_RANGES };
+controls { inet 127.0.0.1 allow { localhost; }; };
+

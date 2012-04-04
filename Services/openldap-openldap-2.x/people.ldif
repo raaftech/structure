@@ -1,0 +1,36 @@
+# Rubin Simons
+dn: uid=rubin,ou=People,dc=DOMAIN_NAME_PART_A,dc=DOMAIN_NAME_PART_B
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+objectClass: posixAccount
+givenName: Rubin
+sn: Simons
+cn: Rubin Simons
+uid: rubin
+uidNumber: 1001
+gidNumber: 100
+gecos: Rubin Simons
+homeDirectory: /home/rubin
+loginShell: /bin/bash
+userPassword: {SSHA}uwX81+JAdOp2wah+4soa+f0N2dQPsho1
+
+# Freek Alleman 
+dn: uid=freek,ou=People,dc=DOMAIN_NAME_PART_A,dc=DOMAIN_NAME_PART_B
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+objectClass: posixAccount
+givenName: Freek
+sn: Alleman
+cn: Freek Alleman
+uid: freek
+uidNumber: 1003
+gidNumber: 100
+gecos: Freek Alleman
+homeDirectory: /home/freek
+loginShell: /bin/bash
+userPassword: {SSHA}HWDZ/PqDpq/Ixyg7EiCIXIYJiaEQxJ9f
+

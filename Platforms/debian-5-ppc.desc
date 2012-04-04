@@ -1,0 +1,229 @@
+# debian-5-ppc.desc - Debian Linux 5.x ppc Platform Descriptor
+
+
+# Used by Tools/sanity
+SANITY_DO_CONFIGURATION="1"         # Do a sanity check before attempting any
+                                    # other steps. Don't touch this unless you
+                                    # know what you're doing.
+
+# Used by Tools/networking
+NETWORKING_DO_CONFIGURATION="0"     # Install networking using settings from
+                                    # Configuration/setup.conf. If set to "0",
+                                    # no setup will be done; currently running
+                                    # settings will be used instead.
+
+# Used by Tools/packaging
+PACKAGING_DO_CONFIGURATION="0"      # Install additional packaging configs on
+                                    # this platform. This is usually needed
+                                    # when not all software dependencies can be
+                                    # met by the default software installation
+                                    # methods available. If set to "0", no
+                                    # setup will be done; currently running
+                                    # settings will be used instead.
+
+# Used by Tools/certificates
+CERTIFICATES_DO_CONFIGURATION="1"   # Install and generate certificates for the
+                                    # specified servername & requested services.
+                                    # If set to "0", no certificates will be
+                                    # generated. Don't touch this unless you
+                                    # know what you're doing.
+
+# Used by Tools/utilities
+UTILITIES_DO_CONFIGURATION="0"      # Install and generate utilities which aid
+                                    # in administration of a server. Don't touch
+                                    # this unless you know what you're doing.
+
+
+# Platform Globals
+PLATFORM_INIT_TYPE="sysv"
+PLATFORM_INIT_DIRECTORY="/etc/init.d"
+PLATFORM_MAC_TYPE="selinux"
+PLATFORM_FW_TYPE="iptables"
+
+
+# Used by Tools/packaging
+PACKAGING_PACKAGES_REQUIRED="1"
+PACKAGING_PACKAGES_LISTING="apt apt-utils"
+PACKAGING_DISTRIBUTION_TYPE="apt"
+PACKAGING_CONFIG_DIRECTORY="/etc/apt"
+PACKAGING_REPOSITORY_LIST=""
+
+# Used by Tools/certificates
+CERTIFICATES_PACKAGES_REQUIRED="1"
+CERTIFICATES_PACKAGES_LISTING="openssl"
+CERTIFICATES_CONFIG_DIRECTORY="/etc"
+CERTIFICATES_DATA_DIRECTORY="/etc/ssl/certs"
+
+# Used by Tools/utilities
+UTILITIES_PACKAGES_REQUIRED="1"
+UTILITIES_PACKAGES_LISTING="bash"
+UTILITIES_CONFIG_DIRECTORY="/usr/sbin"      
+
+# Used by Services/dns/bind9
+BIND9_PACKAGES_REQUIRED="1"
+BIND9_PACKAGES_LISTING="bind9 dnsutils"
+BIND9_SERVICE_DEPS=""
+BIND9_CONFIG_DIRECTORY="/etc"
+BIND9_DATA_DIRECTORY="/etc/bind"
+BIND9_INIT_SCRIPTS="bind9"
+BIND9_INIT_CONFIG=""
+BIND9_INIT_STRING=""
+
+# Used by Services/dhcp/dhcp3
+DHCP3_PACKAGES_REQUIRED="1"
+DHCP3_PACKAGES_LISTING="dhcp3-server"
+DHCP3_SERVICE_DEPS=""
+DHCP3_CONFIG_DIRECTORY="/etc/dhcp3"
+DHCP3_DATA_DIRECTORY="/var/lib/dhcp3"
+DHCP3_INIT_SCRIPTS="dhcp3-server"
+DHCP3_INIT_CONFIG=""
+DHCP3_INIT_STRING=""
+
+# Used by Services/tftp/tftp1
+TFTP1_PACKAGES_REQUIRED="1"
+TFTP1_PACKAGES_LISTING="openbsd-inetd tftp-hpa"
+TFTP1_SERVICE_DEPS="dhcp(dhcp3)"
+TFTP1_CONFIG_DIRECTORY="/etc"
+TFTP1_DATA_DIRECTORY="/var/lib/tftpboot"
+TFTP1_INETD_TYPE="inetd"
+TFTP1_INIT_SCRIPTS="openbsd-inetd"
+TFTP1_INIT_CONFIG=""
+TFTP1_INIT_STRING=""
+
+# Used by Services/ntp/ntp4
+NTP4_PACKAGES_REQUIRED="1"
+NTP4_PACKAGES_LISTING="ntp"
+NTP4_SERVICE_DEPS=""
+NTP4_CONFIG_DIRECTORY="/etc"
+NTP4_DATA_DIRECTORY="/var/lib/ntp"
+NTP4_LOGGING_DIRECTORY="/var/log"
+NTP4_INIT_SCRIPTS="ntp"
+NTP4_INIT_CONFIG=""
+NTP4_INIT_STRING=""
+
+# Used by Services/smtp/postfix2
+POSTFIX2_PACKAGES_REQUIRED="1"
+POSTFIX2_PACKAGES_LISTING="postfix"
+POSTFIX2_SERVICE_DEPS="sasl(dovecot1)"
+POSTFIX2_CONFIG_DIRECTORY="/etc/postfix"
+POSTFIX2_COMMAND_DIRECTORY="/usr/sbin"
+POSTFIX2_DAEMON_DIRECTORY="/usr/lib/postfix"
+POSTFIX2_QUEUE_DIRECTORY="/var/spool/postfix"
+POSTFIX2_ALIASES_FILE="/etc/aliases"
+POSTFIX2_SETGID_GROUP="postdrop"
+POSTFIX2_SASL_TYPE="dovecot"
+POSTFIX2_SASL_PATH="private/auth"
+POSTFIX2_INIT_SCRIPTS="postfix"
+POSTFIX2_INIT_CONFIG=""
+POSTFIX2_INIT_STRING=""
+
+# Used by Services/sasl/cyrus2
+CYRUS2_PACKAGES_REQUIRED="1"
+CYRUS2_PACKAGES_LISTING="sasl2-bin libsasl2-modules"
+CYRUS2_CONFIG_DIRECTORY="/etc"
+CYRUS2_INIT_SCRIPTS="saslauthd"
+CYRUS2_INIT_CONFIG=""
+CYRUS2_INIT_STRING=""
+
+# Used by Services/[imap4 pop3 sasl]/dovecot1
+DOVECOT1_PACKAGES_REQUIRED="1"
+DOVECOT1_PACKAGES_LISTING="dovecot-common dovecot-imapd dovecot-pop3d"
+DOVECOT1_CONFIG_DIRECTORY="/etc/dovecot"
+DOVECOT1_INIT_SCRIPTS="dovecot"
+DOVECOT1_INIT_CONFIG=""
+DOVECOT1_INIT_STRING=""
+
+# Used by Services/ldap/openldap2
+OPENLDAP2_PACKAGES_REQUIRED="1"
+OPENLDAP2_PACKAGES_LISTING="slapd ldap-utils libnss-ldap libpam-ldap"
+OPENLDAP2_SERVICE_DEPS=""
+OPENLDAP2_CONFIG_DIRECTORY="/etc/ldap"
+OPENLDAP2_DATA_DIRECTORY="/var/lib/ldap"
+OPENLDAP2_STATE_DIRECTORY="/var/run/slapd"
+OPENLDAP2_MODULES_DIRECTORY="/usr/lib/ldap"
+OPENLDAP2_MODULAR_BACKEND="1"
+OPENLDAP2_DAEMON_USER="openldap"
+OPENLDAP2_DAEMON_GROUP="openldap"
+OPENLDAP2_BACKEND_TYPE="bdb"
+OPENLDAP2_INIT_SCRIPTS="slapd"
+OPENLDAP2_INIT_CONFIG="/etc/default/slapd"
+OPENLDAP2_INIT_STRING='SLAPD_SERVICES="ldap:/// ldaps:///"'
+
+# Used by Services/nfs/nfs3
+NFS3_PACKAGES_REQUIRED="1"
+NFS3_PACKAGES_LISTING="nfs-kernel-server"
+NFS3_SERVICE_DEPS=""
+NFS3_CONFIG_DIRECTORY="/etc"
+NFS3_DATA_DIRECTORY="/var/public"
+NFS3_INIT_SCRIPTS="portmap nfs-common nfs-kernel-server"
+NFS3_INIT_CONFIG=""
+NFS3_INIT_STRING=""
+
+# Used by Services/smb/samba3
+SAMBA3_PACKAGES_REQUIRED="1"
+SAMBA3_PACKAGES_LISTING="samba smbclient"
+SAMBA3_SERVICE_DEPS=""
+SAMBA3_CONFIG_DIRECTORY="/etc/samba"
+SAMBA3_DATA_DIRECTORY="/var/public"
+SAMBA3_LOGGING_DIRECTORY="/var/log/samba"
+SAMBA3_SPOOLER_DIRECTORY="/var/spool/samba"
+SAMBA3_NETLOGON_DIRECTORY="/var/lib/samba/netlogon"
+SAMBA3_PROFILES_DIRECTORY="/var/lib/samba/profiles"
+SAMBA3_PASSDB_DIRECTORY="/var/lib/samba"
+SAMBA3_PASSDB_BACKEND="tdbsam"
+SAMBA3_INIT_SCRIPTS="samba"
+SAMBA3_INIT_CONFIG=""
+SAMBA3_INIT_STRING=""
+
+# Used by Services/http/apache2
+APACHE2_PACKAGES_REQUIRED="1"
+APACHE2_PACKAGES_LISTING="apache2"
+APACHE2_SERVICE_DEPS=""
+APACHE2_CONFIG_DIRECTORY="/etc/apache2"
+APACHE2_DATA_DIRECTORY="/var/www/htdocs"
+APACHE2_LOGGING_DIRECTORY="/var/log/apache2"
+APACHE2_ICONS_DIRECTORY="/usr/share/apache2/icons"
+APACHE2_CGIBIN_DIRECTORY="/var/www/cgi-bin"
+APACHE2_SITES_DIRECTORY="/var/www/sites"
+APACHE2_STATE_DIRECTORY="/var/run/apache2"
+APACHE2_MODULES_DIRECTORY="/usr/lib/apache2/modules"
+APACHE2_MODULAR_BACKEND="1"
+APACHE2_DAEMON_USER="www-data"
+APACHE2_DAEMON_GROUP="www-data"
+APACHE2_INIT_SCRIPTS="apache2"
+APACHE2_INIT_CONFIG=""
+APACHE2_INIT_STRING=""
+
+# Used by Services/vcs/subversion1
+SUBVERSION1_PACKAGES_REQUIRED="1"
+SUBVERSION1_PACKAGES_LISTING="subversion libapache2-svn"
+SUBVERSION1_SERVICE_DEPS="http(apache2)"
+SUBVERSION1_CONFIG_DIRECTORY="/etc"
+SUBVERSION1_DATA_DIRECTORY="/var/lib/subversion"
+SUBVERSION1_INIT_SCRIPTS=""
+SUBVERSION1_INIT_CONFIG=""
+SUBVERSION1_INIT_STRING=""
+
+# Used by Services/its/trac0
+TRAC0_PACKAGES_REQUIRED="1"
+TRAC0_PACKAGES_LISTING="libapache2-mod-wsgi trac"
+TRAC0_SERVICE_DEPS="http(apache2) vcs(subversion1)"
+TRAC0_CONFIG_DIRECTORY="/etc"
+TRAC0_DATA_DIRECTORY="/var/lib/trac"
+TRAC0_HOME_DIRECTORY="/usr/lib/python2.4/site-packages/trac"
+TRAC0_APACHE2_MODULE="wsgi"
+TRAC0_INIT_SCRIPTS=""
+TRAC0_INIT_CONFIG=""
+TRAC0_INIT_STRING=""
+
+# Used by Services/cms/cfengine2
+CFENGINE2_PACKAGES_REQUIRED="1"
+CFENGINE2_PACKAGES_LISTING="cfengine2"
+CFENGINE2_SERVICE_DEPS=""
+CFENGINE2_CONFIG_DIRECTORY="/etc/cfengine"
+CFENGINE2_DATA_DIRECTORY="/var/lib/cfengine2"
+CFENGINE2_BINARY_DIRECTORY="/usr/sbin"
+CFENGINE2_INIT_SCRIPTS="cfengine2"
+CFENGINE2_INIT_CONFIG="/etc/default/cfengine2"
+CFENGINE2_INIT_STRING='RUN_CFSERVD=1'
+

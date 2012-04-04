@@ -1,0 +1,15 @@
+# Subnet definition for DOMAIN_NAME.
+subnet DOMAIN_ADDR netmask DOMAIN_MASK {
+    server-identifier dhcp.DOMAIN_NAME;
+    option subnet-mask DOMAIN_MASK;
+    option domain-name-servers SERVER_ADDR;
+    option domain-name "DOMAIN_NAME";
+    #option netbios-node-type 8;
+    #option netbios-name-servers SERVER_ADDR;
+    #option netbios-dd-server SERVER_ADDR;
+    #option ntp-servers SERVER_ADDR;
+    #option routers SERVER_ADDR;
+    range DHCP3_DYNAMIC_RANGE;
+}
+
+

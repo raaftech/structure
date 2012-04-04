@@ -1,0 +1,5 @@
+
+Package: *
+Pin: release a=etch-backports
+Pin-Priority: 200
+

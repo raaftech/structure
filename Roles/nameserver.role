@@ -1,0 +1,25 @@
+# nameserver.role - Domain Name Server Role
+
+
+# How do you want to do authentication on this server? Do you want to keep
+# things simple and have related services do their authentication on their own,
+# then select "basic". This will result in using files for authentication of
+# users (think /etc/passwd, smbpasswd, svnpasswd, tracpasswd, etc). You can
+# Also select "centralized" which will connect all related services to the ldap
+# subsystem. This means you will have to specify an ldap system in SERVICES
+# below like ldap(openldap2). All relevant services will then talk to this ldap
+# instance for authentication purposes.
+AUTH="basic"
+
+# Which services does this role need? This corresponds with whatever you have
+# defined under the Services directory. The first name is the ambiguous name of
+# a service (like dns, rdbms, its or any other name of a service that can be
+# implemented by an number of different software packages like bind or djbdns
+# and trac or bugzilla).
+SERVICES="isc-bind-9.x"
+
+# Below you'll see some aliases for services that this host offers. These names
+# will be created as actual CNAMEs in DNS (if that's part of your services) and
+# the certificate generator will generate SSL/TLS certificates for every name.
+ALIASES="dns"
+

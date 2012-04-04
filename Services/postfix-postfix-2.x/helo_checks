@@ -1,0 +1,3 @@
+# Somebody HELO'ing with a non-RFC-compliant dotted-quad IP
+# address?  For shame!  (I don't do this check, btw.)
+/^[0-9]+(\.[0-9]+){3}$/	REJECT Invalid hostname

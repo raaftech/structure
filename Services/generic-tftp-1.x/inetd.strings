@@ -1,0 +1,2 @@
+debian4:tftp           dgram   udp     wait    root /usr/sbin/in.tftpd     /usr/sbin/in.tftpd    -s TFTP1_DATA_DIRECTORY
+netbsd4:tftp           dgram   udp     wait    root /usr/libexec/tftpd     /usr/libexec/tftpd -l -s TFTP1_DATA_DIRECTORY

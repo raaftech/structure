@@ -1,0 +1,6 @@
+# Reservation for HOST.NET (IP)
+host HOST_on_network_NET {
+    hardware ethernet MAC;
+    fixed-address HOST.NET;
+ROOTPATH_LINE
+BOOTFILE_LINE}

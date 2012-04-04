@@ -1,0 +1,31 @@
+# Basic system aliases. These MUST be present.
+MAILER-DAEMON: postmaster
+postmaster: root
+
+# Standard aliases defined by rfc2142
+abuse:		postmaster
+noc:		root
+security:	root
+hostmaster:	root
+usenet:		root
+news:		usenet
+webmaster:	root
+www:		webmaster
+uucp:		root
+ftp:		root
+
+# General redirections for pseudo accounts.
+toor:		root
+daemon:		root
+bin:		root
+games:		root
+postfix:	postmaster
+named:		root
+ntpd:		root
+sshd:		root
+nobody:		root
+
+# Well-known aliases. These should be filled in.
+operator:	root
+# root:
+

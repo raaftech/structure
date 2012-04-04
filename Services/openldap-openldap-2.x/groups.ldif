@@ -1,0 +1,55 @@
+dn: cn=admin,ou=Groups,dc=DOMAIN_NAME_PART_A,dc=DOMAIN_NAME_PART_B
+objectClass: top
+objectClass: posixGroup
+objectClass: sambaGroupMapping
+cn: admin
+displayName: Domain Admins
+description: Domain Administrators
+gidNumber: 512
+memberUid: root
+sambaGroupType: 2
+sambaSID: S-1-5-21-4019806501-1051076456-1274716048-512
+
+dn: cn=users,ou=Groups,dc=DOMAIN_NAME_PART_A,dc=DOMAIN_NAME_PART_B
+objectClass: top
+objectClass: posixGroup
+objectClass: sambaGroupMapping
+cn: users
+displayName: Domain Users
+description: Domain Users
+gidNumber: 513
+sambaGroupType: 2
+sambaSID: S-1-5-21-4019806501-1051076456-1274716048-513
+
+dn: cn=guest,ou=Groups,dc=DOMAIN_NAME_PART_A,dc=DOMAIN_NAME_PART_B
+objectClass: top
+objectClass: posixGroup
+objectClass: sambaGroupMapping
+cn: guest
+displayName: Domain Guests
+description: Domain Guests
+gidNumber: 514
+sambaGroupType: 2
+sambaSID: S-1-5-21-4019806501-1051076456-1274716048-514
+
+dn: cn=machines,ou=Groups,dc=DOMAIN_NAME_PART_A,dc=DOMAIN_NAME_PART_B
+objectClass: top
+objectClass: posixGroup
+objectClass: sambaGroupMapping
+cn: machines
+displayName: Domain Machines
+description: Domain Machines
+gidNumber: 515
+sambaGroupType: 2
+sambaSID: S-1-5-21-4019806501-1051076456-1274716048-515
+
+dn: cn=devel,ou=Groups,dc=DOMAIN_NAME_PART_A,dc=DOMAIN_NAME_PART_B
+objectClass: top
+objectClass: posixGroup
+objectClass: sambaGroupMapping
+cn: devel
+displayName: Development
+description: Domain Developers
+gidNumber: 510
+sambaGroupType: 2
+sambaSID: S-1-5-21-4019806501-1051076456-1274716048-510

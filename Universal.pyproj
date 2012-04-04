@@ -1,0 +1,264 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{379b10f4-9fc4-4166-ad7c-371ded946ffa}</ProjectGuid>
+    <ProjectHome>.</ProjectHome>
+    <StartupFile>
+    </StartupFile>
+    <SearchPath>
+    </SearchPath>
+    <WorkingDirectory>.</WorkingDirectory>
+    <OutputPath>.</OutputPath>
+    <Name>Universal</Name>
+    <RootNamespace>Universal</RootNamespace>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugSymbols>true</DebugSymbols>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+  </PropertyGroup>
+  <ItemGroup>
+    <Folder Include="Build\" />
+    <Folder Include="Configuration\" />
+    <Folder Include="Includes\" />
+    <Folder Include="Logging\" />
+    <Folder Include="Platforms\" />
+    <Folder Include="Roles\" />
+    <Folder Include="Services\" />
+    <Folder Include="Services\apache-http-2.x\" />
+    <Folder Include="Services\apache-subversion-1.5.x" />
+    <Folder Include="Services\cfengine-cfengine-2.x" />
+    <Folder Include="Services\cyrus-sasl-2.x" />
+    <Folder Include="Services\dovecot-imap-0.x" />
+    <Folder Include="Services\dovecot-imap-1.x" />
+    <Folder Include="Services\dovecot-pop-0.x" />
+    <Folder Include="Services\dovecot-pop-1.x" />
+    <Folder Include="Services\dovecot-sasl-1.x" />
+    <Folder Include="Services\edgewall-trac-0.11.x" />
+    <Folder Include="Services\generic-nfs-3.x" />
+    <Folder Include="Services\generic-ntp-4.x" />
+    <Folder Include="Services\generic-tftp-1.x" />
+    <Folder Include="Services\isc-bind-9.x" />
+    <Folder Include="Services\isc-dhcp-3.x" />
+    <Folder Include="Services\openldap-openldap-2.x" />
+    <Folder Include="Services\postfix-postfix-2.x" />
+    <Folder Include="Services\samba-samba-3.x" />
+    <Folder Include="State\" />
+    <Folder Include="Tools\" />
+    <Folder Include="Tools\certificates\" />
+    <Folder Include="Tools\firewall\" />
+    <Folder Include="Tools\networking\" />
+    <Folder Include="Tools\packaging\" />
+    <Folder Include="Tools\packaging\apt-data\" />
+    <Folder Include="Tools\packaging\cvs-data\" />
+    <Folder Include="Tools\packaging\cyg-data\" />
+    <Folder Include="Tools\packaging\mgw-data\" />
+    <Folder Include="Tools\packaging\swa-data\" />
+    <Folder Include="Tools\packaging\yum-data\" />
+    <Folder Include="Tools\sanity\" />
+    <Folder Include="Tools\security\" />
+    <Folder Include="Tools\utilities\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Configuration\example.conf" />
+    <Content Include="Configuration\pc05262.conf" />
+    <Content Include="Configuration\template.conf" />
+    <Content Include="Includes\environment.sh" />
+    <Content Include="Includes\functions.sh" />
+    <Content Include="LICENSE" />
+    <Content Include="universal.sh" />
+    <Content Include="Platforms\cygwin-17-i386.desc" />
+    <Content Include="Platforms\debian-4-i386.desc" />
+    <Content Include="Platforms\debian-4-ia64.desc" />
+    <Content Include="Platforms\debian-4-ppc.desc" />
+    <Content Include="Platforms\debian-4-x86_64.desc" />
+    <Content Include="Platforms\debian-5-i386.desc" />
+    <Content Include="Platforms\debian-5-ia64.desc" />
+    <Content Include="Platforms\debian-5-ppc.desc" />
+    <Content Include="Platforms\debian-5-x86_64.desc" />
+    <Content Include="Platforms\fedora-12-i386.desc" />
+    <Content Include="Platforms\fedora-12-x86_64.desc" />
+    <Content Include="Platforms\mingw-1-i386.desc" />
+    <Content Include="Platforms\netbsd-4-i386.desc" />
+    <Content Include="Platforms\netbsd-4-x86_64.desc" />
+    <Content Include="Platforms\netbsd-5-i386.desc" />
+    <Content Include="Platforms\netbsd-5-x86_64.desc" />
+    <Content Include="Platforms\rhel-4-i386.desc" />
+    <Content Include="Platforms\rhel-4-x86_64.desc" />
+    <Content Include="Platforms\rhel-5-i386.desc" />
+    <Content Include="Platforms\rhel-5-x86_64.desc" />
+    <Content Include="Platforms\rhel-6-x86_64.desc" />
+    <Content Include="README" />
+    <Content Include="Roles\nameserver.role" />
+    <Content Include="Roles\template.role" />
+    <Content Include="Roles\universal.role" />
+    <Content Include="Services\apache-http-2.x\httpd.conf" />
+    <Content Include="Services\apache-http-2.x\mime.magic" />
+    <Content Include="Services\apache-http-2.x\mime.types" />
+    <Content Include="Services\apache-http-2.x\modules.conf-debian4" />
+    <Content Include="Services\apache-http-2.x\modules.conf-debian5" />
+    <Content Include="Services\apache-http-2.x\modules.conf-netbsd4" />
+    <Content Include="Services\apache-http-2.x\modules.conf-rhel4" />
+    <Content Include="Services\apache-http-2.x\modules.conf-rhel5" />
+    <Content Include="Services\apache-http-2.x\modules.conf-rhel6" />
+    <Content Include="Services\apache-http-2.x\repo.DOMAIN_NAME.conf" />
+    <Content Include="Services\apache-http-2.x\run.sh" />
+    <Content Include="Services\apache-http-2.x\ssl.conf" />
+    <Content Include="Services\apache-http-2.x\www.DOMAIN_NAME.conf" />
+    <Content Include="Services\apache-subversion-1.5.x\README" />
+    <Content Include="Services\apache-subversion-1.5.x\run.sh" />
+    <Content Include="Services\apache-subversion-1.5.x\svn.DOMAIN_NAME.conf" />
+    <Content Include="Services\apache-subversion-1.5.x\svnacl" />
+    <Content Include="Services\apache-subversion-1.5.x\svnpasswd" />
+    <Content Include="Services\cfengine-cfengine-2.x\cfservd.conf" />
+    <Content Include="Services\cfengine-cfengine-2.x\run.sh" />
+    <Content Include="Services\cfengine-cfengine-2.x\update.conf" />
+    <Content Include="Services\cyrus-sasl-2.x\run.sh" />
+    <Content Include="Services\cyrus-sasl-2.x\smtpd.conf" />
+    <Content Include="Services\dovecot-imap-0.x\dovecot.conf-auth" />
+    <Content Include="Services\dovecot-imap-0.x\dovecot.conf-header" />
+    <Content Include="Services\dovecot-imap-0.x\dovecot.conf-imap" />
+    <Content Include="Services\dovecot-imap-0.x\run.sh" />
+    <Content Include="Services\dovecot-imap-1.x\dovecot.conf-auth" />
+    <Content Include="Services\dovecot-imap-1.x\dovecot.conf-header" />
+    <Content Include="Services\dovecot-imap-1.x\run.sh" />
+    <Content Include="Services\dovecot-pop-0.x\dovecot.conf-auth" />
+    <Content Include="Services\dovecot-pop-0.x\dovecot.conf-header" />
+    <Content Include="Services\dovecot-pop-0.x\dovecot.conf-pop3" />
+    <Content Include="Services\dovecot-pop-0.x\run.sh" />
+    <Content Include="Services\dovecot-pop-1.x\dovecot.conf-auth" />
+    <Content Include="Services\dovecot-pop-1.x\dovecot.conf-header" />
+    <Content Include="Services\dovecot-pop-1.x\dovecot.conf-pop3" />
+    <Content Include="Services\dovecot-pop-1.x\run.sh" />
+    <Content Include="Services\dovecot-sasl-1.x\dovecot.conf-auth" />
+    <Content Include="Services\dovecot-sasl-1.x\dovecot.conf-header" />
+    <Content Include="Services\dovecot-sasl-1.x\run.sh" />
+    <Content Include="Services\edgewall-trac-0.11.x\run.sh" />
+    <Content Include="Services\edgewall-trac-0.11.x\trac.cgi" />
+    <Content Include="Services\edgewall-trac-0.11.x\trac.DOMAIN_NAME.conf-fastcgi" />
+    <Content Include="Services\edgewall-trac-0.11.x\trac.DOMAIN_NAME.conf-python" />
+    <Content Include="Services\edgewall-trac-0.11.x\trac.DOMAIN_NAME.conf-wsgi" />
+    <Content Include="Services\edgewall-trac-0.11.x\trac.fcgi" />
+    <Content Include="Services\edgewall-trac-0.11.x\trac.wsgi" />
+    <Content Include="Services\edgewall-trac-0.11.x\tracpasswd" />
+    <Content Include="Services\generic-nfs-3.x\exports.strings" />
+    <Content Include="Services\generic-nfs-3.x\run.sh" />
+    <Content Include="Services\generic-ntp-4.x\ntp.conf" />
+    <Content Include="Services\generic-ntp-4.x\run.sh" />
+    <Content Include="Services\generic-tftp-1.x\inetd.strings" />
+    <Content Include="Services\generic-tftp-1.x\run.sh" />
+    <Content Include="Services\generic-tftp-1.x\tftp.xinetd" />
+    <Content Include="Services\isc-bind-9.x\db.0" />
+    <Content Include="Services\isc-bind-9.x\db.127" />
+    <Content Include="Services\isc-bind-9.x\db.255" />
+    <Content Include="Services\isc-bind-9.x\db.empty" />
+    <Content Include="Services\isc-bind-9.x\db.fwd_DOMAIN_NAME_REVERSED-body" />
+    <Content Include="Services\isc-bind-9.x\db.fwd_DOMAIN_NAME_REVERSED-header" />
+    <Content Include="Services\isc-bind-9.x\db.local" />
+    <Content Include="Services\isc-bind-9.x\db.rev_DOMAIN_NAME_REVERSED-header" />
+    <Content Include="Services\isc-bind-9.x\db.rev_DOMAIN_NAME_REVERSED-sub" />
+    <Content Include="Services\isc-bind-9.x\db.rev_DOMAIN_NAME_REVERSED-tld" />
+    <Content Include="Services\isc-bind-9.x\db.root" />
+    <Content Include="Services\isc-bind-9.x\hosts" />
+    <Content Include="Services\isc-bind-9.x\named.conf" />
+    <Content Include="Services\isc-bind-9.x\named.conf.master" />
+    <Content Include="Services\isc-bind-9.x\named.conf.options" />
+    <Content Include="Services\isc-bind-9.x\named.conf.slave" />
+    <Content Include="Services\isc-bind-9.x\resolv.conf" />
+    <Content Include="Services\isc-bind-9.x\rndc.key" />
+    <Content Include="Services\isc-bind-9.x\run.sh" />
+    <Content Include="Services\isc-bind-9.x\zones.rfc1918" />
+    <Content Include="Services\isc-dhcp-3.x\dhcpd.conf-header" />
+    <Content Include="Services\isc-dhcp-3.x\dhcpd.conf-subnet" />
+    <Content Include="Services\isc-dhcp-3.x\run.sh" />
+    <Content Include="Services\openldap-openldap-2.x\debian4_nss_nsswitch.conf" />
+    <Content Include="Services\openldap-openldap-2.x\debian4_pam_common-account" />
+    <Content Include="Services\openldap-openldap-2.x\debian4_pam_common-auth" />
+    <Content Include="Services\openldap-openldap-2.x\debian4_pam_common-password" />
+    <Content Include="Services\openldap-openldap-2.x\debian4_pam_common-session" />
+    <Content Include="Services\openldap-openldap-2.x\debian5_nss_nsswitch.conf" />
+    <Content Include="Services\openldap-openldap-2.x\debian5_pam_common-account" />
+    <Content Include="Services\openldap-openldap-2.x\debian5_pam_common-auth" />
+    <Content Include="Services\openldap-openldap-2.x\debian5_pam_common-password" />
+    <Content Include="Services\openldap-openldap-2.x\debian5_pam_common-session" />
+    <Content Include="Services\openldap-openldap-2.x\groups.ldif" />
+    <Content Include="Services\openldap-openldap-2.x\ldap.conf" />
+    <Content Include="Services\openldap-openldap-2.x\netbsd4_nss_nsswitch.conf" />
+    <Content Include="Services\openldap-openldap-2.x\netbsd4_pam_sshd" />
+    <Content Include="Services\openldap-openldap-2.x\netbsd4_pam_su" />
+    <Content Include="Services\openldap-openldap-2.x\netbsd4_pam_system" />
+    <Content Include="Services\openldap-openldap-2.x\people.ldif" />
+    <Content Include="Services\openldap-openldap-2.x\rhel4_nss_nsswitch.conf" />
+    <Content Include="Services\openldap-openldap-2.x\rhel4_pam_system-auth-uc" />
+    <Content Include="Services\openldap-openldap-2.x\rhel5_nss_nsswitch.conf" />
+    <Content Include="Services\openldap-openldap-2.x\rhel5_pam_system-auth-uc" />
+    <Content Include="Services\openldap-openldap-2.x\root.ldif" />
+    <Content Include="Services\openldap-openldap-2.x\run.sh" />
+    <Content Include="Services\openldap-openldap-2.x\samba.schema" />
+    <Content Include="Services\openldap-openldap-2.x\slapd.conf" />
+    <Content Include="Services\postfix-postfix-2.x\aliases" />
+    <Content Include="Services\postfix-postfix-2.x\body_checks" />
+    <Content Include="Services\postfix-postfix-2.x\header_checks" />
+    <Content Include="Services\postfix-postfix-2.x\helo_checks" />
+    <Content Include="Services\postfix-postfix-2.x\main.cf" />
+    <Content Include="Services\postfix-postfix-2.x\master.cf" />
+    <Content Include="Services\postfix-postfix-2.x\recipient_checks" />
+    <Content Include="Services\postfix-postfix-2.x\run.sh" />
+    <Content Include="Services\samba-samba-3.x\run.sh" />
+    <Content Include="Services\samba-samba-3.x\smb.conf" />
+    <Content Include="Services\samba-samba-3.x\smbldap.conf" />
+    <Content Include="Services\samba-samba-3.x\smbldap_bind.conf" />
+    <Content Include="Services\samba-samba-3.x\smbusers" />
+    <Content Include="Tools\certificates\configuration" />
+    <Content Include="Tools\certificates\run.sh" />
+    <Content Include="Tools\firewall\run.sh" />
+    <Content Include="Tools\networking\run.sh" />
+    <Content Include="Tools\packaging\apt-data\backports.key" />
+    <Content Include="Tools\packaging\apt-data\backports.list-debian4" />
+    <Content Include="Tools\packaging\apt-data\backports.preferences-debian4" />
+    <Content Include="Tools\packaging\apt-handler.sh" />
+    <Content Include="Tools\packaging\cvs-handler.sh" />
+    <Content Include="Tools\packaging\cyg-handler.sh" />
+    <Content Include="Tools\packaging\mgw-handler.sh" />
+    <Content Include="Tools\packaging\run.sh" />
+    <Content Include="Tools\packaging\swa-handler.sh" />
+    <Content Include="Tools\packaging\yum-data\epel.key" />
+    <Content Include="Tools\packaging\yum-data\epel.repo-rhel4" />
+    <Content Include="Tools\packaging\yum-data\epel.repo-rhel5" />
+    <Content Include="Tools\packaging\yum-data\epel.repo-rhel6" />
+    <Content Include="Tools\packaging\yum-data\grond.key" />
+    <Content Include="Tools\packaging\yum-data\grond.repo-rhel4" />
+    <Content Include="Tools\packaging\yum-data\grond.repo-rhel5" />
+    <Content Include="Tools\packaging\yum-data\openpcf.key" />
+    <Content Include="Tools\packaging\yum-data\openpcf.repo-rhel4" />
+    <Content Include="Tools\packaging\yum-data\openpcf.repo-rhel5" />
+    <Content Include="Tools\packaging\yum-handler.sh" />
+    <Content Include="Tools\sanity\netstat.cygwin17" />
+    <Content Include="Tools\sanity\netstat.debian4" />
+    <Content Include="Tools\sanity\netstat.debian5" />
+    <Content Include="Tools\sanity\netstat.fedora12" />
+    <Content Include="Tools\sanity\netstat.mingw1" />
+    <Content Include="Tools\sanity\netstat.netbsd4" />
+    <Content Include="Tools\sanity\netstat.netbsd5" />
+    <Content Include="Tools\sanity\netstat.rhel4" />
+    <Content Include="Tools\sanity\netstat.rhel5" />
+    <Content Include="Tools\sanity\netstat.rhel6" />
+    <Content Include="Tools\sanity\run.sh" />
+    <Content Include="Tools\security\run.sh" />
+    <Content Include="Tools\utilities\bind9-fwd.entry" />
+    <Content Include="Tools\utilities\bind9-rev.entry" />
+    <Content Include="Tools\utilities\dhcp3.entry" />
+    <Content Include="Tools\utilities\hostctl.conf" />
+    <Content Include="Tools\utilities\hostctl.sh" />
+    <Content Include="Tools\utilities\isomnt.conf" />
+    <Content Include="Tools\utilities\isomnt.sh" />
+    <Content Include="Tools\utilities\run.sh" />
+    <Content Include="Tools\utilities\selips.sh" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" />
+</Project>

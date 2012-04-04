@@ -1,0 +1,8 @@
+[openpcf]
+name=OpenPCF $releasever - $basearch
+failovermethod=priority
+baseurl=http://www.openpcf.org/downloads/repository/openpcf/rhel/4.x/os/$basearch/
+enabled=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-openpcf
+gpgcheck=1
+

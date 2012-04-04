@@ -1,0 +1,78 @@
+LoadModule python_module APACHE2_MODULES_DIRECTORY/mod_python.so
+
+
+<VirtualHost *:80>
+    ServerName trac.DOMAIN_NAME
+    ServerAlias trac
+    ServerAdmin webmaster@DOMAIN_NAME
+    DocumentRoot APACHE2_SITES_DIRECTORY/trac.DOMAIN_NAME
+
+    ErrorLog APACHE2_LOGGING_DIRECTORY/trac.DOMAIN_NAME-error_log
+    CustomLog APACHE2_LOGGING_DIRECTORY/trac.DOMAIN_NAME-access_log common
+
+    <Directory TRAC0_DATA_DIRECTORY/repository>
+        Order deny,allow
+        Allow from all
+    </Directory>
+
+    <Location />
+        AuthType Basic
+        AuthName "Trac Repository"
+        #AuthBasicProvider ldap
+        #AuthLDAPURL ldap://127.0.0.1/dc=DOMAIN_NAME_PART_A,dc=DOMAIN_NAME_PART_B?uid
+        #AuthLDAPGroupAttribute memberUid
+        #AuthLDAPGroupAttributeIsDN off
+        #AuthzLDAPAuthoritative on # if Require ldap-*
+        #AuthzLDAPAuthoritative off # if Require valid-user
+        #Require ldap-group cn=devel,ou=Groups,dc=DOMAIN_NAME_PART_A,dc=DOMAIN_NAME_PART_B
+        AuthUserFile TRAC0_DATA_DIRECTORY/tracpasswd
+        Require valid-user
+
+	# Mod_python settings
+	SetHandler mod_python
+        PythonInterpreter main_interpreter
+        PythonHandler trac.web.modpython_frontend 
+        PythonOption TracEnv TRAC0_DATA_DIRECTORY/repository
+    </Location>
+</VirtualHost>
+
+<VirtualHost *:443>
+    ServerName trac.DOMAIN_NAME
+    ServerAlias trac
+    ServerAdmin webmaster@DOMAIN_NAME
+    DocumentRoot APACHE2_SITES_DIRECTORY/trac.DOMAIN_NAME
+
+    SSLEngine on
+
+    ErrorLog APACHE2_LOGGING_DIRECTORY/trac.DOMAIN_NAME-error_log
+    CustomLog APACHE2_LOGGING_DIRECTORY/trac.DOMAIN_NAME-access_log common
+
+
+    <Directory TRAC0_DATA_DIRECTORY/repository>
+        Order deny,allow
+        Allow from all
+    </Directory>
+
+    <Location />
+        # Require SSL connection for password protection.
+        SSLRequireSSL
+
+        AuthType Basic
+        AuthName "Trac Repository"
+        #AuthBasicProvider ldap
+        #AuthLDAPURL ldap://127.0.0.1/dc=DOMAIN_NAME_PART_A,dc=DOMAIN_NAME_PART_B?uid
+        #AuthLDAPGroupAttribute memberUid
+        #AuthLDAPGroupAttributeIsDN off
+        #AuthzLDAPAuthoritative on # if Require ldap-*
+        #AuthzLDAPAuthoritative off # if Require valid-user
+        #Require ldap-group cn=devel,ou=Groups,dc=DOMAIN_NAME_PART_A,dc=DOMAIN_NAME_PART_B
+        AuthUserFile TRAC0_DATA_DIRECTORY/tracpasswd
+        Require valid-user
+
+	# Mod_python settings
+	SetHandler mod_python
+        PythonInterpreter main_interpreter
+        PythonHandler trac.web.modpython_frontend 
+        PythonOption TracEnv TRAC0_DATA_DIRECTORY/repository
+    </Location>
+</VirtualHost>

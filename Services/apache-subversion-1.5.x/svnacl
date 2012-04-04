@@ -1,0 +1,6 @@
+#[on:/]
+#test = rw
+
+# give sally write access only to the 'testing' subdir
+#[calc:/branches/calc/bug-142/testing]
+#sally = rw
