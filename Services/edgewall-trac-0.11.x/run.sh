@@ -31,16 +31,18 @@ if [ ! $UNIVERSAL_HOME ]; then
     done;
     unset DIR
     unset IFS
-    OFFSET="/../../../"
+    OFFSET="/../../"
     if [ -e "`dirname "$ABS"`$OFFSET" ]; then
         # Found, probably called relatively.
         cd "`dirname "$ABS"`$OFFSET"
         UNIVERSAL_HOME="`pwd`"
+        cd - > /dev/null
         unset ABS
     elif [ -e "`dirname "$0"`$OFFSET" ]; then
         # Found, probably called absolutely.
         cd "`dirname "$0"`$OFFSET"
         UNIVERSAL_HOME="`pwd`"
+        cd - > /dev/null
     fi;
 fi;
 
@@ -51,8 +53,10 @@ if [ ! $GLOBAL_RUN ]; then
 fi;
 
 # Set local variables.
-SERVICE_NAME="its"
-SERVICE_IMPL="trac0"
+SERVICE="$(basename $(dirname $(readlink -f $0)))"
+SERVICE_VENDOR="`echo "$SERVICE" | cut -d '-' -f 1`"
+SERVICE_NAME="`echo "$SERVICE" | cut -d '-' -f 2`"
+SERVICE_VERSION="`echo "$SERVICE" | cut -d '-' -f 3`"
 SERVICE_DEPS="$TRAC0_SERVICE_DEPS"
 SERVICE_PRIO="25"
 SERVICE_PORT=""
@@ -62,7 +66,7 @@ NAMESPACE=TRAC0
 CHECK="`set | grep ^${NAMESPACE}_`"
 if [ -z "$CHECK" ]; then
     mkdir -p $TARGET_STATE
-    echo "SERVICE_STATE=failed" > $TARGET_STATE/$SERVICE_IMPL.state
+    echo "SERVICE_STATE=failed" > $TARGET_STATE/$SERVICE.state
 fi;
 unset CHECK
 unset NAMESPACE
@@ -77,12 +81,12 @@ DOMAIN_NAME_PART_A=`echo $DOMAIN_NAME | cut -d "." -f 1`
 DOMAIN_NAME_PART_B=`echo $DOMAIN_NAME | cut -d "." -f 2`
 
 # Include state for this specific module.
-if [ -e $TARGET_STATE/$SERVICE_IMPL.state ]; then
-    . $TARGET_STATE/$SERVICE_IMPL.state
+if [ -e $TARGET_STATE/$SERVICE.state ]; then
+    . $TARGET_STATE/$SERVICE.state
 else
     mkdir -p $TARGET_STATE
-    echo "SERVICE_STATE=uninitialized" > $TARGET_STATE/$SERVICE_IMPL.state
-    . $TARGET_STATE/$SERVICE_IMPL.state
+    echo "SERVICE_STATE=uninitialized" > $TARGET_STATE/$SERVICE.state
+    . $TARGET_STATE/$SERVICE.state
 fi;
 
 # Main case statement.
@@ -138,7 +142,7 @@ case "$1" in
         done;
     fi;
 
-    cd $UNIVERSAL_HOME/Services/$SERVICE_NAME/$SERVICE_IMPL
+    cd $UNIVERSAL_HOME/Services/$SERVICE
 
     echo "Creating configuration files in \$TARGET_ROOT$TRAC0_CONFIG_DIRECTORY.."
     for FILE in $TRAC0_FILES_CONFIG; do
@@ -182,9 +186,9 @@ case "$1" in
     fi;
 
     if [ $? = 0 ]; then
-        echo "SERVICE_STATE=built" > $TARGET_STATE/$SERVICE_IMPL.state
+        echo "SERVICE_STATE=built" > $TARGET_STATE/$SERVICE.state
     else
-        echo "SERVICE_STATE=unknown" > $TARGET_STATE/$SERVICE_IMPL.state
+        echo "SERVICE_STATE=unknown" > $TARGET_STATE/$SERVICE.state
     fi;
 
     echo ""
@@ -242,9 +246,9 @@ case "$1" in
             CLEAN_DIRS_EMPTY=`pwd`
         done;
         if [ $? = 0 ]; then
-            echo "SERVICE_STATE=cleaned" > $TARGET_STATE/$SERVICE_IMPL.state
+            echo "SERVICE_STATE=cleaned" > $TARGET_STATE/$SERVICE.state
         else
-            echo "SERVICE_STATE=unknown" > $TARGET_STATE/$SERVICE_IMPL.state
+            echo "SERVICE_STATE=unknown" > $TARGET_STATE/$SERVICE.state
         fi;
     else
         echo "No created config directory found. use \"build\" first. "
@@ -268,9 +272,9 @@ case "$1" in
             CLEAN_DIRS_EMPTY=`pwd`
         done;
         if [ $? = 0 ]; then
-            echo "SERVICE_STATE=cleaned" > $TARGET_STATE/$SERVICE_IMPL.state
+            echo "SERVICE_STATE=cleaned" > $TARGET_STATE/$SERVICE.state
         else
-            echo "SERVICE_STATE=unknown" > $TARGET_STATE/$SERVICE_IMPL.state
+            echo "SERVICE_STATE=unknown" > $TARGET_STATE/$SERVICE.state
         fi;
     else
         echo "No created data directory found. use \"build\" first. "
@@ -288,9 +292,9 @@ case "$1" in
             CLEAN_DIRS_EMPTY=`pwd`
         done;
         if [ $? = 0 ]; then
-            echo "SERVICE_STATE=cleaned" > $TARGET_STATE/$SERVICE_IMPL.state
+            echo "SERVICE_STATE=cleaned" > $TARGET_STATE/$SERVICE.state
         else
-            echo "SERVICE_STATE=unknown" > $TARGET_STATE/$SERVICE_IMPL.state
+            echo "SERVICE_STATE=unknown" > $TARGET_STATE/$SERVICE.state
         fi;
     else
         echo "No created sites directory found. use \"build\" first. "
@@ -376,8 +380,8 @@ case "$1" in
         trac-admin $TRAC0_DATA_DIRECTORY/repository initenv Trac sqlite:db/trac.db svn $SUBVERSION1_DATA_DIRECTORY/repository
 
         echo "Installing cgi, fastcgi and wsgi handlers.."
-	mkdir -p $TRAC0_DATA_DIRECTORY/repository/apache
-	mkdir -p $TRAC0_DATA_DIRECTORY/repository/eggs
+    mkdir -p $TRAC0_DATA_DIRECTORY/repository/apache
+    mkdir -p $TRAC0_DATA_DIRECTORY/repository/eggs
         install -m 0755 -o root $TARGET_ROOT/$TRAC0_DATA_DIRECTORY/repository/apache/trac.cgi $TRAC0_DATA_DIRECTORY/repository/apache/trac.cgi
         install -m 0755 -o root $TARGET_ROOT/$TRAC0_DATA_DIRECTORY/repository/apache/trac.fcgi $TRAC0_DATA_DIRECTORY/repository/apache/trac.fcgi
         install -m 0755 -o root $TARGET_ROOT/$TRAC0_DATA_DIRECTORY/repository/apache/trac.wsgi $TRAC0_DATA_DIRECTORY/repository/apache/trac.wsgi
@@ -389,11 +393,11 @@ case "$1" in
 
             if [ $? = 0 ]; then
                 echo "success"
-                echo "SERVICE_STATE=installed" > $TARGET_STATE/$SERVICE_IMPL.state
+                echo "SERVICE_STATE=installed" > $TARGET_STATE/$SERVICE.state
             else
                 STATE="fail"
                 echo "$STATE"
-                echo "SERVICE_STATE=unknown" > $TARGET_STATE/$SERVICE_IMPL.state
+                echo "SERVICE_STATE=unknown" > $TARGET_STATE/$SERVICE.state
             fi;
         done;
 
@@ -475,9 +479,9 @@ case "$1" in
     rmdir $APACHE2_SITES_DIRECTORY
 
     if [ $? = 0 ]; then
-        echo "SERVICE_STATE=uninstalled" > $TARGET_STATE/$SERVICE_IMPL.state
+        echo "SERVICE_STATE=uninstalled" > $TARGET_STATE/$SERVICE.state
     else
-        echo "SERVICE_STATE=unknown" > $TARGET_STATE/$SERVICE_IMPL.state
+        echo "SERVICE_STATE=unknown" > $TARGET_STATE/$SERVICE.state
     fi;
     echo ""
     ;;

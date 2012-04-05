@@ -31,16 +31,18 @@ if [ ! $UNIVERSAL_HOME ]; then
     done;
     unset DIR
     unset IFS
-    OFFSET="/../../../"
+    OFFSET="/../../"
     if [ -e "`dirname "$ABS"`$OFFSET" ]; then
         # Found, probably called relatively.
         cd "`dirname "$ABS"`$OFFSET"
         UNIVERSAL_HOME="`pwd`"
+        cd - > /dev/null
         unset ABS
     elif [ -e "`dirname "$0"`$OFFSET" ]; then
         # Found, probably called absolutely.
         cd "`dirname "$0"`$OFFSET"
         UNIVERSAL_HOME="`pwd`"
+        cd - > /dev/null
     fi;
 fi;
 
@@ -51,8 +53,10 @@ if [ ! $GLOBAL_RUN ]; then
 fi;
 
 # Set local variables.
-SERVICE_NAME="ldap"
-SERVICE_IMPL="openldap2"
+SERVICE="$(basename $(dirname $(readlink -f $0)))"
+SERVICE_VENDOR="`echo "$SERVICE" | cut -d '-' -f 1`"
+SERVICE_NAME="`echo "$SERVICE" | cut -d '-' -f 2`"
+SERVICE_VERSION="`echo "$SERVICE" | cut -d '-' -f 3`"
 SERVICE_DEPS="$OPENLDAP2_SERVICE_DEPS"
 SERVICE_PRIO="16"
 SERVICE_PORT="389 636"
@@ -62,7 +66,7 @@ NAMESPACE=OPENLDAP2
 CHECK="`set | grep ^${NAMESPACE}_`"
 if [ -z "$CHECK" ]; then
     mkdir -p $TARGET_STATE
-    echo "SERVICE_STATE=failed" > $TARGET_STATE/$SERVICE_IMPL.state
+    echo "SERVICE_STATE=failed" > $TARGET_STATE/$SERVICE.state
 fi;
 unset CHECK
 unset NAMESPACE
@@ -78,12 +82,12 @@ DOMAIN_NAME_PART_A=`echo $DOMAIN_NAME | cut -d "." -f 1`
 DOMAIN_NAME_PART_B=`echo $DOMAIN_NAME | cut -d "." -f 2`
 
 # Include state for this specific module.
-if [ -e $TARGET_STATE/$SERVICE_IMPL.state ]; then
-    . $TARGET_STATE/$SERVICE_IMPL.state
+if [ -e $TARGET_STATE/$SERVICE.state ]; then
+    . $TARGET_STATE/$SERVICE.state
 else
     mkdir -p $TARGET_STATE
-    echo "SERVICE_STATE=uninitialized" > $TARGET_STATE/$SERVICE_IMPL.state
-    . $TARGET_STATE/$SERVICE_IMPL.state
+    echo "SERVICE_STATE=uninitialized" > $TARGET_STATE/$SERVICE.state
+    . $TARGET_STATE/$SERVICE.state
 fi;
 
 # Main case statement.
@@ -132,7 +136,7 @@ case "$1" in
     fi;
 
     # Enter this module's home directory before starting real work.
-    cd $UNIVERSAL_HOME/Services/$SERVICE_NAME/$SERVICE_IMPL
+    cd $UNIVERSAL_HOME/Services/$SERVICE
 
     # Make sure our target directories exist.
     mkdir -p $TARGET_ROOT/$OPENLDAP2_CONFIG_DIRECTORY/cacerts
@@ -224,9 +228,9 @@ case "$1" in
 
     # Check if the last action exited correctly. Needs to be fixed.
     if [ $? = 0 ]; then
-        echo "SERVICE_STATE=built" > $TARGET_STATE/$SERVICE_IMPL.state
+        echo "SERVICE_STATE=built" > $TARGET_STATE/$SERVICE.state
     else
-        echo "SERVICE_STATE=unknown" > $TARGET_STATE/$SERVICE_IMPL.state
+        echo "SERVICE_STATE=unknown" > $TARGET_STATE/$SERVICE.state
     fi;
     echo ""
     ;;
@@ -342,9 +346,9 @@ case "$1" in
 
     # Check if the last action exited correctly. Needs to be fixed.
     if [ $? = 0 ]; then
-        echo "SERVICE_STATE=cleaned" > $TARGET_STATE/$SERVICE_IMPL.state
+        echo "SERVICE_STATE=cleaned" > $TARGET_STATE/$SERVICE.state
     else
-        echo "SERVICE_STATE=unknown" > $TARGET_STATE/$SERVICE_IMPL.state
+        echo "SERVICE_STATE=unknown" > $TARGET_STATE/$SERVICE.state
     fi;
     echo ""
     ;;
@@ -406,7 +410,7 @@ case "$1" in
     fi;
 
     # Enter this module's home directory before starting real work.
-    cd $UNIVERSAL_HOME/Services/$SERVICE_NAME/$SERVICE_IMPL
+    cd $UNIVERSAL_HOME/Services/$SERVICE
 
     # Make sure our target directories exist.
     mkdir -p $OPENLDAP2_CONFIG_DIRECTORY/cacerts
@@ -431,7 +435,7 @@ case "$1" in
             # Check if the last loop iteration exited correctly.
             if [ $? = 0 ]; then
                 echo "success"
-                echo "SERVICE_STATE=installed" > $TARGET_STATE/$SERVICE_IMPL.state
+                echo "SERVICE_STATE=installed" > $TARGET_STATE/$SERVICE.state
             else
                 STATE="fail"
                 echo "$STATE"
@@ -461,7 +465,7 @@ case "$1" in
             # Check if the last loop iteration exited correctly.
             if [ $? = 0 ]; then
                 echo "success"
-                echo "SERVICE_STATE=installed" > $TARGET_STATE/$SERVICE_IMPL.state
+                echo "SERVICE_STATE=installed" > $TARGET_STATE/$SERVICE.state
             else
                 STATE="fail"
                 echo "$STATE"
@@ -486,7 +490,7 @@ case "$1" in
             # Check if the last loop iteration exited correctly.
             if [ $? = 0 ]; then
                 echo "success"
-                echo "SERVICE_STATE=installed" > $TARGET_STATE/$SERVICE_IMPL.state
+                echo "SERVICE_STATE=installed" > $TARGET_STATE/$SERVICE.state
             else
                 STATE="fail"
                 echo "$STATE"
@@ -499,11 +503,11 @@ case "$1" in
     # Disable modulepath and moduleload settings if _MODULAR_BACKEND=0.
     if [ $OPENLDAP2_MODULAR_BACKEND = "0" ]; then
         echo "Disabling modulepath and moduleload in slapd.conf.."
-	    cp $OPENLDAP2_CONFIG_DIRECTORY/slapd.conf /tmp/slapd.conf.tmp
-	    cat /tmp/slapd.conf.tmp | sed "s|^module|#module|g" > $OPENLDAP2_CONFIG_DIRECTORY/slapd.conf
-	    rm /tmp/slapd.conf.tmp
+        cp $OPENLDAP2_CONFIG_DIRECTORY/slapd.conf /tmp/slapd.conf.tmp
+        cat /tmp/slapd.conf.tmp | sed "s|^module|#module|g" > $OPENLDAP2_CONFIG_DIRECTORY/slapd.conf
+        rm /tmp/slapd.conf.tmp
     else
-	    echo "OPENLDAP2_MODULAR_BACKEND=$OPENLDAP2_MODULAR_BACKEND, nice.."
+        echo "OPENLDAP2_MODULAR_BACKEND=$OPENLDAP2_MODULAR_BACKEND, nice.."
     fi;
     # Creating slapd databases using installed configuration.
     echo "Cleaning up default database if any.."
@@ -565,7 +569,7 @@ case "$1" in
     fi;
 
     # Enter this module's home directory before starting real work.
-    cd $UNIVERSAL_HOME/Services/$SERVICE_NAME/$SERVICE_IMPL
+    cd $UNIVERSAL_HOME/Services/$SERVICE
 
     # Attempt to remove directories which might be empty.
     rmdir $OPENLDAP2_DATA_DIRECTORY
@@ -578,16 +582,16 @@ case "$1" in
         for FILE in $OPENLDAP2_FILES_CONFIG; do
             if [ -e $OPENLDAP2_CONFIG_DIRECTORY/$FILE.orig ]; then
                 cp $OPENLDAP2_CONFIG_DIRECTORY/$FILE.orig $OPENLDAP2_CONFIG_DIRECTORY/$FILE
-	        else
+            else
                 rm -f $OPENLDAP2_CONFIG_DIRECTORY/$FILE
             fi;
         done;
 
         # Check if the last loop iteration exited correctly.
         if [ $? = 0 ]; then
-            echo "SERVICE_STATE=uninstalled" > $TARGET_STATE/$SERVICE_IMPL.state
+            echo "SERVICE_STATE=uninstalled" > $TARGET_STATE/$SERVICE.state
         else
-            echo "SERVICE_STATE=unknown" > $TARGET_STATE/$SERVICE_IMPL.state
+            echo "SERVICE_STATE=unknown" > $TARGET_STATE/$SERVICE.state
         fi;    
     else
         echo "No installed configuration directory found; Are you sure you've"
@@ -613,9 +617,9 @@ case "$1" in
 
         # Check if the last loop iteration exited correctly.
         if [ $? = 0 ]; then
-            echo "SERVICE_STATE=uninstalled" > $TARGET_STATE/$SERVICE_IMPL.state
+            echo "SERVICE_STATE=uninstalled" > $TARGET_STATE/$SERVICE.state
         else
-            echo "SERVICE_STATE=unknown" > $TARGET_STATE/$SERVICE_IMPL.state
+            echo "SERVICE_STATE=unknown" > $TARGET_STATE/$SERVICE.state
         fi;
     else
         echo "No installed import directory found; Are you sure you've"
@@ -636,9 +640,9 @@ case "$1" in
 
         # Check if the last loop iteration exited correctly.
         if [ $? = 0 ]; then
-            echo "SERVICE_STATE=uninstalled" > $TARGET_STATE/$SERVICE_IMPL.state
+            echo "SERVICE_STATE=uninstalled" > $TARGET_STATE/$SERVICE.state
         else
-            echo "SERVICE_STATE=unknown" > $TARGET_STATE/$SERVICE_IMPL.state
+            echo "SERVICE_STATE=unknown" > $TARGET_STATE/$SERVICE.state
         fi;    
     else
         echo "No installed schema directory found; Are you sure you've"

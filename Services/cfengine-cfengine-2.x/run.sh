@@ -31,16 +31,18 @@ if [ ! $UNIVERSAL_HOME ]; then
     done;
     unset DIR
     unset IFS
-    OFFSET="/../../../"
+    OFFSET="/../../"
     if [ -e "`dirname "$ABS"`$OFFSET" ]; then
         # Found, probably called relatively.
         cd "`dirname "$ABS"`$OFFSET"
         UNIVERSAL_HOME="`pwd`"
+        cd - > /dev/null
         unset ABS
     elif [ -e "`dirname "$0"`$OFFSET" ]; then
         # Found, probably called absolutely.
         cd "`dirname "$0"`$OFFSET"
         UNIVERSAL_HOME="`pwd`"
+        cd - > /dev/null
     fi;
 fi;
 
@@ -51,8 +53,10 @@ if [ ! $GLOBAL_RUN ]; then
 fi;
 
 # Set local variables.
-SERVICE_NAME="cms"
-SERVICE_IMPL="cfengine2"
+SERVICE="$(basename $(dirname $(readlink -f $0)))"
+SERVICE_VENDOR="`echo "$SERVICE" | cut -d '-' -f 1`"
+SERVICE_NAME="`echo "$SERVICE" | cut -d '-' -f 2`"
+SERVICE_VERSION="`echo "$SERVICE" | cut -d '-' -f 3`"
 SERVICE_DEPS="$CFENGINE2_SERVICE_DEPS"
 SERVICE_PRIO="26"
 SERVICE_PORT="5308"
@@ -62,7 +66,7 @@ NAMESPACE=CFENGINE2
 CHECK="`set | grep ^${NAMESPACE}_`"
 if [ -z "$CHECK" ]; then
     mkdir -p $TARGET_STATE
-    echo "SERVICE_STATE=failed" > $TARGET_STATE/$SERVICE_IMPL.state
+    echo "SERVICE_STATE=failed" > $TARGET_STATE/$SERVICE.state
 fi;
 unset CHECK
 unset NAMESPACE
@@ -104,12 +108,12 @@ else
 fi;
 
 # Include state for this specific module.
-if [ -e $TARGET_STATE/$SERVICE_IMPL.state ]; then
-    . $TARGET_STATE/$SERVICE_IMPL.state
+if [ -e $TARGET_STATE/$SERVICE.state ]; then
+    . $TARGET_STATE/$SERVICE.state
 else
     mkdir -p $TARGET_STATE
-    echo "SERVICE_STATE=uninitialized" > $TARGET_STATE/$SERVICE_IMPL.state
-    . $TARGET_STATE/$SERVICE_IMPL.state
+    echo "SERVICE_STATE=uninitialized" > $TARGET_STATE/$SERVICE.state
+    . $TARGET_STATE/$SERVICE.state
 fi;
 
 # Main case statement.
@@ -167,7 +171,7 @@ case "$1" in
     mkdir -p $TARGET_ROOT/$CFENGINE2_DATA_DIRECTORY/rpc_out
     mkdir -p $TARGET_ROOT/$CFENGINE2_DATA_DIRECTORY/state
 
-    cd $UNIVERSAL_HOME/Services/$SERVICE_NAME/$SERVICE_IMPL
+    cd $UNIVERSAL_HOME/Services/$SERVICE
 
     echo "Creating default default set of configuration files.."
     for FILE in $CFENGINE2_FILES_CONFIG; do
@@ -190,9 +194,9 @@ case "$1" in
     cd -
 
     if [ $? = 0 ]; then
-        echo "SERVICE_STATE=built" > $TARGET_STATE/$SERVICE_IMPL.state
+        echo "SERVICE_STATE=built" > $TARGET_STATE/$SERVICE.state
     else
-        echo "SERVICE_STATE=unknown" > $TARGET_STATE/$SERVICE_IMPL.state
+        echo "SERVICE_STATE=unknown" > $TARGET_STATE/$SERVICE.state
     fi;
     echo ""
     ;;
@@ -251,9 +255,9 @@ case "$1" in
         done;
         
         if [ $? = 0 ]; then
-            echo "SERVICE_STATE=cleaned" > $TARGET_STATE/$SERVICE_IMPL.state
+            echo "SERVICE_STATE=cleaned" > $TARGET_STATE/$SERVICE.state
         else
-            echo "SERVICE_STATE=unknown" > $TARGET_STATE/$SERVICE_IMPL.state
+            echo "SERVICE_STATE=unknown" > $TARGET_STATE/$SERVICE.state
         fi;
     else
         echo "No created config directory found. use \"build\" first. "
@@ -274,9 +278,9 @@ case "$1" in
         done;
         
         if [ $? = 0 ]; then
-            echo "SERVICE_STATE=cleaned" > $TARGET_STATE/$SERVICE_IMPL.state
+            echo "SERVICE_STATE=cleaned" > $TARGET_STATE/$SERVICE.state
         else
-            echo "SERVICE_STATE=unknown" > $TARGET_STATE/$SERVICE_IMPL.state
+            echo "SERVICE_STATE=unknown" > $TARGET_STATE/$SERVICE.state
         fi;
     else
         echo "No created data directory found. use \"build\" first. "
@@ -369,11 +373,11 @@ case "$1" in
 
             if [ $? = 0 ]; then
                 echo "success"
-                echo "SERVICE_STATE=installed" > $TARGET_STATE/$SERVICE_IMPL.state
+                echo "SERVICE_STATE=installed" > $TARGET_STATE/$SERVICE.state
             else
                 STATE="fail"
                 echo "$STATE"
-                echo "SERVICE_STATE=unknown" > $TARGET_STATE/$SERVICE_IMPL.state
+                echo "SERVICE_STATE=unknown" > $TARGET_STATE/$SERVICE.state
             fi;
         done;
 
@@ -455,9 +459,9 @@ case "$1" in
         echo ""
 
         if [ $? = 0 ]; then
-            echo "SERVICE_STATE=uninstalled" > $TARGET_STATE/$SERVICE_IMPL.state
+            echo "SERVICE_STATE=uninstalled" > $TARGET_STATE/$SERVICE.state
         else
-            echo "SERVICE_STATE=unknown" > $TARGET_STATE/$SERVICE_IMPL.state
+            echo "SERVICE_STATE=unknown" > $TARGET_STATE/$SERVICE.state
         fi;
     else
         echo "No installed configuration directory found; Are you sure you've"

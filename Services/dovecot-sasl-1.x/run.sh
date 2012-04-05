@@ -31,16 +31,18 @@ if [ ! $UNIVERSAL_HOME ]; then
     done;
     unset DIR
     unset IFS
-    OFFSET="/../../../"
+    OFFSET="/../../"
     if [ -e "`dirname "$ABS"`$OFFSET" ]; then
         # Found, probably called relatively.
         cd "`dirname "$ABS"`$OFFSET"
         UNIVERSAL_HOME="`pwd`"
+        cd - > /dev/null
         unset ABS
     elif [ -e "`dirname "$0"`$OFFSET" ]; then
         # Found, probably called absolutely.
         cd "`dirname "$0"`$OFFSET"
         UNIVERSAL_HOME="`pwd`"
+        cd - > /dev/null
     fi;
 fi;
 
@@ -51,8 +53,10 @@ if [ ! $GLOBAL_RUN ]; then
 fi;
 
 # Set local variables.
-SERVICE_NAME="sasl"
-SERVICE_IMPL="dovecot1"
+SERVICE="$(basename $(dirname $(readlink -f $0)))"
+SERVICE_VENDOR="`echo "$SERVICE" | cut -d '-' -f 1`"
+SERVICE_NAME="`echo "$SERVICE" | cut -d '-' -f 2`"
+SERVICE_VERSION="`echo "$SERVICE" | cut -d '-' -f 3`"
 SERVICE_DEPS="$DOVECOT1_SERVICE_DEPS"
 SERVICE_PRIO="20"
 SERVICE_PORT=""
@@ -62,7 +66,7 @@ NAMESPACE=DOVECOT1
 CHECK="`set | grep ^${NAMESPACE}_`"
 if [ -z "$CHECK" ]; then
     mkdir -p $TARGET_STATE
-    echo "SERVICE_STATE=failed" > $TARGET_STATE/$SERVICE_IMPL.state
+    echo "SERVICE_STATE=failed" > $TARGET_STATE/$SERVICE.state
 fi;
 unset CHECK
 unset NAMESPACE
@@ -72,12 +76,12 @@ DOVECOT1_FILES_CONFIG="dovecot.conf"
 DOVECOT1_FILES_TEMPLATES="dovecot.conf-header dovecot.conf-auth"
 
 # Include state for this specific module.
-if [ -e $TARGET_STATE/$SERVICE_IMPL.state ]; then
-    . $TARGET_STATE/$SERVICE_IMPL.state
+if [ -e $TARGET_STATE/$SERVICE.state ]; then
+    . $TARGET_STATE/$SERVICE.state
 else
     mkdir -p $TARGET_STATE
-    echo "SERVICE_STATE=uninitialized" > $TARGET_STATE/$SERVICE_IMPL.state
-    . $TARGET_STATE/$SERVICE_IMPL.state
+    echo "SERVICE_STATE=uninitialized" > $TARGET_STATE/$SERVICE.state
+    . $TARGET_STATE/$SERVICE.state
 fi;
 
 # Main case statement.
@@ -128,7 +132,7 @@ case "$1" in
         done;
     fi;
 
-    cd $UNIVERSAL_HOME/Services/$SERVICE_NAME/$SERVICE_IMPL
+    cd $UNIVERSAL_HOME/Services/$SERVICE
 
     if [ -e $TARGET_ROOT/$DOVECOT1_CONFIG_DIRECTORY/dovecot.conf ]; then
         echo "dovecot.conf exists, checking if my config is applied.."
@@ -157,9 +161,9 @@ case "$1" in
     fi; 
 
     if [ $? = 0 ]; then
-        echo "SERVICE_STATE=built" > $TARGET_STATE/$SERVICE_IMPL.state
+        echo "SERVICE_STATE=built" > $TARGET_STATE/$SERVICE.state
     else
-        echo "SERVICE_STATE=unknown" > $TARGET_STATE/$SERVICE_IMPL.state
+        echo "SERVICE_STATE=unknown" > $TARGET_STATE/$SERVICE.state
     fi;
     echo ""
     ;;
@@ -220,9 +224,9 @@ case "$1" in
         echo "No created config directory found. use \"build\" first. "
     fi;
     if [ $? = 0 ]; then
-        echo "SERVICE_STATE=cleaned" > $TARGET_STATE/$SERVICE_IMPL.state
+        echo "SERVICE_STATE=cleaned" > $TARGET_STATE/$SERVICE.state
     else
-        echo "SERVICE_STATE=unknown" > $TARGET_STATE/$SERVICE_IMPL.state
+        echo "SERVICE_STATE=unknown" > $TARGET_STATE/$SERVICE.state
     fi;
     echo ""
     ;;
@@ -297,7 +301,7 @@ case "$1" in
 
             if [ $? = 0 ]; then
                 echo "success"
-                echo "SERVICE_STATE=installed" > $TARGET_STATE/$SERVICE_IMPL.state
+                echo "SERVICE_STATE=installed" > $TARGET_STATE/$SERVICE.state
             else
                 STATE="fail"
                 echo "$STATE"
@@ -356,14 +360,14 @@ case "$1" in
         for CONFIG in $DOVECOT1_FILES_CONFIG; do
             if [ -e $DOVECOT1_CONFIG_DIRECTORY/$CONFIG.orig ]; then
                 cp $DOVECOT1_CONFIG_DIRECTORY/$CONFIG.orig $DOVECOT1_CONFIG_DIRECTORY/$CONFIG
-	    else
+        else
                 rm -f $DOVECOT1_CONFIG_DIRECTORY/$CONFIG
             fi;
         done;
         if [ $? = 0 ]; then
-        echo "SERVICE_STATE=uninstalled" > $TARGET_STATE/$SERVICE_IMPL.state
+        echo "SERVICE_STATE=uninstalled" > $TARGET_STATE/$SERVICE.state
             else
-        echo "SERVICE_STATE=unknown" > $TARGET_STATE/$SERVICE_IMPL.state
+        echo "SERVICE_STATE=unknown" > $TARGET_STATE/$SERVICE.state
     fi;
 
     else

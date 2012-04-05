@@ -31,16 +31,18 @@ if [ ! $UNIVERSAL_HOME ]; then
     done;
     unset DIR
     unset IFS
-    OFFSET="/../../../"
+    OFFSET="/../../"
     if [ -e "`dirname "$ABS"`$OFFSET" ]; then
         # Found, probably called relatively.
         cd "`dirname "$ABS"`$OFFSET"
         UNIVERSAL_HOME="`pwd`"
+        cd - > /dev/null
         unset ABS
     elif [ -e "`dirname "$0"`$OFFSET" ]; then
         # Found, probably called absolutely.
         cd "`dirname "$0"`$OFFSET"
         UNIVERSAL_HOME="`pwd`"
+        cd - > /dev/null
     fi;
 fi;
 
@@ -51,8 +53,10 @@ if [ ! $GLOBAL_RUN ]; then
 fi;
 
 # Set local variables.
-SERVICE_NAME="http"
-SERVICE_IMPL="apache2"
+SERVICE="$(basename $(dirname $(readlink -f $0)))"
+SERVICE_VENDOR="`echo "$SERVICE" | cut -d '-' -f 1`"
+SERVICE_NAME="`echo "$SERVICE" | cut -d '-' -f 2`"
+SERVICE_VERSION="`echo "$SERVICE" | cut -d '-' -f 3`"
 SERVICE_DEPS="$APACHE2_SERVICE_DEPS"
 SERVICE_PRIO="24"
 SERVICE_PORT="80 443"
@@ -62,7 +66,7 @@ NAMESPACE=APACHE2
 CHECK="`set | grep ^${NAMESPACE}_`"
 if [ -z "$CHECK" ]; then
     mkdir -p $TARGET_STATE
-    echo "SERVICE_STATE=failed" > $TARGET_STATE/$SERVICE_IMPL.state
+    echo "SERVICE_STATE=failed" > $TARGET_STATE/$SERVICE.state
 fi;
 unset CHECK
 unset NAMESPACE
@@ -76,12 +80,12 @@ APACHE2_FILES_SITES="www.DOMAIN_NAME.conf repo.DOMAIN_NAME.conf"
 DOMAIN_NAME=`echo $DOMAIN_RANGES | cut -d "/" -f 1`
 
 # Include state for this specific module.
-if [ -e $TARGET_STATE/$SERVICE_IMPL.state ]; then
-    . $TARGET_STATE/$SERVICE_IMPL.state
+if [ -e $TARGET_STATE/$SERVICE.state ]; then
+    . $TARGET_STATE/$SERVICE.state
 else
     mkdir -p $TARGET_STATE
-    echo "SERVICE_STATE=uninitialized" > $TARGET_STATE/$SERVICE_IMPL.state
-    . $TARGET_STATE/$SERVICE_IMPL.state
+    echo "SERVICE_STATE=uninitialized" > $TARGET_STATE/$SERVICE.state
+    . $TARGET_STATE/$SERVICE.state
 fi;
 
 # Main case statement.
@@ -141,7 +145,7 @@ case "$1" in
         done;
     fi;
 
-    cd $UNIVERSAL_HOME/Services/$SERVICE_NAME/$SERVICE_IMPL
+    cd $UNIVERSAL_HOME/Services/$SERVICE
 
     echo "Creating configuration files in \$TARGET_ROOT$APACHE2_CONFIG_DIRECTORY.."
     for FILE in $APACHE2_FILES_CONFIG; do
@@ -208,9 +212,9 @@ case "$1" in
     fi;
 
     if [ $? = 0 ]; then
-        echo "SERVICE_STATE=built" > $TARGET_STATE/$SERVICE_IMPL.state
+        echo "SERVICE_STATE=built" > $TARGET_STATE/$SERVICE.state
     else
-        echo "SERVICE_STATE=unknown" > $TARGET_STATE/$SERVICE_IMPL.state
+        echo "SERVICE_STATE=unknown" > $TARGET_STATE/$SERVICE.state
     fi;
 
     echo ""
@@ -272,9 +276,9 @@ case "$1" in
             CLEAN_DIRS_EMPTY=`pwd`
         done;
         if [ $? = 0 ]; then
-            echo "SERVICE_STATE=cleaned" > $TARGET_STATE/$SERVICE_IMPL.state
+            echo "SERVICE_STATE=cleaned" > $TARGET_STATE/$SERVICE.state
         else
-            echo "SERVICE_STATE=unknown" > $TARGET_STATE/$SERVICE_IMPL.state
+            echo "SERVICE_STATE=unknown" > $TARGET_STATE/$SERVICE.state
         fi;
     else
         echo "No created config directory found. use \"build\" first. "
@@ -291,9 +295,9 @@ case "$1" in
             CLEAN_DIRS_EMPTY=`pwd`
         done;
         if [ $? = 0 ]; then
-            echo "SERVICE_STATE=cleaned" > $TARGET_STATE/$SERVICE_IMPL.state
+            echo "SERVICE_STATE=cleaned" > $TARGET_STATE/$SERVICE.state
         else
-            echo "SERVICE_STATE=unknown" > $TARGET_STATE/$SERVICE_IMPL.state
+            echo "SERVICE_STATE=unknown" > $TARGET_STATE/$SERVICE.state
         fi;
     else
         echo "No created data directory found. use \"build\" first. "
@@ -310,9 +314,9 @@ case "$1" in
             CLEAN_DIRS_EMPTY=`pwd`
         done;
         if [ $? = 0 ]; then
-            echo "SERVICE_STATE=cleaned" > $TARGET_STATE/$SERVICE_IMPL.state
+            echo "SERVICE_STATE=cleaned" > $TARGET_STATE/$SERVICE.state
         else
-            echo "SERVICE_STATE=unknown" > $TARGET_STATE/$SERVICE_IMPL.state
+            echo "SERVICE_STATE=unknown" > $TARGET_STATE/$SERVICE.state
         fi;
     else
         echo "No created logging directory found. use \"build\" first. "
@@ -329,9 +333,9 @@ case "$1" in
             CLEAN_DIRS_EMPTY=`pwd`
         done;
         if [ $? = 0 ]; then
-            echo "SERVICE_STATE=cleaned" > $TARGET_STATE/$SERVICE_IMPL.state
+            echo "SERVICE_STATE=cleaned" > $TARGET_STATE/$SERVICE.state
         else
-            echo "SERVICE_STATE=unknown" > $TARGET_STATE/$SERVICE_IMPL.state
+            echo "SERVICE_STATE=unknown" > $TARGET_STATE/$SERVICE.state
         fi;
     else
         echo "No created state directory found. use \"build\" first. "
@@ -348,9 +352,9 @@ case "$1" in
             CLEAN_DIRS_EMPTY=`pwd`
         done;
         if [ $? = 0 ]; then
-            echo "SERVICE_STATE=cleaned" > $TARGET_STATE/$SERVICE_IMPL.state
+            echo "SERVICE_STATE=cleaned" > $TARGET_STATE/$SERVICE.state
         else
-            echo "SERVICE_STATE=unknown" > $TARGET_STATE/$SERVICE_IMPL.state
+            echo "SERVICE_STATE=unknown" > $TARGET_STATE/$SERVICE.state
         fi;
     else
         echo "No created cgi-bin directory found. use \"build\" first. "
@@ -367,9 +371,9 @@ case "$1" in
             CLEAN_DIRS_EMPTY=`pwd`
         done;
         if [ $? = 0 ]; then
-            echo "SERVICE_STATE=cleaned" > $TARGET_STATE/$SERVICE_IMPL.state
+            echo "SERVICE_STATE=cleaned" > $TARGET_STATE/$SERVICE.state
         else
-            echo "SERVICE_STATE=unknown" > $TARGET_STATE/$SERVICE_IMPL.state
+            echo "SERVICE_STATE=unknown" > $TARGET_STATE/$SERVICE.state
         fi;
     else
         echo "No created icons directory found. use \"build\" first. "
@@ -378,7 +382,7 @@ case "$1" in
     if [ -e $TARGET_ROOT/$APACHE2_SITES_DIRECTORY ]; then
         echo "Cleaning \$TARGET_ROOT$APACHE2_SITES_DIRECTORY"
         cd $TARGET_ROOT/$APACHE2_SITES_DIRECTORY
-	rmdir `echo $APACHE2_FILES_SITES | sed "s|DOMAIN_NAME.conf|$DOMAIN_NAME|g"`
+    rmdir `echo $APACHE2_FILES_SITES | sed "s|DOMAIN_NAME.conf|$DOMAIN_NAME|g"`
         CLEAN_DIRS_EMPTY="$TARGET_ROOT/$APACHE2_SITES_DIRECTORY"
         CLEAN_DIRS_NAMES="`echo $APACHE2_SITES_DIRECTORY | sed 's|/| |g'`"
         while [ "$CLEAN_DIRS_EMPTY" != "$TARGET_ROOT" ]; do
@@ -387,9 +391,9 @@ case "$1" in
             CLEAN_DIRS_EMPTY=`pwd`
         done;
         if [ $? = 0 ]; then
-            echo "SERVICE_STATE=cleaned" > $TARGET_STATE/$SERVICE_IMPL.state
+            echo "SERVICE_STATE=cleaned" > $TARGET_STATE/$SERVICE.state
         else
-            echo "SERVICE_STATE=unknown" > $TARGET_STATE/$SERVICE_IMPL.state
+            echo "SERVICE_STATE=unknown" > $TARGET_STATE/$SERVICE.state
         fi;
     else
         echo "No created sites directory found. use \"build\" first. "
@@ -490,11 +494,11 @@ case "$1" in
 
             if [ $? = 0 ]; then
                 echo "success"
-                echo "SERVICE_STATE=installed" > $TARGET_STATE/$SERVICE_IMPL.state
+                echo "SERVICE_STATE=installed" > $TARGET_STATE/$SERVICE.state
             else
                 STATE="fail"
                 echo "$STATE"
-                echo "SERVICE_STATE=unknown" > $TARGET_STATE/$SERVICE_IMPL.state
+                echo "SERVICE_STATE=unknown" > $TARGET_STATE/$SERVICE.state
             fi;
         done;
 
@@ -518,11 +522,11 @@ case "$1" in
 
             if [ $? = 0 ]; then
                 echo "success"
-                echo "SERVICE_STATE=installed" > $TARGET_STATE/$SERVICE_IMPL.state
+                echo "SERVICE_STATE=installed" > $TARGET_STATE/$SERVICE.state
             else
                 STATE="fail"
                 echo "$STATE"
-                echo "SERVICE_STATE=unknown" > $TARGET_STATE/$SERVICE_IMPL.state
+                echo "SERVICE_STATE=unknown" > $TARGET_STATE/$SERVICE.state
             fi;
         done;
 
@@ -533,11 +537,11 @@ case "$1" in
 
             if [ $? = 0 ]; then
                 echo "success"
-                echo "SERVICE_STATE=installed" > $TARGET_STATE/$SERVICE_IMPL.state
+                echo "SERVICE_STATE=installed" > $TARGET_STATE/$SERVICE.state
             else
                 STATE="fail"
                 echo "$STATE"
-                echo "SERVICE_STATE=unknown" > $TARGET_STATE/$SERVICE_IMPL.state
+                echo "SERVICE_STATE=unknown" > $TARGET_STATE/$SERVICE.state
             fi;
         done;
     else
@@ -626,9 +630,9 @@ case "$1" in
     rmdir $APACHE2_CONFIG_DIRECTORY/backup
 
     if [ $? = 0 ]; then
-        echo "SERVICE_STATE=uninstalled" > $TARGET_STATE/$SERVICE_IMPL.state
+        echo "SERVICE_STATE=uninstalled" > $TARGET_STATE/$SERVICE.state
     else
-        echo "SERVICE_STATE=unknown" > $TARGET_STATE/$SERVICE_IMPL.state
+        echo "SERVICE_STATE=unknown" > $TARGET_STATE/$SERVICE.state
     fi;
     echo ""
     ;;

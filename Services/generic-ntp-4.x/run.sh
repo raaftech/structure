@@ -31,16 +31,18 @@ if [ ! $UNIVERSAL_HOME ]; then
     done;
     unset DIR
     unset IFS
-    OFFSET="/../../../"
+    OFFSET="/../../"
     if [ -e "`dirname "$ABS"`$OFFSET" ]; then
         # Found, probably called relatively.
         cd "`dirname "$ABS"`$OFFSET"
         UNIVERSAL_HOME="`pwd`"
+        cd - > /dev/null
         unset ABS
     elif [ -e "`dirname "$0"`$OFFSET" ]; then
         # Found, probably called absolutely.
         cd "`dirname "$0"`$OFFSET"
         UNIVERSAL_HOME="`pwd`"
+        cd - > /dev/null
     fi;
 fi;
 
@@ -51,8 +53,10 @@ if [ ! $GLOBAL_RUN ]; then
 fi;
 
 # Set local variables.
-SERVICE_NAME="ntp"
-SERVICE_IMPL="ntp4"
+SERVICE="$(basename $(dirname $(readlink -f $0)))"
+SERVICE_VENDOR="`echo "$SERVICE" | cut -d '-' -f 1`"
+SERVICE_NAME="`echo "$SERVICE" | cut -d '-' -f 2`"
+SERVICE_VERSION="`echo "$SERVICE" | cut -d '-' -f 3`"
 SERVICE_DEPS="$NTP4_SERVICE_DEPS"
 SERVICE_PRIO="19"
 SERVICE_PORT="123"
@@ -62,7 +66,7 @@ NAMESPACE=NTP4
 CHECK="`set | grep ^${NAMESPACE}_`"
 if [ -z "$CHECK" ]; then
     mkdir -p $TARGET_STATE
-    echo "SERVICE_STATE=failed" > $TARGET_STATE/$SERVICE_IMPL.state
+    echo "SERVICE_STATE=failed" > $TARGET_STATE/$SERVICE.state
 fi;
 unset CHECK
 unset NAMESPACE
@@ -71,12 +75,12 @@ unset NAMESPACE
 NTP4_FILES_CONFIG="ntp.conf"
 
 # Include state for this specific module.
-if [ -e $TARGET_STATE/$SERVICE_IMPL.state ]; then
-    . $TARGET_STATE/$SERVICE_IMPL.state
+if [ -e $TARGET_STATE/$SERVICE.state ]; then
+    . $TARGET_STATE/$SERVICE.state
 else
     mkdir -p $TARGET_STATE
-    echo "SERVICE_STATE=uninitialized" > $TARGET_STATE/$SERVICE_IMPL.state
-    . $TARGET_STATE/$SERVICE_IMPL.state
+    echo "SERVICE_STATE=uninitialized" > $TARGET_STATE/$SERVICE.state
+    . $TARGET_STATE/$SERVICE.state
 fi;
 
 # Main case statement.
@@ -128,7 +132,7 @@ case "$1" in
         done;
     fi;
 
-    cd $UNIVERSAL_HOME/Services/$SERVICE_NAME/$SERVICE_IMPL
+    cd $UNIVERSAL_HOME/Services/$SERVICE
 
     echo "Creating a default ntp.conf file.."
     for FILE in $NTP4_FILES_CONFIG; do
@@ -147,9 +151,9 @@ case "$1" in
     done;
 
     if [ $? = 0 ]; then
-        echo "SERVICE_STATE=built" > $TARGET_STATE/$SERVICE_IMPL.state
+        echo "SERVICE_STATE=built" > $TARGET_STATE/$SERVICE.state
     else
-        echo "SERVICE_STATE=unknown" > $TARGET_STATE/$SERVICE_IMPL.state
+        echo "SERVICE_STATE=unknown" > $TARGET_STATE/$SERVICE.state
     fi;
 
     echo ""
@@ -208,9 +212,9 @@ case "$1" in
             CLEAN_DIRS_EMPTY=`pwd`
         done;
         if [ $? = 0 ]; then
-            echo "SERVICE_STATE=cleaned" > $TARGET_STATE/$SERVICE_IMPL.state
+            echo "SERVICE_STATE=cleaned" > $TARGET_STATE/$SERVICE.state
         else
-            echo "SERVICE_STATE=unknown" > $TARGET_STATE/$SERVICE_IMPL.state
+            echo "SERVICE_STATE=unknown" > $TARGET_STATE/$SERVICE.state
         fi;
     else
         echo "No created config directory found. use \"build\" first. "
@@ -228,9 +232,9 @@ case "$1" in
             CLEAN_DIRS_EMPTY=`pwd`
         done;
         if [ $? = 0 ]; then
-            echo "SERVICE_STATE=cleaned" > $TARGET_STATE/$SERVICE_IMPL.state
+            echo "SERVICE_STATE=cleaned" > $TARGET_STATE/$SERVICE.state
         else
-            echo "SERVICE_STATE=unknown" > $TARGET_STATE/$SERVICE_IMPL.state
+            echo "SERVICE_STATE=unknown" > $TARGET_STATE/$SERVICE.state
         fi;
     else
         echo "No created data directory found. use \"build\" first. "
@@ -309,11 +313,11 @@ case "$1" in
 
             if [ $? = 0 ]; then
                 echo "success"
-                echo "SERVICE_STATE=installed" > $TARGET_STATE/$SERVICE_IMPL.state
+                echo "SERVICE_STATE=installed" > $TARGET_STATE/$SERVICE.state
             else
                 STATE="fail"
                 echo "$STATE"
-                echo "SERVICE_STATE=unknown" > $TARGET_STATE/$SERVICE_IMPL.state
+                echo "SERVICE_STATE=unknown" > $TARGET_STATE/$SERVICE.state
             fi;
         done;
     else
@@ -368,18 +372,18 @@ case "$1" in
         echo "Uninstalling generated configuration.."
         for CONFIG in $NTP4_FILES_CONFIG; do
             if [ -e $NTP4_CONFIG_DIRECTORY/$CONFIG.orig ]; then
-		cp $NTP4_CONFIG_DIRECTORY/$CONFIG.orig $NTP4_CONFIG_DIRECTORY/$CONFIG
+        cp $NTP4_CONFIG_DIRECTORY/$CONFIG.orig $NTP4_CONFIG_DIRECTORY/$CONFIG
             else
                 rm -f $NTP4_CONFIG_DIRECTORY/$CONFIG
             fi;
         done;
         rmdir $NTP4_CONFIG_DIRECTORY $NTP4_DATA_DIRECTORY
         if [ $? = 0 ]; then
-            echo "SERVICE_STATE=built" > $TARGET_STATE/$SERVICE_IMPL.state
+            echo "SERVICE_STATE=built" > $TARGET_STATE/$SERVICE.state
         else
-            echo "SERVICE_STATE=unknown" > $TARGET_STATE/$SERVICE_IMPL.state
+            echo "SERVICE_STATE=unknown" > $TARGET_STATE/$SERVICE.state
         fi;
-	    echo  ""
+        echo  ""
     else
         echo "No installed configuration directory found; Are you sure you've"
         echo "specified the right platform for this machine? Or did you"

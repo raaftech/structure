@@ -91,11 +91,7 @@ case "$1" in
     # Enumerate requested services from role.
     echo "Setting up services for the requested role:"
     for SERVICE in $SERVICES; do
-        SERVICE_VENDOR="`echo "$SERVICE" | cut -d '-' -f 1`"
-        SERVICE_NAME="`echo "$SERVICE" | cut -d '-' -f 2`"
-        SERVICE_VERSION="`echo "$SERVICE" | cut -d '-' -f 3`"
-        # And set them up.
-        echo -n " * $SERVICE_VENDOR $SERVICE_NAME ($SERVICE_VERSION): "
+        echo -n " * $SERVICE: "
         $UNIVERSAL_HOME/Services/$SERVICE/run.sh $1 \
           >> $TARGET_LOGS/$SERVICE.log 2>&1 < /dev/null
         
@@ -134,16 +130,9 @@ case "$1" in
     # Enumerate requested services from role.
     echo "Cleaning up services for the requested role:"
     for SERVICE in $SERVICES; do
-        SERVICE_NAME=`echo $SERVICE | sed 's/(/ /g' \
-                                    | sed 's/)/ /g' \
-                                    | awk '{ print $1 }'`
-        SERVICE_IMPL=`echo $SERVICE | sed 's/(/ /g' \
-                                    | sed 's/)/ /g' \
-                                    | awk '{ print $2 }'`
-        # And clean them up.
-        echo -n " * $SERVICE_NAME ($SERVICE_IMPL): "
-        $UNIVERSAL_HOME/Services/$SERVICE_NAME/$SERVICE_IMPL/run.sh $1 \
-          >> $TARGET_LOGS/$SERVICE_IMPL.log 2>&1 < /dev/null
+        echo -n " * $SERVICE: "
+        $UNIVERSAL_HOME/Services/$SERVICE/run.sh $1 \
+          >> $TARGET_LOGS/$SERVICE.log 2>&1 < /dev/null
         
         # Check exit code.
         if [ "$?" = 0 ]; then
@@ -180,16 +169,9 @@ case "$1" in
     # Enumerate requested services from role.
     echo "Installing services for the requested role:"
     for SERVICE in $SERVICES; do
-        SERVICE_NAME=`echo $SERVICE | sed 's/(/ /g' \
-                                    | sed 's/)/ /g' \
-                                    | awk '{ print $1 }'`
-        SERVICE_IMPL=`echo $SERVICE | sed 's/(/ /g' \
-                                    | sed 's/)/ /g' \
-                                    | awk '{ print $2 }'`
-        # And install them.
-        echo -n " * $SERVICE_NAME ($SERVICE_IMPL): "
-        $UNIVERSAL_HOME/Services/$SERVICE_NAME/$SERVICE_IMPL/run.sh $1 \
-          >> $TARGET_LOGS/$SERVICE_IMPL.log 2>&1 < /dev/null
+        echo -n " * $SERVICE: "
+        $UNIVERSAL_HOME/Services/$SERVICE/run.sh $1 \
+          >> $TARGET_LOGS/$SERVICE.log 2>&1 < /dev/null
         
         # Check exit code.
         if [ "$?" = 0 ]; then
@@ -231,16 +213,9 @@ case "$1" in
     # Enumerate requested services from role.
     echo "Uninstalling services for the requested role:"
     for SERVICE in $SERVICES; do
-        SERVICE_NAME=`echo $SERVICE | sed 's/(/ /g' \
-                                    | sed 's/)/ /g' \
-                                    | awk '{ print $1 }'`
-        SERVICE_IMPL=`echo $SERVICE | sed 's/(/ /g' \
-                                    | sed 's/)/ /g' \
-                                    | awk '{ print $2 }'`
-        # And remove them from host.
-        echo -n " * $SERVICE_NAME ($SERVICE_IMPL): "
-        $UNIVERSAL_HOME/Services/$SERVICE_NAME/$SERVICE_IMPL/run.sh $1 \
-          >> $TARGET_LOGS/$SERVICE_IMPL.log 2>&1 < /dev/null
+        echo -n " * $SERVICE: "
+        $UNIVERSAL_HOME/Services/$SERVICE/run.sh $1 \
+          >> $TARGET_LOGS/$SERVICE.log 2>&1 < /dev/null
 
         # Check exit code.
         if [ "$?" = 0 ]; then
@@ -256,16 +231,9 @@ case "$1" in
     # Enumerate requested services from role.
     echo "Configuring boot-time parameters and starting up services:"
     for SERVICE in $SERVICES; do
-        SERVICE_NAME=`echo $SERVICE | sed 's/(/ /g' \
-                                    | sed 's/)/ /g' \
-                                    | awk '{ print $1 }'`
-        SERVICE_IMPL=`echo $SERVICE | sed 's/(/ /g' \
-                                    | sed 's/)/ /g' \
-                                    | awk '{ print $2 }'`
-        # And configure them for boot-time startup.
-        echo -n " * $SERVICE_NAME ($SERVICE_IMPL): "
-        $UNIVERSAL_HOME/Services/$SERVICE_NAME/$SERVICE_IMPL/run.sh $1 \
-        >> $TARGET_LOGS/$SERVICE_IMPL.log 2>&1 < /dev/null
+        echo -n " * $SERVICE: "
+        $UNIVERSAL_HOME/Services/$SERVICE/run.sh $1 \
+        >> $TARGET_LOGS/$SERVICE.log 2>&1 < /dev/null
 
         # Check exit code.
         if [ "$?" = 0 ]; then
@@ -281,16 +249,9 @@ case "$1" in
     # Enumerate requested services from role.
     echo "Unconfiguring boot-time parameters and stopping services:"
     for SERVICE in $SERVICES; do
-        SERVICE_NAME=`echo $SERVICE | sed 's/(/ /g' \
-                                    | sed 's/)/ /g' \
-                                    | awk '{ print $1 }'`
-        SERVICE_IMPL=`echo $SERVICE | sed 's/(/ /g' \
-                                    | sed 's/)/ /g' \
-                                    | awk '{ print $2 }'`
-        # And unconfigure them for boot-time startup.
-        echo -n " * $SERVICE_NAME ($SERVICE_IMPL): "
-        $UNIVERSAL_HOME/Services/$SERVICE_NAME/$SERVICE_IMPL/run.sh $1 \
-        >> $TARGET_LOGS/$SERVICE_IMPL.log 2>&1 < /dev/null
+        echo -n " * $SERVICE: "
+        $UNIVERSAL_HOME/Services/$SERVICE/run.sh $1 \
+        >> $TARGET_LOGS/$SERVICE.log 2>&1 < /dev/null
 
         # Check exit code.
         if [ "$?" = 0 ]; then
@@ -328,14 +289,7 @@ case "$1" in
     # Enumerate requested services from role.
     echo "Showing state from included services:"
     for SERVICE in $SERVICES; do
-        SERVICE_NAME=`echo $SERVICE | sed 's/(/ /g' \
-                                    | sed 's/)/ /g' \
-                                    | awk '{ print $1 }'`
-        SERVICE_IMPL=`echo $SERVICE | sed 's/(/ /g' \
-                                    | sed 's/)/ /g' \
-                                    | awk '{ print $2 }'`
-        # And show their state.
-        echo " * $SERVICE: `$UNIVERSAL_HOME/Services/$SERVICE_NAME/$SERVICE_IMPL/run.sh $1`"
+        echo " * $SERVICE: `$UNIVERSAL_HOME/Services/$SERVICE/run.sh $1`"
     done;
     ;;
 
@@ -362,14 +316,7 @@ case "$1" in
 
     # Enumerate requested services from role.
     for SERVICE in $SERVICES; do
-        SERVICE_NAME=`echo $SERVICE | sed 's/(/ /g' \
-                                    | sed 's/)/ /g' \
-                                    | awk '{ print $1 }'`
-        SERVICE_IMPL=`echo $SERVICE | sed 's/(/ /g' \
-                                    | sed 's/)/ /g' \
-                                    | awk '{ print $2 }'`
-        # And show external software dependencies if any.
-        "$UNIVERSAL_HOME"/Services/$SERVICE_NAME/$SERVICE_IMPL/run.sh $1
+        "$UNIVERSAL_HOME"/Services/$SERVICE/run.sh $1
     done;
     ;;
 

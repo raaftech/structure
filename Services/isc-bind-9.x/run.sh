@@ -31,16 +31,18 @@ if [ ! $UNIVERSAL_HOME ]; then
     done;
     unset DIR
     unset IFS
-    OFFSET="/../../../"
+    OFFSET="/../../"
     if [ -e "`dirname "$ABS"`$OFFSET" ]; then
         # Found, probably called relatively.
         cd "`dirname "$ABS"`$OFFSET"
         UNIVERSAL_HOME="`pwd`"
+        cd - > /dev/null
         unset ABS
     elif [ -e "`dirname "$0"`$OFFSET" ]; then
         # Found, probably called absolutely.
         cd "`dirname "$0"`$OFFSET"
         UNIVERSAL_HOME="`pwd`"
+        cd - > /dev/null
     fi;
 fi;
 
@@ -51,8 +53,10 @@ if [ ! $GLOBAL_RUN ]; then
 fi;
 
 # Set local variables.
-SERVICE_NAME="dns"
-SERVICE_IMPL="bind9"
+SERVICE="$(basename $(dirname $(readlink -f $0)))"
+SERVICE_VENDOR="`echo "$SERVICE" | cut -d '-' -f 1`"
+SERVICE_NAME="`echo "$SERVICE" | cut -d '-' -f 2`"
+SERVICE_VERSION="`echo "$SERVICE" | cut -d '-' -f 3`"
 SERVICE_DEPS="$BIND9_SERVICE_DEPS"
 SERVICE_PRIO="15"
 SERVICE_PORT="53"
@@ -62,7 +66,7 @@ NAMESPACE=BIND9
 CHECK="`set | grep ^${NAMESPACE}_`"
 if [ -z "$CHECK" ]; then
     mkdir -p $TARGET_STATE
-    echo "SERVICE_STATE=failed" > $TARGET_STATE/$SERVICE_IMPL.state
+    echo "SERVICE_STATE=failed" > $TARGET_STATE/$SERVICE.state
 fi;
 unset CHECK
 unset NAMESPACE
@@ -115,12 +119,12 @@ fi;
 
 
 # Include state for this specific module.
-if [ -e $TARGET_STATE/$SERVICE_IMPL.state ]; then
-    . $TARGET_STATE/$SERVICE_IMPL.state
+if [ -e $TARGET_STATE/$SERVICE.state ]; then
+    . $TARGET_STATE/$SERVICE.state
 else
     mkdir -p $TARGET_STATE
-    echo "SERVICE_STATE=uninitialized" > $TARGET_STATE/$SERVICE_IMPL.state
-    . $TARGET_STATE/$SERVICE_IMPL.state
+    echo "SERVICE_STATE=uninitialized" > $TARGET_STATE/$SERVICE.state
+    . $TARGET_STATE/$SERVICE.state
 fi;
 
 # Main case statement.
@@ -174,7 +178,7 @@ case "$1" in
         done;
     fi;
 
-    cd $UNIVERSAL_HOME/Services/$SERVICE_NAME/$SERVICE_IMPL
+    cd $UNIVERSAL_HOME/Services/$SERVICE
 
     echo "Populating default subdirectory with default files.."
     for FILE in $BIND9_FILES_DEFAULT; do
@@ -395,9 +399,9 @@ case "$1" in
     fi;
     
     if [ $? = 0 ]; then
-        echo "SERVICE_STATE=built" > $TARGET_STATE/$SERVICE_IMPL.state
+        echo "SERVICE_STATE=built" > $TARGET_STATE/$SERVICE.state
     else
-        echo "SERVICE_STATE=unknown" > $TARGET_STATE/$SERVICE_IMPL.state
+        echo "SERVICE_STATE=unknown" > $TARGET_STATE/$SERVICE.state
     fi;
 
     echo ""
@@ -456,9 +460,9 @@ case "$1" in
             CLEAN_DIRS_EMPTY=`pwd`
         done;
         if [ $? = 0 ]; then
-            echo "SERVICE_STATE=cleaned" > $TARGET_STATE/$SERVICE_IMPL.state
+            echo "SERVICE_STATE=cleaned" > $TARGET_STATE/$SERVICE.state
         else
-            echo "SERVICE_STATE=unknown" > $TARGET_STATE/$SERVICE_IMPL.state
+            echo "SERVICE_STATE=unknown" > $TARGET_STATE/$SERVICE.state
         fi;
     else
         echo "No created config directory found. use \"build\" first. "
@@ -481,9 +485,9 @@ case "$1" in
             CLEAN_DIRS_EMPTY=`pwd`
         done;
         if [ $? = 0 ]; then
-            echo "SERVICE_STATE=cleaned" > $TARGET_STATE/$SERVICE_IMPL.state
+            echo "SERVICE_STATE=cleaned" > $TARGET_STATE/$SERVICE.state
         else
-            echo "SERVICE_STATE=unknown" > $TARGET_STATE/$SERVICE_IMPL.state
+            echo "SERVICE_STATE=unknown" > $TARGET_STATE/$SERVICE.state
         fi;
     else
         echo "No created data directory found. use \"build\" first. "
@@ -564,9 +568,9 @@ case "$1" in
         done;
         for CONFIG in $BIND9_FILES_OTHERS; do
             if [ -e $BIND9_CONFIG_DIRECTORY/$CONFIG ]; then
-	            if [ ! -e $BIND9_CONFIG_DIRECTORY/$CONFIG.orig ]; then
+                if [ ! -e $BIND9_CONFIG_DIRECTORY/$CONFIG.orig ]; then
                     cp $BIND9_CONFIG_DIRECTORY/$CONFIG $BIND9_CONFIG_DIRECTORY/$CONFIG.orig
-		        fi;
+                fi;
             fi;
          
             echo -n " * $CONFIG: ";
@@ -574,11 +578,11 @@ case "$1" in
 
             if [ $? = 0 ]; then
                 echo "success"
-                echo "SERVICE_STATE=installed" > $TARGET_STATE/$SERVICE_IMPL.state
+                echo "SERVICE_STATE=installed" > $TARGET_STATE/$SERVICE.state
             else
                 STATE="fail"
                 echo "$STATE"
-                echo "SERVICE_STATE=unknown" > $TARGET_STATE/$SERVICE_IMPL.state
+                echo "SERVICE_STATE=unknown" > $TARGET_STATE/$SERVICE.state
             fi;
         done;
         echo "Installing default named databases:"
@@ -589,14 +593,14 @@ case "$1" in
 
             if [ $? = 0 ]; then
                 echo "success"
-                echo "SERVICE_STATE=installed" > $TARGET_STATE/$SERVICE_IMPL.state
+                echo "SERVICE_STATE=installed" > $TARGET_STATE/$SERVICE.state
             else
                 STATE="fail"
                 echo "$STATE"
-                echo "SERVICE_STATE=unknown" > $TARGET_STATE/$SERVICE_IMPL.state
+                echo "SERVICE_STATE=unknown" > $TARGET_STATE/$SERVICE.state
             fi;
         done;
-	echo "Installing generated master/slave databases:"
+    echo "Installing generated master/slave databases:"
         install -d -m 0755 -o root $BIND9_DATA_DIRECTORY/master
         install -d -m 0755 -o root $BIND9_DATA_DIRECTORY/slave
         echo -n " * masterdb: ";
@@ -604,29 +608,29 @@ case "$1" in
 
         if [ $? = 0 ]; then
             echo "success"
-            echo "SERVICE_STATE=installed" > $TARGET_STATE/$SERVICE_IMPL.state
+            echo "SERVICE_STATE=installed" > $TARGET_STATE/$SERVICE.state
         else
             STATE="fail"
             echo "$STATE"
-            echo "SERVICE_STATE=unknown" > $TARGET_STATE/$SERVICE_IMPL.state
+            echo "SERVICE_STATE=unknown" > $TARGET_STATE/$SERVICE.state
         fi;
-	echo "Creating links for named.conf.local, named.conf, rndc.key:"
+    echo "Creating links for named.conf.local, named.conf, rndc.key:"
         echo -n " * links: ";
-	cd $BIND9_DATA_DIRECTORY
-	rm -f named.conf.local
-	ln -s named.conf.master named.conf.local
-	cd $BIND9_CONFIG_DIRECTORY
-	rm -f named.conf
-	ln -s $BIND9_DATA_DIRECTORY/named.conf named.conf
-	rm -f rndc.key 
-	ln -s $BIND9_DATA_DIRECTORY/rndc.key rndc.key
+    cd $BIND9_DATA_DIRECTORY
+    rm -f named.conf.local
+    ln -s named.conf.master named.conf.local
+    cd $BIND9_CONFIG_DIRECTORY
+    rm -f named.conf
+    ln -s $BIND9_DATA_DIRECTORY/named.conf named.conf
+    rm -f rndc.key 
+    ln -s $BIND9_DATA_DIRECTORY/rndc.key rndc.key
         if [ $? = 0 ]; then
             echo "success"
-            echo "SERVICE_STATE=installed" > $TARGET_STATE/$SERVICE_IMPL.state
+            echo "SERVICE_STATE=installed" > $TARGET_STATE/$SERVICE.state
         else
             STATE="fail"
             echo "$STATE"
-            echo "SERVICE_STATE=unknown" > $TARGET_STATE/$SERVICE_IMPL.state
+            echo "SERVICE_STATE=unknown" > $TARGET_STATE/$SERVICE.state
         fi;
     else
         echo "No generated configuration found. use \"build\" first. "
@@ -701,9 +705,9 @@ case "$1" in
         fi;
     done;
     if [ $? = 0 ]; then
-        echo "SERVICE_STATE=uninstalled" > $TARGET_STATE/$SERVICE_IMPL.state
+        echo "SERVICE_STATE=uninstalled" > $TARGET_STATE/$SERVICE.state
     else
-        echo "SERVICE_STATE=unknown" > $TARGET_STATE/$SERVICE_IMPL.state
+        echo "SERVICE_STATE=unknown" > $TARGET_STATE/$SERVICE.state
     fi;
     echo ""
     ;;
