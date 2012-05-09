@@ -5,14 +5,16 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{379b10f4-9fc4-4166-ad7c-371ded946ffa}</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>
-    </StartupFile>
+    <StartupFile>universal.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
     <Name>Universal</Name>
     <RootNamespace>Universal</RootNamespace>
+    <IsWindowsApplication>False</IsWindowsApplication>
+    <InterpreterId>2af0f10d-7135-4994-9156-5d01c9c11b7e</InterpreterId>
+    <InterpreterVersion>2.7</InterpreterVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -27,6 +29,7 @@
     <Folder Include="Configuration\" />
     <Folder Include="Includes\" />
     <Folder Include="Logging\" />
+    <Folder Include="Model\" />
     <Folder Include="Platforms\" />
     <Folder Include="Roles\" />
     <Folder Include="Services\" />
@@ -71,6 +74,7 @@
     <Content Include="Includes\environment.sh" />
     <Content Include="Includes\functions.sh" />
     <Content Include="LICENSE" />
+    <Content Include="Model\Notes.txt" />
     <Content Include="universal.sh" />
     <Content Include="Platforms\cygwin-17-i386.desc" />
     <Content Include="Platforms\debian-4-i386.desc" />
@@ -259,6 +263,9 @@
     <Content Include="Tools\utilities\isomnt.sh" />
     <Content Include="Tools\utilities\run.sh" />
     <Content Include="Tools\utilities\selips.sh" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="universal.py" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" />
 </Project>

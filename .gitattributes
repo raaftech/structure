@@ -4,6 +4,13 @@ Configuration/template.conf -text
 Includes/environment.sh -text
 Includes/functions.sh -text
 /LICENSE -text
+Model/Core.classdiagram -text
+Model/Core.classdiagram.layout -text
+Model/Model.modelproj -text
+Model/ModelDefinition/Model.uml -text
+Model/Notes.txt -text
+Model/Overview.componentdiagram -text
+Model/Overview.componentdiagram.layout -text
 Platforms/cygwin-17-i386.desc -text
 Platforms/debian-4-i386.desc -text
 Platforms/debian-4-ia64.desc -text
@@ -193,4 +200,5 @@ Tools/utilities/run.sh -text
 Tools/utilities/selips.sh -text
 /Universal.pyproj -text
 /Universal.sln -text
+/universal.py -text
 /universal.sh -text

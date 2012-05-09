@@ -1,0 +1,63 @@
+main:
+! deal with inititialization of myuniverse, myhost:
+
+universalinstance: myuniverse
+has: 1..1 description
+has: 1..1 organisation
+has: 1..N network
+has: 1..N host
+
+    organisationinstance: myorganisation
+    has: 1..1 description
+    has: 1..1 name
+    has: 1..1 address
+
+        addressinstance: myaddress
+        has: 0..1 description
+        has: 1..1 street
+        has: 1..1 postal
+        has: 1..1 state
+        has: 1..1 country
+
+    networkinstance: mynetwork
+    has: 1..1 description
+    has: 1..1 domainname
+    has: 1..1 cidraddr
+
+    hostinstance: myhost
+    has: 1..1 description
+    has: 1..1 name
+    has: 1..N listener
+    has: 1..1 platform (is a configurable)
+    has: 1..1 designation
+    has: 1..N alias
+    has: 1..1 role
+
+        listenerinstance: mylistener
+        has: 1..1 description
+        has: 1..N domainname
+        has: 1..N cidraddr
+        has: 1..1 network
+
+        designationinstance: mydesignation
+        has: 1..1 description
+        has: 1..1 name
+
+        instancedrole: myrole
+        has: 1..1 description
+        has: 1..1 name
+        has: 1..N service (is a configurable)
+
+            instancedconfigurable: myservice, myplatform
+            has: 1..1 name
+            has: 1..1 creator
+            has: 1..1 version
+            has: 1..1 designation (if ! match host.role, warn)
+            has: 1..N alias (if match item in host.alias, merge)
+            has: 0..N associatedsoftware
+            has: 0..N configurabledependency
+            has: 0..N directoryobject
+            has: 0..N fileobject
+            has: 0..N replacestring
+            has: 0..N precommand (is a command)
+            has: 0..N postcommand (is a command)

@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{964a715d-617a-4478-b802-2636ad1056f6}</ProjectGuid>
+    <ArchitectureToolsVersion>1.0.0.0</ArchitectureToolsVersion>
+    <Name>Model</Name>
+    <RootNamespace>Model</RootNamespace>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>bin\Debug\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\Release\</OutputPath>
+  </PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v10.0\ArchitectureTools\Microsoft.VisualStudio.TeamArchitect.ModelingProject.targets" />
+  <ItemGroup>
+    <Content Include="Core.classdiagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Core.classdiagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>Core.classdiagram</DependentUpon>
+    </Content>
+    <Content Include="Notes.txt">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Overview.componentdiagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Overview.componentdiagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>Overview.componentdiagram</DependentUpon>
+    </Content>
+    <Folder Include="ModelDefinition\" />
+    <Content Include="ModelDefinition\Model.uml">
+      <SubType>Content</SubType>
+    </Content>
+  </ItemGroup>
+</Project>
