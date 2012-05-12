@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Copyright © 2003, 2004, 2005, 2008, 2009 Rubin Simons
 # This file is part of Universal.

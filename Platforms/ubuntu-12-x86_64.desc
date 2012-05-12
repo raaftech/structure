@@ -1,0 +1,116 @@
+# ubuntu-12-x86_64.desc - Ubuntu 12.x x86_64 Platform Descriptor
+
+
+# Used by Tools/sanity
+SANITY_DO_CONFIGURATION="1"         # Do a sanity check before attempting any
+                                    # other steps. Don't touch this unless you
+                                    # know what you're doing.
+
+# Used by Tools/networking
+NETWORKING_DO_CONFIGURATION="0"     # Install networking using settings from
+                                    # Configuration/setup.conf. If set to "0",
+                                    # no setup will be done; currently running
+                                    # settings will be used instead.
+
+# Used by Tools/packaging
+PACKAGING_DO_CONFIGURATION="0"      # Install additional packaging configs on
+                                    # this platform. This is usually needed
+                                    # when not all software dependencies can be
+                                    # met by the default software installation
+                                    # methods available. If set to "0", no
+                                    # setup will be done; currently running
+                                    # settings will be used instead.
+
+# Used by Tools/certificates
+CERTIFICATES_DO_CONFIGURATION="1"   # Install and generate certificates for the
+                                    # specified servername & requested services.
+                                    # If set to "0", no certificates will be
+                                    # generated. Don't touch this unless you
+                                    # know what you're doing.
+
+# Used by Tools/utilities
+UTILITIES_DO_CONFIGURATION="0"      # Install and generate utilities which aid
+                                    # in administration of a server. Don't touch
+                                    # this unless you know what you're doing.
+
+
+# Platform Globals
+PLATFORM_INIT_TYPE="sysv"
+PLATFORM_INIT_DIRECTORY="/etc/init.d"
+PLATFORM_MAC_TYPE="selinux"
+PLATFORM_FW_TYPE="iptables"
+
+
+# Used by Tools/packaging
+PACKAGING_PACKAGES_REQUIRED="1"
+PACKAGING_PACKAGES_LISTING="apt apt-utils"
+PACKAGING_DISTRIBUTION_TYPE="apt"
+PACKAGING_CONFIG_DIRECTORY="/etc/apt"
+PACKAGING_REPOSITORY_LIST=""
+
+# Used by Tools/certificates
+CERTIFICATES_PACKAGES_REQUIRED="1"
+CERTIFICATES_PACKAGES_LISTING="openssl"
+CERTIFICATES_CONFIG_DIRECTORY="/etc"
+CERTIFICATES_DATA_DIRECTORY="/etc/ssl/private"
+
+# Used by Tools/utilities
+UTILITIES_PACKAGES_REQUIRED="1"
+UTILITIES_PACKAGES_LISTING="bash"
+UTILITIES_CONFIG_DIRECTORY="/usr/sbin"      
+
+# Used by Services/isc-bind-9.x
+BIND9_PACKAGES_REQUIRED="1"
+BIND9_PACKAGES_LISTING="bind9 host"
+BIND9_SERVICE_DEPS=""
+BIND9_CONFIG_DIRECTORY="/etc"
+BIND9_DATA_DIRECTORY="/etc/bind"
+BIND9_INIT_SCRIPTS="bind9"
+BIND9_INIT_CONFIG=""
+BIND9_INIT_STRING=""
+
+# Used by Services/isc-dhcp-3.x
+DHCP3_PACKAGES_REQUIRED="1"
+DHCP3_PACKAGES_LISTING="isc-dhcp-server"
+DHCP3_SERVICE_DEPS=""
+DHCP3_CONFIG_DIRECTORY="/etc/dhcp"
+DHCP3_DATA_DIRECTORY="/var/lib/dhcp"
+DHCP3_INIT_SCRIPTS="isc-dhcp-server"
+DHCP3_INIT_CONFIG=""
+DHCP3_INIT_STRING=""
+
+# Used by Services/generic-tftp-1.x
+TFTP1_PACKAGES_REQUIRED="1"
+TFTP1_PACKAGES_LISTING="tftp-hpa tftpd-hpa"
+TFTP1_SERVICE_DEPS=""
+TFTP1_CONFIG_DIRECTORY="/etc"
+TFTP1_DATA_DIRECTORY="/var/lib/tftpboot"
+TFTP1_INETD_TYPE="inetd"
+TFTP1_INIT_SCRIPTS="tftpd-hpa"
+TFTP1_INIT_CONFIG=""
+TFTP1_INIT_STRING=""
+
+# Used by Services/postfix-postfix-2.x
+POSTFIX2_PACKAGES_REQUIRED="1"
+POSTFIX2_PACKAGES_LISTING="postfix"
+POSTFIX2_SERVICE_DEPS="sasl(dovecot1)"
+POSTFIX2_CONFIG_DIRECTORY="/etc/postfix"
+POSTFIX2_COMMAND_DIRECTORY="/usr/sbin"
+POSTFIX2_DAEMON_DIRECTORY="/usr/lib/postfix"
+POSTFIX2_QUEUE_DIRECTORY="/var/spool/postfix"
+POSTFIX2_ALIASES_FILE="/etc/aliases"
+POSTFIX2_SETGID_GROUP="postdrop"
+POSTFIX2_SASL_TYPE="dovecot"
+POSTFIX2_SASL_PATH="private/auth"
+POSTFIX2_INIT_SCRIPTS="postfix"
+POSTFIX2_INIT_CONFIG=""
+POSTFIX2_INIT_STRING=""
+
+# Used by Services/dovecot1-*
+DOVECOT1_PACKAGES_REQUIRED="1"
+DOVECOT1_PACKAGES_LISTING="dovecot-common dovecot-imapd dovecot-pop3d"
+DOVECOT1_CONFIG_DIRECTORY="/etc/dovecot"
+DOVECOT1_INIT_SCRIPTS="dovecot"
+DOVECOT1_INIT_CONFIG=""
+DOVECOT1_INIT_STRING=""
+

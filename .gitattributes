@@ -32,6 +32,7 @@ Platforms/rhel-4-x86_64.desc -text
 Platforms/rhel-5-i386.desc -text
 Platforms/rhel-5-x86_64.desc -text
 Platforms/rhel-6-x86_64.desc -text
+Platforms/ubuntu-12-x86_64.desc -text
 /README -text
 Roles/nameserver.role -text
 Roles/template.role -text
@@ -187,12 +188,13 @@ Tools/sanity/netstat.netbsd5 -text
 Tools/sanity/netstat.rhel4 -text
 Tools/sanity/netstat.rhel5 -text
 Tools/sanity/netstat.rhel6 -text
+Tools/sanity/netstat.ubuntu12 -text
 Tools/sanity/run.sh -text
 Tools/security/run.sh -text
 Tools/utilities/bind9-fwd.entry -text
 Tools/utilities/bind9-rev.entry -text
 Tools/utilities/dhcp3.entry -text
-Tools/utilities/hostctl.conf -text
+Tools/utilities/hostctl.conf.example -text
 Tools/utilities/hostctl.sh -text
 Tools/utilities/isomnt.conf -text
 Tools/utilities/isomnt.sh -text
