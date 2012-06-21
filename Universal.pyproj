@@ -75,6 +75,7 @@
     <Content Include="Includes\functions.sh" />
     <Content Include="LICENSE" />
     <Content Include="Model\Notes.txt" />
+    <Content Include="Platforms\ubuntu-12-x86_64.desc" />
     <Content Include="universal.sh" />
     <Content Include="Platforms\cygwin-17-i386.desc" />
     <Content Include="Platforms\debian-4-i386.desc" />
