@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<release name="Universal">
+    <version major="0" minor="5"/>
+    <copyright toname="RAAF Technology bv" daterange="2003-2012"/>
+    <license type="foss" name="GPLv3"/>
+    <description>
+        Universal - A tool for provisioning service configurations.
+    </description>
+</release>

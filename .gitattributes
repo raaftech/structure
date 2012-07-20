@@ -202,5 +202,7 @@ Tools/utilities/run.sh -text
 Tools/utilities/selips.sh -text
 /Universal.pyproj -text
 /Universal.sln -text
+/build.xml -text
+/release.xml -text
 /universal.py -text
 /universal.sh -text
