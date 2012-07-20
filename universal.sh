@@ -1,6 +1,7 @@
 #!/bin/sh
 
-# Copyright © 2003, 2004, 2005, 2008, 2009 Rubin Simons
+# Copyright © 2003-2012 RAAF Technology bv
+#
 # This file is part of Universal.
 #
 # Universal is free software: you can redistribute it and/or modify
@@ -15,6 +16,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Universal.  If not, see <http://www.gnu.org/licenses/>.  
+
 
 # Determine where $UNIVERSAL_HOME is.
 if [ ! "$UNIVERSAL_HOME" ]; then
@@ -43,6 +45,16 @@ if [ ! "$UNIVERSAL_HOME" ]; then
         UNIVERSAL_HOME="`pwd`"
     fi;
 fi;
+
+# Show version.
+if [ "$1" = "version" ]; then
+    echo "RELEASE.STRING.VERSION
+    RELEASE.STRING.COPYRIGHT
+    RELEASE.STRING.RELDATE
+    RELEASE.STRING.BUILT
+    RELEASE.STRING.LICENSE" | sed 's/^[ \t]*//;s/[ \t]*$//'
+    exit 0
+fi
 
 # We're running globally, calling other subsystems.
 GLOBAL_RUN=1
@@ -323,10 +335,6 @@ case "$1" in
     debug)
     set
     ;;
-    version)
-    head -n1 "$UNIVERSAL_HOME/README" | cut -d ':' -f 1
-    ;;
-
     *)
     echo $"Usage: $0 {build|clean|install|uninstall|start|stop|state|deps|version}"
     exit 1
