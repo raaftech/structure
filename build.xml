@@ -132,15 +132,15 @@
     <!-- Generate a distributable. -->
     <target name="dist-zip" depends="build">
         <!-- Create zip file. -->
-        <zip destfile="${dist}/${release.name.lowercase}-${release.number.short}.zip">
+        <zip destfile="${dist}/${release.name.lowercase}-${release.number.short}-${release.tag}.zip">
             <fileset dir="build"/>
         </zip>
 
         <!-- Create verification hashes. -->
-        <checksum file="${dist}/${release.name.lowercase}-${release.number.short}.zip" algorithm="md5"/>
-        <checksum file="${dist}/${release.name.lowercase}-${release.number.short}.zip" algorithm="sha1"/>
-        <checksum file="${dist}/${release.name.lowercase}-${release.number.short}.zip" algorithm="sha-256"/>
-        <checksum file="${dist}/${release.name.lowercase}-${release.number.short}.zip" algorithm="sha-512"/>
+        <checksum file="${dist}/${release.name.lowercase}-${release.number.short}-${release.tag}.zip" algorithm="md5"/>
+        <checksum file="${dist}/${release.name.lowercase}-${release.number.short}-${release.tag}.zip" algorithm="sha1"/>
+        <checksum file="${dist}/${release.name.lowercase}-${release.number.short}-${release.tag}.zip" algorithm="sha-256"/>
+        <checksum file="${dist}/${release.name.lowercase}-${release.number.short}-${release.tag}.zip" algorithm="sha-512"/>
     </target>
 
 
