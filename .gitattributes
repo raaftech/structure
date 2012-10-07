@@ -178,17 +178,17 @@ Tools/packaging/yum-data/openpcf.key -text
 Tools/packaging/yum-data/openpcf.repo-rhel4 -text
 Tools/packaging/yum-data/openpcf.repo-rhel5 -text
 Tools/packaging/yum-handler.sh -text
-Tools/sanity/netstat.cygwin17 -text
-Tools/sanity/netstat.debian4 -text
-Tools/sanity/netstat.debian5 -text
-Tools/sanity/netstat.fedora12 -text
-Tools/sanity/netstat.mingw1 -text
-Tools/sanity/netstat.netbsd4 -text
-Tools/sanity/netstat.netbsd5 -text
-Tools/sanity/netstat.rhel4 -text
-Tools/sanity/netstat.rhel5 -text
-Tools/sanity/netstat.rhel6 -text
-Tools/sanity/netstat.ubuntu12 -text
+Tools/sanity/netstat.cygwin17 -text svneol=unset#text/x-script.sh
+Tools/sanity/netstat.debian4 -text svneol=unset#text/x-script.sh
+Tools/sanity/netstat.debian5 -text svneol=unset#text/x-script.sh
+Tools/sanity/netstat.fedora12 -text svneol=unset#text/x-script.sh
+Tools/sanity/netstat.mingw1 -text svneol=unset#text/x-script.sh
+Tools/sanity/netstat.netbsd4 -text svneol=unset#text/x-script.sh
+Tools/sanity/netstat.netbsd5 -text svneol=unset#text/x-script.sh
+Tools/sanity/netstat.rhel4 -text svneol=unset#text/x-script.sh
+Tools/sanity/netstat.rhel5 -text svneol=unset#text/x-script.sh
+Tools/sanity/netstat.rhel6 -text svneol=unset#text/x-script.sh
+Tools/sanity/netstat.ubuntu12 -text svneol=unset#text/x-script.sh
 Tools/sanity/run.sh -text
 Tools/security/run.sh -text
 Tools/utilities/bind9-fwd.entry -text
