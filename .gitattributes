@@ -33,7 +33,6 @@ Platforms/rhel-5-i386.desc -text
 Platforms/rhel-5-x86_64.desc -text
 Platforms/rhel-6-x86_64.desc -text
 Platforms/ubuntu-12-x86_64.desc -text
-/README -text
 Roles/nameserver.role -text
 Roles/template.role -text
 Roles/universal.role -text
@@ -201,6 +200,7 @@ Tools/utilities/isomnt.sh -text
 Tools/utilities/run.sh -text
 Tools/utilities/selips.sh -text
 /build.xml -text
+/readme.txt -text
 /release.xml -text
 /universal.py -text
 /universal.sh -text
