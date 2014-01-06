@@ -1,6 +1,8 @@
-package org.openpcf.universal;/*
+/*
  * Copyright © 2008-2014 RAAF Technology bv
  */
+
+package org.openpcf.universal;
 
 /**
  * Give a description of Component here.
