@@ -1,0 +1,55 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.openpcf.universal</groupId>
+    <artifactId>openpcf-universal</artifactId>
+    <version>0.6.0</version>
+    <packaging>jar</packaging>
+
+    <name>openpcf-universal</name>
+    <url>https://www.openpcf.org/projects/universal/</url>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.4</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <mainClass>org.openpcf.universal.Main</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <!-- example repository entry
+    <repositories>
+        <repository>
+            <id>sonatype-oss-snapshots</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+            <releases><enabled>false</enabled></releases>
+            <snapshots><enabled>true</enabled></snapshots>
+        </repository>
+    </repositories> -->
+
+    <!-- and dependencies
+    <dependencies>
+        <dependency>
+            <groupId>com.tinkerpop</groupId>
+            <artifactId>frames</artifactId>
+            <version>2.5.0</version>
+        </dependency>
+    </dependencies> -->
+
+</project>

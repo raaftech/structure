@@ -1,5 +1,6 @@
 * text=auto !eol
 /build.xml -text
 /license.txt -text
+/pom.xml -text
 /readme.txt -text
 /release.xml -text
