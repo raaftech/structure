@@ -6,15 +6,15 @@
     <node x="221.0" y="227.0">org.openpcf.universal.Command</node>
     <node x="0.0" y="327.0">org.openpcf.universal.Capability</node>
     <node x="819.0" y="151.0">org.openpcf.universal.VirtualSystem</node>
-    <node x="415.0" y="327.0">org.openpcf.universal.State</node>
-    <node x="533.0" y="0.0">org.openpcf.universal.Component</node>
+    <node x="0.0" y="368.0">org.openpcf.universal.State</node>
+    <node x="533.0" y="-90.0">org.openpcf.universal.Component</node>
     <node x="0.0" y="227.0">org.openpcf.universal.Main</node>
     <node x="144.0" y="327.0">org.openpcf.universal.Template</node>
     <node x="290.0" y="151.0">org.openpcf.universal.OperatingSystem</node>
     <node x="367.0" y="227.0">org.openpcf.universal.Credential</node>
     <node x="0.0" y="151.0">org.openpcf.universal.LocalService</node>
-    <node x="652.0" y="151.0">org.openpcf.universal.ClientApplication</node>
     <node x="456.0" y="151.0">org.openpcf.universal.CommandInterpreter</node>
+    <node x="652.0" y="151.0">org.openpcf.universal.ClientApplication</node>
     <node x="289.0" y="0.0">org.openpcf.universal.Software</node>
     <node x="962.0" y="151.0">org.openpcf.universal.PhysicalSystem</node>
     <node x="134.0" y="151.0">org.openpcf.universal.NetworkService</node>
@@ -110,7 +110,7 @@
       <point x="0.0" y="15.5" />
     </edge>
   </edges>
-  <settings layout="Hierarchic Group" zoom="1.0" x="547.5" y="179.0" />
+  <settings layout="Hierarchic Group" zoom="1.0" x="547.5" y="191.5" />
   <SelectedNodes />
   <Categories>
     <Category>Fields</Category>
