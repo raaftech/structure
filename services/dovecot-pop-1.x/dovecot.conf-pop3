@@ -1,3 +1,0 @@
-# --- dovecot.conf-pop3 ---
-pop3_uidl_format = %08Xu%08Xv
-

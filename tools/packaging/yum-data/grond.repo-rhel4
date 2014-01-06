@@ -1,8 +1,0 @@
-[grond]
-name=Grond $releasever - $basearch
-failovermethod=priority
-baseurl=http://www.grond.org/downloads/repository/grond/rhel/4.x/os/$basearch/
-enabled=1
-gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-grond
-gpgcheck=1
-

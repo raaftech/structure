@@ -1,6 +1,0 @@
-# --- dovecot.conf-auth ---
-auth = default
-auth_userdb = passwd
-auth_passdb = pam
-auth_user = root
-

@@ -1,9 +1,0 @@
-# --- dovecot.conf-header ---
-ssl_cert_file = CERTIFICATES_DATA_DIRECTORY/SERVER_NAME.crt
-ssl_key_file = CERTIFICATES_DATA_DIRECTORY/SERVER_NAME.key
-
-protocols =
-
-login_dir = /var/run/dovecot-login
-mbox_locks = fcntl
-

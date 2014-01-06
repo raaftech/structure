@@ -1,6 +1,0 @@
-netbsd4:NFS3_DATA_DIRECTORY -ro -network ALLOWED_NETWORK
-debian4:NFS3_DATA_DIRECTORY ALLOWED_NETWORK(ro,fsid=0,insecure,no_subtree_check,sync,no_root_squash)
-debian5:NFS3_DATA_DIRECTORY ALLOWED_NETWORK(ro,fsid=0,insecure,no_subtree_check,sync,no_root_squash)
-rhel4:NFS3_DATA_DIRECTORY ALLOWED_NETWORK(ro,fsid=0,insecure,no_subtree_check,sync,no_root_squash)
-rhel5:NFS3_DATA_DIRECTORY ALLOWED_NETWORK(ro,fsid=0,insecure,no_subtree_check,sync,no_root_squash)
-

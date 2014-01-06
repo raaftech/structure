@@ -1,4 +1,0 @@
-# --- dovecot.conf-imap ---
-login = imap
-imap_listen = [::]
-

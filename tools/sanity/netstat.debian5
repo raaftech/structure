@@ -1,1 +1,0 @@
-netstat -nta|awk '{print $4}'|grep :|awk -F ':' '{print $NF}'|sort -un | sed -e :a -e '$!N;s/\n/ /;ta'
