@@ -6,9 +6,10 @@ package org.openpcf.universal;
 
 /**
  * Give a description of VirtualSystem here.
- * @author Rubin Simons <rubin.simons@raaftech.com>
- * @since 2014-01-06
- * @version 0.1
+ *
+ * @author      Rubin Simons <rubin.simons@raaftech.com>
+ * @since       2014-01-06
+ * @version     0.6
  */
 public class VirtualSystem implements Hardware,Software,Component {
 }

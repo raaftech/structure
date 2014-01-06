@@ -9,7 +9,7 @@ package org.openpcf.universal;
  *
  * @author      Rubin Simons <rubin.simons@raaftech.com>
  * @since       2014-01-06
- * @version     0.1
+ * @version     0.6
  */
 public class Main {
     public static void main(String[] args){}
