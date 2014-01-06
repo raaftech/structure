@@ -2,10 +2,21 @@
 <Diagram>
   <ID>JAVA</ID>
   <OriginalElement />
-  <nodes />
+  <nodes>
+    <node x="155.0" y="0.0">org.openpcf.universal.Command</node>
+    <node x="0.0" y="152.0">org.openpcf.universal.Capability</node>
+    <node x="266.0" y="228.0">org.openpcf.universal.State</node>
+    <node x="0.0" y="228.0">org.openpcf.universal.Software</node>
+    <node x="0.0" y="0.0">org.openpcf.universal.Component</node>
+    <node x="-545.5" y="-298.0">org.openpcf.universal.Main</node>
+    <node x="144.0" y="152.0">org.openpcf.universal.Template</node>
+    <node x="0.0" y="76.0">org.openpcf.universal.Credential</node>
+    <node x="135.0" y="228.0">org.openpcf.universal.Handler</node>
+    <node x="146.0" y="76.0">org.openpcf.universal.Hardware</node>
+  </nodes>
   <notes />
   <edges />
-  <settings layout="Hierarchic Group" zoom="1.0" x="0.0" y="0.0" />
+  <settings layout="Hierarchic Group" zoom="1.0" x="343.5" y="129.5" />
   <SelectedNodes />
   <Categories>
     <Category>Fields</Category>
