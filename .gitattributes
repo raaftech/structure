@@ -5,3 +5,4 @@ model/domain.uml -text
 /pom.xml -text
 /readme.txt -text
 /release.xml -text
+source/org/openpcf/universal/Component.java -text

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <release name="Universal">
     <version major="0" minor="6" patch="0"/>
-    <copyright toname="RAAF Technology bv" daterange="2003-2014"/>
+    <copyright toname="RAAF Technology bv" daterange="2008-2014"/>
     <license type="foss" name="GPLv3"/>
     <description>
         Universal - A tool for controlling, configuring and provisioning systems and services.
