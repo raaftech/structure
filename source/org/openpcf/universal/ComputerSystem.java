@@ -11,5 +11,12 @@ package org.openpcf.universal;
  * @since       2014-01-06
  * @version     0.6
  */
-public class ComputerSystem {
+public class ComputerSystem extends Device {
+    private NetworkDevice[] networkDevices;
+    private OperatingSystem[] operatingSystems;
+    private StorageDevice[] storageDevices;
+    private MemoryModule[] memoryModules;
+    private ProcessingUnit[] processingUnits;
+    private GraphicsDevice[] graphicsDevices;
+    private ManagementConsole[] managementConsoles;
 }

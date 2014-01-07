@@ -4,6 +4,9 @@
 
 package org.openpcf.universal;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
+
 /**
  * Give a description of StorageDevice here.
  *
@@ -11,5 +14,6 @@ package org.openpcf.universal;
  * @since       2014-01-06
  * @version     0.6
  */
-public class StorageDevice {
+public class StorageDevice extends Device {
+    private BigDecimal size;
 }

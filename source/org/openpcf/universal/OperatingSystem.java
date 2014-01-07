@@ -4,8 +4,6 @@
 
 package org.openpcf.universal;
 
-import java.awt.*;
-
 /**
  * Give a description of OperatingSystem here.
  *
@@ -14,5 +12,6 @@ import java.awt.*;
  * @version     0.6
  * @version     0.6
  */
-public class OperatingSystem {
+public class OperatingSystem extends Software implements Checkable, Stopable {
+    private Service[] services;
 }

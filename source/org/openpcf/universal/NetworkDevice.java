@@ -4,6 +4,8 @@
 
 package org.openpcf.universal;
 
+import java.net.InetAddress;
+
 /**
  * Give a description of Network here.
  *
@@ -11,5 +13,7 @@ package org.openpcf.universal;
  * @since       2014-01-06
  * @version     0.6
  */
-public class NetworkDevice {
+public class NetworkDevice extends Device {
+    String macaddr;
+    InetAddress[] addrs;
 }

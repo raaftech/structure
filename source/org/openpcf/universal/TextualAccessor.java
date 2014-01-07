@@ -11,5 +11,5 @@ package org.openpcf.universal;
  * @since       2014-01-06
  * @version     0.6
  */
-public class TextualAccessor {
+public class TextualAccessor extends NetworkedService implements Accessable {
 }

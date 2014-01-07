@@ -11,5 +11,5 @@ package org.openpcf.universal;
  * @since       2014-01-06
  * @version     0.6
  */
-public class Device {
+public class Device extends Component implements Virtualizable {
 }

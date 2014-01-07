@@ -4,6 +4,8 @@
 
 package org.openpcf.universal;
 
+import java.math.BigInteger;
+
 /**
  * Give a description of Processor here.
  *
@@ -11,5 +13,8 @@ package org.openpcf.universal;
  * @since       2014-01-06
  * @version     0.6
  */
-public class ProcessingUnit {
+public class ProcessingUnit extends Device {
+    int hertz;
+    int cache;
+    int cores;
 }

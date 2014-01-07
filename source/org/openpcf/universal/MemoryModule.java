@@ -4,6 +4,8 @@
 
 package org.openpcf.universal;
 
+import java.math.BigDecimal;
+
 /**
  * Give a description of MemoryModule here.
  *
@@ -11,5 +13,6 @@ package org.openpcf.universal;
  * @since       2014-01-06
  * @version     0.6
  */
-public class MemoryModule {
+public class MemoryModule extends Device {
+    BigDecimal size;
 }
