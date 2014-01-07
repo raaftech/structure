@@ -11,5 +11,5 @@ package org.openpcf.universal;
  * @since       2014-01-06
  * @version     0.6
  */
-public interface Credential {
+public class Credential {
 }

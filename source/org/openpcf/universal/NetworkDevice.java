@@ -5,11 +5,11 @@
 package org.openpcf.universal;
 
 /**
- * Give a description of Hardware here.
+ * Give a description of Network here.
  *
  * @author      Rubin Simons <rubin.simons@raaftech.com>
  * @since       2014-01-06
  * @version     0.6
  */
-public interface Hardware {
+public class NetworkDevice {
 }

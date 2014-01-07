@@ -5,11 +5,11 @@
 package org.openpcf.universal;
 
 /**
- * Give a description of Capability here.
+ * Give a description of MemoryModule here.
  *
  * @author      Rubin Simons <rubin.simons@raaftech.com>
  * @since       2014-01-06
  * @version     0.6
  */
-public enum Capability {
+public class MemoryModule {
 }

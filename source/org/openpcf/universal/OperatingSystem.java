@@ -4,6 +4,8 @@
 
 package org.openpcf.universal;
 
+import java.awt.*;
+
 /**
  * Give a description of OperatingSystem here.
  *
@@ -12,5 +14,5 @@ package org.openpcf.universal;
  * @version     0.6
  * @version     0.6
  */
-public class OperatingSystem implements Software,Component {
+public class OperatingSystem {
 }

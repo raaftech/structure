@@ -5,11 +5,11 @@
 package org.openpcf.universal;
 
 /**
- * Give a description of CommandInterpreter here.
+ * Give a description of Device here.
  *
  * @author      Rubin Simons <rubin.simons@raaftech.com>
  * @since       2014-01-06
  * @version     0.6
  */
-public class CommandInterpreter implements Software,Component {
+public class Device {
 }

@@ -5,11 +5,11 @@
 package org.openpcf.universal;
 
 /**
- * Give a description of ClientApplication here.
+ * Give a description of ComputerSystem here.
  *
  * @author      Rubin Simons <rubin.simons@raaftech.com>
  * @since       2014-01-06
  * @version     0.6
  */
-public class ClientApplication implements Software,Component {
+public class ComputerSystem {
 }
