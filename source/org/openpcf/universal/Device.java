@@ -12,4 +12,7 @@ package org.openpcf.universal;
  * @version     0.6
  */
 public class Device extends Component implements Virtualizable {
+    private String vendor;
+    private String model;
+    private String revision;
 }

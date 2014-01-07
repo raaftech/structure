@@ -12,6 +12,5 @@ package org.openpcf.universal;
  * @version     0.6
  */
 public class NetworkedService extends Service {
-    private String path;
     private Listener[] listeners;
 }

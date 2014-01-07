@@ -12,4 +12,6 @@ package org.openpcf.universal;
  * @version     0.6
  */
 public class LocalService extends Service {
+    private String[] paths;
+    private String image;
 }

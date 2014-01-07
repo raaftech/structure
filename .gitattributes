@@ -22,6 +22,7 @@ source/org/openpcf/universal/GraphicsDevice.java -text
 source/org/openpcf/universal/Handler.java -text
 source/org/openpcf/universal/Hypervisor.java -text
 source/org/openpcf/universal/Interpreter.java -text
+source/org/openpcf/universal/Language.java -text
 source/org/openpcf/universal/Listener.java -text
 source/org/openpcf/universal/LocalService.java -text
 source/org/openpcf/universal/Main.java -text
@@ -37,6 +38,7 @@ source/org/openpcf/universal/Startable.java -text
 source/org/openpcf/universal/State.java -text
 source/org/openpcf/universal/Stopable.java -text
 source/org/openpcf/universal/StorageDevice.java -text
+source/org/openpcf/universal/Templatable.java -text
 source/org/openpcf/universal/Template.java -text
 source/org/openpcf/universal/TextualAccessor.java -text
 source/org/openpcf/universal/Virtualizable.java -text

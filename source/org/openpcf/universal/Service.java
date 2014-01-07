@@ -12,4 +12,6 @@ package org.openpcf.universal;
  * @version     0.6
  */
 public class Service extends Software implements Checkable, Startable, Stopable, Createable, Destroyable {
+    private String[] paths;
+    private String image;
 }

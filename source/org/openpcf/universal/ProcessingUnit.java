@@ -14,7 +14,7 @@ import java.math.BigInteger;
  * @version     0.6
  */
 public class ProcessingUnit extends Device {
-    int hertz;
-    int cache;
-    int cores;
+    private int hertz;
+    private int cache;
+    private int cores;
 }

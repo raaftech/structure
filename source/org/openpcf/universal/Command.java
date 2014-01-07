@@ -4,6 +4,8 @@
 
 package org.openpcf.universal;
 
+import java.util.Date;
+
 /**
  * Give a description of Command here.
  *
@@ -12,4 +14,9 @@ package org.openpcf.universal;
  * @version     0.6
  */
 public class Command {
+    private Interpreter interpreter;
+    private String content;
+    private Date started;
+    private Date finished;
+    private int exitcode;
 }

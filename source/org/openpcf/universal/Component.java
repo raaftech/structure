@@ -11,7 +11,7 @@ package org.openpcf.universal;
  * @since       2014-01-06
  * @version     0.6
  */
-public class Component implements Editable {
+public class Component implements Editable, Templatable {
     private String name;
     private Component[] components;
 }

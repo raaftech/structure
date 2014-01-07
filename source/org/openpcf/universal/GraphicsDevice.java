@@ -12,4 +12,8 @@ package org.openpcf.universal;
  * @version     0.6
  */
 public class GraphicsDevice extends Device {
+    private int clockspeed;
+    private int memspeed;
+    private int memsize;
+    private int fillrate;
 }

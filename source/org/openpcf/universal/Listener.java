@@ -4,6 +4,8 @@
 
 package org.openpcf.universal;
 
+import java.net.InetAddress;
+
 /**
  * Give a description of Listener here.
  *
@@ -12,4 +14,6 @@ package org.openpcf.universal;
  * @version     0.6
  */
 public class Listener {
+    private InetAddress addr;
+    private int port;
 }

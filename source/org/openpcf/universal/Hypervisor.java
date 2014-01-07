@@ -12,4 +12,6 @@ package org.openpcf.universal;
  * @version     0.6
  */
 public class Hypervisor extends LocalService {
+    private String vmhome;
+    private String[] vmdata;
 }
