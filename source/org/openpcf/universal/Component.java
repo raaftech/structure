@@ -4,6 +4,8 @@
 
 package org.openpcf.universal;
 
+import java.awt.*;
+
 /**
  * Give a description of Component here.
  *
@@ -11,7 +13,7 @@ package org.openpcf.universal;
  * @since       2014-01-06
  * @version     0.6
  */
-public class Component implements Editable, Templatable {
+public class Component<T> implements Configurable, Templatable {
     private String name;
-    private Component[] components;
+    private Image icon;
 }

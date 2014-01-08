@@ -4,6 +4,8 @@
 
 package org.openpcf.universal;
 
+import java.util.Arrays;
+
 /**
  * Give a description of Service here.
  *
@@ -13,5 +15,6 @@ package org.openpcf.universal;
  */
 public class Service extends Software implements Checkable, Startable, Stopable, Createable, Destroyable {
     private String[] paths;
-    private String image;
+    private String[] images;
+
 }

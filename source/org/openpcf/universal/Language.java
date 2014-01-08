@@ -12,4 +12,5 @@ package org.openpcf.universal;
  * @version     0.6
  */
 public enum Language {
+    DOS, BASH, KSH, CSH, PERL, PYTHON, RUBY, JAVA, BINARY
 }

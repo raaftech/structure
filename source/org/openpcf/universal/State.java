@@ -12,4 +12,5 @@ package org.openpcf.universal;
  * @version     0.6
  */
 public enum State {
+    ONLINE, OFFLINE, UNKNOWN
 }
