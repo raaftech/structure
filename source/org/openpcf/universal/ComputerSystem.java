@@ -5,7 +5,7 @@
 package org.openpcf.universal;
 
 /**
- * Give a description of ComputerSystem here.
+ * Represents a computer system.
  *
  * @author      Rubin Simons <rubin.simons@raaftech.com>
  * @since       2014-01-06
@@ -19,4 +19,6 @@ public class ComputerSystem extends Device implements Virtualizable {
     private ProcessingUnit[] processingUnits;
     private GraphicsDevice[] graphicsDevices;
     private ManagementConsole[] managementConsoles;
+
+    public ComputerSystem() {}
 }

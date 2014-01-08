@@ -5,7 +5,7 @@
 package org.openpcf.universal;
 
 /**
- * Give a description of Network here.
+ * Represents a network device (possibly with a MAC address).
  *
  * @author      Rubin Simons <rubin.simons@raaftech.com>
  * @since       2014-01-06
@@ -13,4 +13,6 @@ package org.openpcf.universal;
  */
 public class NetworkDevice extends Device {
     private String macaddr;
+
+    public NetworkDevice() {}
 }

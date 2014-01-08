@@ -5,7 +5,7 @@
 package org.openpcf.universal;
 
 /**
- * Give a description of Interpreter here.
+ * Represents an interpreter of commands/languages/bytecode/native executables.
  *
  * @author      Rubin Simons <rubin.simons@raaftech.com>
  * @since       2014-01-06
@@ -13,4 +13,8 @@ package org.openpcf.universal;
  */
 public class Interpreter extends LocalService implements Commandable {
     private Language language;
+
+    public Interpreter() {}
+
+    public void command () {}
 }

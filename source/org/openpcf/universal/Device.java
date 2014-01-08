@@ -5,7 +5,7 @@
 package org.openpcf.universal;
 
 /**
- * Give a description of Device here.
+ * Represents an abstract Device.
  *
  * @author      Rubin Simons <rubin.simons@raaftech.com>
  * @since       2014-01-06
@@ -15,4 +15,6 @@ public class Device extends Component {
     private String vendor;
     private String model;
     private String revision;
+
+    public Device() {}
 }

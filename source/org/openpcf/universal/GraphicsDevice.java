@@ -5,7 +5,7 @@
 package org.openpcf.universal;
 
 /**
- * Give a description of GraphicsDevice here.
+ * Represents a graphics device.
  *
  * @author      Rubin Simons <rubin.simons@raaftech.com>
  * @since       2014-01-06
@@ -16,4 +16,6 @@ public class GraphicsDevice extends Device {
     private int memspeed;
     private int memsize;
     private int fillrate;
+
+    public GraphicsDevice() {}
 }

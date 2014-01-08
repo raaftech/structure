@@ -5,7 +5,7 @@
 package org.openpcf.universal;
 
 /**
- * Give a description of Service here.
+ * Represents a generic service.
  *
  * @author      Rubin Simons <rubin.simons@raaftech.com>
  * @since       2014-01-06
@@ -14,5 +14,15 @@ package org.openpcf.universal;
 public class Service extends Software implements Checkable, Discoverable, Stopable, Startable, Restartable, Createable, Destroyable {
     private String[] paths;
     private String[] images;
+
+    public Service() {}
+
+    public void check() {}
+    public void discover() {}
+    public void stop() {}
+    public void start() {}
+    public void restart() {}
+    public void create() {}
+    public void destroy() {}
 
 }

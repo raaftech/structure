@@ -5,7 +5,8 @@
 package org.openpcf.universal;
 
 /**
- * Give a description of Virtualizable here.
+ * Virtualizable is a tag interface meant to indicate that ComputerSystems are
+ * actually virtualizable and hostable by a Hypervisor service.
  *
  * @author      Rubin Simons <rubin.simons@raaftech.com>
  * @since       2014-01-07

@@ -5,7 +5,7 @@
 package org.openpcf.universal;
 
 /**
- * Give a description of Main here.
+ * The main class and method, possibly referenced in Ant or Maven.
  *
  * @author      Rubin Simons <rubin.simons@raaftech.com>
  * @since       2014-01-06

@@ -5,7 +5,8 @@
 package org.openpcf.universal;
 
 /**
- * Give a description of Management here.
+ * Represents a management interface to a computer system or device.
+ * Think ILO's, DRAC's, HPMP's, Areca management GUIs, etc.
  *
  * @author      Rubin Simons <rubin.simons@raaftech.com>
  * @since       2014-01-06
@@ -14,4 +15,6 @@ package org.openpcf.universal;
 public class ManagementConsole extends Device {
     private NetworkDevice[] networkDevices;
     private OperatingSystem[] operatingSystems;
+
+    public ManagementConsole() {}
 }

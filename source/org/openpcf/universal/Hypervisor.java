@@ -5,7 +5,7 @@
 package org.openpcf.universal;
 
 /**
- * Give a description of Hypervisor here.
+ * Represents a Hypervisor service.
  *
  * @author      Rubin Simons <rubin.simons@raaftech.com>
  * @since       2014-01-06
@@ -14,4 +14,6 @@ package org.openpcf.universal;
 public class Hypervisor extends LocalService {
     private String vmhome;
     private String[] vmdata;
+
+    public Hypervisor() {}
 }

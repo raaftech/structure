@@ -5,7 +5,7 @@
 package org.openpcf.universal;
 
 /**
- * Give a description of ConfiguredDevice here.
+ * Represents an abstract configured component.
  *
  * @author Rubin Simons <rubin.simons@raaftech.com>
  * @version 0.1
@@ -13,4 +13,6 @@ package org.openpcf.universal;
  */
 public class Configuration {
     private String name;
+
+    public Configuration() {}
 }

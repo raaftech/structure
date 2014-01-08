@@ -7,7 +7,7 @@ package org.openpcf.universal;
 import java.net.InetAddress;
 
 /**
- * Give a description of ConfiguredNetworkDevice here.
+ * Represents a configured network device.
  *
  * @author Rubin Simons <rubin.simons@raaftech.com>
  * @version 0.1
@@ -16,4 +16,6 @@ import java.net.InetAddress;
 public class ConfiguredNetworkDevice extends Configuration {
     private NetworkDevice[] assignedNetworkDevices;
     private InetAddress[] assignedInetAddresses;
+
+    public ConfiguredNetworkDevice() {}
 }

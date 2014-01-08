@@ -5,7 +5,7 @@
 package org.openpcf.universal;
 
 /**
- * Give a description of Software here.
+ * Represents software in the most generic sense of the word.
  *
  * @author      Rubin Simons <rubin.simons@raaftech.com>
  * @since       2014-01-06
@@ -14,4 +14,6 @@ package org.openpcf.universal;
 public class Software extends Component {
     private String vendor;
     private String version;
+
+    public Software() {}
 }

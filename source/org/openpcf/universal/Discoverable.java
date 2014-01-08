@@ -5,11 +5,13 @@
 package org.openpcf.universal;
 
 /**
- * Give a description of Discoverable here.
+ * Tells a given class to implement methods that represent "discover"
+ * functionality.
  *
  * @author      Rubin Simons <rubin.simons@raaftech.com>
  * @since       2014-01-07
  * @version     0.6
  */
 public interface Discoverable {
+    public void discover();
 }

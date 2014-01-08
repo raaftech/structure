@@ -5,7 +5,7 @@
 package org.openpcf.universal;
 
 /**
- * Give a description of NetworkedService here.
+ * Represents a service with a network listener component.
  *
  * @author      Rubin Simons <rubin.simons@raaftech.com>
  * @since       2014-01-06
@@ -13,4 +13,6 @@ package org.openpcf.universal;
  */
 public class NetworkedService extends Service {
     private Listener[] listeners;
+
+    public NetworkedService() {}
 }

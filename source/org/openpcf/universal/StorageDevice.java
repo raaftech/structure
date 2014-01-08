@@ -7,7 +7,7 @@ package org.openpcf.universal;
 import java.math.BigDecimal;
 
 /**
- * Give a description of StorageDevice here.
+ * Represents a storage device, like a harddisk. Needs work!
  *
  * @author      Rubin Simons <rubin.simons@raaftech.com>
  * @since       2014-01-06
@@ -15,4 +15,6 @@ import java.math.BigDecimal;
  */
 public class StorageDevice extends Device {
     private BigDecimal size;
+
+    public StorageDevice() {}
 }

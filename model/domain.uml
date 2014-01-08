@@ -3,224 +3,225 @@
   <ID>JAVA</ID>
   <OriginalElement />
   <nodes>
-    <node x="1680.5033068783068" y="700.0">org.openpcf.universal.TextualAccessor</node>
-    <node x="1442.6097883597884" y="165.0">org.openpcf.universal.Createable</node>
-    <node x="2035.80291005291" y="165.0">org.openpcf.universal.Discoverable</node>
-    <node x="1330.6097883597884" y="165.0">org.openpcf.universal.Startable</node>
-    <node x="812.5" y="129.0">org.openpcf.universal.Device</node>
-    <node x="999.0" y="800.0">org.openpcf.universal.State</node>
-    <node x="1915.80291005291" y="165.0">org.openpcf.universal.Checkable</node>
-    <node x="236.0" y="1092.0">org.openpcf.universal.Main</node>
-    <node x="1567.6097883597884" y="165.0">org.openpcf.universal.Destroyable</node>
-    <node x="757.0" y="382.0">org.openpcf.universal.ManagementConsole</node>
-    <node x="1069.0" y="394.0">org.openpcf.universal.NetworkDevice</node>
-    <node x="457.0" y="1092.0">org.openpcf.universal.Credential</node>
-    <node x="271.0" y="905.0">org.openpcf.universal.ConfiguredNetworkDevice</node>
-    <node x="1289.5033068783068" y="688.0">org.openpcf.universal.Interpreter</node>
-    <node x="1489.0033068783068" y="583.0">org.openpcf.universal.LocalService</node>
-    <node x="0.0" y="322.0">org.openpcf.universal.ComputerSystem</node>
-    <node x="1471.0" y="394.0">org.openpcf.universal.StorageDevice</node>
-    <node x="412.0" y="370.0">org.openpcf.universal.ProcessingUnit</node>
-    <node x="1841.5033068783068" y="700.0">org.openpcf.universal.GraphicalAccessor</node>
-    <node x="603.0" y="1092.0">org.openpcf.universal.Handler</node>
-    <node x="670.0" y="800.0">org.openpcf.universal.Command</node>
-    <node x="40.0" y="165.0">org.openpcf.universal.Virtualizable</node>
-    <node x="1269.2533068783068" y="583.0">org.openpcf.universal.Commandable</node>
-    <node x="1362.75" y="0.0">org.openpcf.universal.Component</node>
-    <node x="0.0" y="1092.0">org.openpcf.universal.Listener</node>
-    <node x="1928.4431216931218" y="370.0">org.openpcf.universal.OperatingSystem</node>
-    <node x="1827.2533068783068" y="571.0">org.openpcf.universal.NetworkedService</node>
-    <node x="1243.0" y="358.0">org.openpcf.universal.GraphicsDevice</node>
-    <node x="1737.9246031746034" y="382.0">org.openpcf.universal.Service</node>
-    <node x="382.5" y="800.0">org.openpcf.universal.Configuration</node>
-    <node x="1488.5033068783068" y="676.0">org.openpcf.universal.Hypervisor</node>
-    <node x="579.0" y="394.0">org.openpcf.universal.MemoryModule</node>
-    <node x="0.0" y="800.0">org.openpcf.universal.Language</node>
-    <node x="2174.80291005291" y="141.0">org.openpcf.universal.Software</node>
-    <node x="1689.0033068783068" y="583.0">org.openpcf.universal.Accessable</node>
-    <node x="1796.8029100529102" y="165.0">org.openpcf.universal.Stopable</node>
+    <node x="1583.9550264550264" y="190.5">org.openpcf.universal.Createable</node>
+    <node x="1868.3915343915344" y="837.5">org.openpcf.universal.TextualAccessor</node>
+    <node x="2353.3736772486773" y="190.5">org.openpcf.universal.Discoverable</node>
+    <node x="1437.9550264550264" y="190.5">org.openpcf.universal.Startable</node>
+    <node x="872.5" y="154.0">org.openpcf.universal.Device</node>
+    <node x="1315.0" y="975.0">org.openpcf.universal.State</node>
+    <node x="2201.3736772486773" y="190.5">org.openpcf.universal.Checkable</node>
+    <node x="0.0" y="1267.0">org.openpcf.universal.Main</node>
+    <node x="1740.9550264550264" y="190.5">org.openpcf.universal.Destroyable</node>
+    <node x="817.0" y="456.5">org.openpcf.universal.ManagementConsole</node>
+    <node x="1149.0" y="468.5">org.openpcf.universal.NetworkDevice</node>
+    <node x="221.0" y="1267.0">org.openpcf.universal.Credential</node>
+    <node x="271.0" y="1105.0">org.openpcf.universal.ConfiguredNetworkDevice</node>
+    <node x="1417.3915343915344" y="825.0">org.openpcf.universal.Interpreter</node>
+    <node x="1641.3915343915344" y="707.5">org.openpcf.universal.LocalService</node>
+    <node x="0.0" y="396.5">org.openpcf.universal.ComputerSystem</node>
+    <node x="1591.0" y="468.5">org.openpcf.universal.StorageDevice</node>
+    <node x="432.0" y="444.5">org.openpcf.universal.ProcessingUnit</node>
+    <node x="2083.391534391534" y="837.5">org.openpcf.universal.GraphicalAccessor</node>
+    <node x="401.0" y="1267.0">org.openpcf.universal.Handler</node>
+    <node x="690.0" y="975.0">org.openpcf.universal.Command</node>
+    <node x="45.0" y="202.5">org.openpcf.universal.Virtualizable</node>
+    <node x="1391.1415343915344" y="707.5">org.openpcf.universal.Commandable</node>
+    <node x="1579.0" y="0.0">org.openpcf.universal.Component</node>
+    <node x="1059.0" y="975.0">org.openpcf.universal.Listener</node>
+    <node x="2221.6071428571427" y="396.0">org.openpcf.universal.OperatingSystem</node>
+    <node x="2094.641534391534" y="695.0">org.openpcf.universal.NetworkedService</node>
+    <node x="1343.0" y="432.5">org.openpcf.universal.GraphicsDevice</node>
+    <node x="1880.6071428571427" y="372.0">org.openpcf.universal.Service</node>
+    <node x="382.5" y="975.0">org.openpcf.universal.Configuration</node>
+    <node x="1656.3915343915344" y="825.5">org.openpcf.universal.Hypervisor</node>
+    <node x="619.0" y="468.5">org.openpcf.universal.MemoryModule</node>
+    <node x="0.0" y="975.0">org.openpcf.universal.Language</node>
+    <node x="2525.3736772486773" y="166.0">org.openpcf.universal.Software</node>
+    <node x="1882.3915343915342" y="707.5">org.openpcf.universal.Accessable</node>
+    <node x="2014.373677248677" y="190.5">org.openpcf.universal.Stopable</node>
   </nodes>
   <notes />
   <edges>
     <edge source="org.openpcf.universal.TextualAccessor" target="org.openpcf.universal.Accessable">
-      <point x="-35.25" y="-15.5" />
-      <point x="-26.75" y="15.5" />
+      <point x="-48.75000000000023" y="-40.0" />
+      <point x="-34.75" y="27.5" />
     </edge>
     <edge source="org.openpcf.universal.Interpreter" target="org.openpcf.universal.LocalService">
-      <point x="44.75" y="-27.5" />
-      <point x="1423.7533068783068" y="656.0" />
-      <point x="1517.5033068783068" y="656.0" />
-      <point x="-28.5" y="15.5" />
+      <point x="54.75" y="-52.5" />
+      <point x="1581.6415343915344" y="805.0" />
+      <point x="1678.3915343915344" y="805.0" />
+      <point x="-37.0" y="27.5" />
     </edge>
     <edge source="org.openpcf.universal.Software" target="org.openpcf.universal.Component">
-      <point x="0.0" y="-39.5" />
-      <point x="2255.30291005291" y="104.0" />
-      <point x="1476.0" y="104.0" />
-      <point x="37.75" y="39.5" />
+      <point x="0.0" y="-52.0" />
+      <point x="2615.8736772486773" y="129.0" />
+      <point x="1707.25" y="129.0" />
+      <point x="42.75" y="52.0" />
     </edge>
     <edge source="org.openpcf.universal.Service" target="org.openpcf.universal.Discoverable">
-      <point x="46.0" y="-39.5" />
-      <point x="1864.4246031746034" y="272.0" />
-      <point x="2065.55291005291" y="272.0" />
-      <point x="-29.75" y="15.5" />
+      <point x="91.71428571428578" y="-136.5" />
+      <point x="2132.8214285714284" y="332.0" />
+      <point x="2391.3736772486773" y="332.0" />
+      <point x="-38.0" y="27.5" />
     </edge>
     <edge source="org.openpcf.universal.ConfiguredNetworkDevice" target="org.openpcf.universal.Configuration">
-      <point x="0.0" y="-39.5" />
-      <point x="0.0" y="27.5" />
+      <point x="0.0" y="-52.0" />
+      <point x="0.0" y="40.0" />
     </edge>
     <edge source="org.openpcf.universal.NetworkedService" target="org.openpcf.universal.Service">
-      <point x="0.0" y="-27.5" />
-      <point x="1915.2533068783068" y="546.0" />
-      <point x="1858.6746031746034" y="546.0" />
-      <point x="40.25" y="39.5" />
-    </edge>
-    <edge source="org.openpcf.universal.Interpreter" target="org.openpcf.universal.Commandable">
-      <point x="-44.75" y="-27.5" />
-      <point x="0.0" y="15.5" />
+      <point x="0.0" y="-40.0" />
+      <point x="2192.641534391534" y="670.0" />
+      <point x="2121.3571428571427" y="670.0" />
+      <point x="80.25" y="136.5" />
     </edge>
     <edge source="org.openpcf.universal.StorageDevice" target="org.openpcf.universal.Device">
-      <point x="0.0" y="-27.5" />
-      <point x="1550.0" y="282.0" />
-      <point x="980.5714285714286" y="282.0" />
-      <point x="77.57142857142856" y="51.5" />
+      <point x="0.0" y="-40.0" />
+      <point x="1680.0" y="332.0" />
+      <point x="1059.142857142857" y="332.0" />
+      <point x="86.14285714285711" y="64.0" />
+    </edge>
+    <edge source="org.openpcf.universal.Interpreter" target="org.openpcf.universal.Commandable">
+      <point x="-54.75" y="-52.5" />
+      <point x="0.0" y="27.5" />
     </edge>
     <edge source="org.openpcf.universal.GraphicalAccessor" target="org.openpcf.universal.NetworkedService">
-      <point x="39.25" y="-15.5" />
-      <point x="44.0" y="27.5" />
+      <point x="52.75" y="-40.0" />
+      <point x="49.0" y="40.0" />
     </edge>
     <edge source="org.openpcf.universal.Service" target="org.openpcf.universal.Software">
-      <point x="69.0" y="-39.5" />
-      <point x="1887.4246031746034" y="292.0" />
-      <point x="2215.05291005291" y="292.0" />
-      <point x="-40.25" y="39.5" />
+      <point x="137.57142857142844" y="-136.5" />
+      <point x="2178.678571428571" y="342.0" />
+      <point x="2570.6236772486773" y="342.0" />
+      <point x="-45.25" y="52.0" />
     </edge>
     <edge source="org.openpcf.universal.LocalService" target="org.openpcf.universal.Service">
-      <point x="0.0" y="-15.5" />
-      <point x="1546.0033068783068" y="546.0" />
-      <point x="1778.1746031746034" y="546.0" />
-      <point x="-40.25" y="39.5" />
+      <point x="0.0" y="-27.5" />
+      <point x="1715.3915343915344" y="670.0" />
+      <point x="1960.8571428571427" y="670.0" />
+      <point x="-80.25" y="136.5" />
     </edge>
     <edge source="org.openpcf.universal.Service" target="org.openpcf.universal.Destroyable">
-      <point x="-23.0" y="-39.5" />
-      <point x="1795.4246031746034" y="252.0" />
-      <point x="1624.1097883597884" y="252.0" />
-      <point x="0.0" y="15.5" />
+      <point x="-45.85714285714289" y="-136.5" />
+      <point x="1995.2499999999998" y="302.0" />
+      <point x="1813.9550264550264" y="302.0" />
+      <point x="0.0" y="27.5" />
     </edge>
     <edge source="org.openpcf.universal.ManagementConsole" target="org.openpcf.universal.Device">
-      <point x="0.0" y="-39.5" />
-      <point x="0.0" y="51.5" />
+      <point x="0.0" y="-52.0" />
+      <point x="0.0" y="64.0" />
     </edge>
     <edge source="org.openpcf.universal.Service" target="org.openpcf.universal.Stopable">
-      <point x="0.0" y="-39.5" />
-      <point x="1818.4246031746034" y="302.0" />
-      <point x="1819.5529100529102" y="302.0" />
-      <point x="-22.75" y="15.5" />
+      <point x="0.0" y="-136.5" />
+      <point x="2041.1071428571427" y="352.0" />
+      <point x="2045.623677248677" y="352.0" />
+      <point x="-31.25" y="27.5" />
     </edge>
     <edge source="org.openpcf.universal.OperatingSystem" target="org.openpcf.universal.Stopable">
-      <point x="-78.75000000000023" y="-51.5" />
-      <point x="1954.6931216931216" y="252.0" />
-      <point x="1865.0529100529102" y="252.0" />
-      <point x="22.75" y="15.5" />
+      <point x="-116.25" y="-112.5" />
+      <point x="2260.3571428571427" y="312.0" />
+      <point x="2108.1236772486773" y="312.0" />
+      <point x="31.25" y="27.5" />
     </edge>
     <edge source="org.openpcf.universal.ComputerSystem" target="org.openpcf.universal.Device">
-      <point x="98.0" y="-99.5" />
-      <point x="294.0" y="282.0" />
-      <point x="825.4285714285714" y="282.0" />
-      <point x="-77.57142857142856" y="51.5" />
+      <point x="103.0" y="-112.0" />
+      <point x="309.0" y="332.0" />
+      <point x="886.8571428571429" y="332.0" />
+      <point x="-86.14285714285711" y="64.0" />
     </edge>
     <edge source="org.openpcf.universal.ComputerSystem" target="org.openpcf.universal.Virtualizable">
-      <point x="-98.0" y="-99.5" />
+      <point x="-103.0" y="-112.0" />
       <point x="0.0" y="15.5" />
     </edge>
     <edge source="org.openpcf.universal.MemoryModule" target="org.openpcf.universal.Device">
-      <point x="0.0" y="-27.5" />
-      <point x="658.0" y="302.0" />
-      <point x="877.1428571428571" y="302.0" />
-      <point x="-25.85714285714289" y="51.5" />
-    </edge>
-    <edge source="org.openpcf.universal.GraphicalAccessor" target="org.openpcf.universal.Accessable">
-      <point x="-39.25" y="-15.5" />
-      <point x="1880.7533068783068" y="646.0" />
-      <point x="1769.2533068783068" y="646.0" />
-      <point x="26.75" y="15.5" />
+      <point x="0.0" y="-40.0" />
+      <point x="708.0" y="352.0" />
+      <point x="944.2857142857142" y="352.0" />
+      <point x="-28.71428571428578" y="64.0" />
     </edge>
     <edge source="org.openpcf.universal.TextualAccessor" target="org.openpcf.universal.NetworkedService">
-      <point x="35.25" y="-15.5" />
-      <point x="1786.2533068783068" y="656.0" />
-      <point x="1871.2533068783068" y="656.0" />
-      <point x="-44.0" y="27.5" />
+      <point x="48.74999999999977" y="-40.0" />
+      <point x="2014.6415343915342" y="805.0" />
+      <point x="2143.641534391534" y="805.0" />
+      <point x="-49.0" y="40.0" />
+    </edge>
+    <edge source="org.openpcf.universal.GraphicalAccessor" target="org.openpcf.universal.Accessable">
+      <point x="-52.75" y="-40.0" />
+      <point x="2136.141534391534" y="795.0" />
+      <point x="1986.6415343915342" y="795.0" />
+      <point x="34.75" y="27.5" />
     </edge>
     <edge source="org.openpcf.universal.Service" target="org.openpcf.universal.Createable">
-      <point x="-46.0" y="-39.5" />
-      <point x="1772.4246031746034" y="262.0" />
-      <point x="1495.1097883597884" y="262.0" />
-      <point x="0.0" y="15.5" />
+      <point x="-91.71428571428578" y="-136.5" />
+      <point x="1949.3928571428569" y="312.0" />
+      <point x="1652.4550264550264" y="312.0" />
+      <point x="0.0" y="27.5" />
     </edge>
     <edge source="org.openpcf.universal.Device" target="org.openpcf.universal.Component">
-      <point x="0.0" y="-51.5" />
-      <point x="903.0" y="104.0" />
-      <point x="1400.5" y="104.0" />
-      <point x="-37.75" y="39.5" />
+      <point x="0.0" y="-64.0" />
+      <point x="973.0" y="129.0" />
+      <point x="1621.75" y="129.0" />
+      <point x="-42.75" y="52.0" />
     </edge>
     <edge source="org.openpcf.universal.ProcessingUnit" target="org.openpcf.universal.Device">
-      <point x="0.0" y="-51.5" />
-      <point x="485.5" y="292.0" />
-      <point x="851.2857142857142" y="292.0" />
-      <point x="-51.71428571428578" y="51.5" />
+      <point x="0.0" y="-64.0" />
+      <point x="515.5" y="342.0" />
+      <point x="915.5714285714286" y="342.0" />
+      <point x="-57.428571428571445" y="64.0" />
     </edge>
     <edge source="org.openpcf.universal.NetworkDevice" target="org.openpcf.universal.Device">
-      <point x="0.0" y="-27.5" />
-      <point x="1146.0" y="302.0" />
-      <point x="928.8571428571428" y="302.0" />
-      <point x="25.857142857142776" y="51.5" />
+      <point x="0.0" y="-40.0" />
+      <point x="1236.0" y="352.0" />
+      <point x="1001.7142857142857" y="352.0" />
+      <point x="28.714285714285666" y="64.0" />
     </edge>
     <edge source="org.openpcf.universal.OperatingSystem" target="org.openpcf.universal.Discoverable">
-      <point x="26.249999999999773" y="-51.5" />
-      <point x="2059.6931216931216" y="282.0" />
-      <point x="2125.05291005291" y="282.0" />
-      <point x="29.75" y="15.5" />
-    </edge>
-    <edge source="org.openpcf.universal.OperatingSystem" target="org.openpcf.universal.Software">
-      <point x="78.74999999999977" y="-51.5" />
-      <point x="2112.1931216931216" y="302.0" />
-      <point x="2295.55291005291" y="302.0" />
-      <point x="40.25" y="39.5" />
-    </edge>
-    <edge source="org.openpcf.universal.Service" target="org.openpcf.universal.Startable">
-      <point x="-69.0" y="-39.5" />
-      <point x="1749.4246031746034" y="272.0" />
-      <point x="1376.6097883597884" y="272.0" />
-      <point x="0.0" y="15.5" />
+      <point x="38.75" y="-112.5" />
+      <point x="2415.3571428571427" y="332.0" />
+      <point x="2467.3736772486773" y="332.0" />
+      <point x="38.0" y="27.5" />
     </edge>
     <edge source="org.openpcf.universal.OperatingSystem" target="org.openpcf.universal.Checkable">
-      <point x="-26.250000000000227" y="-51.5" />
-      <point x="2007.1931216931216" y="262.0" />
-      <point x="1990.80291005291" y="262.0" />
-      <point x="25.0" y="15.5" />
+      <point x="-38.75" y="-112.5" />
+      <point x="2337.8571428571427" y="322.0" />
+      <point x="2300.3736772486773" y="322.0" />
+      <point x="33.0" y="27.5" />
     </edge>
-    <edge source="org.openpcf.universal.GraphicsDevice" target="org.openpcf.universal.Device">
-      <point x="0.0" y="-63.5" />
-      <point x="1347.0" y="292.0" />
-      <point x="954.7142857142857" y="292.0" />
-      <point x="51.714285714285666" y="51.5" />
+    <edge source="org.openpcf.universal.Service" target="org.openpcf.universal.Startable">
+      <point x="-137.57142857142867" y="-136.5" />
+      <point x="1903.535714285714" y="322.0" />
+      <point x="1500.9550264550264" y="322.0" />
+      <point x="0.0" y="27.5" />
+    </edge>
+    <edge source="org.openpcf.universal.OperatingSystem" target="org.openpcf.universal.Software">
+      <point x="116.25" y="-112.5" />
+      <point x="2492.8571428571427" y="352.0" />
+      <point x="2661.1236772486773" y="352.0" />
+      <point x="45.25" y="52.0" />
     </edge>
     <edge source="org.openpcf.universal.Hypervisor" target="org.openpcf.universal.LocalService">
-      <point x="0.0" y="-39.5" />
-      <point x="28.5" y="15.5" />
+      <point x="0.0" y="-52.0" />
+      <point x="37.0" y="27.5" />
+    </edge>
+    <edge source="org.openpcf.universal.GraphicsDevice" target="org.openpcf.universal.Device">
+      <point x="0.0" y="-76.0" />
+      <point x="1457.0" y="342.0" />
+      <point x="1030.4285714285713" y="342.0" />
+      <point x="57.42857142857133" y="64.0" />
     </edge>
     <edge source="org.openpcf.universal.Service" target="org.openpcf.universal.Checkable">
-      <point x="23.0" y="-39.5" />
-      <point x="1841.4246031746034" y="262.0" />
-      <point x="1940.80291005291" y="262.0" />
-      <point x="-25.0" y="15.5" />
+      <point x="45.85714285714266" y="-136.5" />
+      <point x="2086.9642857142853" y="322.0" />
+      <point x="2234.3736772486773" y="322.0" />
+      <point x="-33.0" y="27.5" />
     </edge>
   </edges>
-  <settings layout="Hierarchic Group" zoom="0.8047538200339559" x="1168.0" y="585.5" />
+  <settings layout="Hierarchic Group" zoom="0.6952695269526953" x="1353.5" y="661.0" />
   <SelectedNodes />
   <Categories>
     <Category>Fields</Category>
     <Category>Methods</Category>
     <Category>Properties</Category>
+    <Category>Constructors</Category>
   </Categories>
   <SCOPE>All</SCOPE>
   <VISIBILITY>private</VISIBILITY>

@@ -5,7 +5,7 @@
 package org.openpcf.universal;
 
 /**
- * Give a description of Processor here.
+ * Represents a processor.
  *
  * @author      Rubin Simons <rubin.simons@raaftech.com>
  * @since       2014-01-06
@@ -15,4 +15,6 @@ public class ProcessingUnit extends Device {
     private int hertz;
     private int cache;
     private int cores;
+
+    public ProcessingUnit() {}
 }

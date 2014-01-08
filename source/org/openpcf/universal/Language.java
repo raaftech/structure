@@ -5,7 +5,7 @@
 package org.openpcf.universal;
 
 /**
- * Give a description of Language here.
+ * Represents known languages handled by Interpreters.
  *
  * @author      Rubin Simons <rubin.simons@raaftech.com>
  * @since       2014-01-06

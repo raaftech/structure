@@ -7,7 +7,8 @@ package org.openpcf.universal;
 import java.net.InetAddress;
 
 /**
- * Give a description of Listener here.
+ * Represents a listener (ip + portnumber) address for a NetworkedService.
+ * Notice: needs to handle UDP and TCP!
  *
  * @author      Rubin Simons <rubin.simons@raaftech.com>
  * @since       2014-01-06
@@ -16,4 +17,6 @@ import java.net.InetAddress;
 public class Listener {
     private InetAddress addr;
     private int port;
+
+    public Listener() {}
 }

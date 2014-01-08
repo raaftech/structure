@@ -7,7 +7,7 @@ package org.openpcf.universal;
 import java.math.BigDecimal;
 
 /**
- * Give a description of MemoryModule here.
+ * Represents a memory module in a computer system.
  *
  * @author      Rubin Simons <rubin.simons@raaftech.com>
  * @since       2014-01-06
@@ -15,4 +15,6 @@ import java.math.BigDecimal;
  */
 public class MemoryModule extends Device {
     BigDecimal size;
+
+    public MemoryModule() {}
 }

@@ -5,11 +5,13 @@
 package org.openpcf.universal;
 
 /**
- * Give a description of Credential here.
+ * Represents an abstract credential. Needs work!
  *
  * @author      Rubin Simons <rubin.simons@raaftech.com>
  * @since       2014-01-06
  * @version     0.6
  */
 public class Credential {
+
+    public Credential() {}
 }
