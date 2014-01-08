@@ -4,8 +4,6 @@
 
 package org.openpcf.universal;
 
-import java.util.Arrays;
-
 /**
  * Give a description of Service here.
  *

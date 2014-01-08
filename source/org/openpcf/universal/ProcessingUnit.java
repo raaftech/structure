@@ -4,8 +4,6 @@
 
 package org.openpcf.universal;
 
-import java.math.BigInteger;
-
 /**
  * Give a description of Processor here.
  *

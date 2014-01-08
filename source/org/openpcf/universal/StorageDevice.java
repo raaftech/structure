@@ -5,7 +5,6 @@
 package org.openpcf.universal;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 
 /**
  * Give a description of StorageDevice here.

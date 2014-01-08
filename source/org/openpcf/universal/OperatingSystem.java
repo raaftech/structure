@@ -4,11 +4,6 @@
 
 package org.openpcf.universal;
 
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.*;
-
 /**
  * Give a description of OperatingSystem here.
  *
@@ -17,6 +12,7 @@ import java.util.*;
  * @version     0.6
  */
 public class OperatingSystem extends Software implements Checkable, Stopable {
+    private Boolean dormant;
     private Service[] assignedServices;
     private Configuration[] configuredDevices;
 }

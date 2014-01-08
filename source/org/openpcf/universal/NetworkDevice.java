@@ -4,8 +4,6 @@
 
 package org.openpcf.universal;
 
-import java.net.InetAddress;
-
 /**
  * Give a description of Network here.
  *
