@@ -11,7 +11,6 @@ source/org/openpcf/universal/Command.java -text
 source/org/openpcf/universal/Commandable.java -text
 source/org/openpcf/universal/Component.java -text
 source/org/openpcf/universal/ComputerSystem.java -text
-source/org/openpcf/universal/Configurable.java -text
 source/org/openpcf/universal/Configuration.java -text
 source/org/openpcf/universal/ConfiguredNetworkDevice.java -text
 source/org/openpcf/universal/Createable.java -text
@@ -34,13 +33,12 @@ source/org/openpcf/universal/NetworkDevice.java -text
 source/org/openpcf/universal/NetworkedService.java -text
 source/org/openpcf/universal/OperatingSystem.java -text
 source/org/openpcf/universal/ProcessingUnit.java -text
+source/org/openpcf/universal/Restartable.java -text
 source/org/openpcf/universal/Service.java -text
 source/org/openpcf/universal/Software.java -text
 source/org/openpcf/universal/Startable.java -text
 source/org/openpcf/universal/State.java -text
 source/org/openpcf/universal/Stopable.java -text
 source/org/openpcf/universal/StorageDevice.java -text
-source/org/openpcf/universal/Templatable.java -text
-source/org/openpcf/universal/Template.java -text
 source/org/openpcf/universal/TextualAccessor.java -text
 source/org/openpcf/universal/Virtualizable.java -text

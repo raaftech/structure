@@ -11,7 +11,7 @@ package org.openpcf.universal;
  * @since       2014-01-06
  * @version     0.6
  */
-public class OperatingSystem extends Software implements Checkable, Stopable {
+public class OperatingSystem extends Software implements Checkable, Discoverable, Stopable, Restartable {
     private Boolean dormant;
     private Service[] assignedServices;
     private Configuration[] configuredDevices;

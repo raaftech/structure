@@ -11,7 +11,7 @@ package org.openpcf.universal;
  * @since       2014-01-06
  * @version     0.6
  */
-public class ComputerSystem extends Device {
+public class ComputerSystem extends Device implements Virtualizable {
     private NetworkDevice[] networkDevices;
     private OperatingSystem[] operatingSystems;
     private StorageDevice[] storageDevices;

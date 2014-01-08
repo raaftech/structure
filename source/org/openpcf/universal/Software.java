@@ -11,7 +11,7 @@ package org.openpcf.universal;
  * @since       2014-01-06
  * @version     0.6
  */
-public class Software extends Component implements Discoverable {
+public class Software extends Component {
     private String vendor;
     private String version;
 }

@@ -13,7 +13,7 @@ import java.awt.*;
  * @since       2014-01-06
  * @version     0.6
  */
-public class Component<T> implements Configurable, Templatable {
+public class Component {
     private String name;
     private Image icon;
 }
