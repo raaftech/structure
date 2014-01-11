@@ -10,13 +10,16 @@ import java.net.InetAddress;
  * Represents a listener (ip + portnumber) address for a NetworkedService.
  * Notice: needs to handle UDP and TCP!
  *
- * @author      Rubin Simons <rubin.simons@raaftech.com>
- * @since       2014-01-06
- * @version     0.6
+ * @author Rubin Simons <rubin.simons@raaftech.com>
+ * @version 0.6
+ * @since 2014-01-06
  */
 public class Listener {
-    private InetAddress addr;
+    private String addr;
     private int port;
 
-    public Listener() {}
+    public Listener(String addr, int port) {
+        this.addr = addr;
+        this.port = port;
+    }
 }

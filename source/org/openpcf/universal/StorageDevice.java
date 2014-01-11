@@ -4,17 +4,20 @@
 
 package org.openpcf.universal;
 
-import java.math.BigDecimal;
+import java.awt.*;
 
 /**
  * Represents a storage device, like a harddisk. Needs work!
  *
- * @author      Rubin Simons <rubin.simons@raaftech.com>
- * @since       2014-01-06
- * @version     0.6
+ * @author Rubin Simons <rubin.simons@raaftech.com>
+ * @version 0.6
+ * @since 2014-01-06
  */
 public class StorageDevice extends Device {
-    private BigDecimal size;
+    private int size;
 
-    public StorageDevice() {}
+    public StorageDevice(String name, Image icon, String vendor, String model, String revision, int size) {
+        super(name, icon, vendor, model, revision);
+        this.size = size;
+    }
 }

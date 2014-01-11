@@ -4,12 +4,14 @@
 
 package org.openpcf.universal;
 
+import java.awt.*;
+
 /**
  * Represents a graphics device.
  *
- * @author      Rubin Simons <rubin.simons@raaftech.com>
- * @since       2014-01-06
- * @version     0.6
+ * @author Rubin Simons <rubin.simons@raaftech.com>
+ * @version 0.6
+ * @since 2014-01-06
  */
 public class GraphicsDevice extends Device {
     private int clockspeed;
@@ -17,5 +19,11 @@ public class GraphicsDevice extends Device {
     private int memsize;
     private int fillrate;
 
-    public GraphicsDevice() {}
+    public GraphicsDevice(String name, Image icon, String vendor, String model, String revision, int clockspeed, int memspeed, int memsize, int fillrate) {
+        super(name, icon, vendor, model, revision);
+        this.clockspeed = clockspeed;
+        this.memspeed = memspeed;
+        this.memsize = memsize;
+        this.fillrate = fillrate;
+    }
 }

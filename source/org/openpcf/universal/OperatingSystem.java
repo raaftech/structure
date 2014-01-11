@@ -4,23 +4,37 @@
 
 package org.openpcf.universal;
 
+import java.awt.*;
+
 /**
  * Represents an Operating System running on a computer or an embedded
  * device like a management console.
  *
- * @author      Rubin Simons <rubin.simons@raaftech.com>
- * @since       2014-01-06
- * @version     0.6
+ * @author Rubin Simons <rubin.simons@raaftech.com>
+ * @version 0.6
+ * @since 2014-01-06
  */
 public class OperatingSystem extends Software implements Checkable, Discoverable, Stopable, Restartable {
     private Boolean dormant;
-    private Service[] assignedServices;
-    private Configuration[] configuredDevices;
+    private Service assignedService;
+    private Configuration configuredDevice;
 
-    public OperatingSystem() {}
+    public OperatingSystem(String name, Image icon, String vendor, String version, Boolean dormant, Service assignedService, Configuration configuredDevice) {
+        super(name, icon, vendor, version);
+        this.dormant = dormant;
+        this.assignedService = assignedService;
+        this.configuredDevice = configuredDevice;
+    }
 
-    public void check() {}
-    public void discover() {}
-    public void stop() {}
-    public void restart() {}
+    public void check() {
+    }
+
+    public void discover() {
+    }
+
+    public void stop() {
+    }
+
+    public void restart() {
+    }
 }

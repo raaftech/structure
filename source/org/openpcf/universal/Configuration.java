@@ -14,5 +14,7 @@ package org.openpcf.universal;
 public class Configuration {
     private String name;
 
-    public Configuration() {}
+    public Configuration(String name) {
+        this.name = name;
+    }
 }

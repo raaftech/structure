@@ -14,8 +14,12 @@ import java.net.InetAddress;
  * @since 2014-01-08
  */
 public class ConfiguredNetworkDevice extends Configuration {
-    private NetworkDevice[] assignedNetworkDevices;
-    private InetAddress[] assignedInetAddresses;
+    private NetworkDevice assignedNetworkDevice;
+    private String assignedInetAddress;
 
-    public ConfiguredNetworkDevice() {}
+    public ConfiguredNetworkDevice(String name, NetworkDevice assignedNetworkDevice, String assignedInetAddress) {
+        super(name);
+        this.assignedNetworkDevice = assignedNetworkDevice;
+        this.assignedInetAddress = assignedInetAddress;
+    }
 }

@@ -12,13 +12,16 @@ import java.awt.*;
  * specialized components. The application will mostly interact with
  * Components and more usefully, collections of components.
  *
- * @author      Rubin Simons <rubin.simons@raaftech.com>
- * @since       2014-01-06
- * @version     0.6
+ * @author Rubin Simons <rubin.simons@raaftech.com>
+ * @version 0.6
+ * @since 2014-01-06
  */
 public class Component {
     private String name;
     private Image icon;
 
-    public Component() {}
+    public Component(String name, Image icon) {
+        this.name = name;
+        this.icon = icon;
+    }
 }

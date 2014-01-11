@@ -4,17 +4,23 @@
 
 package org.openpcf.universal;
 
+import java.awt.*;
+
 /**
  * Represents a management interface to a computer system or device.
  * Think ILO's, DRAC's, HPMP's, Areca management GUIs, etc.
  *
- * @author      Rubin Simons <rubin.simons@raaftech.com>
- * @since       2014-01-06
- * @version     0.6
+ * @author Rubin Simons <rubin.simons@raaftech.com>
+ * @version 0.6
+ * @since 2014-01-06
  */
 public class ManagementConsole extends Device {
-    private NetworkDevice[] networkDevices;
-    private OperatingSystem[] operatingSystems;
+    private NetworkDevice networkDevice;
+    private OperatingSystem operatingSystem;
 
-    public ManagementConsole() {}
+    public ManagementConsole(String name, Image icon, String vendor, String model, String revision, NetworkDevice networkDevice, OperatingSystem operatingSystem) {
+        super(name, icon, vendor, model, revision);
+        this.networkDevice = networkDevice;
+        this.operatingSystem = operatingSystem;
+    }
 }

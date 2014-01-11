@@ -2,6 +2,7 @@
 /build.xml -text
 /license.txt -text
 model/domain.uml -text
+model/frames.uml -text
 /pom.xml -text
 /readme.txt -text
 /release.xml -text
