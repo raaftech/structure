@@ -1,0 +1,2551 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement />
+  <nodes>
+    <node x="1851.5138888888878" y="3816.0">com.orientechnologies.orient.core.storage.impl.local.OFreezableStorage</node>
+    <node x="12033.25" y="24954.0">com.orientechnologies.orient.core.serialization.OMemoryInputStream</node>
+    <node x="10280.0" y="26122.0">com.orientechnologies.orient.core.db.object.OLazyObjectSetInterface</node>
+    <node x="9059.125" y="1938.0">com.orientechnologies.orient.core.index.OIndexInternal</node>
+    <node x="4531.875" y="227.5">com.orientechnologies.orient.core.db.ODatabase</node>
+    <node x="6109.5" y="22436.5">com.orientechnologies.orient.core.tx.OTransactionNoTx</node>
+    <node x="13810.0" y="25916.5">com.orientechnologies.orient.core.collate.OCaseInsensitiveCollate</node>
+    <node x="1548.0000000000002" y="24368.0">com.orientechnologies.orient.core.storage.impl.local.paginated.wal.OFullCheckpointStartRecord</node>
+    <node x="20836.0" y="25788.0">com.orientechnologies.orient.core.index.OIndexRebuildOutputListener</node>
+    <node x="13029.0" y="24260.5">com.orientechnologies.orient.core.storage.impl.local.OTxSegment</node>
+    <node x="7736.500198412698" y="20458.0">com.orientechnologies.orient.core.index.OPropertyIndexDefinition</node>
+    <node x="5512.015222222224" y="10992.5">com.orientechnologies.orient.core.db.record.OTrackedSet</node>
+    <node x="21729.25" y="25192.5">com.orientechnologies.orient.core.config.OStorageClusterHoleConfiguration</node>
+    <node x="3062.0" y="25788.0">com.orientechnologies.orient.core.version.OVersionFactory</node>
+    <node x="9950.75" y="1618.0">com.orientechnologies.orient.core.index.OIndexAbstractDelegate</node>
+    <node x="4652.875198412698" y="17301.0">com.orientechnologies.orient.core.index.OIndexManager</node>
+    <node x="2314.0" y="18579.0">com.orientechnologies.orient.core.metadata.schema.OPropertyImpl</node>
+    <node x="6558.0" y="24618.0">com.orientechnologies.orient.core.processor.block.OOutputBlock</node>
+    <node x="7841.25" y="24954.0">com.orientechnologies.orient.core.cache.OAbstractRecordCache</node>
+    <node x="17248.5" y="24138.0">com.orientechnologies.orient.core.fetch.json.OJSONFetchContext</node>
+    <node x="3400.0" y="26122.0">com.orientechnologies.orient.core.storage.ORecordMetadata</node>
+    <node x="12939.0" y="26122.0">com.orientechnologies.orient.core.storage.ORecordLockManager</node>
+    <node x="13756.0" y="26122.0">com.orientechnologies.orient.core.serialization.serializer.stream.OStreamSerializerFactory</node>
+    <node x="17704.0" y="26122.0">com.orientechnologies.orient.core.db.tool.ODatabaseImportException</node>
+    <node x="2154.8557692307695" y="24019.0">com.orientechnologies.orient.core.storage.impl.local.paginated.wal.OOperationUnitRecord</node>
+    <node x="13985.0" y="24558.0">com.orientechnologies.orient.core.cache.ODefaultCache</node>
+    <node x="15268.0" y="26122.0">com.orientechnologies.orient.core.exception.OSerializationException</node>
+    <node x="4037.75" y="9403.0">com.orientechnologies.orient.core.db.record.ODatabaseFlat</node>
+    <node x="0.0" y="23027.0">com.orientechnologies.orient.core.index.sbtreebonsai.local.OSBTreeBonsaiBucket</node>
+    <node x="22542.25" y="25151.5">com.orientechnologies.orient.core.fetch.json.OJSONFetchListener</node>
+    <node x="16942.619444444445" y="17640.0">com.orientechnologies.orient.core.storage.impl.local.paginated.OPaginatedCluster</node>
+    <node x="21947.25" y="25192.5">com.orientechnologies.orient.core.config.OStorageDataHoleConfiguration</node>
+    <node x="25589.0" y="25885.0">com.orientechnologies.orient.core.command.OCommandExecutorNotFoundException</node>
+    <node x="3148.81511111111" y="12191.5">com.orientechnologies.orient.core.db.record.ORecordLazyMultiValue</node>
+    <node x="3877.0" y="25926.0">com.orientechnologies.orient.core.serialization.serializer.string.OStringSerializerAnyStreamable</node>
+    <node x="6199.25" y="7193.5">com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx</node>
+    <node x="578.5" y="22519.0">com.orientechnologies.orient.core.index.sbtreebonsai.local.OBonsaiBucketAbstract</node>
+    <node x="11654.0" y="26122.0">com.orientechnologies.orient.core.OrientShutdownHook</node>
+    <node x="6711.513888888888" y="728.0">com.orientechnologies.orient.core.db.OUserObject2RecordHandler</node>
+    <node x="7683.860119047619" y="19189.0">com.orientechnologies.orient.core.metadata.function.OFunctionLibraryImpl</node>
+    <node x="14667.119444444445" y="16622.0">com.orientechnologies.orient.core.storage.OCluster</node>
+    <node x="17837.0" y="25788.0">com.orientechnologies.orient.core.storage.impl.local.paginated.wal.OOperationUnitId</node>
+    <node x="7746.25" y="21579.0">com.orientechnologies.orient.core.storage.impl.local.OSegment</node>
+    <node x="15467.0" y="26122.0">com.orientechnologies.orient.core.exception.OGraphException</node>
+    <node x="936.0" y="25072.0">com.orientechnologies.orient.core.command.traverse.OTraverse</node>
+    <node x="2613.0" y="25788.0">com.orientechnologies.orient.core.index.hashindex.local.cache.OCacheEntry</node>
+    <node x="23279.75" y="24954.0">com.orientechnologies.orient.core.index.OIndexFactory</node>
+    <node x="6042.0" y="24638.0">com.orientechnologies.orient.core.processor.block.OIfBlock</node>
+    <node x="11006.0" y="26122.0">com.orientechnologies.orient.core.command.OCommandResultListener</node>
+    <node x="16688.5" y="24259.0">com.orientechnologies.orient.core.fetch.remote.ORemoteFetchContext</node>
+    <node x="623.0" y="14499.0">com.orientechnologies.orient.core.type.tree.OMVRBTreeDatabaseLazySave</node>
+    <node x="4244.0" y="25151.0">com.orientechnologies.orient.core.config.OStorageEHClusterConfiguration</node>
+    <node x="11366.25" y="24954.0">com.orientechnologies.orient.core.command.script.OScriptManager</node>
+    <node x="22277.5" y="24954.0">com.orientechnologies.orient.core.fetch.OFetchListener</node>
+    <node x="18858.654861111114" y="16991.5">com.orientechnologies.orient.core.storage.impl.local.paginated.base.ODurableComponent</node>
+    <node x="3628.0" y="26122.0">com.orientechnologies.orient.core.metadata.function.OFunctionUtilWrapper</node>
+    <node x="4051.0" y="26122.0">com.orientechnologies.orient.core.db.record.OMultiValueChangeTimeLine</node>
+    <node x="17304.25" y="25269.0">com.orientechnologies.orient.core.engine.local.OEngineLocal</node>
+    <node x="1843.5" y="22218.0">com.orientechnologies.orient.core.index.sbtree.local.OSBTreeBucket</node>
+    <node x="4127.955333333335" y="12202.0">com.orientechnologies.orient.core.db.record.ORecordTrackedList</node>
+    <node x="7310.85" y="14559.5">com.orientechnologies.orient.core.query.OQueryAbstract</node>
+    <node x="17001.75" y="24954.0">com.orientechnologies.orient.core.engine.OEngine</node>
+    <node x="0.0" y="26122.0">com.orientechnologies.orient.core.exception.OQueryParsingException</node>
+    <node x="1465.5138888888878" y="5244.0">com.orientechnologies.orient.core.storage.impl.local.OStorageLocalAbstract</node>
+    <node x="12654.25" y="24954.0">com.orientechnologies.orient.core.exception.OConcurrentModificationException</node>
+    <node x="7166.0" y="26122.0">com.orientechnologies.orient.core.index.hashindex.local.cache.WriteGroup</node>
+    <node x="14190.25" y="25251.0">com.orientechnologies.orient.core.command.traverse.OTraverseMultiValueBreadthFirstProcess</node>
+    <node x="8251.0" y="26122.0">com.orientechnologies.orient.core.serialization.serializer.record.OSerializationThreadLocal</node>
+    <node x="17130.0" y="25788.0">com.orientechnologies.orient.core.index.hashindex.local.cache.LRUEntry</node>
+    <node x="2309.25" y="17241.0">com.orientechnologies.orient.core.metadata.schema.OProperty</node>
+    <node x="24225.571428571428" y="21857.0">com.orientechnologies.orient.core.command.OBasicCommandContext</node>
+    <node x="23928.5" y="24079.0">com.orientechnologies.orient.core.serialization.serializer.stream.OStreamSerializerOldRIDContainer</node>
+    <node x="24332.071428571428" y="22416.0">com.orientechnologies.orient.core.command.traverse.OTraverseContext</node>
+    <node x="20855.654861111114" y="17052.5">com.orientechnologies.orient.core.index.sbtree.OTreeInternal</node>
+    <node x="4285.0" y="21579.0">com.orientechnologies.orient.core.index.hashindex.local.cache.ODiskCache</node>
+    <node x="17914.0" y="26122.0">com.orientechnologies.orient.core.db.tool.ODatabaseExportException</node>
+    <node x="15304.619444444446" y="17750.0">com.orientechnologies.orient.core.storage.impl.local.OClusterLocal</node>
+    <node x="12735.376666666667" y="11861.0">com.orientechnologies.orient.core.type.tree.provider.OMVRBTreeEntryDataProviderAbstract</node>
+    <node x="5433.5" y="4794.5">com.orientechnologies.orient.core.db.ODatabaseRecordWrapperAbstract</node>
+    <node x="18929.5" y="23898.0">com.orientechnologies.orient.core.type.tree.OMVRBTreeEntryPersistent</node>
+    <node x="23460.25" y="25072.0">com.orientechnologies.orient.core.index.ODefaultIndexFactory</node>
+    <node x="18514.0" y="26122.0">com.orientechnologies.orient.core.annotation.OAfterDeserialization</node>
+    <node x="8672.625198412698" y="17381.0">com.orientechnologies.orient.core.index.OIndexDefinition</node>
+    <node x="7365.860119047619" y="19209.5">com.orientechnologies.orient.core.metadata.function.OFunctionLibraryProxy</node>
+    <node x="2053.731777777778" y="14848.0">com.orientechnologies.orient.core.record.impl.ODocument</node>
+    <node x="12642.0" y="26122.0">com.orientechnologies.orient.core.tx.OTxListener</node>
+    <node x="8299.205333333335" y="12041.5">com.orientechnologies.orient.core.storage.OPhysicalPosition</node>
+    <node x="6930.25" y="24954.0">com.orientechnologies.orient.core.serialization.OBinaryProtocol</node>
+    <node x="7953.0" y="26122.0">com.orientechnologies.orient.core.storage.impl.local.paginated.wal.OPaginatedClusterFactory</node>
+    <node x="13129.626666666667" y="13360.5">com.orientechnologies.orient.core.type.tree.provider.OMVRBTreeMapEntryProvider</node>
+    <node x="720.5" y="26219.0">com.orientechnologies.orient.core.index.hashindex.local.cache.OBlockedPageException</node>
+    <node x="21935.25" y="22174.0">com.orientechnologies.orient.core.serialization.serializer.record.string.ORecordSerializerJSON</node>
+    <node x="12064.046296296296" y="4147.5">com.orientechnologies.orient.core.index.OIndexRemoteMultiValue</node>
+    <node x="13489.0" y="26122.0">com.orientechnologies.orient.core.db.ODatabaseThreadLocalFactory</node>
+    <node x="717.0" y="26122.0">com.orientechnologies.orient.core.exception.OStorageException</node>
+    <node x="9009.626666666667" y="12071.0">com.orientechnologies.orient.core.db.record.ORecordOperation</node>
+    <node x="6116.5" y="23939.0">com.orientechnologies.orient.core.processor.block.OAbstractBlock</node>
+    <node x="5772.0" y="26122.0">com.orientechnologies.orient.core.db.OScenarioThreadLocal</node>
+    <node x="6236.763888888888" y="1896.5">com.orientechnologies.orient.core.db.ODatabaseComplex</node>
+    <node x="14783.0" y="25788.0">com.orientechnologies.orient.core.index.ODocumentFieldsHashSet</node>
+    <node x="11446.0" y="26122.0">com.orientechnologies.orient.core.command.script.OScriptInjection</node>
+    <node x="1629.0" y="25788.0">com.orientechnologies.orient.core.memory.OMemoryWatchDog</node>
+    <node x="6625.0" y="26122.0">com.orientechnologies.orient.core.metadata.function.ODatabaseFunctionFactory</node>
+    <node x="6147.891666666666" y="10725.0">com.orientechnologies.orient.core.db.record.ORecordElement</node>
+    <node x="22992.5" y="24099.0">com.orientechnologies.orient.core.serialization.serializer.stream.OStreamSerializerListRID</node>
+    <node x="15687.5" y="23801.0">com.orientechnologies.orient.core.id.ONodeId</node>
+    <node x="25610.5" y="25788.0">com.orientechnologies.orient.core.exception.OCommandExecutionException</node>
+    <node x="3963.4553333333356" y="10942.5">com.orientechnologies.orient.core.db.record.OTrackedList</node>
+    <node x="13254.0" y="25788.0">com.orientechnologies.orient.core.record.ORecordFactoryManager</node>
+    <node x="8395.0" y="24205.5">com.orientechnologies.orient.core.storage.fs.OMMapManagerNew</node>
+    <node x="10668.25" y="25091.0">com.orientechnologies.orient.core.db.ODatabasePoolAbstract</node>
+    <node x="8030.1" y="13530.0">com.orientechnologies.orient.core.type.tree.provider.OMVRBTreeMapProvider</node>
+    <node x="19220.0" y="26122.0">com.orientechnologies.orient.core.annotation.OAfterSerialization</node>
+    <node x="5870.0" y="24638.0">com.orientechnologies.orient.core.processor.block.OFunctionBlock</node>
+    <node x="5577.875198412698" y="17350.5">com.orientechnologies.orient.core.metadata.security.OUser</node>
+    <node x="2432.0000000000005" y="23801.0">com.orientechnologies.orient.core.storage.impl.local.paginated.wal.OWALRecord</node>
+    <node x="12714.75" y="25272.0">com.orientechnologies.orient.core.exception.OFastConcurrentModificationException</node>
+    <node x="2646.0" y="26122.0">com.orientechnologies.orient.core.db.object.OObjectLazyMultivalueElement</node>
+    <node x="14066.5" y="25788.0">com.orientechnologies.orient.core.index.hashindex.local.OHashFunction</node>
+    <node x="15865.0" y="26122.0">com.orientechnologies.orient.core.exception.OConfigurationException</node>
+    <node x="18466.25" y="21579.0">com.orientechnologies.orient.core.iterator.OIdentifiableIterator</node>
+    <node x="1525.0" y="26122.0">com.orientechnologies.orient.core.iterator.OEmptyIterator</node>
+    <node x="8317.955333333335" y="15618.0">com.orientechnologies.orient.core.command.script.OCommandScript</node>
+    <node x="22120.75" y="21579.0">com.orientechnologies.orient.core.serialization.serializer.record.ORecordSerializer</node>
+    <node x="2164.0000000000005" y="24288.0">com.orientechnologies.orient.core.storage.impl.local.paginated.wal.OAbstractPageWALRecord</node>
+    <node x="9116.0" y="23801.0">com.orientechnologies.orient.core.storage.impl.local.paginated.wal.OWriteAheadLog</node>
+    <node x="5088.0" y="26122.0">com.orientechnologies.orient.core.storage.impl.local.TestSimulateError</node>
+    <node x="97.51388888888778" y="4914.0">com.orientechnologies.orient.core.storage.impl.memory.OStorageMemory</node>
+    <node x="20916.25" y="24954.0">com.orientechnologies.orient.core.security.OSecurityManager</node>
+    <node x="20485.5" y="24249.0">com.orientechnologies.orient.core.serialization.serializer.stream.OStreamSerializerInteger</node>
+    <node x="540.2386363636351" y="117.0">com.orientechnologies.orient.core.storage.OStorage</node>
+    <node x="22133.5" y="24249.0">com.orientechnologies.orient.core.serialization.serializer.stream.OStreamSerializerAnyRuntime</node>
+    <node x="10764.0" y="26122.0">com.orientechnologies.orient.core.db.object.OLazyObjectMapInterface</node>
+    <node x="6375.220333333336" y="12222.0">com.orientechnologies.orient.core.db.record.ORecordLazyListener</node>
+    <node x="16860.0" y="26122.0">com.orientechnologies.orient.core.util.OHostInfo</node>
+    <node x="8633.473555555558" y="13711.0">com.orientechnologies.orient.core.command.OCommandRequestText</node>
+    <node x="16740.0" y="25788.0">com.orientechnologies.orient.core.index.OIndexDefinitionFactory</node>
+    <node x="8063.860119047619" y="19249.5">com.orientechnologies.orient.core.index.OAbstractIndexDefinition</node>
+    <node x="5610.1" y="13330.0">com.orientechnologies.orient.core.db.record.ORecordLazySet</node>
+    <node x="1806.0000000000002" y="24318.0">com.orientechnologies.orient.core.storage.impl.local.paginated.wal.OAtomicUnitEndRecord</node>
+    <node x="17034.0" y="26122.0">com.orientechnologies.orient.core.iterator.object.OObjectIteratorClusterInterface</node>
+    <node x="5610.25" y="25243.0">com.orientechnologies.orient.core.id.OClusterPositionLong</node>
+    <node x="12347.046296296296" y="4147.5">com.orientechnologies.orient.core.index.OIndexRemoteOneValue</node>
+    <node x="8642.2501984127" y="21027.0">com.orientechnologies.orient.core.index.OAbstractIndexDefinitionMultiValue</node>
+    <node x="4000.6251984126984" y="16622.0">com.orientechnologies.orient.core.type.ODocumentWrapper</node>
+    <node x="2530.8557692307695" y="23989.0">com.orientechnologies.orient.core.storage.impl.local.paginated.wal.ODirtyPagesRecord</node>
+    <node x="0.0" y="23801.0">com.orientechnologies.orient.core.serialization.serializer.OStringSerializerHelper</node>
+    <node x="916.0" y="26122.0">com.orientechnologies.orient.core.index.ONullOutputListener</node>
+    <node x="25858.0" y="25788.0">com.orientechnologies.orient.core.cache.OCacheLevelOneLocator</node>
+    <node x="3792.941919191919" y="3155.0">com.orientechnologies.orient.core.db.ODatabaseWrapperAbstract</node>
+    <node x="11335.0" y="24430.0">com.orientechnologies.orient.core.index.hashindex.local.OHashIndexTreeStateStore</node>
+    <node x="22688.571428571428" y="22137.0">com.orientechnologies.orient.core.version.OSimpleVersion</node>
+    <node x="457.7638888888878" y="2297.0">com.orientechnologies.orient.core.storage.OStorageProxy</node>
+    <node x="21618.0" y="25788.0">com.orientechnologies.orient.core.db.ODatabaseRecordThreadLocal</node>
+    <node x="24992.0" y="25895.0">com.orientechnologies.orient.core.exception.OAllCacheEntriesAreUsedException</node>
+    <node x="26242.25" y="25153.0">com.orientechnologies.orient.core.storage.ORawBuffer</node>
+    <node x="20385.25" y="24954.0">com.orientechnologies.orient.core.serialization.serializer.binary.impl.OLinkSerializer</node>
+    <node x="10184.0" y="25788.0">com.orientechnologies.orient.core.dictionary.ODictionary</node>
+    <node x="6542.0" y="25788.0">com.orientechnologies.orient.core.db.record.OMultiValueChangeEvent</node>
+    <node x="24692.5" y="24249.0">com.orientechnologies.orient.core.serialization.serializer.stream.OStreamSerializerRecord</node>
+    <node x="7102.0" y="24638.0">com.orientechnologies.orient.core.processor.block.OScriptBlock</node>
+    <node x="13994.0" y="26122.0">com.orientechnologies.orient.core.config.OConfigurationChangeCallback</node>
+    <node x="12229.869444444445" y="17580.0">com.orientechnologies.orient.core.storage.fs.OAbstractFile</node>
+    <node x="19973.5" y="24099.0">com.orientechnologies.orient.core.serialization.serializer.binary.impl.index.OCompositeKeySerializer</node>
+    <node x="13713.25" y="25788.0">com.orientechnologies.orient.core.collate.OCollate</node>
+    <node x="18636.0" y="22977.0">com.orientechnologies.orient.core.iterator.ORecordIteratorClass</node>
+    <node x="5303.5" y="22416.0">com.orientechnologies.orient.core.tx.OTransactionRealAbstract</node>
+    <node x="14002.25" y="25291.0">com.orientechnologies.orient.core.command.traverse.OTraverseFieldProcess</node>
+    <node x="14713.25" y="25281.0">com.orientechnologies.orient.core.command.traverse.OTraverseRecordProcess</node>
+    <node x="1764.0" y="25232.0">com.orientechnologies.orient.core.metadata.OMetadataDefault</node>
+    <node x="0.0" y="24954.0">com.orientechnologies.orient.core.serialization.serializer.OJSONWriter</node>
+    <node x="8545.0" y="26122.0">com.orientechnologies.orient.core.command.script.OScriptOrientWrapper</node>
+    <node x="9647.0" y="26122.0">com.orientechnologies.orient.core.serialization.serializer.record.OSerializableRecordPositional</node>
+    <node x="14998.25" y="24954.0">com.orientechnologies.orient.core.storage.fs.OMMapBufferEntry</node>
+    <node x="23871.25" y="24954.0">com.orientechnologies.orient.core.serialization.serializer.object.OObjectSerializerHelperInterface</node>
+    <node x="19308.25" y="24954.0">com.orientechnologies.orient.core.serialization.serializer.binary.impl.index.OSimpleKeySerializer</node>
+    <node x="2337.446969696968" y="2287.0">com.orientechnologies.orient.core.storage.OAutoshardedStorage</node>
+    <node x="22239.571428571428" y="21836.0">com.orientechnologies.orient.core.serialization.serializer.record.string.ORecordSerializerDocument2Binary</node>
+    <node x="4938.0" y="25945.5">com.orientechnologies.orient.core.intent.OIntentMassiveRead</node>
+    <node x="14205.626666666667" y="12061.0">com.orientechnologies.orient.core.id.ORID</node>
+    <node x="5968.860119047619" y="19019.5">com.orientechnologies.orient.core.index.OIndexManagerProxy</node>
+    <node x="9285.0" y="26122.0">com.orientechnologies.orient.core.serialization.serializer.object.OObjectSerializer</node>
+    <node x="1796.519230769231" y="24019.0">com.orientechnologies.orient.core.storage.impl.local.paginated.wal.OFuzzyCheckpointEndRecord</node>
+    <node x="3080.44011111111" y="11153.5">com.orientechnologies.orient.core.db.record.ODetachable</node>
+    <node x="17417.25" y="22337.0">com.orientechnologies.orient.core.index.engine.OMVRBTreeIndexEngine</node>
+    <node x="24644.25" y="24954.0">com.orientechnologies.orient.core.storage.impl.local.eh.OPhysicalPositionSerializer</node>
+    <node x="14431.369444444445" y="18160.0">com.orientechnologies.orient.core.storage.impl.memory.OClusterMemory</node>
+    <node x="4570.0" y="25926.0">com.orientechnologies.orient.core.serialization.serializer.string.OStringSerializerAnyRuntime</node>
+    <node x="2127.0" y="6573.0">com.orientechnologies.orient.core.storage.impl.local.OStorageLocal</node>
+    <node x="18871.0" y="26122.0">com.orientechnologies.orient.core.annotation.ODocumentInstance</node>
+    <node x="574.0" y="13721.0">com.orientechnologies.orient.core.type.tree.OMVRBTreeStorage</node>
+    <node x="2696.0" y="24318.0">com.orientechnologies.orient.core.storage.impl.local.paginated.wal.OAtomicUnitStartRecord</node>
+    <node x="5484.0" y="23035.0">com.orientechnologies.orient.core.tx.OTransactionOptimistic</node>
+    <node x="9407.92866666667" y="13701.0">com.orientechnologies.orient.core.record.ORecordStringable</node>
+    <node x="11593.0" y="24240.0">com.orientechnologies.orient.core.storage.impl.local.ODataLocalHole</node>
+    <node x="7404.0" y="25788.0">com.orientechnologies.orient.core.db.record.OLazyRecordMultiIterator</node>
+    <node x="23777.0" y="25788.0">com.orientechnologies.orient.core.index.hashindex.local.cache.OPageDataVerificationError</node>
+    <node x="17943.5" y="23801.0">com.orientechnologies.orient.core.serialization.serializer.OJSONReader</node>
+    <node x="6199.513888888888" y="3705.5">com.orientechnologies.orient.core.db.record.ODatabaseRecord</node>
+    <node x="1374.5" y="22388.0">com.orientechnologies.orient.core.storage.impl.local.paginated.OClusterPositionMapBucket</node>
+    <node x="907.4999999999999" y="22418.0">com.orientechnologies.orient.core.index.sbtree.local.OSBTreeValuePage</node>
+    <node x="6214.0" y="24638.0">com.orientechnologies.orient.core.processor.block.OIterateBlock</node>
+    <node x="20473.25" y="22318.0">com.orientechnologies.orient.core.db.tool.ODatabaseImport</node>
+    <node x="18209.25" y="24954.0">com.orientechnologies.orient.core.storage.impl.local.paginated.wal.OWALPage</node>
+    <node x="9829.215277777777" y="0.0">com.orientechnologies.orient.core.index.OIndex</node>
+    <node x="13143.869444444445" y="19419.0">com.orientechnologies.orient.core.storage.fs.OFileMMap</node>
+    <node x="7715.25" y="25352.5">com.orientechnologies.orient.core.cache.OLevel2RecordCache</node>
+    <node x="8637.215277777777" y="5196.0">com.orientechnologies.orient.core.index.OIndexMultiValues</node>
+    <node x="0.0" y="11541.0">com.orientechnologies.orient.core.type.tree.OMVRBTreePersistent</node>
+    <node x="19327.5" y="23801.0">com.orientechnologies.orient.core.type.tree.provider.OIdentityChangedListener</node>
+    <node x="6315.625" y="8512.0">com.orientechnologies.orient.core.db.graph.OGraphDatabase</node>
+    <node x="16920.25" y="25289.0">com.orientechnologies.orient.core.engine.local.OEngineLocalPaginated</node>
+    <node x="14810.869444444445" y="19439.0">com.orientechnologies.orient.core.storage.impl.memory.OClusterMemoryArrayList</node>
+    <node x="14482.0" y="25885.0">com.orientechnologies.orient.core.cache.OCacheLevelTwoLocatorLocal</node>
+    <node x="3551.75" y="25509.0">com.orientechnologies.orient.core.config.OStorageDataConfiguration</node>
+    <node x="24504.75" y="25788.0">com.orientechnologies.orient.core.exception.OTransactionException</node>
+    <node x="21379.0" y="25865.0">com.orientechnologies.orient.core.exception.OSecurityAccessException</node>
+    <node x="17493.0" y="26122.0">com.orientechnologies.orient.core.storage.impl.local.paginated.wal.OWALPageBrokenException</node>
+    <node x="820.0" y="25788.0">com.orientechnologies.orient.core.storage.OClusterFactory</node>
+    <node x="4239.0" y="25788.0">com.orientechnologies.orient.core.serialization.serializer.string.OStringSerializer</node>
+    <node x="12636.5" y="21748.0">com.orientechnologies.orient.core.hook.ORecordHookAbstract</node>
+    <node x="14464.25" y="25281.0">com.orientechnologies.orient.core.command.traverse.OTraverseRecordSetProcess</node>
+    <node x="7643.0" y="26122.0">com.orientechnologies.orient.core.serialization.serializer.record.OSerializationSetThreadLocal</node>
+    <node x="1124.0" y="25788.0">com.orientechnologies.orient.core.processor.OProcessor</node>
+    <node x="3155.0" y="26122.0">com.orientechnologies.orient.core.tx.OTransactionIndexChangesPerKey</node>
+    <node x="8754.125198412698" y="16773.0">com.orientechnologies.orient.core.index.OIndexCallback</node>
+    <node x="6037.015222222224" y="10992.5">com.orientechnologies.orient.core.db.record.ORecordTrackedSet</node>
+    <node x="19029.5" y="22628.0">com.orientechnologies.orient.core.iterator.ORecordIteratorCluster</node>
+    <node x="24818.0" y="25885.0">com.orientechnologies.orient.core.exception.OMemoryLockException</node>
+    <node x="3562.0" y="25111.0">com.orientechnologies.orient.core.config.OStorageSegmentConfiguration</node>
+    <node x="14389.0" y="25788.0">com.orientechnologies.orient.core.cache.OCacheLevelTwoLocator</node>
+    <node x="7591.0" y="24115.0">com.orientechnologies.orient.core.storage.fs.OMMapManagerOld</node>
+    <node x="9843.875" y="5814.5">com.orientechnologies.orient.core.index.OIndexDictionary</node>
+    <node x="1231.0" y="25885.0">com.orientechnologies.orient.core.processor.OComposableProcessor</node>
+    <node x="25858.0" y="25885.0">com.orientechnologies.orient.core.cache.OCacheLevelOneLocatorImpl</node>
+    <node x="2371.0" y="26122.0">com.orientechnologies.orient.core.query.OQueryContext</node>
+    <node x="13709.5" y="24159.0">com.orientechnologies.orient.core.cache.OAbstractMapCache</node>
+    <node x="24929.5" y="23801.0">com.orientechnologies.orient.core.index.hashindex.local.OHashIndexBucket</node>
+    <node x="8352.25" y="21579.0">com.orientechnologies.orient.core.index.hashindex.local.OLocalHashTable</node>
+    <node x="15592.25" y="21579.0">com.orientechnologies.orient.core.index.OIndexEngine</node>
+    <node x="6958.3317777777775" y="11073.0">com.orientechnologies.orient.core.command.OCommandRequest</node>
+    <node x="434.0" y="25788.0">com.orientechnologies.orient.core.metadata.security.ODatabaseSecurityResources</node>
+    <node x="6075.0" y="25788.0">com.orientechnologies.orient.core.id.OClusterPositionFactory</node>
+    <node x="25130.119444444445" y="18421.0">com.orientechnologies.orient.core.command.script.OScriptGraphDatabaseWrapper</node>
+    <node x="1812.0" y="26122.0">com.orientechnologies.orient.core.entity.OClassDictionary</node>
+    <node x="16263.0" y="26122.0">com.orientechnologies.orient.core.iterator.OIterationException</node>
+    <node x="5785.0" y="10471.0">com.orientechnologies.orient.core.db.document.ODatabaseDocumentTxPooled</node>
+    <node x="11266.75" y="1158.0">com.orientechnologies.orient.core.index.OIndexRemote</node>
+    <node x="3386.5" y="4594.0">com.orientechnologies.orient.core.db.record.ODatabaseRecordAbstract</node>
+    <node x="26248.25" y="24954.0">com.orientechnologies.orient.core.type.OBuffer</node>
+    <node x="18827.619444444445" y="17950.0">com.orientechnologies.orient.core.index.sbtreebonsai.local.OSBTreeBonsai</node>
+    <node x="18124.0" y="26122.0">com.orientechnologies.orient.core.index.sbtreebonsai.local.OBonsaiAllocationManager</node>
+    <node x="10731.373444444445" y="14429.0">com.orientechnologies.orient.core.record.ORecordSchemaAwareAbstract</node>
+    <node x="12881.80366666667" y="10745.5">com.orientechnologies.orient.core.db.record.OIdentifiable</node>
+    <node x="3882.0" y="13380.0">com.orientechnologies.orient.core.db.record.ridset.sbtree.OSBTreeRIDSet</node>
+    <node x="5593.0" y="25788.0">com.orientechnologies.orient.core.entity.OEntityManagerClassHandler</node>
+    <node x="4478.25" y="25559.5">com.orientechnologies.orient.core.config.OStorageMemoryClusterConfiguration</node>
+    <node x="24122.0" y="25788.0">com.orientechnologies.orient.core.index.hashindex.local.OHashIndexFileLevelMetadata</node>
+    <node x="10858.75" y="24954.0">com.orientechnologies.orient.core.OOrientListener</node>
+    <node x="2256.0" y="13290.0">com.orientechnologies.orient.core.db.record.ORecordLazyList</node>
+    <node x="7139.321969696968" y="3816.0">com.orientechnologies.orient.core.db.ODatabaseSchemaAware</node>
+    <node x="14653.0" y="26122.0">com.orientechnologies.orient.core.storage.ORecordCallback</node>
+    <node x="4006.0" y="7073.0">com.orientechnologies.orient.core.db.record.ODatabaseRecordTx</node>
+    <node x="1290.0000000000002" y="24368.0">com.orientechnologies.orient.core.storage.impl.local.paginated.wal.OFuzzyCheckpointStartRecord</node>
+    <node x="18546.5" y="22538.0">com.orientechnologies.orient.core.iterator.ORecordIteratorClusters</node>
+    <node x="19560.25" y="22538.0">com.orientechnologies.orient.core.db.tool.ODatabaseCompare</node>
+    <node x="7296.205333333335" y="11901.0">com.orientechnologies.orient.core.type.tree.provider.OMVRBTreeProviderAbstract</node>
+    <node x="12243.0" y="26122.0">com.orientechnologies.orient.core.db.record.OMultiValueChangeListener</node>
+    <node x="11277.0" y="25788.0">com.orientechnologies.orient.core.index.sbtreebonsai.local.OBonsaiBucketPointer</node>
+    <node x="20697.5" y="24249.0">com.orientechnologies.orient.core.serialization.serializer.stream.OStreamSerializerAnyStatic</node>
+    <node x="4914.860119047619" y="18819.0">com.orientechnologies.orient.core.metadata.schema.OSchemaShared</node>
+    <node x="7791.750198412698" y="17471.0">com.orientechnologies.orient.core.metadata.function.OFunctionLibrary</node>
+    <node x="3309.0" y="13500.0">com.orientechnologies.orient.core.db.record.ORecordLazyMap</node>
+    <node x="11270.67866666667" y="10913.0">com.orientechnologies.orient.core.record.ORecord</node>
+    <node x="6878.0" y="22007.5">com.orientechnologies.orient.core.storage.ODataSegment</node>
+    <node x="14266.0" y="25915.0">com.orientechnologies.orient.core.cache.OCacheLevelTwoLocatorRemote</node>
+    <node x="14697.5" y="23801.0">com.orientechnologies.orient.core.metadata.schema.OType</node>
+    <node x="8404.2501984127" y="21165.0">com.orientechnologies.orient.core.index.OPropertyMapIndexDefinition</node>
+    <node x="6711.580333333335" y="12202.0">com.orientechnologies.orient.core.query.OQuery</node>
+    <node x="5438.4" y="12212.0">com.orientechnologies.orient.core.serialization.serializer.string.OStringBuilderSerializable</node>
+    <node x="24910.571428571428" y="21579.0">com.orientechnologies.orient.core.index.hashindex.local.cache.OWOWCache</node>
+    <node x="8394.625" y="3317.0">com.orientechnologies.orient.core.index.OIndexAbstract</node>
+    <node x="14862.0" y="26122.0">com.orientechnologies.orient.core.storage.impl.local.paginated.wal.OClusterAwareWALRecord</node>
+    <node x="9581.715277777777" y="5236.0">com.orientechnologies.orient.core.index.OIndexOneValue</node>
+    <node x="9363.42866666667" y="14439.0">com.orientechnologies.orient.core.record.impl.ORecordFlat</node>
+    <node x="11232.0" y="26122.0">com.orientechnologies.orient.core.config.OStorageEntryConfiguration</node>
+    <node x="24366.571428571428" y="21579.0">com.orientechnologies.orient.core.command.OCommandContext</node>
+    <node x="2998.5" y="22128.0">com.orientechnologies.orient.core.storage.impl.local.paginated.OClusterPage</node>
+    <node x="9438.0" y="25906.0">com.orientechnologies.orient.core.collate.ODefaultCollateFactory</node>
+    <node x="4488.75" y="9453.0">com.orientechnologies.orient.core.db.record.ODatabaseBinary</node>
+    <node x="17061.75" y="25132.0">com.orientechnologies.orient.core.engine.OEngineAbstract</node>
+    <node x="8262.5" y="23801.0">com.orientechnologies.orient.core.storage.fs.OMMapManager</node>
+    <node x="17112.25" y="25289.0">com.orientechnologies.orient.core.engine.memory.OEngineMemory</node>
+    <node x="7416.0" y="26122.0">com.orientechnologies.orient.core.db.graph.OGraphDatabaseMigration</node>
+    <node x="25239.0" y="25788.0">com.orientechnologies.orient.core.db.ODataSegmentStrategy</node>
+    <node x="1006.0" y="13250.0">com.orientechnologies.orient.core.type.tree.OMVRBTreeRID</node>
+    <node x="19365.0" y="25788.0">com.orientechnologies.orient.core.query.OQueryRuntimeValueMulti</node>
+    <node x="7.5" y="17021.0">com.orientechnologies.orient.core.metadata.schema.OClass</node>
+    <node x="12140.5" y="23801.0">com.orientechnologies.orient.core.storage.impl.local.OSingleFileSegment</node>
+    <node x="860.9999999999999" y="23267.0">com.orientechnologies.orient.core.index.sbtreebonsai.local.OSysBucket</node>
+    <node x="15592.25" y="22417.5">com.orientechnologies.orient.core.index.engine.ORemoteIndexEngine</node>
+    <node x="8310.5001984127" y="20508.0">com.orientechnologies.orient.core.index.ORuntimeKeyIndexDefinition</node>
+    <node x="16661.0" y="26122.0">com.orientechnologies.orient.core.processor.OProcessException</node>
+    <node x="23152.571428571428" y="21579.0">com.orientechnologies.orient.core.version.ORecordVersion</node>
+    <node x="1328.5000000000002" y="24009.0">com.orientechnologies.orient.core.storage.impl.local.paginated.wal.OAbstractCheckPointStartRecord</node>
+    <node x="2775.0" y="25551.0">com.orientechnologies.orient.core.command.script.OCommandExecutorScript</node>
+    <node x="21413.0" y="25788.0">com.orientechnologies.orient.core.exception.OSecurityException</node>
+    <node x="1250.0" y="24954.0">com.orientechnologies.orient.core.command.OCommand</node>
+    <node x="19046.0" y="26122.0">com.orientechnologies.orient.core.annotation.OBeforeSerialization</node>
+    <node x="12455.626666666667" y="13460.0">com.orientechnologies.orient.core.type.tree.provider.OMVRBTreeRIDEntryProvider</node>
+    <node x="17489.0" y="25788.0">com.orientechnologies.orient.core.storage.impl.local.OStorageVariableParser</node>
+    <node x="2670.5" y="22468.0">com.orientechnologies.orient.core.storage.impl.local.paginated.OPaginatedClusterState</node>
+    <node x="10522.0" y="26122.0">com.orientechnologies.orient.core.db.object.OLazyObjectListInterface</node>
+    <node x="17003.0" y="23801.0">com.orientechnologies.orient.core.fetch.OFetchContext</node>
+    <node x="10619.25" y="5356.5">com.orientechnologies.orient.core.index.OIndexTxAwareMultiValue</node>
+    <node x="9460.875" y="5824.5">com.orientechnologies.orient.core.index.OIndexUnique</node>
+    <node x="14142.869444444445" y="19449.0">com.orientechnologies.orient.core.storage.impl.memory.OClusterMemoryHashing</node>
+    <node x="4073.1251984126984" y="17441.0">com.orientechnologies.orient.core.type.ODocumentWrapperNoClass</node>
+    <node x="12246.0" y="24390.0">com.orientechnologies.orient.core.storage.impl.local.OClusterLocalHole</node>
+    <node x="10181.5001984127" y="17291.0">com.orientechnologies.orient.core.metadata.security.OSecurity</node>
+    <node x="6971.0" y="25788.0">com.orientechnologies.orient.core.config.OContextConfiguration</node>
+    <node x="3095.0" y="25111.0">com.orientechnologies.orient.core.config.OStoragePaginatedClusterConfiguration</node>
+    <node x="14050.0" y="25885.0">com.orientechnologies.orient.core.index.hashindex.local.OMurmurHash3HashFunction</node>
+    <node x="22609.75" y="23801.0">com.orientechnologies.orient.core.serialization.serializer.stream.OStreamSerializer</node>
+    <node x="13221.0" y="26122.0">com.orientechnologies.orient.core.command.OCommandDistributedReplicateRequest</node>
+    <node x="10920.869444444445" y="18929.0">com.orientechnologies.orient.core.metadata.security.OSecurityShared</node>
+    <node x="23411.571428571428" y="22077.0">com.orientechnologies.orient.core.version.ODistributedVersion</node>
+    <node x="2906.0" y="26122.0">com.orientechnologies.orient.core.serialization.serializer.stream.OStreamSerializerHelper</node>
+    <node x="8016.25" y="25313.0">com.orientechnologies.orient.core.cache.OLevel1RecordCache</node>
+    <node x="10652.25" y="22476.0">com.orientechnologies.orient.core.db.record.OClassTrigger</node>
+    <node x="4622.455333333335" y="10982.5">com.orientechnologies.orient.core.db.record.OTrackedMap</node>
+    <node x="2466.0" y="25551.0">com.orientechnologies.orient.core.command.script.OCommandExecutorFunction</node>
+    <node x="14229.0" y="26122.0">com.orientechnologies.orient.core.exception.ORecordNotFoundException</node>
+    <node x="12113.205333333335" y="15648.0">com.orientechnologies.orient.core.record.impl.ORecordBytesLazy</node>
+    <node x="10216.0" y="23801.0">com.orientechnologies.orient.core.serialization.OBase64Utils</node>
+    <node x="2674.238636363635" y="0.0">com.orientechnologies.orient.core.util.OBackupable</node>
+    <node x="12072.0" y="25788.0">com.orientechnologies.orient.core.command.OCommandGenericIterator</node>
+    <node x="8490.25" y="24954.0">com.orientechnologies.orient.core.schedule.OScheduler</node>
+    <node x="22780.5" y="24249.0">com.orientechnologies.orient.core.serialization.serializer.stream.OStreamSerializerLong</node>
+    <node x="8868.0" y="25788.0">com.orientechnologies.orient.core.db.ODatabaseFactory</node>
+    <node x="10241.25" y="5336.5">com.orientechnologies.orient.core.index.OIndexTxAwareOneValue</node>
+    <node x="16258.25" y="24954.0">com.orientechnologies.orient.core.entity.OEntityManager</node>
+    <node x="848.5" y="25946.0">com.orientechnologies.orient.core.storage.ODefaultClusterFactory</node>
+    <node x="8605.955333333335" y="15668.0">com.orientechnologies.orient.core.command.script.OCommandFunction</node>
+    <node x="19830.0" y="26122.0">com.orientechnologies.orient.core.annotation.OId</node>
+    <node x="13136.25" y="22716.5">com.orientechnologies.orient.core.metadata.function.OFunctionTrigger</node>
+    <node x="7519.750198412698" y="17501.0">com.orientechnologies.orient.core.db.record.OProxedResource</node>
+    <node x="10360.376666666667" y="13590.5">com.orientechnologies.orient.core.record.ORecordSchemaAware</node>
+    <node x="3774.725" y="10725.0">com.orientechnologies.orient.core.db.record.OTrackedMultiValue</node>
+    <node x="24917.0" y="25788.0">com.orientechnologies.orient.core.exception.ODatabaseException</node>
+    <node x="3323.0" y="23801.0">com.orientechnologies.orient.core.Orient</node>
+    <node x="2094.0" y="26122.0">com.orientechnologies.orient.core.OConstants</node>
+    <node x="10947.0" y="25788.0">com.orientechnologies.orient.core.storage.impl.local.paginated.wal.ODirtyPage</node>
+    <node x="22345.5" y="24189.0">com.orientechnologies.orient.core.serialization.serializer.stream.OStreamSerializerAnyStreamable</node>
+    <node x="9238.25" y="24954.0">com.orientechnologies.orient.core.db.record.ridset.sbtree.OIndexRIDContainer</node>
+    <node x="21660.571428571428" y="21696.0">com.orientechnologies.orient.core.serialization.serializer.record.string.ORecordSerializerStringAbstract</node>
+    <node x="18328.0" y="26122.0">com.orientechnologies.orient.core.annotation.OBeforeDeserialization</node>
+    <node x="14223.25" y="24954.0">com.orientechnologies.orient.core.command.OCommandProcess</node>
+    <node x="15666.0" y="26122.0">com.orientechnologies.orient.core.exception.OFetchException</node>
+    <node x="1607.0" y="21579.0">com.orientechnologies.orient.core.storage.impl.local.paginated.base.ODurablePage</node>
+    <node x="6348.0" y="26122.0">com.orientechnologies.orient.core.query.OQueryHelper</node>
+    <node x="21424.25" y="25152.0">com.orientechnologies.orient.core.config.OStorageTxConfiguration</node>
+    <node x="22471.571428571428" y="21856.0">com.orientechnologies.orient.core.serialization.serializer.record.ORecordSerializerRaw</node>
+    <node x="18774.0" y="25905.0">com.orientechnologies.orient.core.command.script.formatter.OSQLScriptFormatter</node>
+    <node x="5618.0" y="24598.0">com.orientechnologies.orient.core.processor.block.OExecuteBlock</node>
+    <node x="0.0" y="18189.0">com.orientechnologies.orient.core.metadata.schema.OClassImpl</node>
+    <node x="11833.0" y="26122.0">com.orientechnologies.orient.core.command.OCommandPredicate</node>
+    <node x="6770.0" y="24558.0">com.orientechnologies.orient.core.processor.block.OQueryBlock</node>
+    <node x="6630.860119047619" y="18959.5">com.orientechnologies.orient.core.metadata.schema.OSchemaProxy</node>
+    <node x="6582.1" y="13480.0">com.orientechnologies.orient.core.type.tree.provider.OMVRBTreeRIDProvider</node>
+    <node x="1223.7444444444445" y="17240.5">com.orientechnologies.orient.core.metadata.security.ORole</node>
+    <node x="19387.0" y="26122.0">com.orientechnologies.orient.core.index.sbtree.local.OSBTreeException</node>
+    <node x="4178.5" y="24954.0">com.orientechnologies.orient.core.config.OStorageClusterConfiguration</node>
+    <node x="6315.854563492065" y="20518.0">com.orientechnologies.orient.core.index.OSimpleKeyIndexDefinition</node>
+    <node x="4235.0" y="25926.0">com.orientechnologies.orient.core.serialization.serializer.string.OStringSerializerEmbedded</node>
+    <node x="7834.0" y="25788.0">com.orientechnologies.orient.core.iterator.OLazyWrapperIterator</node>
+    <node x="6600.875" y="10471.0">com.orientechnologies.orient.core.db.graph.OGraphDatabasePooled</node>
+    <node x="9622.869444444445" y="20659.0">com.orientechnologies.orient.core.index.OIndexDefinitionMultiValue</node>
+    <node x="25239.0" y="25885.0">com.orientechnologies.orient.core.db.ODefaultDataSegmentStrategy</node>
+    <node x="8851.5001984127" y="20428.0">com.orientechnologies.orient.core.index.OCompositeIndexDefinition</node>
+    <node x="8230.0" y="25788.0">com.orientechnologies.orient.core.command.OCommandManager</node>
+    <node x="721.0" y="13711.0">com.orientechnologies.orient.core.type.tree.OMVRBTreeDatabase</node>
+    <node x="2145.0" y="25788.0">com.orientechnologies.orient.core.storage.impl.local.paginated.wal.OPageChanges</node>
+    <node x="21507.25" y="22224.0">com.orientechnologies.orient.core.serialization.serializer.record.string.ORecordSerializerCSVAbstract</node>
+    <node x="2165.0000000000005" y="24607.0">com.orientechnologies.orient.core.storage.impl.local.paginated.wal.OUpdatePageRecord</node>
+    <node x="24591.0" y="25885.0">com.orientechnologies.orient.core.exception.OTransactionAbortedException</node>
+    <node x="10585.0" y="25788.0">com.orientechnologies.orient.core.storage.impl.local.paginated.OStorageTransaction</node>
+    <node x="22186.25" y="25151.0">com.orientechnologies.orient.core.fetch.remote.ORemoteFetchListener</node>
+    <node x="14565.25" y="22387.0">com.orientechnologies.orient.core.index.engine.OMemoryHashMapIndexEngine</node>
+    <node x="23254.25" y="25142.0">com.orientechnologies.orient.core.index.hashindex.local.OHashIndexFactory</node>
+    <node x="1224.0" y="26122.0">com.orientechnologies.orient.core.hook.OHookThreadLocal</node>
+    <node x="2589.0" y="24954.0">com.orientechnologies.orient.core.command.OCommandExecutor</node>
+    <node x="21657.75" y="24954.0">com.orientechnologies.orient.core.config.OStorageFileConfiguration</node>
+    <node x="22015.0" y="25788.0">com.orientechnologies.orient.core.storage.OStorageOperationResult</node>
+    <node x="13114.25" y="24954.0">com.orientechnologies.orient.core.storage.impl.local.paginated.OClusterPositionMap</node>
+    <node x="25201.25" y="24954.0">com.orientechnologies.orient.core.storage.impl.local.eh.OClusterPositionSerializer</node>
+    <node x="19057.0" y="25905.0">com.orientechnologies.orient.core.command.script.formatter.ORubyScriptFormatter</node>
+    <node x="22857.0" y="25788.0">com.orientechnologies.orient.core.tx.OTransactionIndexChanges</node>
+    <node x="12331.869444444445" y="19479.0">com.orientechnologies.orient.core.storage.fs.OFileClassic</node>
+    <node x="0.0" y="25788.0">com.orientechnologies.orient.core.metadata.function.OFunction</node>
+    <node x="13059.876666666667" y="11153.5">com.orientechnologies.orient.core.record.ORecordListener</node>
+    <node x="13428.623444444445" y="10913.0">com.orientechnologies.orient.core.type.tree.provider.OMVRBTreeEntryDataProvider</node>
+    <node x="13792.0" y="23801.0">com.orientechnologies.orient.core.cache.OCache</node>
+    <node x="21641.5" y="24109.0">com.orientechnologies.orient.core.serialization.serializer.stream.OStreamSerializerRID</node>
+    <node x="7274.0" y="24578.0">com.orientechnologies.orient.core.processor.block.OTableBlock</node>
+    <node x="14284.626666666667" y="14529.5">com.orientechnologies.orient.core.id.OImmutableRecordId</node>
+    <node x="14273.5" y="24179.5">com.orientechnologies.orient.core.cache.OEmptyCache</node>
+    <node x="20045.25" y="22568.0">com.orientechnologies.orient.core.db.tool.ODatabaseExport</node>
+    <node x="11435.25" y="22406.0">com.orientechnologies.orient.core.index.OClassIndexManager</node>
+    <node x="3914.75" y="20588.5">com.orientechnologies.orient.core.index.OIndexManagerRemote</node>
+    <node x="9045.375" y="440.5">com.orientechnologies.orient.core.db.ODatabaseListener</node>
+    <node x="10878.626666666667" y="13681.0">com.orientechnologies.orient.core.record.ORecordPositional</node>
+    <node x="14442.0" y="26122.0">com.orientechnologies.orient.core.command.OCommandOutputListener</node>
+    <node x="3851.0" y="25449.0">com.orientechnologies.orient.core.config.OStoragePhysicalClusterConfigurationLocal</node>
+    <node x="12400.25" y="22756.5">com.orientechnologies.orient.core.metadata.security.OUserTrigger</node>
+    <node x="18790.25" y="24954.0">com.orientechnologies.orient.core.index.hashindex.local.cache.LRUList</node>
+    <node x="3842.0" y="26122.0">com.orientechnologies.orient.core.command.script.OCommandScriptException</node>
+    <node x="24480.5" y="24249.0">com.orientechnologies.orient.core.serialization.serializer.stream.OStreamSerializerLiteral</node>
+    <node x="8418.80366666667" y="14509.0">com.orientechnologies.orient.core.command.OCommandRequestTextAbstract</node>
+    <node x="18176.0" y="25788.0">com.orientechnologies.orient.core.storage.OClusterEntryIterator</node>
+    <node x="12748.25" y="22736.5">com.orientechnologies.orient.core.metadata.security.ORestrictedAccessHook</node>
+    <node x="14014.626666666667" y="13380.0">com.orientechnologies.orient.core.id.ORecordId</node>
+    <node x="229.0" y="26122.0">com.orientechnologies.orient.core.db.ODatabasePoolEntry</node>
+    <node x="22262.0" y="25788.0">com.orientechnologies.orient.core.db.record.ridset.sbtree.OSBTreeCollectionManager</node>
+    <node x="6065.625" y="9422.5">com.orientechnologies.orient.core.db.ODatabasePooled</node>
+    <node x="16370.25" y="22347.0">com.orientechnologies.orient.core.index.engine.OLocalHashTableIndexEngine</node>
+    <node x="9245.312896825397" y="21276.0">com.orientechnologies.orient.core.index.OPropertyListIndexDefinition</node>
+    <node x="13661.0" y="24618.5">com.orientechnologies.orient.core.cache.OUnboundedWeakCache</node>
+    <node x="19553.0" y="26122.0">com.orientechnologies.orient.core.db.record.ridset.sbtree.OSBTreeRIDMap</node>
+    <node x="12651.369444444445" y="16622.0">com.orientechnologies.orient.core.storage.fs.OFile</node>
+    <node x="583.7638888888878" y="1996.0">com.orientechnologies.orient.core.storage.OStorageAbstract</node>
+    <node x="8589.875" y="5864.5">com.orientechnologies.orient.core.index.OIndexNotUnique</node>
+    <node x="7132.5" y="5354.5">com.orientechnologies.orient.core.db.object.ODatabaseObject</node>
+    <node x="10444.25" y="4147.0">com.orientechnologies.orient.core.index.OIndexTxAware</node>
+    <node x="1950.5" y="24954.0">com.orientechnologies.orient.core.metadata.OMetadata</node>
+    <node x="24090.25" y="25111.0">com.orientechnologies.orient.core.serialization.serializer.object.OObjectSerializerHelperDocument</node>
+    <node x="6091.875198412698" y="17281.0">com.orientechnologies.orient.core.metadata.schema.OSchema</node>
+    <node x="12476.0" y="25788.0">com.orientechnologies.orient.core.db.record.OLazyRecordIterator</node>
+    <node x="4714.0" y="26122.0">com.orientechnologies.orient.core.storage.fs.OMMapManagerLocator</node>
+    <node x="10284.25" y="22746.5">com.orientechnologies.orient.core.schedule.OSchedulerTrigger</node>
+    <node x="5745.5" y="21579.0">com.orientechnologies.orient.core.tx.OTransaction</node>
+    <node x="7114.5" y="22456.0">com.orientechnologies.orient.core.storage.impl.local.ODataLocal</node>
+    <node x="15853.0" y="25788.0">com.orientechnologies.orient.core.index.sbtree.OSBTreeMapEntryIterator</node>
+    <node x="7346.1" y="13500.0">com.orientechnologies.orient.core.command.OCommandRequestAbstract</node>
+    <node x="8214.0" y="24018.0">com.orientechnologies.orient.core.storage.fs.OMMapManagerAbstract</node>
+    <node x="19710.0" y="26122.0">com.orientechnologies.orient.core.annotation.OVersion</node>
+    <node x="9755.869444444445" y="19199.5">com.orientechnologies.orient.core.schedule.OSchedulerListenerProxy</node>
+    <node x="19823.25" y="24954.0">com.orientechnologies.orient.core.index.hashindex.local.cache.OCachePointer</node>
+    <node x="6386.0" y="24638.0">com.orientechnologies.orient.core.processor.block.OLetBlock</node>
+    <node x="2519.5" y="25192.0">com.orientechnologies.orient.core.command.OCommandExecutorAbstract</node>
+    <node x="11811.869444444445" y="19189.0">com.orientechnologies.orient.core.schedule.OSchedulerListenerImpl</node>
+    <node x="8732.0" y="26122.0">com.orientechnologies.orient.core.db.record.ORecordMultiValueHelper</node>
+    <node x="3833.0" y="18869.0">com.orientechnologies.orient.core.index.OIndexManagerAbstract</node>
+    <node x="15068.0" y="26122.0">com.orientechnologies.orient.core.annotation.OAccess</node>
+    <node x="621.2638888888878" y="3635.5">com.orientechnologies.orient.core.storage.OStorageEmbedded</node>
+    <node x="9761.0" y="25788.0">com.orientechnologies.orient.core.serialization.serializer.record.ORecordSerializerFactory</node>
+    <node x="11855.5" y="21697.0">com.orientechnologies.orient.core.hook.ODocumentHookAbstract</node>
+    <node x="9483.626666666667" y="11711.0">com.orientechnologies.orient.core.config.OStorageConfiguration</node>
+    <node x="8508.625198412698" y="19019.5">com.orientechnologies.orient.core.metadata.security.OSecurityProxy</node>
+    <node x="20158.619444444445" y="17970.0">com.orientechnologies.orient.core.index.sbtree.local.OSBTree</node>
+    <node x="5040.25" y="25233.0">com.orientechnologies.orient.core.id.OClusterPositionNodeId</node>
+    <node x="24392.0" y="25885.0">com.orientechnologies.orient.core.exception.OTransactionBlockedException</node>
+    <node x="9945.126666666667" y="13640.0">com.orientechnologies.orient.core.storage.impl.local.OStorageConfigurationSegment</node>
+    <node x="3503.0" y="25788.0">com.orientechnologies.orient.core.metadata.function.ODatabaseFunction</node>
+    <node x="6744.5" y="22756.0">com.orientechnologies.orient.core.storage.impl.memory.ODataSegmentMemory</node>
+    <node x="10301.25" y="5874.5">com.orientechnologies.orient.core.index.OIndexTxAwareDictionary</node>
+    <node x="7478.9567777777775" y="10993.0">com.orientechnologies.orient.core.type.tree.provider.OMVRBTreeProvider</node>
+    <node x="10315.25" y="25373.0">com.orientechnologies.orient.core.db.document.ODatabaseDocumentPool</node>
+    <node x="5095.5" y="25788.0">com.orientechnologies.orient.core.intent.OIntent</node>
+    <node x="23716.5" y="24249.0">com.orientechnologies.orient.core.serialization.serializer.stream.OStreamSerializerAnyRecord</node>
+    <node x="9476.0" y="25788.0">com.orientechnologies.orient.core.collate.OCollateFactory</node>
+    <node x="16455.75" y="25373.0">com.orientechnologies.orient.core.entity.OEntityManagerInternal</node>
+    <node x="4498.0" y="23801.0">com.orientechnologies.orient.core.serialization.OMemoryStream</node>
+    <node x="12499.5" y="21579.0">com.orientechnologies.orient.core.hook.ORecordHook</node>
+    <node x="18693.0" y="26122.0">com.orientechnologies.orient.core.exception.OValidationException</node>
+    <node x="6097.25" y="24954.0">com.orientechnologies.orient.core.record.impl.ODocumentHelper</node>
+    <node x="19788.0" y="25788.0">com.orientechnologies.orient.core.index.hashindex.local.OHashTreeNodeMetadata</node>
+    <node x="16064.0" y="26122.0">com.orientechnologies.orient.core.exception.OSchemaException</node>
+    <node x="8110.205333333335" y="12191.5">com.orientechnologies.orient.core.command.OCommandRequestInternal</node>
+    <node x="10099.869444444445" y="19029.5">com.orientechnologies.orient.core.metadata.security.OSecurityNull</node>
+    <node x="5368.25" y="24954.0">com.orientechnologies.orient.core.id.OClusterPosition</node>
+    <node x="3983.5" y="22197.0">com.orientechnologies.orient.core.index.hashindex.local.cache.OReadWriteDiskCache</node>
+    <node x="14233.25" y="25133.0">com.orientechnologies.orient.core.command.traverse.OTraverseAbstractProcess</node>
+    <node x="4713.25" y="25559.5">com.orientechnologies.orient.core.config.OStorageMemoryLinearHashingClusterConfiguration</node>
+    <node x="12599.0" y="24430.5">com.orientechnologies.orient.core.index.hashindex.local.OHashIndexBufferStore</node>
+    <node x="10039.0" y="24954.0">com.orientechnologies.orient.core.db.ODatabasePoolBase</node>
+    <node x="18774.0" y="25788.0">com.orientechnologies.orient.core.command.script.formatter.OScriptFormatter</node>
+    <node x="5433.0" y="26122.0">com.orientechnologies.orient.core.record.impl.ODocumentComparator</node>
+    <node x="15551.0" y="25788.0">com.orientechnologies.orient.core.storage.impl.local.paginated.wal.OLogSequenceNumber</node>
+    <node x="2960.0" y="24019.0">com.orientechnologies.orient.core.storage.impl.local.paginated.wal.OCheckpointEndRecord</node>
+    <node x="17268.0" y="26122.0">com.orientechnologies.orient.core.iterator.object.OObjectIteratorClassInterface</node>
+    <node x="7429.25" y="21717.0">com.orientechnologies.orient.core.storage.impl.local.OMultiFileSegment</node>
+    <node x="4532.941919191919" y="1516.0">com.orientechnologies.orient.core.db.raw.ODatabaseRaw</node>
+    <node x="5214.0" y="25905.0">com.orientechnologies.orient.core.intent.OIntentMassiveInsert</node>
+    <node x="4498.0" y="26122.0">com.orientechnologies.orient.core.storage.ORecordDuplicatedException</node>
+    <node x="9971.0" y="26122.0">com.orientechnologies.orient.core.command.OCommandRequestAsynch</node>
+    <node x="10026.25" y="25383.0">com.orientechnologies.orient.core.db.graph.OGraphDatabasePool</node>
+    <node x="18491.0" y="25905.0">com.orientechnologies.orient.core.command.script.formatter.OJSScriptFormatter</node>
+    <node x="21384.619444444445" y="16622.0">com.orientechnologies.orient.core.config.OGlobalConfiguration</node>
+    <node x="13764.25" y="25281.0">com.orientechnologies.orient.core.command.traverse.OTraverseMultiValueDepthFirstProcess</node>
+    <node x="5880.0" y="22177.0">com.orientechnologies.orient.core.tx.OTransactionAbstract</node>
+    <node x="13565.25" y="22357.0">com.orientechnologies.orient.core.index.engine.OSBTreeIndexEngine</node>
+    <node x="12087.205333333335" y="14479.0">com.orientechnologies.orient.core.record.impl.ORecordBytes</node>
+    <node x="11572.0" y="25788.0">com.orientechnologies.orient.core.serialization.serializer.binary.OBinarySerializerFactory</node>
+    <node x="23504.5" y="24249.0">com.orientechnologies.orient.core.serialization.serializer.stream.OStreamSerializerString</node>
+    <node x="6070.0" y="26122.0">com.orientechnologies.orient.core.processor.OProcessorManager</node>
+    <node x="21534.25" y="22572.0">com.orientechnologies.orient.core.serialization.serializer.record.string.ORecordSerializerSchemaAware2CSV</node>
+    <node x="6898.0" y="26122.0">com.orientechnologies.orient.core.db.ODatabaseLifecycleListener</node>
+    <node x="9012.225" y="11143.5">com.orientechnologies.orient.core.serialization.OSerializableStream</node>
+    <node x="8881.875" y="5694.0">com.orientechnologies.orient.core.index.OIndexFullText</node>
+    <node x="4505.75" y="20548.5">com.orientechnologies.orient.core.index.OIndexManagerShared</node>
+    <node x="20505.0" y="25788.0">com.orientechnologies.orient.core.index.sbtree.OSBTreeInverseMapEntryIterator</node>
+    <node x="26401.0" y="25788.0">com.orientechnologies.orient.core.storage.fs.OFileFactory</node>
+    <node x="4009.0" y="25221.5">com.orientechnologies.orient.core.config.OStoragePhysicalClusterConfiguration</node>
+    <node x="17561.25" y="24954.0">com.orientechnologies.orient.core.db.record.ridset.sbtree.OIndexRIDContainerSBTree</node>
+    <node x="6183.0" y="23801.0">com.orientechnologies.orient.core.processor.block.OProcessorBlock</node>
+    <node x="16462.0" y="26122.0">com.orientechnologies.orient.core.memory.OLowMemoryException</node>
+    <node x="12866.0" y="25788.0">com.orientechnologies.orient.core.util.ODateHelper</node>
+    <node x="450.0" y="26219.0">com.orientechnologies.orient.core.index.hashindex.local.OIndexMaximumLimitReachedException</node>
+    <node x="15642.25" y="24954.0">com.orientechnologies.orient.core.fetch.OFetchHelper</node>
+    <node x="19834.75" y="21579.0">com.orientechnologies.orient.core.db.tool.ODatabaseImpExpAbstract</node>
+    <node x="21128.0" y="25788.0">com.orientechnologies.orient.core.storage.impl.local.ODataHoleInfo</node>
+    <node x="25754.25" y="24954.0">com.orientechnologies.orient.core.storage.impl.local.OStorageLocalTxExecuter</node>
+    <node x="6904.5" y="5404.5">com.orientechnologies.orient.core.db.document.ODatabaseDocument</node>
+    <node x="0.0" y="6413.0">com.orientechnologies.orient.core.storage.impl.local.paginated.OLocalPaginatedStorage</node>
+    <node x="24709.619444444445" y="16622.0">com.orientechnologies.orient.core.command.script.OScriptDocumentDatabaseWrapper</node>
+    <node x="13638.0" y="25906.0">com.orientechnologies.orient.core.collate.ODefaultCollate</node>
+    <node x="20122.0" y="25788.0">com.orientechnologies.orient.core.index.OIndexes</node>
+    <node x="11060.626666666667" y="13100.0">com.orientechnologies.orient.core.record.ORecordAbstract</node>
+    <node x="11401.979563492065" y="17461.0">com.orientechnologies.orient.core.schedule.OSchedulerListener</node>
+    <node x="10694.626666666667" y="12141.5">com.orientechnologies.orient.core.record.ORecordInternal</node>
+    <node x="20909.5" y="23989.0">com.orientechnologies.orient.core.serialization.serializer.stream.OStreamSerializerSBTreeIndexRIDContainer</node>
+    <node x="23422.0" y="25788.0">com.orientechnologies.orient.core.storage.impl.local.paginated.wal.OWALRecordsFactory</node>
+    <node x="15247.0" y="25788.0">com.orientechnologies.orient.core.index.sbtree.local.OSBTreeValue</node>
+    <node x="16303.0" y="25788.0">com.orientechnologies.orient.core.serialization.serializer.object.OObjectSerializerHelperManager</node>
+    <node x="484.0" y="26122.0">com.orientechnologies.orient.core.index.OIndexException</node>
+    <node x="4662.0" y="13390.0">com.orientechnologies.orient.core.type.tree.OMVRBTreeRIDSet</node>
+    <node x="4611.0" y="25161.0">com.orientechnologies.orient.core.config.OAbstractStorageClusterConfiguration</node>
+    <node x="26091.0" y="25788.0">com.orientechnologies.orient.core.db.record.ORecordTrackedIterator</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="com.orientechnologies.orient.core.metadata.function.OFunctionLibraryImpl" target="com.orientechnologies.orient.core.metadata.function.OFunctionLibrary">
+      <point x="0.0" y="-94.5" />
+      <point x="7863.860119047619" y="18169.0" />
+      <point x="8015.250198412698" y="18169.0" />
+      <point x="74.5" y="74.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.record.ORecordInternal" target="com.orientechnologies.orient.core.record.ORecord">
+      <point x="132.5" y="-104.0" />
+      <point x="11092.126666666667" y="11521.0" />
+      <point x="11424.42866666667" y="11521.0" />
+      <point x="-153.75" y="264.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.record.ORecordPositional" target="com.orientechnologies.orient.core.record.ORecordInternal">
+      <point x="0.0" y="-53.5" />
+      <point x="0.0" y="104.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.processor.block.OExecuteBlock" target="com.orientechnologies.orient.core.processor.block.OAbstractBlock">
+      <point x="0.0" y="-84.5" />
+      <point x="5734.0" y="24508.0" />
+      <point x="6154.888888888889" y="24508.0" />
+      <point x="-307.1111111111113" y="274.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.exception.OTransactionBlockedException" target="com.orientechnologies.orient.core.exception.OTransactionException">
+      <point x="0.0" y="-23.5" />
+      <point x="24481.5" y="25860.0" />
+      <point x="24543.25" y="25860.0" />
+      <point x="-38.5" y="23.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.iterator.ORecordIteratorCluster" target="com.orientechnologies.orient.core.iterator.OIdentifiableIterator">
+      <point x="0.0" y="-104.5" />
+      <point x="19203.5" y="22513.0" />
+      <point x="19253.0" y="22513.0" />
+      <point x="262.25" y="454.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.query.OQuery" target="com.orientechnologies.orient.core.command.OCommandRequest">
+      <point x="0.0" y="-43.5" />
+      <point x="6812.580333333335" y="11471.0" />
+      <point x="7039.8317777777775" y="11471.0" />
+      <point x="-81.5" y="104.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.serialization.serializer.record.string.ORecordSerializerStringAbstract" target="com.orientechnologies.orient.core.serialization.serializer.record.ORecordSerializer">
+      <point x="0.0" y="-214.0" />
+      <point x="21940.071428571428" y="21671.0" />
+      <point x="22191.083333333332" y="21671.0" />
+      <point x="-140.66666666666788" y="33.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.index.OIndexManagerShared" target="com.orientechnologies.orient.core.index.OIndexManagerAbstract">
+      <point x="-96.25" y="-144.0" />
+      <point x="4602.0" y="20408.0" />
+      <point x="4546.25" y="20408.0" />
+      <point x="237.75" y="414.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.storage.impl.local.paginated.OClusterPage" target="com.orientechnologies.orient.core.storage.impl.local.paginated.base.ODurablePage">
+      <point x="0.0" y="-424.5" />
+      <point x="3468.5" y="22088.0" />
+      <point x="2186.333333333333" y="22088.0" />
+      <point x="263.33333333333303" y="244.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.command.traverse.OTraverseFieldProcess" target="com.orientechnologies.orient.core.command.traverse.OTraverseAbstractProcess">
+      <point x="0.0" y="-54.5" />
+      <point x="14086.25" y="25231.0" />
+      <point x="14283.65" y="25231.0" />
+      <point x="-33.600000000000364" y="34.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.index.sbtreebonsai.local.OSysBucket" target="com.orientechnologies.orient.core.index.sbtreebonsai.local.OBonsaiBucketAbstract">
+      <point x="0.0" y="-124.5" />
+      <point x="1045.5" y="23002.0" />
+      <point x="810.25" y="23002.0" />
+      <point x="77.25" y="33.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.command.traverse.OTraverse" target="com.orientechnologies.orient.core.command.OCommand">
+      <point x="0.0" y="-324.5" />
+      <point x="0.0" y="34.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.exception.OMemoryLockException" target="com.orientechnologies.orient.core.exception.ODatabaseException">
+      <point x="0.0" y="-23.5" />
+      <point x="24895.0" y="25860.0" />
+      <point x="24955.5" y="25860.0" />
+      <point x="-38.5" y="23.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.db.record.OTrackedMap" target="com.orientechnologies.orient.core.db.record.ORecordElement">
+      <point x="131.25" y="-194.5" />
+      <point x="5016.205333333335" y="10883.0" />
+      <point x="6193.141666666666" y="10883.0" />
+      <point x="-45.25" y="54.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.index.engine.OMVRBTreeIndexEngine" target="com.orientechnologies.orient.core.index.OIndexEngine">
+      <point x="0.0" y="-434.5" />
+      <point x="17919.25" y="22307.0" />
+      <point x="16274.45" y="22307.0" />
+      <point x="303.2000000000007" y="354.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.db.document.ODatabaseDocumentTxPooled" target="com.orientechnologies.orient.core.db.ODatabasePooled">
+      <point x="97.0" y="-104.5" />
+      <point x="6076.0" y="10446.0" />
+      <point x="6123.125" y="10446.0" />
+      <point x="-57.5" y="44.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.schedule.OSchedulerListenerImpl" target="com.orientechnologies.orient.core.schedule.OSchedulerListener">
+      <point x="0.0" y="-94.5" />
+      <point x="11998.369444444445" y="18169.0" />
+      <point x="11644.979563492065" y="18169.0" />
+      <point x="81.0" y="84.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.storage.impl.local.paginated.wal.OAbstractPageWALRecord" target="com.orientechnologies.orient.core.storage.impl.local.paginated.wal.OOperationUnitRecord">
+      <point x="0.0" y="-134.5" />
+      <point x="2363.0000000000005" y="24263.0" />
+      <point x="2332.8557692307695" y="24263.0" />
+      <point x="0.0" y="94.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.hook.ORecordHookAbstract" target="com.orientechnologies.orient.core.hook.ORecordHook">
+      <point x="0.0" y="-273.5" />
+      <point x="13024.0" y="21672.0" />
+      <point x="12695.25" y="21672.0" />
+      <point x="65.25" y="34.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.db.graph.OGraphDatabase" target="com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx">
+      <point x="0.0" y="-954.5" />
+      <point x="7332.625" y="8487.0" />
+      <point x="6776.0" y="8487.0" />
+      <point x="192.25" y="244.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.storage.impl.local.OTxSegment" target="com.orientechnologies.orient.core.storage.impl.local.OSingleFileSegment">
+      <point x="0.0" y="-244.0" />
+      <point x="13322.5" y="24210.0" />
+      <point x="12630.1" y="24210.0" />
+      <point x="217.60000000000036" y="194.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.db.record.OTrackedMap" target="com.orientechnologies.orient.core.db.record.OTrackedMultiValue">
+      <point x="-131.25" y="-194.5" />
+      <point x="4753.705333333335" y="10863.0" />
+      <point x="4056.825" y="10863.0" />
+      <point x="80.59999999999991" y="54.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.db.document.ODatabaseDocument" target="com.orientechnologies.orient.core.db.ODatabaseSchemaAware">
+      <point x="52.0" y="-74.0" />
+      <point x="7060.5" y="4574.0" />
+      <point x="7187.571969696968" y="4574.0" />
+      <point x="-48.25" y="33.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.index.OIndexFullText" target="com.orientechnologies.orient.core.index.OIndexMultiValues">
+      <point x="0.0" y="-204.0" />
+      <point x="9161.375" y="5669.0" />
+      <point x="9091.715277777777" y="5669.0" />
+      <point x="151.5" y="224.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.id.ORID" target="com.orientechnologies.orient.core.db.record.OIdentifiable">
+      <point x="108.0" y="-184.5" />
+      <point x="14529.626666666667" y="10893.0" />
+      <point x="12985.30366666667" y="10893.0" />
+      <point x="34.5" y="33.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.db.record.OTrackedSet" target="com.orientechnologies.orient.core.db.record.OTrackedMultiValue">
+      <point x="-126.25" y="-184.5" />
+      <point x="5638.265222222224" y="10853.0" />
+      <point x="4137.425" y="10853.0" />
+      <point x="161.20000000000027" y="54.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.query.OQueryAbstract" target="com.orientechnologies.orient.core.query.OQuery">
+      <point x="-56.5" y="-54.0" />
+      <point x="7367.35" y="14409.0" />
+      <point x="7335.6" y="14409.0" />
+      <point x="7335.6" y="13070.0" />
+      <point x="6812.580333333335" y="13070.0" />
+      <point x="0.0" y="43.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.index.OIndexDefinitionMultiValue" target="com.orientechnologies.orient.core.index.OIndexDefinition">
+      <point x="0.0" y="-33.5" />
+      <point x="9745.369444444445" y="18149.0" />
+      <point x="9006.375198412698" y="18149.0" />
+      <point x="111.25" y="164.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.collate.ODefaultCollate" target="com.orientechnologies.orient.core.collate.OCollate">
+      <point x="0.0" y="-44.5" />
+      <point x="13714.0" y="25881.0" />
+      <point x="13762.0" y="25881.0" />
+      <point x="-48.75" y="34.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.db.record.ORecordTrackedList" target="com.orientechnologies.orient.core.db.record.OTrackedList">
+      <point x="0.0" y="-43.5" />
+      <point x="0.0" y="234.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.metadata.function.OFunctionLibraryProxy" target="com.orientechnologies.orient.core.metadata.function.OFunctionLibrary">
+      <point x="74.5" y="-74.0" />
+      <point x="7589.360119047619" y="18159.0" />
+      <point x="7866.250198412698" y="18159.0" />
+      <point x="-74.5" y="74.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.db.ODatabaseComplex" target="com.orientechnologies.orient.core.db.OUserObject2RecordHandler">
+      <point x="231.25" y="-414.0" />
+      <point x="0.0" y="63.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.config.OStoragePhysicalClusterConfigurationLocal" target="com.orientechnologies.orient.core.config.OStorageSegmentConfiguration">
+      <point x="-88.5" y="-124.0" />
+      <point x="3939.5" y="25424.0" />
+      <point x="3882.25" y="25424.0" />
+      <point x="106.75" y="144.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.type.tree.OMVRBTreeRIDSet" target="com.orientechnologies.orient.core.serialization.serializer.string.OStringBuilderSerializable">
+      <point x="158.80000000000018" y="-344.5" />
+      <point x="5217.8" y="13070.0" />
+      <point x="5592.9" y="13070.0" />
+      <point x="0.0" y="33.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.serialization.serializer.binary.impl.index.OCompositeKeySerializer" target="com.orientechnologies.orient.core.serialization.serializer.stream.OStreamSerializer">
+      <point x="0.0" y="-214.5" />
+      <point x="20219.5" y="23909.0" />
+      <point x="22617.25" y="23909.0" />
+      <point x="-97.5" y="44.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.index.OIndexNotUnique" target="com.orientechnologies.orient.core.index.OIndexMultiValues">
+      <point x="0.0" y="-33.5" />
+      <point x="8725.875" y="5669.0" />
+      <point x="8788.715277777777" y="5669.0" />
+      <point x="-151.5" y="224.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.exception.OAllCacheEntriesAreUsedException" target="com.orientechnologies.orient.core.exception.ODatabaseException">
+      <point x="0.0" y="-13.5" />
+      <point x="25093.0" y="25860.0" />
+      <point x="25032.5" y="25860.0" />
+      <point x="38.5" y="23.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.index.OIndexRemoteMultiValue" target="com.orientechnologies.orient.core.index.OIndexRemote">
+      <point x="0.0" y="-84.0" />
+      <point x="12195.546296296296" y="3292.0" />
+      <point x="11819.25" y="3292.0" />
+      <point x="-552.5" y="1054.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.storage.impl.local.paginated.wal.OAbstractCheckPointStartRecord" target="com.orientechnologies.orient.core.storage.impl.local.paginated.wal.OWALRecord">
+      <point x="0.0" y="-104.5" />
+      <point x="1538.0000000000002" y="23949.0" />
+      <point x="2452.7500000000005" y="23949.0" />
+      <point x="-103.75" y="64.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.type.tree.provider.OMVRBTreeEntryDataProviderAbstract" target="com.orientechnologies.orient.core.type.tree.provider.OMVRBTreeEntryDataProvider">
+      <point x="291.33333333333394" y="-384.5" />
+      <point x="13463.71" y="11521.0" />
+      <point x="13732.123444444445" y="11521.0" />
+      <point x="0.0" y="264.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.engine.local.OEngineLocal" target="com.orientechnologies.orient.core.engine.OEngineAbstract">
+      <point x="0.0" y="-74.5" />
+      <point x="17410.25" y="25244.0" />
+      <point x="17289.25" y="25244.0" />
+      <point x="91.0" y="43.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.storage.impl.local.OClusterLocalHole" target="com.orientechnologies.orient.core.storage.impl.local.OSingleFileSegment">
+      <point x="0.0" y="-114.5" />
+      <point x="0.0" y="194.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.record.impl.ORecordBytes" target="com.orientechnologies.orient.core.record.ORecordAbstract">
+      <point x="0.0" y="-134.5" />
+      <point x="12274.205333333335" y="14409.0" />
+      <point x="12206.46" y="14409.0" />
+      <point x="458.33333333333394" y="634.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.processor.block.OQueryBlock" target="com.orientechnologies.orient.core.processor.block.OAbstractBlock">
+      <point x="0.0" y="-124.5" />
+      <point x="6926.0" y="24528.0" />
+      <point x="6615.555555555556" y="24528.0" />
+      <point x="153.55555555555566" y="274.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.record.ORecord" target="com.orientechnologies.orient.core.db.record.ORecordElement">
+      <point x="-153.75" y="-264.0" />
+      <point x="11424.42866666667" y="10873.0" />
+      <point x="6313.808333333333" y="10873.0" />
+      <point x="75.41666666666697" y="54.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.serialization.serializer.stream.OStreamSerializerLong" target="com.orientechnologies.orient.core.serialization.serializer.stream.OStreamSerializer">
+      <point x="0.0" y="-64.5" />
+      <point x="22876.5" y="23969.0" />
+      <point x="22722.25" y="23969.0" />
+      <point x="7.5" y="44.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.record.impl.ORecordFlat" target="com.orientechnologies.orient.core.record.ORecordAbstract">
+      <point x="113.5" y="-174.5" />
+      <point x="9703.92866666667" y="14399.0" />
+      <point x="11289.793333333331" y="14399.0" />
+      <point x="-458.33333333333394" y="634.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.cache.OUnboundedWeakCache" target="com.orientechnologies.orient.core.cache.OAbstractMapCache">
+      <point x="38.0" y="-23.5" />
+      <point x="13775.0" y="24533.0" />
+      <point x="13845.5" y="24533.0" />
+      <point x="-136.0" y="174.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.engine.memory.OEngineMemory" target="com.orientechnologies.orient.core.engine.OEngineAbstract">
+      <point x="0.0" y="-54.5" />
+      <point x="0.0" y="43.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.index.OIndexUnique" target="com.orientechnologies.orient.core.index.OIndexOneValue">
+      <point x="0.0" y="-73.5" />
+      <point x="9642.375" y="5669.0" />
+      <point x="9705.215277777777" y="5669.0" />
+      <point x="-123.5" y="184.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.storage.impl.local.paginated.wal.OOperationUnitRecord" target="com.orientechnologies.orient.core.storage.impl.local.paginated.wal.OWALRecord">
+      <point x="0.0" y="-94.5" />
+      <point x="2332.8557692307695" y="23969.0" />
+      <point x="2535.7500000000005" y="23969.0" />
+      <point x="-20.75" y="64.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.command.script.formatter.OJSScriptFormatter" target="com.orientechnologies.orient.core.command.script.formatter.OScriptFormatter">
+      <point x="0.0" y="-33.5" />
+      <point x="18622.5" y="25880.0" />
+      <point x="18817.833333333332" y="25880.0" />
+      <point x="-87.66666666666788" y="33.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.config.OStorageDataHoleConfiguration" target="com.orientechnologies.orient.core.config.OStorageFileConfiguration">
+      <point x="0.0" y="-43.5" />
+      <point x="22044.25" y="25127.0" />
+      <point x="21941.916666666668" y="25127.0" />
+      <point x="113.66666666666788" y="74.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.index.OIndexInternal" target="com.orientechnologies.orient.core.db.ODatabaseListener">
+      <point x="-167.75" y="-274.5" />
+      <point x="0.0" y="113.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.db.record.ORecordOperation" target="com.orientechnologies.orient.core.serialization.OSerializableStream">
+      <point x="0.0" y="-174.5" />
+      <point x="9236.626666666667" y="11521.0" />
+      <point x="9099.125" y="11521.0" />
+      <point x="7.899999999999636" y="33.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.command.OCommandExecutorNotFoundException" target="com.orientechnologies.orient.core.exception.OCommandExecutionException">
+      <point x="0.0" y="-23.5" />
+      <point x="0.0" y="23.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.index.OIndexManagerRemote" target="com.orientechnologies.orient.core.index.OIndexManagerAbstract">
+      <point x="0.0" y="-104.0" />
+      <point x="-237.75" y="414.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.index.engine.OMemoryHashMapIndexEngine" target="com.orientechnologies.orient.core.index.OIndexEngine">
+      <point x="0.0" y="-384.5" />
+      <point x="15068.75" y="22317.0" />
+      <point x="15819.65" y="22317.0" />
+      <point x="-151.60000000000036" y="354.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.storage.impl.memory.OClusterMemoryArrayList" target="com.orientechnologies.orient.core.storage.OCluster">
+      <point x="191.0" y="-304.5" />
+      <point x="15383.869444444445" y="19414.0" />
+      <point x="15294.119444444446" y="19414.0" />
+      <point x="0.0" y="484.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.index.OPropertyIndexDefinition" target="com.orientechnologies.orient.core.index.OAbstractIndexDefinition">
+      <point x="-9.094947017729282E-13" y="-234.5" />
+      <point x="8013.5001984126975" y="20408.0" />
+      <point x="8121.610119047619" y="20408.0" />
+      <point x="-19.25" y="34.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.index.OPropertyListIndexDefinition" target="com.orientechnologies.orient.core.index.OIndexDefinitionMultiValue">
+      <point x="95.5" y="-73.5" />
+      <point x="9531.812896825397" y="21007.0" />
+      <point x="9827.036111111112" y="21007.0" />
+      <point x="81.66666666666606" y="33.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.db.ODatabaseRecordWrapperAbstract" target="com.orientechnologies.orient.core.db.ODatabaseComplex">
+      <point x="362.75" y="-684.0" />
+      <point x="6521.75" y="4574.0" />
+      <point x="6867.305555555555" y="4574.0" />
+      <point x="6867.305555555555" y="3130.0" />
+      <point x="6699.263888888888" y="3130.0" />
+      <point x="0.0" y="414.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.type.tree.OMVRBTreeRID" target="com.orientechnologies.orient.core.db.record.OTrackedMultiValue">
+      <point x="0.0" y="-484.5" />
+      <point x="1620.5" y="10893.0" />
+      <point x="3815.025" y="10893.0" />
+      <point x="-161.19999999999982" y="54.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.db.document.ODatabaseDocument" target="com.orientechnologies.orient.core.db.record.ODatabaseRecord">
+      <point x="-52.0" y="-74.0" />
+      <point x="6956.5" y="4564.0" />
+      <point x="6612.763888888888" y="4564.0" />
+      <point x="137.75" y="144.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.db.record.ODatabaseBinary" target="com.orientechnologies.orient.core.db.record.ODatabaseRecordTx">
+      <point x="0.0" y="-13.5" />
+      <point x="4546.75" y="8487.0" />
+      <point x="4597.0" y="8487.0" />
+      <point x="197.0" y="364.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.cache.OLevel2RecordCache" target="com.orientechnologies.orient.core.cache.OAbstractRecordCache">
+      <point x="0.0" y="-94.5" />
+      <point x="7855.75" y="25288.0" />
+      <point x="7942.25" y="25288.0" />
+      <point x="-101.0" y="154.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.index.OIndexRemote" target="com.orientechnologies.orient.core.index.OIndex">
+      <point x="0.0" y="-1054.5" />
+      <point x="12371.75" y="1133.0" />
+      <point x="11138.381944444443" y="1133.0" />
+      <point x="523.6666666666661" y="554.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.engine.local.OEngineLocalPaginated" target="com.orientechnologies.orient.core.engine.OEngineAbstract">
+      <point x="0.0" y="-54.5" />
+      <point x="17006.25" y="25244.0" />
+      <point x="17107.25" y="25244.0" />
+      <point x="-91.0" y="43.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.serialization.serializer.stream.OStreamSerializerListRID" target="com.orientechnologies.orient.core.serialization.serializer.stream.OStreamSerializer">
+      <point x="0.0" y="-214.5" />
+      <point x="23238.5" y="23959.0" />
+      <point x="22737.25" y="23959.0" />
+      <point x="22.5" y="44.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.db.record.ridset.sbtree.OSBTreeRIDSet" target="com.orientechnologies.orient.core.db.record.ORecordLazyMultiValue">
+      <point x="-190.0" y="-354.5" />
+      <point x="4072.0" y="13020.0" />
+      <point x="3321.481777777776" y="13020.0" />
+      <point x="24.666666666666515" y="54.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.record.ORecord" target="com.orientechnologies.orient.core.db.record.OIdentifiable">
+      <point x="153.75" y="-264.0" />
+      <point x="11731.92866666667" y="10893.0" />
+      <point x="12916.30366666667" y="10893.0" />
+      <point x="-34.5" y="33.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.db.record.ridset.sbtree.OSBTreeRIDSet" target="com.orientechnologies.orient.core.serialization.serializer.string.OStringBuilderSerializable">
+      <point x="190.0" y="-354.5" />
+      <point x="4452.0" y="13060.0" />
+      <point x="5489.9" y="13060.0" />
+      <point x="-103.0" y="33.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.db.graph.OGraphDatabasePooled" target="com.orientechnologies.orient.core.db.ODatabasePooled">
+      <point x="-92.25" y="-104.5" />
+      <point x="6693.125" y="10446.0" />
+      <point x="6238.125" y="10446.0" />
+      <point x="57.5" y="44.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.intent.OIntentMassiveRead" target="com.orientechnologies.orient.core.intent.OIntent">
+      <point x="0.0" y="-33.5" />
+      <point x="5066.0" y="25880.0" />
+      <point x="5159.5" y="25880.0" />
+      <point x="-64.0" y="33.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.storage.OStorage" target="com.orientechnologies.orient.core.util.OBackupable">
+      <point x="0.0" y="-674.5" />
+      <point x="1287.7386363636351" y="92.0" />
+      <point x="2776.238636363635" y="92.0" />
+      <point x="-102.0" y="33.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.index.engine.OLocalHashTableIndexEngine" target="com.orientechnologies.orient.core.index.OIndexEngine">
+      <point x="0.0" y="-424.5" />
+      <point x="16883.75" y="22317.0" />
+      <point x="16122.85" y="22317.0" />
+      <point x="151.60000000000036" y="354.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.storage.impl.memory.ODataSegmentMemory" target="com.orientechnologies.orient.core.storage.ODataSegment">
+      <point x="0.0" y="-144.5" />
+      <point x="-41.5" y="54.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.type.tree.provider.OMVRBTreeEntryDataProviderAbstract" target="com.orientechnologies.orient.core.record.ORecordListener">
+      <point x="0.0" y="-384.5" />
+      <point x="0.0" y="23.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.processor.block.OOutputBlock" target="com.orientechnologies.orient.core.processor.block.OAbstractBlock">
+      <point x="0.0" y="-64.5" />
+      <point x="6654.0" y="24538.0" />
+      <point x="6538.777777777777" y="24538.0" />
+      <point x="76.77777777777737" y="274.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.record.impl.ORecordBytesLazy" target="com.orientechnologies.orient.core.record.impl.ORecordBytes">
+      <point x="0.0" y="-64.5" />
+      <point x="0.0" y="134.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.command.OCommandRequestInternal" target="com.orientechnologies.orient.core.serialization.OSerializableStream">
+      <point x="42.25" y="-54.0" />
+      <point x="8236.955333333335" y="11501.0" />
+      <point x="9051.725" y="11501.0" />
+      <point x="-39.5" y="33.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.record.ORecordAbstract" target="com.orientechnologies.orient.core.record.ORecord">
+      <point x="343.75" y="-634.5" />
+      <point x="12091.876666666667" y="11521.0" />
+      <point x="11731.92866666667" y="11521.0" />
+      <point x="153.75" y="264.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.db.tool.ODatabaseImport" target="com.orientechnologies.orient.core.db.tool.ODatabaseImpExpAbstract">
+      <point x="0.0" y="-404.5" />
+      <point x="20967.75" y="22293.0" />
+      <point x="20525.583333333332" y="22293.0" />
+      <point x="276.3333333333321" y="344.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.tx.OTransactionAbstract" target="com.orientechnologies.orient.core.tx.OTransaction">
+      <point x="0.0" y="-94.5" />
+      <point x="0.0" y="274.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.storage.fs.OMMapManagerAbstract" target="com.orientechnologies.orient.core.storage.fs.OMMapManager">
+      <point x="0.0" y="-23.5" />
+      <point x="0.0" y="83.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.storage.impl.memory.OClusterMemoryHashing" target="com.orientechnologies.orient.core.storage.impl.memory.OClusterMemory">
+      <point x="162.0" y="-294.5" />
+      <point x="14628.869444444445" y="19414.0" />
+      <point x="14623.369444444445" y="19414.0" />
+      <point x="-192.0" y="354.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.index.hashindex.local.OIndexMaximumLimitReachedException" target="com.orientechnologies.orient.core.index.OIndexException">
+      <point x="0.0" y="-13.5" />
+      <point x="0.0" y="23.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.type.tree.OMVRBTreeRIDSet" target="com.orientechnologies.orient.core.serialization.OSerializableStream">
+      <point x="317.60000000000036" y="-344.5" />
+      <point x="5376.6" y="13080.0" />
+      <point x="5757.9" y="13080.0" />
+      <point x="5757.9" y="11481.0" />
+      <point x="9020.125" y="11481.0" />
+      <point x="-71.10000000000036" y="33.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.serialization.serializer.record.string.ORecordSerializerSchemaAware2CSV" target="com.orientechnologies.orient.core.serialization.serializer.record.string.ORecordSerializerCSVAbstract">
+      <point x="0.0" y="-124.0" />
+      <point x="0.0" y="124.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.metadata.schema.OSchemaShared" target="com.orientechnologies.orient.core.type.ODocumentWrapperNoClass">
+      <point x="-258.5" y="-464.5" />
+      <point x="5173.360119047619" y="18159.0" />
+      <point x="4292.925198412699" y="18159.0" />
+      <point x="62.80000000000018" y="104.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.storage.fs.OFileMMap" target="com.orientechnologies.orient.core.storage.fs.OAbstractFile">
+      <point x="0.0" y="-424.5" />
+      <point x="13599.869444444445" y="19394.0" />
+      <point x="13630.869444444445" y="19394.0" />
+      <point x="467.0" y="894.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.record.impl.ODocument" target="com.orientechnologies.orient.core.db.record.ODetachable">
+      <point x="-458.5" y="-864.5" />
+      <point x="2512.231777777778" y="14828.0" />
+      <point x="2245.5" y="14828.0" />
+      <point x="2245.5" y="11521.0" />
+      <point x="3102.94011111111" y="11521.0" />
+      <point x="-45.0" y="23.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.serialization.serializer.record.string.ORecordSerializerJSON" target="com.orientechnologies.orient.core.serialization.serializer.record.string.ORecordSerializerStringAbstract">
+      <point x="0.0" y="-174.0" />
+      <point x="22141.25" y="22149.0" />
+      <point x="22079.821428571428" y="22149.0" />
+      <point x="139.75" y="214.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.storage.fs.OMMapManagerNew" target="com.orientechnologies.orient.core.storage.fs.OMMapManager">
+      <point x="169.0" y="-254.0" />
+      <point x="8902.0" y="24090.0" />
+      <point x="8782.125" y="24090.0" />
+      <point x="8782.125" y="23993.0" />
+      <point x="8444.166666666666" y="23993.0" />
+      <point x="72.66666666666606" y="83.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.serialization.serializer.stream.OStreamSerializerAnyStatic" target="com.orientechnologies.orient.core.serialization.serializer.stream.OStreamSerializer">
+      <point x="0.0" y="-64.5" />
+      <point x="20793.5" y="23929.0" />
+      <point x="22647.25" y="23929.0" />
+      <point x="-67.5" y="44.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.collate.ODefaultCollateFactory" target="com.orientechnologies.orient.core.collate.OCollateFactory">
+      <point x="0.0" y="-54.5" />
+      <point x="0.0" y="34.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.serialization.serializer.stream.OStreamSerializerOldRIDContainer" target="com.orientechnologies.orient.core.serialization.serializer.stream.OStreamSerializer">
+      <point x="0.0" y="-234.5" />
+      <point x="24194.5" y="23929.0" />
+      <point x="22782.25" y="23929.0" />
+      <point x="67.5" y="44.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.storage.impl.local.OStorageLocalAbstract" target="com.orientechnologies.orient.core.storage.OStorageEmbedded">
+      <point x="-157.5" y="-234.5" />
+      <point x="1623.0138888888878" y="4574.0" />
+      <point x="1072.0138888888878" y="4574.0" />
+      <point x="150.25" y="214.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.type.tree.OMVRBTreeEntryPersistent" target="com.orientechnologies.orient.core.type.tree.provider.OIdentityChangedListener">
+      <point x="0.0" y="-374.5" />
+      <point x="0.0" y="23.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.serialization.serializer.stream.OStreamSerializerLiteral" target="com.orientechnologies.orient.core.serialization.serializer.stream.OStreamSerializer">
+      <point x="0.0" y="-64.5" />
+      <point x="24576.5" y="23919.0" />
+      <point x="22797.25" y="23919.0" />
+      <point x="82.5" y="44.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.storage.impl.local.paginated.wal.OFuzzyCheckpointEndRecord" target="com.orientechnologies.orient.core.storage.impl.local.paginated.wal.OWALRecord">
+      <point x="0.0" y="-94.5" />
+      <point x="1955.519230769231" y="23959.0" />
+      <point x="2494.2500000000005" y="23959.0" />
+      <point x="-62.25" y="64.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.serialization.serializer.stream.OStreamSerializerSBTreeIndexRIDContainer" target="com.orientechnologies.orient.core.serialization.serializer.stream.OStreamSerializer">
+      <point x="0.0" y="-324.5" />
+      <point x="21265.5" y="23939.0" />
+      <point x="22662.25" y="23939.0" />
+      <point x="-52.5" y="44.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.storage.impl.local.OStorageConfigurationSegment" target="com.orientechnologies.orient.core.config.OStorageConfiguration">
+      <point x="0.0" y="-94.5" />
+      <point x="0.0" y="534.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.db.record.OTrackedList" target="com.orientechnologies.orient.core.db.record.OTrackedMultiValue">
+      <point x="-151.25" y="-234.5" />
+      <point x="4114.705333333335" y="10893.0" />
+      <point x="3976.225" y="10893.0" />
+      <point x="0.0" y="54.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.id.ORecordId" target="com.orientechnologies.orient.core.id.ORID">
+      <point x="0.0" y="-354.5" />
+      <point x="0.0" y="184.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.command.traverse.OTraverseRecordSetProcess" target="com.orientechnologies.orient.core.command.traverse.OTraverseAbstractProcess">
+      <point x="0.0" y="-64.5" />
+      <point x="14578.75" y="25231.0" />
+      <point x="14350.85" y="25231.0" />
+      <point x="33.600000000000364" y="34.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.config.OStorageMemoryClusterConfiguration" target="com.orientechnologies.orient.core.config.OAbstractStorageClusterConfiguration">
+      <point x="0.0" y="-13.5" />
+      <point x="4585.75" y="25424.0" />
+      <point x="4665.5" y="25424.0" />
+      <point x="-54.5" y="94.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.exception.OSecurityAccessException" target="com.orientechnologies.orient.core.exception.OSecurityException">
+      <point x="0.0" y="-44.0" />
+      <point x="0.0" y="13.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.type.tree.provider.OMVRBTreeRIDProvider" target="com.orientechnologies.orient.core.type.tree.provider.OMVRBTreeProviderAbstract">
+      <point x="168.75" y="-254.5" />
+      <point x="7088.35" y="13080.0" />
+      <point x="7494.705333333335" y="13080.0" />
+      <point x="-198.5" y="344.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.config.OStoragePaginatedClusterConfiguration" target="com.orientechnologies.orient.core.config.OStorageClusterConfiguration">
+      <point x="0.0" y="-144.0" />
+      <point x="3318.5" y="25081.0" />
+      <point x="4200.625" y="25081.0" />
+      <point x="-66.375" y="53.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.command.traverse.OTraverseMultiValueBreadthFirstProcess" target="com.orientechnologies.orient.core.command.traverse.OTraverseAbstractProcess">
+      <point x="0.0" y="-94.5" />
+      <point x="0.0" y="34.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.metadata.function.OFunctionTrigger" target="com.orientechnologies.orient.core.hook.ODocumentHookAbstract">
+      <point x="0.0" y="-94.0" />
+      <point x="13328.25" y="22366.0" />
+      <point x="12553.083333333334" y="22366.0" />
+      <point x="317.08333333333394" y="324.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.index.OAbstractIndexDefinition" target="com.orientechnologies.orient.core.index.OIndexDefinition">
+      <point x="38.49999999999909" y="-34.0" />
+      <point x="8179.360119047618" y="18169.0" />
+      <point x="8783.875198412698" y="18169.0" />
+      <point x="-111.25" y="164.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.storage.impl.local.paginated.OClusterPositionMapBucket" target="com.orientechnologies.orient.core.storage.impl.local.paginated.base.ODurablePage">
+      <point x="0.0" y="-164.5" />
+      <point x="1599.0" y="22108.0" />
+      <point x="1870.3333333333333" y="22108.0" />
+      <point x="-52.66666666666674" y="244.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.type.tree.provider.OMVRBTreeProviderAbstract" target="com.orientechnologies.orient.core.type.tree.provider.OMVRBTreeProvider">
+      <point x="-198.5" y="-344.5" />
+      <point x="7494.705333333335" y="11471.0" />
+      <point x="7721.9567777777775" y="11471.0" />
+      <point x="0.0" y="184.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.db.graph.OGraphDatabasePooled" target="com.orientechnologies.orient.core.db.graph.OGraphDatabase">
+      <point x="92.25" y="-104.5" />
+      <point x="6877.625" y="10446.0" />
+      <point x="7332.625" y="10446.0" />
+      <point x="0.0" y="954.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx" target="com.orientechnologies.orient.core.db.document.ODatabaseDocument">
+      <point x="192.25" y="-244.0" />
+      <point x="6776.0" y="6388.0" />
+      <point x="7008.5" y="6388.0" />
+      <point x="0.0" y="74.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.tx.OTransactionNoTx" target="com.orientechnologies.orient.core.tx.OTransactionAbstract">
+      <point x="0.0" y="-264.0" />
+      <point x="6404.5" y="22391.0" />
+      <point x="6135.75" y="22391.0" />
+      <point x="85.25" y="94.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.storage.impl.local.paginated.wal.OAtomicUnitEndRecord" target="com.orientechnologies.orient.core.storage.impl.local.paginated.wal.OOperationUnitRecord">
+      <point x="-2.2737367544323206E-13" y="-104.5" />
+      <point x="1975.0" y="24263.0" />
+      <point x="2214.189102564103" y="24263.0" />
+      <point x="-118.66666666666652" y="94.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.command.script.OScriptGraphDatabaseWrapper" target="com.orientechnologies.orient.core.command.script.OScriptDocumentDatabaseWrapper">
+      <point x="0.0" y="-484.0" />
+      <point x="0.0" y="874.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.index.ODefaultIndexFactory" target="com.orientechnologies.orient.core.index.OIndexFactory">
+      <point x="0.0" y="-114.5" />
+      <point x="23643.25" y="25047.0" />
+      <point x="23603.0" y="25047.0" />
+      <point x="107.75" y="34.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.db.record.ORecordLazyList" target="com.orientechnologies.orient.core.db.record.ORecordLazyMultiValue">
+      <point x="-258.25" y="-444.5" />
+      <point x="2514.25" y="13030.0" />
+      <point x="3222.81511111111" y="13030.0" />
+      <point x="-74.0" y="54.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.storage.OPhysicalPosition" target="com.orientechnologies.orient.core.serialization.OSerializableStream">
+      <point x="0.0" y="-204.0" />
+      <point x="8581.205333333335" y="11511.0" />
+      <point x="9067.525" y="11511.0" />
+      <point x="-23.700000000000728" y="33.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.storage.fs.OMMapManagerNew" target="com.orientechnologies.orient.core.storage.fs.OMMapManagerAbstract">
+      <point x="-169.0" y="-254.0" />
+      <point x="8564.0" y="24090.0" />
+      <point x="8450.25" y="24090.0" />
+      <point x="78.75" y="23.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.db.ODatabaseSchemaAware" target="com.orientechnologies.orient.core.db.ODatabaseComplex">
+      <point x="0.0" y="-33.5" />
+      <point x="7235.821969696968" y="3130.0" />
+      <point x="7007.597222222221" y="3130.0" />
+      <point x="308.33333333333303" y="414.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.db.record.ODatabaseFlat" target="com.orientechnologies.orient.core.db.record.ODatabaseRecordTx">
+      <point x="0.0" y="-63.5" />
+      <point x="4253.25" y="8487.0" />
+      <point x="4203.0" y="8487.0" />
+      <point x="-197.0" y="364.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.config.OStorageDataConfiguration" target="com.orientechnologies.orient.core.config.OStorageSegmentConfiguration">
+      <point x="0.0" y="-64.0" />
+      <point x="-106.75" y="144.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.index.OIndexMultiValues" target="com.orientechnologies.orient.core.index.OIndexAbstract">
+      <point x="0.0" y="-224.0" />
+      <point x="8940.215277777777" y="5171.0" />
+      <point x="8894.625" y="5171.0" />
+      <point x="-500.0" y="914.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.config.OStorageTxConfiguration" target="com.orientechnologies.orient.core.config.OStorageFileConfiguration">
+      <point x="0.0" y="-84.0" />
+      <point x="21566.75" y="25127.0" />
+      <point x="21714.583333333332" y="25127.0" />
+      <point x="-113.66666666666788" y="74.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.index.OIndexDictionary" target="com.orientechnologies.orient.core.index.OIndexOneValue">
+      <point x="0.0" y="-83.5" />
+      <point x="10035.375" y="5669.0" />
+      <point x="9952.215277777777" y="5669.0" />
+      <point x="123.5" y="184.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.index.sbtreebonsai.local.OBonsaiBucketAbstract" target="com.orientechnologies.orient.core.storage.impl.local.paginated.base.ODurablePage">
+      <point x="0.0" y="-33.5" />
+      <point x="733.0" y="22088.0" />
+      <point x="1659.6666666666667" y="22088.0" />
+      <point x="-263.33333333333326" y="244.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.db.record.ODatabaseRecordTx" target="com.orientechnologies.orient.core.db.record.ODatabaseRecordAbstract">
+      <point x="0.0" y="-364.5" />
+      <point x="0.0" y="884.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.storage.impl.local.paginated.OPaginatedCluster" target="com.orientechnologies.orient.core.storage.OCluster">
+      <point x="-466.25" y="-874.5" />
+      <point x="17408.869444444445" y="17610.0" />
+      <point x="15795.719444444447" y="17610.0" />
+      <point x="501.60000000000036" y="484.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.metadata.schema.OClassImpl" target="com.orientechnologies.orient.core.metadata.schema.OClass">
+      <point x="-573.5" y="-1094.5" />
+      <point x="0.0" y="524.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.db.ODatabaseComplex" target="com.orientechnologies.orient.core.db.ODatabase">
+      <point x="-231.25" y="-414.0" />
+      <point x="6468.013888888888" y="1491.0" />
+      <point x="5568.541666666667" y="1491.0" />
+      <point x="414.66666666666697" y="564.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.db.raw.ODatabaseRaw" target="com.orientechnologies.orient.core.db.ODatabase">
+      <point x="0.0" y="-794.5" />
+      <point x="5350.941919191919" y="1491.0" />
+      <point x="5153.875" y="1491.0" />
+      <point x="0.0" y="564.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.type.tree.provider.OMVRBTreeProviderAbstract" target="com.orientechnologies.orient.core.serialization.OSerializableStream">
+      <point x="198.5" y="-344.5" />
+      <point x="7891.705333333335" y="11491.0" />
+      <point x="9035.925000000001" y="11491.0" />
+      <point x="-55.29999999999927" y="33.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.config.OStorageMemoryLinearHashingClusterConfiguration" target="com.orientechnologies.orient.core.config.OAbstractStorageClusterConfiguration">
+      <point x="0.0" y="-13.5" />
+      <point x="4854.25" y="25424.0" />
+      <point x="4774.5" y="25424.0" />
+      <point x="54.5" y="94.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.serialization.serializer.string.OStringSerializerEmbedded" target="com.orientechnologies.orient.core.serialization.serializer.string.OStringSerializer">
+      <point x="0.0" y="-64.5" />
+      <point x="0.0" y="44.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.index.hashindex.local.OHashIndexTreeStateStore" target="com.orientechnologies.orient.core.storage.impl.local.OSingleFileSegment">
+      <point x="0.0" y="-74.5" />
+      <point x="11454.0" y="24210.0" />
+      <point x="12194.9" y="24210.0" />
+      <point x="-217.60000000000036" y="194.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.storage.impl.local.paginated.wal.OUpdatePageRecord" target="com.orientechnologies.orient.core.storage.impl.local.paginated.wal.OAbstractPageWALRecord">
+      <point x="0.0" y="-124.5" />
+      <point x="0.0" y="134.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.metadata.security.ORestrictedAccessHook" target="com.orientechnologies.orient.core.hook.ODocumentHookAbstract">
+      <point x="0.0" y="-74.0" />
+      <point x="12932.25" y="22376.0" />
+      <point x="12426.25" y="22376.0" />
+      <point x="190.25" y="324.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.index.sbtreebonsai.local.OSBTreeBonsaiBucket" target="com.orientechnologies.orient.core.index.sbtreebonsai.local.OBonsaiBucketAbstract">
+      <point x="0.0" y="-364.5" />
+      <point x="420.5" y="23002.0" />
+      <point x="655.75" y="23002.0" />
+      <point x="-77.25" y="33.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.serialization.serializer.record.ORecordSerializerRaw" target="com.orientechnologies.orient.core.serialization.serializer.record.ORecordSerializer">
+      <point x="0.0" y="-54.0" />
+      <point x="22557.571428571428" y="21671.0" />
+      <point x="22472.416666666668" y="21671.0" />
+      <point x="140.66666666666788" y="33.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.storage.impl.local.paginated.OPaginatedClusterState" target="com.orientechnologies.orient.core.storage.impl.local.paginated.base.ODurablePage">
+      <point x="0.0" y="-84.5" />
+      <point x="2824.5" y="22098.0" />
+      <point x="2081.0" y="22098.0" />
+      <point x="158.0" y="244.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.type.tree.OMVRBTreeRIDSet" target="com.orientechnologies.orient.core.db.record.ODetachable">
+      <point x="-158.80000000000018" y="-344.5" />
+      <point x="4900.2" y="13000.0" />
+      <point x="3930.9553333333356" y="13000.0" />
+      <point x="3930.9553333333356" y="11511.0" />
+      <point x="3192.94011111111" y="11511.0" />
+      <point x="45.0" y="23.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.command.traverse.OTraverseRecordProcess" target="com.orientechnologies.orient.core.command.traverse.OTraverseAbstractProcess">
+      <point x="0.0" y="-64.5" />
+      <point x="14833.25" y="25221.0" />
+      <point x="14384.45" y="25221.0" />
+      <point x="67.20000000000073" y="34.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.storage.fs.OMMapManagerOld" target="com.orientechnologies.orient.core.storage.fs.OMMapManager">
+      <point x="-196.0" y="-344.5" />
+      <point x="7787.0" y="24090.0" />
+      <point x="7942.875" y="24090.0" />
+      <point x="7942.875" y="23993.0" />
+      <point x="8298.833333333334" y="23993.0" />
+      <point x="-72.66666666666606" y="83.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.metadata.schema.OSchemaShared" target="com.orientechnologies.orient.core.metadata.schema.OSchema">
+      <point x="258.5" y="-464.5" />
+      <point x="5690.360119047619" y="18169.0" />
+      <point x="6246.625198412698" y="18169.0" />
+      <point x="-154.75" y="264.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.index.hashindex.local.cache.OReadWriteDiskCache" target="com.orientechnologies.orient.core.index.hashindex.local.cache.ODiskCache">
+      <point x="0.0" y="-584.5" />
+      <point x="0.0" y="284.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.index.OIndexManagerAbstract" target="com.orientechnologies.orient.core.type.ODocumentWrapperNoClass">
+      <point x="-237.75" y="-414.5" />
+      <point x="4070.75" y="18169.0" />
+      <point x="4230.125198412698" y="18169.0" />
+      <point x="0.0" y="104.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.db.record.ODatabaseRecordAbstract" target="com.orientechnologies.orient.core.db.record.ODatabaseRecord">
+      <point x="506.75" y="-884.5" />
+      <point x="4906.75" y="4574.0" />
+      <point x="6337.263888888888" y="4574.0" />
+      <point x="-137.75" y="144.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.schedule.OSchedulerTrigger" target="com.orientechnologies.orient.core.hook.ODocumentHookAbstract">
+      <point x="0.0" y="-64.0" />
+      <point x="10458.25" y="22366.0" />
+      <point x="11918.916666666666" y="22366.0" />
+      <point x="-317.08333333333394" y="324.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.cache.OCacheLevelTwoLocatorLocal" target="com.orientechnologies.orient.core.cache.OCacheLevelTwoLocator">
+      <point x="0.0" y="-53.5" />
+      <point x="14610.0" y="25860.0" />
+      <point x="14536.0" y="25860.0" />
+      <point x="49.0" y="23.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.index.OIndexOneValue" target="com.orientechnologies.orient.core.index.OIndexAbstract">
+      <point x="0.0" y="-184.0" />
+      <point x="9828.715277777777" y="5171.0" />
+      <point x="9894.625" y="5171.0" />
+      <point x="500.0" y="914.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.metadata.security.OSecurityNull" target="com.orientechnologies.orient.core.metadata.security.OSecurity">
+      <point x="0.0" y="-254.0" />
+      <point x="10500.369444444445" y="18159.0" />
+      <point x="10474.0001984127" y="18159.0" />
+      <point x="0.0" y="254.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.index.OAbstractIndexDefinitionMultiValue" target="com.orientechnologies.orient.core.index.OPropertyIndexDefinition">
+      <point x="-112.0" y="-44.0" />
+      <point x="8754.2501984127" y="20977.0" />
+      <point x="8013.500198412698" y="20977.0" />
+      <point x="0.0" y="234.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.id.OClusterPositionLong" target="com.orientechnologies.orient.core.id.OClusterPosition">
+      <point x="0.0" y="-194.5" />
+      <point x="5831.25" y="25208.0" />
+      <point x="5675.75" y="25208.0" />
+      <point x="102.5" y="114.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.cache.OCacheLevelOneLocatorImpl" target="com.orientechnologies.orient.core.cache.OCacheLevelOneLocator">
+      <point x="0.0" y="-23.5" />
+      <point x="0.0" y="23.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.command.OCommandRequestAbstract" target="com.orientechnologies.orient.core.command.OCommandRequestInternal">
+      <point x="0.0" y="-234.5" />
+      <point x="7678.1" y="13080.0" />
+      <point x="8152.455333333335" y="13080.0" />
+      <point x="-42.25" y="54.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.serialization.serializer.stream.OStreamSerializerAnyRuntime" target="com.orientechnologies.orient.core.serialization.serializer.stream.OStreamSerializer">
+      <point x="0.0" y="-64.5" />
+      <point x="22229.5" y="23959.0" />
+      <point x="22692.25" y="23959.0" />
+      <point x="-22.5" y="44.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.iterator.ORecordIteratorClass" target="com.orientechnologies.orient.core.iterator.ORecordIteratorClusters">
+      <point x="0.0" y="-94.5" />
+      <point x="0.0" y="194.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.serialization.serializer.object.OObjectSerializerHelperDocument" target="com.orientechnologies.orient.core.serialization.serializer.object.OObjectSerializerHelperInterface">
+      <point x="0.0" y="-94.0" />
+      <point x="0.0" y="53.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.db.document.ODatabaseDocumentPool" target="com.orientechnologies.orient.core.db.ODatabasePoolBase">
+      <point x="0.0" y="-54.0" />
+      <point x="10469.25" y="25348.0" />
+      <point x="10453.0" y="25348.0" />
+      <point x="138.0" y="184.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.storage.OStorageEmbedded" target="com.orientechnologies.orient.core.storage.OStorageAbstract">
+      <point x="0.0" y="-214.0" />
+      <point x="0.0" y="314.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.type.tree.provider.OMVRBTreeEntryDataProviderAbstract" target="com.orientechnologies.orient.core.serialization.OSerializableStream">
+      <point x="-291.33333333333394" y="-384.5" />
+      <point x="12881.043333333331" y="11491.0" />
+      <point x="9146.525" y="11491.0" />
+      <point x="55.29999999999927" y="33.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.type.tree.provider.OMVRBTreeMapProvider" target="com.orientechnologies.orient.core.type.tree.provider.OMVRBTreeProviderAbstract">
+      <point x="0.0" y="-204.5" />
+      <point x="8287.1" y="13070.0" />
+      <point x="7891.705333333335" y="13070.0" />
+      <point x="198.5" y="344.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.index.OPropertyMapIndexDefinition" target="com.orientechnologies.orient.core.index.OAbstractIndexDefinitionMultiValue">
+      <point x="115.5" y="-184.5" />
+      <point x="8750.7501984127" y="21140.0" />
+      <point x="8754.2501984127" y="21140.0" />
+      <point x="-112.0" y="44.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.storage.impl.local.paginated.wal.OAtomicUnitStartRecord" target="com.orientechnologies.orient.core.storage.impl.local.paginated.wal.OWALRecord">
+      <point x="84.5" y="-104.5" />
+      <point x="2949.5" y="23959.0" />
+      <point x="2618.7500000000005" y="23959.0" />
+      <point x="62.25" y="64.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.storage.fs.OFileClassic" target="com.orientechnologies.orient.core.storage.fs.OAbstractFile">
+      <point x="0.0" y="-364.5" />
+      <point x="12727.869444444445" y="19394.0" />
+      <point x="12696.869444444445" y="19394.0" />
+      <point x="-467.0" y="894.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.engine.OEngineAbstract" target="com.orientechnologies.orient.core.engine.OEngine">
+      <point x="0.0" y="-43.5" />
+      <point x="0.0" y="64.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.record.ORecordAbstract" target="com.orientechnologies.orient.core.record.ORecordInternal">
+      <point x="-343.75" y="-634.5" />
+      <point x="11404.376666666667" y="13080.0" />
+      <point x="11136.293333333331" y="13080.0" />
+      <point x="176.66666666666606" y="104.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.processor.block.OAbstractBlock" target="com.orientechnologies.orient.core.processor.block.OProcessorBlock">
+      <point x="0.0" y="-274.5" />
+      <point x="0.0" y="44.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.exception.OFastConcurrentModificationException" target="com.orientechnologies.orient.core.exception.OConcurrentModificationException">
+      <point x="0.0" y="-94.5" />
+      <point x="0.0" y="134.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.storage.fs.OMMapManagerOld" target="com.orientechnologies.orient.core.storage.fs.OMMapManagerAbstract">
+      <point x="196.0" y="-344.5" />
+      <point x="8179.0" y="24090.0" />
+      <point x="8292.75" y="24090.0" />
+      <point x="-78.75" y="23.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.db.record.ORecordLazySet" target="com.orientechnologies.orient.core.db.record.ORecordLazyListener">
+      <point x="0.0" y="-404.5" />
+      <point x="6086.1" y="13070.0" />
+      <point x="6445.720333333336" y="13070.0" />
+      <point x="0.0" y="23.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.type.tree.provider.OMVRBTreeMapEntryProvider" target="com.orientechnologies.orient.core.type.tree.provider.OMVRBTreeEntryDataProviderAbstract">
+      <point x="0.0" y="-374.0" />
+      <point x="13562.126666666667" y="13080.0" />
+      <point x="13390.876666666667" y="13080.0" />
+      <point x="218.5" y="384.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.index.engine.OSBTreeIndexEngine" target="com.orientechnologies.orient.core.index.OIndexEngine">
+      <point x="0.0" y="-414.5" />
+      <point x="14055.25" y="22307.0" />
+      <point x="15668.05" y="22307.0" />
+      <point x="-303.2000000000007" y="354.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.record.impl.ORecordFlat" target="com.orientechnologies.orient.core.record.ORecordStringable">
+      <point x="-113.5" y="-174.5" />
+      <point x="0.0" y="33.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.index.sbtree.local.OSBTreeBucket" target="com.orientechnologies.orient.core.storage.impl.local.paginated.base.ODurablePage">
+      <point x="0.0" y="-334.5" />
+      <point x="2247.0" y="22108.0" />
+      <point x="1975.6666666666665" y="22108.0" />
+      <point x="52.666666666666515" y="244.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.command.script.OCommandExecutorScript" target="com.orientechnologies.orient.core.command.OCommandExecutorAbstract">
+      <point x="0.0" y="-74.5" />
+      <point x="2912.5" y="25526.0" />
+      <point x="2882.5" y="25526.0" />
+      <point x="121.0" y="154.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.db.ODefaultDataSegmentStrategy" target="com.orientechnologies.orient.core.db.ODataSegmentStrategy">
+      <point x="0.0" y="-23.5" />
+      <point x="0.0" y="23.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.collate.OCaseInsensitiveCollate" target="com.orientechnologies.orient.core.collate.OCollate">
+      <point x="0.0" y="-34.0" />
+      <point x="13907.5" y="25881.0" />
+      <point x="13859.5" y="25881.0" />
+      <point x="48.75" y="34.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.index.hashindex.local.OHashIndexFactory" target="com.orientechnologies.orient.core.index.OIndexFactory">
+      <point x="0.0" y="-44.5" />
+      <point x="23347.25" y="25047.0" />
+      <point x="23387.5" y="25047.0" />
+      <point x="-107.75" y="34.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.index.OIndexTxAwareOneValue" target="com.orientechnologies.orient.core.index.OIndexTxAware">
+      <point x="0.0" y="-83.5" />
+      <point x="10420.25" y="5171.0" />
+      <point x="10521.5" y="5171.0" />
+      <point x="-77.25" y="84.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.command.traverse.OTraverseAbstractProcess" target="com.orientechnologies.orient.core.command.OCommandProcess">
+      <point x="0.0" y="-34.0" />
+      <point x="0.0" y="64.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.index.OClassIndexManager" target="com.orientechnologies.orient.core.hook.ODocumentHookAbstract">
+      <point x="0.0" y="-404.5" />
+      <point x="11907.75" y="22386.0" />
+      <point x="12172.583333333334" y="22386.0" />
+      <point x="-63.41666666666606" y="324.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.iterator.ORecordIteratorClusters" target="com.orientechnologies.orient.core.iterator.OIdentifiableIterator">
+      <point x="0.0" y="-194.5" />
+      <point x="18778.0" y="22513.0" />
+      <point x="18728.5" y="22513.0" />
+      <point x="-262.25" y="454.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.index.OIndexManagerAbstract" target="com.orientechnologies.orient.core.index.OIndexManager">
+      <point x="237.75" y="-414.5" />
+      <point x="4546.25" y="18169.0" />
+      <point x="4753.208531746031" y="18169.0" />
+      <point x="-200.66666666666697" y="244.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.index.OIndexDefinition" target="com.orientechnologies.orient.core.index.OIndexCallback">
+      <point x="0.0" y="-164.0" />
+      <point x="0.0" y="23.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.db.object.ODatabaseObject" target="com.orientechnologies.orient.core.db.ODatabaseSchemaAware">
+      <point x="0.0" y="-124.0" />
+      <point x="7315.5" y="4574.0" />
+      <point x="7284.071969696968" y="4574.0" />
+      <point x="48.25" y="33.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.id.OImmutableRecordId" target="com.orientechnologies.orient.core.id.ORecordId">
+      <point x="0.0" y="-84.0" />
+      <point x="0.0" y="354.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.storage.impl.local.ODataLocalHole" target="com.orientechnologies.orient.core.storage.impl.local.OSingleFileSegment">
+      <point x="0.0" y="-264.5" />
+      <point x="11909.5" y="24220.0" />
+      <point x="12303.7" y="24220.0" />
+      <point x="-108.79999999999927" y="194.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.fetch.remote.ORemoteFetchContext" target="com.orientechnologies.orient.core.fetch.OFetchContext">
+      <point x="0.0" y="-143.5" />
+      <point x="16958.5" y="24113.0" />
+      <point x="17134.5" y="24113.0" />
+      <point x="-131.5" y="143.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.db.ODatabase" target="com.orientechnologies.orient.core.util.OBackupable">
+      <point x="0.0" y="-564.0" />
+      <point x="5153.875" y="92.0" />
+      <point x="2980.238636363635" y="92.0" />
+      <point x="102.0" y="33.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.type.tree.OMVRBTreeRIDSet" target="com.orientechnologies.orient.core.db.record.OTrackedMultiValue">
+      <point x="0.0" y="-344.5" />
+      <point x="5059.0" y="12990.0" />
+      <point x="3952.9553333333356" y="12990.0" />
+      <point x="3952.9553333333356" y="10893.0" />
+      <point x="3895.625" y="10893.0" />
+      <point x="-80.59999999999991" y="54.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.processor.OComposableProcessor" target="com.orientechnologies.orient.core.processor.OProcessor">
+      <point x="0.0" y="-94.5" />
+      <point x="0.0" y="23.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.index.OIndexManagerShared" target="com.orientechnologies.orient.core.index.OIndexManager">
+      <point x="96.25" y="-144.0" />
+      <point x="4794.5" y="18169.0" />
+      <point x="4953.875198412698" y="18169.0" />
+      <point x="0.0" y="244.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.index.OIndexAbstractDelegate" target="com.orientechnologies.orient.core.index.OIndex">
+      <point x="0.0" y="-594.5" />
+      <point x="10598.75" y="1133.0" />
+      <point x="10614.715277777777" y="1133.0" />
+      <point x="0.0" y="554.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.version.OSimpleVersion" target="com.orientechnologies.orient.core.version.ORecordVersion">
+      <point x="0.0" y="-274.5" />
+      <point x="23040.071428571428" y="22052.0" />
+      <point x="23285.321428571428" y="22052.0" />
+      <point x="-132.75" y="224.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.index.OAbstractIndexDefinitionMultiValue" target="com.orientechnologies.orient.core.index.OIndexDefinitionMultiValue">
+      <point x="112.0" y="-44.0" />
+      <point x="8978.2501984127" y="20997.0" />
+      <point x="9745.369444444445" y="20997.0" />
+      <point x="0.0" y="33.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.processor.block.OIfBlock" target="com.orientechnologies.orient.core.processor.block.OAbstractBlock">
+      <point x="0.0" y="-44.5" />
+      <point x="6118.0" y="24528.0" />
+      <point x="6308.444444444444" y="24528.0" />
+      <point x="-153.55555555555566" y="274.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.record.ORecordInternal" target="com.orientechnologies.orient.core.serialization.OSerializableStream">
+      <point x="-132.5" y="-104.0" />
+      <point x="10827.126666666667" y="11501.0" />
+      <point x="9130.725" y="11501.0" />
+      <point x="39.5" y="33.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.type.ODocumentWrapperNoClass" target="com.orientechnologies.orient.core.type.ODocumentWrapper">
+      <point x="0.0" y="-104.0" />
+      <point x="0.0" y="174.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.id.OClusterPositionNodeId" target="com.orientechnologies.orient.core.id.OClusterPosition">
+      <point x="0.0" y="-204.5" />
+      <point x="5315.25" y="25208.0" />
+      <point x="5470.75" y="25208.0" />
+      <point x="-102.5" y="114.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.command.script.formatter.OSQLScriptFormatter" target="com.orientechnologies.orient.core.command.script.formatter.OScriptFormatter">
+      <point x="0.0" y="-33.5" />
+      <point x="0.0" y="33.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.entity.OEntityManagerInternal" target="com.orientechnologies.orient.core.entity.OEntityManager">
+      <point x="0.0" y="-23.5" />
+      <point x="0.0" y="184.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.db.record.ODatabaseRecord" target="com.orientechnologies.orient.core.db.ODatabaseComplex">
+      <point x="0.0" y="-144.0" />
+      <point x="6475.013888888888" y="3130.0" />
+      <point x="6390.930555555555" y="3130.0" />
+      <point x="-308.33333333333303" y="414.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.db.record.ORecordTrackedSet" target="com.orientechnologies.orient.core.db.record.ORecordElement">
+      <point x="0.0" y="-184.5" />
+      <point x="6289.515222222224" y="10893.0" />
+      <point x="6253.474999999999" y="10893.0" />
+      <point x="15.08333333333303" y="54.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.processor.block.OIterateBlock" target="com.orientechnologies.orient.core.processor.block.OAbstractBlock">
+      <point x="0.0" y="-44.5" />
+      <point x="6290.0" y="24538.0" />
+      <point x="6385.222222222223" y="24538.0" />
+      <point x="-76.77777777777737" y="274.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.serialization.serializer.record.string.ORecordSerializerDocument2Binary" target="com.orientechnologies.orient.core.serialization.serializer.record.ORecordSerializer">
+      <point x="0.0" y="-74.0" />
+      <point x="22345.571428571428" y="21671.0" />
+      <point x="22331.75" y="21671.0" />
+      <point x="0.0" y="33.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.index.OIndexTxAware" target="com.orientechnologies.orient.core.index.OIndexAbstractDelegate">
+      <point x="0.0" y="-84.5" />
+      <point x="0.0" y="594.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.record.ORecordSchemaAware" target="com.orientechnologies.orient.core.record.ORecordInternal">
+      <point x="0.0" y="-144.0" />
+      <point x="10545.876666666667" y="13080.0" />
+      <point x="10782.96" y="13080.0" />
+      <point x="-176.66666666666606" y="104.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.command.OBasicCommandContext" target="com.orientechnologies.orient.core.command.OCommandContext">
+      <point x="0.0" y="-254.5" />
+      <point x="0.0" y="114.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.cache.ODefaultCache" target="com.orientechnologies.orient.core.cache.OAbstractMapCache">
+      <point x="0.0" y="-84.0" />
+      <point x="136.0" y="174.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.type.tree.OMVRBTreeDatabase" target="com.orientechnologies.orient.core.type.tree.OMVRBTreePersistent">
+      <point x="0.0" y="-23.5" />
+      <point x="-1.1368683772161603E-13" y="704.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.metadata.schema.OSchemaProxy" target="com.orientechnologies.orient.core.db.record.OProxedResource">
+      <point x="178.75" y="-324.0" />
+      <point x="7167.110119047619" y="18139.0" />
+      <point x="7562.950198412698" y="18139.0" />
+      <point x="-28.800000000000182" y="44.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.fetch.remote.ORemoteFetchListener" target="com.orientechnologies.orient.core.fetch.OFetchListener">
+      <point x="0.0" y="-84.0" />
+      <point x="22354.25" y="25126.0" />
+      <point x="22446.25" y="25126.0" />
+      <point x="-168.75" y="73.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.serialization.serializer.stream.OStreamSerializerAnyStreamable" target="com.orientechnologies.orient.core.serialization.serializer.stream.OStreamSerializer">
+      <point x="0.0" y="-124.5" />
+      <point x="22553.0" y="23969.0" />
+      <point x="22707.25" y="23969.0" />
+      <point x="-7.5" y="44.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.serialization.serializer.stream.OStreamSerializerRID" target="com.orientechnologies.orient.core.serialization.serializer.stream.OStreamSerializer">
+      <point x="0.0" y="-204.5" />
+      <point x="21877.5" y="23949.0" />
+      <point x="22677.25" y="23949.0" />
+      <point x="-37.5" y="44.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.command.OCommandRequestInternal" target="com.orientechnologies.orient.core.command.OCommandRequest">
+      <point x="-42.25" y="-54.0" />
+      <point x="8152.455333333335" y="11461.0" />
+      <point x="7202.8317777777775" y="11461.0" />
+      <point x="81.5" y="104.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.index.OIndexManagerProxy" target="com.orientechnologies.orient.core.index.OIndexManager">
+      <point x="-160.5" y="-264.0" />
+      <point x="6129.360119047619" y="18149.0" />
+      <point x="5154.541865079365" y="18149.0" />
+      <point x="200.66666666666697" y="244.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.cache.OEmptyCache" target="com.orientechnologies.orient.core.cache.OCache">
+      <point x="0.0" y="-154.0" />
+      <point x="14463.0" y="24134.0" />
+      <point x="14107.833333333334" y="24134.0" />
+      <point x="126.33333333333394" y="154.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.serialization.serializer.stream.OStreamSerializerInteger" target="com.orientechnologies.orient.core.serialization.serializer.stream.OStreamSerializer">
+      <point x="0.0" y="-64.5" />
+      <point x="20581.5" y="23919.0" />
+      <point x="22632.25" y="23919.0" />
+      <point x="-82.5" y="44.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.type.tree.OMVRBTreeDatabaseLazySave" target="com.orientechnologies.orient.core.type.tree.OMVRBTreeDatabase">
+      <point x="0.0" y="-114.5" />
+      <point x="0.0" y="23.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.storage.impl.local.paginated.OPaginatedCluster" target="com.orientechnologies.orient.core.storage.impl.local.paginated.base.ODurableComponent">
+      <point x="466.25" y="-874.5" />
+      <point x="18341.369444444445" y="17620.0" />
+      <point x="18935.154861111114" y="17620.0" />
+      <point x="-153.0" y="114.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.cache.OCacheLevelTwoLocatorRemote" target="com.orientechnologies.orient.core.cache.OCacheLevelTwoLocator">
+      <point x="0.0" y="-23.5" />
+      <point x="14364.0" y="25860.0" />
+      <point x="14438.0" y="25860.0" />
+      <point x="-49.0" y="23.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.serialization.serializer.record.string.ORecordSerializerCSVAbstract" target="com.orientechnologies.orient.core.serialization.serializer.record.string.ORecordSerializerStringAbstract">
+      <point x="0.0" y="-124.0" />
+      <point x="21711.25" y="22149.0" />
+      <point x="21800.321428571428" y="22149.0" />
+      <point x="-139.75" y="214.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.index.OIndexInternal" target="com.orientechnologies.orient.core.index.OIndex">
+      <point x="167.75" y="-274.5" />
+      <point x="9562.375" y="1133.0" />
+      <point x="10091.048611111111" y="1133.0" />
+      <point x="-523.6666666666661" y="554.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.tx.OTransactionOptimistic" target="com.orientechnologies.orient.core.tx.OTransactionRealAbstract">
+      <point x="0.0" y="-164.5" />
+      <point x="0.0" y="284.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.index.sbtreebonsai.local.OSBTreeBonsai" target="com.orientechnologies.orient.core.index.sbtree.OTreeInternal">
+      <point x="327.75" y="-564.5" />
+      <point x="19810.869444444445" y="17620.0" />
+      <point x="20896.154861111114" y="17620.0" />
+      <point x="-40.5" y="53.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.storage.impl.local.ODataLocal" target="com.orientechnologies.orient.core.storage.impl.local.OMultiFileSegment">
+      <point x="251.25" y="-444.5" />
+      <point x="0.0" y="344.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.index.OIndexTxAwareMultiValue" target="com.orientechnologies.orient.core.index.OIndexTxAware">
+      <point x="0.0" y="-63.5" />
+      <point x="10777.25" y="5171.0" />
+      <point x="10676.0" y="5171.0" />
+      <point x="77.25" y="84.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.metadata.schema.OClassImpl" target="com.orientechnologies.orient.core.type.ODocumentWrapperNoClass">
+      <point x="573.5" y="-1094.5" />
+      <point x="1720.5" y="18149.0" />
+      <point x="4104.525198412698" y="18149.0" />
+      <point x="-125.60000000000036" y="104.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.storage.impl.local.paginated.wal.OAtomicUnitStartRecord" target="com.orientechnologies.orient.core.storage.impl.local.paginated.wal.OOperationUnitRecord">
+      <point x="-84.5" y="-104.5" />
+      <point x="2780.5" y="24263.0" />
+      <point x="2451.522435897436" y="24263.0" />
+      <point x="118.66666666666652" y="94.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.storage.impl.local.OMultiFileSegment" target="com.orientechnologies.orient.core.storage.impl.local.OSegment">
+      <point x="0.0" y="-344.5" />
+      <point x="0.0" y="44.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.query.OQueryAbstract" target="com.orientechnologies.orient.core.command.OCommandRequestAbstract">
+      <point x="56.5" y="-54.0" />
+      <point x="7480.35" y="14409.0" />
+      <point x="7512.1" y="14409.0" />
+      <point x="-166.0" y="234.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.processor.block.OLetBlock" target="com.orientechnologies.orient.core.processor.block.OAbstractBlock">
+      <point x="0.0" y="-44.5" />
+      <point x="0.0" y="274.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.fetch.json.OJSONFetchContext" target="com.orientechnologies.orient.core.fetch.OFetchContext">
+      <point x="0.0" y="-264.5" />
+      <point x="17573.5" y="24113.0" />
+      <point x="17397.5" y="24113.0" />
+      <point x="131.5" y="143.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.serialization.serializer.string.OStringSerializerAnyStreamable" target="com.orientechnologies.orient.core.serialization.serializer.string.OStringSerializer">
+      <point x="0.0" y="-64.5" />
+      <point x="4046.0" y="25901.0" />
+      <point x="4290.166666666667" y="25901.0" />
+      <point x="-102.33333333333303" y="44.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.storage.impl.local.paginated.wal.OFuzzyCheckpointStartRecord" target="com.orientechnologies.orient.core.storage.impl.local.paginated.wal.OAbstractCheckPointStartRecord">
+      <point x="0.0" y="-54.5" />
+      <point x="1409.0000000000002" y="24263.0" />
+      <point x="1433.2500000000002" y="24263.0" />
+      <point x="-104.75" y="104.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.index.OPropertyMapIndexDefinition" target="com.orientechnologies.orient.core.index.OIndexDefinitionMultiValue">
+      <point x="-115.5" y="-184.5" />
+      <point x="8519.7501984127" y="21140.0" />
+      <point x="8574.0001984127" y="21140.0" />
+      <point x="8574.0001984127" y="20987.0" />
+      <point x="9663.70277777778" y="20987.0" />
+      <point x="-81.66666666666606" y="33.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.record.ORecordSchemaAwareAbstract" target="com.orientechnologies.orient.core.record.ORecordSchemaAware">
+      <point x="-109.5" y="-184.5" />
+      <point x="10840.873444444445" y="14389.0" />
+      <point x="10545.876666666667" y="14389.0" />
+      <point x="0.0" y="144.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.command.script.OCommandScript" target="com.orientechnologies.orient.core.command.OCommandRequestTextAbstract">
+      <point x="0.0" y="-94.5" />
+      <point x="8451.955333333335" y="14818.0" />
+      <point x="8484.80366666667" y="14818.0" />
+      <point x="-66.0" y="104.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.command.OCommandRequestText" target="com.orientechnologies.orient.core.command.OCommandRequestInternal">
+      <point x="-37.25" y="-23.5" />
+      <point x="8670.723555555558" y="13060.0" />
+      <point x="8236.955333333335" y="13060.0" />
+      <point x="42.25" y="54.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.storage.impl.local.ODataLocal" target="com.orientechnologies.orient.core.storage.ODataSegment">
+      <point x="-251.25" y="-444.5" />
+      <point x="7365.75" y="22431.0" />
+      <point x="7002.5" y="22431.0" />
+      <point x="41.5" y="54.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.db.record.ORecordLazyList" target="com.orientechnologies.orient.core.db.record.ORecordTrackedList">
+      <point x="258.25" y="-444.5" />
+      <point x="3030.75" y="13040.0" />
+      <point x="4265.955333333335" y="13040.0" />
+      <point x="0.0" y="43.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.metadata.security.ORole" target="com.orientechnologies.orient.core.type.ODocumentWrapper">
+      <point x="0.0" y="-304.5" />
+      <point x="1580.7444444444445" y="16996.0" />
+      <point x="4077.1251984126984" y="16996.0" />
+      <point x="-153.0" y="174.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.index.engine.ORemoteIndexEngine" target="com.orientechnologies.orient.core.index.OIndexEngine">
+      <point x="0.0" y="-354.0" />
+      <point x="0.0" y="354.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.command.traverse.OTraverseMultiValueDepthFirstProcess" target="com.orientechnologies.orient.core.command.traverse.OTraverseAbstractProcess">
+      <point x="0.0" y="-64.5" />
+      <point x="13873.25" y="25221.0" />
+      <point x="14250.05" y="25221.0" />
+      <point x="-67.20000000000073" y="34.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.index.sbtree.local.OSBTree" target="com.orientechnologies.orient.core.index.sbtree.OTreeInternal">
+      <point x="295.25" y="-544.5" />
+      <point x="21044.369444444445" y="17620.0" />
+      <point x="20977.154861111114" y="17620.0" />
+      <point x="40.5" y="53.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.db.tool.ODatabaseCompare" target="com.orientechnologies.orient.core.db.tool.ODatabaseImpExpAbstract">
+      <point x="0.0" y="-184.5" />
+      <point x="19792.75" y="22293.0" />
+      <point x="19972.916666666668" y="22293.0" />
+      <point x="-276.3333333333321" y="344.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.db.record.ODatabaseRecordAbstract" target="com.orientechnologies.orient.core.db.ODatabaseWrapperAbstract">
+      <point x="-506.75" y="-884.5" />
+      <point x="3893.25" y="4574.0" />
+      <point x="4157.691919191919" y="4574.0" />
+      <point x="-364.75" y="694.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.serialization.serializer.string.OStringSerializerAnyRuntime" target="com.orientechnologies.orient.core.serialization.serializer.string.OStringSerializer">
+      <point x="0.0" y="-64.5" />
+      <point x="4731.5" y="25901.0" />
+      <point x="4494.833333333333" y="25901.0" />
+      <point x="102.33333333333303" y="44.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.db.record.OTrackedSet" target="com.orientechnologies.orient.core.db.record.ORecordElement">
+      <point x="126.25" y="-184.5" />
+      <point x="5890.765222222224" y="10893.0" />
+      <point x="6223.308333333333" y="10893.0" />
+      <point x="-15.08333333333303" y="54.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.storage.OAutoshardedStorage" target="com.orientechnologies.orient.core.storage.OStorage">
+      <point x="0.0" y="-23.5" />
+      <point x="2407.446969696968" y="1491.0" />
+      <point x="1786.0719696969682" y="1491.0" />
+      <point x="498.33333333333326" y="674.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.index.OSimpleKeyIndexDefinition" target="com.orientechnologies.orient.core.index.OAbstractIndexDefinition">
+      <point x="0.0" y="-174.5" />
+      <point x="6536.854563492065" y="20398.0" />
+      <point x="8083.110119047619" y="20398.0" />
+      <point x="-57.75" y="34.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.version.ODistributedVersion" target="com.orientechnologies.orient.core.version.ORecordVersion">
+      <point x="0.0" y="-334.5" />
+      <point x="23796.071428571428" y="22052.0" />
+      <point x="23550.821428571428" y="22052.0" />
+      <point x="132.75" y="224.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.config.OStorageEHClusterConfiguration" target="com.orientechnologies.orient.core.config.OStorageClusterConfiguration">
+      <point x="0.0" y="-104.0" />
+      <point x="4417.5" y="25091.0" />
+      <point x="4289.125" y="25091.0" />
+      <point x="22.125" y="53.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.serialization.serializer.stream.OStreamSerializerRecord" target="com.orientechnologies.orient.core.serialization.serializer.stream.OStreamSerializer">
+      <point x="0.0" y="-64.5" />
+      <point x="24788.5" y="23909.0" />
+      <point x="22812.25" y="23909.0" />
+      <point x="97.5" y="44.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.storage.impl.local.OClusterLocal" target="com.orientechnologies.orient.core.storage.OCluster">
+      <point x="1.8189894035458565E-12" y="-764.5" />
+      <point x="16113.619444444448" y="17620.0" />
+      <point x="15544.919444444444" y="17620.0" />
+      <point x="250.79999999999927" y="484.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.storage.impl.local.paginated.wal.OFullCheckpointStartRecord" target="com.orientechnologies.orient.core.storage.impl.local.paginated.wal.OAbstractCheckPointStartRecord">
+      <point x="0.0" y="-54.5" />
+      <point x="1667.0000000000002" y="24263.0" />
+      <point x="1642.7500000000002" y="24263.0" />
+      <point x="104.75" y="104.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.command.script.OCommandExecutorFunction" target="com.orientechnologies.orient.core.command.OCommandExecutorAbstract">
+      <point x="0.0" y="-74.5" />
+      <point x="2610.5" y="25526.0" />
+      <point x="2640.5" y="25526.0" />
+      <point x="-121.0" y="154.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.command.traverse.OTraverseContext" target="com.orientechnologies.orient.core.command.OBasicCommandContext">
+      <point x="0.0" y="-164.5" />
+      <point x="0.0" y="254.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.metadata.security.OUser" target="com.orientechnologies.orient.core.type.ODocumentWrapper">
+      <point x="0.0" y="-194.5" />
+      <point x="5824.875198412698" y="16996.0" />
+      <point x="4383.125198412698" y="16996.0" />
+      <point x="153.0" y="174.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.db.record.OTrackedList" target="com.orientechnologies.orient.core.db.record.ORecordElement">
+      <point x="151.25" y="-234.5" />
+      <point x="4417.205333333335" y="10873.0" />
+      <point x="6162.974999999999" y="10873.0" />
+      <point x="-75.41666666666697" y="54.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.storage.impl.memory.OStorageMemory" target="com.orientechnologies.orient.core.storage.OStorageEmbedded">
+      <point x="0.0" y="-564.5" />
+      <point x="-150.25" y="214.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.processor.block.OFunctionBlock" target="com.orientechnologies.orient.core.processor.block.OAbstractBlock">
+      <point x="0.0" y="-44.5" />
+      <point x="5946.0" y="24518.0" />
+      <point x="6231.666666666667" y="24518.0" />
+      <point x="-230.33333333333303" y="274.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.type.tree.provider.OMVRBTreeRIDProvider" target="com.orientechnologies.orient.core.serialization.serializer.string.OStringBuilderSerializable">
+      <point x="-168.75" y="-254.5" />
+      <point x="6750.85" y="12970.0" />
+      <point x="5695.9" y="12970.0" />
+      <point x="103.0" y="33.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.storage.impl.memory.OClusterMemory" target="com.orientechnologies.orient.core.storage.OCluster">
+      <point x="0.0" y="-354.5" />
+      <point x="14815.369444444445" y="17620.0" />
+      <point x="15043.319444444445" y="17620.0" />
+      <point x="-250.79999999999927" y="484.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.type.tree.OMVRBTreeRID" target="com.orientechnologies.orient.core.db.record.ORecordLazyMultiValue">
+      <point x="409.66666666666674" y="-484.5" />
+      <point x="2030.166666666667" y="13020.0" />
+      <point x="3173.481777777776" y="13020.0" />
+      <point x="-123.33333333333348" y="54.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.record.ORecordSchemaAwareAbstract" target="com.orientechnologies.orient.core.record.ORecordAbstract">
+      <point x="109.5" y="-184.5" />
+      <point x="11059.873444444445" y="14409.0" />
+      <point x="11748.126666666667" y="14409.0" />
+      <point x="0.0" y="634.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.db.record.ORecordLazyMap" target="com.orientechnologies.orient.core.db.record.ORecordLazyMultiValue">
+      <point x="-138.25" y="-234.5" />
+      <point x="3447.25" y="13030.0" />
+      <point x="3272.148444444444" y="13030.0" />
+      <point x="-24.666666666666515" y="54.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.metadata.security.OUserTrigger" target="com.orientechnologies.orient.core.hook.ODocumentHookAbstract">
+      <point x="0.0" y="-54.0" />
+      <point x="12564.25" y="22386.0" />
+      <point x="12299.416666666666" y="22386.0" />
+      <point x="63.41666666666606" y="324.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.storage.fs.OAbstractFile" target="com.orientechnologies.orient.core.storage.fs.OFile">
+      <point x="0.0" y="-894.5" />
+      <point x="0.0" y="454.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.command.OCommandRequestTextAbstract" target="com.orientechnologies.orient.core.command.OCommandRequestAbstract">
+      <point x="-66.0" y="-104.5" />
+      <point x="8484.80366666667" y="14409.0" />
+      <point x="7844.1" y="14409.0" />
+      <point x="166.0" y="234.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.schedule.OSchedulerListenerProxy" target="com.orientechnologies.orient.core.db.record.OProxedResource">
+      <point x="-81.0" y="-84.0" />
+      <point x="9836.869444444445" y="18089.0" />
+      <point x="7649.350198412699" y="18089.0" />
+      <point x="57.600000000000364" y="44.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.storage.impl.local.OStorageLocalAbstract" target="com.orientechnologies.orient.core.storage.impl.local.OFreezableStorage">
+      <point x="157.5" y="-234.5" />
+      <point x="0.0" y="33.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.db.document.ODatabaseDocumentTxPooled" target="com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx">
+      <point x="-97.0" y="-104.5" />
+      <point x="5882.0" y="10446.0" />
+      <point x="5945.0" y="10446.0" />
+      <point x="5945.0" y="8487.0" />
+      <point x="6391.5" y="8487.0" />
+      <point x="-192.25" y="244.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.index.OAbstractIndexDefinition" target="com.orientechnologies.orient.core.type.ODocumentWrapperNoClass">
+      <point x="-38.50000000000091" y="-34.0" />
+      <point x="8102.360119047618" y="18109.0" />
+      <point x="4355.725198412699" y="18109.0" />
+      <point x="125.60000000000036" y="104.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.storage.impl.local.paginated.wal.OCheckpointEndRecord" target="com.orientechnologies.orient.core.storage.impl.local.paginated.wal.OWALRecord">
+      <point x="0.0" y="-94.5" />
+      <point x="3119.0" y="23949.0" />
+      <point x="2660.2500000000005" y="23949.0" />
+      <point x="103.75" y="64.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.index.sbtree.local.OSBTreeValuePage" target="com.orientechnologies.orient.core.storage.impl.local.paginated.base.ODurablePage">
+      <point x="0.0" y="-134.5" />
+      <point x="1131.0" y="22098.0" />
+      <point x="1765.0" y="22098.0" />
+      <point x="-158.0" y="244.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.index.OCompositeIndexDefinition" target="com.orientechnologies.orient.core.index.OAbstractIndexDefinition">
+      <point x="0.0" y="-264.5" />
+      <point x="9214.0001984127" y="20398.0" />
+      <point x="8198.610119047618" y="20398.0" />
+      <point x="57.74999999999909" y="34.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.index.hashindex.local.OMurmurHash3HashFunction" target="com.orientechnologies.orient.core.index.hashindex.local.OHashFunction">
+      <point x="0.0" y="-54.5" />
+      <point x="0.0" y="23.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.command.OCommandRequestText" target="com.orientechnologies.orient.core.serialization.OSerializableStream">
+      <point x="37.25" y="-23.5" />
+      <point x="8745.223555555558" y="13080.0" />
+      <point x="8999.126666666667" y="13080.0" />
+      <point x="8999.126666666667" y="11521.0" />
+      <point x="9083.325" y="11521.0" />
+      <point x="-7.899999999999636" y="33.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.storage.impl.memory.OClusterMemoryHashing" target="com.orientechnologies.orient.core.storage.OCluster">
+      <point x="-162.0" y="-294.5" />
+      <point x="14304.869444444445" y="19414.0" />
+      <point x="14365.619444444445" y="19414.0" />
+      <point x="14365.619444444445" y="17620.0" />
+      <point x="14792.519444444446" y="17620.0" />
+      <point x="-501.60000000000036" y="484.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.index.OIndexAbstract" target="com.orientechnologies.orient.core.index.OIndexInternal">
+      <point x="0.0" y="-914.5" />
+      <point x="0.0" y="274.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx" target="com.orientechnologies.orient.core.db.ODatabaseRecordWrapperAbstract">
+      <point x="-192.25" y="-244.0" />
+      <point x="6391.5" y="6388.0" />
+      <point x="6159.0" y="6388.0" />
+      <point x="0.0" y="684.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.index.OIndexManagerProxy" target="com.orientechnologies.orient.core.db.record.OProxedResource">
+      <point x="160.5" y="-264.0" />
+      <point x="6450.360119047619" y="18129.0" />
+      <point x="7534.150198412698" y="18129.0" />
+      <point x="-57.600000000000364" y="44.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.config.OStorageClusterHoleConfiguration" target="com.orientechnologies.orient.core.config.OStorageFileConfiguration">
+      <point x="0.0" y="-43.5" />
+      <point x="0.0" y="74.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.metadata.security.OSecurityProxy" target="com.orientechnologies.orient.core.metadata.security.OSecurity">
+      <point x="205.25" y="-264.0" />
+      <point x="9124.375198412698" y="18159.0" />
+      <point x="10279.0001984127" y="18159.0" />
+      <point x="-195.0" y="254.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.metadata.security.OSecurityProxy" target="com.orientechnologies.orient.core.db.record.OProxedResource">
+      <point x="-205.25" y="-264.0" />
+      <point x="8713.875198412698" y="18099.0" />
+      <point x="7620.550198412699" y="18099.0" />
+      <point x="28.800000000000182" y="44.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.index.hashindex.local.OHashIndexBufferStore" target="com.orientechnologies.orient.core.storage.impl.local.OSingleFileSegment">
+      <point x="0.0" y="-74.0" />
+      <point x="12804.0" y="24220.0" />
+      <point x="12521.3" y="24220.0" />
+      <point x="108.79999999999927" y="194.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.db.record.ORecordLazySet" target="com.orientechnologies.orient.core.db.record.ORecordLazyMultiValue">
+      <point x="-317.33333333333303" y="-404.5" />
+      <point x="5768.766666666666" y="12980.0" />
+      <point x="3420.1484444444436" y="12980.0" />
+      <point x="123.33333333333348" y="54.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.db.record.OClassTrigger" target="com.orientechnologies.orient.core.hook.ODocumentHookAbstract">
+      <point x="0.0" y="-334.5" />
+      <point x="11033.75" y="22376.0" />
+      <point x="12045.75" y="22376.0" />
+      <point x="-190.25" y="324.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.metadata.schema.OPropertyImpl" target="com.orientechnologies.orient.core.type.ODocumentWrapperNoClass">
+      <point x="374.75" y="-704.5" />
+      <point x="3438.25" y="18159.0" />
+      <point x="4167.325198412698" y="18159.0" />
+      <point x="-62.80000000000018" y="104.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.storage.ODefaultClusterFactory" target="com.orientechnologies.orient.core.storage.OClusterFactory">
+      <point x="0.0" y="-64.5" />
+      <point x="0.0" y="54.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.config.OStoragePhysicalClusterConfigurationLocal" target="com.orientechnologies.orient.core.config.OStoragePhysicalClusterConfiguration">
+      <point x="88.5" y="-124.0" />
+      <point x="0.0" y="33.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.command.OCommandExecutorAbstract" target="com.orientechnologies.orient.core.command.OCommandExecutor">
+      <point x="0.0" y="-154.5" />
+      <point x="0.0" y="94.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.metadata.schema.OSchemaProxy" target="com.orientechnologies.orient.core.metadata.schema.OSchema">
+      <point x="-178.75" y="-324.0" />
+      <point x="6809.610119047619" y="18119.0" />
+      <point x="6556.125198412698" y="18119.0" />
+      <point x="154.75" y="264.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.cache.OUnboundedWeakCache" target="com.orientechnologies.orient.core.cache.OCache">
+      <point x="-38.0" y="-23.5" />
+      <point x="13699.0" y="24134.0" />
+      <point x="13855.166666666666" y="24134.0" />
+      <point x="-126.33333333333394" y="154.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.index.hashindex.local.cache.OBlockedPageException" target="com.orientechnologies.orient.core.exception.OStorageException">
+      <point x="0.0" y="-13.5" />
+      <point x="0.0" y="23.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.hook.ODocumentHookAbstract" target="com.orientechnologies.orient.core.hook.ORecordHook">
+      <point x="0.0" y="-324.5" />
+      <point x="12236.0" y="21672.0" />
+      <point x="12564.75" y="21672.0" />
+      <point x="-65.25" y="34.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.type.tree.provider.OMVRBTreeRIDEntryProvider" target="com.orientechnologies.orient.core.type.tree.provider.OMVRBTreeEntryDataProviderAbstract">
+      <point x="0.0" y="-274.5" />
+      <point x="12782.626666666667" y="13080.0" />
+      <point x="12953.876666666667" y="13080.0" />
+      <point x="-218.5" y="384.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.index.OIndexTxAwareDictionary" target="com.orientechnologies.orient.core.index.OIndexTxAwareOneValue">
+      <point x="0.0" y="-23.5" />
+      <point x="0.0" y="83.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.index.OPropertyListIndexDefinition" target="com.orientechnologies.orient.core.index.OAbstractIndexDefinitionMultiValue">
+      <point x="-95.5" y="-73.5" />
+      <point x="9340.812896825397" y="21140.0" />
+      <point x="8978.2501984127" y="21140.0" />
+      <point x="112.0" y="44.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.db.tool.ODatabaseExport" target="com.orientechnologies.orient.core.db.tool.ODatabaseImpExpAbstract">
+      <point x="0.0" y="-154.5" />
+      <point x="0.0" y="344.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.id.ORID" target="com.orientechnologies.orient.core.serialization.OSerializableStream">
+      <point x="-108.0" y="-184.5" />
+      <point x="14313.626666666667" y="11481.0" />
+      <point x="9162.325" y="11481.0" />
+      <point x="71.10000000000036" y="33.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.config.OStoragePhysicalClusterConfiguration" target="com.orientechnologies.orient.core.config.OStorageClusterConfiguration">
+      <point x="0.0" y="-33.5" />
+      <point x="4116.5" y="25091.0" />
+      <point x="4244.875" y="25091.0" />
+      <point x="-22.125" y="53.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.storage.ORawBuffer" target="com.orientechnologies.orient.core.type.OBuffer">
+      <point x="0.0" y="-54.0" />
+      <point x="0.0" y="74.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.config.OAbstractStorageClusterConfiguration" target="com.orientechnologies.orient.core.config.OStorageClusterConfiguration">
+      <point x="0.0" y="-94.0" />
+      <point x="4720.0" y="25081.0" />
+      <point x="4333.375" y="25081.0" />
+      <point x="66.375" y="53.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.processor.block.OScriptBlock" target="com.orientechnologies.orient.core.processor.block.OAbstractBlock">
+      <point x="0.0" y="-44.5" />
+      <point x="7178.0" y="24518.0" />
+      <point x="6692.333333333333" y="24518.0" />
+      <point x="230.33333333333303" y="274.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.storage.OStorageAbstract" target="com.orientechnologies.orient.core.storage.OStorage">
+      <point x="0.0" y="-314.5" />
+      <point x="921.7638888888878" y="1491.0" />
+      <point x="1287.7386363636351" y="1491.0" />
+      <point x="0.0" y="674.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.storage.impl.local.paginated.OLocalPaginatedStorage" target="com.orientechnologies.orient.core.storage.impl.local.OStorageLocalAbstract">
+      <point x="0.0" y="-1024.5" />
+      <point x="1053.5" y="6388.0" />
+      <point x="1623.0138888888878" y="6388.0" />
+      <point x="-157.5" y="234.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.db.ODatabasePoolAbstract" target="com.orientechnologies.orient.core.OOrientListener">
+      <point x="0.0" y="-194.5" />
+      <point x="0.0" y="43.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.db.record.ORecordLazyMultiValue" target="com.orientechnologies.orient.core.db.record.ODetachable">
+      <point x="0.0" y="-54.0" />
+      <point x="3296.81511111111" y="11521.0" />
+      <point x="3147.94011111111" y="11521.0" />
+      <point x="0.0" y="23.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.intent.OIntentMassiveInsert" target="com.orientechnologies.orient.core.intent.OIntent">
+      <point x="0.0" y="-74.0" />
+      <point x="5381.0" y="25880.0" />
+      <point x="5287.5" y="25880.0" />
+      <point x="64.0" y="33.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.config.OStorageConfiguration" target="com.orientechnologies.orient.core.serialization.OSerializableStream">
+      <point x="0.0" y="-534.5" />
+      <point x="10079.126666666667" y="11511.0" />
+      <point x="9114.925000000001" y="11511.0" />
+      <point x="23.700000000000728" y="33.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.db.ODatabaseWrapperAbstract" target="com.orientechnologies.orient.core.db.ODatabase">
+      <point x="0.0" y="-694.5" />
+      <point x="4522.441919191919" y="1491.0" />
+      <point x="4739.208333333333" y="1491.0" />
+      <point x="-414.66666666666697" y="564.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.exception.OTransactionAbortedException" target="com.orientechnologies.orient.core.exception.OTransactionException">
+      <point x="0.0" y="-23.5" />
+      <point x="24682.0" y="25860.0" />
+      <point x="24620.25" y="25860.0" />
+      <point x="38.5" y="23.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.command.script.formatter.ORubyScriptFormatter" target="com.orientechnologies.orient.core.command.script.formatter.OScriptFormatter">
+      <point x="0.0" y="-33.5" />
+      <point x="19188.5" y="25880.0" />
+      <point x="18993.166666666668" y="25880.0" />
+      <point x="87.66666666666788" y="33.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.type.tree.OMVRBTreeRID" target="com.orientechnologies.orient.core.type.tree.OMVRBTreePersistent">
+      <point x="-409.66666666666674" y="-484.5" />
+      <point x="1210.833333333333" y="13080.0" />
+      <point x="1341.666666666667" y="13080.0" />
+      <point x="536.6666666666665" y="704.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.index.ORuntimeKeyIndexDefinition" target="com.orientechnologies.orient.core.index.OAbstractIndexDefinition">
+      <point x="0.0" y="-184.5" />
+      <point x="8571.0001984127" y="20408.0" />
+      <point x="8160.110119047619" y="20408.0" />
+      <point x="19.25" y="34.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.tx.OTransactionRealAbstract" target="com.orientechnologies.orient.core.tx.OTransactionAbstract">
+      <point x="0.0" y="-284.5" />
+      <point x="5696.5" y="22391.0" />
+      <point x="5965.25" y="22391.0" />
+      <point x="-85.25" y="94.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.db.record.ORecordLazyMap" target="com.orientechnologies.orient.core.db.record.OTrackedMap">
+      <point x="138.25" y="-234.5" />
+      <point x="3723.75" y="13050.0" />
+      <point x="4884.955333333335" y="13050.0" />
+      <point x="0.0" y="194.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.db.graph.OGraphDatabasePool" target="com.orientechnologies.orient.core.db.ODatabasePoolBase">
+      <point x="0.0" y="-44.0" />
+      <point x="10160.75" y="25348.0" />
+      <point x="10177.0" y="25348.0" />
+      <point x="-138.0" y="184.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.db.ODatabaseRecordWrapperAbstract" target="com.orientechnologies.orient.core.db.ODatabaseWrapperAbstract">
+      <point x="-362.75" y="-684.0" />
+      <point x="5796.25" y="4564.0" />
+      <point x="4887.191919191919" y="4564.0" />
+      <point x="364.75" y="694.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.command.script.OCommandFunction" target="com.orientechnologies.orient.core.command.OCommandRequestTextAbstract">
+      <point x="0.0" y="-44.5" />
+      <point x="8702.955333333335" y="14818.0" />
+      <point x="8616.80366666667" y="14818.0" />
+      <point x="66.0" y="104.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.cache.OLevel1RecordCache" target="com.orientechnologies.orient.core.cache.OAbstractRecordCache">
+      <point x="0.0" y="-134.0" />
+      <point x="8230.75" y="25288.0" />
+      <point x="8144.25" y="25288.0" />
+      <point x="101.0" y="154.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.type.tree.OMVRBTreeRIDSet" target="com.orientechnologies.orient.core.db.record.ORecordLazyMultiValue">
+      <point x="-317.60000000000036" y="-344.5" />
+      <point x="4741.4" y="13010.0" />
+      <point x="3370.81511111111" y="13010.0" />
+      <point x="74.0" y="54.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.schedule.OSchedulerListenerProxy" target="com.orientechnologies.orient.core.schedule.OSchedulerListener">
+      <point x="81.0" y="-84.0" />
+      <point x="9998.869444444445" y="18169.0" />
+      <point x="11482.979563492065" y="18169.0" />
+      <point x="-81.0" y="84.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.fetch.json.OJSONFetchListener" target="com.orientechnologies.orient.core.fetch.OFetchListener">
+      <point x="0.0" y="-83.5" />
+      <point x="22875.75" y="25126.0" />
+      <point x="22783.75" y="25126.0" />
+      <point x="168.75" y="73.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.index.sbtree.local.OSBTree" target="com.orientechnologies.orient.core.storage.impl.local.paginated.base.ODurableComponent">
+      <point x="-295.25" y="-544.5" />
+      <point x="20453.869444444445" y="17610.0" />
+      <point x="19241.154861111114" y="17610.0" />
+      <point x="153.0" y="114.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.storage.impl.memory.OClusterMemoryArrayList" target="com.orientechnologies.orient.core.storage.impl.memory.OClusterMemory">
+      <point x="-191.0" y="-304.5" />
+      <point x="15001.869444444445" y="19414.0" />
+      <point x="15007.369444444445" y="19414.0" />
+      <point x="192.0" y="354.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.metadata.OMetadataDefault" target="com.orientechnologies.orient.core.metadata.OMetadata">
+      <point x="0.0" y="-244.5" />
+      <point x="0.0" y="114.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.type.tree.OMVRBTreeStorage" target="com.orientechnologies.orient.core.type.tree.OMVRBTreePersistent">
+      <point x="0.0" y="-13.5" />
+      <point x="637.5" y="13080.0" />
+      <point x="268.33333333333303" y="13080.0" />
+      <point x="-536.6666666666666" y="704.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.processor.block.OTableBlock" target="com.orientechnologies.orient.core.processor.block.OAbstractBlock">
+      <point x="0.0" y="-104.5" />
+      <point x="7410.0" y="24508.0" />
+      <point x="6769.111111111111" y="24508.0" />
+      <point x="307.1111111111113" y="274.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.serialization.serializer.stream.OStreamSerializerString" target="com.orientechnologies.orient.core.serialization.serializer.stream.OStreamSerializer">
+      <point x="0.0" y="-64.5" />
+      <point x="23600.5" y="23949.0" />
+      <point x="22752.25" y="23949.0" />
+      <point x="37.5" y="44.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.record.impl.ODocument" target="com.orientechnologies.orient.core.record.ORecordSchemaAwareAbstract">
+      <point x="458.5" y="-864.5" />
+      <point x="3429.231777777778" y="14828.0" />
+      <point x="10950.373444444445" y="14828.0" />
+      <point x="0.0" y="184.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.index.OIndexRemoteOneValue" target="com.orientechnologies.orient.core.index.OIndexRemote">
+      <point x="0.0" y="-84.0" />
+      <point x="12478.546296296296" y="3292.0" />
+      <point x="12924.25" y="3292.0" />
+      <point x="552.5" y="1054.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.cache.OAbstractMapCache" target="com.orientechnologies.orient.core.cache.OCache">
+      <point x="0.0" y="-174.5" />
+      <point x="0.0" y="154.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.storage.impl.local.OStorageLocal" target="com.orientechnologies.orient.core.storage.impl.local.OStorageLocalAbstract">
+      <point x="0.0" y="-864.5" />
+      <point x="3056.5" y="6388.0" />
+      <point x="1938.0138888888878" y="6388.0" />
+      <point x="157.5" y="234.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.serialization.serializer.stream.OStreamSerializerAnyRecord" target="com.orientechnologies.orient.core.serialization.serializer.stream.OStreamSerializer">
+      <point x="0.0" y="-64.5" />
+      <point x="23812.5" y="23939.0" />
+      <point x="22767.25" y="23939.0" />
+      <point x="52.5" y="44.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.metadata.security.OSecurityShared" target="com.orientechnologies.orient.core.metadata.security.OSecurity">
+      <point x="0.0" y="-354.5" />
+      <point x="11356.369444444445" y="18159.0" />
+      <point x="10669.0001984127" y="18159.0" />
+      <point x="195.0" y="254.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.storage.impl.local.paginated.wal.ODirtyPagesRecord" target="com.orientechnologies.orient.core.storage.impl.local.paginated.wal.OWALRecord">
+      <point x="0.0" y="-124.5" />
+      <point x="2719.8557692307695" y="23969.0" />
+      <point x="2577.2500000000005" y="23969.0" />
+      <point x="20.75" y="64.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.db.record.ORecordLazySet" target="com.orientechnologies.orient.core.db.record.ORecordElement">
+      <point x="317.33333333333303" y="-404.5" />
+      <point x="6403.4333333333325" y="13080.0" />
+      <point x="6701.080333333335" y="13080.0" />
+      <point x="6701.080333333335" y="10883.0" />
+      <point x="6283.641666666666" y="10883.0" />
+      <point x="45.25" y="54.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.command.OCommandRequestTextAbstract" target="com.orientechnologies.orient.core.command.OCommandRequestText">
+      <point x="66.0" y="-104.5" />
+      <point x="8616.80366666667" y="14409.0" />
+      <point x="8707.973555555558" y="14409.0" />
+      <point x="0.0" y="23.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.metadata.function.OFunctionLibraryProxy" target="com.orientechnologies.orient.core.db.record.OProxedResource">
+      <point x="-74.5" y="-74.0" />
+      <point x="7440.360119047619" y="18149.0" />
+      <point x="7591.750198412698" y="18149.0" />
+      <point x="0.0" y="44.0" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.index.sbtreebonsai.local.OSBTreeBonsai" target="com.orientechnologies.orient.core.storage.impl.local.paginated.base.ODurableComponent">
+      <point x="-327.75" y="-564.5" />
+      <point x="19155.369444444445" y="17620.0" />
+      <point x="19088.154861111114" y="17620.0" />
+      <point x="0.0" y="114.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.storage.OStorageProxy" target="com.orientechnologies.orient.core.storage.OStorage">
+      <point x="0.0" y="-13.5" />
+      <point x="510.7638888888878" y="1491.0" />
+      <point x="789.4053030303021" y="1491.0" />
+      <point x="-498.33333333333326" y="674.5" />
+    </edge>
+    <edge source="com.orientechnologies.orient.core.metadata.schema.OPropertyImpl" target="com.orientechnologies.orient.core.metadata.schema.OProperty">
+      <point x="-374.75" y="-704.5" />
+      <point x="0.0" y="304.0" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic Group" zoom="0.3212409592691283" x="1125.4441284512382" y="858.5069321009597" />
+  <SelectedNodes />
+  <Categories>
+    <Category>Fields</Category>
+    <Category>Methods</Category>
+    <Category>Properties</Category>
+  </Categories>
+  <SCOPE>All</SCOPE>
+  <VISIBILITY>private</VISIBILITY>
+</Diagram>
+

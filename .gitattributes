@@ -3,6 +3,8 @@
 /license.txt -text
 model/domain.uml -text
 model/frames.uml -text
+model/orientdb.uml -text
+model/titan.uml -text
 /pom.xml -text
 /readme.txt -text
 /release.xml -text
