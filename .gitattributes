@@ -45,3 +45,4 @@ source/org/openpcf/universal/Stopable.java -text
 source/org/openpcf/universal/StorageDevice.java -text
 source/org/openpcf/universal/TextualAccessor.java -text
 source/org/openpcf/universal/Virtualizable.java -text
+tests/TestComponentInstancing.java -text
