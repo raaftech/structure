@@ -1,6 +1,7 @@
 * text=auto !eol
 /build.xml -text
 /license.txt -text
+model/blueprints.uml -text
 model/domain.uml -text
 model/frames.uml -text
 model/orientdb.uml -text
@@ -46,3 +47,4 @@ source/org/openpcf/universal/StorageDevice.java -text
 source/org/openpcf/universal/TextualAccessor.java -text
 source/org/openpcf/universal/Virtualizable.java -text
 tests/TestComponentInstancing.java -text
+tests/TestTitanGraph.java -text

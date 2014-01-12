@@ -10,7 +10,7 @@ import java.awt.GraphicsDevice;
 import java.awt.image.BufferedImage;
 
 /**
- * The main class and method, possibly referenced in Ant or Maven.
+ * A quick and dirty (big) component instancing test.
  *
  * @author Rubin Simons <rubin.simons@raaftech.com>
  * @version 0.6
