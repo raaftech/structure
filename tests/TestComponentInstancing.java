@@ -2,6 +2,7 @@
  * Copyright © 2008-2014 RAAF Technology bv
  */
 
+import org.junit.Test;
 import org.openpcf.universal.*;
 
 import java.awt.*;
@@ -17,7 +18,8 @@ import java.awt.image.BufferedImage;
  * @since 2014-01-06
  */
 public class TestComponentInstancing {
-    public static void testInstance() {
+    @Test
+    public void testInstance() {
 
         String name = "foohost";
         Image icon = new BufferedImage(100, 100, BufferedImage.TYPE_INT_RGB);
