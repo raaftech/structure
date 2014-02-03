@@ -25,7 +25,7 @@ public class TestComponentInstancing {
         Image icon = new BufferedImage(100, 100, BufferedImage.TYPE_INT_RGB);
         String vendor = "Some Corp";
         String model = "Master 9000";
-        String revision = "REV1.0";
+        String revision = "REV1.1";
 
 
         NetworkDevice networkDeviceForOS = new NetworkDevice("eth0", icon, "Another Corp", "Ethernet 53 Card", "REV1.0", "00:34:52:C0:FF:EE");
