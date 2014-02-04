@@ -4,6 +4,7 @@
 
 import com.thinkaurelius.titan.core.*;
 import com.tinkerpop.blueprints.*;
+import org.junit.Test;
 
 /**
  * A quick test with Titan as graph backend, unsing TinkerPop Blueprints.
@@ -14,7 +15,8 @@ import com.tinkerpop.blueprints.*;
  * @since 2014-01-06
  */
 public class TestTitanGraph {
-    public static void quickTest() {
+    @Test
+    public void quickTest() {
 
         TitanGraph g = TitanFactory.open("C:/Data/Services/servers/titan04/data/gods");
 
