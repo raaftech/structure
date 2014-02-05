@@ -33,10 +33,10 @@ public class TestMain {
     }
 
     // . does app have version() function?
-//    @Test
-//    public void appHasVersion(){
-//        Assert.assertEquals(testMain.getVersion(), "0.1");
-//    }
+    @Test
+    public void appHasVersion(){
+        Assert.assertEquals(testMain.getVersion(), "0.1");
+    }
 
 
 }

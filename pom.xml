@@ -45,6 +45,14 @@
                     </archive>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>com.atlassian.maven.plugins</groupId>
+                <artifactId>maven-clover2-plugin</artifactId>
+                <version>3.2.0</version>
+                <configuration>
+                    <licenseLocation>${user.home}/.atlassian/clover.license</licenseLocation>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
@@ -70,6 +78,11 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.11</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-nop</artifactId>
+            <version>1.7.5</version>
         </dependency>
         <dependency>
             <groupId>com.orientechnologies</groupId>

@@ -18,7 +18,7 @@ public class TestTitanGraph {
     @Test
     public void quickTest() {
 
-        TitanGraph g = TitanFactory.open("C:/Data/Services/servers/titan04/data/gods");
+        TitanGraph g = TitanFactory.open("titandb");
 
         //Vertex a = g.addVertex(null);
         //Vertex b = g.addVertex(null);
