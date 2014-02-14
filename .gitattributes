@@ -6,6 +6,7 @@ model/domain.uml -text
 model/frames.uml -text
 model/orientdb.uml -text
 model/titan.uml -text
+/notes.txt -text
 /pom.xml -text
 /readme.txt -text
 /release.xml -text

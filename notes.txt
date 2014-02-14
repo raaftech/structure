@@ -1,0 +1,13 @@
+# Notes about UniversalGraphFactory:
+  - should create titandb if not exists
+  - if exists, should check schema version
+  - against application required schema version
+  - if schema version is not equal enumerate change-scripts
+  - replay through enumerated change scripts until db schema == app schema
+  - if schema version in titandb is equal to app, open
+
+  - schema should be divided in core/opcf/raaf/user
+    - core = abstract base types only
+    - opcf = freely available generic/basic types of things
+    - raaf = full-blown library of os'es and services
+    - user = stuff we don't touch, that uses/relates to things existing in the above
