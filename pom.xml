@@ -40,7 +40,7 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <mainClass>org.openpcf.universal.scaffolding.Main</mainClass>
+                            <mainClass>org.openpcf.universal.Main</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
@@ -92,6 +92,11 @@
         <dependency>
             <groupId>com.thinkaurelius.titan</groupId>
             <artifactId>titan-berkeleyje</artifactId>
+            <version>0.4.2</version>
+        </dependency>
+        <dependency>
+            <groupId>com.thinkaurelius.titan</groupId>
+            <artifactId>titan-es</artifactId>
             <version>0.4.2</version>
         </dependency>
         <dependency>

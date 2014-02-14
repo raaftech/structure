@@ -9,6 +9,8 @@ model/titan.uml -text
 /pom.xml -text
 /readme.txt -text
 /release.xml -text
+source/org/openpcf/universal/Main.java -text
+source/org/openpcf/universal/graph/UniversalGraphFactory.java -text
 source/org/openpcf/universal/scaffolding/Accessable.java -text
 source/org/openpcf/universal/scaffolding/Checkable.java -text
 source/org/openpcf/universal/scaffolding/Command.java -text
@@ -30,7 +32,6 @@ source/org/openpcf/universal/scaffolding/Interpreter.java -text
 source/org/openpcf/universal/scaffolding/Language.java -text
 source/org/openpcf/universal/scaffolding/Listener.java -text
 source/org/openpcf/universal/scaffolding/LocalService.java -text
-source/org/openpcf/universal/scaffolding/Main.java -text
 source/org/openpcf/universal/scaffolding/ManagementConsole.java -text
 source/org/openpcf/universal/scaffolding/MemoryModule.java -text
 source/org/openpcf/universal/scaffolding/NetworkDevice.java -text
@@ -46,6 +47,5 @@ source/org/openpcf/universal/scaffolding/Stopable.java -text
 source/org/openpcf/universal/scaffolding/StorageDevice.java -text
 source/org/openpcf/universal/scaffolding/TextualAccessor.java -text
 source/org/openpcf/universal/scaffolding/Virtualizable.java -text
+tests/org/openpcf/universal/graph/TestTitanGraph.java -text
 tests/org/openpcf/universal/scaffolding/TestComponentInstancing.java -text
-tests/org/openpcf/universal/scaffolding/TestMain.java -text
-tests/org/openpcf/universal/scaffolding/TestTitanGraph.java -text
