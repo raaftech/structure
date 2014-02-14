@@ -1,4 +1,16 @@
 import org.openpcf.universal.graph.UniversalGraphFactory;
+
+println " * creating or opening target/test-titandb"
 g = UniversalGraphFactory.create("target/test-titandb");
-saturn = g.V('name','saturn').next()
-println "Did I find Saturn?: " + saturn.getProperty("name");
+
+try {
+    println " * checking if saturn exists.."
+    saturn = g.V('name', 'saturn').next();
+}
+catch (Exception e) {
+    println " * guess not.. loading default data into graph"
+    UniversalGraphFactory.load(g);
+    saturn = g.V('name', 'saturn').next();
+}
+
+println " * did we find saturn: " + saturn.getProperty("name");

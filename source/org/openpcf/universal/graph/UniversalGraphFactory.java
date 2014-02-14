@@ -45,7 +45,7 @@ public class UniversalGraphFactory {
         index.setProperty(STORAGE_DIRECTORY_KEY, directory + File.separator + "es");
 
         TitanGraph graph = TitanFactory.open(config);
-        UniversalGraphFactory.load(graph);
+        // don't do this at create: UniversalGraphFactory.load(graph);
         return graph;
     }
 
