@@ -1,0 +1,4 @@
+import org.openpcf.universal.graph.UniversalGraphFactory;
+g = UniversalGraphFactory.create("target/test-titandb");
+saturn = g.V('name','saturn').next()
+println "Did I find Saturn?: " + saturn.getProperty("name");

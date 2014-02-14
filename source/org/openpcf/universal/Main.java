@@ -4,10 +4,6 @@
 
 package org.openpcf.universal;
 
-import com.thinkaurelius.titan.core.TitanGraph;
-import com.tinkerpop.blueprints.Vertex;
-import org.openpcf.universal.graph.UniversalGraphFactory;
-
 /**
  * The main class and method, possibly referenced in Ant or Maven.
  *
@@ -17,12 +13,8 @@ import org.openpcf.universal.graph.UniversalGraphFactory;
  */
 public class Main {
 
-    public static void main(String[] args) {
+    public static void main(final String[] args) {
 
-        TitanGraph g = UniversalGraphFactory.create("target/main-titandb");
-
-        for (Vertex vertex : g.getVertices()) {
-            System.out.println(vertex.getProperty("name"));
-        }
+        System.out.println("Main loop");
     }
 }

@@ -4,12 +4,17 @@
 
 package org.openpcf.universal.graph;
 
-import com.thinkaurelius.titan.core.*;
-import com.tinkerpop.blueprints.*;
+import com.tinkerpop.gremlin.groovy.jsr223.GremlinGroovyScriptEngineFactory;
 import org.junit.Test;
 
+import javax.script.ScriptEngine;
+import javax.script.ScriptException;
+import java.io.FileReader;
+import java.io.IOException;
+
 /**
- * A quick test with Titan as graph backend, using TinkerPop Blueprints.
+ * A quick test with Titan as graph backend, using TinkerPop Blueprints,
+ * all through gremlin as a JSR223 scripting handler.
  * Testing persistence behaviour.
  *
  * @author Rubin Simons <rubin.simons@raaftech.com>
@@ -18,12 +23,10 @@ import org.junit.Test;
  */
 public class TestTitanGraph {
     @Test
-    public void quickTest() {
+    public void quickTest() throws IOException, InterruptedException, ScriptException {
 
-        TitanGraph g = UniversalGraphFactory.create("target/test-titandb");
+        ScriptEngine engine = new GremlinGroovyScriptEngineFactory().getScriptEngine();
 
-        for (Vertex vertex : g.getVertices()) {
-            System.out.println(vertex.getProperty("name"));
-        }
+        engine.eval(new FileReader("scripts/test-titan-dbinit.grm"));
     }
 }
