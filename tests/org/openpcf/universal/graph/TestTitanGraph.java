@@ -20,7 +20,7 @@ public class TestTitanGraph {
     @Test
     public void quickTest() {
 
-        TitanGraph g = UniversalGraphFactory.create("titandb");
+        TitanGraph g = UniversalGraphFactory.create("target/test-titandb");
 
         for (Vertex vertex : g.getVertices()) {
             System.out.println(vertex.getProperty("name"));

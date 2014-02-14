@@ -19,7 +19,7 @@ public class Main {
 
     public static void main(String[] args) {
 
-        TitanGraph g = UniversalGraphFactory.create("target/test-titandb");
+        TitanGraph g = UniversalGraphFactory.create("target/main-titandb");
 
         for (Vertex vertex : g.getVertices()) {
             System.out.println(vertex.getProperty("name"));
