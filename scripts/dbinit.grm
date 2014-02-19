@@ -63,9 +63,8 @@ catch (Exception e) {
     g.makeKey("cmdExit").dataType(Integer.class).make()
 
     g.makeLabel("vendor").manyToOne().make()
-    g.makeLabel("runs").manyToMany().make()
     g.makeLabel("isa").oneToOne().make()
-    g.makeLabel("has").oneToMany().make()
+    g.makeLabel("has").manyToMany().make()
 
     g.commit()
     println " * finished setting key definitions and constraints"
@@ -106,6 +105,7 @@ catch (Exception e) {
     genericSshService.setProperty("softwareVersion", "1")
 
     genericSshService.addEdge("vendor", genericVendor)
+    genericSshService.addEdge("has", defaultSshListener)
 
     // Generic storage device.
     Vertex genericStorageDevice = g.addVertex(null)
@@ -186,9 +186,21 @@ catch (Exception e) {
     genericConsoleDevice.addEdge("vendor", genericVendor)
 
     // Generic BSD operating system.
+    Vertex genericBsdOperatingSystem = g.addVertex(null)
+    genericBsdOperatingSystem.setProperty("type", "OperatingSystem")
+    genericBsdOperatingSystem.setProperty("name", "genericBsdOperatingSystem")
+    genericBsdOperatingSystem.setProperty("desc", "A generic BSD operating system.")
+    genericBsdOperatingSystem.setProperty("icon", "icons/genericBsdOperatingSystem.svg")
+
+    genericBsdOperatingSystem.addEdge("vendor", genericVendor)
+    genericBsdOperatingSystem.addEdge("has", genericSshService)
+
     // Generic UNIX operating system.
+
     // Generic Linux operating system.
+
     // Generic Windows operating system.
+
     // Generic MacOS operating system.
 
 
