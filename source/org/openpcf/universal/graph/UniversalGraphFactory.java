@@ -25,6 +25,7 @@ import static com.thinkaurelius.titan.graphdb.configuration.GraphDatabaseConfigu
  */
 public class UniversalGraphFactory {
 
+    public static final String INDEX_TYPE = "es";
     public static final String INDEX_NAME = "search";
 
     public static TitanGraph create(final String directory) {
@@ -40,10 +41,10 @@ public class UniversalGraphFactory {
 
         // Configuring elastic search index.
         Configuration index = storage.subset(GraphDatabaseConfiguration.INDEX_NAMESPACE).subset(INDEX_NAME);
-        index.setProperty(INDEX_BACKEND_KEY, "lucene");
+        index.setProperty(INDEX_BACKEND_KEY, INDEX_TYPE);
         index.setProperty("local-mode", true);
         index.setProperty("client-only", false);
-        index.setProperty(STORAGE_DIRECTORY_KEY, directory + File.separator + "lucene");
+        index.setProperty(STORAGE_DIRECTORY_KEY, directory + File.separator + INDEX_TYPE);
 
         TitanGraph graph = TitanFactory.open(config);
         return graph;

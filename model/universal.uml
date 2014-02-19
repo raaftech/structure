@@ -3,49 +3,50 @@
   <ID>JAVA</ID>
   <OriginalElement />
   <nodes>
-    <node x="0.0" y="1066.0">org.openpcf.universal.scaffolding.Language</node>
+    <node x="0.0" y="1076.0">org.openpcf.universal.scaffolding.Language</node>
     <node x="0.0" y="207.0">org.openpcf.universal.scaffolding.Discoverable</node>
-    <node x="523.9375000000001" y="207.0">org.openpcf.universal.scaffolding.Stopable</node>
-    <node x="1369.9751275510207" y="0.0">org.openpcf.universal.scaffolding.Component</node>
-    <node x="2127.699617346939" y="517.5">org.openpcf.universal.scaffolding.StorageDevice</node>
-    <node x="378.5" y="1066.0">org.openpcf.universal.scaffolding.Configuration</node>
-    <node x="1048.0" y="1066.0">org.openpcf.universal.scaffolding.Listener</node>
-    <node x="0.0" y="1388.0">org.openpcf.universal.scaffolding.Handler</node>
-    <node x="1367.650510204082" y="918.0">org.openpcf.universal.scaffolding.GraphicalAccessor</node>
-    <node x="319.0000000000001" y="207.0">org.openpcf.universal.scaffolding.Restartable</node>
-    <node x="598.6505102040818" y="904.5">org.openpcf.universal.scaffolding.Hypervisor</node>
-    <node x="274.0" y="1205.0">org.openpcf.universal.scaffolding.ConfiguredNetworkDevice</node>
-    <node x="899.9005102040818" y="765.0">org.openpcf.universal.scaffolding.NetworkedService</node>
-    <node x="1312.900510204082" y="207.0">org.openpcf.universal.scaffolding.Destroyable</node>
-    <node x="1435.0" y="1066.0">org.openpcf.universal.scaffolding.Credential</node>
-    <node x="1677.400510204082" y="779.0">org.openpcf.universal.scaffolding.Accessable</node>
-    <node x="1500.699617346939" y="490.5">org.openpcf.universal.scaffolding.ProcessingUnit</node>
-    <node x="2277.699617346939" y="436.5">org.openpcf.universal.scaffolding.ComputerSystem</node>
-    <node x="1934.699617346939" y="517.5">org.openpcf.universal.scaffolding.NetworkDevice</node>
-    <node x="810.6505102040818" y="918.0">org.openpcf.universal.scaffolding.TextualAccessor</node>
-    <node x="2521.449617346939" y="220.5">org.openpcf.universal.scaffolding.Virtualizable</node>
-    <node x="1010.9005102040818" y="207.0">org.openpcf.universal.scaffolding.Startable</node>
-    <node x="1259.0" y="1066.0">org.openpcf.universal.scaffolding.State</node>
-    <node x="1693.9751275510207" y="166.0">org.openpcf.universal.scaffolding.Device</node>
-    <node x="680.0" y="1066.0">org.openpcf.universal.scaffolding.Command</node>
-    <node x="1023.699617346939" y="504.0">org.openpcf.universal.scaffolding.ManagementConsole</node>
-    <node x="665.9375000000001" y="179.5">org.openpcf.universal.scaffolding.Software</node>
-    <node x="561.5143494897961" y="409.0">org.openpcf.universal.scaffolding.Service</node>
-    <node x="219.1505102040818" y="904.0">org.openpcf.universal.scaffolding.Interpreter</node>
-    <node x="207.07684948979613" y="436.0">org.openpcf.universal.scaffolding.OperatingSystem</node>
-    <node x="1156.900510204082" y="207.0">org.openpcf.universal.scaffolding.Createable</node>
-    <node x="168.0000000000001" y="207.0">org.openpcf.universal.scaffolding.Checkable</node>
-    <node x="1688.699617346939" y="477.0">org.openpcf.universal.scaffolding.GraphicsDevice</node>
-    <node x="196.1505102040818" y="779.0">org.openpcf.universal.scaffolding.Commandable</node>
-    <node x="1344.699617346939" y="517.5">org.openpcf.universal.scaffolding.MemoryModule</node>
-    <node x="372.1505102040818" y="779.0">org.openpcf.universal.scaffolding.LocalService</node>
+    <node x="523.9375" y="207.0">org.openpcf.universal.scaffolding.Stopable</node>
+    <node x="1485.5495689655172" y="0.0">org.openpcf.universal.scaffolding.Component</node>
+    <node x="2126.799568965517" y="527.5">org.openpcf.universal.scaffolding.StorageDevice</node>
+    <node x="378.5" y="1076.0">org.openpcf.universal.scaffolding.Configuration</node>
+    <node x="1048.0" y="1076.0">org.openpcf.universal.scaffolding.Listener</node>
+    <node x="0.0" y="1398.0">org.openpcf.universal.scaffolding.Handler</node>
+    <node x="1384.864224137931" y="928.0">org.openpcf.universal.scaffolding.GraphicalAccessor</node>
+    <node x="319.0" y="207.0">org.openpcf.universal.scaffolding.Restartable</node>
+    <node x="615.8642241379309" y="914.5">org.openpcf.universal.scaffolding.Hypervisor</node>
+    <node x="274.0" y="1215.0">org.openpcf.universal.scaffolding.ConfiguredNetworkDevice</node>
+    <node x="917.1142241379309" y="775.0">org.openpcf.universal.scaffolding.NetworkedService</node>
+    <node x="1330.6099137931035" y="207.0">org.openpcf.universal.scaffolding.Destroyable</node>
+    <node x="1435.0" y="1076.0">org.openpcf.universal.scaffolding.Credential</node>
+    <node x="1694.614224137931" y="789.0">org.openpcf.universal.scaffolding.Accessable</node>
+    <node x="1339.1271551724137" y="500.5">org.openpcf.universal.scaffolding.ProcessingUnit</node>
+    <node x="2512.799568965517" y="446.5">org.openpcf.universal.scaffolding.ComputerSystem</node>
+    <node x="1933.7995689655172" y="527.5">org.openpcf.universal.scaffolding.NetworkDevice</node>
+    <node x="827.8642241379309" y="928.0">org.openpcf.universal.scaffolding.TextualAccessor</node>
+    <node x="2756.549568965517" y="220.5">org.openpcf.universal.scaffolding.Virtualizable</node>
+    <node x="1028.6099137931035" y="207.0">org.openpcf.universal.scaffolding.Startable</node>
+    <node x="1259.0" y="1076.0">org.openpcf.universal.scaffolding.State</node>
+    <node x="1809.5495689655172" y="166.0">org.openpcf.universal.scaffolding.Device</node>
+    <node x="680.0" y="1076.0">org.openpcf.universal.scaffolding.Command</node>
+    <node x="1018.1271551724137" y="514.0">org.openpcf.universal.scaffolding.ManagementConsole</node>
+    <node x="665.9375" y="179.5">org.openpcf.universal.scaffolding.Software</node>
+    <node x="567.7478448275863" y="419.0">org.openpcf.universal.scaffolding.Service</node>
+    <node x="236.36422413793093" y="914.0">org.openpcf.universal.scaffolding.Interpreter</node>
+    <node x="2276.799568965517" y="487.0">org.openpcf.universal.scaffolding.ConsoleDevice</node>
+    <node x="213.31034482758628" y="446.0">org.openpcf.universal.scaffolding.OperatingSystem</node>
+    <node x="1174.6099137931035" y="207.0">org.openpcf.universal.scaffolding.Createable</node>
+    <node x="168.0" y="207.0">org.openpcf.universal.scaffolding.Checkable</node>
+    <node x="1687.7995689655172" y="487.0">org.openpcf.universal.scaffolding.GraphicsDevice</node>
+    <node x="213.36422413793093" y="789.0">org.openpcf.universal.scaffolding.Commandable</node>
+    <node x="1527.1271551724137" y="527.5">org.openpcf.universal.scaffolding.MemoryModule</node>
+    <node x="389.36422413793093" y="789.0">org.openpcf.universal.scaffolding.LocalService</node>
   </nodes>
   <notes />
   <edges>
     <edge source="org.openpcf.universal.scaffolding.Service" target="org.openpcf.universal.scaffolding.Startable">
       <point x="57.375" y="-153.0" />
-      <point x="771.8893494897961" y="339.0" />
-      <point x="1073.900510204082" y="339.0" />
+      <point x="778.1228448275863" y="339.0" />
+      <point x="1091.6099137931035" y="339.0" />
       <point x="0.0" y="30.5" />
     </edge>
     <edge source="org.openpcf.universal.scaffolding.Interpreter" target="org.openpcf.universal.scaffolding.Commandable">
@@ -54,20 +55,20 @@
     </edge>
     <edge source="org.openpcf.universal.scaffolding.Service" target="org.openpcf.universal.scaffolding.Destroyable">
       <point x="133.875" y="-153.0" />
-      <point x="848.3893494897961" y="359.0" />
-      <point x="1384.900510204082" y="359.0" />
+      <point x="854.6228448275863" y="359.0" />
+      <point x="1402.6099137931035" y="359.0" />
       <point x="0.0" y="30.5" />
     </edge>
     <edge source="org.openpcf.universal.scaffolding.Service" target="org.openpcf.universal.scaffolding.Restartable">
       <point x="-57.375" y="-153.0" />
-      <point x="657.1393494897961" y="349.0" />
-      <point x="424.0000000000001" y="349.0" />
+      <point x="663.3728448275863" y="359.0" />
+      <point x="424.0" y="359.0" />
       <point x="35.0" y="30.5" />
     </edge>
     <edge source="org.openpcf.universal.scaffolding.OperatingSystem" target="org.openpcf.universal.scaffolding.Software">
       <point x="122.0" y="-126.0" />
-      <point x="481.57684948979613" y="389.0" />
-      <point x="711.4375000000001" y="389.0" />
+      <point x="487.8103448275863" y="399.0" />
+      <point x="711.4375" y="399.0" />
       <point x="-45.5" y="58.0" />
     </edge>
     <edge source="org.openpcf.universal.scaffolding.TextualAccessor" target="org.openpcf.universal.scaffolding.NetworkedService">
@@ -76,27 +77,27 @@
     </edge>
     <edge source="org.openpcf.universal.scaffolding.ManagementConsole" target="org.openpcf.universal.scaffolding.Device">
       <point x="0.0" y="-58.0" />
-      <point x="1174.199617346939" y="369.0" />
-      <point x="1708.403698979592" y="369.0" />
-      <point x="-86.57142857142867" y="71.5" />
+      <point x="1168.6271551724137" y="369.0" />
+      <point x="1822.1745689655172" y="369.0" />
+      <point x="-88.375" y="71.5" />
     </edge>
     <edge source="org.openpcf.universal.scaffolding.ProcessingUnit" target="org.openpcf.universal.scaffolding.Device">
       <point x="0.0" y="-71.5" />
-      <point x="1584.699617346939" y="389.0" />
-      <point x="1766.1179846938778" y="389.0" />
-      <point x="-28.85714285714289" y="71.5" />
+      <point x="1423.1271551724137" y="379.0" />
+      <point x="1847.4245689655172" y="379.0" />
+      <point x="-63.125" y="71.5" />
     </edge>
     <edge source="org.openpcf.universal.scaffolding.Service" target="org.openpcf.universal.scaffolding.Checkable">
       <point x="-95.625" y="-153.0" />
-      <point x="618.8893494897961" y="359.0" />
-      <point x="266.2500000000001" y="359.0" />
+      <point x="625.1228448275863" y="369.0" />
+      <point x="266.25" y="369.0" />
       <point x="32.75" y="30.5" />
     </edge>
     <edge source="org.openpcf.universal.scaffolding.NetworkDevice" target="org.openpcf.universal.scaffolding.Device">
-      <point x="-2.2737367544323206E-13" y="-44.5" />
-      <point x="2021.1996173469388" y="389.0" />
-      <point x="1823.8322704081636" y="389.0" />
-      <point x="28.85714285714289" y="71.5" />
+      <point x="0.0" y="-44.5" />
+      <point x="2020.2995689655172" y="399.0" />
+      <point x="1923.1745689655172" y="399.0" />
+      <point x="12.625" y="71.5" />
     </edge>
     <edge source="org.openpcf.universal.scaffolding.ConfiguredNetworkDevice" target="org.openpcf.universal.scaffolding.Configuration">
       <point x="0.0" y="-58.0" />
@@ -104,8 +105,8 @@
     </edge>
     <edge source="org.openpcf.universal.scaffolding.Service" target="org.openpcf.universal.scaffolding.Createable">
       <point x="95.625" y="-153.0" />
-      <point x="810.1393494897961" y="349.0" />
-      <point x="1224.900510204082" y="349.0" />
+      <point x="816.3728448275863" y="349.0" />
+      <point x="1242.6099137931035" y="349.0" />
       <point x="0.0" y="30.5" />
     </edge>
     <edge source="org.openpcf.universal.scaffolding.GraphicalAccessor" target="org.openpcf.universal.scaffolding.Accessable">
@@ -114,80 +115,86 @@
     </edge>
     <edge source="org.openpcf.universal.scaffolding.ComputerSystem" target="org.openpcf.universal.scaffolding.Device">
       <point x="-100.25" y="-125.5" />
-      <point x="2377.949617346939" y="369.0" />
-      <point x="1881.5465561224491" y="369.0" />
-      <point x="86.57142857142844" y="71.5" />
+      <point x="2613.049568965517" y="369.0" />
+      <point x="1998.9245689655172" y="369.0" />
+      <point x="88.375" y="71.5" />
     </edge>
     <edge source="org.openpcf.universal.scaffolding.Service" target="org.openpcf.universal.scaffolding.Stopable">
       <point x="-19.125" y="-153.0" />
-      <point x="695.3893494897961" y="339.0" />
-      <point x="615.4375000000001" y="339.0" />
+      <point x="701.6228448275863" y="349.0" />
+      <point x="615.4375" y="349.0" />
       <point x="30.5" y="30.5" />
     </edge>
     <edge source="org.openpcf.universal.scaffolding.NetworkedService" target="org.openpcf.universal.scaffolding.Service">
-      <point x="1.1368683772161603E-13" y="-44.5" />
-      <point x="989.9005102040819" y="740.0" />
-      <point x="791.0143494897961" y="740.0" />
+      <point x="0.0" y="-44.5" />
+      <point x="1007.1142241379309" y="750.0" />
+      <point x="797.2478448275863" y="750.0" />
       <point x="76.5" y="153.0" />
     </edge>
     <edge source="org.openpcf.universal.scaffolding.OperatingSystem" target="org.openpcf.universal.scaffolding.Checkable">
       <point x="-61.0" y="-126.0" />
-      <point x="298.57684948979613" y="379.0" />
-      <point x="200.7500000000001" y="379.0" />
+      <point x="304.8103448275863" y="389.0" />
+      <point x="200.75" y="389.0" />
       <point x="-32.75" y="30.5" />
     </edge>
     <edge source="org.openpcf.universal.scaffolding.Interpreter" target="org.openpcf.universal.scaffolding.LocalService">
       <point x="55.0" y="-58.5" />
-      <point x="384.1505102040818" y="884.0" />
-      <point x="479.6505102040818" y="884.0" />
+      <point x="401.36422413793093" y="894.0" />
+      <point x="496.86422413793093" y="894.0" />
       <point x="-107.5" y="30.5" />
+    </edge>
+    <edge source="org.openpcf.universal.scaffolding.ConsoleDevice" target="org.openpcf.universal.scaffolding.Device">
+      <point x="0.0" y="-85.0" />
+      <point x="2384.799568965517" y="379.0" />
+      <point x="1973.6745689655172" y="379.0" />
+      <point x="63.125" y="71.5" />
     </edge>
     <edge source="org.openpcf.universal.scaffolding.GraphicalAccessor" target="org.openpcf.universal.scaffolding.NetworkedService">
       <point x="-137.5" y="-44.5" />
-      <point x="1505.150510204082" y="874.0" />
-      <point x="1034.900510204082" y="874.0" />
-      <point x="45.000000000000114" y="44.5" />
+      <point x="1522.364224137931" y="884.0" />
+      <point x="1052.114224137931" y="884.0" />
+      <point x="45.0" y="44.5" />
     </edge>
     <edge source="org.openpcf.universal.scaffolding.Service" target="org.openpcf.universal.scaffolding.Discoverable">
       <point x="-133.875" y="-153.0" />
-      <point x="580.6393494897961" y="369.0" />
-      <point x="111.0" y="369.0" />
+      <point x="586.8728448275863" y="379.0" />
+      <point x="111.0" y="379.0" />
       <point x="37.0" y="30.5" />
     </edge>
     <edge source="org.openpcf.universal.scaffolding.StorageDevice" target="org.openpcf.universal.scaffolding.Device">
       <point x="0.0" y="-44.5" />
-      <point x="2192.699617346939" y="379.0" />
-      <point x="1852.6894132653065" y="379.0" />
-      <point x="57.71428571428578" y="71.5" />
+      <point x="2191.799568965517" y="389.0" />
+      <point x="1948.4245689655172" y="389.0" />
+      <point x="37.875" y="71.5" />
     </edge>
     <edge source="org.openpcf.universal.scaffolding.MemoryModule" target="org.openpcf.universal.scaffolding.Device">
       <point x="0.0" y="-44.5" />
-      <point x="1412.699617346939" y="379.0" />
-      <point x="1737.260841836735" y="379.0" />
-      <point x="-57.71428571428578" y="71.5" />
+      <point x="1595.1271551724137" y="389.0" />
+      <point x="1872.6745689655172" y="389.0" />
+      <point x="-37.875" y="71.5" />
     </edge>
     <edge source="org.openpcf.universal.scaffolding.LocalService" target="org.openpcf.universal.scaffolding.Service">
       <point x="0.0" y="-30.5" />
-      <point x="587.1505102040818" y="740.0" />
-      <point x="638.0143494897961" y="740.0" />
+      <point x="604.3642241379309" y="750.0" />
+      <point x="644.2478448275863" y="750.0" />
       <point x="-76.5" y="153.0" />
     </edge>
     <edge source="org.openpcf.universal.scaffolding.OperatingSystem" target="org.openpcf.universal.scaffolding.Discoverable">
       <point x="-122.0" y="-126.0" />
-      <point x="237.57684948979613" y="389.0" />
-      <point x="37.0" y="389.0" />
+      <point x="243.81034482758628" y="399.0" />
+      <point x="37.0" y="399.0" />
       <point x="-37.0" y="30.5" />
     </edge>
     <edge source="org.openpcf.universal.scaffolding.Device" target="org.openpcf.universal.scaffolding.Component">
       <point x="0.0" y="-71.5" />
-      <point x="1794.9751275510207" y="141.0" />
-      <point x="1498.9751275510207" y="141.0" />
+      <point x="1910.5495689655172" y="141.0" />
+      <point x="1614.5495689655172" y="141.0" />
       <point x="43.0" y="58.0" />
     </edge>
     <edge source="org.openpcf.universal.scaffolding.TextualAccessor" target="org.openpcf.universal.scaffolding.Accessable">
       <point x="134.25" y="-44.5" />
-      <point x="1213.400510204082" y="884.0" />
-      <point x="1711.650510204082" y="884.0" />
+      <point x="1230.614224137931" y="894.0" />
+      <point x="1728.864224137931" y="894.0" />
       <point x="-34.25" y="30.5" />
     </edge>
     <edge source="org.openpcf.universal.scaffolding.ComputerSystem" target="org.openpcf.universal.scaffolding.Virtualizable">
@@ -196,26 +203,26 @@
     </edge>
     <edge source="org.openpcf.universal.scaffolding.GraphicsDevice" target="org.openpcf.universal.scaffolding.Device">
       <point x="0.0" y="-85.0" />
-      <point x="1801.699617346939" y="389.0" />
-      <point x="1794.9751275510207" y="389.0" />
-      <point x="0.0" y="71.5" />
+      <point x="1800.7995689655172" y="399.0" />
+      <point x="1897.9245689655172" y="399.0" />
+      <point x="-12.625" y="71.5" />
     </edge>
     <edge source="org.openpcf.universal.scaffolding.OperatingSystem" target="org.openpcf.universal.scaffolding.Stopable">
       <point x="61.0" y="-126.0" />
-      <point x="420.57684948979613" y="379.0" />
-      <point x="554.4375000000001" y="379.0" />
+      <point x="426.8103448275863" y="389.0" />
+      <point x="554.4375" y="389.0" />
       <point x="-30.5" y="30.5" />
     </edge>
     <edge source="org.openpcf.universal.scaffolding.OperatingSystem" target="org.openpcf.universal.scaffolding.Restartable">
       <point x="0.0" y="-126.0" />
-      <point x="359.57684948979613" y="389.0" />
-      <point x="354.0000000000001" y="389.0" />
+      <point x="365.8103448275863" y="399.0" />
+      <point x="354.0" y="399.0" />
       <point x="-35.0" y="30.5" />
     </edge>
     <edge source="org.openpcf.universal.scaffolding.Software" target="org.openpcf.universal.scaffolding.Component">
       <point x="0.0" y="-58.0" />
-      <point x="756.9375000000001" y="141.0" />
-      <point x="1412.9751275510207" y="141.0" />
+      <point x="756.9375" y="141.0" />
+      <point x="1528.5495689655172" y="141.0" />
       <point x="-43.0" y="58.0" />
     </edge>
     <edge source="org.openpcf.universal.scaffolding.Hypervisor" target="org.openpcf.universal.scaffolding.LocalService">
@@ -224,15 +231,13 @@
     </edge>
     <edge source="org.openpcf.universal.scaffolding.Service" target="org.openpcf.universal.scaffolding.Software">
       <point x="19.125" y="-153.0" />
-      <point x="733.6393494897961" y="329.0" />
-      <point x="802.4375000000001" y="329.0" />
+      <point x="739.8728448275863" y="329.0" />
+      <point x="802.4375" y="329.0" />
       <point x="45.5" y="58.0" />
     </edge>
   </edges>
-  <settings layout="Hierarchic Group" zoom="0.7021118932938125" x="1339.5" y="724.5" />
-  <SelectedNodes>
-    <node>org.openpcf.universal.scaffolding.ManagementConsole</node>
-  </SelectedNodes>
+  <settings layout="Hierarchic Group" zoom="0.6458759372869802" x="1457.0" y="729.5" />
+  <SelectedNodes />
   <Categories>
     <Category>Constructors</Category>
     <Category>Fields</Category>

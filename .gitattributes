@@ -21,6 +21,7 @@ source/org/openpcf/universal/scaffolding/Component.java -text
 source/org/openpcf/universal/scaffolding/ComputerSystem.java -text
 source/org/openpcf/universal/scaffolding/Configuration.java -text
 source/org/openpcf/universal/scaffolding/ConfiguredNetworkDevice.java -text
+source/org/openpcf/universal/scaffolding/ConsoleDevice.java -text
 source/org/openpcf/universal/scaffolding/Createable.java -text
 source/org/openpcf/universal/scaffolding/Credential.java -text
 source/org/openpcf/universal/scaffolding/Destroyable.java -text

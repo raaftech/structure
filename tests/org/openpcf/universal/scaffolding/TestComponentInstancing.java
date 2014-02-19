@@ -35,7 +35,7 @@ public class TestComponentInstancing {
         MemoryModule memoryModule = new MemoryModule("dimm0", icon, "Kingston", "PC4500-333", "REV0.1", 2349823);
         ProcessingUnit processingUnit = new ProcessingUnit("cpu0", icon, "Intel", "Xeon 5600", "REV1", 5000, 3072, 4);
         GraphicsDevice graphicsDevice = new GraphicsDevice("gfx0", icon, "NVIDIA", "GTX8800", "REV4", 2300, 1333, 8192, 32489238);
-
+        ConsoleDevice consoleDevice = new ConsoleDevice("tty0", icon, "Digital", "Com Port 1", "REV-A", 9600, 8, "N", 1);
         Configuration configuredStuffOnComputer = new ConfiguredNetworkDevice("configged-card", networkDeviceForOS, "1.2.3.4");
         OperatingSystem osForComputer = new OperatingSystem("myos", icon, "Canonical", "Ubuntu Linux 4", Boolean.FALSE, servicesForOS, configuredStuffOnComputer);
 
@@ -49,7 +49,7 @@ public class TestComponentInstancing {
 
         ManagementConsole managementConsole = new ManagementConsole("ilo0", icon, "HP", "iLO", "5", networkDevicesForConsole, osForManageDev);
 
-        Component foo = new ComputerSystem(name, icon, vendor, model, revision, networkDeviceForOS, osForComputer, storageDevice, memoryModule, processingUnit, graphicsDevice, managementConsole);
+        Component foo = new ComputerSystem(name, icon, vendor, model, revision, networkDeviceForOS, osForComputer, storageDevice, memoryModule, processingUnit, graphicsDevice, consoleDevice, managementConsole);
 
         System.out.println(foo);
     }

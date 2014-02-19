@@ -91,7 +91,7 @@
         </dependency>
         <dependency>
             <groupId>com.thinkaurelius.titan</groupId>
-            <artifactId>titan-lucene</artifactId>
+            <artifactId>titan-es</artifactId>
             <version>0.4.2</version>
         </dependency>
     </dependencies>

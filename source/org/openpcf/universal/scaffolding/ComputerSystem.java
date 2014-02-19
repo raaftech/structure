@@ -20,9 +20,10 @@ public class ComputerSystem extends Device implements Virtualizable {
     private MemoryModule memoryModule;
     private ProcessingUnit processingUnit;
     private GraphicsDevice graphicsDevice;
+    private ConsoleDevice consoleDevice;
     private ManagementConsole managementConsole;
 
-    public ComputerSystem(String name, Image icon, String vendor, String model, String revision, NetworkDevice networkDevice, OperatingSystem operatingSystem, StorageDevice storageDevice, MemoryModule memoryModule, ProcessingUnit processingUnit, GraphicsDevice graphicsDevice, ManagementConsole managementConsole) {
+    public ComputerSystem(String name, Image icon, String vendor, String model, String revision, NetworkDevice networkDevice, OperatingSystem operatingSystem, StorageDevice storageDevice, MemoryModule memoryModule, ProcessingUnit processingUnit, GraphicsDevice graphicsDevice, ConsoleDevice consoleDevice, ManagementConsole managementConsole) {
         super(name, icon, vendor, model, revision);
         this.networkDevice = networkDevice;
         this.operatingSystem = operatingSystem;
@@ -30,6 +31,7 @@ public class ComputerSystem extends Device implements Virtualizable {
         this.memoryModule = memoryModule;
         this.processingUnit = processingUnit;
         this.graphicsDevice = graphicsDevice;
+        this.consoleDevice = consoleDevice;
         this.managementConsole = managementConsole;
     }
 }

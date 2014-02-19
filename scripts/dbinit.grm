@@ -33,14 +33,21 @@ catch (Exception e) {
     g.makeKey("netIpv4Addr").dataType(String.class).indexed(INDEX_NAME, Vertex.class).make()
     g.makeKey("netIpv4Port").dataType(Integer.class).indexed(INDEX_NAME, Vertex.class).make()
 
-    g.makeKey("storageSize").dataType(BigDecimal.class).indexed(INDEX_NAME, Vertex.class).make()
-    g.makeKey("cacheSize").dataType(BigDecimal.class).indexed(INDEX_NAME, Vertex.class).make()
-    g.makeKey("memSize").dataType(BigDecimal.class).indexed(INDEX_NAME, Vertex.class).make()
+    g.makeKey("storageSize").dataType(Integer.class).indexed(INDEX_NAME, Vertex.class).make()
+    g.makeKey("cacheSize").dataType(Integer.class).indexed(INDEX_NAME, Vertex.class).make()
+    g.makeKey("memSize").dataType(Integer.class).indexed(INDEX_NAME, Vertex.class).make()
 
     g.makeKey("cpuCores").dataType(Integer.class).indexed(INDEX_NAME, Vertex.class).make()
+    g.makeKey("gpuCores").dataType(Integer.class).indexed(INDEX_NAME, Vertex.class).make()
+
     g.makeKey("cpuSpeed").dataType(Integer.class).indexed(INDEX_NAME, Vertex.class).make()
     g.makeKey("gpuSpeed").dataType(Integer.class).indexed(INDEX_NAME, Vertex.class).make()
     g.makeKey("memSpeed").dataType(Integer.class).indexed(INDEX_NAME, Vertex.class).make()
+
+    g.makeKey("baudRate").dataType(Integer.class).indexed(INDEX_NAME, Vertex.class).make()
+    g.makeKey("dataBits").dataType(Integer.class).indexed(INDEX_NAME, Vertex.class).make()
+    g.makeKey("parity").dataType(String.class).indexed(INDEX_NAME, Vertex.class).make()
+    g.makeKey("stopBits").dataType(Integer.class).indexed(INDEX_NAME, Vertex.class).make()
 
     g.makeKey("execPath").dataType(String.class).indexed(INDEX_NAME, Vertex.class).make()
     g.makeKey("execImage").dataType(String.class).indexed(INDEX_NAME, Vertex.class).make()
@@ -50,8 +57,8 @@ catch (Exception e) {
     g.makeKey("vmData").dataType(String.class).make()
 
     g.makeKey("cmdContent").dataType(String.class).make()
-    g.makeKey("cmdStarted").dataType(String.class).indexed(INDEX_NAME, Vertex.class).make()
-    g.makeKey("cmdFinished").dataType(String.class).indexed(INDEX_NAME, Vertex.class).make()
+    g.makeKey("cmdStarted").dataType(Date.class).indexed(Vertex.class).make()
+    g.makeKey("cmdFinished").dataType(Date.class).indexed(Vertex.class).make()
     g.makeKey("cmdResult").dataType(String.class).indexed(INDEX_NAME, Vertex.class).make()
     g.makeKey("cmdExit").dataType(Integer.class).make()
 
@@ -63,14 +70,14 @@ catch (Exception e) {
     g.commit()
     println " * finished setting key definitions and constraints"
 
-    // Default vendor.
+    // Generic vendor.
     Vertex genericVendor = g.addVertex(null)
     genericVendor.setProperty("type", "Vendor")
     genericVendor.setProperty("name", "genericVendor")
     genericVendor.setProperty("desc", "A generic devices and software vendor.")
     genericVendor.setProperty("icon", "icons/genericVendor.svg")
 
-    // Default network device.
+    // Generic network device.
     Vertex genericNetworkDevice = g.addVertex(null)
     genericNetworkDevice.setProperty("type", "NetworkDevice")
     genericNetworkDevice.setProperty("name", "genericNetworkDevice")
@@ -78,17 +85,111 @@ catch (Exception e) {
     genericNetworkDevice.setProperty("icon", "icons/genericNetworkDevice.svg")
 
     genericNetworkDevice.setProperty("deviceModel", "Generic Network Device")
-    genericNetworkDevice.setProperty("deviceRevision", "REV1.0")
+    genericNetworkDevice.setProperty("deviceRevision", "REV1")
+
     genericNetworkDevice.setProperty("macAddr", "00:00:00:00:00:00")
 
     genericNetworkDevice.addEdge("vendor", genericVendor)
 
+    // Default SSH listener.
+    Vertex defaultSshListener = g.addVertex(null)
+    defaultSshListener.setProperty("netIpv4Addr", "0.0.0.0")
+    defaultSshListener.setProperty("netIpv4Port", 22)
 
+    // Generic SSH service.
+    Vertex genericSshService = g.addVertex(null)
+    genericSshService.setProperty("type", "TextualAccessor")
+    genericSshService.setProperty("name", "genericSshService")
+    genericSshService.setProperty("desc", "A generic SSH service.")
+    genericSshService.setProperty("icon", "icons/genericSshService.svg")
 
+    genericSshService.setProperty("softwareVersion", "1")
 
+    genericSshService.addEdge("vendor", genericVendor)
 
+    // Generic storage device.
+    Vertex genericStorageDevice = g.addVertex(null)
+    genericStorageDevice.setProperty("type", "StorageDevice")
+    genericStorageDevice.setProperty("name", "genericStorageDevice")
+    genericStorageDevice.setProperty("desc", "A generic storage device.")
+    genericStorageDevice.setProperty("icon", "icons/genericStorageDevice.svg")
 
+    genericStorageDevice.setProperty("deviceModel", "Generic Storage Device")
+    genericStorageDevice.setProperty("deviceRevision", "REV1")
 
+    genericStorageDevice.setProperty("storageSize", 1048576)
+
+    genericStorageDevice.addEdge("vendor", genericVendor)
+
+    // Generic memory module.
+    Vertex genericMemoryModule = g.addVertex(null)
+    genericMemoryModule.setProperty("type", "MemoryModule")
+    genericMemoryModule.setProperty("name", "genericMemoryModule")
+    genericMemoryModule.setProperty("desc", "A generic memory module.")
+    genericMemoryModule.setProperty("icon", "icons/genericMemoryModule.svg")
+
+    genericMemoryModule.setProperty("deviceModel", "Generic Memory Module")
+    genericMemoryModule.setProperty("deviceRevision", "REV1")
+
+    genericMemoryModule.setProperty("memSize", 1048576)
+    genericMemoryModule.setProperty("memSpeed", 1000000)
+
+    genericMemoryModule.addEdge("vendor", genericVendor)
+
+    // Generic processing unit.
+    Vertex genericProcessingUnit = g.addVertex(null)
+    genericProcessingUnit.setProperty("type", "ProcessingUnit")
+    genericProcessingUnit.setProperty("name", "genericProcessingUnit")
+    genericProcessingUnit.setProperty("desc", "A generic processing unit.")
+    genericProcessingUnit.setProperty("icon", "icons/genericProcessingUnit.svg")
+
+    genericProcessingUnit.setProperty("deviceModel", "Generic processing unit.")
+    genericProcessingUnit.setProperty("deviceRevision", "REV1")
+
+    genericProcessingUnit.setProperty("cpuCores", 1)
+    genericProcessingUnit.setProperty("cpuSpeed", 10000000)
+    genericProcessingUnit.setProperty("cacheSize", 1024)
+
+    genericProcessingUnit.addEdge("vendor", genericVendor)
+
+    // Generic graphics device.
+    Vertex genericGraphicsDevice = g.addVertex(null)
+    genericGraphicsDevice.setProperty("type", "GraphicsDevice")
+    genericGraphicsDevice.setProperty("name", "genericGraphicsDevice")
+    genericGraphicsDevice.setProperty("desc", "A generic graphics device.")
+    genericGraphicsDevice.setProperty("icon", "icons/genericGraphicsDevice.svg")
+
+    genericGraphicsDevice.setProperty("deviceModel", "Generic graphics device.")
+    genericGraphicsDevice.setProperty("deviceRevision", "REV1")
+
+    genericGraphicsDevice.setProperty("gpuCores", 1)
+    genericGraphicsDevice.setProperty("gpuSpeed", 1000000)
+    genericGraphicsDevice.setProperty("memSize", 33554432)
+
+    genericGraphicsDevice.addEdge("vendor", genericVendor)
+
+    // Generic console device.
+    Vertex genericConsoleDevice = g.addVertex(null)
+    genericConsoleDevice.setProperty("type", "GraphicsDevice")
+    genericConsoleDevice.setProperty("name", "genericConsoleDevice")
+    genericConsoleDevice.setProperty("desc", "A generic console device.")
+    genericConsoleDevice.setProperty("icon", "icons/genericConsoleDevice.svg")
+
+    genericConsoleDevice.setProperty("deviceModel", "Generic console device.")
+    genericConsoleDevice.setProperty("deviceRevision", "REV1")
+
+    genericConsoleDevice.setProperty("baudRate", 9600)
+    genericConsoleDevice.setProperty("dataBits", 8)
+    genericConsoleDevice.setProperty("parity", "N")
+    genericConsoleDevice.setProperty("stopBits", 1)
+
+    genericConsoleDevice.addEdge("vendor", genericVendor)
+
+    // Generic BSD operating system.
+    // Generic UNIX operating system.
+    // Generic Linux operating system.
+    // Generic Windows operating system.
+    // Generic MacOS operating system.
 
 
     g.commit()
