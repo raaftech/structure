@@ -27,6 +27,6 @@ public class TestTitanGraph {
 
         ScriptEngine engine = new GremlinGroovyScriptEngineFactory().getScriptEngine();
 
-        engine.eval(new FileReader("scripts/test-titan-dbinit.grm"));
+        engine.eval(new FileReader("scripts/dbinit.grm"));
     }
 }

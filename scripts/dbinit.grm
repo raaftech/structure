@@ -1,0 +1,99 @@
+/*
+ * Copyright © 2008-2014 RAAF Technology bv
+ */
+
+import com.tinkerpop.blueprints.Edge
+import com.tinkerpop.blueprints.Vertex
+import org.openpcf.universal.graph.UniversalGraphFactory
+
+println " * creating or opening target/test-titandb"
+g = UniversalGraphFactory.create("target/test-titandb")
+
+try {
+    println " * checking if a generic network device exists.."
+    testresult = g.V("name", "genericNetworkDevice").next()
+}
+catch (Exception e) {
+    println " * guess not. loading default data into graph.."
+
+    // Allowed keys.
+    final String INDEX_NAME = "search"
+
+    g.makeKey("type").dataType(String.class).indexed(Vertex.class).make()
+    g.makeKey("name").dataType(String.class).indexed(Vertex.class).unique().make()
+    g.makeKey("desc").dataType(String.class).indexed(INDEX_NAME, Vertex.class).make()
+    g.makeKey("icon").dataType(String.class).make()
+
+    g.makeKey("deviceModel").dataType(String.class).indexed(INDEX_NAME, Vertex.class).make()
+    g.makeKey("deviceRevision").dataType(String.class).indexed(INDEX_NAME, Vertex.class).make()
+
+    g.makeKey("softwareVersion").dataType(String.class).indexed(INDEX_NAME, Vertex.class).make()
+
+    g.makeKey("macAddr").dataType(String.class).indexed(INDEX_NAME, Vertex.class).make()
+    g.makeKey("netIpv4Addr").dataType(String.class).indexed(INDEX_NAME, Vertex.class).make()
+    g.makeKey("netIpv4Port").dataType(Integer.class).indexed(INDEX_NAME, Vertex.class).make()
+
+    g.makeKey("storageSize").dataType(BigDecimal.class).indexed(INDEX_NAME, Vertex.class).make()
+    g.makeKey("cacheSize").dataType(BigDecimal.class).indexed(INDEX_NAME, Vertex.class).make()
+    g.makeKey("memSize").dataType(BigDecimal.class).indexed(INDEX_NAME, Vertex.class).make()
+
+    g.makeKey("cpuCores").dataType(Integer.class).indexed(INDEX_NAME, Vertex.class).make()
+    g.makeKey("cpuSpeed").dataType(Integer.class).indexed(INDEX_NAME, Vertex.class).make()
+    g.makeKey("gpuSpeed").dataType(Integer.class).indexed(INDEX_NAME, Vertex.class).make()
+    g.makeKey("memSpeed").dataType(Integer.class).indexed(INDEX_NAME, Vertex.class).make()
+
+    g.makeKey("execPath").dataType(String.class).indexed(INDEX_NAME, Vertex.class).make()
+    g.makeKey("execImage").dataType(String.class).indexed(INDEX_NAME, Vertex.class).make()
+    g.makeKey("execLang").dataType(String.class).indexed(INDEX_NAME, Vertex.class).make()
+
+    g.makeKey("vmHome").dataType(String.class).make()
+    g.makeKey("vmData").dataType(String.class).make()
+
+    g.makeKey("cmdContent").dataType(String.class).make()
+    g.makeKey("cmdStarted").dataType(String.class).indexed(INDEX_NAME, Vertex.class).make()
+    g.makeKey("cmdFinished").dataType(String.class).indexed(INDEX_NAME, Vertex.class).make()
+    g.makeKey("cmdResult").dataType(String.class).indexed(INDEX_NAME, Vertex.class).make()
+    g.makeKey("cmdExit").dataType(Integer.class).make()
+
+    g.makeLabel("vendor").manyToOne().make()
+    g.makeLabel("runs").manyToMany().make()
+    g.makeLabel("isa").oneToOne().make()
+    g.makeLabel("has").oneToMany().make()
+
+    g.commit()
+    println " * finished setting key definitions and constraints"
+
+    // Default vendor.
+    Vertex genericVendor = g.addVertex(null)
+    genericVendor.setProperty("type", "Vendor")
+    genericVendor.setProperty("name", "genericVendor")
+    genericVendor.setProperty("desc", "A generic devices and software vendor.")
+    genericVendor.setProperty("icon", "icons/genericVendor.svg")
+
+    // Default network device.
+    Vertex genericNetworkDevice = g.addVertex(null)
+    genericNetworkDevice.setProperty("type", "NetworkDevice")
+    genericNetworkDevice.setProperty("name", "genericNetworkDevice")
+    genericNetworkDevice.setProperty("desc", "A generic network device.")
+    genericNetworkDevice.setProperty("icon", "icons/genericNetworkDevice.svg")
+
+    genericNetworkDevice.setProperty("deviceModel", "Generic Network Device")
+    genericNetworkDevice.setProperty("deviceRevision", "REV1.0")
+    genericNetworkDevice.setProperty("macAddr", "00:00:00:00:00:00")
+
+    genericNetworkDevice.addEdge("vendor", genericVendor)
+
+
+
+
+
+
+
+
+
+    g.commit()
+
+    testresult = g.V("name", "genericNetworkDevice").next()
+}
+
+println " * did we find a device: " + testresult.getProperty("name")
