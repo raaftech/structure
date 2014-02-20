@@ -18,15 +18,13 @@ import java.io.IOException;
  * Testing persistence behaviour.
  *
  * @author Rubin Simons <rubin.simons@raaftech.com>
- * @since 2014-01-06
  * @version 0.6
+ * @since 2014-01-06
  */
 public class TestTitanGraph {
     @Test
     public void quickTest() throws IOException, InterruptedException, ScriptException {
-
         ScriptEngine engine = new GremlinGroovyScriptEngineFactory().getScriptEngine();
-
-        engine.eval(new FileReader("scripts/dbinit.grm"));
+        engine.eval(new FileReader("scripts/init.grm"));
     }
 }

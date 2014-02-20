@@ -1,58 +1,71 @@
 /*
- * Copyright © 2008-2014 RAAF Technology bv
- */
+* Copyright © 2008-2014 RAAF Technology bv
+*/
 
-import com.tinkerpop.blueprints.Edge
 import com.tinkerpop.blueprints.Vertex
-import org.openpcf.universal.graph.UniversalGraphFactory
 
-println " * creating or opening target/test-titandb"
-g = UniversalGraphFactory.create("target/test-titandb")
+// Set a few globals.
+def importClassWrapper, result, g
 
 try {
-    println " * checking if a generic operating system exists.."
-    testresult = testresult = g.V("name", "genericUnixLikeOperatingSystem").next()
+    // Import our own custom factory if Gremlin can find it (conditional import).
+    importClassWrapper = "org.openpcf.universal.graph.UniversalGraphFactory" as Class
+} catch (Exception e) {
+    // Fallback on a stub graph factory if not.
+    importClassWrapper = "com.thinkaurelius.titan.example.GraphOfTheGodsFactory" as Class
+}
+
+try {
+    // Try and open a Rexter graph (used when running through Rexter console).
+    g = rexster.getGraph("graph")
+} catch (MissingPropertyException e) {
+    // If g is unset/empty, use the importClassWrapper to create/open the graph.
+    println " * Creating or opening Titan Database.."
+    g = importClassWrapper.create("target/test-titandb");
+}
+
+try {
+    // Check if our data exists. Set a result variable.
+    println " * Checking for default data existence.."
+    result = g.V("name", "genericUnixLikeOperatingSystem").next()
 }
 catch (Exception e) {
-    println " * guess not. loading default data into graph.."
-
-    // Allowed keys.
-    final String INDEX_NAME = "search"
-
+    // Create our default data. Set a result variable.
+    println " * Not Found, creating default data.."
     g.makeKey("type").dataType(String.class).indexed(Vertex.class).make()
     g.makeKey("name").dataType(String.class).indexed(Vertex.class).unique().make()
-    g.makeKey("desc").dataType(String.class).indexed(INDEX_NAME, Vertex.class).make()
+    g.makeKey("desc").dataType(String.class).indexed("search", Vertex.class).make()
     g.makeKey("icon").dataType(String.class).make()
 
-    g.makeKey("deviceModel").dataType(String.class).indexed(INDEX_NAME, Vertex.class).make()
-    g.makeKey("deviceRevision").dataType(String.class).indexed(INDEX_NAME, Vertex.class).make()
+    g.makeKey("deviceModel").dataType(String.class).indexed("search", Vertex.class).make()
+    g.makeKey("deviceRevision").dataType(String.class).indexed("search", Vertex.class).make()
 
-    g.makeKey("softwareVersion").dataType(String.class).indexed(INDEX_NAME, Vertex.class).make()
+    g.makeKey("softwareVersion").dataType(String.class).indexed("search", Vertex.class).make()
 
-    g.makeKey("macAddr").dataType(String.class).indexed(INDEX_NAME, Vertex.class).make()
-    g.makeKey("netIpv4Addr").dataType(String.class).indexed(INDEX_NAME, Vertex.class).make()
-    g.makeKey("netIpv4Port").dataType(Integer.class).indexed(INDEX_NAME, Vertex.class).make()
+    g.makeKey("macAddr").dataType(String.class).indexed("search", Vertex.class).make()
+    g.makeKey("netIpv4Addr").dataType(String.class).indexed("search", Vertex.class).make()
+    g.makeKey("netIpv4Port").dataType(Integer.class).indexed("search", Vertex.class).make()
 
-    g.makeKey("storageSize").dataType(Integer.class).indexed(INDEX_NAME, Vertex.class).make()
-    g.makeKey("cacheSize").dataType(Integer.class).indexed(INDEX_NAME, Vertex.class).make()
-    g.makeKey("memSize").dataType(Integer.class).indexed(INDEX_NAME, Vertex.class).make()
+    g.makeKey("storageSize").dataType(Integer.class).indexed("search", Vertex.class).make()
+    g.makeKey("cacheSize").dataType(Integer.class).indexed("search", Vertex.class).make()
+    g.makeKey("memSize").dataType(Integer.class).indexed("search", Vertex.class).make()
 
-    g.makeKey("cpuCores").dataType(Integer.class).indexed(INDEX_NAME, Vertex.class).make()
-    g.makeKey("gpuCores").dataType(Integer.class).indexed(INDEX_NAME, Vertex.class).make()
+    g.makeKey("cpuCores").dataType(Integer.class).indexed("search", Vertex.class).make()
+    g.makeKey("gpuCores").dataType(Integer.class).indexed("search", Vertex.class).make()
 
-    g.makeKey("cpuSpeed").dataType(Integer.class).indexed(INDEX_NAME, Vertex.class).make()
-    g.makeKey("gpuSpeed").dataType(Integer.class).indexed(INDEX_NAME, Vertex.class).make()
-    g.makeKey("memSpeed").dataType(Integer.class).indexed(INDEX_NAME, Vertex.class).make()
+    g.makeKey("cpuSpeed").dataType(Integer.class).indexed("search", Vertex.class).make()
+    g.makeKey("gpuSpeed").dataType(Integer.class).indexed("search", Vertex.class).make()
+    g.makeKey("memSpeed").dataType(Integer.class).indexed("search", Vertex.class).make()
 
-    g.makeKey("baudRate").dataType(Integer.class).indexed(INDEX_NAME, Vertex.class).make()
-    g.makeKey("dataBits").dataType(Integer.class).indexed(INDEX_NAME, Vertex.class).make()
-    g.makeKey("parity").dataType(String.class).indexed(INDEX_NAME, Vertex.class).make()
-    g.makeKey("stopBits").dataType(Integer.class).indexed(INDEX_NAME, Vertex.class).make()
+    g.makeKey("baudRate").dataType(Integer.class).indexed("search", Vertex.class).make()
+    g.makeKey("dataBits").dataType(Integer.class).indexed("search", Vertex.class).make()
+    g.makeKey("parity").dataType(String.class).indexed("search", Vertex.class).make()
+    g.makeKey("stopBits").dataType(Integer.class).indexed("search", Vertex.class).make()
 
-    g.makeKey("execPath").dataType(String.class).indexed(INDEX_NAME, Vertex.class).make()
-    g.makeKey("execImage").dataType(String.class).indexed(INDEX_NAME, Vertex.class).make()
-    g.makeKey("execArgs").dataType(String.class).indexed(INDEX_NAME, Vertex.class).make()
-    g.makeKey("execLang").dataType(String.class).indexed(INDEX_NAME, Vertex.class).make()
+    g.makeKey("execPath").dataType(String.class).indexed("search", Vertex.class).make()
+    g.makeKey("execImage").dataType(String.class).indexed("search", Vertex.class).make()
+    g.makeKey("execArgs").dataType(String.class).indexed("search", Vertex.class).make()
+    g.makeKey("execLang").dataType(String.class).indexed("search", Vertex.class).make()
 
     g.makeKey("vmHome").dataType(String.class).make()
     g.makeKey("vmData").dataType(String.class).make()
@@ -60,16 +73,13 @@ catch (Exception e) {
     g.makeKey("cmdContent").dataType(String.class).make()
     g.makeKey("cmdStarted").dataType(Date.class).indexed(Vertex.class).make()
     g.makeKey("cmdFinished").dataType(Date.class).indexed(Vertex.class).make()
-    g.makeKey("cmdResult").dataType(String.class).indexed(INDEX_NAME, Vertex.class).make()
+    g.makeKey("cmdResult").dataType(String.class).indexed("search", Vertex.class).make()
     g.makeKey("cmdExit").dataType(Integer.class).make()
 
     g.makeLabel("vendor").manyToOne().make()
     g.makeLabel("uses").manyToMany().make()
     g.makeLabel("isa").oneToOne().make()
     g.makeLabel("has").manyToMany().make()
-
-    g.commit()
-    println " * finished setting key definitions and constraints"
 
     // Generic vendor.
     Vertex genericVendor = g.addVertex(null)
@@ -249,7 +259,7 @@ catch (Exception e) {
 
     // Generic console device.
     Vertex genericConsoleDevice = g.addVertex(null)
-    genericConsoleDevice.setProperty("type", "GraphicsDevice")
+    genericConsoleDevice.setProperty("type", "ConsoleDevice")
     genericConsoleDevice.setProperty("name", "genericConsoleDevice")
     genericConsoleDevice.setProperty("desc", "A generic console device.")
     genericConsoleDevice.setProperty("icon", "icons/genericConsoleDevice.svg")
@@ -287,10 +297,9 @@ catch (Exception e) {
     genericWindowsLikeOperatingSystem.addEdge("has", genericRdpService)
     genericWindowsLikeOperatingSystem.addEdge("has", genericDosInterpreter)
 
-
     g.commit()
 
-    testresult = g.V("name", "genericUnixLikeOperatingSystem").next()
+    result = g.V("name", "genericUnixLikeOperatingSystem").next()
 }
 
-println " * did we find a generic operating system: " + testresult.getProperty("name")
+println " * Found: " + result.getProperty("name")
