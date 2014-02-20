@@ -10,8 +10,8 @@ println " * creating or opening target/test-titandb"
 g = UniversalGraphFactory.create("target/test-titandb")
 
 try {
-    println " * checking if a generic network device exists.."
-    testresult = g.V("name", "genericNetworkDevice").next()
+    println " * checking if a generic operating system exists.."
+    testresult = testresult = g.V("name", "genericUnixLikeOperatingSystem").next()
 }
 catch (Exception e) {
     println " * guess not. loading default data into graph.."
@@ -51,6 +51,7 @@ catch (Exception e) {
 
     g.makeKey("execPath").dataType(String.class).indexed(INDEX_NAME, Vertex.class).make()
     g.makeKey("execImage").dataType(String.class).indexed(INDEX_NAME, Vertex.class).make()
+    g.makeKey("execArgs").dataType(String.class).indexed(INDEX_NAME, Vertex.class).make()
     g.makeKey("execLang").dataType(String.class).indexed(INDEX_NAME, Vertex.class).make()
 
     g.makeKey("vmHome").dataType(String.class).make()
@@ -63,6 +64,7 @@ catch (Exception e) {
     g.makeKey("cmdExit").dataType(Integer.class).make()
 
     g.makeLabel("vendor").manyToOne().make()
+    g.makeLabel("uses").manyToMany().make()
     g.makeLabel("isa").oneToOne().make()
     g.makeLabel("has").manyToMany().make()
 
@@ -95,6 +97,16 @@ catch (Exception e) {
     defaultSshListener.setProperty("netIpv4Addr", "0.0.0.0")
     defaultSshListener.setProperty("netIpv4Port", 22)
 
+    // Default SMB listener.
+    Vertex defaultSmbListener = g.addVertex(null)
+    defaultSmbListener.setProperty("netIpv4Addr", "0.0.0.0")
+    defaultSmbListener.setProperty("netIpv4Port", 445)
+
+    // Default RDP listener.
+    Vertex defaultRdpListener = g.addVertex(null)
+    defaultRdpListener.setProperty("netIpv4Addr", "0.0.0.0")
+    defaultRdpListener.setProperty("netIpv4Port", 3389)
+
     // Generic SSH service.
     Vertex genericSshService = g.addVertex(null)
     genericSshService.setProperty("type", "TextualAccessor")
@@ -104,8 +116,75 @@ catch (Exception e) {
 
     genericSshService.setProperty("softwareVersion", "1")
 
+    genericSshService.setProperty("execPath", "/usr/sbin")
+    genericSshService.setProperty("execImage", "sshd")
+
     genericSshService.addEdge("vendor", genericVendor)
     genericSshService.addEdge("has", defaultSshListener)
+
+    // Generic SMB service.
+    Vertex genericSmbService = g.addVertex(null)
+    genericSmbService.setProperty("type", "TextualAccessor")
+    genericSmbService.setProperty("name", "genericSmbService")
+    genericSmbService.setProperty("desc", "A generic SMB service.")
+    genericSmbService.setProperty("icon", "icons/genericSmbService.svg")
+
+    genericSmbService.setProperty("softwareVersion", "1")
+
+    genericSmbService.setProperty("execPath", "C:/Windows/System32")
+    genericSmbService.setProperty("execImage", "svchost.exe")
+    genericSmbService.setProperty("execArgs", "-k netsvcs")
+
+    genericSmbService.addEdge("vendor", genericVendor)
+    genericSmbService.addEdge("has", defaultSmbListener)
+
+    // Generic RDP service.
+    Vertex genericRdpService = g.addVertex(null)
+    genericRdpService.setProperty("type", "GraphicalAccessor")
+    genericRdpService.setProperty("name", "genericRdpService")
+    genericRdpService.setProperty("desc", "A generic RDP service.")
+    genericRdpService.setProperty("icon", "icons/genericRdpService.svg")
+
+    genericRdpService.setProperty("softwareVersion", "1")
+
+    genericRdpService.setProperty("execPath", "C:/Windows/System32")
+    genericRdpService.setProperty("execImage", "svchost.exe")
+    genericRdpService.setProperty("execArgs", "-k termsvcs")
+
+    genericRdpService.addEdge("vendor", genericVendor)
+    genericRdpService.addEdge("has", defaultRdpListener)
+
+    // Generic DOS interpreter.
+    Vertex genericDosInterpreter = g.addVertex(null)
+    genericDosInterpreter.setProperty("type", "Interpreter")
+    genericDosInterpreter.setProperty("name", "genericDosInterpreter")
+    genericDosInterpreter.setProperty("desc", "A generic DOS command-line interpreter.")
+    genericDosInterpreter.setProperty("icon", "icons/genericDosInterpreter.svg")
+
+    genericDosInterpreter.setProperty("softwareVersion", "1")
+
+    genericDosInterpreter.setProperty("execPath", "C:/Windows/System32")
+    genericDosInterpreter.setProperty("execImage", "cmd.exe")
+    genericDosInterpreter.setProperty("execLang", "DOS")
+
+    genericDosInterpreter.addEdge("vendor", genericVendor)
+    genericDosInterpreter.addEdge("uses", genericSmbService)
+
+    // Generic (Bourne/Posix/UNIX) Shell interpreter.
+    Vertex genericShellInterpreter = g.addVertex(null)
+    genericShellInterpreter.setProperty("type", "Interpreter")
+    genericShellInterpreter.setProperty("name", "genericShellInterpreter")
+    genericShellInterpreter.setProperty("desc", "A generic (Bourne/Posix/UNIX) Shell command-line interpreter.")
+    genericShellInterpreter.setProperty("icon", "icons/genericShellInterpreter.svg")
+
+    genericShellInterpreter.setProperty("softwareVersion", "1")
+
+    genericDosInterpreter.setProperty("execPath", "/bin")
+    genericDosInterpreter.setProperty("execImage", "sh")
+    genericDosInterpreter.setProperty("execLang", "SH")
+
+    genericShellInterpreter.addEdge("vendor", genericVendor)
+    genericShellInterpreter.addEdge("uses", genericSshService)
 
     // Generic storage device.
     Vertex genericStorageDevice = g.addVertex(null)
@@ -185,28 +264,33 @@ catch (Exception e) {
 
     genericConsoleDevice.addEdge("vendor", genericVendor)
 
-    // Generic BSD operating system.
-    Vertex genericBsdOperatingSystem = g.addVertex(null)
-    genericBsdOperatingSystem.setProperty("type", "OperatingSystem")
-    genericBsdOperatingSystem.setProperty("name", "genericBsdOperatingSystem")
-    genericBsdOperatingSystem.setProperty("desc", "A generic BSD operating system.")
-    genericBsdOperatingSystem.setProperty("icon", "icons/genericBsdOperatingSystem.svg")
+    // Generic UNIX-like operating system.
+    Vertex genericUnixLikeOperatingSystem = g.addVertex(null)
+    genericUnixLikeOperatingSystem.setProperty("type", "OperatingSystem")
+    genericUnixLikeOperatingSystem.setProperty("name", "genericUnixLikeOperatingSystem")
+    genericUnixLikeOperatingSystem.setProperty("desc", "A generic UNIX-like operating system.")
+    genericUnixLikeOperatingSystem.setProperty("icon", "icons/genericUnixLikeOperatingSystem.svg")
 
-    genericBsdOperatingSystem.addEdge("vendor", genericVendor)
-    genericBsdOperatingSystem.addEdge("has", genericSshService)
+    genericUnixLikeOperatingSystem.addEdge("vendor", genericVendor)
+    genericUnixLikeOperatingSystem.addEdge("has", genericSshService)
+    genericUnixLikeOperatingSystem.addEdge("has", genericShellInterpreter)
 
-    // Generic UNIX operating system.
+    // Generic Windows-like operating system.
+    Vertex genericWindowsLikeOperatingSystem = g.addVertex(null)
+    genericWindowsLikeOperatingSystem.setProperty("type", "OperatingSystem")
+    genericWindowsLikeOperatingSystem.setProperty("name", "genericWindowsLikeOperatingSystem")
+    genericWindowsLikeOperatingSystem.setProperty("desc", "A generic Windows-like operating system.")
+    genericWindowsLikeOperatingSystem.setProperty("icon", "icons/genericWindowsLikeOperatingSystem.svg")
 
-    // Generic Linux operating system.
-
-    // Generic Windows operating system.
-
-    // Generic MacOS operating system.
+    genericWindowsLikeOperatingSystem.addEdge("vendor", genericVendor)
+    genericWindowsLikeOperatingSystem.addEdge("has", genericSmbService)
+    genericWindowsLikeOperatingSystem.addEdge("has", genericRdpService)
+    genericWindowsLikeOperatingSystem.addEdge("has", genericDosInterpreter)
 
 
     g.commit()
 
-    testresult = g.V("name", "genericNetworkDevice").next()
+    testresult = g.V("name", "genericUnixLikeOperatingSystem").next()
 }
 
-println " * did we find a device: " + testresult.getProperty("name")
+println " * did we find a generic operating system: " + testresult.getProperty("name")

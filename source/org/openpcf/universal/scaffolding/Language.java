@@ -12,5 +12,5 @@ package org.openpcf.universal.scaffolding;
  * @since 2014-01-06
  */
 public enum Language {
-    DOS, BASH, KSH, CSH, PERL, PYTHON, RUBY, JAVA, BINARY
+    DOS, BASH, KSH, CSH, SH, PERL, PYTHON, RUBY, JAVA, BINARY
 }
