@@ -6,15 +6,8 @@ package org.openpcf.universal.graph;
 
 import com.thinkaurelius.titan.core.TitanGraph;
 import com.tinkerpop.blueprints.Vertex;
-import com.tinkerpop.gremlin.groovy.jsr223.GremlinGroovyScriptEngineFactory;
-import org.junit.BeforeClass;
 import org.junit.Test;
-import org.openpcf.universal.ConnectionDing;
 
-import javax.script.ScriptEngine;
-import javax.script.ScriptException;
-import java.io.FileReader;
-import java.io.IOException;
 
 /**
  * A quick test with Titan as graph backend, using TinkerPop Blueprints,
