@@ -50,6 +50,7 @@ source/org/openpcf/universal/scaffolding/Stopable.java -text
 source/org/openpcf/universal/scaffolding/StorageDevice.java -text
 source/org/openpcf/universal/scaffolding/TextualAccessor.java -text
 source/org/openpcf/universal/scaffolding/Virtualizable.java -text
+source/org/openpcf/universal/servlet/HelloServlet.java -text
 tests/org/openpcf/universal/graph/TestTitanGraph.java -text
 tests/org/openpcf/universal/scaffolding/TestComponentInstancing.java -text
 web/META-INF/MANIFEST.MF -text
