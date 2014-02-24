@@ -21,7 +21,7 @@ try {
     g = rexster.getGraph("graph")
 } catch (MissingPropertyException e) {
     // If g is unset/empty, use the importClassWrapper to create/open the graph.
-    g = importClassWrapper.create("target/test-titandb");
+    g = importClassWrapper.create("/tmp/test-titandb");
 }
 
 try {

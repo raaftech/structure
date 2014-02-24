@@ -30,7 +30,7 @@ public class TestTitanGraph {
             System.out.println(e.getMessage());
         }
 
-        TitanGraph g = UniversalGraphFactory.create("target/test-titandb");
+        TitanGraph g = UniversalGraphFactory.create("/tmp/test-titandb");
 
         for (Vertex v: g.getVertices("name", "genericUnixLikeOperatingSystem")){
             System.out.println(v);

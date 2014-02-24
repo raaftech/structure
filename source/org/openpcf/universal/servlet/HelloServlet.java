@@ -26,16 +26,10 @@ public class HelloServlet extends HttpServlet {
         throws ServletException, IOException {
 
         String resultText = "";
-        try{
-            UniversalGraphFactory.load();
-        }
-        catch(Exception e){
-            resultText += "<strong>" + e.getMessage() + "</strong>";
-        }
 
-        TitanGraph g = UniversalGraphFactory.create("target/test-titandb");
+        TitanGraph g = UniversalGraphFactory.create("/tmp/test-titandb");
         for (Vertex v: g.getVertices("name", "genericUnixLikeOperatingSystem")){
-            resultText += "<br />" + v;
+            resultText += "<br />" + v.getProperty("desc");
         }
 
         response.setContentType("text/html");
