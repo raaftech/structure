@@ -7,10 +7,15 @@ package org.openpcf.universal.graph;
 import com.thinkaurelius.titan.core.TitanFactory;
 import com.thinkaurelius.titan.core.TitanGraph;
 import com.thinkaurelius.titan.graphdb.configuration.GraphDatabaseConfiguration;
+import com.tinkerpop.gremlin.groovy.jsr223.GremlinGroovyScriptEngineFactory;
 import org.apache.commons.configuration.BaseConfiguration;
 import org.apache.commons.configuration.Configuration;
 
+import javax.script.ScriptEngine;
+import javax.script.ScriptException;
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 
 import static com.thinkaurelius.titan.graphdb.configuration.GraphDatabaseConfiguration.INDEX_BACKEND_KEY;
 import static com.thinkaurelius.titan.graphdb.configuration.GraphDatabaseConfiguration.STORAGE_DIRECTORY_KEY;
@@ -49,4 +54,12 @@ public class UniversalGraphFactory {
         TitanGraph graph = TitanFactory.open(config);
         return graph;
     }
+
+    public static void load() throws IOException, InterruptedException, ScriptException {
+
+        ScriptEngine engine = new GremlinGroovyScriptEngineFactory().getScriptEngine();
+        engine.eval(new FileReader("scripts/init.grm"));
+
+    }
+
 }

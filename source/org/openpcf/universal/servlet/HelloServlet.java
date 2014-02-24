@@ -4,9 +4,13 @@
 
 package org.openpcf.universal.servlet;
 
+import com.thinkaurelius.titan.core.TitanGraph;
+import com.tinkerpop.blueprints.Vertex;
+import org.openpcf.universal.graph.*;
 import java.io.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
+import java.io.IOException;
 
 /**
  * Give a description of HelloServlet here.
@@ -16,19 +20,38 @@ import javax.servlet.http.*;
  * @since 2014-02-24
  */
 public class HelloServlet extends HttpServlet {
+
     public void doGet(HttpServletRequest request,
                       HttpServletResponse response)
         throws ServletException, IOException {
+
+        String resultText = "";
+        try{
+            UniversalGraphFactory.load();
+        }
+        catch(Exception e){
+            resultText += "<strong>" + e.getMessage() + "</strong>";
+        }
+
+        TitanGraph g = UniversalGraphFactory.create("target/test-titandb");
+        for (Vertex v: g.getVertices("name", "genericUnixLikeOperatingSystem")){
+            resultText += "<br />" + v;
+        }
+
         response.setContentType("text/html");
         PrintWriter out = response.getWriter();
         String docType =
             "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 " +
                 "Transitional//EN\">\n";
+
         out.println(docType +
             "<HTML>\n" +
             "<HEAD><TITLE>Hello</TITLE></HEAD>\n" +
             "<BODY BGCOLOR=\"#FDF5E6\">\n" +
             "<H1>Hello</H1>\n" +
+                resultText +
             "</BODY></HTML>");
     }
+
+
 }

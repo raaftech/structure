@@ -21,18 +21,15 @@ try {
     g = rexster.getGraph("graph")
 } catch (MissingPropertyException e) {
     // If g is unset/empty, use the importClassWrapper to create/open the graph.
-    println " * Creating or opening Titan Database.."
     g = importClassWrapper.create("target/test-titandb");
 }
 
 try {
     // Check if our data exists. Set a result variable.
-    println " * Checking for default data existence.."
     result = g.V("name", "genericUnixLikeOperatingSystem").next()
 }
 catch (Exception e) {
     // Create our default data. Set a result variable.
-    println " * Not Found, creating default data.."
     g.makeKey("type").dataType(String.class).indexed(Vertex.class).make()
     g.makeKey("name").dataType(String.class).indexed(Vertex.class).unique().make()
     g.makeKey("desc").dataType(String.class).indexed("search", Vertex.class).make()
@@ -299,8 +296,6 @@ catch (Exception e) {
     genericWindowsLikeOperatingSystem.addEdge("has", genericDosInterpreter)
 
     g.commit()
-
-    result = g.V("name", "genericUnixLikeOperatingSystem").next()
 }
 
-println " * Found: " + result.getProperty("name")
+

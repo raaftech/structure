@@ -4,8 +4,12 @@
 
 package org.openpcf.universal.graph;
 
+import com.thinkaurelius.titan.core.TitanGraph;
+import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.gremlin.groovy.jsr223.GremlinGroovyScriptEngineFactory;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.openpcf.universal.ConnectionDing;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptException;
@@ -22,9 +26,21 @@ import java.io.IOException;
  * @since 2014-01-06
  */
 public class TestTitanGraph {
+
     @Test
-    public void quickTest() throws IOException, InterruptedException, ScriptException {
-        ScriptEngine engine = new GremlinGroovyScriptEngineFactory().getScriptEngine();
-        engine.eval(new FileReader("scripts/init.grm"));
+    public void quickTest() {
+
+        try{
+            UniversalGraphFactory.load();
+        }
+        catch (Exception e){
+            System.out.println(e.getMessage());
+        }
+
+        TitanGraph g = UniversalGraphFactory.create("target/test-titandb");
+
+        for (Vertex v: g.getVertices("name", "genericUnixLikeOperatingSystem")){
+            System.out.println(v);
+        }
     }
 }
