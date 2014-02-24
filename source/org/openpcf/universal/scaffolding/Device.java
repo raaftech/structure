@@ -18,7 +18,7 @@ public class Device extends Component {
     private String model;
     private String revision;
 
-    public Device(String name, Image icon, String vendor, String model, String revision) {
+    public Device(String name, String icon, String vendor, String model, String revision) {
         super(name, icon);
         this.vendor = vendor;
         this.model = model;

@@ -17,7 +17,7 @@ public class Software extends Component {
     private String vendor;
     private String version;
 
-    public Software(String name, Image icon, String vendor, String version) {
+    public Software(String name, String icon, String vendor, String version) {
         super(name, icon);
         this.vendor = vendor;
         this.version = version;

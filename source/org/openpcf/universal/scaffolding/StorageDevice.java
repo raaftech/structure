@@ -16,7 +16,7 @@ import java.awt.*;
 public class StorageDevice extends Device {
     private int size;
 
-    public StorageDevice(String name, Image icon, String vendor, String model, String revision, int size) {
+    public StorageDevice(String name, String icon, String vendor, String model, String revision, int size) {
         super(name, icon, vendor, model, revision);
         this.size = size;
     }

@@ -16,7 +16,7 @@ import java.awt.*;
 public class Interpreter extends LocalService implements Commandable {
     private Language language;
 
-    public Interpreter(String name, Image icon, String vendor, String version, String path, String image, Language language) {
+    public Interpreter(String name, String icon, String vendor, String version, String path, String image, Language language) {
         super(name, icon, vendor, version, path, image);
         this.language = language;
     }

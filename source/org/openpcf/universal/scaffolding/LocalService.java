@@ -15,7 +15,7 @@ import java.awt.*;
  */
 public class LocalService extends Service {
 
-    public LocalService(String name, Image icon, String vendor, String version, String path, String image) {
+    public LocalService(String name, String icon, String vendor, String version, String path, String image) {
         super(name, icon, vendor, version, path, image);
     }
 }

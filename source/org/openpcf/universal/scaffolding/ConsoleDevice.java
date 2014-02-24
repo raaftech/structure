@@ -19,7 +19,7 @@ public class ConsoleDevice extends Device {
     private String parity;
     private int stopBits;
 
-    public ConsoleDevice(String name, Image icon, String vendor, String model, String revision, int baudRate, int dataBits, String parity, int stopBits) {
+    public ConsoleDevice(String name, String icon, String vendor, String model, String revision, int baudRate, int dataBits, String parity, int stopBits) {
         super(name, icon, vendor, model, revision);
         this.baudRate = baudRate;
         this.dataBits = dataBits;

@@ -18,10 +18,12 @@ import java.awt.*;
  */
 public class Component {
     private String name;
-    private Image icon;
+    private String icon;
 
-    public Component(String name, Image icon) {
-        this.name = name;
-        this.icon = icon;
+    public Component(String name, String icon) {
+
+        //make sure connection object exists, reuse
+        // query for name try catch
+
     }
 }

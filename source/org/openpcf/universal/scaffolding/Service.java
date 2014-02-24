@@ -17,7 +17,7 @@ public class Service extends Software implements Checkable, Discoverable, Stopab
     private String path;
     private String image;
 
-    public Service(String name, Image icon, String vendor, String version, String path, String image) {
+    public Service(String name, String icon, String vendor, String version, String path, String image) {
         super(name, icon, vendor, version);
         this.path = path;
         this.image = image;

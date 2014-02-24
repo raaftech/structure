@@ -16,7 +16,7 @@ import java.awt.*;
 public class MemoryModule extends Device {
     int size;
 
-    public MemoryModule(String name, Image icon, String vendor, String model, String revision, int size) {
+    public MemoryModule(String name, String icon, String vendor, String model, String revision, int size) {
         super(name, icon, vendor, model, revision);
         this.size = size;
     }

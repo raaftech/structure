@@ -6,9 +6,6 @@ package org.openpcf.universal.scaffolding;
 
 import org.junit.Test;
 
-import java.awt.*;
-import java.awt.image.BufferedImage;
-
 /**
  * A quick and dirty (big) component instancing test.
  *
@@ -21,7 +18,7 @@ public class TestComponentInstancing {
     public void testInstance() {
 
         String name = "foohost";
-        Image icon = new BufferedImage(100, 100, BufferedImage.TYPE_INT_RGB);
+        String icon = "icons/custom/foohost.svg";
         String vendor = "Some Corp";
         String model = "Master 9000";
         String revision = "REV1.1";

@@ -2,6 +2,7 @@
 * Copyright © 2008-2014 RAAF Technology bv
 */
 
+// Not really neccessary for Gremlin or Rexter, but helps IDEA with code analysis.
 import com.tinkerpop.blueprints.Vertex
 
 // Set a few globals.

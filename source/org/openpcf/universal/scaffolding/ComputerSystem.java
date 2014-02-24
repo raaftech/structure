@@ -23,7 +23,7 @@ public class ComputerSystem extends Device implements Virtualizable {
     private ConsoleDevice consoleDevice;
     private ManagementConsole managementConsole;
 
-    public ComputerSystem(String name, Image icon, String vendor, String model, String revision, NetworkDevice networkDevice, OperatingSystem operatingSystem, StorageDevice storageDevice, MemoryModule memoryModule, ProcessingUnit processingUnit, GraphicsDevice graphicsDevice, ConsoleDevice consoleDevice, ManagementConsole managementConsole) {
+    public ComputerSystem(String name, String icon, String vendor, String model, String revision, NetworkDevice networkDevice, OperatingSystem operatingSystem, StorageDevice storageDevice, MemoryModule memoryModule, ProcessingUnit processingUnit, GraphicsDevice graphicsDevice, ConsoleDevice consoleDevice, ManagementConsole managementConsole) {
         super(name, icon, vendor, model, revision);
         this.networkDevice = networkDevice;
         this.operatingSystem = operatingSystem;

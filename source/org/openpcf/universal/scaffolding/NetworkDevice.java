@@ -16,7 +16,7 @@ import java.awt.*;
 public class NetworkDevice extends Device {
     private String macaddr;
 
-    public NetworkDevice(String name, Image icon, String vendor, String model, String revision, String macaddr) {
+    public NetworkDevice(String name, String icon, String vendor, String model, String revision, String macaddr) {
         super(name, icon, vendor, model, revision);
         this.macaddr = macaddr;
     }

@@ -16,7 +16,7 @@ import java.awt.*;
  */
 public class TextualAccessor extends NetworkedService implements Accessable {
 
-    public TextualAccessor(String name, Image icon, String vendor, String version, String path, String image, Listener listener) {
+    public TextualAccessor(String name, String icon, String vendor, String version, String path, String image, Listener listener) {
         super(name, icon, vendor, version, path, image, listener);
     }
 
