@@ -2,7 +2,7 @@
  * Copyright © 2008-2014 RAAF Technology bv
  */
 
-package org.openpcf.universal.graph;
+package org.openpcf.universal.initialization;
 
 import com.thinkaurelius.titan.core.TitanFactory;
 import com.thinkaurelius.titan.core.TitanGraph;
@@ -25,8 +25,8 @@ import static com.thinkaurelius.titan.graphdb.configuration.GraphDatabaseConfigu
  * A preliminary Universal Graph Database Factory.
  *
  * @author Rubin Simons <rubin.simons@raaftech.com>
- * @since 2014-02-14
  * @version 0.6
+ * @since 2014-02-14
  */
 public class UniversalGraphFactory {
 

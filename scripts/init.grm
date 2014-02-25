@@ -10,7 +10,7 @@ def importClassWrapper, result, g
 
 try {
     // Import our own custom factory if Gremlin can find it (conditional import).
-    importClassWrapper = "org.openpcf.universal.graph.UniversalGraphFactory" as Class
+    importClassWrapper = "org.openpcf.universal.initialization.UniversalGraphFactory" as Class
 } catch (Exception e) {
     // Fallback on a stub graph factory if not.
     importClassWrapper = "com.thinkaurelius.titan.example.GraphOfTheGodsFactory" as Class
