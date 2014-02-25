@@ -17,7 +17,7 @@ import java.io.IOException;
  * Give a description of HelloServlet here.
  *
  * @author Rubin Simons <rubin.simons@raaftech.com>
- * @version 0.1
+ * @version 0.6
  * @since 2014-02-24
  */
 public class HelloServlet extends HttpServlet {

@@ -3,7 +3,7 @@
   ~ Copyright © 2008-2014 RAAF Technology bv
   -->
 
-<project name="OpenPCF org.openpcf.universal.scaffolding.Component" default="help" basedir=".">
+<project name="OpenPCF org.openpcf.universal.model.Component" default="help" basedir=".">
 
 
     <!-- Set global properties. -->
