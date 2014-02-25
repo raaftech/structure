@@ -5,6 +5,10 @@
 package org.openpcf.universal.scaffolding;
 
 import org.junit.Test;
+import org.openpcf.universal.graph.TestTitanGraph;
+import org.openpcf.universal.initialization.UniversalLoggingFactory;
+import org.slf4j.Logger;
+
 
 /**
  * A quick and dirty (big) component instancing test.
@@ -16,6 +20,8 @@ import org.junit.Test;
 public class TestComponentInstancing {
     @Test
     public void testInstance() {
+
+        Logger logger = UniversalLoggingFactory.create(TestComponentInstancing.class);
 
         String name = "foohost";
         String icon = "icons/custom/foohost.svg";
@@ -48,7 +54,8 @@ public class TestComponentInstancing {
 
         Component foo = new ComputerSystem(name, icon, vendor, model, revision, networkDeviceForOS, osForComputer, storageDevice, memoryModule, processingUnit, graphicsDevice, consoleDevice, managementConsole);
 
-        System.out.println(foo);
+        logger.warn(foo.toString());
+
     }
 }
 

@@ -7,7 +7,9 @@ package org.openpcf.universal.graph;
 import com.thinkaurelius.titan.core.TitanGraph;
 import com.tinkerpop.blueprints.Vertex;
 import org.junit.Test;
-
+import org.openpcf.universal.initialization.UniversalGraphFactory;
+import org.openpcf.universal.initialization.UniversalLoggingFactory;
+import org.slf4j.Logger;
 
 /**
  * A quick test with Titan as graph backend, using TinkerPop Blueprints,
@@ -23,17 +25,19 @@ public class TestTitanGraph {
     @Test
     public void quickTest() {
 
+        Logger logger = UniversalLoggingFactory.create(TestTitanGraph.class);
+
         try{
             UniversalGraphFactory.load();
         }
         catch (Exception e){
-            System.out.println(e.getMessage());
+            logger.error(e.getMessage());
         }
 
         TitanGraph g = UniversalGraphFactory.create("/tmp/test-titandb");
 
         for (Vertex v: g.getVertices("name", "genericUnixLikeOperatingSystem")){
-            System.out.println(v);
+            logger.warn(v.toString());
         }
     }
 }
