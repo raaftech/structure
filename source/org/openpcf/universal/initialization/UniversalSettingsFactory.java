@@ -11,5 +11,10 @@ package org.openpcf.universal.initialization;
  * @version 0.6
  * @since 2014-02-25
  */
-public class UniversalSettingsFactory {
+public final class UniversalSettingsFactory {
+
+    // Make sure this class is non-instantiable by making the constructor private.
+    private UniversalSettingsFactory() {
+        throw new AssertionError();
+    }
 }

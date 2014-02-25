@@ -28,7 +28,12 @@ import static com.thinkaurelius.titan.graphdb.configuration.GraphDatabaseConfigu
  * @version 0.6
  * @since 2014-02-14
  */
-public class UniversalGraphFactory {
+public final class UniversalGraphFactory {
+
+    // Make sure this class is non-instantiable by making the constructor private.
+    private UniversalGraphFactory() {
+        throw new AssertionError();
+    }
 
     public static final String INDEX_TYPE = "es";
     public static final String INDEX_NAME = "search";

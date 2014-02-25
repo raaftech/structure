@@ -14,7 +14,13 @@ import org.slf4j.LoggerFactory;
  * @version 0.6
  * @since 2014-02-25
  */
-public class UniversalLoggingFactory {
+public final class UniversalLoggingFactory {
+
+    // Make sure this class is non-instantiable by making the constructor private.
+    private UniversalLoggingFactory() {
+        throw new AssertionError();
+    }
+
     public static Logger create(final Class clazz) {
 
         Logger logger = LoggerFactory.getLogger(clazz);
