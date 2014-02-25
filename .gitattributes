@@ -14,6 +14,7 @@ scripts/init.grm -text
 source/org/openpcf/universal/Main.java -text
 source/org/openpcf/universal/initialization/UniversalGraphFactory.java -text
 source/org/openpcf/universal/initialization/UniversalLoggingFactory.java -text
+source/org/openpcf/universal/initialization/UniversalSettingsFactory.java -text
 source/org/openpcf/universal/scaffolding/Accessable.java -text
 source/org/openpcf/universal/scaffolding/Checkable.java -text
 source/org/openpcf/universal/scaffolding/Command.java -text
