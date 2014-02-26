@@ -13,9 +13,10 @@ model/universal.uml -text
 resources/universal.properties -text
 scripts/init.grm -text
 source/org/openpcf/universal/Main.java -text
+source/org/openpcf/universal/initialization/UniversalGraph.java -text
 source/org/openpcf/universal/initialization/UniversalGraphFactory.java -text
-source/org/openpcf/universal/initialization/UniversalLoggingFactory.java -text
-source/org/openpcf/universal/initialization/UniversalSettingsFactory.java -text
+source/org/openpcf/universal/initialization/UniversalLogger.java -text
+source/org/openpcf/universal/initialization/UniversalSettings.java -text
 source/org/openpcf/universal/model/Accessable.java -text
 source/org/openpcf/universal/model/Checkable.java -text
 source/org/openpcf/universal/model/Command.java -text
@@ -54,9 +55,9 @@ source/org/openpcf/universal/model/StorageDevice.java -text
 source/org/openpcf/universal/model/TextualAccessor.java -text
 source/org/openpcf/universal/model/Virtualizable.java -text
 source/org/openpcf/universal/servlet/HelloServlet.java -text
-tests/org/openpcf/universal/initialization/TestUniversalGraphFactory.java -text
-tests/org/openpcf/universal/initialization/TestUniversalLoggingFactory.java -text
-tests/org/openpcf/universal/initialization/TestUniversalSettingsFactory.java -text
+tests/org/openpcf/universal/initialization/TestUniversalGraphSingleton.java -text
+tests/org/openpcf/universal/initialization/TestUniversalLoggerSingleton.java -text
+tests/org/openpcf/universal/initialization/TestUniversalSettingsSingleton.java -text
 tests/org/openpcf/universal/model/TestComputerSystem.java -text
 web/META-INF/MANIFEST.MF -text
 web/WEB-INF/web.xml -text svneol=unset#application/xml

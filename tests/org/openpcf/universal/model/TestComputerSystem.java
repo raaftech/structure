@@ -5,7 +5,7 @@
 package org.openpcf.universal.model;
 
 import org.junit.Test;
-import org.openpcf.universal.initialization.UniversalLoggingFactory;
+import org.openpcf.universal.initialization.UniversalLogger;
 import org.slf4j.Logger;
 
 
@@ -21,8 +21,7 @@ public class TestComputerSystem {
     @Test
     public void testComputerSystemObjectCreation() {
 
-        Logger logger = UniversalLoggingFactory.create(TestComputerSystem.class);
-
+        Logger logger = UniversalLogger.INSTANCE.getLogger();
         String name = "foohost";
         String icon = "icons/custom/foohost.svg";
         String vendor = "Some Corp";

@@ -8,18 +8,18 @@ import org.junit.Test;
 import org.slf4j.Logger;
 
 /**
- * Give a description of TestUniversalLoggingFactory here.
+ * A quick test of the UniversalLogger Singleton
  *
  * @author Rubin Simons <rubin.simons@raaftech.com>
  * @version 0.6
  * @since 2014-02-25
  */
-public class TestUniversalLoggingFactory {
+public class TestUniversalLoggerSingleton {
 
     @Test
     public void testLoggingObjectCreation() {
 
-        Logger logger = UniversalLoggingFactory.create(TestUniversalLoggingFactory.class);
+        Logger logger = UniversalLogger.INSTANCE.getLogger();
 
         logger.info(logger.toString());
     }

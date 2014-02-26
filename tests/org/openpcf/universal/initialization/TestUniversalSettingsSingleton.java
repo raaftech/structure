@@ -11,13 +11,13 @@ import org.slf4j.Logger;
 import java.util.Properties;
 
 /**
- * Give a description of TestUniversalSettingsFactory here.
+ * A quick test of the UniversalSettings Singleton
  *
  * @author Rubin Simons <rubin.simons@raaftech.com>
  * @version 0.6
  * @since 2014-02-25
  */
-public class TestUniversalSettingsFactory {
+public class TestUniversalSettingsSingleton {
 
     @Test
     public void testGetResource() {
@@ -32,9 +32,9 @@ public class TestUniversalSettingsFactory {
     @Test
     public void testSettingsObjectCreation() {
 
-        Logger logger = UniversalLoggingFactory.create(TestUniversalSettingsFactory.class);
+        Logger logger = UniversalLogger.INSTANCE.getLogger();
 
-        Properties settings = UniversalSettingsFactory.create(TestUniversalSettingsFactory.class);
+        Properties settings = UniversalSettings.INSTANCE.getSettings();
 
         logger.info(System.getProperty("user.dir"));
         settings.list(System.out);

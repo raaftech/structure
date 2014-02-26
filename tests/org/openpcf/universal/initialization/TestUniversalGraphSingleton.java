@@ -6,6 +6,7 @@ package org.openpcf.universal.initialization;
 
 import com.thinkaurelius.titan.core.TitanGraph;
 import com.tinkerpop.blueprints.Vertex;
+import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 
@@ -18,22 +19,22 @@ import org.slf4j.Logger;
  * @version 0.6
  * @since 2014-01-06
  */
-public class TestUniversalGraphFactory {
+public class TestUniversalGraphSingleton {
 
     @Test
     public void testGraphObjectCreation() {
 
-        Logger logger = UniversalLoggingFactory.create(TestUniversalGraphFactory.class);
+        Logger logger = UniversalLogger.INSTANCE.getLogger();
 
-        try {
-            UniversalGraphFactory.load();
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-        }
+        TitanGraph g = UniversalGraph.INSTANCE.getGraph();
+        TitanGraph h = UniversalGraph.INSTANCE.getGraph();
 
-        TitanGraph g = UniversalGraphFactory.create("/tmp/test-titandb");
+        Assert.assertEquals("Graphs are not the same object", g, h);
 
         for (Vertex v : g.getVertices("name", "genericUnixLikeOperatingSystem")) {
+            logger.info(v.toString());
+        }
+        for (Vertex v : h.getVertices("name", "genericWindowsLikeOperatingSystem")) {
             logger.info(v.toString());
         }
     }
