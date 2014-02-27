@@ -24,10 +24,10 @@ public class TestUniversalGraphSingleton {
     @Test
     public void testGraphObjectCreation() {
 
-        Logger logger = UniversalLogger.INSTANCE.getLogger();
+        Logger logger = UniversalLoggerFactory.getLogger(this.getClass());
 
-        TitanGraph g = UniversalGraph.INSTANCE.getGraph();
-        TitanGraph h = UniversalGraph.INSTANCE.getGraph();
+        TitanGraph g = UniversalGraphSingleton.INSTANCE.getGraph();
+        TitanGraph h = UniversalGraphSingleton.INSTANCE.getGraph();
 
         Assert.assertEquals("Graphs are not the same object", g, h);
 

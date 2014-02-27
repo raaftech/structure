@@ -11,7 +11,7 @@ import org.slf4j.Logger;
 import java.util.Properties;
 
 /**
- * A quick test of the UniversalSettings Singleton
+ * A quick test of the UniversalSettingsSingleton Singleton
  *
  * @author Rubin Simons <rubin.simons@raaftech.com>
  * @version 0.6
@@ -32,9 +32,8 @@ public class TestUniversalSettingsSingleton {
     @Test
     public void testSettingsObjectCreation() {
 
-        Logger logger = UniversalLogger.INSTANCE.getLogger();
-
-        Properties settings = UniversalSettings.INSTANCE.getSettings();
+        Logger logger = UniversalLoggerFactory.getLogger(this.getClass());
+        Properties settings = UniversalSettingsSingleton.INSTANCE.getSettings();
 
         logger.info(System.getProperty("user.dir"));
         settings.list(System.out);

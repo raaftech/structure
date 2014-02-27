@@ -5,7 +5,7 @@
 package org.openpcf.universal.model;
 
 import org.junit.Test;
-import org.openpcf.universal.initialization.UniversalLogger;
+import org.openpcf.universal.initialization.UniversalLoggerFactory;
 import org.slf4j.Logger;
 
 
@@ -21,13 +21,13 @@ public class TestComputerSystem {
     @Test
     public void testComputerSystemObjectCreation() {
 
-        Logger logger = UniversalLogger.INSTANCE.getLogger();
+        Logger logger = UniversalLoggerFactory.getLogger(this.getClass());
+
         String name = "foohost";
         String icon = "icons/custom/foohost.svg";
         String vendor = "Some Corp";
         String model = "Master 9000";
         String revision = "REV1.1";
-
 
         NetworkDevice networkDeviceForOS = new NetworkDevice("eth0", icon, "Another Corp", "Ethernet 53 Card", "REV1.0", "00:34:52:C0:FF:EE");
         Listener listenerForSSHonOS = new Listener("10.10.10.1", 22);

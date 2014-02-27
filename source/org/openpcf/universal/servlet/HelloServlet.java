@@ -6,7 +6,7 @@ package org.openpcf.universal.servlet;
 
 import com.thinkaurelius.titan.core.TitanGraph;
 import com.tinkerpop.blueprints.Vertex;
-import org.openpcf.universal.initialization.UniversalGraphFactory;
+import org.openpcf.universal.initialization.UniversalGraphSingleton;
 
 import java.io.*;
 import javax.servlet.*;
@@ -28,7 +28,7 @@ public class HelloServlet extends HttpServlet {
 
         String resultText = "";
 
-        TitanGraph g = UniversalGraphFactory.create("/tmp/test-titandb");
+        TitanGraph g = UniversalGraphSingleton.INSTANCE.getGraph();
         for (Vertex v : g.getVertices("name", "genericUnixLikeOperatingSystem")) {
             resultText += "<br />" + v.getProperty("desc");
         }

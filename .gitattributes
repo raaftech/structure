@@ -13,10 +13,9 @@ model/universal.uml -text
 resources/universal.properties -text
 scripts/init.grm -text
 source/org/openpcf/universal/Main.java -text
-source/org/openpcf/universal/initialization/UniversalGraph.java -text
-source/org/openpcf/universal/initialization/UniversalGraphFactory.java -text
-source/org/openpcf/universal/initialization/UniversalLogger.java -text
-source/org/openpcf/universal/initialization/UniversalSettings.java -text
+source/org/openpcf/universal/initialization/UniversalGraphSingleton.java -text
+source/org/openpcf/universal/initialization/UniversalLoggerFactory.java -text
+source/org/openpcf/universal/initialization/UniversalSettingsSingleton.java -text
 source/org/openpcf/universal/model/Accessable.java -text
 source/org/openpcf/universal/model/Checkable.java -text
 source/org/openpcf/universal/model/Command.java -text
@@ -56,7 +55,7 @@ source/org/openpcf/universal/model/TextualAccessor.java -text
 source/org/openpcf/universal/model/Virtualizable.java -text
 source/org/openpcf/universal/servlet/HelloServlet.java -text
 tests/org/openpcf/universal/initialization/TestUniversalGraphSingleton.java -text
-tests/org/openpcf/universal/initialization/TestUniversalLoggerSingleton.java -text
+tests/org/openpcf/universal/initialization/TestUniversalLoggerFactory.java -text
 tests/org/openpcf/universal/initialization/TestUniversalSettingsSingleton.java -text
 tests/org/openpcf/universal/model/TestComputerSystem.java -text
 web/META-INF/MANIFEST.MF -text

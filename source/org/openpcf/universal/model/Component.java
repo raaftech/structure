@@ -4,6 +4,14 @@
 
 package org.openpcf.universal.model;
 
+import com.thinkaurelius.titan.core.TitanGraph;
+import org.openpcf.universal.initialization.UniversalGraphSingleton;
+import org.openpcf.universal.initialization.UniversalLoggerFactory;
+import org.openpcf.universal.initialization.UniversalSettingsSingleton;
+import org.slf4j.Logger;
+
+import java.util.Properties;
+
 /**
  * Component represents the most abstract part within the Domain Model.
  * Essentially, everything is a component and consists itself of various
@@ -14,9 +22,13 @@ package org.openpcf.universal.model;
  * @version 0.6
  * @since 2014-01-06
  */
-public class Component {
+abstract class Component {
     private String name;
     private String icon;
+
+    Properties settings = UniversalSettingsSingleton.INSTANCE.getSettings();
+    Logger logger = UniversalLoggerFactory.getLogger(this.getClass());
+    TitanGraph graph = UniversalGraphSingleton.INSTANCE.getGraph();
 
     public Component(String name, String icon) {
 

@@ -12,17 +12,17 @@ import java.util.Properties;
  * @version 0.1
  * @since 2014-02-25
  */
-public enum UniversalSettings {
+public enum UniversalSettingsSingleton {
     INSTANCE;
 
     private Properties settings;
 
-    private UniversalSettings(){
+    private UniversalSettingsSingleton() {
 
         settings = new Properties();
 
         try {
-            InputStream input = UniversalSettings.class.getResourceAsStream("/universal.properties");
+            InputStream input = UniversalSettingsSingleton.class.getResourceAsStream("/universal.properties");
             settings.load(input);
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -30,7 +30,7 @@ public enum UniversalSettings {
 
     }
 
-    public Properties getSettings(){
+    public Properties getSettings() {
         return settings;
     }
 }

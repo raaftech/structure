@@ -11,7 +11,7 @@ package org.openpcf.universal.model;
  * @version 0.6
  * @since 2014-01-06
  */
-public class Software extends Component {
+abstract class Software extends Component {
     private String vendor;
     private String version;
 

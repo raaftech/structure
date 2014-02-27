@@ -10,16 +10,11 @@ import org.slf4j.LoggerFactory;
  * @version 0.1
  * @since 2014-02-25
  */
-public enum UniversalLogger {
-    INSTANCE;
+public class UniversalLoggerFactory {
 
-    private Logger logger;
+    public static Logger getLogger(Class clazz) {
+        Logger logger = LoggerFactory.getLogger(clazz);
 
-    private UniversalLogger(){
-        logger = LoggerFactory.getLogger(UniversalLogger.class);
-    }
-
-    public Logger getLogger(){
         return logger;
     }
 }
