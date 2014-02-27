@@ -35,7 +35,10 @@ public class TestUniversalSettingsSingleton {
         Logger logger = UniversalLoggerFactory.getLogger(this.getClass());
         Properties settings = UniversalSettingsSingleton.INSTANCE.getSettings();
 
-        logger.info(System.getProperty("user.dir"));
-        settings.list(System.out);
+        logger.info("universal.home: " + settings.getProperty("universal.home"));
+        logger.info("universal.graph.dbtype: " + settings.getProperty("universal.graph.dbtype"));
+        logger.info("universal.graph.dbhome: " + settings.getProperty("universal.graph.dbhome"));
+        logger.info("universal.graph.dbindex: " + settings.getProperty("universal.graph.dbindex"));
+
     }
 }

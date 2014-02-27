@@ -5,6 +5,7 @@
 package org.openpcf.universal.initialization;
 
 import org.junit.Test;
+import org.openpcf.universal.initialization.UniversalLoggerFactory;
 import org.slf4j.Logger;
 
 /**

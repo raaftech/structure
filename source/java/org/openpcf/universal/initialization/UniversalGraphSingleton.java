@@ -35,9 +35,9 @@ public enum UniversalGraphSingleton {
         Logger logger = UniversalLoggerFactory.getLogger(this.getClass());
         Properties settings = UniversalSettingsSingleton.INSTANCE.getSettings();
 
-        String INDEX_TYPE = settings.getProperty("universal.titandb.indexer");
+        String INDEX_TYPE = settings.getProperty("universal.graph.dbindex");
         String INDEX_NAME = "search";
-        String directory = settings.getProperty("universal.titandb.location");
+        String directory = settings.getProperty("universal.graph.dbhome");
 
         BaseConfiguration config = new BaseConfiguration();
         Configuration storage = config.subset(GraphDatabaseConfiguration.STORAGE_NAMESPACE);
