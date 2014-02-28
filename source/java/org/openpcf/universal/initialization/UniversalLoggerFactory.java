@@ -7,8 +7,8 @@ import org.slf4j.LoggerFactory;
  * A preliminary Universal Logger Factory.
  *
  * @author Freek Alleman <freek.alleman@raaftech.com>
- * @version 0.1
  * @since 2014-02-25
+ * @version 0.6
  */
 public class UniversalLoggerFactory {
 

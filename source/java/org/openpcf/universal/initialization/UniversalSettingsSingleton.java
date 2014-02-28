@@ -13,8 +13,8 @@ import java.util.Properties;
  * A preliminary Universal Settings Singleton.
  *
  * @author Freek Alleman <freek.alleman@raaftech.com>
- * @version 0.1
  * @since 2014-02-25
+ * @version 0.6
  */
 public enum UniversalSettingsSingleton {
     INSTANCE;
