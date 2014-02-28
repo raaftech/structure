@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A preliminary Universal Logger Singleton.
+ * A preliminary Universal Logger Factory.
  *
  * @author Freek Alleman <freek.alleman@raaftech.com>
  * @version 0.1

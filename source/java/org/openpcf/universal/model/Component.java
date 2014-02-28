@@ -22,7 +22,7 @@ import java.util.Properties;
  * @version 0.6
  * @since 2014-01-06
  */
-abstract class Component {
+abstract class Component implements Persistable{
     private String name;
     private String icon;
 
@@ -36,4 +36,8 @@ abstract class Component {
         // query for name try catch
 
     }
+
+    public void init(){};
+    public void load(){};
+    public void save(){};
 }

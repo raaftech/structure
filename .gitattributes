@@ -42,6 +42,7 @@ source/java/org/openpcf/universal/model/MemoryModule.java -text
 source/java/org/openpcf/universal/model/NetworkDevice.java -text
 source/java/org/openpcf/universal/model/NetworkedService.java -text
 source/java/org/openpcf/universal/model/OperatingSystem.java -text
+source/java/org/openpcf/universal/model/Persistable.java -text
 source/java/org/openpcf/universal/model/ProcessingUnit.java -text
 source/java/org/openpcf/universal/model/Restartable.java -text
 source/java/org/openpcf/universal/model/Service.java -text
