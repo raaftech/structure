@@ -51,6 +51,7 @@ source/java/org/openpcf/universal/model/Startable.java -text
 source/java/org/openpcf/universal/model/State.java -text
 source/java/org/openpcf/universal/model/Stopable.java -text
 source/java/org/openpcf/universal/model/StorageDevice.java -text
+source/java/org/openpcf/universal/model/Templatable.java -text
 source/java/org/openpcf/universal/model/TextualAccessor.java -text
 source/java/org/openpcf/universal/model/Virtualizable.java -text
 source/java/org/openpcf/universal/servlet/HelloServlet.java -text

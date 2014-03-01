@@ -11,7 +11,7 @@ package org.openpcf.universal.model;
  * @version 0.6
  * @since 2014-01-06
  */
-public class Service extends Software implements Checkable, Discoverable, Stopable, Startable, Restartable, Createable, Destroyable {
+abstract class Service extends Software implements Checkable, Discoverable, Stopable, Startable, Restartable, Createable, Destroyable {
     private String path;
     private String image;
 

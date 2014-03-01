@@ -22,7 +22,7 @@ import java.util.Properties;
  * @version 0.6
  * @since 2014-01-06
  */
-abstract class Component implements Persistable {
+abstract class Component implements Persistable, Templatable {
     private String name;
     private String icon;
 
@@ -51,5 +51,8 @@ abstract class Component implements Persistable {
     }
 
     ;
+    public void template() {
+    }
 
+    ;
 }
