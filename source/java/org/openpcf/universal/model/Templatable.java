@@ -1,9 +1,11 @@
 package org.openpcf.universal.model;
 
 /**
- * Persistable represents all objects that can 'persist' themselves
- * in a database layer, in our case Graphs, initially focused on
- * Titan but might become more generic in the future.
+ * Templatable represents all objects that can return a 'template' version of
+ * themselves. This method can be called by anything that requires a not-yet
+ * -persisted version of the component in question. This can then be editted and
+ * persisted. Effectively this makes it possible for any constructed component
+ * or group of components to be used as a template for new components.
  *
  * @author Rubin Simons <rubin.simons@raaftech.com>
  * @since 2014-03-01
