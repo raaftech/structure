@@ -22,12 +22,62 @@ public class Command {
     private String result;
     private int exitcode;
 
+    public Command() {};
+
     public Command(Interpreter interpreter, String content, Date started, Date finished, String result, int exitcode) {
         this.interpreter = interpreter;
         this.content = content;
         this.started = started;
         this.finished = finished;
         this.result = result;
+        this.exitcode = exitcode;
+    }
+
+    public Interpreter getInterpreter() {
+        return interpreter;
+    }
+
+    public void setInterpreter(Interpreter interpreter) {
+        this.interpreter = interpreter;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public Date getStarted() {
+        return started;
+    }
+
+    public void setStarted(Date started) {
+        this.started = started;
+    }
+
+    public Date getFinished() {
+        return finished;
+    }
+
+    public void setFinished(Date finished) {
+        this.finished = finished;
+    }
+
+    public String getResult() {
+        return result;
+    }
+
+    public void setResult(String result) {
+        this.result = result;
+    }
+
+    public int getExitcode() {
+        return exitcode;
+    }
+
+    public void setExitcode(int exitcode) {
         this.exitcode = exitcode;
     }
 }

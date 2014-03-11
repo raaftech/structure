@@ -14,6 +14,8 @@ package org.openpcf.universal.model;
  */
 public class TextualAccessor extends NetworkedService implements Accessable {
 
+    public TextualAccessor() {};
+
     public TextualAccessor(String name, String desc, String icon, String vendor, String version, String path, String image, Listener listener) {
         super(name, desc, icon, vendor, version, path, image, listener);
     }

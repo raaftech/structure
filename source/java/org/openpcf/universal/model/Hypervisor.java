@@ -15,9 +15,26 @@ public class Hypervisor extends LocalService {
     private String vmhome;
     private String vmdata;
 
+    public Hypervisor() {};
     public Hypervisor(String name, String desc, String icon, String vendor, String version, String path, String image, String vmhome, String vmdata) {
         super(name, desc, icon, vendor, version, path, image);
         this.vmhome = vmhome;
+        this.vmdata = vmdata;
+    }
+
+    public String getVmhome() {
+        return vmhome;
+    }
+
+    public void setVmhome(String vmhome) {
+        this.vmhome = vmhome;
+    }
+
+    public String getVmdata() {
+        return vmdata;
+    }
+
+    public void setVmdata(String vmdata) {
         this.vmdata = vmdata;
     }
 }

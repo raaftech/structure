@@ -31,8 +31,7 @@ abstract class Component {
     Logger logger = UniversalLoggerFactory.getLogger(this.getClass());
     TitanGraph graph = UniversalGraphSingleton.INSTANCE.getGraph();
 
-    public Component() {
-    }
+    public Component() {};
 
     public Component(String name, String desc, String icon) {
         this.name = name;

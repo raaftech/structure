@@ -15,9 +15,27 @@ abstract class Software extends Component {
     private String vendor;
     private String version;
 
+    public Software() {};
+
     public Software(String name, String desc, String icon, String vendor, String version) {
         super(name, desc, icon);
         this.vendor = vendor;
+        this.version = version;
+    }
+
+    public String getVendor() {
+        return vendor;
+    }
+
+    public void setVendor(String vendor) {
+        this.vendor = vendor;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
         this.version = version;
     }
 }

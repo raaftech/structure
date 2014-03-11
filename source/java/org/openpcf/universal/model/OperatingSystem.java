@@ -17,10 +17,36 @@ public class OperatingSystem extends Software implements Checkable, Discoverable
     private Service assignedService;
     private Configuration configuredDevice;
 
+    public OperatingSystem() {};
+
     public OperatingSystem(String name, String desc, String icon, String vendor, String version, Boolean dormant, Service assignedService, Configuration configuredDevice) {
         super(name, desc, icon, vendor, version);
         this.dormant = dormant;
         this.assignedService = assignedService;
+        this.configuredDevice = configuredDevice;
+    }
+
+    public Boolean getDormant() {
+        return dormant;
+    }
+
+    public void setDormant(Boolean dormant) {
+        this.dormant = dormant;
+    }
+
+    public Service getAssignedService() {
+        return assignedService;
+    }
+
+    public void setAssignedService(Service assignedService) {
+        this.assignedService = assignedService;
+    }
+
+    public Configuration getConfiguredDevice() {
+        return configuredDevice;
+    }
+
+    public void setConfiguredDevice(Configuration configuredDevice) {
         this.configuredDevice = configuredDevice;
     }
 

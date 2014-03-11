@@ -15,9 +15,27 @@ abstract class Service extends Software implements Checkable, Discoverable, Stop
     private String path;
     private String image;
 
+    public Service() {};
+
     public Service(String name, String desc, String icon, String vendor, String version, String path, String image) {
         super(name, desc, icon, vendor, version);
         this.path = path;
+        this.image = image;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
         this.image = image;
     }
 

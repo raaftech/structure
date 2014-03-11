@@ -17,6 +17,7 @@ abstract class Device extends Component {
     private String revision;
 
     public Device() {};
+
     public Device(String name, String desc, String icon, String vendor, String model, String revision) {
         super(name, desc, icon);
         this.vendor = vendor;

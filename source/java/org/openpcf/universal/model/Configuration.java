@@ -14,7 +14,17 @@ package org.openpcf.universal.model;
 public class Configuration {
     private String name;
 
+    public Configuration() {};
+
     public Configuration(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
         this.name = name;
     }
 }

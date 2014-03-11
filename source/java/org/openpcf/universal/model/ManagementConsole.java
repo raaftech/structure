@@ -16,9 +16,27 @@ public class ManagementConsole extends Device {
     private NetworkDevice networkDevice;
     private OperatingSystem operatingSystem;
 
+    public ManagementConsole() {};
+
     public ManagementConsole(String name, String desc, String icon, String vendor, String model, String revision, NetworkDevice networkDevice, OperatingSystem operatingSystem) {
         super(name, desc, icon, vendor, model, revision);
         this.networkDevice = networkDevice;
+        this.operatingSystem = operatingSystem;
+    }
+
+    public NetworkDevice getNetworkDevice() {
+        return networkDevice;
+    }
+
+    public void setNetworkDevice(NetworkDevice networkDevice) {
+        this.networkDevice = networkDevice;
+    }
+
+    public OperatingSystem getOperatingSystem() {
+        return operatingSystem;
+    }
+
+    public void setOperatingSystem(OperatingSystem operatingSystem) {
         this.operatingSystem = operatingSystem;
     }
 }
