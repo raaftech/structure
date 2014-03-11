@@ -14,8 +14,17 @@ package org.openpcf.universal.model;
 public class NetworkDevice extends Device {
     private String macaddr;
 
+    public NetworkDevice() {};
     public NetworkDevice(String name, String desc, String icon, String vendor, String model, String revision, String macaddr) {
         super(name, desc, icon, vendor, model, revision);
+        this.macaddr = macaddr;
+    }
+
+    public String getMacaddr() {
+        return macaddr;
+    }
+
+    public void setMacaddr(String macaddr) {
         this.macaddr = macaddr;
     }
 }

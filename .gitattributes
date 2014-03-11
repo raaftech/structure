@@ -60,6 +60,7 @@ tests/java/org/openpcf/universal/initialization/TestUniversalGraphSingleton.java
 tests/java/org/openpcf/universal/initialization/TestUniversalLoggerFactory.java -text
 tests/java/org/openpcf/universal/initialization/TestUniversalSettingsSingleton.java -text
 tests/java/org/openpcf/universal/model/TestComputerSystem.java -text
+tests/java/org/openpcf/universal/model/TestNetworkDevice.java -text
 tests/resources/universal.properties -text
 web/META-INF/MANIFEST.MF -text
 web/WEB-INF/web.xml -text svneol=unset#application/xml

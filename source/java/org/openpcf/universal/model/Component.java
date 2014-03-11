@@ -22,7 +22,7 @@ import java.util.Properties;
  * @version 0.6
  * @since 2014-01-06
  */
-abstract class Component implements Persistable, Templatable {
+abstract class Component {
     private String name;
     private String desc;
     private String icon;
@@ -31,29 +31,36 @@ abstract class Component implements Persistable, Templatable {
     Logger logger = UniversalLoggerFactory.getLogger(this.getClass());
     TitanGraph graph = UniversalGraphSingleton.INSTANCE.getGraph();
 
+    public Component() {
+    }
+
     public Component(String name, String desc, String icon) {
-
-        //make sure connection object exists, reuse
-        // query for name try catch
-
+        this.name = name;
+        this.desc = desc;
+        this.icon = icon;
     }
 
-    public void init() {
+    public String getName() {
+        return name;
     }
 
-    ;
-
-    public void load() {
+    public void setName(String name) {
+        this.name = name;
     }
 
-    ;
-
-    public void save() {
+    public String getDesc() {
+        return desc;
     }
 
-    ;
-    public void template() {
+    public void setDesc(String desc) {
+        this.desc = desc;
     }
 
-    ;
+    public String getIcon() {
+        return icon;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
+    }
 }
