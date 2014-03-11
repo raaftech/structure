@@ -4,8 +4,8 @@
 
 package org.openpcf.universal.initialization;
 
-import org.junit.Test;
 import org.junit.Assert;
+import org.junit.Test;
 import org.slf4j.Logger;
 
 import java.util.Properties;
