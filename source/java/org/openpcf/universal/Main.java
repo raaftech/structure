@@ -4,6 +4,9 @@
 
 package org.openpcf.universal;
 
+import org.openpcf.universal.initialization.UniversalLoggerFactory;
+import org.slf4j.Logger;
+
 /**
  * The main class and method, possibly referenced in Ant or Maven.
  *
@@ -15,6 +18,7 @@ public class Main {
 
     public static void main(final String[] args) {
 
-        System.out.println("Main loop");
+        Logger logger = UniversalLoggerFactory.getLogger(Main.class);
+        logger.info("Main loop");
     }
 }
