@@ -49,7 +49,7 @@ source/java/org/openpcf/universal/model/Service.java -text
 source/java/org/openpcf/universal/model/Software.java -text
 source/java/org/openpcf/universal/model/Startable.java -text
 source/java/org/openpcf/universal/model/State.java -text
-source/java/org/openpcf/universal/model/Stopable.java -text
+source/java/org/openpcf/universal/model/Stoppable.java -text
 source/java/org/openpcf/universal/model/StorageDevice.java -text
 source/java/org/openpcf/universal/model/Templatable.java -text
 source/java/org/openpcf/universal/model/TextualAccessor.java -text

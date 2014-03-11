@@ -14,8 +14,8 @@ package org.openpcf.universal.model;
 public class Interpreter extends LocalService implements Commandable {
     private Language language;
 
-    public Interpreter(String name, String icon, String vendor, String version, String path, String image, Language language) {
-        super(name, icon, vendor, version, path, image);
+    public Interpreter(String name, String desc, String icon, String vendor, String version, String path, String image, Language language) {
+        super(name, desc, icon, vendor, version, path, image);
         this.language = language;
     }
 

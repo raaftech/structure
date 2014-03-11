@@ -15,8 +15,8 @@ abstract class Software extends Component {
     private String vendor;
     private String version;
 
-    public Software(String name, String icon, String vendor, String version) {
-        super(name, icon);
+    public Software(String name, String desc, String icon, String vendor, String version) {
+        super(name, desc, icon);
         this.vendor = vendor;
         this.version = version;
     }

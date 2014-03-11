@@ -14,8 +14,8 @@ package org.openpcf.universal.model;
 public class NetworkedService extends Service {
     private Listener listener;
 
-    public NetworkedService(String name, String icon, String vendor, String version, String path, String image, Listener listener) {
-        super(name, icon, vendor, version, path, image);
+    public NetworkedService(String name, String desc, String icon, String vendor, String version, String path, String image, Listener listener) {
+        super(name, desc, icon, vendor, version, path, image);
         this.listener = listener;
     }
 }

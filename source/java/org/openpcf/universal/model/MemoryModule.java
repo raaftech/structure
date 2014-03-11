@@ -14,8 +14,8 @@ package org.openpcf.universal.model;
 public class MemoryModule extends Device {
     int size;
 
-    public MemoryModule(String name, String icon, String vendor, String model, String revision, int size) {
-        super(name, icon, vendor, model, revision);
+    public MemoryModule(String name, String desc, String icon, String vendor, String model, String revision, int size) {
+        super(name, desc, icon, vendor, model, revision);
         this.size = size;
     }
 }

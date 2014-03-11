@@ -16,8 +16,8 @@ public class ProcessingUnit extends Device {
     private int cache;
     private int cores;
 
-    public ProcessingUnit(String name, String icon, String vendor, String model, String revision, int hertz, int cache, int cores) {
-        super(name, icon, vendor, model, revision);
+    public ProcessingUnit(String name, String desc, String icon, String vendor, String model, String revision, int hertz, int cache, int cores) {
+        super(name, desc, icon, vendor, model, revision);
         this.hertz = hertz;
         this.cache = cache;
         this.cores = cores;

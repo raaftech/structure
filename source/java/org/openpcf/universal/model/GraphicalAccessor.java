@@ -14,8 +14,8 @@ package org.openpcf.universal.model;
  */
 public class GraphicalAccessor extends NetworkedService implements Accessable {
 
-    public GraphicalAccessor(String name, String icon, String vendor, String version, String path, String image, Listener listener) {
-        super(name, icon, vendor, version, path, image, listener);
+    public GraphicalAccessor(String name, String desc, String icon, String vendor, String version, String path, String image, Listener listener) {
+        super(name, desc, icon, vendor, version, path, image, listener);
     }
 
     public void access() {

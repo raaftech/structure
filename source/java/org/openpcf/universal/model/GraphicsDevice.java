@@ -17,8 +17,8 @@ public class GraphicsDevice extends Device {
     private int memsize;
     private int fillrate;
 
-    public GraphicsDevice(String name, String icon, String vendor, String model, String revision, int clockspeed, int memspeed, int memsize, int fillrate) {
-        super(name, icon, vendor, model, revision);
+    public GraphicsDevice(String name, String desc, String icon, String vendor, String model, String revision, int clockspeed, int memspeed, int memsize, int fillrate) {
+        super(name, desc, icon, vendor, model, revision);
         this.clockspeed = clockspeed;
         this.memspeed = memspeed;
         this.memsize = memsize;

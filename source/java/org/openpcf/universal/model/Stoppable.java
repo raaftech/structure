@@ -12,6 +12,6 @@ package org.openpcf.universal.model;
  * @version 0.6
  * @since 2014-01-07
  */
-public interface Stopable {
+public interface Stoppable {
     public void stop();
 }

@@ -14,8 +14,8 @@ package org.openpcf.universal.model;
 public class StorageDevice extends Device {
     private int size;
 
-    public StorageDevice(String name, String icon, String vendor, String model, String revision, int size) {
-        super(name, icon, vendor, model, revision);
+    public StorageDevice(String name, String desc, String icon, String vendor, String model, String revision, int size) {
+        super(name, desc, icon, vendor, model, revision);
         this.size = size;
     }
 }

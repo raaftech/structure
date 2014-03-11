@@ -12,13 +12,13 @@ package org.openpcf.universal.model;
  * @version 0.6
  * @since 2014-01-06
  */
-public class OperatingSystem extends Software implements Checkable, Discoverable, Stopable, Restartable {
+public class OperatingSystem extends Software implements Checkable, Discoverable, Stoppable, Restartable {
     private Boolean dormant;
     private Service assignedService;
     private Configuration configuredDevice;
 
-    public OperatingSystem(String name, String icon, String vendor, String version, Boolean dormant, Service assignedService, Configuration configuredDevice) {
-        super(name, icon, vendor, version);
+    public OperatingSystem(String name, String desc, String icon, String vendor, String version, Boolean dormant, Service assignedService, Configuration configuredDevice) {
+        super(name, desc, icon, vendor, version);
         this.dormant = dormant;
         this.assignedService = assignedService;
         this.configuredDevice = configuredDevice;

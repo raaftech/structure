@@ -24,13 +24,14 @@ import java.util.Properties;
  */
 abstract class Component implements Persistable, Templatable {
     private String name;
+    private String desc;
     private String icon;
 
     Properties settings = UniversalSettingsSingleton.INSTANCE.getSettings();
     Logger logger = UniversalLoggerFactory.getLogger(this.getClass());
     TitanGraph graph = UniversalGraphSingleton.INSTANCE.getGraph();
 
-    public Component(String name, String icon) {
+    public Component(String name, String desc, String icon) {
 
         //make sure connection object exists, reuse
         // query for name try catch
