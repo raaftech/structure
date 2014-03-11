@@ -79,6 +79,27 @@ catch (Exception e) {
     g.makeLabel("isa").oneToOne().make()
     g.makeLabel("has").manyToMany().make()
 
+    // The only abstract component.
+    Vertex abstractComponent = g.addVertex(null)
+    abstractComponent.setProperty("type", "Component")
+    abstractComponent.setProperty("name", "abstractComponent")
+    abstractComponent.setProperty("desc", "The only abstract component.")
+    abstractComponent.setProperty("icon", "icons/abstractComponent.svg")
+
+    // The only abstract device.
+    Vertex abstractDevice = g.addVertex(null)
+    abstractDevice.setProperty("type", "Device")
+    abstractDevice.setProperty("name", "abstractDevice")
+    abstractDevice.setProperty("desc", "The only abstract device.")
+    abstractDevice.setProperty("icon", "icons/abstractDevice.svg")
+
+    // The only abstract software.
+    Vertex abstractSoftware = g.addVertex(null)
+    abstractSoftware.setProperty("type", "Software")
+    abstractSoftware.setProperty("name", "abstractSoftware")
+    abstractSoftware.setProperty("desc", "The only abstract software.")
+    abstractSoftware.setProperty("icon", "icons/abstractSoftware.svg")
+
     // Generic vendor.
     Vertex genericVendor = g.addVertex(null)
     genericVendor.setProperty("type", "Vendor")
