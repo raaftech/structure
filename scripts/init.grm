@@ -79,26 +79,39 @@ catch (Exception e) {
     g.makeLabel("isa").oneToOne().make()
     g.makeLabel("has").manyToMany().make()
 
-    // The only abstract component.
+    // Abstract component.
     Vertex abstractComponent = g.addVertex(null)
     abstractComponent.setProperty("type", "Component")
     abstractComponent.setProperty("name", "abstractComponent")
     abstractComponent.setProperty("desc", "The only abstract component.")
     abstractComponent.setProperty("icon", "icons/abstractComponent.svg")
 
-    // The only abstract device.
+    // Abstract device.
     Vertex abstractDevice = g.addVertex(null)
     abstractDevice.setProperty("type", "Device")
     abstractDevice.setProperty("name", "abstractDevice")
     abstractDevice.setProperty("desc", "The only abstract device.")
     abstractDevice.setProperty("icon", "icons/abstractDevice.svg")
 
-    // The only abstract software.
+    abstractDevice.addEdge("isa", abstractComponent)
+
+    // Abstract software.
     Vertex abstractSoftware = g.addVertex(null)
     abstractSoftware.setProperty("type", "Software")
     abstractSoftware.setProperty("name", "abstractSoftware")
     abstractSoftware.setProperty("desc", "The only abstract software.")
     abstractSoftware.setProperty("icon", "icons/abstractSoftware.svg")
+
+    abstractSoftware.addEdge("isa", abstractComponent)
+
+    // Abstract service.
+    Vertex abstractService = g.addVertex(null)
+    abstractService.setProperty("type", "Service")
+    abstractService.setProperty("name", "abstractService")
+    abstractService.setProperty("desc", "The only abstract service.")
+    abstractService.setProperty("icon", "icons/abstractService.svg")
+
+    abstractService.addEdge("isa", abstractSoftware)
 
     // Generic vendor.
     Vertex genericVendor = g.addVertex(null)
@@ -120,6 +133,7 @@ catch (Exception e) {
     genericNetworkDevice.setProperty("macAddr", "00:00:00:00:00:00")
 
     genericNetworkDevice.addEdge("vendor", genericVendor)
+    genericNetworkDevice.addEdge("isa", abstractDevice)
 
     // Default SSH listener.
     Vertex defaultSshListener = g.addVertex(null)
@@ -136,6 +150,24 @@ catch (Exception e) {
     defaultRdpListener.setProperty("netIpv4Addr", "0.0.0.0")
     defaultRdpListener.setProperty("netIpv4Port", 3389)
 
+    // Regular networked service.
+    Vertex regularNetworkedService = g.addVertex(null)
+    regularNetworkedService.setProperty("type", "NetworkedService")
+    regularNetworkedService.setProperty("name", "regularNetworkedService")
+    regularNetworkedService.setProperty("desc", "A regular networked service.")
+    regularNetworkedService.setProperty("icon", "icons/regularNetworkedService.svg")
+
+    regularNetworkedService.addEdge("isa", abstractService)
+
+    // Regular local service.
+    Vertex regularLocalService = g.addVertex(null)
+    regularLocalService.setProperty("type", "LocalService")
+    regularLocalService.setProperty("name", "regularLocalService")
+    regularLocalService.setProperty("desc", "A regular local (non-networked) service.")
+    regularLocalService.setProperty("icon", "icons/regularLocalService.svg")
+
+    regularNetworkedService.addEdge("isa", abstractService)
+
     // Generic SSH service.
     Vertex genericSshService = g.addVertex(null)
     genericSshService.setProperty("type", "TextualAccessor")
@@ -149,6 +181,7 @@ catch (Exception e) {
     genericSshService.setProperty("execImage", "sshd")
 
     genericSshService.addEdge("vendor", genericVendor)
+    genericSshService.addEdge("isa", regularNetworkedService)
     genericSshService.addEdge("has", defaultSshListener)
 
     // Generic SMB service.
@@ -165,6 +198,7 @@ catch (Exception e) {
     genericSmbService.setProperty("execArgs", "-k netsvcs")
 
     genericSmbService.addEdge("vendor", genericVendor)
+    genericSmbService.addEdge("isa", regularNetworkedService)
     genericSmbService.addEdge("has", defaultSmbListener)
 
     // Generic RDP service.
@@ -181,6 +215,7 @@ catch (Exception e) {
     genericRdpService.setProperty("execArgs", "-k termsvcs")
 
     genericRdpService.addEdge("vendor", genericVendor)
+    genericRdpService.addEdge("isa", regularNetworkedService)
     genericRdpService.addEdge("has", defaultRdpListener)
 
     // Generic DOS interpreter.
@@ -197,6 +232,7 @@ catch (Exception e) {
     genericDosInterpreter.setProperty("execLang", "DOS")
 
     genericDosInterpreter.addEdge("vendor", genericVendor)
+    genericDosInterpreter.addEdge("isa", regularLocalService)
     genericDosInterpreter.addEdge("uses", genericSmbService)
 
     // Generic (Bourne/Posix/UNIX) Shell interpreter.
@@ -213,6 +249,7 @@ catch (Exception e) {
     genericDosInterpreter.setProperty("execLang", "SH")
 
     genericShellInterpreter.addEdge("vendor", genericVendor)
+    genericShellInterpreter.addEdge("isa", regularLocalService)
     genericShellInterpreter.addEdge("uses", genericSshService)
 
     // Generic storage device.
@@ -228,6 +265,7 @@ catch (Exception e) {
     genericStorageDevice.setProperty("storageSize", 1048576)
 
     genericStorageDevice.addEdge("vendor", genericVendor)
+    genericStorageDevice.addEdge("isa", abstractDevice)
 
     // Generic memory module.
     Vertex genericMemoryModule = g.addVertex(null)
@@ -243,6 +281,7 @@ catch (Exception e) {
     genericMemoryModule.setProperty("memSpeed", 1000000)
 
     genericMemoryModule.addEdge("vendor", genericVendor)
+    genericMemoryModule.addEdge("isa", abstractDevice)
 
     // Generic processing unit.
     Vertex genericProcessingUnit = g.addVertex(null)
@@ -259,6 +298,7 @@ catch (Exception e) {
     genericProcessingUnit.setProperty("cacheSize", 1024)
 
     genericProcessingUnit.addEdge("vendor", genericVendor)
+    genericProcessingUnit.addEdge("isa", abstractDevice)
 
     // Generic graphics device.
     Vertex genericGraphicsDevice = g.addVertex(null)
@@ -275,6 +315,7 @@ catch (Exception e) {
     genericGraphicsDevice.setProperty("memSize", 33554432)
 
     genericGraphicsDevice.addEdge("vendor", genericVendor)
+    genericGraphicsDevice.addEdge("isa", abstractDevice)
 
     // Generic console device.
     Vertex genericConsoleDevice = g.addVertex(null)
@@ -292,6 +333,7 @@ catch (Exception e) {
     genericConsoleDevice.setProperty("stopBits", 1)
 
     genericConsoleDevice.addEdge("vendor", genericVendor)
+    genericConsoleDevice.addEdge("isa", abstractDevice)
 
     // Generic UNIX-like operating system.
     Vertex genericUnixLikeOperatingSystem = g.addVertex(null)
@@ -301,6 +343,7 @@ catch (Exception e) {
     genericUnixLikeOperatingSystem.setProperty("icon", "icons/genericUnixLikeOperatingSystem.svg")
 
     genericUnixLikeOperatingSystem.addEdge("vendor", genericVendor)
+    genericUnixLikeOperatingSystem.addEdge("isa", abstractSoftware)
     genericUnixLikeOperatingSystem.addEdge("has", genericSshService)
     genericUnixLikeOperatingSystem.addEdge("has", genericShellInterpreter)
 
@@ -312,6 +355,7 @@ catch (Exception e) {
     genericWindowsLikeOperatingSystem.setProperty("icon", "icons/genericWindowsLikeOperatingSystem.svg")
 
     genericWindowsLikeOperatingSystem.addEdge("vendor", genericVendor)
+    genericWindowsLikeOperatingSystem.addEdge("isa", abstractSoftware)
     genericWindowsLikeOperatingSystem.addEdge("has", genericSmbService)
     genericWindowsLikeOperatingSystem.addEdge("has", genericRdpService)
     genericWindowsLikeOperatingSystem.addEdge("has", genericDosInterpreter)
