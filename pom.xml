@@ -16,7 +16,7 @@
     <url>https://www.openpcf.org/projects/universal/</url>
 
     <build>
-        <finalName>${project.artifactId}-${project.version}</finalName>
+        <finalName>universal-${project.version}-trunk</finalName>
 
         <directory>target</directory>
 
