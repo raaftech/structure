@@ -17,7 +17,7 @@ import java.util.Map;
 public class DataPool {
 
     public Map<String, Command> commands = new HashMap();
-    public Map<String, ComputerSystem> computerSystems = new HashMap<>();
+    public Map<String, AssembledDevice> computerSystems = new HashMap<>();
     public Map<String, ConsoleDevice> consoleDevices = new HashMap<>();
     public Map<String, Credential> credentials = new HashMap<>();
     public Map<String, GraphicalAccessor> graphicalAccessors = new HashMap<>();
@@ -27,7 +27,6 @@ public class DataPool {
     public Map<String, Interpreter> interpreters = new HashMap<>();
     public Map<String, Listener> listeners = new HashMap<>();
     public Map<String, LocalService> localServices = new HashMap<>();
-    public Map<String, ManagementConsole> managementConsoles = new HashMap<>();
     public Map<String, MemoryModule> memoryModules = new HashMap<>();
     public Map<String, NetworkDevice> networkDevices = new HashMap<>();
     public Map<String, NetworkedService> networkedServices = new HashMap<>();

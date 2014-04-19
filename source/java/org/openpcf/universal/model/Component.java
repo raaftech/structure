@@ -26,12 +26,13 @@ abstract class Component {
     private String name;
     private String desc;
     private String icon;
+    private Coordinate location;
 
     Properties settings = UniversalSettingsSingleton.INSTANCE.getSettings();
     Logger logger = UniversalLoggerFactory.getLogger(this.getClass());
     TitanGraph graph = UniversalGraphSingleton.INSTANCE.getGraph();
 
-    public Component() {};
+    public Component() {}
 
     public Component(String name, String desc, String icon) {
         this.name = name;
@@ -61,5 +62,13 @@ abstract class Component {
 
     public void setIcon(String icon) {
         this.icon = icon;
+    }
+
+    public Coordinate getLocation() {
+        return location;
+    }
+
+    public void setLocation(Coordinate location) {
+        this.location = location;
     }
 }
