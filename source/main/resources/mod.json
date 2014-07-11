@@ -1,0 +1,10 @@
+{
+    "description": "Vert.x application to manage computing environments.",
+    "keywords": ["neo4j", "graph", "datacenter", "operations", "cloud"],
+    "author": "Open Provisioning and Control Framework",
+    "developers": ["Rubin Simons", "Freek Alleman", "Maurice Schillemans", "Stephan Kaffa"],
+    "homepage": "https://www.openpcf.org/projects/universal",
+    "licenses": "GNU General Public License (GPL) version 3.0",
+    "main": "org.openpcf.universal.Main",
+    "auto-redeploy": true
+}

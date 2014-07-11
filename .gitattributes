@@ -1,7 +1,22 @@
 * text=auto !eol
 /build.xml -text
 /license.txt -text
+model/createdb.sh -text
+model/org.openpcf.model.base.cql -text
+model/org.openpcf.model.cloudsystems.cql -text
+model/org.openpcf.model.hypervisors.cql -text
+model/org.openpcf.model.interpreters.cql -text
+model/org.openpcf.model.operatingsystems.cql -text
+model/org.openpcf.model.packagemanagers.cql -text
+model/org.openpcf.model.servicemanagers.cql -text
+model/org.openpcf.model.services.cql -text
 /notes.txt -text
 /pom.xml -text
 /readme.txt -text
 /release.xml -text
+source/main/assembly/mod.xml -text
+source/main/resources/langs.properties -text
+source/main/resources/log4j.properties -text
+source/main/resources/mod.json -text
+source/main/resources/universal.json -text
+source/test/resources/universal.json -text
