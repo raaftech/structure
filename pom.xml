@@ -1,19 +1,166 @@
-<!--
-  ~ Copyright © 2008-2014 RAAF Technology bv
-  -->
-
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.openpcf.universal</groupId>
-    <artifactId>openpcf-universal</artifactId>
-    <version>0.6.0</version>
-    <packaging>war</packaging>
+    <parent>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
+        <version>7</version>
+    </parent>
 
-    <name>openpcf-universal</name>
-    <url>https://www.openpcf.org/projects/universal/</url>
+    <groupId>org.openpcf</groupId>
+    <artifactId>universal</artifactId>
+    <packaging>jar</packaging>
+    <version>0.6.0</version>
+    <name>universal</name>
+
+    <description>
+        Vert.x and Neo4j application to manage computing environments.
+    </description>
+
+    <url>https://www.openpcf.org/projects/universal</url>
+
+    <licenses>
+        <license>
+            <name>GNU General Public License, Version 3</name>
+            <url>http://www.gnu.org/licenses/gpl-3.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <organization>
+        <name>Open Provisioning and Control Framework</name>
+        <url>https://www.openpcf.org/</url>
+    </organization>
+
+    <scm>
+        <url>https://svn.openpcf.org/universal/trunk</url>
+        <connection>scm:svn:https://svn.openpcf.org/universal/trunk</connection>
+        <developerConnection>scm:svn:https://svn.openpcf.org/universal/trunk</developerConnection>
+    </scm>
+
+    <issueManagement>
+        <system>OpenPCF JIRA</system>
+        <url>https://jira.openpcf.org/</url>
+    </issueManagement>
+
+    <ciManagement>
+        <system>OpenPCF Bamboo</system>
+        <url>https://boo.openpcf.org/</url>
+    </ciManagement>
+
+    <developers>
+        <developer>
+            <id>rubin</id>
+            <email>rubin@openpcf.org</email>
+            <name>Rubin Simons</name>
+            <organization>Open Provisioning and Control Framework</organization>
+            <organizationUrl>https://www.openpcf.org/</organizationUrl>
+        </developer>
+        <developer>
+            <id>freek</id>
+            <email>freek@openpcf.org</email>
+            <name>Freek Alleman</name>
+            <organization>Open Provisioning and Control Framework</organization>
+            <organizationUrl>https://www.openpcf.org/</organizationUrl>
+        </developer>
+    </developers>
+
+    <properties>
+        <!-- Generic settings -->
+        <neo4j.version>2.1.2</neo4j.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <vertx.pullInDeps>false</vertx.pullInDeps>
+        <vertx.createFatJar>false</vertx.createFatJar>
+        <module.name>${project.groupId}~${project.artifactId}~${project.version}</module.name>
+        <mods.directory>target/mods</mods.directory>
+        <vertx.version>2.1</vertx.version>
+        <vertx.testtools.version>2.0.3-final</vertx.testtools.version>
+        <junit.version>4.11</junit.version>
+        <gpg.keyname>C6E91526</gpg.keyname>
+
+        <!-- Plugin versions -->
+        <maven.compiler.plugin.version>3.0</maven.compiler.plugin.version>
+        <maven.resources.plugin.version>2.6</maven.resources.plugin.version>
+        <maven.clean.plugin.version>2.5</maven.clean.plugin.version>
+        <maven.vertx.plugin.version>2.0.6-final</maven.vertx.plugin.version>
+        <maven.surefire.plugin.version>2.14</maven.surefire.plugin.version>
+        <maven.failsafe.plugin.version>2.14</maven.failsafe.plugin.version>
+        <maven.surefire.report.plugin.version>2.14</maven.surefire.report.plugin.version>
+        <maven.javadoc.plugin.version>2.9.1</maven.javadoc.plugin.version>
+        <maven.source.plugin.version>2.2.1</maven.source.plugin.version>
+        <maven.dependency.plugin.version>2.7</maven.dependency.plugin.version>
+    </properties>
+
+
+    <dependencies>
+        <!-- Generic dependencies -->
+        <dependency>
+            <groupId>io.vertx</groupId>
+            <artifactId>vertx-core</artifactId>
+            <version>${vertx.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.vertx</groupId>
+            <artifactId>vertx-platform</artifactId>
+            <version>${vertx.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.vertx</groupId>
+            <artifactId>vertx-hazelcast</artifactId>
+            <version>${vertx.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.neo4j.app</groupId>
+            <artifactId>neo4j-server</artifactId>
+            <version>${neo4j.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.neo4j.app</groupId>
+            <artifactId>neo4j-server</artifactId>
+            <classifier>static-web</classifier>
+            <version>${neo4j.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!--Test dependencies -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.11</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.javassist</groupId>
+            <artifactId>javassist</artifactId>
+            <version>3.18.2-GA</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.neo4j</groupId>
+            <artifactId>neo4j-kernel</artifactId>
+            <version>${neo4j.version}</version>
+            <classifier>tests</classifier>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.vertx</groupId>
+            <artifactId>testtools</artifactId>
+            <version>${vertx.testtools.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.vertx</groupId>
+            <artifactId>vertx-testframework</artifactId>
+            <version>2.0.0-final</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 
     <build>
         <finalName>universal-${project.version}-trunk</finalName>
@@ -23,25 +170,58 @@
         <outputDirectory>target/classes</outputDirectory>
         <testOutputDirectory>target/test-classes</testOutputDirectory>
 
-        <sourceDirectory>source/java</sourceDirectory>
-        <testSourceDirectory>tests/java</testSourceDirectory>
+        <sourceDirectory>source/main/java</sourceDirectory>
+        <testSourceDirectory>source/test/java</testSourceDirectory>
 
         <resources>
             <resource>
-                <directory>source/resources</directory>
+                <directory>source/main/resources</directory>
             </resource>
         </resources>
         <testResources>
             <testResource>
-                <directory>tests/resources</directory>
+                <directory>source/test/resources</directory>
             </testResource>
         </testResources>
 
         <plugins>
             <plugin>
+                <groupId>io.vertx</groupId>
+                <artifactId>vertx-maven-plugin</artifactId>
+                <version>${maven.vertx.plugin.version}</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>io.vertx</groupId>
+                        <artifactId>vertx-platform</artifactId>
+                        <version>${vertx.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>io.vertx</groupId>
+                        <artifactId>vertx-core</artifactId>
+                        <version>${vertx.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>io.vertx</groupId>
+                        <artifactId>vertx-hazelcast</artifactId>
+                        <version>${vertx.version}</version>
+                    </dependency>
+                </dependencies>
+
+                <executions>
+                    <execution>
+                        <id>PullInDeps</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>pullInDeps</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.1</version>
+                <version>${maven.compiler.plugin.version}</version>
                 <configuration>
                     <source>1.7</source>
                     <target>1.7</target>
@@ -49,78 +229,181 @@
             </plugin>
 
             <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>${maven.resources.plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>copy-mod-to-target</id>
+                        <phase>process-classes</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <overwrite>true</overwrite>
+                            <outputDirectory>${mods.directory}/${module.name}</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>target/classes</directory>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
-                <version>2.4</version>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>${maven.dependency.plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>copy-mod-dependencies-to-target</id>
+                        <phase>process-classes</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${mods.directory}/${module.name}/lib</outputDirectory>
+                            <includeScope>runtime</includeScope>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>copy-mod-dependencies-to-target-dependencies</id>
+                        <phase>process-classes</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>target/dependencies</outputDirectory>
+                            <includeScope>runtime</includeScope>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${maven.surefire.plugin.version}</version>
                 <configuration>
-                    <webResources>
-                        <resource>
-                            <directory>web</directory>
-                        </resource>
-                    </webResources>
+                    <includes>
+                        <include>**/*.java</include>
+                    </includes>
                 </configuration>
             </plugin>
 
             <plugin>
-                <groupId>com.atlassian.maven.plugins</groupId>
-                <artifactId>maven-clover2-plugin</artifactId>
-                <version>3.2.0</version>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-report-plugin</artifactId>
+                <version>${maven.surefire.report.plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>generate-test-report</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>report-only</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
                 <configuration>
-                    <licenseLocation>${user.home}/.atlassian/clover.license</licenseLocation>
+                    <descriptors>
+                        <descriptor>source/main/assembly/mod.xml</descriptor>
+                    </descriptors>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>assemble</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>1.5</version>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.5</version>
+                <configuration>
+                    <mavenExecutorId>forked-path</mavenExecutorId>
+                    <useReleaseProfile>false</useReleaseProfile>
+                    <arguments>-Psonatype-oss-release</arguments>
                 </configuration>
             </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>${maven.source.plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>${maven.javadoc.plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
         </plugins>
     </build>
 
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-report-plugin</artifactId>
+                <version>${maven.surefire.report.plugin.version}</version>
+            </plugin>
+        </plugins>
+    </reporting>
 
-    <repositories>
+    <distributionManagement>
         <repository>
-            <id>sonatype-oss-snapshots</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
+            <id>sonatype-nexus-staging</id>
+            <name>Nexus Staging Repository</name>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
         </repository>
-    </repositories>
 
-    <dependencies>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.11</version>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>1.7.6</version>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-simple</artifactId>
-            <version>1.7.6</version>
-        </dependency>
-        <dependency>
-            <groupId>com.thinkaurelius.titan</groupId>
-            <artifactId>titan-berkeleyje</artifactId>
-            <version>0.4.2</version>
-        </dependency>
-        <dependency>
-            <groupId>com.thinkaurelius.titan</groupId>
-            <artifactId>titan-es</artifactId>
-            <version>0.4.2</version>
-        </dependency>
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>jsp-api</artifactId>
-            <version>2.0</version>
-            <scope>provided</scope>
-        </dependency>
-    </dependencies>
+        <snapshotRepository>
+            <id>sonatype-nexus-snapshots</id>
+            <name>Nexus Snapshots Repository</name>
+            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
 
 </project>
