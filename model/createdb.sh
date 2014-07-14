@@ -4,12 +4,13 @@ neo4j_home="/opt/neo/neo4j2"
 neo4j_exec="$neo4j_home/bin/neo4j"
 neo4j_repl="$neo4j_home/bin/neo4j-shell"
 
-"$neo4j_exec" stop
 
-rm -rf "$neo4j_home/data/*"
-
-"$neo4j_exec" start
+echo to start fresh do:
+echo "$neo4j_exec" stop
+echo rm -rf "$neo4j_home/data/*"
+echo "$neo4j_exec" start
 echo ""
+sleep 3
 
 echo "OpenPCF Base Model"
 sleep 3

@@ -53,6 +53,90 @@ MATCH (component:Component {uuid: 'a79ce509-a021-4177-ae61-73abd01fb479'}),
 MERGE (component)-[:ISA]->(object);
 
 
+// Configuration - Any kind of configuration.
+MERGE (configuration:Object:Component:Configuration {
+    uuid: '3f4a43f7-b558-4bf0-ba7e-66b99cffaf16',
+    name: 'Configuration',
+    desc: 'An abstract configuration component.'
+    });
+
+MATCH (configuration:Configuration {uuid: '3f4a43f7-b558-4bf0-ba7e-66b99cffaf16'}),
+    (component:Component {uuid: 'a79ce509-a021-4177-ae61-73abd01fb479'})
+MERGE (configuration)-[:ISA]->(component);
+
+
+// IpAddress - An  IP address.
+MERGE (ipaddress:Object:Component:Configuration:IpAddress {
+    uuid: '299001a6-1091-4c0d-87be-c512af03e179',
+    name: 'IpAddress',
+    desc: 'An IP address (address only, can be assigned to a network interface).'
+    });
+
+MATCH (ipaddress:IpAddress {uuid: '299001a6-1091-4c0d-87be-c512af03e179'}),
+    (configuration:Configuration {uuid: '3f4a43f7-b558-4bf0-ba7e-66b99cffaf16'})
+MERGE (ipaddress)-[:ISA]->(configuration);
+
+
+// Ipv4Address - An IPv4 address.
+MERGE (ipv4addr:Object:Component:Configuration:IpAddress:Ipv4Address {
+    uuid: 'f7fbe917-9d49-4df5-95f6-6e132067a424',
+    name: 'Ipv4Address',
+    desc: 'An IPv4 address (address only, can be assigned to a network interface).'
+    });
+
+MATCH (ipv4addr:Ipv4Address {uuid: 'f7fbe917-9d49-4df5-95f6-6e132067a424'}),
+    (ipaddress:IpAddress {uuid: '299001a6-1091-4c0d-87be-c512af03e179'})
+MERGE (ipv4addr)-[:ISA]->(ipaddress);
+
+
+// Ipv6Address - An IPv6 address.
+MERGE (ipv6addr:Object:Component:Configuration:IpAddress:Ipv6Address {
+    uuid: '47b5804d-5f5d-4bf8-89f6-a189c29b05ae',
+    name: 'Ipv6Address',
+    desc: 'An IPv6 address (address only, can be assigned to a network interface).'
+    });
+
+MATCH (ipv6addr:Ipv6Address {uuid: '47b5804d-5f5d-4bf8-89f6-a189c29b05ae'}),
+    (ipaddress:IpAddress {uuid: '299001a6-1091-4c0d-87be-c512af03e179'})
+MERGE (ipv6addr)-[:ISA]->(ipaddress);
+
+
+// IpListener - An IP listener.
+MERGE (iplistener:Object:Component:Configuration:IpListener {
+    uuid: '91c999a0-33ec-42ee-bae0-6f8adae42535',
+    name: 'IpListener',
+    desc: 'An IP listener (address and port, can be assigned to a network service).'
+    });
+
+MATCH (iplistener:IpListener {uuid: '91c999a0-33ec-42ee-bae0-6f8adae42535'}),
+    (configuration:Configuration {uuid: '3f4a43f7-b558-4bf0-ba7e-66b99cffaf16'})
+MERGE (iplistener)-[:ISA]->(configuration);
+
+
+// Ipv4Listener - An IPv4 listener.
+MERGE (ip4vlistener:Object:Component:Configuration:IpListener:Ipv4Listener {
+    uuid: '5ca95f7a-5175-4e7f-8a61-862e24485af3',
+    name: 'Ipv4Listener',
+    desc: 'An IPv4 listener (address and port, can be assigned to a network service).'
+    });
+
+MATCH (ip4vlistener:Ipv4Listener {uuid: '5ca95f7a-5175-4e7f-8a61-862e24485af3'}),
+    (iplistener:IpListener {uuid: '91c999a0-33ec-42ee-bae0-6f8adae42535'})
+MERGE (ip4vlistener)-[:ISA]->(iplistener);
+
+
+// Ipv6Listener - An IPv6 listener.
+MERGE (ipv6listener:Object:Component:Configuration:IpListener:Ipv6Listener {
+    uuid: '6a79b4e9-13ce-4a09-bc5b-b429d23b34d7',
+    name: 'Ipv6Listener',
+    desc: 'An IPv6 listener (address and port, can be assigned to a network service).'
+    });
+
+MATCH (ipv6listener:Ipv6Listener {uuid: '6a79b4e9-13ce-4a09-bc5b-b429d23b34d7'}),
+    (iplistener:IpListener {uuid: '91c999a0-33ec-42ee-bae0-6f8adae42535'})
+MERGE (ipv6listener)-[:ISA]->(iplistener);
+
+
 // Device - Any kind of device.
 MERGE (device:Object:Component:Device {
     uuid: 'ea6a7487-867c-4a74-8849-fb8539b8169f',
