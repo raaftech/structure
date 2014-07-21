@@ -69,7 +69,8 @@ MERGE (configuration)-[:ISA]->(component);
 MERGE (ipaddress:Object:Component:Configuration:IpAddress {
     uuid: '299001a6-1091-4c0d-87be-c512af03e179',
     name: 'IpAddress',
-    desc: 'An IP address (address only, can be assigned to a network interface).'
+    desc: 'An IP address (address only, can be assigned to a network interface).',
+    addr: 'IP addresses should at least have the addr field.'
     });
 
 MATCH (ipaddress:IpAddress {uuid: '299001a6-1091-4c0d-87be-c512af03e179'}),
@@ -81,7 +82,8 @@ MERGE (ipaddress)-[:ISA]->(configuration);
 MERGE (ipv4addr:Object:Component:Configuration:IpAddress:Ipv4Address {
     uuid: 'f7fbe917-9d49-4df5-95f6-6e132067a424',
     name: 'Ipv4Address',
-    desc: 'An IPv4 address (address only, can be assigned to a network interface).'
+    desc: 'An IPv4 address (address only, can be assigned to a network interface).',
+    addr: 'Fill in an IPv4 address here.'
     });
 
 MATCH (ipv4addr:Ipv4Address {uuid: 'f7fbe917-9d49-4df5-95f6-6e132067a424'}),
@@ -93,7 +95,8 @@ MERGE (ipv4addr)-[:ISA]->(ipaddress);
 MERGE (ipv6addr:Object:Component:Configuration:IpAddress:Ipv6Address {
     uuid: '47b5804d-5f5d-4bf8-89f6-a189c29b05ae',
     name: 'Ipv6Address',
-    desc: 'An IPv6 address (address only, can be assigned to a network interface).'
+    desc: 'An IPv6 address (address only, can be assigned to a network interface).',
+    addr: 'Fill in an IPv6 address here.'
     });
 
 MATCH (ipv6addr:Ipv6Address {uuid: '47b5804d-5f5d-4bf8-89f6-a189c29b05ae'}),
@@ -105,7 +108,9 @@ MERGE (ipv6addr)-[:ISA]->(ipaddress);
 MERGE (iplistener:Object:Component:Configuration:IpListener {
     uuid: '91c999a0-33ec-42ee-bae0-6f8adae42535',
     name: 'IpListener',
-    desc: 'An IP listener (address and port, can be assigned to a network service).'
+    desc: 'An IP listener (address and port, can be assigned to a network service).',
+    addr: 'IP listeners should at least have the addr and port fields.',
+    port: 'IP listeners should at least have the addr and port fields.'
     });
 
 MATCH (iplistener:IpListener {uuid: '91c999a0-33ec-42ee-bae0-6f8adae42535'}),
@@ -117,7 +122,9 @@ MERGE (iplistener)-[:ISA]->(configuration);
 MERGE (ip4vlistener:Object:Component:Configuration:IpListener:Ipv4Listener {
     uuid: '5ca95f7a-5175-4e7f-8a61-862e24485af3',
     name: 'Ipv4Listener',
-    desc: 'An IPv4 listener (address and port, can be assigned to a network service).'
+    desc: 'An IPv4 listener (address and port, can be assigned to a network service).',
+    addr: 'Fill in an IPv4 address here.',
+    port: 'Fill in a port number between 0 and 65535 here.'
     });
 
 MATCH (ip4vlistener:Ipv4Listener {uuid: '5ca95f7a-5175-4e7f-8a61-862e24485af3'}),
@@ -129,7 +136,9 @@ MERGE (ip4vlistener)-[:ISA]->(iplistener);
 MERGE (ipv6listener:Object:Component:Configuration:IpListener:Ipv6Listener {
     uuid: '6a79b4e9-13ce-4a09-bc5b-b429d23b34d7',
     name: 'Ipv6Listener',
-    desc: 'An IPv6 listener (address and port, can be assigned to a network service).'
+    desc: 'An IPv6 listener (address and port, can be assigned to a network service).',
+    addr: 'Fill in an IPv6 address here.',
+    port: 'Fill in a port number between 0 and 65535 here.'
     });
 
 MATCH (ipv6listener:Ipv6Listener {uuid: '6a79b4e9-13ce-4a09-bc5b-b429d23b34d7'}),
@@ -137,11 +146,55 @@ MATCH (ipv6listener:Ipv6Listener {uuid: '6a79b4e9-13ce-4a09-bc5b-b429d23b34d7'})
 MERGE (ipv6listener)-[:ISA]->(iplistener);
 
 
+// Url - A uniform resource locator.
+MERGE (url:Object:Component:Configuration:Url {
+    uuid: '0e9f72bd-5bc5-43dc-ab86-30a8f7171bc6',
+    name: 'Url',
+    desc: 'a uniform resource locator.',
+    url: 'scheme://domain:port/path?query_string#fragment_id'
+    });
+
+MATCH (url:Url {uuid: '0e9f72bd-5bc5-43dc-ab86-30a8f7171bc6'}),
+    (configuration:Configuration {uuid: '3f4a43f7-b558-4bf0-ba7e-66b99cffaf16'})
+MERGE (url)-[:ISA]->(configuration);
+
+
+// DnsName - Either a short name or a fully-qualified domain name.
+MERGE (dnsname:Object:Component:Configuration:DnsName {
+    uuid: '99c0da37-3599-418d-8ecc-de36d37ae9f4',
+    name: 'DnsName',
+    desc: 'Either a short name or a fully-qualified domain name.',
+    dnsname: 'somename'
+    });
+
+MATCH (dnsname:DnsName {uuid: '99c0da37-3599-418d-8ecc-de36d37ae9f4'}),
+    (configuration:Configuration {uuid: '3f4a43f7-b558-4bf0-ba7e-66b99cffaf16'})
+MERGE (dnsname)-[:ISA]->(configuration);
+
+
+// DirectoryMap - A generic map of possible directories this software has.
+// PrefixDirectoryMap - A map of possible/known prefix directories for this software.
+// ConfigDirectoryMap - A map of possible/known configuration directories for this software.
+// BinaryDirectoryMap - A map of possible/known binary executable directories for this software.
+// LibraryDirectoryMap - A map of possible/known dynamic link library directories for this software.
+// DataDirectoryMap - A map of possible/known data directories for this software.
+// LogDirectoryMap - A map of possible/known log directories for this software.
+// FileMap - A generic map of possible/known files this software has.
+// ConfigFileMap - A map of possible/known configuration files for this software, non-full path, checked within ConfigDirectoryMap entries.
+// BinaryFileMap - A map of possible/known binary executable files for this software, non-full path, checked within BinaryDirectoryMap entries.
+// LibraryFileMap - A map of possible/known dynamic link library files for this software, non-full path, checked within LibraryDirectoryMap entries.
+// DataFileMap - A map of possible/known data files for this software, non-full path, checked within DataDirectoryMap entries.
+// LogFileMap - A map of possible/known log files for this software, non-full path, checked within LogDirectoryMap entries.
+// NameMap - A generic map of possible/known names this software has.
+// PackageNameMap - A map of possible/known package names for this software, non-full path, checked within ConfigDirectoryMap entries.
+
+
 // Device - Any kind of device.
 MERGE (device:Object:Component:Device {
     uuid: 'ea6a7487-867c-4a74-8849-fb8539b8169f',
     name: 'Device',
-    desc: 'An abstract device component.'
+    desc: 'An abstract device component.',
+    rev: 'The revision of the device.'
     });
 
 MATCH (device:Device {uuid: 'ea6a7487-867c-4a74-8849-fb8539b8169f'}),
@@ -153,7 +206,8 @@ MERGE (device)-[:ISA]->(component);
 MERGE (assembleddevice:Object:Component:Device:AssembledDevice {
     uuid: 'dbb2884f-7c31-4f7d-a92e-d6a76dd1b7fe',
     name: 'AssembledDevice',
-    desc: 'An assembled device, containing various components.'
+    desc: 'An assembled device, containing various components.',
+    rev: 'The revision of the assembled device.'
     });
 
 MATCH (assembleddevice:AssembledDevice {uuid: 'dbb2884f-7c31-4f7d-a92e-d6a76dd1b7fe'}),
@@ -165,7 +219,8 @@ MERGE (assembleddevice)-[:ISA]->(device);
 MERGE (computer:Object:Component:Device:AssembledDevice:Computer {
     uuid: 'ec11db91-6973-4285-b018-b461fbb432d7',
     name: 'Computer',
-    desc: 'An assembled computer device.'
+    desc: 'An assembled computer device.',
+    rev: 'The revision of the computer device.'
     });
 
 MATCH (computer:Computer {uuid: 'ec11db91-6973-4285-b018-b461fbb432d7'}),
@@ -177,7 +232,12 @@ MERGE (computer)-[:ISA]->(assembleddevice);
 MERGE (consoledevice:Object:Component:Device:ConsoleDevice {
     uuid: '3d0865a2-3ecf-4035-886b-0bb603c0e2c2',
     name: 'ConsoleDevice',
-    desc: 'A console device.'
+    desc: 'A console device.',
+    rev: 'The revision of the console device.',
+    baudRate: '110,300,600,1200,2400,4800,9600,14400,19200,28800,38400,56000,57600 or 115200.',
+    dataBits: '5,6,7,8 or 9.',
+    parity: 'none (N), odd (O), even (E), mark (M), or space (S).',
+    stopBits: '1, 1.5 or 2.'
     });
 
 MATCH (consoledevice:ConsoleDevice {uuid: '3d0865a2-3ecf-4035-886b-0bb603c0e2c2'}),
@@ -189,7 +249,12 @@ MERGE (consoledevice)-[:ISA]->(device);
 MERGE (genericserial:Object:Component:Device:ConsoleDevice:GenericSerial {
     uuid: 'f5b25736-ec12-4a7e-b198-548b97ebc36f',
     name: 'GenericSerial',
-    desc: 'A serial communication device.'
+    desc: 'A serial communication device.',
+    rev: 'A',
+    baudRate: '9600',
+    dataBits: '8',
+    parity: 'N',
+    stopBits: '1'
     });
 
 MATCH (genericserial:GenericSerial {uuid: 'f5b25736-ec12-4a7e-b198-548b97ebc36f'}),
@@ -201,7 +266,23 @@ MERGE (genericserial)-[:ISA]->(consoledevice);
 MERGE (graphicsdevice:Object:Component:Device:GraphicsDevice {
     uuid: 'a642b995-c073-4c27-a611-c5bf3854958f',
     name: 'GraphicsDevice',
-    desc: 'A graphics device.'
+    desc: 'A graphics device.',
+    rev: 'The revision of the graphics device.',
+    gpuClockHz: 'Clockspeed of the GPU in Hz.',
+    gpuCoreCount: 'Number of GPU cores if applicable.',
+    maxColorBitsPerChannel: 'Maximum number of bits to describe color in a color channel (R,G,B,A).',
+    maxColorBitsPerScreen: 'Maximum number of bits per pixel on a screen.',
+    maxVerticalRefreshRateHz: 'Max',
+    memClockHz: 'Memory speed in Hz.',
+    memSizeKb: 'Memory size in Kb.',
+    memBusBits: 'Memory bus width in bits.',
+    memBandwidthKbs: 'Memory bandwidth in kilobytes per second.',
+    shadingUnits: 'Number of shading units.',
+    textureMapUnits: 'Number of texture mapping units.',
+    renderOutputCores: 'Number of render output cores.',
+    pixelRatesPerSec: 'Pixel fillrate, in pixels per second.',
+    texelRatesPerSec: 'Texture fillrate, in texels per second.',
+    flops: 'Number of floating-point operations per second.'
     });
 
 MATCH (graphicsdevice:GraphicsDevice {uuid: 'a642b995-c073-4c27-a611-c5bf3854958f'}),
@@ -213,7 +294,23 @@ MERGE (graphicsdevice)-[:ISA]->(device);
 MERGE (genericvga:Object:Component:Device:GraphicsDevice:GenericVga {
     uuid: 'b3a2ac7c-ad8a-4047-a460-2ac41a7ddfef',
     name: 'GenericVga',
-    desc: 'A VGA graphics device.'
+    desc: 'A VGA graphics device.',
+    rev: 'A',
+    gpuClockHz: '28322',
+    gpuCoreCount: '1',
+    maxColorBitsPerChannel: '6',
+    maxColorBitsPerScreen: '8',
+    maxVerticalRefreshRateHz: '70',
+    memClockHz: '833',
+    memSizeKb: '256',
+    memBusBits: '16',
+    memBandwidthKbs: '16384',
+    shadingUnits: '0',
+    textureMapUnits: '0',
+    renderOutputCores: '0',
+    pixelRatesPerSec: '',
+    texelRatesPerSec: '0',
+    flops: ''
     });
 
 MATCH (genericvga:GenericVga {uuid: 'b3a2ac7c-ad8a-4047-a460-2ac41a7ddfef'}),
@@ -225,7 +322,9 @@ MERGE (genericvga)-[:ISA]->(graphicsdevice);
 MERGE (memorydevice:Object:Component:Device:MemoryDevice {
     uuid: '1c87c672-1f69-4a02-9bc8-9eff28dda5e5',
     name: 'MemoryDevice',
-    desc: 'A memory device'
+    desc: 'A memory device',
+    rev: 'The revision of the memory device.',
+    memSizeKb: 'Memory size in Kb.'
     });
 
 MATCH (memorydevice:MemoryDevice {uuid: '1c87c672-1f69-4a02-9bc8-9eff28dda5e5'}),
@@ -237,7 +336,10 @@ MERGE (memorydevice)-[:ISA]->(device);
 MERGE (volatilememory:Object:Component:Device:MemoryDevice:VolatileMemory {
     uuid: '44131d46-c1b0-4030-ae5a-9a3108627749',
     name: 'VolatileMemory',
-    desc: 'A generic volatile memory device.'
+    desc: 'A generic volatile memory device.',
+    rev: 'The revision of the volatile device.',
+    memSizeKb: 'Memory size in Kb.',
+    memClockHz: 'Memory speed in Hz.'
     });
 
 MATCH (volatilememory:VolatileMemory {uuid: '44131d46-c1b0-4030-ae5a-9a3108627749'}),
@@ -249,7 +351,10 @@ MERGE (volatilememory)-[:ISA]->(memorydevice);
 MERGE (randomaccessmemory:Object:Component:Device:MemoryDevice:VolatileMemory:RandomAccessMemory {
     uuid: '4c0a0638-1fa7-4f5b-9d69-1d199dcedccc',
     name: 'RandomAccessMemory',
-    desc: 'Random access memory.'
+    desc: 'Random access memory.',
+    rev: 'The revision of the random access memory device.',
+    memSizeKb: 'Memory size in Kb.',
+    memClockHz: 'Memory speed in Hz.'
     });
 
 MATCH (randomaccessmemory:RandomAccessMemory {uuid: '4c0a0638-1fa7-4f5b-9d69-1d199dcedccc'}),
@@ -261,7 +366,9 @@ MERGE (randomaccessmemory)-[:ISA]->(volatilememory);
 MERGE (nonvolatilememory:Object:Component:Device:MemoryDevice:NonVolatileMemory {
     uuid: '7f129e53-ff07-4ed8-9062-daf5f733a3a6',
     name: 'NonVolatileMemory',
-    desc: 'A generic non-volatile memory device.'
+    desc: 'A generic non-volatile memory device.',
+    rev: 'The revision of the non-volatile memory device.',
+    memSizeKb: 'Memory size in Kb.'
     });
 
 MATCH (nonvolatilememory:NonVolatileMemory {uuid: '7f129e53-ff07-4ed8-9062-daf5f733a3a6'}),
@@ -273,7 +380,9 @@ MERGE (nonvolatilememory)-[:ISA]->(memorydevice);
 MERGE (harddiskdrive:Object:Component:Device:MemoryDevice:NonVolatileMemory:HardDiskDrive {
     uuid: '24cc3545-0d1a-4d85-8d08-a83c3dbe5912',
     name: 'HardDiskDrive',
-    desc: 'A non-volatile harddisk-based storage device.'
+    desc: 'A non-volatile harddisk-based storage device.',
+    rev: 'The revision of the hard disk drive device.',
+    memSizeKb: 'Memory size in Kb.'
     });
 
 MATCH (harddiskdrive:HardDiskDrive {uuid: '24cc3545-0d1a-4d85-8d08-a83c3dbe5912'}),
@@ -285,7 +394,9 @@ MERGE (harddiskdrive)-[:ISA]->(nonvolatilememory);
 MERGE (solidstatedrive:Object:Component:Device:MemoryDevice:NonVolatileMemory:SolidStateDrive {
     uuid: '7a60ec32-0a9a-40b9-bf1f-d69674d4a233',
     name: 'SolidStateDrive',
-    desc: 'A non-volatile solid-state storage device.'
+    desc: 'A non-volatile solid-state storage device.',
+    rev: 'The revision of the solid-state storage device.',
+    memSizeKb: 'Memory size in Kb.'
     });
 
 MATCH (solidstatedrive:SolidStateDrive {uuid: '7a60ec32-0a9a-40b9-bf1f-d69674d4a233'}),
@@ -297,7 +408,9 @@ MERGE (solidstatedrive)-[:ISA]->(nonvolatilememory);
 MERGE (floppydrive:Object:Component:Device:MemoryDevice:NonVolatileMemory:FloppyDrive {
     uuid: '118ec961-a823-465b-be17-b706f1c8c2f1',
     name: 'FloppyDrive',
-    desc: 'A floppy disk drive.'
+    desc: 'A floppy disk drive.',
+    rev: 'The revision of the floppy disk drive device.',
+    memSizeKb: 'Memory size in Kb.'
     });
 
 MATCH (floppydrive:FloppyDrive {uuid: '118ec961-a823-465b-be17-b706f1c8c2f1'}),
@@ -309,7 +422,9 @@ MERGE (floppydrive)-[:ISA]->(nonvolatilememory);
 MERGE (tapedrive:Object:Component:Device:MemoryDevice:NonVolatileMemory:TapeDrive {
     uuid: 'a507461f-647b-4b79-936a-721ca2dba145',
     name: 'TapeDrive',
-    desc: 'A floppy disk drive.'
+    desc: 'A tape drive.',
+    rev: 'The revision of the tape drive device.',
+    memSizeKb: 'Memory size in Kb.'
     });
 
 MATCH (tapedrive:TapeDrive {uuid: 'a507461f-647b-4b79-936a-721ca2dba145'}),
@@ -321,7 +436,9 @@ MERGE (tapedrive)-[:ISA]->(nonvolatilememory);
 MERGE (cddrive:Object:Component:Device:MemoryDevice:NonVolatileMemory:CdDrive {
     uuid: '30af2fe3-aa05-4912-a3d5-dddfdacf74e2',
     name: 'CdDrive',
-    desc: 'A Compact Disc drive.'
+    desc: 'A Compact Disc drive.',
+    rev: 'The revision of the compact disk drive device.',
+    memSizeKb: 'Memory size in Kb.'
     });
 
 MATCH (cddrive:CdDrive {uuid: '30af2fe3-aa05-4912-a3d5-dddfdacf74e2'}),
@@ -333,7 +450,9 @@ MERGE (cddrive)-[:ISA]->(nonvolatilememory);
 MERGE (dvddrive:Object:Component:Device:MemoryDevice:NonVolatileMemory:DvdDrive {
     uuid: '23ab95d2-2815-4121-a81c-63aca40cdcfa',
     name: 'DvdDrive',
-    desc: 'A Digital Video Disc drive.'
+    desc: 'A Digital Video Disc drive.',
+    rev: 'The revision of the digital video disk drive device.',
+    memSizeKb: 'Memory size in Kb.'
     });
 
 MATCH (dvddrive:DvdDrive {uuid: '23ab95d2-2815-4121-a81c-63aca40cdcfa'}),
@@ -345,7 +464,9 @@ MERGE (dvddrive)-[:ISA]->(nonvolatilememory);
 MERGE (bddrive:Object:Component:Device:MemoryDevice:NonVolatileMemory:BdDrive {
     uuid: 'cbc27482-11d1-4890-a3e1-e9f80baea82c',
     name: 'BdDrive',
-    desc: 'A Digital Video Disc drive.'
+    desc: 'A Digital Video Disc drive.',
+    rev: 'The revision of the blu-ray disk drive device.',
+    memSizeKb: 'Memory size in Kb.'
     });
 
 MATCH (bddrive:BdDrive {uuid: 'cbc27482-11d1-4890-a3e1-e9f80baea82c'}),
@@ -357,7 +478,8 @@ MERGE (bddrive)-[:ISA]->(nonvolatilememory);
 MERGE (networkdevice:Object:Component:Device:NetworkDevice {
     uuid: '86786ed6-d62a-4011-9ae8-0082000e48fa',
     name: 'NetworkDevice',
-    desc: 'A network device.'
+    desc: 'A network device.',
+    rev: 'The revision of the network device.'
     });
 
 MATCH (networkdevice:NetworkDevice {uuid: '86786ed6-d62a-4011-9ae8-0082000e48fa'}),
@@ -369,7 +491,8 @@ MERGE (networkdevice)-[:ISA]->(device);
 MERGE (wirednetworkdevice:Object:Component:Device:NetworkDevice:WiredNetworkDevice {
     uuid: '0d4c880d-d888-435f-b3a3-3d3eb9e70ddf',
     name: 'WiredNetworkDevice',
-    desc: 'A wired network device.'
+    desc: 'A wired network device.',
+    rev: 'The revision of the wired network device.'
     });
 
 MATCH (wirednetworkdevice:WiredNetworkDevice {uuid: '0d4c880d-d888-435f-b3a3-3d3eb9e70ddf'}),
@@ -377,11 +500,13 @@ MATCH (wirednetworkdevice:WiredNetworkDevice {uuid: '0d4c880d-d888-435f-b3a3-3d3
 MERGE (wirednetworkdevice)-[:ISA]->(networkdevice);
 
 
-// ModemDevice - A wired modem networking device.
+// ModemDevice - A modem networking device.
 MERGE (modemdevice:Object:Component:Device:NetworkDevice:WiredNetworkDevice:ModemDevice {
     uuid: 'f34b76e4-f5a6-4bae-968e-f22ef09b1e35',
     name: 'ModemDevice',
-    desc: 'A modem networking device.'
+    desc: 'A modem networking device.',
+    rev: 'The revision of the modem networking device.',
+    baudRate: '110,300,600,1200,2400,4800,9600,14400,19200,28800,38400,56000,57600 or 115200.'
     });
 
 MATCH (modemdevice:ModemDevice {uuid: 'f34b76e4-f5a6-4bae-968e-f22ef09b1e35'}),
@@ -393,7 +518,10 @@ MERGE (modemdevice)-[:ISA]->(wirednetworkdevice);
 MERGE (ethernetdevice:Object:Component:Device:NetworkDevice:WiredNetworkDevice:EthernetDevice {
     uuid: '0dbd26f2-baff-446c-9241-46eaa3e03736',
     name: 'EthernetDevice',
-    desc: 'A wired ethernet device.'
+    desc: 'A wired ethernet device.',
+    rev: 'The revision of the ethernet network device.',
+    macAddr: 'A media access control address.',
+    speedMbit: 'Speed in Mbits.'
     });
 
 MATCH (ethernetdevice:EthernetDevice {uuid: '0dbd26f2-baff-446c-9241-46eaa3e03736'}),
@@ -405,7 +533,8 @@ MERGE (ethernetdevice)-[:ISA]->(wirednetworkdevice);
 MERGE (wirelessnetworkdevice:Object:Component:Device:NetworkDevice:WirelessNetworkDevice {
     uuid: '61328f83-db43-4efe-81be-df47e17814a5',
     name: 'WirelessNetworkDevice',
-    desc: 'A wireless network device.'
+    desc: 'A wireless network device.',
+    rev: 'The revision of the wireless network device.'
     });
 
 MATCH (wirelessnetworkdevice:WirelessNetworkDevice {uuid: '61328f83-db43-4efe-81be-df47e17814a5'}),
@@ -417,7 +546,10 @@ MERGE (wirelessnetworkdevice)-[:ISA]->(networkdevice);
 MERGE (bluetoothdevice:Object:Component:Device:NetworkDevice:WirelessNetworkDevice:BluetoothDevice {
     uuid: '009cf823-39c0-4b17-ae81-ad98ed0d4585',
     name: 'BluetoothDevice',
-    desc: 'A Bluetooth device.'
+    desc: 'A Bluetooth device.',
+    rev: 'The revision of the bluetooth network device.',
+    macAddr: 'A media access control address.',
+    speedKbit: 'Speed in Kbits.'
     });
 
 MATCH (bluetoothdevice:BluetoothDevice {uuid: '009cf823-39c0-4b17-ae81-ad98ed0d4585'}),
@@ -429,7 +561,9 @@ MERGE (bluetoothdevice)-[:ISA]->(wirelessnetworkdevice);
 MERGE (irdadevice:Object:Component:Device:NetworkDevice:WirelessNetworkDevice:IrdaDevice {
     uuid: '42c7997c-0c56-4f93-956f-5fd0778c47c6',
     name: 'IrdaDevice',
-    desc: 'An IrDA device.'
+    desc: 'An IrDA device.',
+    rev: 'The revision of the irda network device.',
+    speedKbit: 'Speed in Kbits.'
     });
 
 MATCH (irdadevice:IrdaDevice {uuid: '42c7997c-0c56-4f93-956f-5fd0778c47c6'}),
@@ -441,7 +575,10 @@ MERGE (irdadevice)-[:ISA]->(wirelessnetworkdevice);
 MERGE (wifidevice:Object:Component:Device:NetworkDevice:WirelessNetworkDevice:WifiDevice {
     uuid: '78ff02be-2abe-4a8f-a082-a0d9c3cdae70',
     name: 'WifiDevice',
-    desc: 'A WiFi device.'
+    desc: 'A WiFi device.',
+    rev: 'The revision of the WiFi network device.',
+    macAddr: 'A media access control address.',
+    speedMbit: 'Speed in Mbits.'
     });
 
 MATCH (wifidevice:WifiDevice {uuid: '78ff02be-2abe-4a8f-a082-a0d9c3cdae70'}),
@@ -453,7 +590,9 @@ MERGE (wifidevice)-[:ISA]->(wirelessnetworkdevice);
 MERGE (wwandevice:Object:Component:Device:NetworkDevice:WirelessNetworkDevice:WwanDevice {
     uuid: '8d6e0956-033e-4efc-8846-e85bfddc8f98',
     name: 'WwanDevice',
-    desc: 'A wireless WAN device.'
+    desc: 'A wireless WAN device.',
+    rev: 'The revision of the wireless WAN network device.',
+    speedKbit: 'Speed in Kbits.'
     });
 
 MATCH (wwandevice:WwanDevice {uuid: '8d6e0956-033e-4efc-8846-e85bfddc8f98'}),
@@ -465,7 +604,13 @@ MERGE (wwandevice)-[:ISA]->(wirelessnetworkdevice);
 MERGE (processingunit:Object:Component:Device:ProcessingUnit {
     uuid: 'b7b2a2ff-3af7-469b-afbf-e52f1b80be91',
     name: 'ProcessingUnit',
-    desc: 'A processing unit.'
+    desc: 'A processing unit.',
+    rev: 'The revision of the processing unit.',
+    cpuClockHz: 'CPU clock in hertz.',
+    cpuCoreCount: 'Number of cores.',
+    smtEnabled: "Simultaneous multithreading (for example hyper-threading) capable true/false.",
+    cacheSizeKb: 'The size of cache memory on the CPU.',
+    bits: 'Number of bit width supported.'
     });
 
 MATCH (processingunit:ProcessingUnit {uuid: 'b7b2a2ff-3af7-469b-afbf-e52f1b80be91'}),
@@ -477,7 +622,13 @@ MERGE (processingunit)-[:ISA]->(device);
 MERGE (armprocessor:Object:Component:Device:ProcessingUnit:ArmProcessor {
     uuid: 'f3b1b497-1e83-4a09-a280-04f46a83fe24',
     name: 'ArmProcessor',
-    desc: 'An ARM processor.'
+    desc: 'An ARM processor.',
+    rev: 'The revision of the processing unit.',
+    cpuClockHz: 'CPU clock in hertz.',
+    cpuCoreCount: 'Number of cores.',
+    smtEnabled: "Simultaneous multithreading (for example hyper-threading) capable true/false.",
+    cacheSizeKb: 'The size of cache memory on the CPU.',
+    bits: 'Number of bit width supported.'
     });
 
 MATCH (armprocessor:ArmProcessor {uuid: 'f3b1b497-1e83-4a09-a280-04f46a83fe24'}),
@@ -489,7 +640,13 @@ MERGE (armprocessor)-[:ISA]->(processingunit);
 MERGE (itaniumprocessor:Object:Component:Device:ProcessingUnit:ItaniumProcessor {
     uuid: '241015c9-72f5-491f-a870-a30d8f7902fd',
     name: 'ItaniumProcessor',
-    desc: 'An Itanium processor.'
+    desc: 'An Itanium processor.',
+    rev: 'The revision of the processing unit.',
+    cpuClockHz: 'CPU clock in hertz.',
+    cpuCoreCount: 'Number of cores.',
+    smtEnabled: "Simultaneous multithreading (for example hyper-threading) capable true/false.",
+    cacheSizeKb: 'The size of cache memory on the CPU.',
+    bits: 'Number of bit width supported.'
     });
 
 MATCH (itaniumprocessor:ItaniumProcessor {uuid: '241015c9-72f5-491f-a870-a30d8f7902fd'}),
@@ -501,7 +658,13 @@ MERGE (itaniumprocessor)-[:ISA]->(processingunit);
 MERGE (m68kprocessor:Object:Component:Device:ProcessingUnit:M68kProcessor {
     uuid: '33920524-4989-4322-a0ca-1cea614d7fef',
     name: 'M68kProcessor',
-    desc: 'A Motorola 68000 series processor.'
+    desc: 'A Motorola 68000 series processor.',
+    rev: 'The revision of the processing unit.',
+    cpuClockHz: 'CPU clock in hertz.',
+    cpuCoreCount: 'Number of cores.',
+    smtEnabled: "Simultaneous multithreading (for example hyper-threading) capable true/false.",
+    cacheSizeKb: 'The size of cache memory on the CPU.',
+    bits: 'Number of bit width supported.'
     });
 
 MATCH (m68kprocessor:M68kProcessor {uuid: '33920524-4989-4322-a0ca-1cea614d7fef'}),
@@ -513,7 +676,13 @@ MERGE (m68kprocessor)-[:ISA]->(processingunit);
 MERGE (mipsprocessor:Object:Component:Device:ProcessingUnit:MipsProcessor {
     uuid: 'cbe81157-97f6-401b-bbaa-cfbc4f479298',
     name: 'MipsProcessor',
-    desc: 'A Motorola 68000 series processor.'
+    desc: 'A Motorola 68000 series processor.',
+    rev: 'The revision of the processing unit.',
+    cpuClockHz: 'CPU clock in hertz.',
+    cpuCoreCount: 'Number of cores.',
+    smtEnabled: "Simultaneous multithreading (for example hyper-threading) capable true/false.",
+    cacheSizeKb: 'The size of cache memory on the CPU.',
+    bits: 'Number of bit width supported.'
     });
 
 MATCH (mipsprocessor:MipsProcessor {uuid: 'cbe81157-97f6-401b-bbaa-cfbc4f479298'}),
@@ -525,7 +694,13 @@ MERGE (mipsprocessor)-[:ISA]->(processingunit);
 MERGE (mosprocessor:Object:Component:Device:ProcessingUnit:MosProcessor {
     uuid: 'b4f67698-7eca-4ca1-a4cf-b7ef9737785c',
     name: 'MosProcessor',
-    desc: 'A MOS Technology processor.'
+    desc: 'A MOS Technology processor.',
+    rev: 'The revision of the processing unit.',
+    cpuClockHz: 'CPU clock in hertz.',
+    cpuCoreCount: 'Number of cores.',
+    smtEnabled: "Simultaneous multithreading (for example hyper-threading) capable true/false.",
+    cacheSizeKb: 'The size of cache memory on the CPU.',
+    bits: 'Number of bit width supported.'
     });
 
 MATCH (mosprocessor:MosProcessor {uuid: 'b4f67698-7eca-4ca1-a4cf-b7ef9737785c'}),
@@ -537,7 +712,13 @@ MERGE (mosprocessor)-[:ISA]->(processingunit);
 MERGE (powerprocessor:Object:Component:Device:ProcessingUnit:PowerProcessor {
     uuid: '808f2737-feca-4b70-aa1a-53410b970b10',
     name: 'PowerProcessor',
-    desc: 'A PowerPC processor.'
+    desc: 'A PowerPC processor.',
+    rev: 'The revision of the processing unit.',
+    cpuClockHz: 'CPU clock in hertz.',
+    cpuCoreCount: 'Number of cores.',
+    smtEnabled: "Simultaneous multithreading (for example hyper-threading) capable true/false.",
+    cacheSizeKb: 'The size of cache memory on the CPU.',
+    bits: 'Number of bit width supported.'
     });
 
 MATCH (powerprocessor:PowerProcessor {uuid: '808f2737-feca-4b70-aa1a-53410b970b10'}),
@@ -549,7 +730,13 @@ MERGE (powerprocessor)-[:ISA]->(processingunit);
 MERGE (sparcprocessor:Object:Component:Device:ProcessingUnit:SparcProcessor {
     uuid: '798ba8d1-8da7-471a-9efa-30530569b6a1',
     name: 'SparcProcessor',
-    desc: 'A SPARC processor.'
+    desc: 'A SPARC processor.',
+    rev: 'The revision of the processing unit.',
+    cpuClockHz: 'CPU clock in hertz.',
+    cpuCoreCount: 'Number of cores.',
+    smtEnabled: "Simultaneous multithreading (for example hyper-threading) capable true/false.",
+    cacheSizeKb: 'The size of cache memory on the CPU.',
+    bits: 'Number of bit width supported.'
     });
 
 MATCH (sparcprocessor:SparcProcessor {uuid: '798ba8d1-8da7-471a-9efa-30530569b6a1'}),
@@ -561,7 +748,13 @@ MERGE (sparcprocessor)-[:ISA]->(processingunit);
 MERGE (x86processor:Object:Component:Device:ProcessingUnit:X86Processor {
     uuid: '4d4971b6-43b3-4c14-a82a-c51d72ba23a5',
     name: 'X86Processor',
-    desc: 'An x86-based processor.'
+    desc: 'An x86-based processor.',
+    rev: 'The revision of the processing unit.',
+    cpuClockHz: 'CPU clock in hertz.',
+    cpuCoreCount: 'Number of cores.',
+    smtEnabled: "Simultaneous multithreading (for example hyper-threading) capable true/false.",
+    cacheSizeKb: 'The size of cache memory on the CPU.',
+    bits: 'Number of bit width supported.'
     });
 
 MATCH (x86processor:X86Processor {uuid: '4d4971b6-43b3-4c14-a82a-c51d72ba23a5'}),
@@ -573,7 +766,13 @@ MERGE (x86processor)-[:ISA]->(processingunit);
 MERGE (zilogprocessor:Object:Component:Device:ProcessingUnit:ZilogProcessor {
     uuid: 'a68f42c5-2a1d-43cb-bebd-55339f5e61ee',
     name: 'ZilogProcessor',
-    desc: 'A ZiLOG processor.'
+    desc: 'A ZiLOG processor.',
+    rev: 'The revision of the processing unit.',
+    cpuClockHz: 'CPU clock in hertz.',
+    cpuCoreCount: 'Number of cores.',
+    smtEnabled: "Simultaneous multithreading (for example hyper-threading) capable true/false.",
+    cacheSizeKb: 'The size of cache memory on the CPU.',
+    bits: 'Number of bit width supported.'
     });
 
 MATCH (zilogprocessor:ZilogProcessor {uuid: 'a68f42c5-2a1d-43cb-bebd-55339f5e61ee'}),
@@ -585,7 +784,8 @@ MERGE (zilogprocessor)-[:ISA]->(processingunit);
 MERGE (software:Object:Component:Software {
     uuid: '8db2b492-9a4a-41fe-97a5-bc625da042ea',
     name: 'Software',
-    desc: 'An abstract software component.'
+    desc: 'An abstract software component.',
+    ver: 'The version of the software.'
     });
 
 MATCH (software:Software {uuid: '8db2b492-9a4a-41fe-97a5-bc625da042ea'}),
@@ -597,7 +797,8 @@ MERGE (software)-[:ISA]->(component);
 MERGE (cloudsystem:Object:Component:Software:CloudSystem {
     uuid: '86c0439a-4219-46e6-82a3-6fb2ee774aa4',
     name: 'CloudSystem',
-    desc: 'A cloud (operating) system and/or environment.'
+    desc: 'A cloud (operating) system and/or environment.',
+    ver: 'The version of the cloud (operating) system environment.'
     });
 
 MATCH (cloudsystem:CloudSystem {uuid: '86c0439a-4219-46e6-82a3-6fb2ee774aa4'}),
@@ -609,7 +810,8 @@ MERGE (cloudsystem)-[:ISA]->(software);
 MERGE (operatingsystem:Object:Component:Software:OperatingSystem {
     uuid: 'f05e325e-1aee-4892-96e4-8bcd6e97c528',
     name: 'OperatingSystem',
-    desc: 'An operating system.'
+    desc: 'An operating system.',
+    ver: 'The version of the operating system software.'
     });
 
 MATCH (operatingsystem:OperatingSystem {uuid: 'f05e325e-1aee-4892-96e4-8bcd6e97c528'}),
@@ -621,7 +823,8 @@ MERGE (operatingsystem)-[:ISA]->(software);
 MERGE (servicemanager:Object:Component:Software:ServiceManager {
     uuid: 'c3008eec-b454-4ef6-bf7e-0bd92c13d3c3',
     name: 'ServiceManager',
-    desc: 'An operating system initialization system.'
+    desc: 'An operating system initialization system.',
+    ver: 'The version of the service manager software.'
     });
 
 MATCH (servicemanager:ServiceManager {uuid: 'c3008eec-b454-4ef6-bf7e-0bd92c13d3c3'}),
@@ -633,7 +836,8 @@ MERGE (servicemanager)-[:ISA]->(software);
 MERGE (packagemanager:Object:Component:Software:PackageManager {
     uuid: 'e2b8b9ee-b66f-4252-8fba-4fb172f741bc',
     name: 'PackageManager',
-    desc: 'A package manager.'
+    desc: 'A package manager.',
+    ver: 'The version of the package manager software.'
     });
 
 MATCH (packagemanager:PackageManager {uuid: 'e2b8b9ee-b66f-4252-8fba-4fb172f741bc'}),
@@ -645,7 +849,8 @@ MERGE (packagemanager)-[:ISA]->(software);
 MERGE (interpreter:Object:Component:Software:Interpreter {
     uuid: 'd047f415-734c-4bd3-92b9-d68d5521ce69',
     name: 'Interpreter',
-    desc: 'A command or programming language interpreter.'
+    desc: 'A command or programming language interpreter.',
+    ver: 'The version of the command or programming language interpreter software.'
     });
 
 MATCH (interpreter:Interpreter {uuid: 'd047f415-734c-4bd3-92b9-d68d5521ce69'}),
@@ -657,7 +862,8 @@ MERGE (interpreter)-[:ISA]->(software);
 MERGE (hypervisor:Object:Component:Software:Hypervisor {
     uuid: 'c5c7fcb5-8ac3-40cc-b195-b2b6af368e81',
     name: 'Hypervisor',
-    desc: 'A virtualization hypervisor.'
+    desc: 'A virtualization hypervisor.',
+    ver: 'The version of the hypervisor software.'
     });
 
 MATCH (hypervisor:Hypervisor {uuid: 'c5c7fcb5-8ac3-40cc-b195-b2b6af368e81'}),
@@ -669,7 +875,8 @@ MERGE (hypervisor)-[:ISA]->(software);
 MERGE (service:Object:Component:Software:Service {
     uuid: '3fb4603b-281e-47c0-b338-768ea05d4660',
     name: 'Service',
-    desc: 'A generic local/networked service.'
+    desc: 'A generic local/networked/daemonized service.',
+    ver: 'The version of the local/networked/daemonized software.'
     });
 
 MATCH (service:Service {uuid: '3fb4603b-281e-47c0-b338-768ea05d4660'}),
@@ -1131,6 +1338,25 @@ MATCH (operation:Operation {uuid: '46294722-b14e-438e-9fbc-95ff137b6b18'}),
 MERGE (operation)-[:ISA]->(object);
 
 
+// InstallOperation - Installs a software, does not create a Result.
+// UninstallOperation - Uninstalls a software, does not create a Result.
+// StartOperation - Starts a software, does not create a Result.
+// StopOperation - Stops a software, does not create a Result.
+// RestartOperation - Restarts a software, does not create a Result.
+// CommandOperation - Executes an arbitrary command, creating a CommandResult.
+// ExistenceOperation - Executes an existence operation.
+// DirectoryExistenceOperation - Executes a directory existence operation, creating a *DirectoryExistenceResult.
+// FileExistenceOperation - Executes a file existence operation, creating a *FileExistenceResult.
+// PackageExistenceOperation - Executes a package existence operation, creating a PackageExistenceResult.
+// VersionOperation - Executes a command that displays a version string, creating a VersionResult.
+// StatusOperation - Executes a status operation, creates a *StatusResult.
+// UsageOperation - Executes a generic usage operation.
+// ProcessorUsageOperation - Executes a processor usage operation.
+// MemoryUsageOperation - Executes a volatile memory usage operation.
+// StorageUsageOperation - Executes a non-volatile memory usage operation.
+// NetworkUsageOperation - Executes a network usage operation.
+
+
 // Result - A result from an operation.
 MERGE (result:Object:Result {
     uuid: 'f3498c02-58c6-486b-87c6-9d54607fdb12',
@@ -1141,6 +1367,50 @@ MERGE (result:Object:Result {
 MATCH (result:Result {uuid: 'f3498c02-58c6-486b-87c6-9d54607fdb12'}),
     (object:Object {uuid: 'b1bc963a-19cc-4518-aecb-a35d028c49e3'})
 MERGE (result)-[:ISA]->(object);
+
+
+// CommandResult - A generic textual result from a command operation.
+MERGE (commandresult:Object:Result:CommandResult {
+    uuid: '6991d878-52be-467d-893a-6b95074f04c2',
+    name: 'CommandResult',
+    desc: 'A result from an operation.'
+    });
+
+MATCH (commandresult:CommandResult {uuid: '6991d878-52be-467d-893a-6b95074f04c2'}),
+    (result:Result {uuid: 'f3498c02-58c6-486b-87c6-9d54607fdb12'})
+MERGE (commandresult)-[:ISA]->(result);
+
+
+// ExistenceResult - A generic result from an ExistenceOperation.
+// DirectoryExistenceResult - A generic result from a DirectoryExistenceOperation.
+// PrefixDirectoryExistenceResult - A possible result from a DirectoryExistenceOperation, parsing a PrefixDirectoryMap.
+// ConfigDirectoryExistenceResult - A possible result from a DirectoryExistenceOperation, parsing a ConfigDirectoryMap.
+// BinaryDirectoryExistenceResult - A possible result from a DirectoryExistenceOperation, parsing a BinaryDirectoryMap.
+// LibraryDirectoryExistenceResult - A possible result from a DirectoryExistenceOperation, parsing a LibraryDirectoryMap.
+// DataDirectoryExistenceResult - A possible result from a DirectoryExistenceOperation, parsing a DataDirectoryMap.
+// LogDirectoryExistenceResult - A possible result from a DirectoryExistenceOperation, parsing a LogDirectoryMap.
+// FileExistenceResult - A generic result from an FileExistenceOperation.
+// ConfigFileExistenceResult - A possible result from a FileExistenceOperation, parsing a ConfigFileMap.
+// BinaryFileExistenceResult - A possible result from a FileExistenceOperation, parsing a BinaryFileMap.
+// LibraryFileExistenceResult - A possible result from a FileExistenceOperation, parsing a LibraryFileMap.
+// DataFileExistenceResult - A possible result from a FileExistenceOperation, parsing a DataFileMap.
+// LogFileExistenceResult - A possible result from a FileExistenceOperation, parsing a LogFileMap.
+// PackageExistenceResult - A possible result from a PackageExistenceOperation, parsing a PackageNameMap.
+// VersionResult - A textual result representing a version string from a version operation.
+// StatusResult - A result that represents a status.
+// DerivedStatusResult - A derived status. 1/ok, 0/not-ok.
+// LocalDerivedStatusResult - A derived 1/0 status from all statuses known to the software itself.
+// AggregateDerivedStatusResult A derived 1/0 status from all localderivedstatuses from its children.
+// SoftwareInstalledStatusResult - 1/installed, 0/not-installed.
+// SoftwareRunningStatusResult - 1/running, 0/not-running.
+// IpAddressReachableStatusResult - 1/reachable, 0/unreachable.
+// ListenerAvailableStatusResult - 1/open, 0/closed.
+// DnsNameResolvableStatusResult - 1/resolved, 0/not-resolved.
+// UsageResult - A generic usage result.
+// ProcessorUsageResult - The results from a ProcessorUsageOperation.
+// MemoryUsageResult - The results from a MemoryUsageOperation.
+// StorageUsageResult - The results from a StorageUsageOperation.
+// NetworkUsageResult - The results from a NetworkUsageOperation.
 
 
 // Handler - A representation of a software handler that gives end user function.

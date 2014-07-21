@@ -1,3 +1,168 @@
+// DirectoryMap - A generic map of possible directories this software has.
+// PrefixDirectoryMap - A map of possible/known prefix directories for this software.
+// ConfigDirectoryMap - A map of possible/known configuration directories for this software.
+// BinaryDirectoryMap - A map of possible/known binary executable directories for this software.
+// LibraryDirectoryMap - A map of possible/known dynamic link library directories for this software.
+// DataDirectoryMap - A map of possible/known data directories for this software.
+// LogDirectoryMap - A map of possible/known log directories for this software.
+// FileMap - A generic map of possible/known files this software has.
+// ConfigFileMap - A map of possible/known configuration files for this software, non-full path, checked within ConfigDirectoryMap entries.
+// BinaryFileMap - A map of possible/known binary executable files for this software, non-full path, checked within BinaryDirectoryMap entries.
+// LibraryFileMap - A map of possible/known dynamic link library files for this software, non-full path, checked within LibraryDirectoryMap entries.
+// DataFileMap - A map of possible/known data files for this software, non-full path, checked within DataDirectoryMap entries.
+// LogFileMap - A map of possible/known log files for this software, non-full path, checked within LogDirectoryMap entries.
+// NameMap - A generic map of possible/known names this software has.
+// PackageNameMap - A map of possible/known package names for this software, non-full path, checked within ConfigDirectoryMap entries.
+
+// InstallOperation - Installs a software, does not create a Result.
+// UninstallOperation - Uninstalls a software, does not create a Result.
+// StartOperation - Starts a software, does not create a Result.
+// StopOperation - Stops a software, does not create a Result.
+// RestartOperation - Restarts a software, does not create a Result.
+// CommandOperation - Executes an arbitrary command, creating a CommandResult.
+// ExistenceOperation - Executes an existence operation.
+// DirectoryExistenceOperation - Executes a directory existence operation, creating a *DirectoryExistenceResult.
+// FileExistenceOperation - Executes a file existence operation, creating a *FileExistenceResult.
+// PackageExistenceOperation - Executes a package existence operation, creating a PackageExistenceResult.
+// VersionOperation - Executes a command that displays a version string, creating a VersionResult.
+// StatusOperation - Executes a status operation, creates a *StatusResult.
+// UsageOperation - Executes a generic usage operation.
+// ProcessorUsageOperation - Executes a processor usage operation.
+// MemoryUsageOperation - Executes a volatile memory usage operation.
+// StorageUsageOperation - Executes a non-volatile memory usage operation.
+// NetworkUsageOperation - Executes a network usage operation.
+
+// Result - A result from an operation.
+// CommandResult - A generic textual result from a command operation.
+// ExistenceResult - A generic result from an ExistenceOperation.
+// DirectoryExistenceResult - A generic result from a DirectoryExistenceOperation.
+// PrefixDirectoryExistenceResult - A possible result from a DirectoryExistenceOperation, parsing a PrefixDirectoryMap.
+// ConfigDirectoryExistenceResult - A possible result from a DirectoryExistenceOperation, parsing a ConfigDirectoryMap.
+// BinaryDirectoryExistenceResult - A possible result from a DirectoryExistenceOperation, parsing a BinaryDirectoryMap.
+// LibraryDirectoryExistenceResult - A possible result from a DirectoryExistenceOperation, parsing a LibraryDirectoryMap.
+// DataDirectoryExistenceResult - A possible result from a DirectoryExistenceOperation, parsing a DataDirectoryMap.
+// LogDirectoryExistenceResult - A possible result from a DirectoryExistenceOperation, parsing a LogDirectoryMap.
+// FileExistenceResult - A generic result from an FileExistenceOperation.
+// ConfigFileExistenceResult - A possible result from a FileExistenceOperation, parsing a ConfigFileMap.
+// BinaryFileExistenceResult - A possible result from a FileExistenceOperation, parsing a BinaryFileMap.
+// LibraryFileExistenceResult - A possible result from a FileExistenceOperation, parsing a LibraryFileMap.
+// DataFileExistenceResult - A possible result from a FileExistenceOperation, parsing a DataFileMap.
+// LogFileExistenceResult - A possible result from a FileExistenceOperation, parsing a LogFileMap.
+// PackageExistenceResult - A possible result from a PackageExistenceOperation, parsing a PackageNameMap.
+// VersionResult - A textual result representing a version string from a version operation.
+// StatusResult - A result that represents a status.
+// DerivedStatusResult - A derived status. 1/ok, 0/not-ok.
+// LocalDerivedStatusResult - A derived 1/0 status from all statuses known to the software itself.
+// AggregateDerivedStatusResult A derived 1/0 status from all localderivedstatuses from its children.
+// SoftwareInstalledStatusResult - 1/installed, 0/not-installed.
+// SoftwareRunningStatusResult - 1/running, 0/not-running.
+// IpAddressReachableStatusResult - 1/reachable, 0/unreachable.
+// ListenerAvailableStatusResult - 1/open, 0/closed.
+// DnsNameResolvableStatusResult - 1/resolved, 0/not-resolved.
+// UsageResult - A generic usage result.
+// ProcessorUsageResult - The results from a ProcessorUsageOperation.
+// MemoryUsageResult - The results from a MemoryUsageOperation.
+// StorageUsageResult - The results from a StorageUsageOperation.
+// NetworkUsageResult - The results from a NetworkUsageOperation.
+
+
+
+
+Hoe bepaal je waar een StatusResult terecht komt?
+(denk aan device status bijvoorbeeld)
+Antwoord: een device heeft geen StatusResult maar een DerivedStatusResult; maw:
+de onderliggende osen/software/services etc hebben StatusResult en DerivedStatusResult
+waarvan een nieuw DerivedStatusResult voor dat device gemaakt wordt.
+
+A software has:
+   Operation
+      DetectionOperation
+      CommandOperation
+      VersionOperation
+      StatusOperation
+      StartOperation
+      StopOperation
+      RestartOperation
+      InstallOperation
+
+   Configuration
+      IpAddress
+         Ipv4Address
+         Ipv6Address
+
+      Listener
+         Ipv4Listener
+         Ipv6Listener
+
+      Url
+
+      DnsName
+
+      DirectoryMap
+         PrefixDirectoryMap
+         ConfigurationDirectoryMap
+         ExecutableDirectoryMap
+         LibraryDirectoryMap
+         DataDirectoryMap
+         LogDirectoryMap
+
+      FileMap
+         ConfigurationFileMap
+         ExecutableFileMap
+         LibraryFileMap
+         DataFileMap
+         LogFileMap
+
+      PackageMap
+
+   Result
+      StatusResult
+      TextualResult
+      DetectionResult
+
+
+
+Status:
+
+everything can be: unknown
+a component can be: unreachable, not-installed, active, inactive
+
+
+state transitions:
+  unknown       -> (state was never checked, software is unreachable)       -> (state is checked) -> unreachable
+  unknown       -> (state was never checked, software is installed)         -> (state is checked) -> not-installed
+  unknown       -> (state was never checked, software is not running)       -> (state is checked) -> inactive
+  unknown       -> (state was never checked, software is running)           -> (state is checked) -> active
+
+  unreachable   -> (previous check said unreachable, this one too)          -> (state is checked) -> unreachable
+  unreachable   -> (previous check said unreachable, but now not-installed) -> (state is checked) -> not-installed
+  unreachable   -> (previous check said unreachable, but now inactive)      -> (state is checked) -> inactive
+  unreachable   -> (previous check said unreachable, but now active)        -> (state is checked) -> active
+
+  not-installed -> (user installs software, but now were unreachable)       -> (state is checked) -> unreachable
+  not-installed -> (user installs software, something went wrong)           -> (state is checked) -> not-installed
+  not-installed -> (user installs software, which is not auto-started)      -> (state is checked) -> inactive
+  not-installed -> (user installs software, which is auto-started)          -> (state is checked) -> active
+
+  inactive      -> (state is checked, but now were unreachable)             -> (state is checked) -> unreachable
+  inactive      -> (user uninstalls the inactive software)                  -> (state is checked) -> not-installed
+  inactive      -> (user starts software, and fails)                        -> (state is checked) -> inactive
+  inactive      -> (user starts software, and is succesful)                 -> (state is checked) -> active
+
+  active        -> (state is checked, but now were unreachable)             -> (state is checked) -> unreachable
+  active        -> (user uninstalls the active software)                    -> (state is checked) -> not-installed
+  active        -> (user stops software, and is succesful)                  -> (state is checked) -> inactive
+  active        -> (user stops software, and fails)                         -> (state is checked) -> active
+
+
+questions that need answers:
+  what is the state
+  what is this
+  how certain is it
+
+
+
+
 *** Notes about schema:
   - should create graph if not exists
   - if exists, should check schema version
@@ -151,8 +316,26 @@ Object                    All, has uuid constraints, name indexes
 
 
    Operation              A command or method that can be called, with or without schedule
+      ExistenceOperation
+      VersionOperation
+      StatusOperation
+      StartOperation
+      StopOperation
+   Result                      A result from an operation
+      TextualResult            A textual result from an operation
+   Match                       A matching expression
+      TextualMatch             A textual matching expression
 
-   Result                 A result from an operation
+
+   Paths
+      ConfigurationPaths
+      ExecutablePaths
+      LibraryPaths
+      LoggingPaths
+      DataPaths
+   Files
+      MainExecutableFiles
+      ControllerExecutableFiles
 
    Handler                A representation of a software handler that gives end user function
 
