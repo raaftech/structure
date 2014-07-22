@@ -1,72 +1,3 @@
-// DirectoryMap - A generic map of possible directories this software has.
-// PrefixDirectoryMap - A map of possible/known prefix directories for this software.
-// ConfigDirectoryMap - A map of possible/known configuration directories for this software.
-// BinaryDirectoryMap - A map of possible/known binary executable directories for this software.
-// LibraryDirectoryMap - A map of possible/known dynamic link library directories for this software.
-// DataDirectoryMap - A map of possible/known data directories for this software.
-// LogDirectoryMap - A map of possible/known log directories for this software.
-// FileMap - A generic map of possible/known files this software has.
-// ConfigFileMap - A map of possible/known configuration files for this software, non-full path, checked within ConfigDirectoryMap entries.
-// BinaryFileMap - A map of possible/known binary executable files for this software, non-full path, checked within BinaryDirectoryMap entries.
-// LibraryFileMap - A map of possible/known dynamic link library files for this software, non-full path, checked within LibraryDirectoryMap entries.
-// DataFileMap - A map of possible/known data files for this software, non-full path, checked within DataDirectoryMap entries.
-// LogFileMap - A map of possible/known log files for this software, non-full path, checked within LogDirectoryMap entries.
-// NameMap - A generic map of possible/known names this software has.
-// PackageNameMap - A map of possible/known package names for this software, non-full path, checked within ConfigDirectoryMap entries.
-
-// InstallOperation - Installs a software, does not create a Result.
-// UninstallOperation - Uninstalls a software, does not create a Result.
-// StartOperation - Starts a software, does not create a Result.
-// StopOperation - Stops a software, does not create a Result.
-// RestartOperation - Restarts a software, does not create a Result.
-// CommandOperation - Executes an arbitrary command, creating a CommandResult.
-// ExistenceOperation - Executes an existence operation.
-// DirectoryExistenceOperation - Executes a directory existence operation, creating a *DirectoryExistenceResult.
-// FileExistenceOperation - Executes a file existence operation, creating a *FileExistenceResult.
-// PackageExistenceOperation - Executes a package existence operation, creating a PackageExistenceResult.
-// VersionOperation - Executes a command that displays a version string, creating a VersionResult.
-// StatusOperation - Executes a status operation, creates a *StatusResult.
-// UsageOperation - Executes a generic usage operation.
-// ProcessorUsageOperation - Executes a processor usage operation.
-// MemoryUsageOperation - Executes a volatile memory usage operation.
-// StorageUsageOperation - Executes a non-volatile memory usage operation.
-// NetworkUsageOperation - Executes a network usage operation.
-
-// Result - A result from an operation.
-// CommandResult - A generic textual result from a command operation.
-// ExistenceResult - A generic result from an ExistenceOperation.
-// DirectoryExistenceResult - A generic result from a DirectoryExistenceOperation.
-// PrefixDirectoryExistenceResult - A possible result from a DirectoryExistenceOperation, parsing a PrefixDirectoryMap.
-// ConfigDirectoryExistenceResult - A possible result from a DirectoryExistenceOperation, parsing a ConfigDirectoryMap.
-// BinaryDirectoryExistenceResult - A possible result from a DirectoryExistenceOperation, parsing a BinaryDirectoryMap.
-// LibraryDirectoryExistenceResult - A possible result from a DirectoryExistenceOperation, parsing a LibraryDirectoryMap.
-// DataDirectoryExistenceResult - A possible result from a DirectoryExistenceOperation, parsing a DataDirectoryMap.
-// LogDirectoryExistenceResult - A possible result from a DirectoryExistenceOperation, parsing a LogDirectoryMap.
-// FileExistenceResult - A generic result from an FileExistenceOperation.
-// ConfigFileExistenceResult - A possible result from a FileExistenceOperation, parsing a ConfigFileMap.
-// BinaryFileExistenceResult - A possible result from a FileExistenceOperation, parsing a BinaryFileMap.
-// LibraryFileExistenceResult - A possible result from a FileExistenceOperation, parsing a LibraryFileMap.
-// DataFileExistenceResult - A possible result from a FileExistenceOperation, parsing a DataFileMap.
-// LogFileExistenceResult - A possible result from a FileExistenceOperation, parsing a LogFileMap.
-// PackageExistenceResult - A possible result from a PackageExistenceOperation, parsing a PackageNameMap.
-// VersionResult - A textual result representing a version string from a version operation.
-// StatusResult - A result that represents a status.
-// DerivedStatusResult - A derived status. 1/ok, 0/not-ok.
-// LocalDerivedStatusResult - A derived 1/0 status from all statuses known to the software itself.
-// AggregateDerivedStatusResult A derived 1/0 status from all localderivedstatuses from its children.
-// SoftwareInstalledStatusResult - 1/installed, 0/not-installed.
-// SoftwareRunningStatusResult - 1/running, 0/not-running.
-// IpAddressReachableStatusResult - 1/reachable, 0/unreachable.
-// ListenerAvailableStatusResult - 1/open, 0/closed.
-// DnsNameResolvableStatusResult - 1/resolved, 0/not-resolved.
-// UsageResult - A generic usage result.
-// ProcessorUsageResult - The results from a ProcessorUsageOperation.
-// MemoryUsageResult - The results from a MemoryUsageOperation.
-// StorageUsageResult - The results from a StorageUsageOperation.
-// NetworkUsageResult - The results from a NetworkUsageOperation.
-
-
-
 
 Hoe bepaal je waar een StatusResult terecht komt?
 (denk aan device status bijvoorbeeld)
@@ -76,14 +7,7 @@ waarvan een nieuw DerivedStatusResult voor dat device gemaakt wordt.
 
 A software has:
    Operation
-      DetectionOperation
-      CommandOperation
-      VersionOperation
-      StatusOperation
-      StartOperation
-      StopOperation
-      RestartOperation
-      InstallOperation
+      ...
 
    Configuration
       IpAddress
@@ -116,9 +40,7 @@ A software has:
       PackageMap
 
    Result
-      StatusResult
-      TextualResult
-      DetectionResult
+      ...
 
 
 
@@ -178,167 +100,189 @@ questions that need answers:
     - user = stuff we don't touch, that uses/relates to things existing in the above (label: Instance)
 
 *** Nodes Overview:
-Object                    All, has uuid constraints, name indexes
+// Object - All, has uuid constraints, name indexes.
 
-   Model                  Housekeeping stuff for the database, versioning, etc
+// Model - Housekeeping stuff for the database, versioning.
+// BaseModel - The first model object.
 
-   Component              Something that can be combined/built
-      Device              Any kind of device
-         AssembledDevice  Any assembled device
-            Computer
+// Component - Something that can be combined/built.
 
-         ConsoleDevice              A console device
-            GenericSerial
-         GraphicsDevice             A grapical device
-            GenericVga
-         MemoryDevice               A memory module
-            VolatileMemory
-               RandomAccessMemory
-            NonVolatileMemory       A storage device
-               HardDiskDrive
-               SolidStateDrive
-               FloppyDrive
-               TapeDrive
-               CdDrive
-               DvdDrive
-               BluRayDrive
+// Configuration - Any kind of configuration.
+// IpAddress - An IP address.
+// Ipv4Address - An IPv4 address.
+// Ipv6Address - An IPv6 address.
+// IpListener - An IP listener.
+// Ipv4Listener - An IPv4 listener.
+// Ipv6Listener - An IPv6 listener.
+// Url - A uniform resource locator.
+    url: 'scheme://domain:port/path?query_string#fragment_id'
+// DnsName - Either a short name or a fully-qualified domain name.
+// Map - A configuration object that maps keys to multi-valued attributes in the JSON format.
+// DirectoryMap - A generic map of possible directories this software has. Key: os-shortname, Values: list of directories, Format: JSON.
+// PrefixDirectoryMap - A map of possible/known prefix directories for this software. Key: os-shortname, Values: list of directory prefixes, Format: JSON.
+// ConfigDirectoryMap - A map of possible/known configuration directories for this software. Key: os-shortname, Values: list of config directories, Format: JSON.
+// BinaryDirectoryMap - A map of possible/known binary executable directories for this software. Key: os-shortname, Values: list of binary directories, Format: JSON.
+// LibraryDirectoryMap - A map of possible/known dynamic link library directories for this software. Key: os-shortname, Values: list of library directories, Format: JSON.
+// DataDirectoryMap - A map of possible/known data directories for this software. Key: os-shortname, Values: list of data directories, Format: JSON.
+// LogDirectoryMap - A map of possible/known log directories for this software. Key: os-shortname, Values: list of log directories, Format: JSON.
+// FileMap - A generic map of possible/known files this software has. Key: os-shortname, Values: list of files, Format: JSON.
+// ConfigFileMap - A map of possible/known configuration files for this software, non-full path, checked within ConfigDirectoryMap entries.
+// BinaryFileMap - A map of possible/known binary executable files for this software, non-full path, checked within BinaryDirectoryMap entries.
+// LibraryFileMap - A map of possible/known dynamic link library files for this software, non-full path, checked within LibraryDirectoryMap entries.
+// DataFileMap - A map of possible/known data files for this software, non-full path, checked within DataDirectoryMap entries.
+// LogFileMap - A map of possible/known log files for this software, non-full path, checked within LogDirectoryMap entries.
+// NameMap - A generic map of possible/known names this software has. Key: os-shortname, Values: list of names, Format: JSON.
+// PackageNameMap - A generic map of possible/known package names this software has. Key: os-shortname, Values: list of names, Format: JSON.
+// ServiceNameMap - A generic map of possible/known service names this software has. Key: os-shortname, Values: list of names, Format: JSON.
 
-         NetworkDevice              A network device
-            WiredDevice
-               ModemDevice
-               EthernetDevice
-            WirelessDevice
-               BluetoothDevice
-               IrdaDevice
-               WifiDevice
-               WwanDevice
-         ProcessingUnit              A processing unit
-            ArmProcessor
-            ItaniumProcessor
-            M68KProcessor
-            MipsProcessor
-            MosProcessor
-            PowerProcessor
-            SparcProcessor
-            X86Processor
-            ZilogProcessor
+// Device - Any kind of device.
+// AssembledDevice - Any assembled device.
+// Computer - An assembled computer device.
+// ConsoleDevice - A console device.
+// GenericSerial - A serial communication device.
+// GraphicsDevice - A grapical device.
+// GenericVga - A VGA graphics device.
+// MemoryDevice - A memory device.
+// VolatileMemory - A volatile memory device.
+// RandomAccessMemory - Random access memory.
+// NonVolatileMemory - A volatile memory device.
+// HardDiskDrive - A non-volatile harddisk-based storage device.
+// SolidStateDrive - A non-volatile solid-state storage device.
+// FloppyDrive - A floppy disk drive.
+// TapeDrive - A floppy disk drive.
+// CdDrive - A Compact Disc drive.
+// DvdDrive - A Digital Video Disc drive.
+// BdDrive - A Blu-Ray drive.
+// NetworkDevice - A network device.
+// WiredNetworkDevice - A wired networking device.
+// ModemDevice - A modem networking device.
+// EthernetDevice - A wired ethernet device.
+// WirelessNetworkDevice - A wireless device.
+// BluetoothDevice - A Bluetooth device.
+// IrdaDevice - An IrDA device.
+// WifiDevice - A WiFi device.
+// WwanDevice - A Wireless WAN device.
+// ProcessingUnit - A processing unit.
+// AlphaProcessor - An Alpha processor.
+// ArmProcessor- An ARM processor.
+// ItaniumProcessor - An Itanium processor.
+// M68KProcessor - A Motorola 68000 series processor.
+// MipsProcessor - A MIPS processor.
+// MosProcessor - A MOS Technology processor.
+// PariscProcessor - A PA Risc processor.
+// PowerProcessor - A PowerPC processor.
+// SparcProcessor - A SPARC processor.
+// X86Processor - An x86-based processor.
+// ZilogProcessor - A ZiLOG processor.
 
+// Software - Any kind of software.
+// CloudSystem - Any cloud (operating) system, either IAAS or PAAS.
+// OperatingSystem - Any operating system.
+// ServiceManager - Any service/boot initialization system.
+// PackageManager - Any packaging system.
+// Interpreter - Any interpreter.
+// Hypervisor - Any hypervisor.
+// Service - Any generic local/networked service.
 
+// Grouping - A group of references to things.
+// Locational - Any kind of place/location.
+// Building - A building, has address, containing references to floors, rooms, devices.
+// Floor - A floor containing references to rooms, devices.
+// Room - A room containing references to devices.
+// Organizational - Any kind of organizational group.
+// Company - A company can contain references to departments, teams, users.
+// Department - A department can contain references to teams, users.
+// Team - A team can contain references to users.
+// Componental - A convenience group for organizing references to components.
 
+// Actor - Something or someone that interacts/starts/acts.
+// User - Users. Interact with the system.
+// Batch - An automated entity type. Interacts with system in an automated way.
 
-      Software            Any kind of software
-         CloudSystem      Any cloud system that can host virtual machines or services
-            Joyent
-            GoogleCloud
-            MicrosoftAzure
-            AmazonWebServices
-            ApacheCloudStack
-            CitrixCloudCom
-            CloudFoundry
-            Eucalyptus
-            OpenNebula
-            OpenShift
-            OpenStack
-            OnApp
-            Heroku
-            BlueMix
+// Capability - A software component gives capabilities to its parent or to siblings.
+// Checkable - Makes it possible to state-check.
+// Stopable - Gives a stop capability.
+// Startable - Gives a start capability.
+// Restartable - Gives a restart capability.
+// Installable - Gives an install capability.
+// Configurable - Gives a configure capability.
+// Uninstallable - Gives an uninstall capability.
+// Virtualizable - Gives a virtualization capability.
+// Commandable - Can be used to run a command.
 
-         OperatingSystem  Any operating system (that can host stuff)
-         PackageManager   Any packaging system
-         ServiceManager   Any service/boot initialization system
-         Interpreter      Any interpreter
-         Hypervisor       Any hypervisor
-         Service          Any generic local/networked service
+// Protocol - Services implement protocols, Handlers interact with services using protocols.
+// HTTP - Can speak the HTTP protocol.
+// HTTP09 - Can speak the HTTP 0.9 protocol.
+// HTTP10 - Can speak the HTTP 1.0 protocol.
+// HTTP11 - Can speak the HTTP 1.1 protocol.
+// SMB - Can speak the SMB protocol.
+// SMB10 - Can speak the SMB 1.0 protocol.
+// SMB20 - Can speak the SMB 2.0 protocol.
+// SMB21 - Can speak the SMB 2.1 protocol.
+// SMB30 - Can speak the SMB 3.0 protocol.
+// SSH - Can speak the SSH protocol.
+// SSH10 - Can speak the SSH 1.0 protocol.
+// SSH20 - Can speak the SSH 2.0 protocol.
+// TELNET - Can speak the SSH protocol.
 
-   Grouping               A group of references to things
-      Locational          Any kind of place/location
-         Building         A building, has address, containing references to floors, rooms, devices
-         Floor            A floor containing references to rooms, devices
-         Room             A room containing references to devices
-      Organizational      Any kind of organizational group
-         Company          A company can contain references to departments, teams, users
-         Department       A department can contain references to teams, users
-         Team             A team can contain references to users
-      Componental         A convenience group for organizing references to components
+// Handler - A representation of a software handler that gives end user function.
+// CommandHandler - Creates a CommandOperation, executes that CommandOperation, creates CommandResult.
+// VersionHandler - Looks up a VersionOperation, executes command, creates VersionResult.
+// StatusHandler - Executes generic code to get a status or executes CustomStatusOperation if it exists. Creates StatusResult.
+// ExistenceHandler - Executes generic code to get a existence information or executes CustomExistenceOperation if it exists. Creates ExistenceResult.
+// UsageHandler - Executes generic code to derive usage of resources or executes CustomUsageOperation if it exists. Creates UsageResult.
+// InstallHandler - Executes generic code to derive install method and executes or executes CustomInstallOperation if it exists.
+// UninstallHandler - Executes generic code to derive uninstall method and executes or executes CustomUninstallOperation if it exists.
+// StartHandler - Executes generic code to derive start method and executes or executes CustomStartOperation if it exists.
+// StopHandler - Executes generic code to derive stop method and executes or executes CustomStopOperation if it exists.
+// RestartHandler - Executes generic code to derive restart method and executes or executes CustomRestartOperation if it exists.
 
-   Actor                  Something or someone that interacts/starts/acts
-      User                Users. Interact with the system
-      Batch               An automated entity type. Interacts with system in an automated way
+// Operation - A command or method that can be called, with or without schedule.
+// CommandOperation - An arbitrary command.
+// VersionOperation - A command that displays a version string.
+// CustomStatusOperation - Custom command for a status check operation.
+// CustomExistenceOperation - Custom command for an existence operation.
+// CustomUsageOperation - Custom command that shows/derives/fetches the usage of a resource.
+// CustomInstallOperation - Custom command to install a software.
+// CustomUninstallOperation - Custom command to uninstall a software.
+// CustomStartOperation - Custom command to start a software.
+// CustomStopOperation - Custom command to stop a software.
+// CustomRestartOperation - Custom command to restart a software.
 
-   Capability             A software component gives capabilities to its parent or to siblings
-      Checkable           Makes it possible to state-check
-      Stopable            Gives a stop capability
-      Startable           Gives a start capability
-      Restartable         Gives a restart capability
-      Installable         Gives an install capability
-      Configurable        Gives a configure capability
-      Uninstallable       Gives an uninstall capability
-      Virtualizable       Gives a virtualization capability
-      Commandable         Can be used to run a command
-
-
-   File
-      Android package (.apk) distributable.
-      Apple Disk Image (.dmg) distributable.
-      Apple iOS iPhone Package Archive (.ipa) distributable.
-      Arch Linux Pacman Package (.pkg.xz) distributable.
-      Debian Package (.deb) distributable.
-      FreeBSD/DragonFlyBSD PKGNG Package distributable.
-      Generic BSD Ports Package distributable.
-      HP/UX Depot (.depot) distributable.
-      IBM Licensed Program Product (.lpp) distributable.
-      NetBSD PKGSRC Package distributable.
-      Red Hat Package Manager (.rpm) distributable.
-      Solaris Image Packaging System (.ips) distributable.
-      Solaris SVR4 Package (.pkg) distributable.
-      Windows Installer (.msi) distributable.
-      Windows Runtime App Package (.appx) distributable.
-
-
-   Protocol
-      HTTP                Can speak the HTTP protocol
-         HTTP 0.9         Can speak the HTTP 0.9 protocol
-         HTTP 1.0         Can speak the HTTP 1.0 protocol
-         HTTP 1.1         Can speak the HTTP 1.1 protocol
-         HTTP 2.0         Can speak the HTTP 2.0 protocol
-
-      SMB
-         SMB 1.0          Can speak the SMB1 protocol
-         SMB 2.0          Can speak the SMB2 protocol
-         SMB 2.1          Can speak the SMB2.1 protocol
-         SMB 3.0          Can speak the SMB3 protocol
-
-      SSH
-         SSH 1            Can speak the SSH1 protocol
-         SSH 2            Can speak the SSH2 protocol
-
-      TELNET              Can speak the TELNET protocol
-
-
-   Operation              A command or method that can be called, with or without schedule
-      ExistenceOperation
-      VersionOperation
-      StatusOperation
-      StartOperation
-      StopOperation
-   Result                      A result from an operation
-      TextualResult            A textual result from an operation
-   Match                       A matching expression
-      TextualMatch             A textual matching expression
-
-
-   Paths
-      ConfigurationPaths
-      ExecutablePaths
-      LibraryPaths
-      LoggingPaths
-      DataPaths
-   Files
-      MainExecutableFiles
-      ControllerExecutableFiles
-
-   Handler                A representation of a software handler that gives end user function
-
+// Result - A result from an operation.
+// CommandResult - A generic textual result from a command operation.
+// VersionResult - A textual result representing a version string.
+// StatusResult - A result that represents a status.
+// DerivedStatusResult - A derived status. 1/ok, 0/not-ok.
+// LocalDerivedStatusResult - A derived 1/0 status from all statuses known to the software itself.
+// AggregateDerivedStatusResult - A derived 1/0 status from all localderivedstatuses from its children.
+// SoftwareInstalledStatusResult - 1/installed, 0/not-installed.
+// SoftwareRunningStatusResult - 1/running, 0/not-running.
+// IpAddressReachableStatusResult - 1/reachable, 0/unreachable.
+// ListenerAvailableStatusResult - 1/open, 0/closed.
+// DnsNameResolvableStatusResult - 1/resolved, 0/not-resolved.
+// ExistenceResult - A generic result from an ExistenceHandler.
+// DirectoryExistenceResult - A generic directory existence result from an ExistenceHandler.
+// PrefixDirectoryExistenceResult - A possible result from an ExistenceHandler, parsing a PrefixDirectoryMap.
+// ConfigDirectoryExistenceResult - A possible result from an ExistenceHandler, parsing a ConfigDirectoryMap.
+// BinaryDirectoryExistenceResult - A possible result from an ExistenceHandler, parsing a BinaryDirectoryMap.
+// LibraryDirectoryExistenceResult - A possible result from an ExistenceHandler, parsing a LibraryDirectoryMap.
+// DataDirectoryExistenceResult - A possible result from an ExistenceHandler, parsing a DataDirectoryMap.
+// LogDirectoryExistenceResult - A possible result from an ExistenceHandler, parsing a LogDirectoryMap.
+// FileExistenceResult - A generic file existence result from an ExistenceHandler.
+// ConfigFileExistenceResult - A possible result from an ExistenceHandler, parsing a ConfigFileMap.
+// BinaryFileExistenceResult - A possible result from an ExistenceHandler, parsing a BinaryFileMap.
+// LibraryFileExistenceResult - A possible result from an ExistenceHandler, parsing a LibraryFileMap.
+// DataFileExistenceResult - A possible result from an ExistenceHandler, parsing a DataFileMap.
+// LogFileExistenceResult - A possible result from an ExistenceHandler, parsing a LogFileMap.
+// NameExistenceResult - A possible result from an ExistenceHandler, parsing a NameMap.
+// PackageNameExistenceResult - A possible result from an ExistenceHandler, parsing a PackageNameMap.
+// ServiceNameExistenceResult - A possible result from an ExistenceHandler, parsing a ServiceNameMap.
+// UsageResult - A generic usage result.
+// ProcessorUsageResult - The processing unit usage results from a UsageHandler.
+// MemoryUsageResult - The memory usage results from a UsageHandler.
+// StorageUsageResult - The storage usage results from a UsageHandler.
+// NetworkUsageResult - The network bandwidth usage results from a UsageHandler.
 
 *** Notes about cloud stuff
 paas: clouds that give you platforms, platforms being application runtimes like java/node/python/etc

@@ -27,7 +27,7 @@ MATCH (model:Model {uuid: '4e2dccfa-b5ca-4992-a76e-c390b7d90084'}),
 MERGE (model)-[:ISA]->(object);
 
 
-// Base Model 0.0.1 - The first model object.
+// BaseModel - The first model object.
 MERGE (basemodel:Object:Model:BaseModel {
     uuid: '48c8698b-3afd-44e5-baf7-73f55494cb31',
     name: 'BaseModel',
@@ -65,7 +65,7 @@ MATCH (configuration:Configuration {uuid: '3f4a43f7-b558-4bf0-ba7e-66b99cffaf16'
 MERGE (configuration)-[:ISA]->(component);
 
 
-// IpAddress - An  IP address.
+// IpAddress - An IP address.
 MERGE (ipaddress:Object:Component:Configuration:IpAddress {
     uuid: '299001a6-1091-4c0d-87be-c512af03e179',
     name: 'IpAddress',
@@ -172,21 +172,225 @@ MATCH (dnsname:DnsName {uuid: '99c0da37-3599-418d-8ecc-de36d37ae9f4'}),
 MERGE (dnsname)-[:ISA]->(configuration);
 
 
-// DirectoryMap - A generic map of possible directories this software has.
-// PrefixDirectoryMap - A map of possible/known prefix directories for this software.
-// ConfigDirectoryMap - A map of possible/known configuration directories for this software.
-// BinaryDirectoryMap - A map of possible/known binary executable directories for this software.
-// LibraryDirectoryMap - A map of possible/known dynamic link library directories for this software.
-// DataDirectoryMap - A map of possible/known data directories for this software.
-// LogDirectoryMap - A map of possible/known log directories for this software.
-// FileMap - A generic map of possible/known files this software has.
+// Map - A configuration object that maps keys to multi-valued attributes in the JSON format.
+MERGE (map:Object:Component:Configuration:Map {
+    uuid: 'c970f6d3-4898-4596-bfac-9d6d1f6b2541',
+    name: 'Map',
+    desc: 'A configuration object that maps keys to multi-valued attributes in the JSON format.',
+    map: 'JSON string containing the Map.'
+    });
+
+MATCH (map:Map {uuid: 'c970f6d3-4898-4596-bfac-9d6d1f6b2541'}),
+    (configuration:Configuration {uuid: '3f4a43f7-b558-4bf0-ba7e-66b99cffaf16'})
+MERGE (map)-[:ISA]->(configuration);
+
+
+// DirectoryMap - A generic map of possible directories this software has. Key: os-shortname, Values: list of directories, Format: JSON.
+MERGE (dirmap:Object:Component:Configuration:Map:DirectoryMap {
+    uuid: '64d50e90-8be2-4d97-9dba-dd8518eb3f84',
+    name: 'DirectoryMap',
+    desc: 'A generic map of possible directories this software has. Key: os-shortname, Values: list of directories, Format: JSON.',
+    map: 'JSON string containing the DirectoryMap.'
+    });
+
+MATCH (dirmap:DirectoryMap {uuid: '64d50e90-8be2-4d97-9dba-dd8518eb3f84'}),
+    (map:Map {uuid: 'c970f6d3-4898-4596-bfac-9d6d1f6b2541'})
+MERGE (dirmap)-[:ISA]->(map);
+
+
+// PrefixDirectoryMap - A map of possible/known prefix directories for this software. Key: os-shortname, Values: list of directory prefixes, Format: JSON.
+MERGE (prefixdirmap:Object:Component:Configuration:Map:DirectoryMap:PrefixDirectoryMap {
+    uuid: 'd47e9ecd-d735-49a0-8d94-c4cb948ea226',
+    name: 'PrefixDirectoryMap',
+    desc: 'A map of possible/known prefix directories for this software. Key: os-shortname, Values: list of directory prefixes, Format: JSON.',
+    map: 'JSON string containing the PrefixDirectoryMap.'
+    });
+
+MATCH (prefixdirmap:PrefixDirectoryMap {uuid: 'd47e9ecd-d735-49a0-8d94-c4cb948ea226'}),
+    (dirmap:DirectoryMap {uuid: '64d50e90-8be2-4d97-9dba-dd8518eb3f84'})
+MERGE (prefixdirmap)-[:ISA]->(dirmap);
+
+
+// ConfigDirectoryMap - A map of possible/known configuration directories for this software. Key: os-shortname, Values: list of config directories, Format: JSON.
+MERGE (configdirmap:Object:Component:Configuration:Map:DirectoryMap:ConfigDirectoryMap {
+    uuid: 'fb83aefa-ec5e-4ad9-a807-4a37ffaa404b',
+    name: 'ConfigDirectoryMap',
+    desc: 'A map of possible/known configuration directories for this software. Key: os-shortname, Values: list of config directories, Format: JSON.',
+    map: 'JSON string containing the ConfigDirectoryMap.'
+    });
+
+MATCH (configdirmap:ConfigDirectoryMap {uuid: 'fb83aefa-ec5e-4ad9-a807-4a37ffaa404b'}),
+    (dirmap:DirectoryMap {uuid: '64d50e90-8be2-4d97-9dba-dd8518eb3f84'})
+MERGE (configdirmap)-[:ISA]->(dirmap);
+
+
+// BinaryDirectoryMap - A map of possible/known binary executable directories for this software. Key: os-shortname, Values: list of binary directories, Format: JSON.
+MERGE (bindirmap:Object:Component:Configuration:Map:DirectoryMap:BinaryDirectoryMap {
+    uuid: '33e5e211-88db-4a78-95cd-2f2a3cd9e297',
+    name: 'BinaryDirectoryMap',
+    desc: 'A map of possible/known binary executable directories for this software. Key: os-shortname, Values: list of binary directories, Format: JSON.',
+    map: 'JSON string containing the BinaryDirectoryMap.'
+    });
+
+MATCH (bindirmap:BinaryDirectoryMap {uuid: '33e5e211-88db-4a78-95cd-2f2a3cd9e297'}),
+    (dirmap:DirectoryMap {uuid: '64d50e90-8be2-4d97-9dba-dd8518eb3f84'})
+MERGE (bindirmap)-[:ISA]->(dirmap);
+
+
+// LibraryDirectoryMap - A map of possible/known dynamic link library directories for this software. Key: os-shortname, Values: list of library directories, Format: JSON.
+MERGE (libdirmap:Object:Component:Configuration:Map:DirectoryMap:LibraryDirectoryMap {
+    uuid: '8ccf2b1c-3650-408f-8560-4ab9f3a57bbe',
+    name: 'LibraryDirectoryMap',
+    desc: 'A map of possible/known dynamic link library directories for this software. Key: os-shortname, Values: list of library directories, Format: JSON.',
+    map: 'JSON string containing the LibraryDirectoryMap.'
+    });
+
+MATCH (libdirmap:LibraryDirectoryMap {uuid: '8ccf2b1c-3650-408f-8560-4ab9f3a57bbe'}),
+    (dirmap:DirectoryMap {uuid: '64d50e90-8be2-4d97-9dba-dd8518eb3f84'})
+MERGE (libdirmap)-[:ISA]->(dirmap);
+
+
+// DataDirectoryMap - A map of possible/known data directories for this software. Key: os-shortname, Values: list of data directories, Format: JSON.
+MERGE (datadirmap:Object:Component:Configuration:Map:DirectoryMap:DataDirectoryMap {
+    uuid: '07aaa5dd-a747-4474-850d-01ad00a2f533',
+    name: 'DataDirectoryMap',
+    desc: 'A map of possible/known data directories for this software. Key: os-shortname, Values: list of data directories, Format: JSON.',
+    map: 'JSON string containing the DataDirectoryMap.'
+    });
+
+MATCH (datadirmap:DataDirectoryMap {uuid: '07aaa5dd-a747-4474-850d-01ad00a2f533'}),
+    (dirmap:DirectoryMap {uuid: '64d50e90-8be2-4d97-9dba-dd8518eb3f84'})
+MERGE (datadirmap)-[:ISA]->(dirmap);
+
+
+// LogDirectoryMap - A map of possible/known log directories for this software. Key: os-shortname, Values: list of log directories, Format: JSON.
+MERGE (logdirmap:Object:Component:Configuration:Map:DirectoryMap:LogDirectoryMap {
+    uuid: 'f8a9ce96-2a50-4a80-8deb-ec6fb294638e',
+    name: 'LogDirectoryMap',
+    desc: 'A map of possible/known log directories for this software. Key: os-shortname, Values: list of log directories, Format: JSON.',
+    map: 'JSON string containing the LogDirectoryMap.'
+    });
+
+MATCH (logdirmap:LogDirectoryMap {uuid: 'f8a9ce96-2a50-4a80-8deb-ec6fb294638e'}),
+    (dirmap:DirectoryMap {uuid: '64d50e90-8be2-4d97-9dba-dd8518eb3f84'})
+MERGE (logdirmap)-[:ISA]->(dirmap);
+
+
+// FileMap - A generic map of possible/known files this software has. Key: os-shortname, Values: list of files, Format: JSON.
+MERGE (filemap:Object:Component:Configuration:Map:FileMap {
+    uuid: '35407e44-ec50-4d66-83f9-dacf1f1b49dd',
+    name: 'FileMap',
+    desc: 'A generic map of possible/known files this software has. Key: os-shortname, Values: list of files, Format: JSON.',
+    map: 'JSON string containing the FileMap.'
+    });
+
+MATCH (filemap:FileMap {uuid: '35407e44-ec50-4d66-83f9-dacf1f1b49dd'}),
+    (map:Map {uuid: 'c970f6d3-4898-4596-bfac-9d6d1f6b2541'})
+MERGE (filemap)-[:ISA]->(map);
+
+
 // ConfigFileMap - A map of possible/known configuration files for this software, non-full path, checked within ConfigDirectoryMap entries.
+MERGE (configfilemap:Object:Component:Configuration:Map:FileMap:ConfigFileMap {
+    uuid: 'a6125034-55e0-4604-bf21-407837d0b419',
+    name: 'ConfigFileMap',
+    desc: 'A map of possible/known configuration files for this software, non-full path, checked within ConfigDirectoryMap entries.',
+    map: 'JSON string containing the ConfigFileMap.'
+    });
+
+MATCH (configfilemap:ConfigFileMap {uuid: 'a6125034-55e0-4604-bf21-407837d0b419'}),
+    (filemap:FileMap {uuid: '35407e44-ec50-4d66-83f9-dacf1f1b49dd'})
+MERGE (configfilemap)-[:ISA]->(filemap);
+
+
 // BinaryFileMap - A map of possible/known binary executable files for this software, non-full path, checked within BinaryDirectoryMap entries.
+MERGE (binfilemap:Object:Component:Configuration:Map:FileMap:BinaryFileMap {
+    uuid: '5ffab714-fa0e-416c-a237-9b023fe27bd7',
+    name: 'BinaryFileMap',
+    desc: 'A map of possible/known binary executable files for this software, non-full path, checked within BinaryDirectoryMap entries.',
+    map: 'JSON string containing the BinaryFileMap.'
+    });
+
+MATCH (binfilemap:BinaryFileMap {uuid: '5ffab714-fa0e-416c-a237-9b023fe27bd7'}),
+    (filemap:FileMap {uuid: '35407e44-ec50-4d66-83f9-dacf1f1b49dd'})
+MERGE (binfilemap)-[:ISA]->(filemap);
+
+
 // LibraryFileMap - A map of possible/known dynamic link library files for this software, non-full path, checked within LibraryDirectoryMap entries.
+MERGE (libfilemap:Object:Component:Configuration:Map:FileMap:LibraryFileMap {
+    uuid: '99a6e35b-912e-41f1-b404-d24299e51fb2',
+    name: 'LibraryFileMap',
+    desc: 'A map of possible/known dynamic link library files for this software, non-full path, checked within LibraryDirectoryMap entries.',
+    map: 'JSON string containing the LibraryFileMap.'
+    });
+
+MATCH (libfilemap:LibraryFileMap {uuid: '99a6e35b-912e-41f1-b404-d24299e51fb2'}),
+    (filemap:FileMap {uuid: '35407e44-ec50-4d66-83f9-dacf1f1b49dd'})
+MERGE (libfilemap)-[:ISA]->(filemap);
+
+
 // DataFileMap - A map of possible/known data files for this software, non-full path, checked within DataDirectoryMap entries.
+MERGE (datafilemap:Object:Component:Configuration:Map:FileMap:DataFileMap {
+    uuid: 'b19412ae-dffe-4fe8-9f00-3207ab686fb4',
+    name: 'DataFileMap',
+    desc: 'A map of possible/known data files for this software, non-full path, checked within DataDirectoryMap entries.',
+    map: 'JSON string containing the DataFileMap.'
+    });
+
+MATCH (datafilemap:DataFileMap {uuid: 'b19412ae-dffe-4fe8-9f00-3207ab686fb4'}),
+    (filemap:FileMap {uuid: '35407e44-ec50-4d66-83f9-dacf1f1b49dd'})
+MERGE (datafilemap)-[:ISA]->(filemap);
+
+
 // LogFileMap - A map of possible/known log files for this software, non-full path, checked within LogDirectoryMap entries.
-// NameMap - A generic map of possible/known names this software has.
-// PackageNameMap - A map of possible/known package names for this software, non-full path, checked within ConfigDirectoryMap entries.
+MERGE (logfilemap:Object:Component:Configuration:Map:FileMap:LogFileMap {
+    uuid: 'ac583c10-f77c-4d40-84eb-4ffed77c79e0',
+    name: 'LogFileMap',
+    desc: 'A map of possible/known log files for this software, non-full path, checked within LogDirectoryMap entries.',
+    map: 'JSON string containing the LogFileMap.'
+    });
+
+MATCH (logfilemap:LogFileMap {uuid: 'ac583c10-f77c-4d40-84eb-4ffed77c79e0'}),
+    (filemap:FileMap {uuid: '35407e44-ec50-4d66-83f9-dacf1f1b49dd'})
+MERGE (logfilemap)-[:ISA]->(filemap);
+
+
+// NameMap - A generic map of possible/known names this software has. Key: os-shortname, Values: list of names, Format: JSON.
+MERGE (namemap:Object:Component:Configuration:Map:NameMap {
+    uuid: '14372d63-a428-46b9-8359-9982ef22cfce',
+    name: 'NameMap',
+    desc: 'A generic map of possible/known names this software has. Key: os-shortname, Values: list of names, Format: JSON.',
+    map: 'JSON string containing the NameMap.'
+    });
+
+MATCH (namemap:NameMap {uuid: '14372d63-a428-46b9-8359-9982ef22cfce'}),
+    (map:Map {uuid: 'c970f6d3-4898-4596-bfac-9d6d1f6b2541'})
+MERGE (namemap)-[:ISA]->(map);
+
+
+// PackageNameMap - A generic map of possible/known package names this software has. Key: os-shortname, Values: list of names, Format: JSON.
+MERGE (pkgmap:Object:Component:Configuration:Map:NameMap:PackageNameMap {
+    uuid: '1d691f61-3c9f-46ad-b98b-b968352d59b3',
+    name: 'PackageNameMap',
+    desc: 'A generic map of possible/known package names this software has. Key: os-shortname, Values: list of names, Format: JSON.',
+    map: 'JSON string containing the PackageNameMap.'
+    });
+
+MATCH (pkgmap:PackageNameMap {uuid: '1d691f61-3c9f-46ad-b98b-b968352d59b3'}),
+    (namemap:NameMap {uuid: '14372d63-a428-46b9-8359-9982ef22cfce'})
+MERGE (pkgmap)-[:ISA]->(namemap);
+
+
+// ServiceNameMap - A generic map of possible/known service names this software has. Key: os-shortname, Values: list of names, Format: JSON.
+MERGE (svcmap:Object:Component:Configuration:Map:NameMap:ServiceNameMap {
+    uuid: 'ead61277-e797-406b-96e1-95c155655fac',
+    name: 'ServiceNameMap',
+    desc: 'A generic map of possible/known service names this software has. Key: os-shortname, Values: list of names, Format: JSON.',
+    map: 'JSON string containing the ServiceNameMap.'
+    });
+
+MATCH (svcmap:ServiceNameMap {uuid: 'ead61277-e797-406b-96e1-95c155655fac'}),
+    (namemap:NameMap {uuid: '14372d63-a428-46b9-8359-9982ef22cfce'})
+MERGE (svcmap)-[:ISA]->(namemap);
 
 
 // Device - Any kind of device.
@@ -618,6 +822,24 @@ MATCH (processingunit:ProcessingUnit {uuid: 'b7b2a2ff-3af7-469b-afbf-e52f1b80be9
 MERGE (processingunit)-[:ISA]->(device);
 
 
+// AlphaProcessor - An Alpha processor.
+MERGE (alphaprocessor:Object:Component:Device:ProcessingUnit:AlphaProcessor {
+    uuid: '95b9f7a2-1a17-4cb9-8088-3e2e478ce638',
+    name: 'AlphaProcessor',
+    desc: 'An Alpha processor.',
+    rev: 'The revision of the processing unit.',
+    cpuClockHz: 'CPU clock in hertz.',
+    cpuCoreCount: 'Number of cores.',
+    smtEnabled: "Simultaneous multithreading (for example hyper-threading) capable true/false.",
+    cacheSizeKb: 'The size of cache memory on the CPU.',
+    bits: 'Number of bit width supported.'
+    });
+
+MATCH (alphaprocessor:AlphaProcessor {uuid: '95b9f7a2-1a17-4cb9-8088-3e2e478ce638'}),
+    (processingunit:ProcessingUnit {uuid: 'b7b2a2ff-3af7-469b-afbf-e52f1b80be91'})
+MERGE (alphaprocessor)-[:ISA]->(processingunit);
+
+
 // ArmProcessor- An ARM processor.
 MERGE (armprocessor:Object:Component:Device:ProcessingUnit:ArmProcessor {
     uuid: 'f3b1b497-1e83-4a09-a280-04f46a83fe24',
@@ -706,6 +928,24 @@ MERGE (mosprocessor:Object:Component:Device:ProcessingUnit:MosProcessor {
 MATCH (mosprocessor:MosProcessor {uuid: 'b4f67698-7eca-4ca1-a4cf-b7ef9737785c'}),
     (processingunit:ProcessingUnit {uuid: 'b7b2a2ff-3af7-469b-afbf-e52f1b80be91'})
 MERGE (mosprocessor)-[:ISA]->(processingunit);
+
+
+// PariscProcessor - An PA Risc processor.
+MERGE (pariscprocessor:Object:Component:Device:ProcessingUnit:PariscProcessor {
+    uuid: '689a4f33-e08d-4e7f-83a5-79fd310bd3f9',
+    name: 'PariscProcessor',
+    desc: 'A PA Risc processor.',
+    rev: 'The revision of the processing unit.',
+    cpuClockHz: 'CPU clock in hertz.',
+    cpuCoreCount: 'Number of cores.',
+    smtEnabled: "Simultaneous multithreading (for example hyper-threading) capable true/false.",
+    cacheSizeKb: 'The size of cache memory on the CPU.',
+    bits: 'Number of bit width supported.'
+    });
+
+MATCH (pariscprocessor:PariscProcessor {uuid: '689a4f33-e08d-4e7f-83a5-79fd310bd3f9'}),
+    (processingunit:ProcessingUnit {uuid: 'b7b2a2ff-3af7-469b-afbf-e52f1b80be91'})
+MERGE (pariscprocessor)-[:ISA]->(processingunit);
 
 
 // PowerProcessor - A PowerPC processor.
@@ -798,7 +1038,9 @@ MERGE (cloudsystem:Object:Component:Software:CloudSystem {
     uuid: '86c0439a-4219-46e6-82a3-6fb2ee774aa4',
     name: 'CloudSystem',
     desc: 'A cloud (operating) system and/or environment.',
-    ver: 'The version of the cloud (operating) system environment.'
+    ver: 'The version of the cloud (operating) system environment.',
+    shortName: 'A short lowercase name for the Cloud System without spaces.',
+    longName: 'The full descriptive name of the Cloud System.'
     });
 
 MATCH (cloudsystem:CloudSystem {uuid: '86c0439a-4219-46e6-82a3-6fb2ee774aa4'}),
@@ -811,7 +1053,9 @@ MERGE (operatingsystem:Object:Component:Software:OperatingSystem {
     uuid: 'f05e325e-1aee-4892-96e4-8bcd6e97c528',
     name: 'OperatingSystem',
     desc: 'An operating system.',
-    ver: 'The version of the operating system software.'
+    ver: 'The version of the operating system software.',
+    shortName: 'A short lowercase name for the Operating System without spaces.',
+    longName: 'The full descriptive name of the Operating System.'
     });
 
 MATCH (operatingsystem:OperatingSystem {uuid: 'f05e325e-1aee-4892-96e4-8bcd6e97c528'}),
@@ -1326,6 +1570,138 @@ MATCH (telnet:TELNET {uuid: '27fc7ed2-beb3-41c8-aa69-900ad7bb989f'}),
 MERGE (telnet)-[:ISA]->(protocol);
 
 
+// Handler - A representation of a software handler that gives end user function.
+MERGE (handler:Object:Handler {
+    uuid: '14dbfbfa-b50a-466f-8539-55d5d3f15e4a',
+    name: 'Handler',
+    desc: 'A representation of a software handler that gives end user function.'
+    });
+
+MATCH (handler:Handler {uuid: '14dbfbfa-b50a-466f-8539-55d5d3f15e4a'}),
+    (object:Object {uuid: 'b1bc963a-19cc-4518-aecb-a35d028c49e3'})
+MERGE (handler)-[:ISA]->(object);
+
+
+// CommandHandler - Creates a CommandOperation, executes that CommandOperation, creates CommandResult.
+MERGE (cmdhandler:Object:Handler:CommandHandler {
+    uuid: '6ac7f3f8-4a1f-42aa-87b8-b2f5516b5d7c',
+    name: 'CommandHandler',
+    desc: 'Creates a CommandOperation, executes that CommandOperation, creates CommandResult.'
+    });
+
+MATCH (cmdhandler:CommandHandler {uuid: '6ac7f3f8-4a1f-42aa-87b8-b2f5516b5d7c'}),
+    (handler:Handler {uuid: '14dbfbfa-b50a-466f-8539-55d5d3f15e4a'})
+MERGE (cmdhandler)-[:ISA]->(handler);
+
+
+// VersionHandler - Looks up a VersionOperation, executes command, creates VersionResult.
+MERGE (verhandler:Object:Handler:VersionHandler {
+    uuid: 'a57f47c3-7e27-4347-806b-204239c61e65',
+    name: 'VersionHandler',
+    desc: 'Looks up a VersionOperation, executes command, creates VersionResult.'
+    });
+
+MATCH (verhandler:VersionHandler {uuid: 'a57f47c3-7e27-4347-806b-204239c61e65'}),
+    (handler:Handler {uuid: '14dbfbfa-b50a-466f-8539-55d5d3f15e4a'})
+MERGE (verhandler)-[:ISA]->(handler);
+
+
+// StatusHandler - Executes generic code to get a status or executes CustomStatusOperation if it exists. Creates StatusResult.
+MERGE (stathandler:Object:Handler:StatusHandler {
+    uuid: '3b6555cd-abd4-4cc6-ab64-b7c031c2b008',
+    name: 'StatusHandler',
+    desc: 'Executes generic code to get a status or executes CustomStatusOperation if it exists. Creates StatusResult.'
+    });
+
+MATCH (stathandler:StatusHandler {uuid: '3b6555cd-abd4-4cc6-ab64-b7c031c2b008'}),
+    (handler:Handler {uuid: '14dbfbfa-b50a-466f-8539-55d5d3f15e4a'})
+MERGE (stathandler)-[:ISA]->(handler);
+
+
+// ExistenceHandler - Executes generic code to get a existence information or executes CustomExistenceOperation if it exists. Creates ExistenceResult.
+MERGE (existhandler:Object:Handler:ExistenceHandler {
+    uuid: '6a8a8dd7-f8d3-4170-8c25-3866cfc2037c',
+    name: 'ExistenceHandler',
+    desc: 'Executes generic code to get a existence information or executes CustomExistenceOperation if it exists. Creates ExistenceResult.'
+    });
+
+MATCH (existhandler:ExistenceHandler {uuid: '6a8a8dd7-f8d3-4170-8c25-3866cfc2037c'}),
+    (handler:Handler {uuid: '14dbfbfa-b50a-466f-8539-55d5d3f15e4a'})
+MERGE (existhandler)-[:ISA]->(handler);
+
+
+// UsageHandler - Executes generic code to derive usage of resources or executes CustomUsageOperation if it exists. Creates UsageResult.
+MERGE (usagehandler:Object:Handler:UsageHandler {
+    uuid: 'dd0878eb-b560-4dc0-89da-1d7ddfcbbced',
+    name: 'UsageHandler',
+    desc: 'Executes generic code to derive usage of resources or executes CustomUsageOperation if it exists. Creates UsageResult.'
+    });
+
+MATCH (usagehandler:UsageHandler {uuid: 'dd0878eb-b560-4dc0-89da-1d7ddfcbbced'}),
+    (handler:Handler {uuid: '14dbfbfa-b50a-466f-8539-55d5d3f15e4a'})
+MERGE (usagehandler)-[:ISA]->(handler);
+
+
+// InstallHandler - Executes generic code to derive install method and executes or executes CustomInstallOperation if it exists.
+MERGE (installhandler:Object:Handler:InstallHandler {
+    uuid: '3e33df40-8d9d-49d2-939d-6712d89ca70f',
+    name: 'InstallHandler',
+    desc: 'Executes generic code to derive install method and executes or executes CustomInstallOperation if it exists.'
+    });
+
+MATCH (installhandler:InstallHandler {uuid: '3e33df40-8d9d-49d2-939d-6712d89ca70f'}),
+    (handler:Handler {uuid: '14dbfbfa-b50a-466f-8539-55d5d3f15e4a'})
+MERGE (installhandler)-[:ISA]->(handler);
+
+
+// UninstallHandler - Executes generic code to derive uninstall method and executes or executes CustomUninstallOperation if it exists.
+MERGE (uninstallhandler:Object:Handler:UninstallHandler {
+    uuid: '6b80a87e-9d24-4a06-b792-2d13c0713b6c',
+    name: 'UninstallHandler',
+    desc: 'Executes generic code to derive uninstall method and executes or executes CustomUninstallOperation if it exists.'
+    });
+
+MATCH (uninstallhandler:UninstallHandler {uuid: '6b80a87e-9d24-4a06-b792-2d13c0713b6c'}),
+    (handler:Handler {uuid: '14dbfbfa-b50a-466f-8539-55d5d3f15e4a'})
+MERGE (uninstallhandler)-[:ISA]->(handler);
+
+
+// StartHandler - Executes generic code to derive start method and executes or executes CustomStartOperation if it exists.
+MERGE (starthandler:Object:Handler:StartHandler {
+    uuid: 'db00edc2-5900-46d8-99fc-b379fd8538e2',
+    name: 'StartHandler',
+    desc: 'Executes generic code to derive start method and executes or executes CustomStartOperation if it exists.'
+    });
+
+MATCH (starthandler:StartHandler {uuid: 'db00edc2-5900-46d8-99fc-b379fd8538e2'}),
+    (handler:Handler {uuid: '14dbfbfa-b50a-466f-8539-55d5d3f15e4a'})
+MERGE (starthandler)-[:ISA]->(handler);
+
+
+// StopHandler - Executes generic code to derive stop method and executes or executes CustomStopOperation if it exists.
+MERGE (stophandler:Object:Handler:StopHandler {
+    uuid: '5d97322d-9113-4d7c-ac6c-2690a8c65d0d',
+    name: 'StopHandler',
+    desc: 'Executes generic code to derive stop method and executes or executes CustomStopOperation if it exists.'
+    });
+
+MATCH (stophandler:StopHandler {uuid: '5d97322d-9113-4d7c-ac6c-2690a8c65d0d'}),
+    (handler:Handler {uuid: '14dbfbfa-b50a-466f-8539-55d5d3f15e4a'})
+MERGE (stophandler)-[:ISA]->(handler);
+
+
+// RestartHandler - Executes generic code to derive restart method and executes or executes CustomRestartOperation if it exists.
+MERGE (restartHandler:Object:Handler:RestartHandler {
+    uuid: 'c61c2f8c-0ba2-4e0d-99f2-66a5580a59a6',
+    name: 'RestartHandler',
+    desc: 'Executes generic code to derive restart method and executes or executes CustomRestartOperation if it exists.'
+    });
+
+MATCH (restartHandler:RestartHandler {uuid: 'c61c2f8c-0ba2-4e0d-99f2-66a5580a59a6'}),
+    (handler:Handler {uuid: '14dbfbfa-b50a-466f-8539-55d5d3f15e4a'})
+MERGE (restartHandler)-[:ISA]->(handler);
+
+
 // Operation - A command or method that can be called, with or without schedule.
 MERGE (operation:Object:Operation {
     uuid: '46294722-b14e-438e-9fbc-95ff137b6b18',
@@ -1338,23 +1714,124 @@ MATCH (operation:Operation {uuid: '46294722-b14e-438e-9fbc-95ff137b6b18'}),
 MERGE (operation)-[:ISA]->(object);
 
 
-// InstallOperation - Installs a software, does not create a Result.
-// UninstallOperation - Uninstalls a software, does not create a Result.
-// StartOperation - Starts a software, does not create a Result.
-// StopOperation - Stops a software, does not create a Result.
-// RestartOperation - Restarts a software, does not create a Result.
-// CommandOperation - Executes an arbitrary command, creating a CommandResult.
-// ExistenceOperation - Executes an existence operation.
-// DirectoryExistenceOperation - Executes a directory existence operation, creating a *DirectoryExistenceResult.
-// FileExistenceOperation - Executes a file existence operation, creating a *FileExistenceResult.
-// PackageExistenceOperation - Executes a package existence operation, creating a PackageExistenceResult.
-// VersionOperation - Executes a command that displays a version string, creating a VersionResult.
-// StatusOperation - Executes a status operation, creates a *StatusResult.
-// UsageOperation - Executes a generic usage operation.
-// ProcessorUsageOperation - Executes a processor usage operation.
-// MemoryUsageOperation - Executes a volatile memory usage operation.
-// StorageUsageOperation - Executes a non-volatile memory usage operation.
-// NetworkUsageOperation - Executes a network usage operation.
+// CommandOperation - An arbitrary command.
+MERGE (cmdoperation:Object:Operation:CommandOperation {
+    uuid: 'de64c2f4-7fa3-4e68-ba10-6af8140dac36',
+    name: 'CommandOperation',
+    desc: 'An arbitrary command.'
+    });
+
+MATCH (cmdoperation:CommandOperation {uuid: 'de64c2f4-7fa3-4e68-ba10-6af8140dac36'}),
+    (operation:Operation {uuid: '46294722-b14e-438e-9fbc-95ff137b6b18'})
+MERGE (cmdoperation)-[:ISA]->(operation);
+
+
+// VersionOperation - A command that displays a version string.
+MERGE (veroperation:Object:Operation:VersionOperation {
+    uuid: '9598a74d-0293-459a-af63-e3563215162f',
+    name: 'VersionOperation',
+    desc: 'A command that displays a version string.'
+    });
+
+MATCH (veroperation:VersionOperation {uuid: '9598a74d-0293-459a-af63-e3563215162f'}),
+    (operation:Operation {uuid: '46294722-b14e-438e-9fbc-95ff137b6b18'})
+MERGE (veroperation)-[:ISA]->(operation);
+
+
+// CustomStatusOperation - Custom command for a status check operation.
+MERGE (customstatusoperation:Object:Operation:CustomStatusOperation {
+    uuid: 'bfc01b44-075d-4d6e-82eb-474830bba06e',
+    name: 'CustomStatusOperation',
+    desc: 'Custom command for a status check operation.'
+    });
+
+MATCH (customstatusoperation:CustomStatusOperation {uuid: 'bfc01b44-075d-4d6e-82eb-474830bba06e'}),
+    (operation:Operation {uuid: '46294722-b14e-438e-9fbc-95ff137b6b18'})
+MERGE (customstatusoperation)-[:ISA]->(operation);
+
+
+// CustomExistenceOperation - Custom command for an existence operation.
+MERGE (customexistenceoperation:Object:Operation:CustomExistenceOperation {
+    uuid: '97bf21ef-d112-4607-9392-83243e44577f',
+    name: 'CustomExistenceOperation',
+    desc: 'Custom command for an existence operation.'
+    });
+
+MATCH (customexistenceoperation:CustomExistenceOperation {uuid: '97bf21ef-d112-4607-9392-83243e44577f'}),
+    (operation:Operation {uuid: '46294722-b14e-438e-9fbc-95ff137b6b18'})
+MERGE (customexistenceoperation)-[:ISA]->(operation);
+
+
+// CustomUsageOperation - Custom command that shows/derives/fetches the usage of a resource.
+MERGE (customusageoperation:Object:Operation:CustomUsageOperation {
+    uuid: '32b9f847-3579-4750-b29b-c0f3af877adb',
+    name: 'CustomUsageOperation',
+    desc: 'Custom command that shows/derives/fetches the usage of a resource.'
+    });
+
+MATCH (customusageoperation:CustomUsageOperation {uuid: '32b9f847-3579-4750-b29b-c0f3af877adb'}),
+    (operation:Operation {uuid: '46294722-b14e-438e-9fbc-95ff137b6b18'})
+MERGE (customusageoperation)-[:ISA]->(operation);
+
+
+// CustomInstallOperation - Custom command to install a software.
+MERGE (custominstalloperation:Object:Operation:CustomInstallOperation {
+    uuid: '7fb7c8c0-6967-4af2-a4f9-e5342fc3fb24',
+    name: 'CustomInstallOperation',
+    desc: 'Custom command to install a software.'
+    });
+
+MATCH (custominstalloperation:CustomInstallOperation {uuid: '7fb7c8c0-6967-4af2-a4f9-e5342fc3fb24'}),
+    (operation:Operation {uuid: '46294722-b14e-438e-9fbc-95ff137b6b18'})
+MERGE (custominstalloperation)-[:ISA]->(operation);
+
+
+// CustomUninstallOperation - Custom command to uninstall a software.
+MERGE (customuninstalloperation:Object:Operation:CustomUninstallOperation {
+    uuid: '1308c542-ea7a-4525-8a1b-65cf96033a62',
+    name: 'CustomUninstallOperation',
+    desc: 'Custom command to uninstall a software.'
+    });
+
+MATCH (customuninstalloperation:CustomUninstallOperation {uuid: '1308c542-ea7a-4525-8a1b-65cf96033a62'}),
+    (operation:Operation {uuid: '46294722-b14e-438e-9fbc-95ff137b6b18'})
+MERGE (customuninstalloperation)-[:ISA]->(operation);
+
+
+// CustomStartOperation - Custom command to start a software.
+MERGE (customstartoperation:Object:Operation:CustomStartOperation {
+    uuid: '8cb7ac74-7923-4114-abd2-17f4c5f440d7',
+    name: 'CustomStartOperation',
+    desc: 'Custom command to start a software.'
+    });
+
+MATCH (customstartoperation:CustomStartOperation {uuid: '8cb7ac74-7923-4114-abd2-17f4c5f440d7'}),
+    (operation:Operation {uuid: '46294722-b14e-438e-9fbc-95ff137b6b18'})
+MERGE (customstartoperation)-[:ISA]->(operation);
+
+
+// CustomStopOperation - Custom command to stop a software.
+MERGE (customstopoperation:Object:Operation:CustomStopOperation {
+    uuid: 'ffefceab-afd8-42da-b793-d65beb4f71eb',
+    name: 'CustomStopOperation',
+    desc: 'Custom command to stop a software.'
+    });
+
+MATCH (customstopoperation:CustomStopOperation {uuid: 'ffefceab-afd8-42da-b793-d65beb4f71eb'}),
+    (operation:Operation {uuid: '46294722-b14e-438e-9fbc-95ff137b6b18'})
+MERGE (customstopoperation)-[:ISA]->(operation);
+
+
+// CustomRestartOperation - Custom command to restart a software.
+MERGE (customrestartoperation:Object:Operation:CustomRestartOperation {
+    uuid: '3d5300bf-7b4d-443c-b33a-159c00572eb9',
+    name: 'CustomRestartOperation',
+    desc: 'Custom command to restart a software.'
+    });
+
+MATCH (customrestartoperation:CustomRestartOperation {uuid: '3d5300bf-7b4d-443c-b33a-159c00572eb9'}),
+    (operation:Operation {uuid: '46294722-b14e-438e-9fbc-95ff137b6b18'})
+MERGE (customrestartoperation)-[:ISA]->(operation);
 
 
 // Result - A result from an operation.
@@ -1373,7 +1850,7 @@ MERGE (result)-[:ISA]->(object);
 MERGE (commandresult:Object:Result:CommandResult {
     uuid: '6991d878-52be-467d-893a-6b95074f04c2',
     name: 'CommandResult',
-    desc: 'A result from an operation.'
+    desc: 'A generic textual result from a command operation.'
     });
 
 MATCH (commandresult:CommandResult {uuid: '6991d878-52be-467d-893a-6b95074f04c2'}),
@@ -1381,45 +1858,385 @@ MATCH (commandresult:CommandResult {uuid: '6991d878-52be-467d-893a-6b95074f04c2'
 MERGE (commandresult)-[:ISA]->(result);
 
 
-// ExistenceResult - A generic result from an ExistenceOperation.
-// DirectoryExistenceResult - A generic result from a DirectoryExistenceOperation.
-// PrefixDirectoryExistenceResult - A possible result from a DirectoryExistenceOperation, parsing a PrefixDirectoryMap.
-// ConfigDirectoryExistenceResult - A possible result from a DirectoryExistenceOperation, parsing a ConfigDirectoryMap.
-// BinaryDirectoryExistenceResult - A possible result from a DirectoryExistenceOperation, parsing a BinaryDirectoryMap.
-// LibraryDirectoryExistenceResult - A possible result from a DirectoryExistenceOperation, parsing a LibraryDirectoryMap.
-// DataDirectoryExistenceResult - A possible result from a DirectoryExistenceOperation, parsing a DataDirectoryMap.
-// LogDirectoryExistenceResult - A possible result from a DirectoryExistenceOperation, parsing a LogDirectoryMap.
-// FileExistenceResult - A generic result from an FileExistenceOperation.
-// ConfigFileExistenceResult - A possible result from a FileExistenceOperation, parsing a ConfigFileMap.
-// BinaryFileExistenceResult - A possible result from a FileExistenceOperation, parsing a BinaryFileMap.
-// LibraryFileExistenceResult - A possible result from a FileExistenceOperation, parsing a LibraryFileMap.
-// DataFileExistenceResult - A possible result from a FileExistenceOperation, parsing a DataFileMap.
-// LogFileExistenceResult - A possible result from a FileExistenceOperation, parsing a LogFileMap.
-// PackageExistenceResult - A possible result from a PackageExistenceOperation, parsing a PackageNameMap.
-// VersionResult - A textual result representing a version string from a version operation.
-// StatusResult - A result that represents a status.
-// DerivedStatusResult - A derived status. 1/ok, 0/not-ok.
-// LocalDerivedStatusResult - A derived 1/0 status from all statuses known to the software itself.
-// AggregateDerivedStatusResult A derived 1/0 status from all localderivedstatuses from its children.
-// SoftwareInstalledStatusResult - 1/installed, 0/not-installed.
-// SoftwareRunningStatusResult - 1/running, 0/not-running.
-// IpAddressReachableStatusResult - 1/reachable, 0/unreachable.
-// ListenerAvailableStatusResult - 1/open, 0/closed.
-// DnsNameResolvableStatusResult - 1/resolved, 0/not-resolved.
-// UsageResult - A generic usage result.
-// ProcessorUsageResult - The results from a ProcessorUsageOperation.
-// MemoryUsageResult - The results from a MemoryUsageOperation.
-// StorageUsageResult - The results from a StorageUsageOperation.
-// NetworkUsageResult - The results from a NetworkUsageOperation.
-
-
-// Handler - A representation of a software handler that gives end user function.
-MERGE (handler:Object:Handler {
-    uuid: '14dbfbfa-b50a-466f-8539-55d5d3f15e4a',
-    name: 'Handler',
-    desc: 'A representation of a software handler that gives end user function.'
+// VersionResult - A textual result representing a version string.
+MERGE (versionresult:Object:Result:VersionResult {
+    uuid: '2f9703cb-3d68-44fa-99bf-935ed658ca5a',
+    name: 'VersionResult',
+    desc: 'A textual result representing a version string.'
     });
 
-MATCH (handler:Handler {uuid: '14dbfbfa-b50a-466f-8539-55d5d3f15e4a'}),
-    (object:Object {uuid: 'b1bc963a-19cc-4518-aecb-a35d028c49e3'})
-MERGE (handler)-[:ISA]->(object);
+MATCH (versionresult:VersionResult {uuid: '2f9703cb-3d68-44fa-99bf-935ed658ca5a'}),
+    (result:Result {uuid: 'f3498c02-58c6-486b-87c6-9d54607fdb12'})
+MERGE (versionresult)-[:ISA]->(result);
+
+
+// StatusResult - A result that represents a status.
+MERGE (statusresult:Object:Result:StatusResult {
+    uuid: '48839d5c-8ebc-4989-80ec-f6fb90299a56',
+    name: 'StatusResult',
+    desc: 'A result that represents a status.'
+    });
+
+MATCH (statusresult:StatusResult {uuid: '48839d5c-8ebc-4989-80ec-f6fb90299a56'}),
+    (result:Result {uuid: 'f3498c02-58c6-486b-87c6-9d54607fdb12'})
+MERGE (statusresult)-[:ISA]->(result);
+
+
+// DerivedStatusResult - A derived status. 1/ok, 0/not-ok.
+MERGE (derivedstatusresult:Object:Result:StatusResult:DerivedStatusResult {
+    uuid: '9565a2ca-29e4-4c36-8f17-97e9a0074ded',
+    name: 'DerivedStatusResult',
+    desc: 'A derived status. 1/ok, 0/not-ok.'
+    });
+
+MATCH (derivedstatusresult:DerivedStatusResult {uuid: '9565a2ca-29e4-4c36-8f17-97e9a0074ded'}),
+    (statusresult:StatusResult {uuid: '48839d5c-8ebc-4989-80ec-f6fb90299a56'})
+MERGE (derivedstatusresult)-[:ISA]->(statusresult);
+
+
+// LocalDerivedStatusResult - A derived 1/0 status from all statuses known to the software itself.
+MERGE (localderivedstatusresult:Object:Result:StatusResult:LocalDerivedStatusResult {
+    uuid: '9d007dd4-82df-4791-81f9-d91a65e9f3a3',
+    name: 'LocalDerivedStatusResult',
+    desc: 'A derived 1/0 status from all statuses known to the software itself.'
+    });
+
+MATCH (localderivedstatusresult:LocalDerivedStatusResult {uuid: '9d007dd4-82df-4791-81f9-d91a65e9f3a3'}),
+    (statusresult:StatusResult {uuid: '48839d5c-8ebc-4989-80ec-f6fb90299a56'})
+MERGE (localderivedstatusresult)-[:ISA]->(statusresult);
+
+
+// AggregateDerivedStatusResult - A derived 1/0 status from all localderivedstatuses from its children.
+MERGE (aggregatederivedstatusresult:Object:Result:StatusResult:AggregateDerivedStatusResult {
+    uuid: '3f9ca86e-6286-4e59-9eb1-fa352103fe5c',
+    name: 'AggregateDerivedStatusResult',
+    desc: 'A derived 1/0 status from all localderivedstatuses from its children.'
+    });
+
+MATCH (aggregatederivedstatusresult:AggregateDerivedStatusResult {uuid: '3f9ca86e-6286-4e59-9eb1-fa352103fe5c'}),
+    (statusresult:StatusResult {uuid: '48839d5c-8ebc-4989-80ec-f6fb90299a56'})
+MERGE (aggregatederivedstatusresult)-[:ISA]->(statusresult);
+
+
+// SoftwareInstalledStatusResult - 1/installed, 0/not-installed.
+MERGE (softwareinstalledstatusresult:Object:Result:StatusResult:SoftwareInstalledStatusResult {
+    uuid: '38b435e1-046c-415b-9cce-6578efb4eef6',
+    name: 'SoftwareInstalledStatusResult',
+    desc: '1/installed, 0/not-installed.'
+    });
+
+MATCH (softwareinstalledstatusresult:SoftwareInstalledStatusResult {uuid: '38b435e1-046c-415b-9cce-6578efb4eef6'}),
+    (statusresult:StatusResult {uuid: '48839d5c-8ebc-4989-80ec-f6fb90299a56'})
+MERGE (softwareinstalledstatusresult)-[:ISA]->(statusresult);
+
+
+// SoftwareRunningStatusResult - 1/running, 0/not-running.
+MERGE (softwarerunningstatusresult:Object:Result:StatusResult:SoftwareRunningStatusResult {
+    uuid: '4fda91ea-63bb-4689-bcf4-86bb02314c21',
+    name: 'SoftwareRunningStatusResult',
+    desc: '1/running, 0/not-running.'
+    });
+
+MATCH (softwarerunningstatusresult:SoftwareRunningStatusResult {uuid: '4fda91ea-63bb-4689-bcf4-86bb02314c21'}),
+    (statusresult:StatusResult {uuid: '48839d5c-8ebc-4989-80ec-f6fb90299a56'})
+MERGE (softwarerunningstatusresult)-[:ISA]->(statusresult);
+
+
+// IpAddressReachableStatusResult - 1/reachable, 0/unreachable.
+MERGE (ipaddressreachablestatusresult:Object:Result:StatusResult:IpAddressReachableStatusResult {
+    uuid: '729e0e03-3a27-47e2-8075-7e4a754d68a5',
+    name: 'IpAddressReachableStatusResult',
+    desc: '1/reachable, 0/unreachable.'
+    });
+
+MATCH (ipaddressreachablestatusresult:IpAddressReachableStatusResult {uuid: '729e0e03-3a27-47e2-8075-7e4a754d68a5'}),
+    (statusresult:StatusResult {uuid: '48839d5c-8ebc-4989-80ec-f6fb90299a56'})
+MERGE (ipaddressreachablestatusresult)-[:ISA]->(statusresult);
+
+
+// ListenerAvailableStatusResult - 1/open, 0/closed.
+MERGE (listeneravailablestatusresult:Object:Result:StatusResult:ListenerAvailableStatusResult {
+    uuid: '630e8753-7566-4c2f-9cdf-99f5b64492a1',
+    name: 'ListenerAvailableStatusResult',
+    desc: '1/open, 0/closed.'
+    });
+
+MATCH (listeneravailablestatusresult:ListenerAvailableStatusResult {uuid: '630e8753-7566-4c2f-9cdf-99f5b64492a1'}),
+    (statusresult:StatusResult {uuid: '48839d5c-8ebc-4989-80ec-f6fb90299a56'})
+MERGE (listeneravailablestatusresult)-[:ISA]->(statusresult);
+
+
+// DnsNameResolvableStatusResult - 1/resolved, 0/not-resolved.
+MERGE (dnsnameresolvablestatusresult:Object:Result:StatusResult:DnsNameResolvableStatusResult {
+    uuid: 'fffdce77-417f-4044-a570-6e6153db1dd0',
+    name: 'DnsNameResolvableStatusResult',
+    desc: '1/resolved, 0/not-resolved.'
+    });
+
+MATCH (dnsnameresolvablestatusresult:DnsNameResolvableStatusResult {uuid: 'fffdce77-417f-4044-a570-6e6153db1dd0'}),
+    (statusresult:StatusResult {uuid: '48839d5c-8ebc-4989-80ec-f6fb90299a56'})
+MERGE (dnsnameresolvablestatusresult)-[:ISA]->(statusresult);
+
+
+// ExistenceResult - A generic result from an ExistenceHandler.
+MERGE (existenceresult:Object:Result:ExistenceResult {
+    uuid: '6d23a2bc-9539-4914-aaf4-45406f59d8fc',
+    name: 'ExistenceResult',
+    desc: 'A generic result from an ExistenceHandler.'
+    });
+
+MATCH (existenceresult:ExistenceResult {uuid: '6d23a2bc-9539-4914-aaf4-45406f59d8fc'}),
+    (result:Result {uuid: 'f3498c02-58c6-486b-87c6-9d54607fdb12'})
+MERGE (existenceresult)-[:ISA]->(result);
+
+
+// DirectoryExistenceResult - A generic directory existence result from an ExistenceHandler.
+MERGE (directoryexistenceresult:Object:Result:ExistenceResult:DirectoryExistenceResult {
+    uuid: '31736b3b-82da-4864-bc59-b49c196e3327',
+    name: 'DirectoryExistenceResult',
+    desc: 'A generic directory existence result from an ExistenceHandler.'
+    });
+
+MATCH (directoryexistenceresult:DirectoryExistenceResult {uuid: '31736b3b-82da-4864-bc59-b49c196e3327'}),
+    (existenceresult:ExistenceResult {uuid: '6d23a2bc-9539-4914-aaf4-45406f59d8fc'})
+MERGE (directoryexistenceresult)-[:ISA]->(existenceresult);
+
+
+// PrefixDirectoryExistenceResult - A possible result from an ExistenceHandler, parsing a PrefixDirectoryMap.
+MERGE (prefixdirectoryexistenceresult:Object:Result:ExistenceResult:DirectoryExistenceResult:PrefixDirectoryExistenceResult {
+    uuid: '93e34319-fe7b-4768-b83d-58986a4cdb73',
+    name: 'PrefixDirectoryExistenceResult',
+    desc: 'A possible result from an ExistenceHandler, parsing a PrefixDirectoryMap.'
+    });
+
+MATCH (prefixdirectoryexistenceresult:PrefixDirectoryExistenceResult {uuid: '93e34319-fe7b-4768-b83d-58986a4cdb73'}),
+    (directoryexistenceresult:DirectoryExistenceResult {uuid: '31736b3b-82da-4864-bc59-b49c196e3327'})
+MERGE (prefixdirectoryexistenceresult)-[:ISA]->(directoryexistenceresult);
+
+
+// ConfigDirectoryExistenceResult - A possible result from an ExistenceHandler, parsing a ConfigDirectoryMap.
+MERGE (configdirectoryexistenceresult:Object:Result:ExistenceResult:DirectoryExistenceResult:ConfigDirectoryExistenceResult {
+    uuid: '0182518c-2380-4abc-be84-5fa02679fe52',
+    name: 'ConfigDirectoryExistenceResult',
+    desc: 'A possible result from an ExistenceHandler, parsing a ConfigDirectoryMap.'
+    });
+
+MATCH (configdirectoryexistenceresult:ConfigDirectoryExistenceResult {uuid: '0182518c-2380-4abc-be84-5fa02679fe52'}),
+    (directoryexistenceresult:DirectoryExistenceResult {uuid: '31736b3b-82da-4864-bc59-b49c196e3327'})
+MERGE (configdirectoryexistenceresult)-[:ISA]->(directoryexistenceresult);
+
+
+// BinaryDirectoryExistenceResult - A possible result from an ExistenceHandler, parsing a BinaryDirectoryMap.
+MERGE (binarydirectoryexistenceresult:Object:Result:ExistenceResult:DirectoryExistenceResult:BinaryDirectoryExistenceResult {
+    uuid: '1b607b4a-5206-4d55-8743-0487f7b6d944',
+    name: 'BinaryDirectoryExistenceResult',
+    desc: 'A possible result from an ExistenceHandler, parsing a BinaryDirectoryMap.'
+    });
+
+MATCH (binarydirectoryexistenceresult:BinaryDirectoryExistenceResult {uuid: '1b607b4a-5206-4d55-8743-0487f7b6d944'}),
+    (directoryexistenceresult:DirectoryExistenceResult {uuid: '31736b3b-82da-4864-bc59-b49c196e3327'})
+MERGE (binarydirectoryexistenceresult)-[:ISA]->(directoryexistenceresult);
+
+
+// LibraryDirectoryExistenceResult - A possible result from an ExistenceHandler, parsing a LibraryDirectoryMap.
+MERGE (librarydirectoryexistenceresult:Object:Result:ExistenceResult:DirectoryExistenceResult:LibraryDirectoryExistenceResult {
+    uuid: '25a2e063-b7e7-4727-9725-63859005e6ed',
+    name: 'LibraryDirectoryExistenceResult',
+    desc: 'A possible result from an ExistenceHandler, parsing a LibraryDirectoryMap.'
+    });
+
+MATCH (librarydirectoryexistenceresult:LibraryDirectoryExistenceResult {uuid: '25a2e063-b7e7-4727-9725-63859005e6ed'}),
+    (directoryexistenceresult:DirectoryExistenceResult {uuid: '31736b3b-82da-4864-bc59-b49c196e3327'})
+MERGE (librarydirectoryexistenceresult)-[:ISA]->(directoryexistenceresult);
+
+
+// DataDirectoryExistenceResult - A possible result from an ExistenceHandler, parsing a DataDirectoryMap.
+MERGE (datadirectoryexistenceresult:Object:Result:ExistenceResult:DirectoryExistenceResult:DataDirectoryExistenceResult {
+    uuid: '22105b60-ea6d-4c1e-b3ad-14b8ff9e37a1',
+    name: 'DataDirectoryExistenceResult',
+    desc: 'A possible result from an ExistenceHandler, parsing a DataDirectoryMap.'
+    });
+
+MATCH (datadirectoryexistenceresult:DataDirectoryExistenceResult {uuid: '22105b60-ea6d-4c1e-b3ad-14b8ff9e37a1'}),
+    (directoryexistenceresult:DirectoryExistenceResult {uuid: '31736b3b-82da-4864-bc59-b49c196e3327'})
+MERGE (datadirectoryexistenceresult)-[:ISA]->(directoryexistenceresult);
+
+
+// LogDirectoryExistenceResult - A possible result from an ExistenceHandler, parsing a LogDirectoryMap.
+MERGE (logdirectoryexistenceresult:Object:Result:ExistenceResult:DirectoryExistenceResult:LogDirectoryExistenceResult {
+    uuid: '3b64fa0c-474e-4109-9f43-c861ac5fce19',
+    name: 'LogDirectoryExistenceResult',
+    desc: 'A possible result from an ExistenceHandler, parsing a LogDirectoryMap.'
+    });
+
+MATCH (logdirectoryexistenceresult:LogDirectoryExistenceResult {uuid: '3b64fa0c-474e-4109-9f43-c861ac5fce19'}),
+    (directoryexistenceresult:DirectoryExistenceResult {uuid: '31736b3b-82da-4864-bc59-b49c196e3327'})
+MERGE (logdirectoryexistenceresult)-[:ISA]->(directoryexistenceresult);
+
+
+// FileExistenceResult - A generic file existence result from an ExistenceHandler.
+MERGE (fileexistenceresult:Object:Result:ExistenceResult:FileExistenceResult {
+    uuid: 'b72fd981-3473-4874-9a40-bc86d6b5362f',
+    name: 'FileExistenceResult',
+    desc: 'A generic file existence result from an ExistenceHandler.'
+    });
+
+MATCH (fileexistenceresult:FileExistenceResult {uuid: 'b72fd981-3473-4874-9a40-bc86d6b5362f'}),
+    (existenceresult:ExistenceResult {uuid: '6d23a2bc-9539-4914-aaf4-45406f59d8fc'})
+MERGE (fileexistenceresult)-[:ISA]->(existenceresult);
+
+
+// ConfigFileExistenceResult - A possible result from an ExistenceHandler, parsing a ConfigFileMap.
+MERGE (configfileexistenceresult:Object:Result:ExistenceResult:FileExistenceResult:ConfigFileExistenceResult {
+    uuid: '6615da84-00f9-4858-a753-38f5905e8c4c',
+    name: 'ConfigFileExistenceResult',
+    desc: 'A possible result from an ExistenceHandler, parsing a ConfigFileMap.'
+    });
+
+MATCH (configfileexistenceresult:ConfigFileExistenceResult {uuid: '6615da84-00f9-4858-a753-38f5905e8c4c'}),
+    (fileexistenceresult:FileExistenceResult {uuid: 'b72fd981-3473-4874-9a40-bc86d6b5362f'})
+MERGE (configfileexistenceresult)-[:ISA]->(fileexistenceresult);
+
+
+// BinaryFileExistenceResult - A possible result from an ExistenceHandler, parsing a BinaryFileMap.
+MERGE (binaryfileexistenceresult:Object:Result:ExistenceResult:FileExistenceResult:BinaryFileExistenceResult {
+    uuid: '6c510a61-53b1-4f16-a5cb-8816846062be',
+    name: 'BinaryFileExistenceResult',
+    desc: 'A possible result from an ExistenceHandler, parsing a BinaryFileMap.'
+    });
+
+MATCH (binaryfileexistenceresult:BinaryFileExistenceResult {uuid: '6c510a61-53b1-4f16-a5cb-8816846062be'}),
+    (fileexistenceresult:FileExistenceResult {uuid: 'b72fd981-3473-4874-9a40-bc86d6b5362f'})
+MERGE (binaryfileexistenceresult)-[:ISA]->(fileexistenceresult);
+
+
+// LibraryFileExistenceResult - A possible result from an ExistenceHandler, parsing a LibraryFileMap.
+MERGE (libraryfileexistenceresult:Object:Result:ExistenceResult:FileExistenceResult:LibraryFileExistenceResult {
+    uuid: 'e4d04fd4-0d95-49db-9637-891d5f9b6e21',
+    name: 'LibraryFileExistenceResult',
+    desc: 'A possible result from an ExistenceHandler, parsing a LibraryFileMap.'
+    });
+
+MATCH (libraryfileexistenceresult:LibraryFileExistenceResult {uuid: 'e4d04fd4-0d95-49db-9637-891d5f9b6e21'}),
+    (fileexistenceresult:FileExistenceResult {uuid: 'b72fd981-3473-4874-9a40-bc86d6b5362f'})
+MERGE (libraryfileexistenceresult)-[:ISA]->(fileexistenceresult);
+
+
+// DataFileExistenceResult - A possible result from an ExistenceHandler, parsing a DataFileMap.
+MERGE (datafileexistenceresult:Object:Result:ExistenceResult:FileExistenceResult:DataFileExistenceResult {
+    uuid: '6a1d9396-707e-4224-965c-2dd8c5c97cfb',
+    name: 'DataFileExistenceResult',
+    desc: 'A possible result from an ExistenceHandler, parsing a DataFileMap.'
+    });
+
+MATCH (datafileexistenceresult:DataFileExistenceResult {uuid: '6a1d9396-707e-4224-965c-2dd8c5c97cfb'}),
+    (fileexistenceresult:FileExistenceResult {uuid: 'b72fd981-3473-4874-9a40-bc86d6b5362f'})
+MERGE (datafileexistenceresult)-[:ISA]->(fileexistenceresult);
+
+
+// LogFileExistenceResult - A possible result from an ExistenceHandler, parsing a LogFileMap.
+MERGE (logfileexistenceresult:Object:Result:ExistenceResult:FileExistenceResult:LogFileExistenceResult {
+    uuid: 'fbd1b321-3c95-4eb3-ad4f-16c1f7215e39',
+    name: 'LogFileExistenceResult',
+    desc: 'A possible result from an ExistenceHandler, parsing a LogFileMap.'
+    });
+
+MATCH (logfileexistenceresult:LogFileExistenceResult {uuid: 'fbd1b321-3c95-4eb3-ad4f-16c1f7215e39'}),
+    (fileexistenceresult:FileExistenceResult {uuid: 'b72fd981-3473-4874-9a40-bc86d6b5362f'})
+MERGE (logfileexistenceresult)-[:ISA]->(fileexistenceresult);
+
+
+// NameExistenceResult - A possible result from an ExistenceHandler, parsing a NameMap.
+MERGE (nameexistenceresult:Object:Result:ExistenceResult:NameExistenceResult {
+    uuid: 'db4c51ec-7455-4bba-b965-f1c067f22e37',
+    name: 'NameExistenceResult',
+    desc: 'A possible result from an ExistenceHandler, parsing a NameMap.'
+    });
+
+MATCH (nameexistenceresult:NameExistenceResult {uuid: 'db4c51ec-7455-4bba-b965-f1c067f22e37'}),
+    (existenceresult:ExistenceResult {uuid: '6d23a2bc-9539-4914-aaf4-45406f59d8fc'})
+MERGE (nameexistenceresult)-[:ISA]->(existenceresult);
+
+
+// PackageNameExistenceResult - A possible result from an ExistenceHandler, parsing a PackageNameMap.
+MERGE (packagenameexistenceresult:Object:Result:ExistenceResult:NameExistenceResult:PackageNameExistenceResult {
+    uuid: '7dd30b10-04bf-4875-8f98-2add74299648',
+    name: 'PackageNameExistenceResult',
+    desc: 'A possible result from an ExistenceHandler, parsing a PackageNameMap.'
+    });
+
+MATCH (packagenameexistenceresult:PackageNameExistenceResult {uuid: '7dd30b10-04bf-4875-8f98-2add74299648'}),
+    (nameexistenceresult:NameExistenceResult {uuid: 'db4c51ec-7455-4bba-b965-f1c067f22e37'})
+MERGE (packagenameexistenceresult)-[:ISA]->(nameexistenceresult);
+
+
+// ServiceNameExistenceResult - A possible result from an ExistenceHandler, parsing a ServiceNameMap.
+MERGE (servicenameexistenceresult:Object:Result:ExistenceResult:NameExistenceResult:ServiceNameExistenceResult {
+    uuid: '9edc562a-f026-4ea8-861f-0dd0cfdf3c39',
+    name: 'ServiceNameExistenceResult',
+    desc: 'A possible result from an ExistenceHandler, parsing a ServiceNameMap.'
+    });
+
+MATCH (servicenameexistenceresult:ServiceNameExistenceResult {uuid: '9edc562a-f026-4ea8-861f-0dd0cfdf3c39'}),
+    (nameexistenceresult:NameExistenceResult {uuid: 'db4c51ec-7455-4bba-b965-f1c067f22e37'})
+MERGE (servicenameexistenceresult)-[:ISA]->(nameexistenceresult);
+
+
+// UsageResult - A generic usage result.
+MERGE (usageresult:Object:Result:UsageResult {
+    uuid: '61bc2f71-158c-450c-9346-b9100505054e',
+    name: 'UsageResult',
+    desc: 'A generic usage result.'
+    });
+
+MATCH (usageresult:UsageResult {uuid: '61bc2f71-158c-450c-9346-b9100505054e'}),
+    (result:Result {uuid: 'f3498c02-58c6-486b-87c6-9d54607fdb12'})
+MERGE (usageresult)-[:ISA]->(result);
+
+
+// ProcessorUsageResult - The processing unit usage results from a UsageHandler.
+MERGE (processorusageresult:Object:Result:UsageResult:ProcessorUsageResult {
+    uuid: '885e629b-3f03-4fa9-a876-67e3991711a0',
+    name: 'ProcessorUsageResult',
+    desc: 'The processing unit usage results from a UsageHandler.'
+    });
+
+MATCH (processorusageresult:ProcessorUsageResult {uuid: '885e629b-3f03-4fa9-a876-67e3991711a0'}),
+    (usageresult:UsageResult {uuid: '61bc2f71-158c-450c-9346-b9100505054e'})
+MERGE (processorusageresult)-[:ISA]->(usageresult);
+
+
+// MemoryUsageResult - The memory usage results from a UsageHandler.
+MERGE (memoryusageresult:Object:Result:UsageResult:MemoryUsageResult {
+    uuid: 'c893bc3b-21de-47b8-96dd-0ba11006d35b',
+    name: 'MemoryUsageResult',
+    desc: 'The memory usage results from a UsageHandler.'
+    });
+
+MATCH (memoryusageresult:MemoryUsageResult {uuid: 'c893bc3b-21de-47b8-96dd-0ba11006d35b'}),
+    (usageresult:UsageResult {uuid: '61bc2f71-158c-450c-9346-b9100505054e'})
+MERGE (memoryusageresult)-[:ISA]->(usageresult);
+
+
+// StorageUsageResult - The storage usage results from a UsageHandler.
+MERGE (storageusageresult:Object:Result:UsageResult:StorageUsageResult {
+    uuid: '2615131b-50ce-4699-a5ef-261fbb633fe3',
+    name: 'StorageUsageResult',
+    desc: 'The storage usage results from a UsageHandler.'
+    });
+
+MATCH (storageusageresult:StorageUsageResult {uuid: '2615131b-50ce-4699-a5ef-261fbb633fe3'}),
+    (usageresult:UsageResult {uuid: '61bc2f71-158c-450c-9346-b9100505054e'})
+MERGE (storageusageresult)-[:ISA]->(usageresult);
+
+
+// NetworkUsageResult - The network bandwidth usage results from a UsageHandler.
+MERGE (networkusageresult:Object:Result:UsageResult:NetworkUsageResult {
+    uuid: 'ebaf3fae-351a-4d90-9b98-9970399160aa',
+    name: 'NetworkUsageResult',
+    desc: 'The network bandwidth usage results from a UsageHandler.'
+    });
+
+MATCH (networkusageresult:NetworkUsageResult {uuid: 'ebaf3fae-351a-4d90-9b98-9970399160aa'}),
+    (usageresult:UsageResult {uuid: '61bc2f71-158c-450c-9346-b9100505054e'})
+MERGE (networkusageresult)-[:ISA]->(usageresult);
