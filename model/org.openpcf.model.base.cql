@@ -17,9 +17,9 @@ CREATE CONSTRAINT ON (object:Object)
 MERGE (model:Object:Model {
     uuid: '4e2dccfa-b5ca-4992-a76e-c390b7d90084',
     name: 'Model',
-    namespace: 'Specifies a namespace for the model.',
-    version: 'Specifies a version number for the model.',
-    desc: 'A model object.'
+    desc: 'A model object.',
+    ver: 'Specifies a version number for the model.',
+    ns: 'Specifies a namespace for the model.'
     });
 
 MATCH (model:Model {uuid: '4e2dccfa-b5ca-4992-a76e-c390b7d90084'}),
@@ -31,9 +31,9 @@ MERGE (model)-[:ISA]->(object);
 MERGE (basemodel:Object:Model:BaseModel {
     uuid: '48c8698b-3afd-44e5-baf7-73f55494cb31',
     name: 'BaseModel',
-    namespace: 'org.openpcf.model.base',
-    version: '0.0.1',
-    desc: 'The first model object, all base types.'
+    desc: 'The first model object, all base types.',
+    ver: '0.0.1',
+    ns: 'org.openpcf.model.base'
     });
 
 MATCH (basemodel:BaseModel {uuid: '48c8698b-3afd-44e5-baf7-73f55494cb31'}),
@@ -1025,7 +1025,9 @@ MERGE (software:Object:Component:Software {
     uuid: '8db2b492-9a4a-41fe-97a5-bc625da042ea',
     name: 'Software',
     desc: 'An abstract software component.',
-    ver: 'The version of the software.'
+    ver: 'The version of the software.',
+    shortName: 'A short lowercase name for the Software without spaces.',
+    longName: 'The full descriptive name of the Software.'
     });
 
 MATCH (software:Software {uuid: '8db2b492-9a4a-41fe-97a5-bc625da042ea'}),
@@ -1068,7 +1070,9 @@ MERGE (servicemanager:Object:Component:Software:ServiceManager {
     uuid: 'c3008eec-b454-4ef6-bf7e-0bd92c13d3c3',
     name: 'ServiceManager',
     desc: 'An operating system initialization system.',
-    ver: 'The version of the service manager software.'
+    ver: 'The version of the service manager software.',
+    shortName: 'A short lowercase name for the Service Manager without spaces.',
+    longName: 'The full descriptive name of the Service Manager.'
     });
 
 MATCH (servicemanager:ServiceManager {uuid: 'c3008eec-b454-4ef6-bf7e-0bd92c13d3c3'}),
@@ -1081,7 +1085,9 @@ MERGE (packagemanager:Object:Component:Software:PackageManager {
     uuid: 'e2b8b9ee-b66f-4252-8fba-4fb172f741bc',
     name: 'PackageManager',
     desc: 'A package manager.',
-    ver: 'The version of the package manager software.'
+    ver: 'The version of the package manager software.',
+    shortName: 'A short lowercase name for the Package Manager without spaces.',
+    longName: 'The full descriptive name of the Package Manager.'
     });
 
 MATCH (packagemanager:PackageManager {uuid: 'e2b8b9ee-b66f-4252-8fba-4fb172f741bc'}),
@@ -1094,7 +1100,9 @@ MERGE (interpreter:Object:Component:Software:Interpreter {
     uuid: 'd047f415-734c-4bd3-92b9-d68d5521ce69',
     name: 'Interpreter',
     desc: 'A command or programming language interpreter.',
-    ver: 'The version of the command or programming language interpreter software.'
+    ver: 'The version of the command or programming language interpreter software.',
+    shortName: 'A short lowercase name for the Interpreter without spaces.',
+    longName: 'The full descriptive name of the Interpreter.'
     });
 
 MATCH (interpreter:Interpreter {uuid: 'd047f415-734c-4bd3-92b9-d68d5521ce69'}),
@@ -1107,7 +1115,9 @@ MERGE (hypervisor:Object:Component:Software:Hypervisor {
     uuid: 'c5c7fcb5-8ac3-40cc-b195-b2b6af368e81',
     name: 'Hypervisor',
     desc: 'A virtualization hypervisor.',
-    ver: 'The version of the hypervisor software.'
+    ver: 'The version of the hypervisor software.',
+    shortName: 'A short lowercase name for the Hypervisor without spaces.',
+    longName: 'The full descriptive name of the Hypervisor.'
     });
 
 MATCH (hypervisor:Hypervisor {uuid: 'c5c7fcb5-8ac3-40cc-b195-b2b6af368e81'}),
@@ -1115,12 +1125,29 @@ MATCH (hypervisor:Hypervisor {uuid: 'c5c7fcb5-8ac3-40cc-b195-b2b6af368e81'}),
 MERGE (hypervisor)-[:ISA]->(software);
 
 
+// Emulator - Any emulator.
+MERGE (emulator:Object:Component:Software:Emulator {
+    uuid: '59aeae81-9741-4986-b9c2-931504cfc9e3',
+    name: 'Emulator',
+    desc: 'A hardware platform emulator.',
+    ver: 'The version of the emulator software.',
+    shortName: 'A short lowercase name for the Emulator without spaces.',
+    longName: 'The full descriptive name of the Emulator.'
+    });
+
+MATCH (emulator:Emulator {uuid: '59aeae81-9741-4986-b9c2-931504cfc9e3'}),
+    (software:Software {uuid: '8db2b492-9a4a-41fe-97a5-bc625da042ea'})
+MERGE (emulator)-[:ISA]->(software);
+
+
 // Service - Any generic local/networked service.
 MERGE (service:Object:Component:Software:Service {
     uuid: '3fb4603b-281e-47c0-b338-768ea05d4660',
     name: 'Service',
     desc: 'A generic local/networked/daemonized service.',
-    ver: 'The version of the local/networked/daemonized software.'
+    ver: 'The version of the local/networked/daemonized software.',
+    shortName: 'A short lowercase name for the Service without spaces.',
+    longName: 'The full descriptive name of the Service.'
     });
 
 MATCH (service:Service {uuid: '3fb4603b-281e-47c0-b338-768ea05d4660'}),
@@ -1128,7 +1155,7 @@ MATCH (service:Service {uuid: '3fb4603b-281e-47c0-b338-768ea05d4660'}),
 MERGE (service)-[:ISA]->(software);
 
 
-// Grouping - A group of references to things.
+// Grouping - A group of references to things. Members of a group are HAS relations.
 MERGE (grouping:Object:Grouping {
     uuid: '5f1eb7c5-ec5e-4563-be6a-fc50774fc374',
     name: 'Grouping',
@@ -1155,7 +1182,12 @@ MERGE (locational)-[:ISA]->(grouping);
 MERGE (building:Object:Grouping:Locational:Building {
     uuid: '44197148-678f-4421-a618-dc6807beaf30',
     name: 'Building',
-    desc: 'A building.'
+    desc: 'A building.',
+    code: 'An optional code designation for the Building.',
+    streetAddress: 'The street address and number (if any) of the Building.',
+    postalCode: 'The postal code or the Building.',
+    city: 'The city where the Building resides.',
+    country: 'The country where the Building resides'
     });
 
 MATCH (building:Building {uuid: '44197148-678f-4421-a618-dc6807beaf30'}),
@@ -1167,7 +1199,8 @@ MERGE (building)-[:ISA]->(locational);
 MERGE (floor:Object:Grouping:Locational:Floor {
     uuid: '9ca8061a-898c-4f2f-aeb3-c77d1747559f',
     name: 'Floor',
-    desc: 'A floor.'
+    desc: 'A floor.',
+    code: 'An optional code designation for the Floor.'
     });
 
 MATCH (floor:Floor {uuid: '9ca8061a-898c-4f2f-aeb3-c77d1747559f'}),
@@ -1179,7 +1212,8 @@ MERGE (floor)-[:ISA]->(locational);
 MERGE (room:Object:Grouping:Locational:Room {
     uuid: '94721751-ab2f-4285-9c33-cd91cb919430',
     name: 'Room',
-    desc: 'A room.'
+    desc: 'A room.',
+    code: 'An optional code designation for the Room.'
     });
 
 MATCH (room:Room {uuid: '94721751-ab2f-4285-9c33-cd91cb919430'}),
@@ -1263,7 +1297,12 @@ MERGE (actor)-[:ISA]->(object);
 MERGE (user:Object:Actor:User {
     uuid: '88d8630d-54ce-4aa5-8505-2068c31df5b1',
     name: 'User',
-    desc: 'A user.'
+    desc: 'A user.',
+    emailAddress: 'The email address of the User.',
+    firstName: 'The first name of the User.',
+    lastName: 'The last name of the User.',
+    title: 'The title of the user.',
+    birthDate: 'The birth date of the User'
     });
 
 MATCH (user:User {uuid: '88d8630d-54ce-4aa5-8505-2068c31df5b1'}),
@@ -1275,7 +1314,8 @@ MERGE (user)-[:ISA]->(actor);
 MERGE (batch:Object:Actor:Batch {
     uuid: '395d3e08-842b-4640-8b57-751e1b0c9e4b',
     name: 'Batch',
-    desc: 'A batch user.'
+    desc: 'A batch user.',
+    emailAddress: 'The email address of the Batch user.'
     });
 
 MATCH (batch:Batch {uuid: '395d3e08-842b-4640-8b57-751e1b0c9e4b'}),
@@ -1706,7 +1746,12 @@ MERGE (restartHandler)-[:ISA]->(handler);
 MERGE (operation:Object:Operation {
     uuid: '46294722-b14e-438e-9fbc-95ff137b6b18',
     name: 'Operation',
-    desc: 'A command or method that can be called, with or without schedule.'
+    desc: 'A command or method that can be called, with or without schedule.',
+    data: 'The stored command, method or eventbus message.',
+    dateCreated: 'The date + time when the operation was created',
+    dateStarted: 'The date + time when the operation was started.',
+    dateFinished: 'The date + time when the operation was finished.',
+    timesInvoked: 'The number of times this operation was invoked.'
     });
 
 MATCH (operation:Operation {uuid: '46294722-b14e-438e-9fbc-95ff137b6b18'}),
@@ -1718,7 +1763,12 @@ MERGE (operation)-[:ISA]->(object);
 MERGE (cmdoperation:Object:Operation:CommandOperation {
     uuid: 'de64c2f4-7fa3-4e68-ba10-6af8140dac36',
     name: 'CommandOperation',
-    desc: 'An arbitrary command.'
+    desc: 'An arbitrary command.',
+    data: 'The stored command, including its parameters.',
+    dateCreated: 'The date + time when the operation was created',
+    dateStarted: 'The date + time when the operation was started.',
+    dateFinished: 'The date + time when the operation was finished.',
+    timesInvoked: 'The number of times this operation was invoked.'
     });
 
 MATCH (cmdoperation:CommandOperation {uuid: 'de64c2f4-7fa3-4e68-ba10-6af8140dac36'}),
@@ -1730,7 +1780,12 @@ MERGE (cmdoperation)-[:ISA]->(operation);
 MERGE (veroperation:Object:Operation:VersionOperation {
     uuid: '9598a74d-0293-459a-af63-e3563215162f',
     name: 'VersionOperation',
-    desc: 'A command that displays a version string.'
+    desc: 'A command that displays a version string.',
+    data: 'The stored command that returns a version string.',
+    dateCreated: 'The date + time when the operation was created',
+    dateStarted: 'The date + time when the operation was started.',
+    dateFinished: 'The date + time when the operation was finished.',
+    timesInvoked: 'The number of times this operation was invoked.'
     });
 
 MATCH (veroperation:VersionOperation {uuid: '9598a74d-0293-459a-af63-e3563215162f'}),
@@ -1742,7 +1797,12 @@ MERGE (veroperation)-[:ISA]->(operation);
 MERGE (customstatusoperation:Object:Operation:CustomStatusOperation {
     uuid: 'bfc01b44-075d-4d6e-82eb-474830bba06e',
     name: 'CustomStatusOperation',
-    desc: 'Custom command for a status check operation.'
+    desc: 'Custom command for a status check operation.',
+    data: 'A custom command, method or eventbus message that does a status check.',
+    dateCreated: 'The date + time when the operation was created',
+    dateStarted: 'The date + time when the operation was started.',
+    dateFinished: 'The date + time when the operation was finished.',
+    timesInvoked: 'The number of times this operation was invoked.'
     });
 
 MATCH (customstatusoperation:CustomStatusOperation {uuid: 'bfc01b44-075d-4d6e-82eb-474830bba06e'}),
@@ -1754,7 +1814,12 @@ MERGE (customstatusoperation)-[:ISA]->(operation);
 MERGE (customexistenceoperation:Object:Operation:CustomExistenceOperation {
     uuid: '97bf21ef-d112-4607-9392-83243e44577f',
     name: 'CustomExistenceOperation',
-    desc: 'Custom command for an existence operation.'
+    desc: 'Custom command for an existence operation.',
+    data: 'A custom command, method or eventbus message that does an existence check.',
+    dateCreated: 'The date + time when the operation was created',
+    dateStarted: 'The date + time when the operation was started.',
+    dateFinished: 'The date + time when the operation was finished.',
+    timesInvoked: 'The number of times this operation was invoked.'
     });
 
 MATCH (customexistenceoperation:CustomExistenceOperation {uuid: '97bf21ef-d112-4607-9392-83243e44577f'}),
@@ -1766,7 +1831,12 @@ MERGE (customexistenceoperation)-[:ISA]->(operation);
 MERGE (customusageoperation:Object:Operation:CustomUsageOperation {
     uuid: '32b9f847-3579-4750-b29b-c0f3af877adb',
     name: 'CustomUsageOperation',
-    desc: 'Custom command that shows/derives/fetches the usage of a resource.'
+    desc: 'Custom command that shows/derives/fetches the usage of a resource.',
+    data: 'A custom command, method or eventbus message that does a usage check.',
+    dateCreated: 'The date + time when the operation was created',
+    dateStarted: 'The date + time when the operation was started.',
+    dateFinished: 'The date + time when the operation was finished.',
+    timesInvoked: 'The number of times this operation was invoked.'
     });
 
 MATCH (customusageoperation:CustomUsageOperation {uuid: '32b9f847-3579-4750-b29b-c0f3af877adb'}),
@@ -1778,7 +1848,12 @@ MERGE (customusageoperation)-[:ISA]->(operation);
 MERGE (custominstalloperation:Object:Operation:CustomInstallOperation {
     uuid: '7fb7c8c0-6967-4af2-a4f9-e5342fc3fb24',
     name: 'CustomInstallOperation',
-    desc: 'Custom command to install a software.'
+    desc: 'Custom command to install a software.',
+    data: 'A custom command, method or eventbus message that does a software installation.',
+    dateCreated: 'The date + time when the operation was created',
+    dateStarted: 'The date + time when the operation was started.',
+    dateFinished: 'The date + time when the operation was finished.',
+    timesInvoked: 'The number of times this operation was invoked.'
     });
 
 MATCH (custominstalloperation:CustomInstallOperation {uuid: '7fb7c8c0-6967-4af2-a4f9-e5342fc3fb24'}),
@@ -1790,7 +1865,12 @@ MERGE (custominstalloperation)-[:ISA]->(operation);
 MERGE (customuninstalloperation:Object:Operation:CustomUninstallOperation {
     uuid: '1308c542-ea7a-4525-8a1b-65cf96033a62',
     name: 'CustomUninstallOperation',
-    desc: 'Custom command to uninstall a software.'
+    desc: 'Custom command to uninstall a software.',
+    data: 'A custom command, method or eventbus message that uninstalls a software.',
+    dateCreated: 'The date + time when the operation was created',
+    dateStarted: 'The date + time when the operation was started.',
+    dateFinished: 'The date + time when the operation was finished.',
+    timesInvoked: 'The number of times this operation was invoked.'
     });
 
 MATCH (customuninstalloperation:CustomUninstallOperation {uuid: '1308c542-ea7a-4525-8a1b-65cf96033a62'}),
@@ -1802,7 +1882,12 @@ MERGE (customuninstalloperation)-[:ISA]->(operation);
 MERGE (customstartoperation:Object:Operation:CustomStartOperation {
     uuid: '8cb7ac74-7923-4114-abd2-17f4c5f440d7',
     name: 'CustomStartOperation',
-    desc: 'Custom command to start a software.'
+    desc: 'Custom command to start a software.',
+    data: 'A custom command, method or eventbus message that does a start operation.',
+    dateCreated: 'The date + time when the operation was created',
+    dateStarted: 'The date + time when the operation was started.',
+    dateFinished: 'The date + time when the operation was finished.',
+    timesInvoked: 'The number of times this operation was invoked.'
     });
 
 MATCH (customstartoperation:CustomStartOperation {uuid: '8cb7ac74-7923-4114-abd2-17f4c5f440d7'}),
@@ -1814,7 +1899,12 @@ MERGE (customstartoperation)-[:ISA]->(operation);
 MERGE (customstopoperation:Object:Operation:CustomStopOperation {
     uuid: 'ffefceab-afd8-42da-b793-d65beb4f71eb',
     name: 'CustomStopOperation',
-    desc: 'Custom command to stop a software.'
+    desc: 'Custom command to stop a software.',
+    data: 'A custom command, method or eventbus message that does a stop operation.',
+    dateCreated: 'The date + time when the operation was created',
+    dateStarted: 'The date + time when the operation was started.',
+    dateFinished: 'The date + time when the operation was finished.',
+    timesInvoked: 'The number of times this operation was invoked.'
     });
 
 MATCH (customstopoperation:CustomStopOperation {uuid: 'ffefceab-afd8-42da-b793-d65beb4f71eb'}),
@@ -1826,7 +1916,12 @@ MERGE (customstopoperation)-[:ISA]->(operation);
 MERGE (customrestartoperation:Object:Operation:CustomRestartOperation {
     uuid: '3d5300bf-7b4d-443c-b33a-159c00572eb9',
     name: 'CustomRestartOperation',
-    desc: 'Custom command to restart a software.'
+    desc: 'Custom command to restart a software.',
+    data: 'A custom command, method or eventbus message that does a restart operation.',
+    dateCreated: 'The date + time when the operation was created',
+    dateStarted: 'The date + time when the operation was started.',
+    dateFinished: 'The date + time when the operation was finished.',
+    timesInvoked: 'The number of times this operation was invoked.'
     });
 
 MATCH (customrestartoperation:CustomRestartOperation {uuid: '3d5300bf-7b4d-443c-b33a-159c00572eb9'}),
@@ -1838,7 +1933,9 @@ MERGE (customrestartoperation)-[:ISA]->(operation);
 MERGE (result:Object:Result {
     uuid: 'f3498c02-58c6-486b-87c6-9d54607fdb12',
     name: 'Result',
-    desc: 'A result from an operation.'
+    desc: 'A result from an operation.',
+    data: 'The result data.',
+    dateCreated: 'The date + time when the result was created.'
     });
 
 MATCH (result:Result {uuid: 'f3498c02-58c6-486b-87c6-9d54607fdb12'}),
@@ -1850,7 +1947,9 @@ MERGE (result)-[:ISA]->(object);
 MERGE (commandresult:Object:Result:CommandResult {
     uuid: '6991d878-52be-467d-893a-6b95074f04c2',
     name: 'CommandResult',
-    desc: 'A generic textual result from a command operation.'
+    desc: 'A generic textual result from a command operation.',
+    data: 'The result data.',
+    dateCreated: 'The date + time when the result was created.'
     });
 
 MATCH (commandresult:CommandResult {uuid: '6991d878-52be-467d-893a-6b95074f04c2'}),
@@ -1862,7 +1961,9 @@ MERGE (commandresult)-[:ISA]->(result);
 MERGE (versionresult:Object:Result:VersionResult {
     uuid: '2f9703cb-3d68-44fa-99bf-935ed658ca5a',
     name: 'VersionResult',
-    desc: 'A textual result representing a version string.'
+    desc: 'A textual result representing a version string.',
+    data: 'The result data.',
+    dateCreated: 'The date + time when the result was created.'
     });
 
 MATCH (versionresult:VersionResult {uuid: '2f9703cb-3d68-44fa-99bf-935ed658ca5a'}),
@@ -1874,7 +1975,9 @@ MERGE (versionresult)-[:ISA]->(result);
 MERGE (statusresult:Object:Result:StatusResult {
     uuid: '48839d5c-8ebc-4989-80ec-f6fb90299a56',
     name: 'StatusResult',
-    desc: 'A result that represents a status.'
+    desc: 'A result that represents a status.',
+    data: 'The result data.',
+    dateCreated: 'The date + time when the result was created.'
     });
 
 MATCH (statusresult:StatusResult {uuid: '48839d5c-8ebc-4989-80ec-f6fb90299a56'}),
@@ -1886,7 +1989,9 @@ MERGE (statusresult)-[:ISA]->(result);
 MERGE (derivedstatusresult:Object:Result:StatusResult:DerivedStatusResult {
     uuid: '9565a2ca-29e4-4c36-8f17-97e9a0074ded',
     name: 'DerivedStatusResult',
-    desc: 'A derived status. 1/ok, 0/not-ok.'
+    desc: 'A derived status. 1/ok, 0/not-ok.',
+    data: 'The result data.',
+    dateCreated: 'The date + time when the result was created.'
     });
 
 MATCH (derivedstatusresult:DerivedStatusResult {uuid: '9565a2ca-29e4-4c36-8f17-97e9a0074ded'}),
@@ -1898,7 +2003,9 @@ MERGE (derivedstatusresult)-[:ISA]->(statusresult);
 MERGE (localderivedstatusresult:Object:Result:StatusResult:LocalDerivedStatusResult {
     uuid: '9d007dd4-82df-4791-81f9-d91a65e9f3a3',
     name: 'LocalDerivedStatusResult',
-    desc: 'A derived 1/0 status from all statuses known to the software itself.'
+    desc: 'A derived 1/0 status from all statuses known to the software itself.',
+    data: 'The result data.',
+    dateCreated: 'The date + time when the result was created.'
     });
 
 MATCH (localderivedstatusresult:LocalDerivedStatusResult {uuid: '9d007dd4-82df-4791-81f9-d91a65e9f3a3'}),
@@ -1910,7 +2017,9 @@ MERGE (localderivedstatusresult)-[:ISA]->(statusresult);
 MERGE (aggregatederivedstatusresult:Object:Result:StatusResult:AggregateDerivedStatusResult {
     uuid: '3f9ca86e-6286-4e59-9eb1-fa352103fe5c',
     name: 'AggregateDerivedStatusResult',
-    desc: 'A derived 1/0 status from all localderivedstatuses from its children.'
+    desc: 'A derived 1/0 status from all localderivedstatuses from its children.',
+    data: 'The result data.',
+    dateCreated: 'The date + time when the result was created.'
     });
 
 MATCH (aggregatederivedstatusresult:AggregateDerivedStatusResult {uuid: '3f9ca86e-6286-4e59-9eb1-fa352103fe5c'}),
@@ -1922,7 +2031,9 @@ MERGE (aggregatederivedstatusresult)-[:ISA]->(statusresult);
 MERGE (softwareinstalledstatusresult:Object:Result:StatusResult:SoftwareInstalledStatusResult {
     uuid: '38b435e1-046c-415b-9cce-6578efb4eef6',
     name: 'SoftwareInstalledStatusResult',
-    desc: '1/installed, 0/not-installed.'
+    desc: '1/installed, 0/not-installed.',
+    data: 'The result data.',
+    dateCreated: 'The date + time when the result was created.'
     });
 
 MATCH (softwareinstalledstatusresult:SoftwareInstalledStatusResult {uuid: '38b435e1-046c-415b-9cce-6578efb4eef6'}),
@@ -1934,7 +2045,9 @@ MERGE (softwareinstalledstatusresult)-[:ISA]->(statusresult);
 MERGE (softwarerunningstatusresult:Object:Result:StatusResult:SoftwareRunningStatusResult {
     uuid: '4fda91ea-63bb-4689-bcf4-86bb02314c21',
     name: 'SoftwareRunningStatusResult',
-    desc: '1/running, 0/not-running.'
+    desc: '1/running, 0/not-running.',
+    data: 'The result data.',
+    dateCreated: 'The date + time when the result was created.'
     });
 
 MATCH (softwarerunningstatusresult:SoftwareRunningStatusResult {uuid: '4fda91ea-63bb-4689-bcf4-86bb02314c21'}),
@@ -1946,7 +2059,9 @@ MERGE (softwarerunningstatusresult)-[:ISA]->(statusresult);
 MERGE (ipaddressreachablestatusresult:Object:Result:StatusResult:IpAddressReachableStatusResult {
     uuid: '729e0e03-3a27-47e2-8075-7e4a754d68a5',
     name: 'IpAddressReachableStatusResult',
-    desc: '1/reachable, 0/unreachable.'
+    desc: '1/reachable, 0/unreachable.',
+    data: 'The result data.',
+    dateCreated: 'The date + time when the result was created.'
     });
 
 MATCH (ipaddressreachablestatusresult:IpAddressReachableStatusResult {uuid: '729e0e03-3a27-47e2-8075-7e4a754d68a5'}),
@@ -1958,7 +2073,9 @@ MERGE (ipaddressreachablestatusresult)-[:ISA]->(statusresult);
 MERGE (listeneravailablestatusresult:Object:Result:StatusResult:ListenerAvailableStatusResult {
     uuid: '630e8753-7566-4c2f-9cdf-99f5b64492a1',
     name: 'ListenerAvailableStatusResult',
-    desc: '1/open, 0/closed.'
+    desc: '1/open, 0/closed.',
+    data: 'The result data.',
+    dateCreated: 'The date + time when the result was created.'
     });
 
 MATCH (listeneravailablestatusresult:ListenerAvailableStatusResult {uuid: '630e8753-7566-4c2f-9cdf-99f5b64492a1'}),
@@ -1970,7 +2087,9 @@ MERGE (listeneravailablestatusresult)-[:ISA]->(statusresult);
 MERGE (dnsnameresolvablestatusresult:Object:Result:StatusResult:DnsNameResolvableStatusResult {
     uuid: 'fffdce77-417f-4044-a570-6e6153db1dd0',
     name: 'DnsNameResolvableStatusResult',
-    desc: '1/resolved, 0/not-resolved.'
+    desc: '1/resolved, 0/not-resolved.',
+    data: 'The result data.',
+    dateCreated: 'The date + time when the result was created.'
     });
 
 MATCH (dnsnameresolvablestatusresult:DnsNameResolvableStatusResult {uuid: 'fffdce77-417f-4044-a570-6e6153db1dd0'}),
@@ -1982,7 +2101,9 @@ MERGE (dnsnameresolvablestatusresult)-[:ISA]->(statusresult);
 MERGE (existenceresult:Object:Result:ExistenceResult {
     uuid: '6d23a2bc-9539-4914-aaf4-45406f59d8fc',
     name: 'ExistenceResult',
-    desc: 'A generic result from an ExistenceHandler.'
+    desc: 'A generic result from an ExistenceHandler.',
+    data: 'The result data.',
+    dateCreated: 'The date + time when the result was created.'
     });
 
 MATCH (existenceresult:ExistenceResult {uuid: '6d23a2bc-9539-4914-aaf4-45406f59d8fc'}),
@@ -1994,7 +2115,9 @@ MERGE (existenceresult)-[:ISA]->(result);
 MERGE (directoryexistenceresult:Object:Result:ExistenceResult:DirectoryExistenceResult {
     uuid: '31736b3b-82da-4864-bc59-b49c196e3327',
     name: 'DirectoryExistenceResult',
-    desc: 'A generic directory existence result from an ExistenceHandler.'
+    desc: 'A generic directory existence result from an ExistenceHandler.',
+    data: 'The result data.',
+    dateCreated: 'The date + time when the result was created.'
     });
 
 MATCH (directoryexistenceresult:DirectoryExistenceResult {uuid: '31736b3b-82da-4864-bc59-b49c196e3327'}),
@@ -2006,7 +2129,9 @@ MERGE (directoryexistenceresult)-[:ISA]->(existenceresult);
 MERGE (prefixdirectoryexistenceresult:Object:Result:ExistenceResult:DirectoryExistenceResult:PrefixDirectoryExistenceResult {
     uuid: '93e34319-fe7b-4768-b83d-58986a4cdb73',
     name: 'PrefixDirectoryExistenceResult',
-    desc: 'A possible result from an ExistenceHandler, parsing a PrefixDirectoryMap.'
+    desc: 'A possible result from an ExistenceHandler, parsing a PrefixDirectoryMap.',
+    data: 'The result data.',
+    dateCreated: 'The date + time when the result was created.'
     });
 
 MATCH (prefixdirectoryexistenceresult:PrefixDirectoryExistenceResult {uuid: '93e34319-fe7b-4768-b83d-58986a4cdb73'}),
@@ -2018,7 +2143,9 @@ MERGE (prefixdirectoryexistenceresult)-[:ISA]->(directoryexistenceresult);
 MERGE (configdirectoryexistenceresult:Object:Result:ExistenceResult:DirectoryExistenceResult:ConfigDirectoryExistenceResult {
     uuid: '0182518c-2380-4abc-be84-5fa02679fe52',
     name: 'ConfigDirectoryExistenceResult',
-    desc: 'A possible result from an ExistenceHandler, parsing a ConfigDirectoryMap.'
+    desc: 'A possible result from an ExistenceHandler, parsing a ConfigDirectoryMap.',
+    data: 'The result data.',
+    dateCreated: 'The date + time when the result was created.'
     });
 
 MATCH (configdirectoryexistenceresult:ConfigDirectoryExistenceResult {uuid: '0182518c-2380-4abc-be84-5fa02679fe52'}),
@@ -2030,7 +2157,9 @@ MERGE (configdirectoryexistenceresult)-[:ISA]->(directoryexistenceresult);
 MERGE (binarydirectoryexistenceresult:Object:Result:ExistenceResult:DirectoryExistenceResult:BinaryDirectoryExistenceResult {
     uuid: '1b607b4a-5206-4d55-8743-0487f7b6d944',
     name: 'BinaryDirectoryExistenceResult',
-    desc: 'A possible result from an ExistenceHandler, parsing a BinaryDirectoryMap.'
+    desc: 'A possible result from an ExistenceHandler, parsing a BinaryDirectoryMap.',
+    data: 'The result data.',
+    dateCreated: 'The date + time when the result was created.'
     });
 
 MATCH (binarydirectoryexistenceresult:BinaryDirectoryExistenceResult {uuid: '1b607b4a-5206-4d55-8743-0487f7b6d944'}),
@@ -2042,7 +2171,9 @@ MERGE (binarydirectoryexistenceresult)-[:ISA]->(directoryexistenceresult);
 MERGE (librarydirectoryexistenceresult:Object:Result:ExistenceResult:DirectoryExistenceResult:LibraryDirectoryExistenceResult {
     uuid: '25a2e063-b7e7-4727-9725-63859005e6ed',
     name: 'LibraryDirectoryExistenceResult',
-    desc: 'A possible result from an ExistenceHandler, parsing a LibraryDirectoryMap.'
+    desc: 'A possible result from an ExistenceHandler, parsing a LibraryDirectoryMap.',
+    data: 'The result data.',
+    dateCreated: 'The date + time when the result was created.'
     });
 
 MATCH (librarydirectoryexistenceresult:LibraryDirectoryExistenceResult {uuid: '25a2e063-b7e7-4727-9725-63859005e6ed'}),
@@ -2054,7 +2185,9 @@ MERGE (librarydirectoryexistenceresult)-[:ISA]->(directoryexistenceresult);
 MERGE (datadirectoryexistenceresult:Object:Result:ExistenceResult:DirectoryExistenceResult:DataDirectoryExistenceResult {
     uuid: '22105b60-ea6d-4c1e-b3ad-14b8ff9e37a1',
     name: 'DataDirectoryExistenceResult',
-    desc: 'A possible result from an ExistenceHandler, parsing a DataDirectoryMap.'
+    desc: 'A possible result from an ExistenceHandler, parsing a DataDirectoryMap.',
+    data: 'The result data.',
+    dateCreated: 'The date + time when the result was created.'
     });
 
 MATCH (datadirectoryexistenceresult:DataDirectoryExistenceResult {uuid: '22105b60-ea6d-4c1e-b3ad-14b8ff9e37a1'}),
@@ -2066,7 +2199,9 @@ MERGE (datadirectoryexistenceresult)-[:ISA]->(directoryexistenceresult);
 MERGE (logdirectoryexistenceresult:Object:Result:ExistenceResult:DirectoryExistenceResult:LogDirectoryExistenceResult {
     uuid: '3b64fa0c-474e-4109-9f43-c861ac5fce19',
     name: 'LogDirectoryExistenceResult',
-    desc: 'A possible result from an ExistenceHandler, parsing a LogDirectoryMap.'
+    desc: 'A possible result from an ExistenceHandler, parsing a LogDirectoryMap.',
+    data: 'The result data.',
+    dateCreated: 'The date + time when the result was created.'
     });
 
 MATCH (logdirectoryexistenceresult:LogDirectoryExistenceResult {uuid: '3b64fa0c-474e-4109-9f43-c861ac5fce19'}),
@@ -2078,7 +2213,9 @@ MERGE (logdirectoryexistenceresult)-[:ISA]->(directoryexistenceresult);
 MERGE (fileexistenceresult:Object:Result:ExistenceResult:FileExistenceResult {
     uuid: 'b72fd981-3473-4874-9a40-bc86d6b5362f',
     name: 'FileExistenceResult',
-    desc: 'A generic file existence result from an ExistenceHandler.'
+    desc: 'A generic file existence result from an ExistenceHandler.',
+    data: 'The result data.',
+    dateCreated: 'The date + time when the result was created.'
     });
 
 MATCH (fileexistenceresult:FileExistenceResult {uuid: 'b72fd981-3473-4874-9a40-bc86d6b5362f'}),
@@ -2090,7 +2227,9 @@ MERGE (fileexistenceresult)-[:ISA]->(existenceresult);
 MERGE (configfileexistenceresult:Object:Result:ExistenceResult:FileExistenceResult:ConfigFileExistenceResult {
     uuid: '6615da84-00f9-4858-a753-38f5905e8c4c',
     name: 'ConfigFileExistenceResult',
-    desc: 'A possible result from an ExistenceHandler, parsing a ConfigFileMap.'
+    desc: 'A possible result from an ExistenceHandler, parsing a ConfigFileMap.',
+    data: 'The result data.',
+    dateCreated: 'The date + time when the result was created.'
     });
 
 MATCH (configfileexistenceresult:ConfigFileExistenceResult {uuid: '6615da84-00f9-4858-a753-38f5905e8c4c'}),
@@ -2114,7 +2253,9 @@ MERGE (binaryfileexistenceresult)-[:ISA]->(fileexistenceresult);
 MERGE (libraryfileexistenceresult:Object:Result:ExistenceResult:FileExistenceResult:LibraryFileExistenceResult {
     uuid: 'e4d04fd4-0d95-49db-9637-891d5f9b6e21',
     name: 'LibraryFileExistenceResult',
-    desc: 'A possible result from an ExistenceHandler, parsing a LibraryFileMap.'
+    desc: 'A possible result from an ExistenceHandler, parsing a LibraryFileMap.',
+    data: 'The result data.',
+    dateCreated: 'The date + time when the result was created.'
     });
 
 MATCH (libraryfileexistenceresult:LibraryFileExistenceResult {uuid: 'e4d04fd4-0d95-49db-9637-891d5f9b6e21'}),
@@ -2126,7 +2267,9 @@ MERGE (libraryfileexistenceresult)-[:ISA]->(fileexistenceresult);
 MERGE (datafileexistenceresult:Object:Result:ExistenceResult:FileExistenceResult:DataFileExistenceResult {
     uuid: '6a1d9396-707e-4224-965c-2dd8c5c97cfb',
     name: 'DataFileExistenceResult',
-    desc: 'A possible result from an ExistenceHandler, parsing a DataFileMap.'
+    desc: 'A possible result from an ExistenceHandler, parsing a DataFileMap.',
+    data: 'The result data.',
+    dateCreated: 'The date + time when the result was created.'
     });
 
 MATCH (datafileexistenceresult:DataFileExistenceResult {uuid: '6a1d9396-707e-4224-965c-2dd8c5c97cfb'}),
@@ -2138,7 +2281,9 @@ MERGE (datafileexistenceresult)-[:ISA]->(fileexistenceresult);
 MERGE (logfileexistenceresult:Object:Result:ExistenceResult:FileExistenceResult:LogFileExistenceResult {
     uuid: 'fbd1b321-3c95-4eb3-ad4f-16c1f7215e39',
     name: 'LogFileExistenceResult',
-    desc: 'A possible result from an ExistenceHandler, parsing a LogFileMap.'
+    desc: 'A possible result from an ExistenceHandler, parsing a LogFileMap.',
+    data: 'The result data.',
+    dateCreated: 'The date + time when the result was created.'
     });
 
 MATCH (logfileexistenceresult:LogFileExistenceResult {uuid: 'fbd1b321-3c95-4eb3-ad4f-16c1f7215e39'}),
@@ -2150,7 +2295,9 @@ MERGE (logfileexistenceresult)-[:ISA]->(fileexistenceresult);
 MERGE (nameexistenceresult:Object:Result:ExistenceResult:NameExistenceResult {
     uuid: 'db4c51ec-7455-4bba-b965-f1c067f22e37',
     name: 'NameExistenceResult',
-    desc: 'A possible result from an ExistenceHandler, parsing a NameMap.'
+    desc: 'A possible result from an ExistenceHandler, parsing a NameMap.',
+    data: 'The result data.',
+    dateCreated: 'The date + time when the result was created.'
     });
 
 MATCH (nameexistenceresult:NameExistenceResult {uuid: 'db4c51ec-7455-4bba-b965-f1c067f22e37'}),
@@ -2162,7 +2309,9 @@ MERGE (nameexistenceresult)-[:ISA]->(existenceresult);
 MERGE (packagenameexistenceresult:Object:Result:ExistenceResult:NameExistenceResult:PackageNameExistenceResult {
     uuid: '7dd30b10-04bf-4875-8f98-2add74299648',
     name: 'PackageNameExistenceResult',
-    desc: 'A possible result from an ExistenceHandler, parsing a PackageNameMap.'
+    desc: 'A possible result from an ExistenceHandler, parsing a PackageNameMap.',
+    data: 'The result data.',
+    dateCreated: 'The date + time when the result was created.'
     });
 
 MATCH (packagenameexistenceresult:PackageNameExistenceResult {uuid: '7dd30b10-04bf-4875-8f98-2add74299648'}),
@@ -2174,7 +2323,9 @@ MERGE (packagenameexistenceresult)-[:ISA]->(nameexistenceresult);
 MERGE (servicenameexistenceresult:Object:Result:ExistenceResult:NameExistenceResult:ServiceNameExistenceResult {
     uuid: '9edc562a-f026-4ea8-861f-0dd0cfdf3c39',
     name: 'ServiceNameExistenceResult',
-    desc: 'A possible result from an ExistenceHandler, parsing a ServiceNameMap.'
+    desc: 'A possible result from an ExistenceHandler, parsing a ServiceNameMap.',
+    data: 'The result data.',
+    dateCreated: 'The date + time when the result was created.'
     });
 
 MATCH (servicenameexistenceresult:ServiceNameExistenceResult {uuid: '9edc562a-f026-4ea8-861f-0dd0cfdf3c39'}),
@@ -2186,7 +2337,9 @@ MERGE (servicenameexistenceresult)-[:ISA]->(nameexistenceresult);
 MERGE (usageresult:Object:Result:UsageResult {
     uuid: '61bc2f71-158c-450c-9346-b9100505054e',
     name: 'UsageResult',
-    desc: 'A generic usage result.'
+    desc: 'A generic usage result.',
+    data: 'The result data.',
+    dateCreated: 'The date + time when the result was created.'
     });
 
 MATCH (usageresult:UsageResult {uuid: '61bc2f71-158c-450c-9346-b9100505054e'}),
@@ -2198,7 +2351,9 @@ MERGE (usageresult)-[:ISA]->(result);
 MERGE (processorusageresult:Object:Result:UsageResult:ProcessorUsageResult {
     uuid: '885e629b-3f03-4fa9-a876-67e3991711a0',
     name: 'ProcessorUsageResult',
-    desc: 'The processing unit usage results from a UsageHandler.'
+    desc: 'The processing unit usage results from a UsageHandler.',
+    data: 'The result data.',
+    dateCreated: 'The date + time when the result was created.'
     });
 
 MATCH (processorusageresult:ProcessorUsageResult {uuid: '885e629b-3f03-4fa9-a876-67e3991711a0'}),
@@ -2210,7 +2365,9 @@ MERGE (processorusageresult)-[:ISA]->(usageresult);
 MERGE (memoryusageresult:Object:Result:UsageResult:MemoryUsageResult {
     uuid: 'c893bc3b-21de-47b8-96dd-0ba11006d35b',
     name: 'MemoryUsageResult',
-    desc: 'The memory usage results from a UsageHandler.'
+    desc: 'The memory usage results from a UsageHandler.',
+    data: 'The result data.',
+    dateCreated: 'The date + time when the result was created.'
     });
 
 MATCH (memoryusageresult:MemoryUsageResult {uuid: 'c893bc3b-21de-47b8-96dd-0ba11006d35b'}),
@@ -2222,7 +2379,9 @@ MERGE (memoryusageresult)-[:ISA]->(usageresult);
 MERGE (storageusageresult:Object:Result:UsageResult:StorageUsageResult {
     uuid: '2615131b-50ce-4699-a5ef-261fbb633fe3',
     name: 'StorageUsageResult',
-    desc: 'The storage usage results from a UsageHandler.'
+    desc: 'The storage usage results from a UsageHandler.',
+    data: 'The result data.',
+    dateCreated: 'The date + time when the result was created.'
     });
 
 MATCH (storageusageresult:StorageUsageResult {uuid: '2615131b-50ce-4699-a5ef-261fbb633fe3'}),
@@ -2234,7 +2393,9 @@ MERGE (storageusageresult)-[:ISA]->(usageresult);
 MERGE (networkusageresult:Object:Result:UsageResult:NetworkUsageResult {
     uuid: 'ebaf3fae-351a-4d90-9b98-9970399160aa',
     name: 'NetworkUsageResult',
-    desc: 'The network bandwidth usage results from a UsageHandler.'
+    desc: 'The network bandwidth usage results from a UsageHandler.',
+    data: 'The result data.',
+    dateCreated: 'The date + time when the result was created.'
     });
 
 MATCH (networkusageresult:NetworkUsageResult {uuid: 'ebaf3fae-351a-4d90-9b98-9970399160aa'}),

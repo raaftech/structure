@@ -22,6 +22,11 @@ sleep 3
 "$neo4j_repl" -file org.openpcf.model.cloudsystems.cql
 echo ""
 
+echo "OpenPCF Emulators"
+sleep 3
+"$neo4j_repl" -file org.openpcf.model.emulators.cql
+echo ""
+
 echo "OpenPCF Hypervisors"
 sleep 3
 "$neo4j_repl" -file org.openpcf.model.hypervisors.cql

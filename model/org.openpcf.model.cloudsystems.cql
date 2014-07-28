@@ -5,9 +5,9 @@
 MERGE (opcfcloudmodel:Object:Model:CloudSystemModel {
     uuid: '4a8e288a-696d-4616-bb77-970dcf3e150d',
     name: 'CloudSystemModel',
-    namespace: 'org.openpcf.model.cloudsystems',
-    version: '0.0.1',
-    desc: 'Main cloud (operating) system types.'
+    desc: 'Main cloud (operating) system types.',
+    ver: '0.0.1',
+    ns: 'org.openpcf.model.cloudsystems'
     });
 
 MATCH (opcfcloudmodel:CloudSystemModel {uuid: '4a8e288a-696d-4616-bb77-970dcf3e150d'}),

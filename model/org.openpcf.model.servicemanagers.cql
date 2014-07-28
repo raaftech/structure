@@ -5,9 +5,9 @@
 MERGE (opcfsvcmgrmodel:Object:Model:ServiceManagerModel {
     uuid: '4c305d8f-a9bb-4cfa-a512-4cc514c63349',
     name: 'ServiceManagerModel',
-    namespace: 'org.openpcf.model.servicemanagers',
-    version: '0.0.1',
-    desc: 'Main service manager types.'
+    desc: 'Main service manager types.',
+    ver: '0.0.1',
+    ns: 'org.openpcf.model.servicemanagers'
     });
 
 MATCH (opcfsvcmgrmodel:ServiceManagerModel {uuid: '4c305d8f-a9bb-4cfa-a512-4cc514c63349'}),
@@ -23,7 +23,9 @@ MERGE (opcfsvcmgrmodel)-[:REQUIRES]->(basemodel);
 MERGE (sysvinit:Object:Component:Software:ServiceManager:SysvInit {
     uuid: '608bfaf1-9edc-4609-b5cd-56d8aeff8174',
     name: 'SysvInit',
-    desc: 'SysV Init Service Manager.'
+    desc: 'SysV Init Service Manager.',
+    shortName: 'sysvinit',
+    longName: 'SysV Init'
     });
 
 MATCH (sysvinit:SysvInit {uuid: '608bfaf1-9edc-4609-b5cd-56d8aeff8174'}),
@@ -35,7 +37,9 @@ MERGE (sysvinit)-[:ISA]->(servicemanager);
 MERGE (bsdrcinit:Object:Component:Software:ServiceManager:BsdrcInit {
     uuid: 'b4c067de-e3cf-4b5b-90ca-588725d1b6c4',
     name: 'BsdrcInit',
-    desc: 'BSD RC Init Service Manager.'
+    desc: 'BSD RC Init Service Manager.',
+    shortName: 'bsdrcinit',
+    longName: 'BSD RC Init'
     });
 
 MATCH (bsdrcinit:BsdrcInit {uuid: 'b4c067de-e3cf-4b5b-90ca-588725d1b6c4'}),
@@ -47,7 +51,9 @@ MERGE (bsdrcinit)-[:ISA]->(servicemanager);
 MERGE (upstart:Object:Component:Software:ServiceManager:Upstart {
     uuid: '3aac3563-a493-4efa-a31b-e751ee7d0a6f',
     name: 'Upstart',
-    desc: 'Upstart Service Manager.'
+    desc: 'Upstart Service Manager.',
+    shortName: 'upstart',
+    longName: 'Upstart'
     });
 
 MATCH (upstart:Upstart {uuid: '3aac3563-a493-4efa-a31b-e751ee7d0a6f'}),
@@ -59,7 +65,9 @@ MERGE (upstart)-[:ISA]->(servicemanager);
 MERGE (systemd:Object:Component:Software:ServiceManager:Systemd {
     uuid: '0c189a0e-6b78-4177-832d-5d9b35b8a6af',
     name: 'Systemd',
-    desc: 'Systemd Service Manager.'
+    desc: 'Systemd Service Manager.',
+    shortName: 'systemd',
+    longName: 'Systemd'
     });
 
 MATCH (systemd:Systemd {uuid: '0c189a0e-6b78-4177-832d-5d9b35b8a6af'}),
@@ -71,7 +79,9 @@ MERGE (systemd)-[:ISA]->(servicemanager);
 MERGE (systemstarter:Object:Component:Software:ServiceManager:SystemStarter {
     uuid: 'fd13bd74-6682-4494-92af-a6caf5e64f12',
     name: 'SystemStarter',
-    desc: 'Mac OS X SystemStarter.'
+    desc: 'Mac OS X SystemStarter.',
+    shortName: 'systemstarter',
+    longName: 'SystemStarter'
     });
 
 MATCH (systemstarter:SystemStarter {uuid: 'fd13bd74-6682-4494-92af-a6caf5e64f12'}),
@@ -83,7 +93,9 @@ MERGE (systemstarter)-[:ISA]->(servicemanager);
 MERGE (launchd:Object:Component:Software:ServiceManager:Launchd {
     uuid: '7b0bfefb-2212-4c58-a7c5-46ff66f0166a',
     name: 'Launchd',
-    desc: 'Mac OS X Launchd.'
+    desc: 'Mac OS X Launchd.',
+    shortName: 'launchd',
+    longName: 'Launchd'
     });
 
 MATCH (launchd:Launchd {uuid: '7b0bfefb-2212-4c58-a7c5-46ff66f0166a'}),
@@ -95,7 +107,9 @@ MERGE (launchd)-[:ISA]->(servicemanager);
 MERGE (scm:Object:Component:Software:ServiceManager:Scm {
     uuid: '198435e1-cf1d-4d0a-9fb8-c760b5e8ac2b',
     name: 'Scm',
-    desc: 'Service Control Manager.'
+    desc: 'Service Control Manager.',
+    shortName: 'scm',
+    longName: 'Service Control Manager'
     });
 
 MATCH (scm:Scm {uuid: '198435e1-cf1d-4d0a-9fb8-c760b5e8ac2b'}),

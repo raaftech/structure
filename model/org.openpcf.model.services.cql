@@ -5,9 +5,9 @@
 MERGE (opcfsvcmodel:Object:Model:ServiceModel {
     uuid: 'f947e94a-f9b2-4170-90e1-107c2a946bd7',
     name: 'ServiceModel',
-    namespace: 'org.openpcf.model.services',
-    version: '0.0.1',
-    desc: 'Main service types.'
+    desc: 'Main service types.',
+    ver: '0.0.1',
+    ns: 'org.openpcf.model.services'
     });
 
 MATCH (opcfsvcmodel:ServiceModel {uuid: 'f947e94a-f9b2-4170-90e1-107c2a946bd7'}),
@@ -23,7 +23,9 @@ MERGE (opcfsvcmodel)-[:REQUIRES]->(basemodel);
 MERGE (httpserver:Object:Component:Software:Service:HttpServer {
     uuid: 'b46cb520-caaf-4d26-b59d-58edca723b8d',
     name: 'HttpServer',
-    desc: 'A generic HTTP Server.'
+    desc: 'A generic HTTP Server.',
+    shortName: 'httpserver',
+    longName: 'HTTP Server'
     });
 
 MATCH (httpserver:HttpServer {uuid: 'b46cb520-caaf-4d26-b59d-58edca723b8d'}),
@@ -35,7 +37,9 @@ MERGE (httpserver)-[:ISA]->(service);
 MERGE (smbserver:Object:Component:Software:Service:SmbServer {
     uuid: '65af133b-1a2c-4faa-8d2a-a288eaa4f412',
     name: 'SmbServer',
-    desc: 'A generic SMB/CIFS Server.'
+    desc: 'A generic SMB/CIFS Server.',
+    shortName: 'smbserver',
+    longName: 'SMB/CIFS Server'
     });
 
 MATCH (smbserver:SmbServer {uuid: '65af133b-1a2c-4faa-8d2a-a288eaa4f412'}),
@@ -47,7 +51,9 @@ MERGE (smbserver)-[:ISA]->(service);
 MERGE (sshserver:Object:Component:Software:Service:SshServer {
     uuid: '7db4a3ef-2d3c-4071-929b-e81505fbd5e2',
     name: 'SshServer',
-    desc: 'A generic SSH Server.'
+    desc: 'A generic SSH Server.',
+    shortName: 'sshserver',
+    longName: 'SSH Server'
     });
 
 MATCH (sshserver:SshServer {uuid: '7db4a3ef-2d3c-4071-929b-e81505fbd5e2'}),
@@ -59,7 +65,9 @@ MERGE (sshserver)-[:ISA]->(service);
 MERGE (telnetserver:Object:Component:Software:Service:TelnetServer {
     uuid: '4a09bcce-59c6-4e94-9fc4-ba020733a27c',
     name: 'TelnetServer',
-    desc: 'A generic TELNET Server.'
+    desc: 'A generic TELNET Server.',
+    shortName: 'telnetserver',
+    longName: 'TELNET Server'
     });
 
 MATCH (telnetserver:TelnetServer {uuid: '4a09bcce-59c6-4e94-9fc4-ba020733a27c'}),

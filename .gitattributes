@@ -4,6 +4,7 @@
 model/createdb.sh -text
 model/org.openpcf.model.base.cql -text
 model/org.openpcf.model.cloudsystems.cql -text
+model/org.openpcf.model.emulators.cql -text
 model/org.openpcf.model.hypervisors.cql -text
 model/org.openpcf.model.interpreters.cql -text
 model/org.openpcf.model.operatingsystems.cql -text

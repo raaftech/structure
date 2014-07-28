@@ -5,9 +5,9 @@
 MERGE (opcfpkgmodel:Object:Model:PackageManagerModel {
     uuid: '88846580-7ca5-4d7c-aba4-f350e61dd5ce',
     name: 'PackageManagerModel',
-    namespace: 'org.openpcf.model.packagemanagers',
-    version: '0.0.1',
-    desc: 'Main package manager types.'
+    desc: 'Main package manager types.',
+    ver: '0.0.1',
+    ns: 'org.openpcf.model.packagemanagers'
     });
 
 MATCH (opcfpkgmodel:PackageManagerModel {uuid: '88846580-7ca5-4d7c-aba4-f350e61dd5ce'}),
@@ -23,7 +23,9 @@ MERGE (opcfpkgmodel)-[:REQUIRES]->(basemodel);
 MERGE (pacman:Object:Component:Software:PackageManager:PacMan {
     uuid: 'ad047d85-792a-4385-a14c-b85266bc5176',
     name: 'PacMan',
-    desc: 'Arch Linux Pacman Package Manager.'
+    desc: 'Arch Linux Pacman Package Manager.',
+    shortName: 'pacman',
+    longName: 'Pacman'
     });
 
 MATCH (pacman:PacMan {uuid: 'ad047d85-792a-4385-a14c-b85266bc5176'}),
@@ -35,7 +37,9 @@ MERGE (pacman)-[:ISA]->(packagemanager);
 MERGE (bsdpkg:Object:Component:Software:PackageManager:BsdPkg {
     uuid: '95d6093b-448b-4a62-8642-dc8d32b43622',
     name: 'BsdPkg',
-    desc: 'BSD pkg Package Manager.'
+    desc: 'BSD pkg Package Manager.',
+    shortName: 'bsdpkg',
+    longName: 'BSD pkg'
     });
 
 MATCH (bsdpkg:BsdPkg {uuid: '95d6093b-448b-4a62-8642-dc8d32b43622'}),
@@ -47,7 +51,9 @@ MERGE (bsdpkg)-[:ISA]->(packagemanager);
 MERGE (bsdpkgng:Object:Component:Software:PackageManager:BsdPkgNg {
     uuid: '1a879371-f680-4514-8189-5d6e227ca6cc',
     name: 'BsdPkgNg',
-    desc: 'BSD pkgng Package Manager.'
+    desc: 'BSD pkgng Package Manager.',
+    shortName: 'pkgng',
+    longName: 'BSD pkgng'
     });
 
 MATCH (bsdpkgng:BsdPkgNg {uuid: '1a879371-f680-4514-8189-5d6e227ca6cc'}),
@@ -59,7 +65,9 @@ MERGE (bsdpkgng)-[:ISA]->(packagemanager);
 MERGE (apt:Object:Component:Software:PackageManager:Apt {
     uuid: '74528ec1-d223-40ad-8e2f-703b7f6d33b0',
     name: 'Apt',
-    desc: 'Debian Advanced Package Tool.'
+    desc: 'Debian Advanced Package Tool.',
+    shortName: 'apt',
+    longName: 'Apt'
     });
 
 MATCH (apt:Apt {uuid: '74528ec1-d223-40ad-8e2f-703b7f6d33b0'}),
@@ -71,7 +79,9 @@ MERGE (apt)-[:ISA]->(packagemanager);
 MERGE (yum:Object:Component:Software:PackageManager:Yum {
     uuid: '27a03a73-d654-4999-8888-72043c84172d',
     name: 'Yum',
-    desc: 'YellowDog Updater, Modified.'
+    desc: 'YellowDog Updater, Modified.',
+    shortName: 'yum',
+    longName: 'Yum'
     });
 
 MATCH (yum:Yum {uuid: '27a03a73-d654-4999-8888-72043c84172d'}),
@@ -83,7 +93,9 @@ MERGE (yum)-[:ISA]->(packagemanager);
 MERGE (zypp:Object:Component:Software:PackageManager:Zypp {
     uuid: '8a016a93-73f3-4b3d-9129-b3708f5d1afe',
     name: 'Zypp',
-    desc: 'ZYpp Package Manager.'
+    desc: 'ZYpp Package Manager.',
+    shortName: 'zypp',
+    longName: 'ZYpp'
     });
 
 MATCH (zypp:Zypp {uuid: '8a016a93-73f3-4b3d-9129-b3708f5d1afe'}),
@@ -95,7 +107,9 @@ MERGE (zypp)-[:ISA]->(packagemanager);
 MERGE (optzip:Object:Component:Software:PackageManager:OptZip {
     uuid: '2115cfc1-a2e8-4efe-aa58-60ef64a729ca',
     name: 'OptZip',
-    desc: 'The very simple unzip-in /opt package manager.'
+    desc: 'The very simple unzip-in /opt package manager.',
+    shortName: 'optzip',
+    longName: 'OptZip'
     });
 
 MATCH (optzip:OptZip {uuid: '2115cfc1-a2e8-4efe-aa58-60ef64a729ca'}),

@@ -5,9 +5,9 @@
 MERGE (opcfosmodel:Object:Model:OperatingSystemModel {
     uuid: '90d2c69e-7199-45f4-bafa-5e0f848cf17d',
     name: 'OperatingSystemModel',
-    namespace: 'org.openpcf.model.operatingsystems',
-    version: '0.0.1',
-    desc: 'Main operating system types.'
+    desc: 'Main operating system types.',
+    ver: '0.0.1',
+    ns: 'org.openpcf.model.operatingsystems'
     });
 
 MATCH (opcfosmodel:OperatingSystemModel {uuid: '90d2c69e-7199-45f4-bafa-5e0f848cf17d'}),
@@ -25,8 +25,7 @@ MERGE (doslike:Object:Component:Software:OperatingSystem:DosLike {
     name: 'DosLike',
     desc: 'A DOS-like operating system.',
     shortName: 'doslike',
-    longName: 'DOS-Like',
-    detectionString: "A string to assist in programmatically identifying this os"
+    longName: 'DOS-Like'
     });
 
 MATCH (doslike:DosLike {uuid: 'e181e9e8-7f30-42a3-b87f-b8e183ddfd6f'}),
@@ -40,8 +39,7 @@ MERGE (windowslike:Object:Component:Software:OperatingSystem:WindowsLike {
     name: 'WindowsLike',
     desc: 'A Windows-like operating system.',
     shortName: 'windowslike',
-    longName: 'Windows-Like',
-    detectionString: "A string to assist in programmatically identifying this os"
+    longName: 'Windows-Like'
     });
 
 MATCH (windowslike:WindowsLike {uuid: '4edbaf6a-da58-4644-abac-ae80328ddb49'}),
@@ -55,8 +53,7 @@ MERGE (windows:Object:Component:Software:OperatingSystem:WindowsLike:Windows {
     name: 'Windows',
     desc: 'The Microsoft Windows Operating System.',
     shortName: 'windows',
-    longName: 'Windows',
-    detectionString: "A string to assist in programmatically identifying this os"
+    longName: 'Windows'
     });
 
 MATCH (windows:Windows {uuid: '060a519d-08d0-4d12-82ac-1e3f14277009'}),
@@ -70,8 +67,7 @@ MERGE (unixlike:Object:Component:Software:OperatingSystem:UnixLike {
     name: 'UnixLike',
     desc: 'A UNIX-like operating system.',
     shortName: 'unixlike',
-    longName: 'UNIX-Like',
-    detectionString: "A string to assist in programmatically identifying this os"
+    longName: 'UNIX-Like'
     });
 
 MATCH (unixlike:UnixLike {uuid: '6a1eea8b-1462-4439-8c60-12edbee6c397'}),
@@ -85,8 +81,7 @@ MERGE (unix:Object:Component:Software:OperatingSystem:UnixLike:Unix {
     name: 'Unix',
     desc: 'The UNIX Operating System.',
     shortName: 'unix',
-    longName: 'UNIX',
-    detectionString: "A string to assist in programmatically identifying this os"
+    longName: 'UNIX'
     });
 
 MATCH (unix:Unix {uuid: 'a3b228b6-f737-460c-a3bc-bc653167b36c'}),
@@ -100,8 +95,7 @@ MERGE (illumos:Object:Component:Software:OperatingSystem:UnixLike:Unix:Illumos {
     name: 'Illumos',
     desc: 'The Illumos Operating System.',
     shortName: 'illumos',
-    longName: 'Illumos',
-    detectionString: "A string to assist in programmatically identifying this os"
+    longName: 'Illumos'
     });
 
 MATCH (illumos:Illumos {uuid: 'f0bcc651-3ca6-4d4c-ac9d-5a60b2b08520'}),
@@ -115,8 +109,7 @@ MERGE (macosx:Object:Component:Software:OperatingSystem:UnixLike:Unix:MacOsX {
     name: 'MacOsX',
     desc: 'The Apple Mac OS X Operating System.',
     shortName: 'macosx',
-    longName: 'Mac OS X',
-    detectionString: "A string to assist in programmatically identifying this os"
+    longName: 'Mac OS X'
     });
 
 MATCH (macosx:MacOsX {uuid: '0f81d6dc-d221-464a-ab85-1e3e5d98c3f0'}),
@@ -130,8 +123,7 @@ MERGE (bsd:Object:Component:Software:OperatingSystem:UnixLike:Bsd {
     name: 'Bsd',
     desc: 'The Berkeley Software Distribution Operating System.',
     shortName: 'bsd',
-    longName: 'BSD',
-    detectionString: "A string to assist in programmatically identifying this os"
+    longName: 'BSD'
     });
 
 MATCH (bsd:Bsd {uuid: '6004436f-7c88-4c2e-a29d-e8077bad10e9'}),
@@ -145,8 +137,7 @@ MERGE (linux:Object:Component:Software:OperatingSystem:UnixLike:Linux {
     name: 'Linux',
     desc: 'The Linux Operating System.',
     shortName: 'linux',
-    longName: 'Linux',
-    detectionString: "A string to assist in programmatically identifying this os"
+    longName: 'Linux'
     });
 
 MATCH (linux:Linux {uuid: 'a5613527-2f64-4481-83f2-80b0cb427e28'}),
