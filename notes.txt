@@ -1,8 +1,3 @@
-Todo: need to add formalized way of adding recognition patterns (matchers which could 
-be regular expressions) to Software components. We would then have a component that 
-could parse those matcher patterns and derive true/false match results from them. this
-in turn would be instrumental to software detection.
-
 Hoe bepaal je waar een StatusResult terecht komt?
 (denk aan device status bijvoorbeeld)
 Antwoord: een device heeft geen StatusResult maar een DerivedStatusResult; maw:

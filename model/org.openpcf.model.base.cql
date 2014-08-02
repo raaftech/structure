@@ -393,6 +393,32 @@ MATCH (svcmap:ServiceNameMap {uuid: 'ead61277-e797-406b-96e1-95c155655fac'}),
 MERGE (svcmap)-[:ISA]->(namemap);
 
 
+// StringMap - A generic map of possible/known strings this software has. Key: *, Values: string pattern, Format: JSON.
+MERGE (stringmap:Object:Component:Configuration:Map:StringMap {
+    uuid: '0d554a04-67d6-428f-8e6f-6cdcdaca39cb',
+    name: 'StringMap',
+    desc: 'A generic map of possible/known strings this software has. Key: *, Values: string pattern, Format: JSON.',
+    map: 'JSON string containing the StringMap.'
+    });
+
+MATCH (stringmap:StringMap {uuid: '0d554a04-67d6-428f-8e6f-6cdcdaca39cb'}),
+    (map:Map {uuid: 'c970f6d3-4898-4596-bfac-9d6d1f6b2541'})
+MERGE (stringmap)-[:ISA]->(map);
+
+
+// VersionStringMap - A map of possible/known version strings this software has. Key: *, Values: version string pattern, Format: JSON.
+MERGE (versionstringmap:Object:Component:Configuration:Map:StringMap:VersionStringMap {
+    uuid: '1c1af482-f0e0-45f1-9aa1-f7702040067d',
+    name: 'VersionStringMap',
+    desc: 'A map of possible/known version strings this software has. Key: *, Values: version string pattern, Format: JSON.',
+    map: 'JSON string containing the VersionStringMap.'
+    });
+
+MATCH (versionstringmap:VersionStringMap {uuid: '1c1af482-f0e0-45f1-9aa1-f7702040067d'}),
+    (stringmap:StringMap {uuid: '0d554a04-67d6-428f-8e6f-6cdcdaca39cb'})
+MERGE (versionstringmap)-[:ISA]->(stringmap);
+
+
 // Device - Any kind of device.
 MERGE (device:Object:Component:Device {
     uuid: 'ea6a7487-867c-4a74-8849-fb8539b8169f',
@@ -2331,6 +2357,34 @@ MERGE (servicenameexistenceresult:Object:Result:ExistenceResult:NameExistenceRes
 MATCH (servicenameexistenceresult:ServiceNameExistenceResult {uuid: '9edc562a-f026-4ea8-861f-0dd0cfdf3c39'}),
     (nameexistenceresult:NameExistenceResult {uuid: 'db4c51ec-7455-4bba-b965-f1c067f22e37'})
 MERGE (servicenameexistenceresult)-[:ISA]->(nameexistenceresult);
+
+
+// StringExistenceResult - A possible result from an ExistenceHandler, parsing a StringMap.
+MERGE (stringexistenceresult:Object:Result:ExistenceResult:StringExistenceResult {
+    uuid: '7bcaa3ec-9ffb-468d-a5dd-21d26661078a',
+    name: 'StringExistenceResult',
+    desc: 'A possible result from an ExistenceHandler, parsing a StringMap.',
+    data: 'The result data.',
+    dateCreated: 'The date + time when the result was created.'
+    });
+
+MATCH (stringexistenceresult:StringExistenceResult {uuid: '7bcaa3ec-9ffb-468d-a5dd-21d26661078a'}),
+    (existenceresult:ExistenceResult {uuid: '6d23a2bc-9539-4914-aaf4-45406f59d8fc'})
+MERGE (stringexistenceresult)-[:ISA]->(existenceresult);
+
+
+// VersionStringExistenceResult - A possible result from an ExistenceHandler, parsing a VersionStringMap.
+MERGE (stringexistenceresult:Object:Result:ExistenceResult:StringExistenceResult:VersionStringExistenceResult {
+    uuid: '4b86cf7f-6a98-46cc-b78a-0e568d2afe1f',
+    name: 'VersionStringExistenceResult',
+    desc: 'A possible result from an ExistenceHandler, parsing a VersionStringMap.',
+    data: 'The result data.',
+    dateCreated: 'The date + time when the result was created.'
+    });
+
+MATCH (versionstringexistenceresult:VersionStringExistenceResult {uuid: '4b86cf7f-6a98-46cc-b78a-0e568d2afe1f'}),
+    (stringexistenceresult:StringExistenceResult {uuid: '7bcaa3ec-9ffb-468d-a5dd-21d26661078a'})
+MERGE (versionstringexistenceresult)-[:ISA]->(stringexistenceresult);
 
 
 // UsageResult - A generic usage result.
