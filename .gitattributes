@@ -16,7 +16,7 @@ model/org.openpcf.model.services.cql -text
 /readme.txt -text
 /release.xml -text
 source/main/assembly/mod.xml -text
-source/main/resources/init.js -text
+source/main/javascript/init.js -text
 source/main/resources/langs.properties -text
 source/main/resources/log4j.properties -text
 source/main/resources/mod.json -text

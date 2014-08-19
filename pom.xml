@@ -201,6 +201,7 @@
                 <directory>source/main/resources</directory>
             </resource>
         </resources>
+
         <testResources>
             <testResource>
                 <directory>source/test/resources</directory>
@@ -255,6 +256,21 @@
                 <artifactId>maven-resources-plugin</artifactId>
                 <version>${maven.resources.plugin.version}</version>
                 <executions>
+                    <execution>
+                        <id>copy-js-to-target</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${mods.directory}/${module.name}/js</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>source/main/javascript</directory>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
                     <execution>
                         <id>copy-mod-to-target</id>
                         <phase>process-classes</phase>
