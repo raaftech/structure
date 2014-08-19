@@ -193,12 +193,12 @@
         <outputDirectory>target/classes</outputDirectory>
         <testOutputDirectory>target/test-classes</testOutputDirectory>
 
-        <sourceDirectory>source/main/java</sourceDirectory>
+        <sourceDirectory>source/server/java</sourceDirectory>
         <testSourceDirectory>source/test/java</testSourceDirectory>
 
         <resources>
             <resource>
-                <directory>source/main/resources</directory>
+                <directory>source/server/resources</directory>
             </resource>
         </resources>
 
@@ -257,7 +257,7 @@
                 <version>${maven.resources.plugin.version}</version>
                 <executions>
                     <execution>
-                        <id>copy-js-to-target</id>
+                        <id>copy-server-js-to-target</id>
                         <phase>validate</phase>
                         <goals>
                             <goal>copy-resources</goal>
@@ -266,7 +266,52 @@
                             <outputDirectory>${mods.directory}/${module.name}/js</outputDirectory>
                             <resources>
                                 <resource>
-                                    <directory>source/main/javascript</directory>
+                                    <directory>source/server/js</directory>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>copy-client-js-to-target</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${mods.directory}/${module.name}/client/js</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>source/client/js</directory>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>copy-client-css-to-target</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${mods.directory}/${module.name}/client/css</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>source/client/css</directory>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>copy-client-html-to-target</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${mods.directory}/${module.name}/client/html</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>source/client/html</directory>
                                 </resource>
                             </resources>
                         </configuration>
@@ -350,7 +395,7 @@
                 <artifactId>maven-assembly-plugin</artifactId>
                 <configuration>
                     <descriptors>
-                        <descriptor>source/main/assembly/mod.xml</descriptor>
+                        <descriptor>mod.xml</descriptor>
                     </descriptors>
                 </configuration>
                 <executions>

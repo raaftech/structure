@@ -1,6 +1,6 @@
 * text=auto !eol
-/build.xml -text
 /license.txt -text
+/mod.xml -text
 model/createdb.sh -text
 model/org.openpcf.model.base.cql -text
 model/org.openpcf.model.cloudsystems.cql -text
@@ -14,12 +14,11 @@ model/org.openpcf.model.services.cql -text
 /notes.txt -text
 /pom.xml -text
 /readme.txt -text
-/release.xml -text
-source/main/assembly/mod.xml -text
-source/main/javascript/init.js -text
-source/main/resources/langs.properties -text
-source/main/resources/log4j.properties -text
-source/main/resources/mod.json -text
-source/main/resources/universal.json -text
-source/test/resources/universal.json -text
+source/client/html/index.html -text
+source/client/js/client.js -text
+source/server/js/app.js -text
+source/server/resources/langs.properties -text
+source/server/resources/log4j.properties -text
+source/server/resources/mod.json -text
+source/server/resources/universal.json -text
 /vertx_classpath.txt -text
