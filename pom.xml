@@ -12,7 +12,7 @@
     <groupId>org.openpcf</groupId>
     <artifactId>universal</artifactId>
     <packaging>jar</packaging>
-    <version>0.6.0</version>
+    <version>0.6.1</version>
     <name>universal</name>
 
     <description>
