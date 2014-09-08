@@ -32,6 +32,6 @@ function deploymentCompleteHandler(error, deploymentID){
         console.log("Something went wrong with deployment: ");
         console.log(error)
     } else {
-        console.log("Deployment Completed succesfully, deployment ID: " + deploymentID);
+        console.log("Deployment completed succesfully, deployment ID: " + deploymentID);
     }
 }
