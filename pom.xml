@@ -236,61 +236,52 @@
                 <version>${maven.resources.plugin.version}</version>
                 <executions>
                     <execution>
-                        <id>copy-server-js-to-target</id>
+                        <id>copy-app-js-to-target</id>
                         <phase>validate</phase>
                         <goals>
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${mods.directory}/${module.name}/js</outputDirectory>
+                            <outputDirectory>${mods.directory}/${module.name}</outputDirectory>
                             <resources>
                                 <resource>
-                                    <directory>source/server/js</directory>
+                                    <directory>/</directory>
+                                    <includes>
+                                        <include>app.js</include>
+                                    </includes>
                                 </resource>
                             </resources>
                         </configuration>
                     </execution>
                     <execution>
-                        <id>copy-client-js-to-target</id>
+                        <id>copy-server-to-target</id>
                         <phase>validate</phase>
                         <goals>
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${mods.directory}/${module.name}/client/js</outputDirectory>
+                            <outputDirectory>${mods.directory}/${module.name}/server</outputDirectory>
                             <resources>
                                 <resource>
-                                    <directory>source/client/js</directory>
+                                    <directory>source/server</directory>
+                                    <excludes>
+                                        <exclude>resources/*</exclude>
+                                    </excludes>
                                 </resource>
                             </resources>
                         </configuration>
                     </execution>
                     <execution>
-                        <id>copy-client-css-to-target</id>
+                        <id>copy-client-to-target</id>
                         <phase>validate</phase>
                         <goals>
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${mods.directory}/${module.name}/client/css</outputDirectory>
+                            <outputDirectory>${mods.directory}/${module.name}/client</outputDirectory>
                             <resources>
                                 <resource>
-                                    <directory>source/client/css</directory>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>copy-client-html-to-target</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${mods.directory}/${module.name}/client/html</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>source/client/html</directory>
+                                    <directory>source/client</directory>
                                 </resource>
                             </resources>
                         </configuration>
