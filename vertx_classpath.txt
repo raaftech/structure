@@ -5,8 +5,8 @@
 # Feel free to edit it if you have a non standard project structure and put the resources of your
 # module elsewhere
 
-source/server/resources
-source/server/js
+src/main/resources
+src/main/js
 target/classes
 target/dependencies
 bin

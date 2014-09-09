@@ -7,7 +7,7 @@ var webServerConfig = {
     host: "0.0.0.0",
     bridge: true,
     web_root: "client",
-    index_page: "html/index.html",
+    index_page: "main/html/index.html",
     inbound_permitted: [
         { address_re: 'neo4j-graph.*' }
     ]
@@ -16,7 +16,7 @@ var webServerConfig = {
 // neo4vertx configuration
 var neo4jConfig = {
     mode: "default",
-    path: "/tmp/db",
+    path: "target/neo4j-db",
     baseAddress: "neo4j-graph"
 };
 

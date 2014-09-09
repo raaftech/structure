@@ -89,22 +89,23 @@
         <vertx.pullInDeps>false</vertx.pullInDeps>
         <vertx.createFatJar>false</vertx.createFatJar>
         <vertx.testtools.version>2.0.3-final</vertx.testtools.version>
+        <slf4j.version>1.7.7</slf4j.version>
         <module.name>${project.groupId}~${project.artifactId}~${project.version}</module.name>
         <mods.directory>target/mods</mods.directory>
         <junit.version>4.11</junit.version>
         <gpg.keyname>C6E91526</gpg.keyname>
 
         <!-- Plugin versions -->
-        <maven.compiler.plugin.version>3.0</maven.compiler.plugin.version>
+        <maven.compiler.plugin.version>3.1</maven.compiler.plugin.version>
         <maven.resources.plugin.version>2.6</maven.resources.plugin.version>
         <maven.clean.plugin.version>2.5</maven.clean.plugin.version>
-        <maven.vertx.plugin.version>2.0.6-final</maven.vertx.plugin.version>
-        <maven.surefire.plugin.version>2.14</maven.surefire.plugin.version>
-        <maven.failsafe.plugin.version>2.14</maven.failsafe.plugin.version>
-        <maven.surefire.report.plugin.version>2.14</maven.surefire.report.plugin.version>
+        <maven.vertx.plugin.version>2.0.8-final</maven.vertx.plugin.version>
+        <maven.surefire.plugin.version>2.17</maven.surefire.plugin.version>
+        <maven.failsafe.plugin.version>2.17</maven.failsafe.plugin.version>
+        <maven.surefire.report.plugin.version>2.17</maven.surefire.report.plugin.version>
         <maven.javadoc.plugin.version>2.9.1</maven.javadoc.plugin.version>
-        <maven.source.plugin.version>2.2.1</maven.source.plugin.version>
-        <maven.dependency.plugin.version>2.7</maven.dependency.plugin.version>
+        <maven.source.plugin.version>2.3</maven.source.plugin.version>
+        <maven.dependency.plugin.version>2.8</maven.dependency.plugin.version>
     </properties>
 
 
@@ -172,18 +173,18 @@
         <outputDirectory>target/classes</outputDirectory>
         <testOutputDirectory>target/test-classes</testOutputDirectory>
 
-        <sourceDirectory>source/server/java</sourceDirectory>
-        <testSourceDirectory>source/test/java</testSourceDirectory>
+        <sourceDirectory>src/main/java</sourceDirectory>
+        <testSourceDirectory>src/test/java</testSourceDirectory>
 
         <resources>
             <resource>
-                <directory>source/server/resources</directory>
+                <directory>src/main/resources</directory>
             </resource>
         </resources>
 
         <testResources>
             <testResource>
-                <directory>source/test/resources</directory>
+                <directory>src/test/resources</directory>
             </testResource>
         </testResources>
 
@@ -208,6 +209,21 @@
                         <artifactId>vertx-hazelcast</artifactId>
                         <version>${vertx.version}</version>
                     </dependency>
+                    <dependency>
+                        <groupId>org.javassist</groupId>
+                        <artifactId>javassist</artifactId>
+                        <version>3.18.2-GA</version>
+                    </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
                 </dependencies>
 
                 <executions>
@@ -254,34 +270,16 @@
                         </configuration>
                     </execution>
                     <execution>
-                        <id>copy-server-to-target</id>
+                        <id>copy-main-to-target</id>
                         <phase>validate</phase>
                         <goals>
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${mods.directory}/${module.name}/server</outputDirectory>
+                            <outputDirectory>${mods.directory}/${module.name}/main</outputDirectory>
                             <resources>
                                 <resource>
-                                    <directory>source/server</directory>
-                                    <excludes>
-                                        <exclude>resources/*</exclude>
-                                    </excludes>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>copy-client-to-target</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${mods.directory}/${module.name}/client</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>source/client</directory>
+                                    <directory>src/main</directory>
                                 </resource>
                             </resources>
                         </configuration>
@@ -365,7 +363,7 @@
                 <artifactId>maven-assembly-plugin</artifactId>
                 <configuration>
                     <descriptors>
-                        <descriptor>source/server/resources/mod.xml</descriptor>
+                        <descriptor>src/main/resources/mod.xml</descriptor>
                     </descriptors>
                 </configuration>
                 <executions>
