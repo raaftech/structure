@@ -9,4 +9,3 @@ src/main/resources
 src/main/js
 target/classes
 target/dependencies
-bin

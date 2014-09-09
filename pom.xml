@@ -214,16 +214,16 @@
                         <artifactId>javassist</artifactId>
                         <version>3.18.2-GA</version>
                     </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>${slf4j.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-            <version>${slf4j.version}</version>
-        </dependency>
+                    <dependency>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>slf4j-api</artifactId>
+                        <version>${slf4j.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>slf4j-log4j12</artifactId>
+                        <version>${slf4j.version}</version>
+                    </dependency>
                 </dependencies>
 
                 <executions>
@@ -252,7 +252,7 @@
                 <version>${maven.resources.plugin.version}</version>
                 <executions>
                     <execution>
-                        <id>copy-app-js-to-target</id>
+                        <id>copy-root-to-target</id>
                         <phase>validate</phase>
                         <goals>
                             <goal>copy-resources</goal>
@@ -263,7 +263,26 @@
                                 <resource>
                                     <directory>/</directory>
                                     <includes>
-                                        <include>app.js</include>
+                                        <include>readme.txt</include>
+                                        <include>license.txt</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>copy-modjson-to-target</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${mods.directory}/${module.name}</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>/src/main/resources</directory>
+                                    <includes>
+                                        <include>mod.json</include>
                                     </includes>
                                 </resource>
                             </resources>
@@ -276,16 +295,20 @@
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${mods.directory}/${module.name}/main</outputDirectory>
+                            <outputDirectory>${mods.directory}/${module.name}/src/main</outputDirectory>
                             <resources>
                                 <resource>
                                     <directory>src/main</directory>
+                                    <excludes>
+                                        <exclude>**/mod.json</exclude>
+                                        <exclude>**/platform_lib/*</exclude>
+                                    </excludes>
                                 </resource>
                             </resources>
                         </configuration>
                     </execution>
                     <execution>
-                        <id>copy-mod-to-target</id>
+                        <id>copy-classes-to-target</id>
                         <phase>process-classes</phase>
                         <goals>
                             <goal>copy-resources</goal>
@@ -363,7 +386,7 @@
                 <artifactId>maven-assembly-plugin</artifactId>
                 <configuration>
                     <descriptors>
-                        <descriptor>src/main/resources/mod.xml</descriptor>
+                        <descriptor>src/main/platform_lib/mod.xml</descriptor>
                     </descriptors>
                 </configuration>
                 <executions>

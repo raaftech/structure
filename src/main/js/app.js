@@ -6,8 +6,8 @@ var webServerConfig = {
     port: 8080,
     host: "0.0.0.0",
     bridge: true,
-    web_root: "client",
-    index_page: "main/html/index.html",
+    web_root: "src/main",
+    index_page: "html/index.html",
     inbound_permitted: [
         { address_re: 'neo4j-graph.*' }
     ]
