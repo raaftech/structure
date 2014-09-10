@@ -6,5 +6,6 @@
     "homepage": "https://www.openpcf.org/projects/universal",
     "licenses": ["GNU General Public License (GPL) version 3.0"],
     "main": "src/main/js/app.js",
-    "auto-redeploy": true
+    "auto-redeploy": true,
+    "preserve-cwd": true
 }

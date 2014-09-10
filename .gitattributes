@@ -13,11 +13,11 @@ src/main/cql/org.openpcf.model.operatingsystems.cql -text
 src/main/cql/org.openpcf.model.packagemanagers.cql -text
 src/main/cql/org.openpcf.model.servicemanagers.cql -text
 src/main/cql/org.openpcf.model.services.cql -text
-src/main/html/index.html -text
 src/main/js/app.js -text
-src/main/js/client.js -text
 src/main/platform_lib/langs.properties -text
 src/main/platform_lib/log4j.properties -text
 src/main/platform_lib/mod.xml -text
 src/main/resources/mod.json -text
 /vertx_classpath.txt -text
+web/html/index.html -text
+web/js/client.js -text
