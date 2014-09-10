@@ -1,18 +1,48 @@
-<!DOCTYPE html>
-
-<html>
-
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="en-US">
 <head>
-    <meta charset="utf-8">
-    <title>A Simple neo4vertx example</title>
-</head>
-
-<body>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=9">
+    <title>Reveal</title>
+    <link rel="stylesheet" type="text/css" href="../css/reset.css">
+    <link rel="stylesheet" type="text/css" href="../css/style.css">
     <script src="//cdnjs.cloudflare.com/ajax/libs/sockjs-client/0.3.4/sockjs.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/vertx/2.0.0/vertxbus.min.js"></script>
     <script src="/js/client.js"></script>
-
-<p>A Simple neo4vertx example. See your development console (F12).</p>
+</head>
+<body>
+<div id="reveal">
+    <div id="header">
+        <div class="logo"></div>
+        <div class="name">Reveal</div>
+        <ul class="nav">
+            <li>Docs</li>
+            <li>Catalog</li>
+            <li>Dashboard</li>
+        </ul>
+    </div>
+    <div id="main">
+        <div id="navigation">
+            <div id="search"><input type="search" result="5" placeholder="Search..." /></div>
+            <ul class="nav">
+                <li class="square">Dashboard</li>
+            </ul>
+            <ul class="nav">
+                <li class="square">Landmarks</li>
+            </ul>
+            <ul class="nav">
+                <li class="square">All</li>
+                <li class="square">Configuration</li>
+                <li class="square">Devices</li>
+                <li class="square">Software</li>
+            </ul>
+            <div id="version">Version</div>
+        </div>
+        <div id="content">
+            <div id="info">Information</div>
+            <div id="list">List</div>
+        </div>
+    </div>
+</div>
 </body>
-
 </html>

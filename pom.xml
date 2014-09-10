@@ -318,6 +318,11 @@
                             <resources>
                                 <resource>
                                     <directory>web</directory>
+                                    <excludes>
+                                        <exclude>config.rb</exclude>
+                                        <exclude>**/.sass-cache/**</exclude>
+                                        <exclude>**/*.scss</exclude>
+                                    </excludes>
                                 </resource>
                             </resources>
                         </configuration>

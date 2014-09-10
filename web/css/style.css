@@ -1,0 +1,139 @@
+/* body */
+/* end body */
+/* reveal */
+/* end reveal */
+/* header */
+/* end header */
+/* main */
+/* end main */
+/* navigation */
+/* end navigation */
+/* content */
+/* end content */
+@import url(http://fonts.googleapis.com/css?family=Lato:300,400,700);
+/* line 50, icons/*.png */
+.icons-sprite, .icons-li-square-white, #navigation li.square:hover, .icons-li-square, #navigation li.square {
+  background: url('../img/icons-s26f22fe01f.png') no-repeat;
+}
+
+/* line 60, ../../../../../../../usr/local/lib/ruby/gems/2.1.0/gems/compass-0.12.6/frameworks/compass/stylesheets/compass/utilities/sprites/_base.scss */
+.icons-li-square-white, #navigation li.square:hover {
+  background-position: 0 -24px;
+}
+
+/* line 60, ../../../../../../../usr/local/lib/ruby/gems/2.1.0/gems/compass-0.12.6/frameworks/compass/stylesheets/compass/utilities/sprites/_base.scss */
+.icons-li-square, #navigation li.square {
+  background-position: 0 0;
+}
+
+/* line 2, ../scss/partials/_basic-layout.scss */
+html,
+body {
+  height: 100%;
+}
+
+/* line 6, ../scss/partials/_basic-layout.scss */
+body {
+  font-family: "Lato", sans-serif;
+  font-size: 1em;
+  font-weight: 400;
+  background-color: #121314;
+  color: #949599;
+}
+
+/* line 14, ../scss/partials/_basic-layout.scss */
+#reveal {
+  font-size: 0.85em;
+  width: 100%;
+  height: 100%;
+  margin: auto;
+  position: relative;
+}
+
+/* line 22, ../scss/partials/_basic-layout.scss */
+#header {
+  width: 100%;
+  height: 50px;
+  border-bottom: 1px solid #393b40;
+}
+/* line 27, ../scss/partials/_basic-layout.scss */
+#header .logo {
+  position: absolute;
+  background-color: white;
+  background-image: url("../img/logo_reveal.png");
+  background-size: 50px;
+  background-repeat: no-repeat;
+  height: 50px;
+  width: 50px;
+}
+/* line 37, ../scss/partials/_basic-layout.scss */
+#header .name {
+  position: absolute;
+  left: 50px;
+  text-transform: uppercase;
+  line-height: 50px;
+  margin: 0 18px;
+  color: white;
+}
+/* line 46, ../scss/partials/_basic-layout.scss */
+#header .nav {
+  text-transform: uppercase;
+}
+/* line 50, ../scss/partials/_basic-layout.scss */
+#header li {
+  display: inline;
+  line-height: 50px;
+  margin: 0 30px;
+  float: right;
+}
+
+/* line 58, ../scss/partials/_basic-layout.scss */
+#main {
+  position: absolute;
+  bottom: 0;
+  top: 51px;
+  width: 100%;
+  padding-bottom: 1px;
+}
+
+/* line 66, ../scss/partials/_basic-layout.scss */
+#navigation {
+  background: #222326;
+  width: 300px;
+  height: 100%;
+  float: left;
+}
+/* line 72, ../scss/partials/_basic-layout.scss */
+#navigation #search {
+  margin: 25px 35px;
+}
+/* line 76, ../scss/partials/_basic-layout.scss */
+#navigation .nav {
+  margin: 25px 0px;
+  padding-left: 35px;
+}
+/* line 81, ../scss/partials/_basic-layout.scss */
+#navigation li {
+  line-height: 24px;
+}
+/* line 84, ../scss/partials/_basic-layout.scss */
+#navigation li.square {
+  padding-left: 25px;
+}
+/* line 96, ../scss/partials/_basic-layout.scss */
+#navigation #version {
+  margin: 25px 35px;
+  position: absolute;
+  bottom: 1px;
+}
+
+/* line 103, ../scss/partials/_basic-layout.scss */
+#content {
+  overflow: hidden;
+  height: 100%;
+}
+/* line 107, ../scss/partials/_basic-layout.scss */
+#content #info, #content #list {
+  width: 100%;
+  background-color: #222326;
+}
