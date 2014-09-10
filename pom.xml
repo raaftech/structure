@@ -308,6 +308,21 @@
                         </configuration>
                     </execution>
                     <execution>
+                        <id>copy-web-to-target</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${mods.directory}/${module.name}/web</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>web</directory>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                    <execution>
                         <id>copy-classes-to-target</id>
                         <phase>process-classes</phase>
                         <goals>
