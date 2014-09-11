@@ -75,21 +75,35 @@ body {
 
     .nav {
         margin: 25px 0px;
-        padding-left: 35px;
     }
 
     li {
         line-height: 24px;
+        border-left: 3px solid $bgr-grey;
 
-        &.square {
-            @extend .icons-li-square;
-            padding-left: 25px;
+        a {
+            display: block;
+            text-indent: 2em;
+            margin-left: 30px;
+            text-decoration: none;
+            color: $txt-lightgrey;
+
+            &.square {
+                @extend .icons-li-square;
+            }
         }
     }
 
     li:hover {
-        &.square {
-            @extend .icons-li-square-white;
+        background-color: $bgr-light-grey;
+        border-left: 3px solid $rvl-orange;
+
+        a {
+            color: $txt-white;
+
+            &.square {
+                @extend .icons-li-square-white;
+            }
         }
     }
 

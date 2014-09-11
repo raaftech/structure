@@ -12,17 +12,17 @@
 /* end content */
 @import url(http://fonts.googleapis.com/css?family=Lato:300,400,700);
 /* line 50, icons/*.png */
-.icons-sprite, .icons-li-square-white, #navigation li.square:hover, .icons-li-square, #navigation li.square {
+.icons-sprite, .icons-li-square-white, #navigation li:hover a.square, .icons-li-square, #navigation li a.square {
   background: url('/img/icons-s26f22fe01f.png') no-repeat;
 }
 
 /* line 60, ../../../../../../../usr/local/lib/ruby/gems/2.1.0/gems/compass-0.12.6/frameworks/compass/stylesheets/compass/utilities/sprites/_base.scss */
-.icons-li-square-white, #navigation li.square:hover {
+.icons-li-square-white, #navigation li:hover a.square {
   background-position: 0 -24px;
 }
 
 /* line 60, ../../../../../../../usr/local/lib/ruby/gems/2.1.0/gems/compass-0.12.6/frameworks/compass/stylesheets/compass/utilities/sprites/_base.scss */
-.icons-li-square, #navigation li.square {
+.icons-li-square, #navigation li a.square {
   background-position: 0 0;
 }
 
@@ -110,29 +110,42 @@ body {
 /* line 76, ../scss/partials/_basic-layout.scss */
 #navigation .nav {
   margin: 25px 0px;
-  padding-left: 35px;
 }
-/* line 81, ../scss/partials/_basic-layout.scss */
+/* line 80, ../scss/partials/_basic-layout.scss */
 #navigation li {
   line-height: 24px;
+  border-left: 3px solid #222326;
 }
 /* line 84, ../scss/partials/_basic-layout.scss */
-#navigation li.square {
-  padding-left: 25px;
+#navigation li a {
+  display: block;
+  text-indent: 2em;
+  margin-left: 30px;
+  text-decoration: none;
+  color: #949599;
 }
-/* line 96, ../scss/partials/_basic-layout.scss */
+/* line 97, ../scss/partials/_basic-layout.scss */
+#navigation li:hover {
+  background-color: #2a2b2e;
+  border-left: 3px solid #fbb03b;
+}
+/* line 101, ../scss/partials/_basic-layout.scss */
+#navigation li:hover a {
+  color: white;
+}
+/* line 110, ../scss/partials/_basic-layout.scss */
 #navigation #version {
   margin: 25px 35px;
   position: absolute;
   bottom: 1px;
 }
 
-/* line 103, ../scss/partials/_basic-layout.scss */
+/* line 117, ../scss/partials/_basic-layout.scss */
 #content {
   overflow: hidden;
   height: 100%;
 }
-/* line 107, ../scss/partials/_basic-layout.scss */
+/* line 121, ../scss/partials/_basic-layout.scss */
 #content #info, #content #list {
   width: 100%;
   background-color: #222326;
