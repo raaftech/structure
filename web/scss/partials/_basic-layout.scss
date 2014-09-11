@@ -115,7 +115,8 @@ body {
 }
 
 #content {
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: auto;
     height: $cnt-height;
 
     #info, #list {
