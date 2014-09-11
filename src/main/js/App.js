@@ -13,7 +13,8 @@ var webServerConfig = {
         { address: 'frame.component.isa' },
         { address: 'frame.component.has' },
         { address: 'frame.protocol' },
-        { address: 'query.run' }
+        { address: 'query.run' },
+        { address: 'schema.version' }
     ]
 };
 

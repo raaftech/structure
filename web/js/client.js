@@ -24,6 +24,10 @@ eventBus.onopen = function eventbusConnected() {
     eventBus.send('frame.component.isa', {}, function(result) {
         displayResult(result);
     });
+
+    eventBus.send('schema.version', {}, function(result) {
+        $('#version').text('Version: ' + result);
+    });
 };
 
 $(document).ready(function() {

@@ -5,7 +5,7 @@ import org.vertx.java.platform.Verticle;
 public class Schema extends Verticle {
 
     public void start() {
-        vertx.eventBus().registerHandler("schema-version", new Handler<Message<String>>() {
+        vertx.eventBus().registerHandler("schema.version", new Handler<Message<String>>() {
             @Override
             public void handle(Message<String> message) {
                 message.reply("0.0.0");
