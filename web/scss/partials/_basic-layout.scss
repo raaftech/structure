@@ -120,6 +120,26 @@ body {
 
     #info, #list {
         width: $cnt-width;
-        background-color: $bgr-grey;
+        margin: 35px 0 35px 35px;
+    }
+
+    #list {
+
+        li {
+            border-bottom: 1px solid $bgr-less-grey;
+            line-height: 2.5em;
+        }
+
+        .header {
+            text-transform: uppercase;
+        }
+
+        .row {
+            color: $txt-white;
+        }
+
+        .row:hover {
+            background-color: $bgr-less-darkgrey;
+        }
     }
 }

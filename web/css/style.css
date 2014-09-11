@@ -148,5 +148,22 @@ body {
 /* line 121, ../scss/partials/_basic-layout.scss */
 #content #info, #content #list {
   width: 100%;
-  background-color: #222326;
+  margin: 35px 0 35px 35px;
+}
+/* line 128, ../scss/partials/_basic-layout.scss */
+#content #list li {
+  border-bottom: 1px solid #26272a;
+  line-height: 2.5em;
+}
+/* line 133, ../scss/partials/_basic-layout.scss */
+#content #list .header {
+  text-transform: uppercase;
+}
+/* line 137, ../scss/partials/_basic-layout.scss */
+#content #list .row {
+  color: white;
+}
+/* line 141, ../scss/partials/_basic-layout.scss */
+#content #list .row:hover {
+  background-color: #1a1b1d;
 }
