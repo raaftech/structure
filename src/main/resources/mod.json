@@ -5,7 +5,7 @@
     "developers": ["Rubin Simons", "Freek Alleman", "Maurice Schillemans", "Stephan Kaffa"],
     "homepage": "https://www.openpcf.org/projects/universal",
     "licenses": ["GNU General Public License (GPL) version 3.0"],
-    "main": "src/main/js/app.js",
+    "main": "src/main/js/App.js",
     "auto-redeploy": true,
     "preserve-cwd": true
 }

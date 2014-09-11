@@ -32,11 +32,14 @@ container.deployModule("io.vertx~mod-web-server~2.0.0-final", webServerConfig, 1
 // deploy neo4vertx
 container.deployModule("org.openpcf~neo4vertx~1.3.2", neo4jConfig, 1, deploymentCompleteHandler);
 
+// deploy schema verticle
+container.deployVerticle("Schema.java", deploymentCompleteHandler)
+
 // deploy frame verticle
-container.deployVerticle('src/main/js/frame.js');
+container.deployVerticle("Frame.js", deploymentCompleteHandler);
 
 // deploy query verticle
-container.deployVerticle('src/main/js/query.js');
+container.deployVerticle("Query.js", deploymentCompleteHandler);
 
 // display deployment status
 function deploymentCompleteHandler(error, deploymentID){

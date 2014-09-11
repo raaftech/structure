@@ -13,9 +13,10 @@ src/main/cql/org.openpcf.model.operatingsystems.cql -text
 src/main/cql/org.openpcf.model.packagemanagers.cql -text
 src/main/cql/org.openpcf.model.servicemanagers.cql -text
 src/main/cql/org.openpcf.model.services.cql -text
-src/main/js/app.js -text
-src/main/js/frame.js -text
-src/main/js/query.js -text
+src/main/java/Schema.java -text
+src/main/js/App.js -text
+src/main/js/Frame.js -text
+src/main/js/Query.js -text
 src/main/platform_lib/langs.properties -text
 src/main/platform_lib/log4j.properties -text
 src/main/platform_lib/mod.xml -text
