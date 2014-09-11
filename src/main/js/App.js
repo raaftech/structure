@@ -34,7 +34,7 @@ container.deployModule("io.vertx~mod-web-server~2.0.0-final", webServerConfig, 1
 container.deployModule("org.openpcf~neo4vertx~1.3.2", neo4jConfig, 1, deploymentCompleteHandler);
 
 // deploy schema verticle
-container.deployVerticle("Schema.java", deploymentCompleteHandler)
+container.deployVerticle("Schema.java", deploymentCompleteHandler);
 
 // deploy frame verticle
 container.deployVerticle("Frame.js", deploymentCompleteHandler);
