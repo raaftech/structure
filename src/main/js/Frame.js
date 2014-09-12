@@ -2,7 +2,7 @@ var eb = require('vertx/event_bus');
 
 var name = function(args, frame) {
     return (typeof(args.name) !== 'undefined') ? args.name: frame;
-}
+};
 
 eb.registerHandler('frame.component.isa', function(args, responder) {
 
