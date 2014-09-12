@@ -1,3 +1,5 @@
+// Copyright © 2008-2014 RAAF Technology bv
+
 var eventBus = new vertx.EventBus(
         window.location.protocol + '//' +
         window.location.hostname + ':'  +

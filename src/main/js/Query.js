@@ -1,7 +1,9 @@
+// Copyright © 2008-2014 RAAF Technology bv
+
 var eb = require('vertx/event_bus');
 
 eb.registerHandler('query.run', function(queryString, responder) {
-    
+
     var queryJsonObject = { 'query': queryString };
 
     // Put the query message on the eventbus

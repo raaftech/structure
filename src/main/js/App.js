@@ -1,3 +1,5 @@
+// Copyright © 2008-2014 RAAF Technology bv
+
 var container = require("vertx/container"),
     console = require("vertx/console");
 

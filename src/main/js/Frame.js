@@ -1,3 +1,5 @@
+// Copyright © 2008-2014 RAAF Technology bv
+
 var eb = require('vertx/event_bus');
 
 var name = function(args, frame) {
