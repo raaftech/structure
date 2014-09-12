@@ -26,10 +26,8 @@ body {
 
     .logo {
         position: absolute;
-        background-color: $bgr-white;
-        background-image: url('/img/logo_reveal.png');
+        background: $bgr-white url('/img/logo_reveal.png') no-repeat;
         background-size: $hdr-height;
-        background-repeat: no-repeat;
         height: $hdr-height;
         width: $hdr-height;
     }
@@ -52,6 +50,17 @@ body {
         line-height: $hdr-height;
         margin: 0 30px;
         float: right;
+
+        a {
+            display: block;
+            color: $txt-lightgrey;
+            text-decoration: none;
+        }
+
+        a:hover {
+            border-bottom: 1px solid $rvl-orange;
+            color: $txt-white;
+        }
     }
 }
 
