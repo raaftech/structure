@@ -253,7 +253,7 @@
                 <executions>
                     <execution>
                         <id>copy-root-to-target</id>
-                        <phase>validate</phase>
+                        <phase>prepare-package</phase>
                         <goals>
                             <goal>copy-resources</goal>
                         </goals>
@@ -272,7 +272,7 @@
                     </execution>
                     <execution>
                         <id>copy-modjson-to-target</id>
-                        <phase>validate</phase>
+                        <phase>prepare-package</phase>
                         <goals>
                             <goal>copy-resources</goal>
                         </goals>
@@ -290,7 +290,7 @@
                     </execution>
                     <execution>
                         <id>copy-main-to-target</id>
-                        <phase>validate</phase>
+                        <phase>prepare-package</phase>
                         <goals>
                             <goal>copy-resources</goal>
                         </goals>
@@ -309,7 +309,7 @@
                     </execution>
                     <execution>
                         <id>copy-web-to-target</id>
-                        <phase>validate</phase>
+                        <phase>prepare-package</phase>
                         <goals>
                             <goal>copy-resources</goal>
                         </goals>
@@ -329,7 +329,7 @@
                     </execution>
                     <execution>
                         <id>copy-classes-to-target</id>
-                        <phase>process-classes</phase>
+                        <phase>prepare-package</phase>
                         <goals>
                             <goal>copy-resources</goal>
                         </goals>
@@ -353,7 +353,7 @@
                 <executions>
                     <execution>
                         <id>copy-mod-dependencies-to-target</id>
-                        <phase>process-classes</phase>
+                        <phase>prepare-package</phase>
                         <goals>
                             <goal>copy-dependencies</goal>
                         </goals>
