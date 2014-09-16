@@ -3,14 +3,13 @@
 package org.openpcf.universal.actor;
 
 import org.openpcf.universal.base.BaseActor;
-import org.openpcf.universal.base.MessageHandler;
 import org.vertx.java.core.json.JsonArray;
 
 /**
  * The schema management verticle.
  *
- * @author      Rubin Simons <rubin.simons@raaftech.com>
- * @since       2014-09-11
+ * @author Rubin Simons <rubin.simons@raaftech.com>
+ * @since 2014-09-11
  */
 public class SchemaManager extends BaseActor {
 
