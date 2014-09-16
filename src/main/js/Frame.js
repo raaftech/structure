@@ -6,29 +6,29 @@ var name = function(args, frame) {
     return (typeof(args.name) !== 'undefined') ? args.name: frame;
 };
 
-eb.registerHandler('frame.component.isa', function(args, responder) {
+eb.registerHandler('org.openpcf.universal.frame.component.isa', function(args, responder) {
 
     var queryString = "MATCH (p:Component)<-[:ISA]-(c) WHERE p.name = '" + name(args, 'Component') + "' RETURN c";
 
-    eb.send('query.run', queryString, function(res) {
+    eb.send('org.openpcf.universal.query.run', queryString, function(res) {
         responder(res);
     });
 });
 
-eb.registerHandler('frame.component.has', function(args, responder) {
+eb.registerHandler('org.openpcf.universal.frame.component.has', function(args, responder) {
 
     var queryString = "MATCH (p:Component)-[:HAS]->(c) WHERE p.name = '" + name(args, 'Component') + "' RETURN c";
 
-    eb.send('query.run', queryString, function(res) {
+    eb.send('org.openpcf.universal.query.run', queryString, function(res) {
         responder(res);
     });
 });
 
-eb.registerHandler('frame.protocol', function(args, responder) {
+eb.registerHandler('org.openpcf.universal.frame.protocol', function(args, responder) {
 
     var queryString = "MATCH (p:Protocol)<-[:ISA]-(c) WHERE p.name = '" + name(args, 'Protocol') + "' RETURN c";
 
-    eb.send('query.run', queryString, function(res) {
+    eb.send('org.openpcf.universal.query.run', queryString, function(res) {
         responder(res);
     });
 });

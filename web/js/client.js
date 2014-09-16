@@ -23,11 +23,11 @@ function displayResult(result) {
 
 // Fire when connected to the eventbus
 eventBus.onopen = function eventbusConnected() {
-    eventBus.send('frame.component.isa', {}, function(result) {
+    eventBus.send('org.openpcf.universal.frame.component.isa', {}, function(result) {
         displayResult(result);
     });
 
-    eventBus.send('schema.version', {}, function(result) {
+    eventBus.send('org.openpcf.universal.actor.schemamanager', { "msgh": "showVersion" }, function(result) {
         $('#version').text('Version: ' + result);
     });
 };

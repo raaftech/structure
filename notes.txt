@@ -1,3 +1,20 @@
+Schema.handler
+
+ private abstract class BaseActor extends Verticle
+
+ common commands:
+  listCommand / help
+  showVersion / version api version
+  status /statistics iets
+
+ specialized commands:
+  (verticle specific)
+
+  init
+  update
+  verify
+
+
 Hoe bepaal je waar een StatusResult terecht komt?
 (denk aan device status bijvoorbeeld)
 Antwoord: een device heeft geen StatusResult maar een DerivedStatusResult; maw:
