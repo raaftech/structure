@@ -17,8 +17,9 @@ public class SchemaManager extends BaseActor {
     public MessageHandler initSchema() {
         return new MessageHandler() {
             public String exec(JsonArray args) {
-                container.logger().info("I am in initSchema! ");
-                return new String("I am initSchema!");
+                String msg = "I am initSchema";
+                log("info", msg);
+                return msg;
             }
         };
     }

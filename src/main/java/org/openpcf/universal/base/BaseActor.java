@@ -66,7 +66,7 @@ public abstract class BaseActor extends Verticle {
     }
 
     // A logger for actors with nice defaults.
-    private void log(String level, String message) {
+    public void log(String level, String message) {
         if (!loggers.containsKey(level)) {
             container.logger().error(getActorName() + ": invalid level " + level + "specified");
             container.logger().warn(getActorName()  + ": setting level to \"info\"");
@@ -116,7 +116,9 @@ public abstract class BaseActor extends Verticle {
     public MessageHandler showUsage() {
         return new MessageHandler() {
             public String exec(JsonArray args) {
-                return "I am showUsage!";
+                String msg = "I am showUsage!";
+                log("info", msg);
+                return msg;
             }
         };
     }
@@ -125,7 +127,9 @@ public abstract class BaseActor extends Verticle {
     public MessageHandler showVersion() {
         return new MessageHandler() {
             public String exec(JsonArray args) {
-                return "I am showVersion!";
+                String msg = "I am showVersion!";
+                log("info", msg);
+                return msg;
             }
         };
     }
