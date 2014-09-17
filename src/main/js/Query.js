@@ -8,7 +8,7 @@ eb.registerHandler('org.openpcf.universal.query.run', function(queryString, resp
 
     // Put the query message on the eventbus
     eb.send(
-        'org.openpcf.universal.neo4vertx.cypher.query',
+        'org.openpcf.neo4vertx.cypher.query',
         queryJsonObject,
         function(res) {
             res.query = queryString;

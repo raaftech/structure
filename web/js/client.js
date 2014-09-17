@@ -35,7 +35,7 @@ eventBus.onopen = function eventbusConnected() {
 $(document).ready(function() {
     $('ul.result').on('click', 'li.row', function() {
         var name = $(this).data('name');
-        eventBus.send('frame.component.isa', {'name': name}, function(result) {
+        eventBus.send('org.openpcf.universal.frame.component.isa', {'name': name}, function(result) {
             displayResult(result);
         });
     });

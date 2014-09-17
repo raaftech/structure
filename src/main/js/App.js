@@ -21,7 +21,7 @@ var neo4jConfig = {
     // mode: "default",
     mode: "remote",
     // path: "target/neo4j-db",
-    baseAddress: "org.openpcf.neo4vertx.",
+    baseAddress: "org.openpcf.neo4vertx",
     restUrl: "http://localhost:7474/db/data/cypher"
 };
 
