@@ -1,3 +1,40 @@
+request format:
+{ "msgh": "someHandler", "args": {} }
+
+result format:
+{ "result":
+""
+[..]
+{}
+}
+
+help format:
+
+{
+
+"help":
+  { "name":        "someHandler",
+    "synopsis":    "some sort of usage synopsis",
+    "description": "handler description text",
+    "options":     [ { "option":   { "name": "someOption",      "description": "About someOption."     }} ],
+    "files":       [ { "file":     { "name": "client.js",       "description": "About this file."      }} ],
+    "environment": [ { "variable": { "name": "SOMEVARIABLE",    "description": "About this variable."  }},
+                     { "property": { "name": "some.property",   "description": "About this property."  }} ],
+    "diagnostics": [ { "bug":      { "name": "some bug",        "description": "Bug description"       }},
+                     { "error":    { "name": "some error",      "description": "Error description"     }} ],
+    "examples":    [ { "example":  { "name": "some example",    "description": "About this variable."  }} ],
+    "authors":     [ { "author":   { "name": "John Doe",        "email":       "john@apple.com"        }} ],
+    "see also":    [ "a", "b"]
+  }
+ }
+
+usage format:
+{ "result":
+[ { "help": {..} ]
+}
+
+
+
 Schema.handler
 
  private abstract class BaseActor extends Verticle

@@ -8,6 +8,9 @@ import org.vertx.java.core.json.JsonArray;
 import org.vertx.java.core.json.JsonObject;
 import org.vertx.java.platform.Verticle;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
@@ -96,34 +99,84 @@ public abstract class BaseActor extends Verticle {
         loggers.get(level).log(message);
     }
 
+    public boolean isValidJson(String body) {
+        try {
+            new JsonObject(body);
+        } catch (Exception x) {
+            return false;
+        }
+        return true;
+    }
+
+    public boolean isAlphaNumeric(String str) {
+        return str.matches("[0-9a-zA-Z]+");
+    }
+
+    public JsonObject bodyFilter(JsonObject body) {
+
+        String msghDefault = "showUsage";
+        String msghRetrieved;
+        String msghAlphaNumeric;
+
+        JsonObject argsDefault = new JsonObject("{}");
+        String argsRetrieved;
+
+        // Verify if msgh field exists.
+        if (body.containsField("msgh")) {
+            msghRetrieved = body.getString("msgh");
+            // Verify if msgh is a alpha-numeric string.
+            if (isAlphaNumeric(msghRetrieved)) {
+                msghAlphaNumeric = msghRetrieved;
+                // Verify if msgh is an existing handler.
+                if (!handlers.containsKey(msghAlphaNumeric)) {
+                    // Unknown message handler specified, replace msgh.
+                    log("error", "Field \"msgh\" not a valid message handler: " + msghAlphaNumeric);
+                    log("warn", "Valid \"msgh\" values are: " + Arrays.asList(handlers.values()));
+                    log("warn",  "Setting \"msgh\" to default value: " + msghDefault);
+                    body.removeField("msgh");
+                    body.putString("msgh", msghDefault);
+                }
+            } else {
+                // Invalid characters in msgh, replace msgh.
+                log("error", "Field \"msgh\" contains invalid characters: " + msghRetrieved);
+                log("warn",  "Setting \"msgh\" to default value: " + msghDefault);
+                body.removeField("msgh");
+                body.putString("msgh", msghDefault);
+            }
+        } else {
+            // Non-existing msgh, adding default msgh.
+            log("warn", "Field \"msgh\" not in JSON body");
+            log("warn",  "Setting \"msgh\" to default value: " + msghDefault);
+            body.putString("msgh", msghDefault);
+        }
+
+        // Verify if args field exists.
+        if (body.containsField("args")) {
+            argsRetrieved = body.getValue("args").toString();
+            // Verify if args is a json object.
+            if (!isValidJson(argsRetrieved)) {
+                // Invalid args, replace args.
+                log("error", "Field \"args\" not of type JSON object: " + argsRetrieved);
+                log("warn",  "Setting \"args\" to empty JSON object: " + argsDefault);
+                body.removeField("args");
+                body.putObject("args", argsDefault);
+            }
+        } else {
+            // Non-existing args, which is ok, adding default args.
+            body.putObject("args", argsDefault);
+        }
+
+        return body;
+    }
+
     // The Vert.x Verticle start method.
     public void start() {
         vertx.eventBus().registerHandler(getActorName(), new Handler<Message<JsonObject>>() {
             @Override
             public void handle(Message<JsonObject> message) {
-                String msghDefault = "showUsage";
-                String msgh;
-                JsonArray args;
-
-                // Verify if we got some sane stuff back.
-                if (message.body().containsField("msgh")) {
-                    msgh = message.body().getString("msgh");
-                    if (!handlers.containsKey(msgh)) {
-                        log("error", "msgh " + msgh + " unknown");
-                        log("warn", "setting msgh to " + msghDefault);
-                        msgh = msghDefault;
-                    }
-                } else {
-                    log("error", "msgh missing from message");
-                    log("warn", "setting msgh to " + msghDefault);
-                    msgh = msghDefault;
-                }
-
-                if (message.body().containsField("args")) {
-                    args = message.body().getArray("args");
-                } else {
-                    args = new JsonArray();
-                }
+                JsonObject verifiedMessageBody = bodyFilter(message.body());
+                String msgh = verifiedMessageBody.getString("msgh");
+                JsonObject args = verifiedMessageBody.getObject("args");
 
                 // Route message to message handler and execute.
                 message.reply(handlers.get(msgh).exec(args));
@@ -136,16 +189,29 @@ public abstract class BaseActor extends Verticle {
 
     // A public interface for MessageHandler objects.
     public interface MessageHandler {
-        public String exec(JsonArray args);
+        public JsonObject exec(JsonObject args);
+        public JsonObject help(JsonObject args);
     }
 
     // The default usage  handler.
     public MessageHandler showUsage() {
         return new MessageHandler() {
-            public String exec(JsonArray args) {
-                String msg = "I am showUsage!";
-                log("info", msg);
-                return msg;
+            public JsonObject exec(JsonObject args) {
+                JsonObject exec = new JsonObject();
+                JsonArray result = new JsonArray();
+                exec.putArray("result", result);
+                for (String msgh : handlers.keySet()) {
+                    result.addObject(handlers.get(msgh).help(args));
+                }
+                return exec;
+            }
+
+            public JsonObject help(JsonObject args) {
+                JsonObject help = new JsonObject();
+                help.putString("name", "showUsage");
+                help.putObject("synopsis", new JsonObject("{ \"msgh\": \"showUsage\" }"));
+                help.putString("description", "showUsage shows a cumulative help message from all message handlers in this actor.");
+                return help;
             }
         };
     }
@@ -153,10 +219,34 @@ public abstract class BaseActor extends Verticle {
     // The default version handler.
     public MessageHandler showVersion() {
         return new MessageHandler() {
-            public String exec(JsonArray args) {
-                String msg = "I am showVersion!";
-                log("info", msg);
-                return msg;
+            public JsonObject exec(JsonObject args) {
+                JsonObject exec = new JsonObject();
+                JsonObject result = new JsonObject();
+                exec.putObject("result", result);
+
+                Properties properties = new Properties();
+                String release = "release.properties";
+
+                InputStream inputStream = getClass().getClassLoader().getResourceAsStream(release);
+                try {
+                    properties.load(inputStream);
+                } catch (IOException x) {
+                    log("error", x.getMessage());
+                }
+
+                if (properties.containsKey("release.version")) {
+                        result.putString("version", properties.getProperty("release.version").replaceAll("[\'\"]", ""));
+                };
+
+                return exec;
+            }
+
+            public JsonObject help(JsonObject args) {
+                JsonObject help = new JsonObject();
+                help.putString("name", "showVersion");
+                help.putObject("synopsis", new JsonObject("{ \"msgh\": \"showVersion\" }"));
+                help.putString("description", "showVersion returns the version of the actor or framework.");
+                return help;
             }
         };
     }

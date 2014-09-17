@@ -27,8 +27,8 @@ eventBus.onopen = function eventbusConnected() {
         displayResult(result);
     });
 
-    eventBus.send('org.openpcf.universal.actor.schemamanager', { "msgh": "showVersion" }, function(result) {
-        $('#version').text('Version: ' + result);
+    eventBus.send('org.openpcf.universal.actor.schemamanager', { "msgh": "showVersion", "args": {} }, function(result) {
+        $('#version').text('Version: ' + JSON.stringify(result));
     });
 };
 

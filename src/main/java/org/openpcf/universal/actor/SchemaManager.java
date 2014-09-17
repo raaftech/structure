@@ -4,6 +4,7 @@ package org.openpcf.universal.actor;
 
 import org.openpcf.universal.base.BaseActor;
 import org.vertx.java.core.json.JsonArray;
+import org.vertx.java.core.json.JsonObject;
 
 /**
  * The schema management verticle.
@@ -15,10 +16,18 @@ public class SchemaManager extends BaseActor {
 
     public MessageHandler initSchema() {
         return new MessageHandler() {
-            public String exec(JsonArray args) {
-                String msg = "I am initSchema";
-                log("info", msg);
-                return msg;
+            public JsonObject exec(JsonObject args) {
+                JsonObject result = new JsonObject("\"result\": \"I am initSchema!\"");
+                log("info", result.toString());
+                return result;
+            }
+
+            public JsonObject help(JsonObject args) {
+                JsonObject help = new JsonObject();
+                help.putString("name", "initSchema");
+                help.putObject("synopsis", new JsonObject("{ \"msgh\": \"initSchema\" }"));
+                help.putString("description", "initSchema initializes a Neo4j database with OpenPCF schema.");
+                return help;
             }
         };
     }
