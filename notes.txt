@@ -14,7 +14,7 @@ help format:
 
 "help":
   { "name":        "someHandler",
-    "synopsis":    "some sort of usage synopsis",
+    "synopsis":    { "msgh": "someHandler", "args": {} }
     "description": "handler description text",
     "options":     [ { "option":   { "name": "someOption",      "description": "About someOption."     }} ],
     "files":       [ { "file":     { "name": "client.js",       "description": "About this file."      }} ],

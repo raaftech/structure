@@ -3,7 +3,6 @@
 package org.openpcf.universal.actor;
 
 import org.openpcf.universal.base.BaseActor;
-import org.vertx.java.core.json.JsonArray;
 import org.vertx.java.core.json.JsonObject;
 
 /**

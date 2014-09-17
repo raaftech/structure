@@ -21,8 +21,11 @@ src/main/js/Query.js -text
 src/main/platform_lib/langs.properties -text
 src/main/platform_lib/log4j.properties -text
 src/main/platform_lib/mod.xml -text
+src/main/resources/manual.schema.json -text
 src/main/resources/mod.json -text
 src/main/resources/release.properties -text
+src/main/resources/request.schema.json -text
+src/main/resources/response.schema.json -text
 /vertx_classpath.txt -text
 web/config.rb -text
 web/css/reset.css -text

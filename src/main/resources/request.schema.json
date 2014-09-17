@@ -1,0 +1,16 @@
+{
+    "id": "https://repo.openpcf.org/schema/request.schema.json#",
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "description": "Schema for OpenPCF, Universal and Structure request messages.",
+    "type": "object",
+    "required": [ "msgh" ],
+    "properties": {
+        "msgh": {
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9]$"
+        },
+        "args": {
+            "type": "object"
+        }
+    }
+}
