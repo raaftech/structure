@@ -13,7 +13,7 @@ function displayResult(result) {
         // Empty list
         $('.result').empty();
         // Display query result(s) in html
-        $('<li>', {class: 'header'}).text(result.query).appendTo('.result');
+        $('<li>', {class: 'header'}).text(result.name).appendTo('.result');
         $.each(result.data, function(i, arr) {
             var comp = arr[0].data;
             $('<li>', {text: comp.name, class: 'row', 'data-name': comp.name}).appendTo('.result');
@@ -54,8 +54,14 @@ $(document).ready(function() {
             $('ul.tools').remove();
         }
     }, 'li.row');
+
+    $('ul.nav').on('click', 'li', function(e) {
+        e.preventDefault();
+        $('ul.nav li').removeClass('clicked');
+        $(this).addClass('clicked');
+        var name = $(this).data('name');
+        eventBus.send('org.openpcf.universal.frame.component.isa', {'name': name}, function(data) {
+            displayResult(data);
+        });
+    });
 });
-
-
-
-
