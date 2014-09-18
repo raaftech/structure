@@ -37,6 +37,19 @@ eb.registerHandler('org.openpcf.universal.frame.protocol', function(args, respon
     });
 });
 
+eb.registerHandler('org.openpcf.universal.frame.search', function(args, responder) {
+
+    var name = getName(args, 'Component');
+    var data = {
+        'name': 'Search results for "' + name + '"',
+        'queryString': 'MATCH (p) WHERE p.name =~ ".*(?i)' + name + '.*" RETURN p'
+    };
+
+    eb.send('org.openpcf.universal.query.run', data, function(res) {
+        responder(res);
+    });
+});
+
 // Select a complete computer by name
 // MATCH (p:Computer)-[:HAS*]->(c) WHERE p.name = 'MyComputer' RETURN p, c
 

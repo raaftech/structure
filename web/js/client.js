@@ -64,4 +64,18 @@ $(document).ready(function() {
             displayResult(data);
         });
     });
+
+    $('[name="search"]').keyup(function() {
+        var src = $(this).val();
+        if(src.length > 0) {
+            eventBus.send('org.openpcf.universal.frame.search', {'name': src}, function(data) {
+                displayResult(data);
+            });
+        }
+        else{
+            eventBus.send('org.openpcf.universal.frame.component.isa', {}, function(data) {
+                displayResult(data);
+            });
+        }
+    });
 });
