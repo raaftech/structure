@@ -12,12 +12,14 @@
 /* end content */
 @import url(http://fonts.googleapis.com/css?family=Lato:300,400,700);
 /* line 50, icons/*.png */
-.icons-sprite, .icons-li-square-white, #navigation li:hover a.square, .icons-li-square, #navigation li a.square {
+.icons-sprite, .icons-li-square-white, #navigation li:hover a.square,
+#navigation li.clicked a.square, .icons-li-square, #navigation li a.square {
   background: url('/img/icons-s26f22fe01f.png') no-repeat;
 }
 
 /* line 60, ../../../../../../../usr/local/lib/ruby/gems/2.1.0/gems/compass-0.12.6/frameworks/compass/stylesheets/compass/utilities/sprites/_base.scss */
-.icons-li-square-white, #navigation li:hover a.square {
+.icons-li-square-white, #navigation li:hover a.square,
+#navigation li.clicked a.square {
   background-position: 0 -24px;
 }
 
@@ -95,8 +97,13 @@ body {
   border-bottom: 1px solid #fbb03b;
   color: white;
 }
-
 /* line 67, ../scss/partials/_basic-layout.scss */
+#header li.clicked a {
+  border-bottom: 1px solid #fbb03b;
+  color: white;
+}
+
+/* line 74, ../scss/partials/_basic-layout.scss */
 #main {
   position: absolute;
   bottom: 0;
@@ -105,27 +112,27 @@ body {
   padding-bottom: 1px;
 }
 
-/* line 75, ../scss/partials/_basic-layout.scss */
+/* line 82, ../scss/partials/_basic-layout.scss */
 #navigation {
   background: #222326;
   width: 300px;
   height: 100%;
   float: left;
 }
-/* line 81, ../scss/partials/_basic-layout.scss */
+/* line 88, ../scss/partials/_basic-layout.scss */
 #navigation #search {
   margin: 25px 35px;
 }
-/* line 85, ../scss/partials/_basic-layout.scss */
+/* line 92, ../scss/partials/_basic-layout.scss */
 #navigation .nav {
   margin: 25px 0px;
 }
-/* line 89, ../scss/partials/_basic-layout.scss */
+/* line 96, ../scss/partials/_basic-layout.scss */
 #navigation li {
   line-height: 24px;
   border-left: 3px solid #222326;
 }
-/* line 93, ../scss/partials/_basic-layout.scss */
+/* line 100, ../scss/partials/_basic-layout.scss */
 #navigation li a {
   display: block;
   text-indent: 2em;
@@ -133,47 +140,72 @@ body {
   text-decoration: none;
   color: #949599;
 }
-/* line 106, ../scss/partials/_basic-layout.scss */
-#navigation li:hover {
+/* line 115, ../scss/partials/_basic-layout.scss */
+#navigation li:hover,
+#navigation li.clicked {
   background-color: #2a2b2e;
   border-left: 3px solid #fbb03b;
 }
-/* line 110, ../scss/partials/_basic-layout.scss */
-#navigation li:hover a {
+/* line 119, ../scss/partials/_basic-layout.scss */
+#navigation li:hover a,
+#navigation li.clicked a {
   color: white;
 }
-/* line 119, ../scss/partials/_basic-layout.scss */
+/* line 128, ../scss/partials/_basic-layout.scss */
 #navigation #version {
   margin: 25px 35px;
   position: absolute;
   bottom: 1px;
+  font-size: 0.75em;
 }
 
-/* line 126, ../scss/partials/_basic-layout.scss */
+/* line 136, ../scss/partials/_basic-layout.scss */
 #content {
   overflow-x: hidden;
   overflow-y: auto;
   height: 100%;
+  padding-right: 35px;
 }
-/* line 131, ../scss/partials/_basic-layout.scss */
+/* line 142, ../scss/partials/_basic-layout.scss */
 #content #info, #content #list {
   width: 100%;
   margin: 35px 0 35px 35px;
 }
-/* line 138, ../scss/partials/_basic-layout.scss */
+/* line 149, ../scss/partials/_basic-layout.scss */
 #content #list li {
   border-bottom: 1px solid #26272a;
   line-height: 2.5em;
 }
-/* line 143, ../scss/partials/_basic-layout.scss */
+/* line 154, ../scss/partials/_basic-layout.scss */
 #content #list .header {
   text-transform: uppercase;
 }
-/* line 147, ../scss/partials/_basic-layout.scss */
+/* line 158, ../scss/partials/_basic-layout.scss */
 #content #list .row {
   color: white;
 }
-/* line 151, ../scss/partials/_basic-layout.scss */
+/* line 162, ../scss/partials/_basic-layout.scss */
 #content #list .row:hover {
   background-color: #1a1b1d;
+}
+/* line 166, ../scss/partials/_basic-layout.scss */
+#content #list ul.tools {
+  background-color: #26272a;
+  float: right;
+  text-transform: uppercase;
+}
+/* line 171, ../scss/partials/_basic-layout.scss */
+#content #list ul.tools li {
+  margin: 0 10px;
+  display: inline-block;
+}
+/* line 176, ../scss/partials/_basic-layout.scss */
+#content #list ul.tools a {
+  display: block;
+  color: white;
+  text-decoration: none;
+}
+/* line 182, ../scss/partials/_basic-layout.scss */
+#content #list ul.tools a:hover {
+  color: #fbb03b;
 }

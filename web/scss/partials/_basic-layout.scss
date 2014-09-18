@@ -22,7 +22,7 @@ body {
 #header {
     width: $hdr-width;
     height: $hdr-height;
-    border-bottom: 1px solid $line-light-grey;
+    border-bottom: $hdr-border;
 
     .logo {
         position: absolute;
@@ -58,7 +58,14 @@ body {
         }
 
         a:hover {
-            border-bottom: 1px solid $rvl-orange;
+            border-bottom: $hdr-nav-border;
+            color: $txt-white;
+        }
+    }
+
+    li.clicked {
+        a {
+            border-bottom: $hdr-nav-border;
             color: $txt-white;
         }
     }
@@ -88,7 +95,7 @@ body {
 
     li {
         line-height: 24px;
-        border-left: 3px solid $bgr-grey;
+        border-left: $nav-border-left-grey;
 
         a {
             display: block;
@@ -103,9 +110,11 @@ body {
         }
     }
 
-    li:hover {
+    li:hover,
+    li.clicked
+    {
         background-color: $bgr-light-grey;
-        border-left: 3px solid $rvl-orange;
+        border-left: $nav-border-left-orange;
 
         a {
             color: $txt-white;
@@ -120,6 +129,7 @@ body {
         margin: 25px 35px;
         position: absolute;
         bottom: 1px;
+        font-size: $std-size-small;
     }
 }
 
@@ -127,6 +137,7 @@ body {
     overflow-x: hidden;
     overflow-y: auto;
     height: $cnt-height;
+    padding-right: 35px;
 
     #info, #list {
         width: $cnt-width;
@@ -136,7 +147,7 @@ body {
     #list {
 
         li {
-            border-bottom: 1px solid $bgr-less-grey;
+            border-bottom: $cnt-list-border;
             line-height: 2.5em;
         }
 
@@ -150,6 +161,27 @@ body {
 
         .row:hover {
             background-color: $bgr-less-darkgrey;
+        }
+
+        ul.tools {
+            background-color: $bgr-less-grey;
+            float: right;
+            text-transform: uppercase;
+
+            li {
+                margin: 0 10px;
+                display: inline-block;
+            }
+
+            a {
+                display: block;
+                color: $txt-white;
+                text-decoration: none;
+            }
+
+            a:hover {
+                color: $rvl-orange;
+            }
         }
     }
 }

@@ -23,22 +23,37 @@ function displayResult(result) {
 
 // Fire when connected to the eventbus
 eventBus.onopen = function eventbusConnected() {
-    eventBus.send('org.openpcf.universal.frame.component.isa', {}, function(result) {
-        displayResult(result);
+    eventBus.send('org.openpcf.universal.frame.component.isa', {}, function(data) {
+        displayResult(data);
     });
 
-    eventBus.send('org.openpcf.universal.actor.schemamanager', { "msgh": "showVersion", "args": {} }, function(result) {
-        $('#version').text('Version: ' + JSON.stringify(result));
+    eventBus.send('org.openpcf.universal.actor.schemamanager', { "msgh": "showVersion", "args": {} }, function(data) {
+        $('#version').html('Universal version ' + data.result.version + '<br />Copyright &copy; 2008-2014 RAAF Technology bv');
     });
 };
 
 $(document).ready(function() {
     $('ul.result').on('click', 'li.row', function() {
         var name = $(this).data('name');
-        eventBus.send('org.openpcf.universal.frame.component.isa', {'name': name}, function(result) {
-            displayResult(result);
+        eventBus.send('org.openpcf.universal.frame.component.isa', {'name': name}, function(data) {
+            displayResult(data);
         });
     });
+
+    $('ul.result').on({
+        mouseenter: function() {
+            var parent = $(this);
+            var tools = $('<ul>', {class: 'tools'});
+            $('<a>', {text: 'Start', 'href': '#'}).appendTo($('<li>').appendTo(tools));
+            $('<a>', {text: 'Stop', 'href': '#'}).appendTo($('<li>').appendTo(tools));
+            $('<a>', {text: 'Edit', 'href': '#'}).appendTo($('<li>').appendTo(tools));
+            $('<a>', {text: 'Remove', 'href': '#'}).appendTo($('<li>').appendTo(tools));
+            tools.appendTo(parent);
+        },
+        mouseleave: function() {
+            $('ul.tools').remove();
+        }
+    }, 'li.row');
 });
 
 
