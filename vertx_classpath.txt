@@ -5,8 +5,9 @@
 # Feel free to edit it if you have a non standard project structure and put the resources of your
 # module elsewhere
 
-src/main/resources
-src/main/java
+# Enable if you're running java verticles directly as a file and not as a compiled class
+#src/main/java
+
 src/main/js
 target/classes
 target/dependencies
