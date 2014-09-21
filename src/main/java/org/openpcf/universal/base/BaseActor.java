@@ -2,6 +2,13 @@
 
 package org.openpcf.universal.base;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.github.fge.jackson.JsonLoader;
+import com.github.fge.jsonschema.core.exceptions.ProcessingException;
+import com.github.fge.jsonschema.core.report.ProcessingReport;
+import com.github.fge.jsonschema.examples.Utils;
+import com.github.fge.jsonschema.main.JsonSchema;
+import com.github.fge.jsonschema.main.JsonSchemaFactory;
 import org.vertx.java.core.Handler;
 import org.vertx.java.core.eventbus.Message;
 import org.vertx.java.core.json.JsonArray;
@@ -111,6 +118,23 @@ public abstract class BaseActor extends Verticle {
         return str.matches("[0-9a-zA-Z]+");
     }
 
+
+    public void testValidator(JsonObject body) {
+
+        try {
+            final JsonNode requestSchema = JsonLoader.fromResource("/request.schema.json");
+            final JsonNode check = JsonLoader.fromString(body.toString());
+            final JsonSchemaFactory factory = JsonSchemaFactory.byDefault();
+            final JsonSchema schema = factory.getJsonSchema(requestSchema);
+            ProcessingReport report;
+            report = schema.validate(check);
+            log("info", report.toString());
+
+        } catch (IOException|ProcessingException x) {
+            log("error", x.getMessage());
+        }
+    }
+
     public JsonObject bodyFilter(JsonObject body) {
 
         String msghDefault = "showUsage";
@@ -173,6 +197,8 @@ public abstract class BaseActor extends Verticle {
         vertx.eventBus().registerHandler(getActorName(), new Handler<Message<JsonObject>>() {
             @Override
             public void handle(Message<JsonObject> message) {
+                log("info", "Invoking schema validation test....");
+                testValidator(message.body());
                 JsonObject verifiedMessageBody = bodyFilter(message.body());
                 String msgh = verifiedMessageBody.getString("msgh");
                 JsonObject args = verifiedMessageBody.getObject("args");
