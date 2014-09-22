@@ -23,7 +23,7 @@ src/main/platform_lib/log4j.properties -text
 src/main/platform_lib/mod.xml -text
 src/main/resources/manual.schema.json -text
 src/main/resources/mod.json -text
-src/main/resources/release.properties -text
+src/main/resources/release.json -text
 src/main/resources/request.schema.json -text
 src/main/resources/response.schema.json -text
 /vertx_classpath.txt -text

@@ -1,0 +1,9 @@
+{
+    "release": {
+        "name": "Universal",
+        "version": "0.6.1",
+        "copyright": "Copyright © 2003-2014 RAAF Technology bv",
+        "license": "GNU General Public License, Version 3",
+        "description": "Vert.x and Neo4j application to manage computing environments."
+    }
+}

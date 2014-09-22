@@ -2,8 +2,10 @@
 
 package org.openpcf.universal.actor;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.openpcf.universal.base.BaseActor;
-import org.vertx.java.core.json.JsonObject;
 
 /**
  * The schema management verticle.
@@ -15,18 +17,18 @@ public class SchemaManager extends BaseActor {
 
     public MessageHandler initSchema() {
         return new MessageHandler() {
-            public JsonObject exec(JsonObject args) {
-                JsonObject result = new JsonObject("\"result\": \"I am initSchema!\"");
+            public JsonNode exec(JsonNode args) {
+                ObjectNode result = JsonNodeFactory.instance.objectNode();
+                result.put("result", "I am initSchema!");
                 log("info", result.toString());
                 return result;
             }
 
-            public JsonObject help(JsonObject args) {
-                JsonObject help = new JsonObject();
-                help.putString("name", "initSchema");
-                help.putObject("synopsis", new JsonObject("{ \"msgh\": \"initSchema\" }"));
-                help.putString("description", "initSchema initializes a Neo4j database with OpenPCF schema.");
-                return help;
+            public JsonNode help(JsonNode args) {
+                ObjectNode result = JsonNodeFactory.instance.objectNode();
+                result.put("name", "initSchema");
+                result.put("description", "initSchema initializes a Neo4j database with OpenPCF schema.");
+                return result;
             }
         };
     }
