@@ -31,6 +31,7 @@ container.deployModule("org.openpcf~neo4vertx~1.3.2", neo4jConfig, 1, deployment
 
 // Deploy our verticles.
 container.deployVerticle("org.openpcf.universal.actor.SchemaManager", deploymentCompleteHandler);
+container.deployVerticle("org.openpcf.universal.actor.Konijn", deploymentCompleteHandler);
 container.deployVerticle("Frame.js", deploymentCompleteHandler);
 container.deployVerticle("Query.js", deploymentCompleteHandler);
 

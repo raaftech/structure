@@ -18,27 +18,17 @@ public class SchemaManager extends BaseActor {
     public MessageHandler initSchema() {
         return new MessageHandler() {
             public JsonNode exec(JsonNode request) {
-                ObjectNode response = JsonNodeFactory.instance.objectNode();
                 ObjectNode result = JsonNodeFactory.instance.objectNode();
-
                 result.put("says", "I am initSchema!");
-
-                response.put("request", request);
-                response.put("result", result);
-
-                return response;
+                return response(request, result);
             }
 
             public JsonNode help(JsonNode request) {
-                ObjectNode response = JsonNodeFactory.instance.objectNode();
                 ObjectNode result = JsonNodeFactory.instance.objectNode();
                 result.put("name", "initSchema");
                 result.put("description", "initSchema initializes a Neo4j database with OpenPCF schema.");
 
-                response.put("request", request);
-                response.put("result", result);
-
-                return response;
+                return result;
             }
         };
     }

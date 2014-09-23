@@ -10,6 +10,9 @@
         },
         "result": {
             "type": "object"
+        },
+        "stats": {
+            "type": "object"
         }
     }
 }

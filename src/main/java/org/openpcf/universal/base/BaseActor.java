@@ -137,15 +137,109 @@ public abstract class BaseActor extends Verticle {
         return jsonDoc;
     }
 
+    // The response helper.
+    public JsonNode response(JsonNode request, JsonNode result) {
+        ObjectNode response = JsonNodeFactory.instance.objectNode();
+
+        response.put("request", request);
+        response.put("result", result);
+
+        return response;
+    }
+
+    // The response helper (with statistics).
+    public JsonNode response(JsonNode request, JsonNode result, JsonNode stats) {
+        ObjectNode response = JsonNodeFactory.instance.objectNode();
+
+        response.put("request", request);
+        response.put("result", result);
+        response.put("stats", stats);
+
+        return response;
+    }
+
+    // Check if some string is valid JSON.
+    public boolean isValidJson(String body) {
+        try {
+            new JsonObject(body);
+        } catch (Exception x) {
+            return false;
+        }
+        return true;
+    }
+
+    // Check if a string is alpha-numeric.
+    public boolean isAlphaNumeric(String str) {
+        return str.matches("[0-9a-zA-Z]+");
+    }
+
+    // Filter a given JsonObject body and enforce basic validity.
+    public JsonObject bodyFilter(JsonObject body) {
+
+        String msghDefault = "showUsage";
+        String msghRetrieved;
+        String msghAlphaNumeric;
+
+        JsonObject argsDefault = new JsonObject("{}");
+        String argsRetrieved;
+
+        // Verify if msgh field exists.
+        if (body.containsField("msgh")) {
+            msghRetrieved = body.getString("msgh");
+            // Verify if msgh is a alpha-numeric string.
+            if (isAlphaNumeric(msghRetrieved)) {
+                msghAlphaNumeric = msghRetrieved;
+                // Verify if msgh is an existing handler.
+                if (!handlers.containsKey(msghAlphaNumeric)) {
+                    // Unknown message handler specified, replace msgh.
+                    log("error", "Field \"msgh\" not a valid message handler: " + msghAlphaNumeric);
+                    log("warn", "Valid \"msgh\" values are: " + handlers.keySet().toString());
+                    log("warn",  "Setting \"msgh\" to default value: " + msghDefault);
+                    body.removeField("msgh");
+                    body.putString("msgh", msghDefault);
+                }
+            } else {
+                // Invalid characters in msgh, replace msgh.
+                log("error", "Field \"msgh\" contains invalid characters: " + msghRetrieved);
+                log("warn",  "Setting \"msgh\" to default value: " + msghDefault);
+                body.removeField("msgh");
+                body.putString("msgh", msghDefault);
+            }
+        } else {
+            // Non-existing msgh, adding default msgh.
+            log("warn", "Field \"msgh\" not in JSON body");
+            log("warn",  "Setting \"msgh\" to default value: " + msghDefault);
+            body.putString("msgh", msghDefault);
+        }
+
+        // Verify if args field exists.
+        if (body.containsField("args")) {
+            argsRetrieved = body.getValue("args").toString();
+            // Verify if args is a json object.
+            if (!isValidJson(argsRetrieved)) {
+                // Invalid args, replace args.
+                log("error", "Field \"args\" not of type JSON object: " + argsRetrieved);
+                log("warn",  "Setting \"args\" to empty JSON object: " + argsDefault);
+                body.removeField("args");
+                body.putObject("args", argsDefault);
+            }
+        } else {
+            // Non-existing args, which is ok, adding default args.
+            body.putObject("args", argsDefault);
+        }
+
+        return body;
+    }
+
     // The Vert.x Verticle start method.
     public void start() {
         vertx.eventBus().registerHandler(getActorName(), new Handler<Message<JsonObject>>() {
             @Override
             public void handle(Message<JsonObject> message){
-
                 try {
                     // Request! Convert "Vert.x JsonObject" to "Jackson JsonNode".
-                    JsonNode request = validate(schemaForRequest, mapper.readTree(message.body().toString()));
+                    JsonObject body = bodyFilter(message.body());
+                    JsonNode request = validate(schemaForRequest, mapper.readTree(body.toString()));
                     String msgh = request.get("msgh").asText();
 
                     // Response! Convert "Jackson JsonNode" to "Vert.x JsonObject".
@@ -158,7 +252,7 @@ public abstract class BaseActor extends Verticle {
         });
 
         // Tell the console we're up and running.
-        log("info", "started");
+        log("info", "ready to serve");
     }
 
     // A public interface for MessageHandler objects.
@@ -171,28 +265,20 @@ public abstract class BaseActor extends Verticle {
     public MessageHandler showUsage() {
         return new MessageHandler() {
             public JsonNode exec(JsonNode request) {
-                ObjectNode response = JsonNodeFactory.instance.objectNode();
                 ObjectNode result = JsonNodeFactory.instance.objectNode();
                 for (String msgh : handlers.keySet()) {
                     result.put(msgh, handlers.get(msgh).help(request));
                 }
 
-                response.put("request", request);
-                response.put("result", result);
-
-                return response;
+                return response(request, result);
             }
 
             public JsonNode help(JsonNode request) {
-                ObjectNode response = JsonNodeFactory.instance.objectNode();
                 ObjectNode result = JsonNodeFactory.instance.objectNode();
                 result.put("name", "showUsage");
                 result.put("description", "showUsage shows a cumulative help message from all message handlers in this actor.");
 
-                response.put("request", request);
-                response.put("result", result);
-
-                return response;
+                return result;
             }
         };
     }
@@ -201,7 +287,6 @@ public abstract class BaseActor extends Verticle {
     public MessageHandler showVersion() {
         return new MessageHandler() {
             public JsonNode exec(JsonNode request) {
-                ObjectNode response = JsonNodeFactory.instance.objectNode();
                 JsonNode result = JsonNodeFactory.instance.objectNode();
                 InputStream inputStream = getClass().getClassLoader().getResourceAsStream("release.json");
 
@@ -211,22 +296,15 @@ public abstract class BaseActor extends Verticle {
                     log("error", x.getMessage());
                 }
 
-                response.put("request", request);
-                response.put("result", result);
-
-                return response;
+                return response(request, result);
             }
 
             public JsonNode help(JsonNode request) {
-                ObjectNode response = JsonNodeFactory.instance.objectNode();
                 ObjectNode result = JsonNodeFactory.instance.objectNode();
                 result.put("name", "showVersion");
                 result.put("description", "showVersion returns the version of the actor or framework.");
 
-                response.put("request", request);
-                response.put("result", result);
-
-                return response;
+                return result;
             }
         };
     }
