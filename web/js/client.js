@@ -21,14 +21,14 @@ function displayResult(result) {
     }
 }
 
-function displayVersion(result) {
-    $('#version').append(result.release.name);
+function displayVersion(data) {
+    $('#version').append(data.result.release.name);
     $('#version').append('&nbsp;');
-    $('#version').append(result.release.version);
+    $('#version').append(data.result.release.version);
     $('#version').append('<br />');
-    $('#version').append(result.release.copyright);
+    $('#version').append(data.result.release.copyright);
     $('#version').append('<br />');
-    $('#version').append(result.release.license);
+    $('#version').append(data.result.release.license);
 }
 
 // Fire when connected to the eventbus

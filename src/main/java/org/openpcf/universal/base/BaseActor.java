@@ -30,6 +30,10 @@ import java.util.*;
  */
 public abstract class BaseActor extends Verticle {
 
+    JsonNode schemaForRequest;
+    JsonNode schemaForResponse;
+    JsonNode schemaForManual;
+
     Map<String, MessageHandler> handlers;
     Map<String, Loggable> loggers;
     ObjectMapper mapper = new ObjectMapper();
@@ -85,7 +89,17 @@ public abstract class BaseActor extends Verticle {
                 container.logger().debug(getActorName() + ": " + message);
             }
         });
+
+        // Initialize schema documents.
+        try {
+            schemaForRequest = JsonLoader.fromResource("/request.schema.json");
+            schemaForResponse = JsonLoader.fromResource("/response.schema.json");
+            schemaForManual = JsonLoader.fromResource("/manual.schema.json");
+        } catch (IOException x) {
+            log("error", x.getMessage());
+        }
     }
+
 
     // Get the name of the actor (used with registerHandler).
     private String getActorName() {
@@ -107,19 +121,20 @@ public abstract class BaseActor extends Verticle {
         loggers.get(level).log(message);
     }
 
-    // The tryout validator.
-    public void testValidator(JsonNode body) {
-
+    // The validator.
+    public JsonNode validate(JsonNode schemaDoc, JsonNode jsonDoc) {
         try {
-            final JsonNode requestSchema = JsonLoader.fromResource("/request.schema.json");
             final JsonSchemaFactory factory = JsonSchemaFactory.byDefault();
-            final JsonSchema schema = factory.getJsonSchema(requestSchema);
-            ProcessingReport report;
-            report = schema.validate(body);
-            log("info", report.toString());
-        } catch (IOException|ProcessingException x) {
+            final JsonSchema schema = factory.getJsonSchema(schemaDoc);
+            ProcessingReport report = schema.validate(jsonDoc);
+            if (!report.isSuccess()) {
+                log("error", report.toString());
+            }
+        } catch (ProcessingException x) {
             log("error", x.getMessage());
         }
+
+        return jsonDoc;
     }
 
     // The Vert.x Verticle start method.
@@ -130,12 +145,11 @@ public abstract class BaseActor extends Verticle {
 
                 try {
                     // Request! Convert "Vert.x JsonObject" to "Jackson JsonNode".
-                    JsonNode request = mapper.readTree(message.body().toString());
+                    JsonNode request = validate(schemaForRequest, mapper.readTree(message.body().toString()));
                     String msgh = request.get("msgh").asText();
-                    JsonNode args = request.get("args");
 
                     // Response! Convert "Jackson JsonNode" to "Vert.x JsonObject".
-                    JsonObject response = new JsonObject(handlers.get(msgh).exec(args).toString());
+                    JsonObject response = new JsonObject(validate(schemaForResponse, handlers.get(msgh).exec(request)).toString());
                     message.reply(response);
                 } catch (Exception x) {
                     log("error", x.getMessage());
@@ -149,26 +163,36 @@ public abstract class BaseActor extends Verticle {
 
     // A public interface for MessageHandler objects.
     public interface MessageHandler {
-        public JsonNode exec(JsonNode args);
-        public JsonNode help(JsonNode args);
+        public JsonNode exec(JsonNode request);
+        public JsonNode help(JsonNode request);
     }
 
     // The default usage  handler.
     public MessageHandler showUsage() {
         return new MessageHandler() {
-            public JsonNode exec(JsonNode args) {
+            public JsonNode exec(JsonNode request) {
+                ObjectNode response = JsonNodeFactory.instance.objectNode();
                 ObjectNode result = JsonNodeFactory.instance.objectNode();
                 for (String msgh : handlers.keySet()) {
-                    result.put(msgh, handlers.get(msgh).help(args));
+                    result.put(msgh, handlers.get(msgh).help(request));
                 }
-                return result;
+
+                response.put("request", request);
+                response.put("result", result);
+
+                return response;
             }
 
-            public JsonNode help(JsonNode args) {
+            public JsonNode help(JsonNode request) {
+                ObjectNode response = JsonNodeFactory.instance.objectNode();
                 ObjectNode result = JsonNodeFactory.instance.objectNode();
                 result.put("name", "showUsage");
                 result.put("description", "showUsage shows a cumulative help message from all message handlers in this actor.");
-                return result;
+
+                response.put("request", request);
+                response.put("result", result);
+
+                return response;
             }
         };
     }
@@ -176,7 +200,8 @@ public abstract class BaseActor extends Verticle {
     // The default version handler.
     public MessageHandler showVersion() {
         return new MessageHandler() {
-            public JsonNode exec(JsonNode args) {
+            public JsonNode exec(JsonNode request) {
+                ObjectNode response = JsonNodeFactory.instance.objectNode();
                 JsonNode result = JsonNodeFactory.instance.objectNode();
                 InputStream inputStream = getClass().getClassLoader().getResourceAsStream("release.json");
 
@@ -186,14 +211,22 @@ public abstract class BaseActor extends Verticle {
                     log("error", x.getMessage());
                 }
 
-                return result;
+                response.put("request", request);
+                response.put("result", result);
+
+                return response;
             }
 
-            public JsonNode help(JsonNode args) {
+            public JsonNode help(JsonNode request) {
+                ObjectNode response = JsonNodeFactory.instance.objectNode();
                 ObjectNode result = JsonNodeFactory.instance.objectNode();
                 result.put("name", "showVersion");
                 result.put("description", "showVersion returns the version of the actor or framework.");
-                return result;
+
+                response.put("request", request);
+                response.put("result", result);
+
+                return response;
             }
         };
     }
