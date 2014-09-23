@@ -21,6 +21,16 @@ function displayResult(result) {
     }
 }
 
+function displayVersion(result) {
+    $('#version').append(result.release.name);
+    $('#version').append('&nbsp;');
+    $('#version').append(result.release.version);
+    $('#version').append('<br />');
+    $('#version').append(result.release.copyright);
+    $('#version').append('<br />');
+    $('#version').append(result.release.license);
+}
+
 // Fire when connected to the eventbus
 eventBus.onopen = function eventbusConnected() {
     eventBus.send('org.openpcf.universal.frame.component.isa', {}, function(data) {
@@ -28,7 +38,7 @@ eventBus.onopen = function eventbusConnected() {
     });
 
     eventBus.send('org.openpcf.universal.actor.schemamanager', { "msgh": "showVersion", "args": {} }, function(data) {
-        $('#version').html('Universal version ' + data.result.version + '<br />Copyright &copy; 2008-2014 RAAF Technology bv');
+        displayVersion(data);
     });
 };
 
