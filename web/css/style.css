@@ -209,3 +209,23 @@ body {
 #content #list ul.tools a:hover {
   color: #fbb03b;
 }
+
+/* line 189, ../scss/partials/_basic-layout.scss */
+#dialog {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: rgba(42, 43, 46, 0.8);
+}
+/* line 197, ../scss/partials/_basic-layout.scss */
+#dialog div {
+  position: relative;
+  width: 450px;
+  margin: 10% auto;
+  padding: 20px;
+  border-radius: 10px;
+  border: 1px solid #fbb03b;
+  background: #121314;
+}

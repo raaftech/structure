@@ -31,6 +31,13 @@ function displayVersion(data) {
     $('#version').append(data.result.release.license);
 }
 
+function displayDialog(data) {
+    $('<div>', {id: 'dialog'}).appendTo('body');
+    var body = $('<div>');
+    $('<p>', {text: JSON.stringify(data)}).appendTo(body);
+    body.appendTo('#dialog');
+}
+
 // Fire when connected to the eventbus
 eventBus.onopen = function eventbusConnected() {
     eventBus.send('org.openpcf.universal.frame.component.isa', {}, function(data) {
@@ -38,11 +45,16 @@ eventBus.onopen = function eventbusConnected() {
     });
 
     eventBus.send('org.openpcf.universal.actor.schemamanager', { "msgh": "showVersion", "args": {} }, function(data) {
+        // displayDialog(data);
         displayVersion(data);
     });
 };
 
 $(document).ready(function() {
+    $('body').on('click', '#dialog', function() {
+        $('#dialog').remove();
+    });
+
     $('ul.result').on('click', 'li.row', function() {
         var name = $(this).data('name');
         eventBus.send('org.openpcf.universal.frame.component.isa', {'name': name}, function(data) {
