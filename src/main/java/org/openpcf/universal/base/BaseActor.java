@@ -2,7 +2,6 @@
 
 package org.openpcf.universal.base;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
@@ -126,23 +125,7 @@ public abstract class BaseActor extends Verticle {
         loggers.get(level).log(message);
     }
 
-    // The validator.
-    public JsonNode validate(JsonNode schemaDoc, JsonNode jsonDoc) {
-        try {
-            final JsonSchemaFactory factory = JsonSchemaFactory.byDefault();
-            final JsonSchema schema = factory.getJsonSchema(schemaDoc);
-            ProcessingReport report = schema.validate(jsonDoc);
-            if (!report.isSuccess()) {
-                log("error", report.toString());
-            }
-        } catch (ProcessingException x) {
-            log("error", x.getMessage());
-        }
-
-        return jsonDoc;
-    }
-
-    // The Neo4j cypher query helper.
+    // The Neo4j cypher query helper (accepts a JsonNode parameter).
     public JsonNode cypherQuery(JsonNode query) {
         final String SERVER_ROOT_URI = "http://localhost:7474/db/data/";
         JsonNode result = JsonNodeFactory.instance.objectNode();
@@ -203,6 +186,22 @@ public abstract class BaseActor extends Verticle {
     // Check if a string is alpha-numeric.
     public boolean isAlphaNumeric(String str) {
         return str.matches("[0-9a-zA-Z]+");
+    }
+
+    // The validator.
+    public JsonNode validate(JsonNode schemaDoc, JsonNode jsonDoc) {
+        try {
+            final JsonSchemaFactory factory = JsonSchemaFactory.byDefault();
+            final JsonSchema schema = factory.getJsonSchema(schemaDoc);
+            ProcessingReport report = schema.validate(jsonDoc);
+            if (!report.isSuccess()) {
+                log("error", report.toString());
+            }
+        } catch (ProcessingException x) {
+            log("error", x.getMessage());
+        }
+
+        return jsonDoc;
     }
 
     // Filter a given JsonObject body and enforce basic validity.
@@ -295,7 +294,6 @@ public abstract class BaseActor extends Verticle {
 
         }
 
-        log("info", bodyFiltered.toString());
         return bodyFiltered;
     }
 
