@@ -48,6 +48,10 @@ eventBus.onopen = function eventbusConnected() {
         // displayDialog(data);
         displayVersion(data);
     });
+
+    eventBus.send('org.openpcf.universal.actor.querymanager', { "msgh": "runQuery", "args": {} }, function(data) {
+        displayDialog(data);
+    });
 };
 
 $(document).ready(function() {
@@ -55,11 +59,13 @@ $(document).ready(function() {
         $('#dialog').remove();
     });
 
-    $('ul.result').on('click', 'li.row', function() {
-        var name = $(this).data('name');
-        eventBus.send('org.openpcf.universal.frame.component.isa', {'name': name}, function(data) {
-            displayResult(data);
-        });
+    $('ul.result').on('click', 'li.row', function(e) {
+        if(e.target == this) {
+            var name = $(this).data('name');
+            eventBus.send('org.openpcf.universal.frame.component.isa', {'name': name}, function (data) {
+                displayResult(data);
+            });
+        }
     });
 
     $('ul.result').on({
@@ -76,6 +82,13 @@ $(document).ready(function() {
             $('ul.tools').remove();
         }
     }, 'li.row');
+
+    $('ul.result').on('click', '.tools', function(e) {
+        e.preventDefault();
+        var name = $(this).parent().data('name'),
+            action = $(e.target).text();
+        console.log('a tool item is clicked: ' + name + ' ' + action);
+    });
 
     $('ul.nav').on('click', 'li', function(e) {
         e.preventDefault();
