@@ -49,7 +49,7 @@ eventBus.onopen = function eventbusConnected() {
         displayVersion(data);
     });
 
-    eventBus.send('org.openpcf.universal.actor.querymanager', { "msgh": "runQuery", "args": {} }, function(data) {
+    eventBus.send('org.openpcf.universal.actor.querymanager', { "msgh": "runQuery", "args": {"query": 'MATCH (n) RETURN n'} }, function(data) {
         displayDialog(data);
     });
 };

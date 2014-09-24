@@ -20,7 +20,7 @@ public class SchemaManager extends BaseActor {
             public JsonNode exec(JsonNode request) {
                 ObjectNode result = JsonNodeFactory.instance.objectNode();
                 result.put("says", "I am initSchema!");
-                return response(request, result);
+                return response(request, result, 0);
             }
 
             public JsonNode help(JsonNode request) {

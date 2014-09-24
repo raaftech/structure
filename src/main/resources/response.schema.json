@@ -3,7 +3,7 @@
     "$schema": "http://json-schema.org/draft-04/schema#",
     "description": "Schema for OpenPCF, Universal and Structure responses to requests.",
     "type": "object",
-    "required": [ "request", "result" ],
+    "required": [ "request", "result", "exit"],
     "properties": {
         "request": {
             "type": "object"
@@ -13,6 +13,13 @@
         },
         "stats": {
             "type": "object"
+        },
+        "error": {
+            "type": "object"
+        },
+        "exit": {
+            "type": "integer",
+            "pattern": "^[0-255]$"
         }
     }
 }

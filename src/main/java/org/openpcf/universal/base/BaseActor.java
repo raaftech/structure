@@ -2,6 +2,7 @@
 
 package org.openpcf.universal.base;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
@@ -11,11 +12,15 @@ import com.github.fge.jsonschema.core.exceptions.ProcessingException;
 import com.github.fge.jsonschema.core.report.ProcessingReport;
 import com.github.fge.jsonschema.main.JsonSchema;
 import com.github.fge.jsonschema.main.JsonSchemaFactory;
+import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.api.client.WebResource;
 import org.vertx.java.core.Handler;
 import org.vertx.java.core.eventbus.Message;
 import org.vertx.java.core.json.JsonObject;
 import org.vertx.java.platform.Verticle;
 
+import javax.ws.rs.core.MediaType;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
@@ -137,22 +142,49 @@ public abstract class BaseActor extends Verticle {
         return jsonDoc;
     }
 
+    // The Neo4j cypher query helper.
+    public JsonNode cypherQuery(JsonNode query) {
+        final String SERVER_ROOT_URI = "http://localhost:7474/db/data/";
+        JsonNode result = JsonNodeFactory.instance.objectNode();
+
+        Client client = Client.create();
+        WebResource cypher = client.resource(SERVER_ROOT_URI + "cypher");
+
+        ClientResponse cypherResponse = cypher
+                .accept( MediaType.APPLICATION_JSON )
+                .type( MediaType.APPLICATION_JSON )
+                .entity( query.toString() )
+                .post( ClientResponse.class );
+
+        try {
+            result = mapper.readTree(cypherResponse.getEntity(String.class));
+        } catch (IOException x) {
+            log("error", x.getMessage());
+        }
+
+        cypherResponse.close();
+
+        return result;
+    }
+
     // The response helper.
-    public JsonNode response(JsonNode request, JsonNode result) {
+    public JsonNode response(JsonNode request, JsonNode result, int exit) {
         ObjectNode response = JsonNodeFactory.instance.objectNode();
 
         response.put("request", request);
         response.put("result", result);
+        response.put("exit", exit);
 
         return response;
     }
 
     // The response helper (with statistics).
-    public JsonNode response(JsonNode request, JsonNode result, JsonNode stats) {
+    public JsonNode response(JsonNode request, JsonNode result, int exit, JsonNode stats) {
         ObjectNode response = JsonNodeFactory.instance.objectNode();
 
         response.put("request", request);
         response.put("result", result);
+        response.put("exit", exit);
         response.put("stats", stats);
 
         return response;
@@ -174,80 +206,112 @@ public abstract class BaseActor extends Verticle {
     }
 
     // Filter a given JsonObject body and enforce basic validity.
-    public JsonObject bodyFilter(JsonObject body) {
+    public JsonNode requestFilter(JsonObject body) {
 
+        // Bodies; original and sanitized.
+        JsonNode bodyRetrieved;
+        ObjectNode bodyFiltered = JsonNodeFactory.instance.objectNode();
+
+        // Defaults for msgh, args and error.
         String msghDefault = "showUsage";
         String msghRetrieved;
         String msghAlphaNumeric;
+        ObjectNode argsDefault = JsonNodeFactory.instance.objectNode();
+        JsonNode argsRetrieved;
+        ObjectNode errorDefault = JsonNodeFactory.instance.objectNode();
 
-        JsonObject argsDefault = new JsonObject("{}");
-        String argsRetrieved;
+        // Assumed validity (we're optimists).
+        Boolean valid = true;
 
-        // Verify if msgh field exists.
-        if (body.containsField("msgh")) {
-            msghRetrieved = body.getString("msgh");
-            // Verify if msgh is a alpha-numeric string.
-            if (isAlphaNumeric(msghRetrieved)) {
-                msghAlphaNumeric = msghRetrieved;
-                // Verify if msgh is an existing handler.
-                if (!handlers.containsKey(msghAlphaNumeric)) {
-                    // Unknown message handler specified, replace msgh.
-                    log("error", "Field \"msgh\" not a valid message handler: " + msghAlphaNumeric);
-                    log("warn", "Valid \"msgh\" values are: " + handlers.keySet().toString());
-                    log("warn",  "Setting \"msgh\" to default value: " + msghDefault);
-                    body.removeField("msgh");
-                    body.putString("msgh", msghDefault);
+        // Validate bodyRetrieved, construct sanitized bodyFiltered.
+        try {
+            bodyRetrieved = validate(schemaForRequest, mapper.readTree(body.toString()));
+
+            // Verify if msgh field exists.
+            if (bodyRetrieved.has("msgh")) {
+                msghRetrieved = bodyRetrieved.get("msgh").asText();
+                // Verify if msgh is a alpha-numeric string.
+                if (isAlphaNumeric(msghRetrieved)) {
+                    msghAlphaNumeric = msghRetrieved;
+                    // Verify if msgh is an existing handler.
+                    if (handlers.containsKey(msghAlphaNumeric)) {
+                        bodyFiltered.put("msgh", msghRetrieved);
+                    } else {
+                        // Unknown message handler specified, replace msgh.
+                        log("error", "Field \"msgh\" not a valid message handler: " + msghAlphaNumeric);
+                        valid = false;
+                        log("warn", "Valid \"msgh\" values are: " + handlers.keySet().toString());
+                        log("warn", "Setting \"msgh\" to default value: " + msghDefault);
+                        bodyFiltered.put("msgh", msghDefault);
+                    }
+                } else {
+                    // Invalid characters in msgh, replace msgh.
+                    log("error", "Field \"msgh\" contains invalid characters: " + msghRetrieved);
+                    valid = false;
+
+                    log("warn", "Setting \"msgh\" to default value: " + msghDefault);
+                    bodyFiltered.put("msgh", msghDefault);
                 }
             } else {
-                // Invalid characters in msgh, replace msgh.
-                log("error", "Field \"msgh\" contains invalid characters: " + msghRetrieved);
-                log("warn",  "Setting \"msgh\" to default value: " + msghDefault);
-                body.removeField("msgh");
-                body.putString("msgh", msghDefault);
+                // Non-existing msgh, adding default msgh.
+                log("error", "Field \"msgh\" not in JSON body");
+                valid = false;
+
+                log("warn", "Setting \"msgh\" to default value: " + msghDefault);
+                bodyFiltered.put("msgh", msghDefault);
             }
-        } else {
-            // Non-existing msgh, adding default msgh.
-            log("warn", "Field \"msgh\" not in JSON body");
-            log("warn",  "Setting \"msgh\" to default value: " + msghDefault);
-            body.putString("msgh", msghDefault);
+
+            // Verify if args field exists.
+            if (bodyRetrieved.has("args")) {
+                argsRetrieved = bodyRetrieved.get("args");
+                // Verify if args is a json object.
+                if (isValidJson(argsRetrieved.toString())) {
+                    bodyFiltered.put("args", argsRetrieved);
+                } else {
+                    // Invalid args, replace args.
+                    log("error", "Field \"args\" not of type JSON object: " + argsRetrieved);
+                    valid = false;
+
+                    log("warn", "Setting \"args\" to empty JSON object: " + argsDefault);
+                    bodyFiltered.put("args", argsDefault);
+                }
+            } else {
+                // Non-existing args, which is ok, adding default args.
+                bodyFiltered.put("args", argsDefault);
+            }
+
+            // Set validity.
+            bodyFiltered.put("valid", valid);
+
+            // If an error occurred, copy the original body to error.
+            if (!valid) {
+                log("warn", "Copying original request body to error object");
+                errorDefault.put("original-request", bodyRetrieved);
+                bodyFiltered.put("error", errorDefault);
+            }
+
+        } catch (Exception x) {
+            log("error", x.getMessage());
+
         }
 
-        // Verify if args field exists.
-        if (body.containsField("args")) {
-            argsRetrieved = body.getValue("args").toString();
-            // Verify if args is a json object.
-            if (!isValidJson(argsRetrieved)) {
-                // Invalid args, replace args.
-                log("error", "Field \"args\" not of type JSON object: " + argsRetrieved);
-                log("warn",  "Setting \"args\" to empty JSON object: " + argsDefault);
-                body.removeField("args");
-                body.putObject("args", argsDefault);
-            }
-        } else {
-            // Non-existing args, which is ok, adding default args.
-            body.putObject("args", argsDefault);
-        }
-
-        return body;
+        log("info", bodyFiltered.toString());
+        return bodyFiltered;
     }
 
     // The Vert.x Verticle start method.
     public void start() {
         vertx.eventBus().registerHandler(getActorName(), new Handler<Message<JsonObject>>() {
             @Override
-            public void handle(Message<JsonObject> message){
-                try {
-                    // Request! Convert "Vert.x JsonObject" to "Jackson JsonNode".
-                    JsonObject body = bodyFilter(message.body());
-                    JsonNode request = validate(schemaForRequest, mapper.readTree(body.toString()));
-                    String msgh = request.get("msgh").asText();
+            public void handle(Message<JsonObject> message) {
 
-                    // Response! Convert "Jackson JsonNode" to "Vert.x JsonObject".
-                    JsonObject response = new JsonObject(validate(schemaForResponse, handlers.get(msgh).exec(request)).toString());
-                    message.reply(response);
-                } catch (Exception x) {
-                    log("error", x.getMessage());
-                }
+                // Request! Convert "Vert.x JsonObject" to "Jackson JsonNode".
+                JsonNode request = requestFilter(message.body());
+                String msgh = request.get("msgh").asText();
+
+                // Response! Convert "Jackson JsonNode" to "Vert.x JsonObject".
+                JsonObject response = new JsonObject(validate(schemaForResponse, handlers.get(msgh).exec(request)).toString());
+                message.reply(response);
             }
         });
 
@@ -266,11 +330,18 @@ public abstract class BaseActor extends Verticle {
         return new MessageHandler() {
             public JsonNode exec(JsonNode request) {
                 ObjectNode result = JsonNodeFactory.instance.objectNode();
-                for (String msgh : handlers.keySet()) {
-                    result.put(msgh, handlers.get(msgh).help(request));
-                }
+                int exitCode = 0;
 
-                return response(request, result);
+                    for (String msgh : handlers.keySet()) {
+                        try {
+                            result.put(msgh, handlers.get(msgh).help(request));
+                        } catch (NullPointerException x) {
+                            log("error", x.getMessage());
+                            exitCode++;
+                        }
+                    }
+
+                return response(request, result, exitCode);
             }
 
             public JsonNode help(JsonNode request) {
@@ -289,14 +360,16 @@ public abstract class BaseActor extends Verticle {
             public JsonNode exec(JsonNode request) {
                 JsonNode result = JsonNodeFactory.instance.objectNode();
                 InputStream inputStream = getClass().getClassLoader().getResourceAsStream("release.json");
+                int exitCode = 0;
 
                 try {
                     result = mapper.readTree(inputStream);
                 } catch (IOException x) {
                     log("error", x.getMessage());
+                    exitCode++;
                 }
 
-                return response(request, result);
+                return response(request, result, exitCode);
             }
 
             public JsonNode help(JsonNode request) {

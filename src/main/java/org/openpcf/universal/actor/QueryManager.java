@@ -6,33 +6,25 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.openpcf.universal.base.BaseActor;
-import org.vertx.java.core.Handler;
-import org.vertx.java.core.eventbus.Message;
-import org.vertx.java.core.json.JsonObject;
 
 /**
- * The query management verticle.
+ * The query management actor.
  *
  * @author Maurice Schillemans <maurice.schillemans@raaftech.com>
  * @since 2014-09-24
  */
 public class QueryManager extends BaseActor {
 
+
     public MessageHandler runQuery() {
         return new MessageHandler() {
             public JsonNode exec(JsonNode request) {
-                ObjectNode query = JsonNodeFactory.instance.objectNode();
-                query.put("query", "match (c{name:'SSH'})<-[:ISA]-(a) return a");
-                JsonObject jquery = new JsonObject(query.toString());
+                ObjectNode result = JsonNodeFactory.instance.objectNode();
+                JsonNode args = request.get("args");
 
-                vertx.eventBus().send("org.openpcf.neo4vertx.cypher.query", jquery, new Handler<Message<JsonObject>>() {
-                    public void handle(Message<JsonObject> message) {
-                        String meh = message.body().toString();
-                        log("info", "I received a reply " + meh);
-                    }
-                });
+                result.put("cypher", cypherQuery(args));
 
-                return response(request, query);
+                return response(request, result, 0);
             }
 
             public JsonNode help(JsonNode request) {
