@@ -39,7 +39,7 @@ eventBus.onopen = function eventbusConnected() {
         displayResult(data);
     });
 
-    eventBus.send('org.openpcf.universal.actor.schemamanager', { "msgh": "version", "args": {} }, function(data) {
+    eventBus.send('org.openpcf.universal.actor.framehelper', { "msgh": "version", "args": {} }, function(data) {
         displayVersion(data);
     });
 };

@@ -125,8 +125,21 @@ public abstract class BaseActor extends Verticle {
         loggers.get(level).log(message);
     }
 
+    // The Neo4j cypher query helper (accepts a string query parameter).
+    public JsonNode cypherQuery(String query) {
+        return cypherQuery(query, null);
+    }
+
+    // The Neo4j cypher query helper (accepts a string query and params).
+    public JsonNode cypherQuery(String query, String params) {
+        ObjectNode request = JsonNodeFactory.instance.objectNode();
+        if (params != null) { request.put("params", params); };
+        request.put("query", query);
+        return cypherQuery(request);
+    }
+
     // The Neo4j cypher query helper (accepts a JsonNode parameter).
-    public JsonNode cypherQuery(JsonNode query) {
+    public JsonNode cypherQuery(JsonNode request) {
         final String SERVER_ROOT_URI = "http://localhost:7474/db/data/";
         JsonNode result = JsonNodeFactory.instance.objectNode();
 
@@ -136,7 +149,7 @@ public abstract class BaseActor extends Verticle {
         ClientResponse cypherResponse = cypher
                 .accept( MediaType.APPLICATION_JSON )
                 .type( MediaType.APPLICATION_JSON )
-                .entity( query.toString() )
+                .entity( request.toString() )
                 .post( ClientResponse.class );
 
         try {
