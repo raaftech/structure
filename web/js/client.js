@@ -5,16 +5,16 @@ var eventBus = new vertx.EventBus(
         window.location.hostname + ':'  +
         window.location.port     + '/eventbus');
 
-function displayResult(result) {
+function displayResult(data) {
     // Display query result(s) in console
-    console.log(result);
+    console.log(data.result);
     // If there are any results
-    if(result.data.length > 0) {
+    if(data.result.cypher.data.length > 0) {
         // Empty list
         $('.result').empty();
         // Display query result(s) in html
-        $('<li>', {class: 'header'}).text(result.name).appendTo('.result');
-        $.each(result.data, function(i, arr) {
+        $('<li>', {class: 'header'}).text(data.result.name).appendTo('.result');
+        $.each(data.result.cypher.data, function(i, arr) {
             var comp = arr[0].data;
             $('<li>', {text: comp.name, class: 'row', 'data-name': comp.name}).appendTo('.result');
         });
@@ -22,13 +22,8 @@ function displayResult(result) {
 }
 
 function displayVersion(data) {
-    $('#version').append(data.result.release.name);
-    $('#version').append('&nbsp;');
-    $('#version').append(data.result.release.version);
-    $('#version').append('<br />');
-    $('#version').append(data.result.release.copyright);
-    $('#version').append('<br />');
-    $('#version').append(data.result.release.license);
+    $('#version').append(data.result.release.name + '&nbsp;' + data.result.release.version + '<br />' +
+        data.result.release.copyright + '<br />' + data.result.release.license);
 }
 
 function displayDialog(data) {
@@ -40,17 +35,12 @@ function displayDialog(data) {
 
 // Fire when connected to the eventbus
 eventBus.onopen = function eventbusConnected() {
-    eventBus.send('org.openpcf.universal.frame.component.isa', {}, function(data) {
+    eventBus.send('org.openpcf.universal.actor.frame', { "msgh": "component", "args": {} }, function(data) {
         displayResult(data);
     });
 
     eventBus.send('org.openpcf.universal.actor.schemamanager', { "msgh": "showVersion", "args": {} }, function(data) {
-        // displayDialog(data);
         displayVersion(data);
-    });
-
-    eventBus.send('org.openpcf.universal.actor.querymanager', { "msgh": "runQuery", "args": {"query": 'MATCH (n) RETURN n'} }, function(data) {
-        displayDialog(data);
     });
 };
 
@@ -62,7 +52,7 @@ $(document).ready(function() {
     $('ul.result').on('click', 'li.row', function(e) {
         if(e.target == this) {
             var name = $(this).data('name');
-            eventBus.send('org.openpcf.universal.frame.component.isa', {'name': name}, function (data) {
+            eventBus.send('org.openpcf.universal.actor.frame', { "msgh": "component", "args": {"name": name}}, function (data) {
                 displayResult(data);
             });
         }
@@ -95,7 +85,7 @@ $(document).ready(function() {
         $('ul.nav li').removeClass('clicked');
         $(this).addClass('clicked');
         var name = $(this).data('name');
-        eventBus.send('org.openpcf.universal.frame.component.isa', {'name': name}, function(data) {
+        eventBus.send('org.openpcf.universal.actor.frame', { "msgh": "component", "args": {"name": name}}, function(data) {
             displayResult(data);
         });
     });
@@ -103,12 +93,12 @@ $(document).ready(function() {
     $('[name="search"]').keyup(function() {
         var src = $(this).val();
         if(src.length > 0) {
-            eventBus.send('org.openpcf.universal.frame.search', {'name': src}, function(data) {
+            eventBus.send('org.openpcf.universal.actor.frame', { "msgh": "search", "args": {"name": src}}, function(data) {
                 displayResult(data);
             });
         }
         else{
-            eventBus.send('org.openpcf.universal.frame.component.isa', {}, function(data) {
+            eventBus.send('org.openpcf.universal.actor.frame', { "msgh": "component", "args": {} }, function(data) {
                 displayResult(data);
             });
         }

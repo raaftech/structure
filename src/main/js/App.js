@@ -20,9 +20,7 @@ container.deployModule("io.vertx~mod-web-server~2.0.0-final", webServerConfig, 1
 
 // Deploy our verticles.
 container.deployVerticle("org.openpcf.universal.actor.SchemaManager", deploymentCompleteHandler);
-container.deployVerticle("org.openpcf.universal.actor.QueryManager", deploymentCompleteHandler);
-//container.deployVerticle("Frame.js", deploymentCompleteHandler);
-//container.deployVerticle("Query.js", deploymentCompleteHandler);
+container.deployVerticle("org.openpcf.universal.actor.Frame", deploymentCompleteHandler);
 
 // Display deployment status.
 function deploymentCompleteHandler(error, deploymentID){

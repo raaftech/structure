@@ -13,7 +13,7 @@ src/main/cql/org.openpcf.model.operatingsystems.cql -text
 src/main/cql/org.openpcf.model.packagemanagers.cql -text
 src/main/cql/org.openpcf.model.servicemanagers.cql -text
 src/main/cql/org.openpcf.model.services.cql -text
-src/main/java/org/openpcf/universal/actor/QueryManager.java -text
+src/main/java/org/openpcf/universal/actor/Frame.java -text
 src/main/java/org/openpcf/universal/actor/SchemaManager.java -text
 src/main/java/org/openpcf/universal/base/BaseActor.java -text
 src/main/js/App.js -text
