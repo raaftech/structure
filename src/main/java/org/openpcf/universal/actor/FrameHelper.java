@@ -13,7 +13,7 @@ import org.openpcf.universal.base.BaseActor;
  * @author Maurice Schillemans <maurice.schillemans@raaftech.com>
  * @since 2014-09-24
  */
-public class Frame extends BaseActor {
+public class FrameHelper extends BaseActor {
 
     private String setName(JsonNode args, String pFrame) {
         if(args.has("name")) {

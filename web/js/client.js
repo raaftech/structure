@@ -35,7 +35,7 @@ function displayDialog(data) {
 
 // Fire when connected to the eventbus
 eventBus.onopen = function eventbusConnected() {
-    eventBus.send('org.openpcf.universal.actor.frame', { "msgh": "component", "args": {} }, function(data) {
+    eventBus.send('org.openpcf.universal.actor.framehelper', { "msgh": "component", "args": {} }, function(data) {
         displayResult(data);
     });
 
@@ -52,7 +52,7 @@ $(document).ready(function() {
     $('ul.result').on('click', 'li.row', function(e) {
         if(e.target == this) {
             var name = $(this).data('name');
-            eventBus.send('org.openpcf.universal.actor.frame', { "msgh": "component", "args": {"name": name}}, function (data) {
+            eventBus.send('org.openpcf.universal.actor.framehelper', { "msgh": "component", "args": {"name": name}}, function (data) {
                 displayResult(data);
             });
         }
@@ -85,7 +85,7 @@ $(document).ready(function() {
         $('ul.nav li').removeClass('clicked');
         $(this).addClass('clicked');
         var name = $(this).data('name');
-        eventBus.send('org.openpcf.universal.actor.frame', { "msgh": "component", "args": {"name": name}}, function(data) {
+        eventBus.send('org.openpcf.universal.actor.framehelper', { "msgh": "component", "args": {"name": name}}, function(data) {
             displayResult(data);
         });
     });
@@ -93,12 +93,12 @@ $(document).ready(function() {
     $('[name="search"]').keyup(function() {
         var src = $(this).val();
         if(src.length > 0) {
-            eventBus.send('org.openpcf.universal.actor.frame', { "msgh": "search", "args": {"name": src}}, function(data) {
+            eventBus.send('org.openpcf.universal.actor.framehelper', { "msgh": "search", "args": {"name": src}}, function(data) {
                 displayResult(data);
             });
         }
         else{
-            eventBus.send('org.openpcf.universal.actor.frame', { "msgh": "component", "args": {} }, function(data) {
+            eventBus.send('org.openpcf.universal.actor.framehelper', { "msgh": "component", "args": {} }, function(data) {
                 displayResult(data);
             });
         }
