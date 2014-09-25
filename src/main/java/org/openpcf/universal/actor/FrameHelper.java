@@ -44,7 +44,7 @@ public class FrameHelper extends BaseActor {
             public JsonNode help(JsonNode request) {
                 ObjectNode result = JsonNodeFactory.instance.objectNode();
                 result.put("name", "component");
-                result.put("description", "component gets the children of the component.");
+                result.put("description", "Component gets the children of a component type object.");
                 return result;
             }
         };
@@ -71,7 +71,7 @@ public class FrameHelper extends BaseActor {
             public JsonNode help(JsonNode request) {
                 ObjectNode result = JsonNodeFactory.instance.objectNode();
                 result.put("name", "search");
-                result.put("description", "search Neo4j database with given parameter.");
+                result.put("description", "Search Neo4j database with a given parameter.");
                 return result;
             }
         };

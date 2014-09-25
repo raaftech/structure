@@ -212,7 +212,7 @@ public abstract class BaseActor extends Verticle {
         ObjectNode bodyFiltered = JsonNodeFactory.instance.objectNode();
 
         // Defaults for msgh, args and error.
-        String msghDefault = "showUsage";
+        String msghDefault = "help";
         String msghRetrieved;
         String msghAlphaNumeric;
         ObjectNode argsDefault = JsonNodeFactory.instance.objectNode();
@@ -324,7 +324,7 @@ public abstract class BaseActor extends Verticle {
     }
 
     // The default usage  handler.
-    public MessageHandler showUsage() {
+    public MessageHandler help() {
         return new MessageHandler() {
             public JsonNode exec(JsonNode request) {
                 ObjectNode result = JsonNodeFactory.instance.objectNode();
@@ -344,8 +344,8 @@ public abstract class BaseActor extends Verticle {
 
             public JsonNode help(JsonNode request) {
                 ObjectNode result = JsonNodeFactory.instance.objectNode();
-                result.put("name", "showUsage");
-                result.put("description", "showUsage shows a cumulative help message from all message handlers in this actor.");
+                result.put("name", "help");
+                result.put("description", "The help command shows a help and/or usage message from all message handlers in this actor.");
 
                 return result;
             }
@@ -353,7 +353,7 @@ public abstract class BaseActor extends Verticle {
     }
 
     // The default version handler.
-    public MessageHandler showVersion() {
+    public MessageHandler version() {
         return new MessageHandler() {
             public JsonNode exec(JsonNode request) {
                 JsonNode result = JsonNodeFactory.instance.objectNode();
@@ -372,8 +372,8 @@ public abstract class BaseActor extends Verticle {
 
             public JsonNode help(JsonNode request) {
                 ObjectNode result = JsonNodeFactory.instance.objectNode();
-                result.put("name", "showVersion");
-                result.put("description", "showVersion returns the version of the actor or framework.");
+                result.put("name", "version");
+                result.put("description", "The version command returns the version of the actor or framework.");
 
                 return result;
             }

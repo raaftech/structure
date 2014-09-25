@@ -15,18 +15,54 @@ import org.openpcf.universal.base.BaseActor;
  */
 public class SchemaManager extends BaseActor {
 
-    public MessageHandler initSchema() {
+    public MessageHandler reinit() {
         return new MessageHandler() {
             public JsonNode exec(JsonNode request) {
                 ObjectNode result = JsonNodeFactory.instance.objectNode();
-                result.put("says", "I am initSchema!");
+                result.put("says", "I am reinit!");
                 return response(request, result, 0);
             }
 
             public JsonNode help(JsonNode request) {
                 ObjectNode result = JsonNodeFactory.instance.objectNode();
-                result.put("name", "initSchema");
-                result.put("description", "initSchema initializes a Neo4j database with OpenPCF schema.");
+                result.put("name", "reinit");
+                result.put("description", "reinit initializes a clean, empty Neo4j database with OpenPCF schema.");
+
+                return result;
+            }
+        };
+    }
+
+    public MessageHandler update() {
+        return new MessageHandler() {
+            public JsonNode exec(JsonNode request) {
+                ObjectNode result = JsonNodeFactory.instance.objectNode();
+                result.put("says", "I am update!");
+                return response(request, result, 0);
+            }
+
+            public JsonNode help(JsonNode request) {
+                ObjectNode result = JsonNodeFactory.instance.objectNode();
+                result.put("name", "update");
+                result.put("description", "Updates or creates a Neo4j database with OpenPCF schema.");
+
+                return result;
+            }
+        };
+    }
+
+    public MessageHandler status() {
+        return new MessageHandler() {
+            public JsonNode exec(JsonNode request) {
+                ObjectNode result = JsonNodeFactory.instance.objectNode();
+                result.put("says", "I am status!");
+                return response(request, result, 0);
+            }
+
+            public JsonNode help(JsonNode request) {
+                ObjectNode result = JsonNodeFactory.instance.objectNode();
+                result.put("name", "status");
+                result.put("description", "Request status.");
 
                 return result;
             }

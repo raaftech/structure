@@ -1,3 +1,13 @@
+schemamanager
+   update
+   reinit
+   status
+
+
+
+
+
+
 request format:
 { "msgh": "someHandler", "args": {} }
 
