@@ -158,59 +158,68 @@ body {
   bottom: 1px;
   font-size: 0.75em;
 }
+/* line 134, ../scss/partials/_basic-layout.scss */
+#navigation #version a {
+  color: #949599;
+  text-decoration: none;
+}
+/* line 139, ../scss/partials/_basic-layout.scss */
+#navigation #version a:hover {
+  color: white;
+}
 
-/* line 136, ../scss/partials/_basic-layout.scss */
+/* line 145, ../scss/partials/_basic-layout.scss */
 #content {
   overflow-x: hidden;
   overflow-y: auto;
   height: 100%;
   padding-right: 35px;
 }
-/* line 142, ../scss/partials/_basic-layout.scss */
+/* line 151, ../scss/partials/_basic-layout.scss */
 #content #info, #content #list {
   width: 100%;
   margin: 35px 0 35px 35px;
 }
-/* line 149, ../scss/partials/_basic-layout.scss */
+/* line 158, ../scss/partials/_basic-layout.scss */
 #content #list li {
   border-bottom: 1px solid #26272a;
   line-height: 2.5em;
 }
-/* line 154, ../scss/partials/_basic-layout.scss */
+/* line 163, ../scss/partials/_basic-layout.scss */
 #content #list .header {
   text-transform: uppercase;
 }
-/* line 158, ../scss/partials/_basic-layout.scss */
+/* line 167, ../scss/partials/_basic-layout.scss */
 #content #list .row {
   color: white;
 }
-/* line 162, ../scss/partials/_basic-layout.scss */
+/* line 171, ../scss/partials/_basic-layout.scss */
 #content #list .row:hover {
   background-color: #1a1b1d;
 }
-/* line 166, ../scss/partials/_basic-layout.scss */
+/* line 175, ../scss/partials/_basic-layout.scss */
 #content #list ul.tools {
   background-color: #26272a;
   float: right;
   text-transform: uppercase;
 }
-/* line 171, ../scss/partials/_basic-layout.scss */
+/* line 180, ../scss/partials/_basic-layout.scss */
 #content #list ul.tools li {
   margin: 0 10px;
   display: inline-block;
 }
-/* line 176, ../scss/partials/_basic-layout.scss */
+/* line 185, ../scss/partials/_basic-layout.scss */
 #content #list ul.tools a {
   display: block;
   color: white;
   text-decoration: none;
 }
-/* line 182, ../scss/partials/_basic-layout.scss */
+/* line 191, ../scss/partials/_basic-layout.scss */
 #content #list ul.tools a:hover {
   color: #fbb03b;
 }
 
-/* line 189, ../scss/partials/_basic-layout.scss */
+/* line 198, ../scss/partials/_basic-layout.scss */
 #dialog {
   position: fixed;
   top: 0;
@@ -219,7 +228,7 @@ body {
   left: 0;
   background: rgba(42, 43, 46, 0.8);
 }
-/* line 197, ../scss/partials/_basic-layout.scss */
+/* line 206, ../scss/partials/_basic-layout.scss */
 #dialog div {
   position: relative;
   width: 450px;

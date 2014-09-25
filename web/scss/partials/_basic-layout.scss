@@ -130,6 +130,15 @@ body {
         position: absolute;
         bottom: 1px;
         font-size: $std-size-small;
+
+        a {
+            color: $txt-lightgrey;
+            text-decoration: none;
+        }
+
+        a:hover {
+            color: $txt-white;
+        }
     }
 }
 

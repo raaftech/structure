@@ -22,7 +22,7 @@ function displayResult(data) {
 }
 
 function displayVersion(data) {
-    $('#version').append(data.result.release.name + '&nbsp;' + data.result.release.version + '<br />' +
+    $('#version').append(data.result.release.name + '&nbsp;' + data.result.release.version + '&nbsp;<a href="#" id="cfu">Check for updates</a><br />' +
         data.result.release.copyright + '<br />' + data.result.release.license);
 }
 
@@ -103,4 +103,11 @@ $(document).ready(function() {
             });
         }
     });
+
+    $('#version').on('click', '#cfu', function(e) {
+        e.preventDefault();
+        eventBus.send('org.openpcf.universal.actor.schemamanager', { "msgh": "update", "args": {} }, function(data) {
+            displayDialog(data);
+        });
+    })
 });
