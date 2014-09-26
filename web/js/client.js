@@ -21,6 +21,30 @@ function displayResult(data) {
     }
 }
 
+function displayInformation(data) {
+    $('#info').empty();
+    var node = data.result.cypher.data[0][0].data;
+    var labels = data.result.cypher.data[0][1];
+    var basic = $('<div>', {class: 'basic'});
+    var detail = $('<ul>', {class: 'detail'});
+    $('<img>', {'src': '/img/logo_dummy.png', 'align': 'left'}).appendTo(basic);
+    $('<h1>', {text: node.name}).appendTo(basic);
+    $('<p>', {text: node.desc}).appendTo(basic);
+    $('<h2>', {text: 'Details'}).appendTo(detail);
+    $.each(node, function(k,v) {
+        var li = $('<li>');
+        $('<p>', {text: v}).appendTo(li);
+        li.prepend($('<label>', {text: k}));
+        li.appendTo(detail);
+    });
+    var li = $('<li>');
+    $('<p>', {text: labels.join(', ')}).appendTo(li);
+    li.prepend($('<label>', {text: 'labels'}));
+    li.appendTo(detail);
+    basic.appendTo('#info');
+    detail.appendTo('#info');
+}
+
 function displayVersion(data) {
     $('#version').append(data.result.release.name + '&nbsp;' + data.result.release.version + '&nbsp;<a href="#" id="cfu">Check for updates</a><br />' +
         data.result.release.copyright + '<br />' + data.result.release.license);
@@ -54,6 +78,9 @@ $(document).ready(function() {
             var name = $(this).data('name');
             eventBus.send('org.openpcf.universal.actor.framehelper', { "msgh": "component", "args": {"name": name}}, function (data) {
                 displayResult(data);
+            });
+            eventBus.send('org.openpcf.universal.actor.framehelper', { "msgh": "node", "args": {"name": name}}, function (data) {
+                displayInformation(data);
             });
         }
     });

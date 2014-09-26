@@ -27,16 +27,11 @@ public class FrameHelper extends BaseActor {
         return new MessageHandler() {
             public JsonNode exec(JsonNode request) {
                 ObjectNode result = JsonNodeFactory.instance.objectNode();
-                ObjectNode queryObject = JsonNodeFactory.instance.objectNode();
                 JsonNode args = request.get("args");
-
                 String name = setName(args, "Component");
-                String query = "MATCH (p:Component)<-[:ISA]-(c) WHERE p.name = '" + name + "' RETURN c";
-
-                queryObject.put("query", query);
 
                 result.put("name", name);
-                result.put("cypher", cypherQuery(queryObject));
+                result.put("cypher", cypherQuery("MATCH (p:Component)<-[:ISA]-(c) WHERE p.name = '" + name + "' RETURN c"));
 
                 return response(request, result, 0);
             }
@@ -50,20 +45,37 @@ public class FrameHelper extends BaseActor {
         };
     }
 
+    public MessageHandler node() {
+        return new MessageHandler() {
+            public JsonNode exec(JsonNode request) {
+                ObjectNode result = JsonNodeFactory.instance.objectNode();
+                JsonNode args = request.get("args");
+                String name = setName(args, "Component");
+
+                result.put("name", name);
+                result.put("cypher", cypherQuery("MATCH (p) WHERE p.name = '" + name + "' RETURN p, labels(p)"));
+
+                return response(request, result, 0);
+            }
+
+            public JsonNode help(JsonNode request) {
+                ObjectNode result = JsonNodeFactory.instance.objectNode();
+                result.put("name", "node");
+                result.put("description", "Node gets all properties and labels of a Neo4j node.");
+                return result;
+            }
+        };
+    }
+
     public MessageHandler search() {
         return new MessageHandler() {
             public JsonNode exec(JsonNode request) {
                 ObjectNode result = JsonNodeFactory.instance.objectNode();
-                ObjectNode queryObject = JsonNodeFactory.instance.objectNode();
                 JsonNode args = request.get("args");
-
                 String name = setName(args, "Component");
-                String query = "MATCH (p) WHERE p.name =~ '.*(?i)" + name + ".*' RETURN p";
-
-                queryObject.put("query", query);
 
                 result.put("name", name);
-                result.put("cypher", cypherQuery(queryObject));
+                result.put("cypher", cypherQuery("MATCH (p) WHERE p.name =~ '.*(?i)" + name + ".*' RETURN p"));
 
                 return response(request, result, 0);
             }

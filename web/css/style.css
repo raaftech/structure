@@ -178,48 +178,103 @@ body {
 /* line 151, ../scss/partials/_basic-layout.scss */
 #content #info, #content #list {
   width: 100%;
-  margin: 35px 0 35px 35px;
+  margin: 35px 0 0 35px;
 }
-/* line 158, ../scss/partials/_basic-layout.scss */
+/* line 156, ../scss/partials/_basic-layout.scss */
+#content #info {
+  display: inline-block;
+}
+/* line 159, ../scss/partials/_basic-layout.scss */
+#content #info .basic, #content #info .detail {
+  width: 50%;
+  float: left;
+}
+/* line 166, ../scss/partials/_basic-layout.scss */
+#content #info .basic img {
+  padding-right: 10px;
+}
+/* line 170, ../scss/partials/_basic-layout.scss */
+#content #info .basic h1 {
+  font-size: 1.35em;
+  text-transform: uppercase;
+  color: white;
+}
+/* line 176, ../scss/partials/_basic-layout.scss */
+#content #info .basic p {
+  margin-top: 5px;
+  padding-right: 35px;
+}
+/* line 184, ../scss/partials/_basic-layout.scss */
+#content #info .detail h2 {
+  text-transform: uppercase;
+  border-bottom: 1px solid #26272a;
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+}
+/* line 191, ../scss/partials/_basic-layout.scss */
+#content #info .detail li {
+  margin-bottom: 5px;
+}
+/* line 195, ../scss/partials/_basic-layout.scss */
+#content #info .detail label {
+  color: white;
+  width: 25%;
+  display: inline-block;
+  float: left;
+}
+/* line 202, ../scss/partials/_basic-layout.scss */
+#content #info .detail label:first-letter {
+  text-transform: uppercase;
+}
+/* line 206, ../scss/partials/_basic-layout.scss */
+#content #info .detail p {
+  width: 75%;
+  display: inline-block;
+}
+/* line 213, ../scss/partials/_basic-layout.scss */
+#content #list {
+  margin-bottom: 35px;
+}
+/* line 216, ../scss/partials/_basic-layout.scss */
 #content #list li {
   border-bottom: 1px solid #26272a;
   line-height: 2.5em;
 }
-/* line 163, ../scss/partials/_basic-layout.scss */
+/* line 221, ../scss/partials/_basic-layout.scss */
 #content #list .header {
   text-transform: uppercase;
 }
-/* line 167, ../scss/partials/_basic-layout.scss */
+/* line 225, ../scss/partials/_basic-layout.scss */
 #content #list .row {
   color: white;
 }
-/* line 171, ../scss/partials/_basic-layout.scss */
+/* line 229, ../scss/partials/_basic-layout.scss */
 #content #list .row:hover {
   background-color: #1a1b1d;
 }
-/* line 175, ../scss/partials/_basic-layout.scss */
+/* line 233, ../scss/partials/_basic-layout.scss */
 #content #list ul.tools {
   background-color: #26272a;
   float: right;
   text-transform: uppercase;
 }
-/* line 180, ../scss/partials/_basic-layout.scss */
+/* line 238, ../scss/partials/_basic-layout.scss */
 #content #list ul.tools li {
   margin: 0 10px;
   display: inline-block;
 }
-/* line 185, ../scss/partials/_basic-layout.scss */
+/* line 243, ../scss/partials/_basic-layout.scss */
 #content #list ul.tools a {
   display: block;
   color: white;
   text-decoration: none;
 }
-/* line 191, ../scss/partials/_basic-layout.scss */
+/* line 249, ../scss/partials/_basic-layout.scss */
 #content #list ul.tools a:hover {
   color: #fbb03b;
 }
 
-/* line 198, ../scss/partials/_basic-layout.scss */
+/* line 256, ../scss/partials/_basic-layout.scss */
 #dialog {
   position: fixed;
   top: 0;
@@ -228,7 +283,7 @@ body {
   left: 0;
   background: rgba(42, 43, 46, 0.8);
 }
-/* line 206, ../scss/partials/_basic-layout.scss */
+/* line 264, ../scss/partials/_basic-layout.scss */
 #dialog div {
   position: relative;
   width: 450px;
