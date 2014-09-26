@@ -30,6 +30,10 @@ function displayInformation(data) {
     $('<img>', {'src': '/img/logo_dummy.png', 'align': 'left'}).appendTo(basic);
     $('<h1>', {text: node.name}).appendTo(basic);
     $('<p>', {text: node.desc}).appendTo(basic);
+    var buttons = $('<p>');
+    $('<a>', {class: 'button', text: 'edit'}).appendTo(buttons);
+    $('<a>', {class: 'button-transparant', text: '...'}).appendTo(buttons);
+    buttons.appendTo(basic);
     $('<h2>', {text: 'Details'}).appendTo(detail);
     $.each(node, function(k,v) {
         var li = $('<li>');

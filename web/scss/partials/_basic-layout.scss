@@ -174,8 +174,27 @@ body {
             }
 
             p {
-                margin-top: 5px;
+                margin: 5px 0;
                 padding-right: 35px;
+            }
+
+            .button {
+                display: inline-block;
+                border-radius: 50px;
+                color: $txt-white;
+                background-color: $rvl-orange;
+                cursor: pointer;
+                padding: 4px 10px;
+                text-transform: uppercase;
+                margin-right: 5px;
+            }
+
+            .button-transparant {
+                display: inline-block;
+                border-radius: 50px;
+                border: $inf-list-border;
+                cursor: pointer;
+                padding: 4px 8px;
             }
         }
 
