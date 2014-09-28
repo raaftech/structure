@@ -508,7 +508,7 @@
                         <configuration>
                             <encoding>UTF-8</encoding>
                             <verbose>false</verbose>
-                            <doclet>org.openpcf.universal.base.Doclet</doclet>
+                            <doclet>org.openpcf.universal.base.XMLDoclet</doclet>
                             <docletPath>${project.build.outputDirectory}</docletPath>
                             <useStandardDocletOptions>false</useStandardDocletOptions>
                         </configuration>
