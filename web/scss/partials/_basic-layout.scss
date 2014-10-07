@@ -237,8 +237,26 @@ body {
             line-height: 2.5em;
         }
 
+        li:hover {
+            cursor: pointer;
+        }
+
         .header {
             text-transform: uppercase;
+        }
+
+        .closed:before {
+            content: '+';
+            margin-left: -20px;
+            margin-right: 11px;
+            color: $txt-white;
+        }
+
+        .open:before {
+            content: '-';
+            margin-left: -18px;
+            margin-right: 12px;
+            color: $txt-white;
         }
 
         .row {

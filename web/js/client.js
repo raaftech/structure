@@ -13,7 +13,7 @@ function displayResult(data) {
         // Empty list
         $('.result').empty();
         // Display query result(s) in html
-        $('<li>', {class: 'header'}).text(data.result.name).appendTo('.result');
+        $('<li>', {class: 'header open'}).text(data.result.name).appendTo('.result');
         $.each(data.result.cypher.data, function(i, arr) {
             var comp = arr[0].data;
             $('<li>', {text: comp.name, class: 'row', 'data-name': comp.name}).appendTo('.result');
@@ -109,6 +109,20 @@ $(document).ready(function() {
         var name = $(this).parent().data('name'),
             action = $(e.target).text();
         console.log('a tool item is clicked: ' + name + ' ' + action);
+    });
+
+    $('ul.result').on('click', '.header', function() {
+        if($(this).hasClass('closed')) {
+            $(this).removeClass('closed');
+            $(this).addClass('open');
+            $('ul.result > li.row').show();
+
+        }
+        else{
+            $(this).removeClass('open');
+            $(this).addClass('closed');
+            $('ul.result > li.row').hide();
+        }
     });
 
     $('ul.nav').on('click', 'li', function(e) {

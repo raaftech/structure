@@ -260,40 +260,58 @@ body {
   line-height: 2.5em;
 }
 /* line 240, ../scss/partials/_basic-layout.scss */
+#content #list li:hover {
+  cursor: pointer;
+}
+/* line 244, ../scss/partials/_basic-layout.scss */
 #content #list .header {
   text-transform: uppercase;
 }
-/* line 244, ../scss/partials/_basic-layout.scss */
+/* line 248, ../scss/partials/_basic-layout.scss */
+#content #list .closed:before {
+  content: '+';
+  margin-left: -20px;
+  margin-right: 11px;
+  color: white;
+}
+/* line 255, ../scss/partials/_basic-layout.scss */
+#content #list .open:before {
+  content: '-';
+  margin-left: -18px;
+  margin-right: 12px;
+  color: white;
+}
+/* line 262, ../scss/partials/_basic-layout.scss */
 #content #list .row {
   color: white;
 }
-/* line 248, ../scss/partials/_basic-layout.scss */
+/* line 266, ../scss/partials/_basic-layout.scss */
 #content #list .row:hover {
   background-color: #1a1b1d;
 }
-/* line 252, ../scss/partials/_basic-layout.scss */
+/* line 270, ../scss/partials/_basic-layout.scss */
 #content #list ul.tools {
   background-color: #26272a;
   float: right;
   text-transform: uppercase;
 }
-/* line 257, ../scss/partials/_basic-layout.scss */
+/* line 275, ../scss/partials/_basic-layout.scss */
 #content #list ul.tools li {
   margin: 0 10px;
   display: inline-block;
 }
-/* line 262, ../scss/partials/_basic-layout.scss */
+/* line 280, ../scss/partials/_basic-layout.scss */
 #content #list ul.tools a {
   display: block;
   color: white;
   text-decoration: none;
 }
-/* line 268, ../scss/partials/_basic-layout.scss */
+/* line 286, ../scss/partials/_basic-layout.scss */
 #content #list ul.tools a:hover {
   color: #fbb03b;
 }
 
-/* line 275, ../scss/partials/_basic-layout.scss */
+/* line 293, ../scss/partials/_basic-layout.scss */
 #dialog {
   position: fixed;
   top: 0;
@@ -302,7 +320,7 @@ body {
   left: 0;
   background: rgba(42, 43, 46, 0.8);
 }
-/* line 283, ../scss/partials/_basic-layout.scss */
+/* line 301, ../scss/partials/_basic-layout.scss */
 #dialog div {
   position: relative;
   width: 450px;
