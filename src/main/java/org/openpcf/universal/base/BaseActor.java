@@ -144,7 +144,7 @@ public abstract class BaseActor extends Verticle {
     // The Neo4j cypher query helper (accepts a JsonNode parameter).
     public JsonNode cypherQuery(JsonNode request) {
 
-        final String SERVER_ROOT_URI = settings.get("neo4j.rest.uri").toString();
+        final String SERVER_ROOT_URI = settings.get("neo4j.rest.uri").asText();
         JsonNode result = JsonNodeFactory.instance.objectNode();
 
         Client client = Client.create();
