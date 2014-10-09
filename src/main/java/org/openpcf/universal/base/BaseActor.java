@@ -34,6 +34,8 @@ import java.util.*;
  */
 public abstract class BaseActor extends Verticle {
 
+    JsonNode settings;
+
     JsonNode schemaForRequest;
     JsonNode schemaForResponse;
     JsonNode schemaForManual;
@@ -94,8 +96,9 @@ public abstract class BaseActor extends Verticle {
             }
         });
 
-        // Initialize schema documents.
+        // Read settings and initialize schema documents.
         try {
+            settings = JsonLoader.fromResource("/settings.json");
             schemaForRequest = JsonLoader.fromResource("/request.schema.json");
             schemaForResponse = JsonLoader.fromResource("/response.schema.json");
             schemaForManual = JsonLoader.fromResource("/manual.schema.json");
@@ -133,14 +136,15 @@ public abstract class BaseActor extends Verticle {
     // The Neo4j cypher query helper (accepts a string query and params).
     public JsonNode cypherQuery(String query, String params) {
         ObjectNode request = JsonNodeFactory.instance.objectNode();
-        if (params != null) { request.put("params", params); };
+        if (params != null) { request.put("params", params); }
         request.put("query", query);
         return cypherQuery(request);
     }
 
     // The Neo4j cypher query helper (accepts a JsonNode parameter).
     public JsonNode cypherQuery(JsonNode request) {
-        final String SERVER_ROOT_URI = "http://localhost:7474/db/data/";
+
+        final String SERVER_ROOT_URI = settings.get("neo4j.rest.uri").toString();
         JsonNode result = JsonNodeFactory.instance.objectNode();
 
         Client client = Client.create();

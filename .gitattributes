@@ -29,6 +29,7 @@ src/main/resources/mod.json -text
 src/main/resources/release.json -text
 src/main/resources/request.schema.json -text
 src/main/resources/response.schema.json -text
+src/main/resources/settings.json -text
 /vertx_classpath.txt -text
 web/config.rb -text
 web/css/reset.css -text
