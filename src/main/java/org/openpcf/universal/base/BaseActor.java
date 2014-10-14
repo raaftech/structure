@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.github.fge.jackson.JsonLoader;
 import com.github.fge.jsonschema.core.exceptions.ProcessingException;
 import com.github.fge.jsonschema.core.report.ProcessingReport;
 import com.github.fge.jsonschema.main.JsonSchema;
@@ -97,14 +96,10 @@ public abstract class BaseActor extends Verticle {
         });
 
         // Read settings and initialize schema documents.
-        try {
-            settings = JsonLoader.fromResource("/settings.json");
-            schemaForRequest = JsonLoader.fromResource("/request.schema.json");
-            schemaForResponse = JsonLoader.fromResource("/response.schema.json");
-            schemaForManual = JsonLoader.fromResource("/manual.schema.json");
-        } catch (IOException x) {
-            log("error", x.getMessage());
-        }
+        settings = jsonFromResource("settings.json");
+        schemaForRequest = jsonFromResource("schema/request.schema.json");
+        schemaForResponse = jsonFromResource("schema/response.schema.json");
+        schemaForManual = jsonFromResource("schema/manual.schema.json");
     }
 
 
@@ -126,6 +121,20 @@ public abstract class BaseActor extends Verticle {
             level = "info";
         }
         loggers.get(level).log(message);
+    }
+
+    // A json file loader (looks in your classpath/resources.)
+    public JsonNode jsonFromResource(String resource) {
+        JsonNode result = JsonNodeFactory.instance.objectNode();
+        InputStream inputStream = getClass().getClassLoader().getResourceAsStream(resource);
+
+        try {
+            result = mapper.readTree(inputStream);
+        } catch (IOException x) {
+            log("error", x.getMessage());
+        }
+
+        return result;
     }
 
     // The Neo4j cypher query helper (accepts a string query parameter).
@@ -168,13 +177,11 @@ public abstract class BaseActor extends Verticle {
     }
 
     // The response helper.
-    public JsonNode response(JsonNode request, JsonNode result, int exit) {
+    public JsonNode response(JsonNode request, JsonNode result) {
         ObjectNode response = JsonNodeFactory.instance.objectNode();
 
         response.put("request", request);
         response.put("result", result);
-        response.put("exit", exit);
-
         return response;
     }
 
@@ -340,31 +347,25 @@ public abstract class BaseActor extends Verticle {
         public JsonNode help(JsonNode request);
     }
 
-    // The default usage  handler.
+    // The default usage handler.
     public MessageHandler help() {
         return new MessageHandler() {
             public JsonNode exec(JsonNode request) {
                 ObjectNode result = JsonNodeFactory.instance.objectNode();
-                int exitCode = 0;
 
                     for (String msgh : handlers.keySet()) {
                         try {
                             result.put(msgh, handlers.get(msgh).help(request));
                         } catch (NullPointerException x) {
                             log("error", x.getMessage());
-                            exitCode++;
                         }
                     }
 
-                return response(request, result, exitCode);
+                return response(request, result);
             }
 
             public JsonNode help(JsonNode request) {
-                ObjectNode result = JsonNodeFactory.instance.objectNode();
-                result.put("name", "help");
-                result.put("description", "The help command shows a help and/or usage message from all message handlers in this actor.");
-
-                return result;
+                return jsonFromResource("help/baseactor.help.json");
             }
         };
     }
@@ -373,26 +374,12 @@ public abstract class BaseActor extends Verticle {
     public MessageHandler version() {
         return new MessageHandler() {
             public JsonNode exec(JsonNode request) {
-                JsonNode result = JsonNodeFactory.instance.objectNode();
-                InputStream inputStream = getClass().getClassLoader().getResourceAsStream("release.json");
-                int exitCode = 0;
-
-                try {
-                    result = mapper.readTree(inputStream);
-                } catch (IOException x) {
-                    log("error", x.getMessage());
-                    exitCode++;
-                }
-
-                return response(request, result, exitCode);
+                JsonNode result = jsonFromResource("release.json");
+                return response(request, result);
             }
 
             public JsonNode help(JsonNode request) {
-                ObjectNode result = JsonNodeFactory.instance.objectNode();
-                result.put("name", "version");
-                result.put("description", "The version command returns the version of the actor or framework.");
-
-                return result;
+                return jsonFromResource("help/baseactor.version.json");
             }
         };
     }

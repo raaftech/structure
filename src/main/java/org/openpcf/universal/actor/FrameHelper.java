@@ -8,7 +8,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.openpcf.universal.base.BaseActor;
 
 /**
- * The frame management actor.
+ * The FrameHelper actor.
  *
  * @author Maurice Schillemans <maurice.schillemans@raaftech.com>
  * @since 2014-09-24
@@ -16,7 +16,7 @@ import org.openpcf.universal.base.BaseActor;
 public class FrameHelper extends BaseActor {
 
     private String setName(JsonNode args, String pFrame) {
-        if(args.has("name")) {
+        if (args.has("name")) {
             return args.get("name").asText();
         } else {
             return pFrame;
@@ -33,14 +33,11 @@ public class FrameHelper extends BaseActor {
                 result.put("name", name);
                 result.put("cypher", cypherQuery("MATCH (p:Component)<-[:ISA]-(c) WHERE p.name = '" + name + "' RETURN c"));
 
-                return response(request, result, 0);
+                return response(request, result);
             }
 
             public JsonNode help(JsonNode request) {
-                ObjectNode result = JsonNodeFactory.instance.objectNode();
-                result.put("name", "component");
-                result.put("description", "Component gets the children of a component type object.");
-                return result;
+                return jsonFromResource("help/framehelper.component.json");
             }
         };
     }
@@ -55,14 +52,11 @@ public class FrameHelper extends BaseActor {
                 result.put("name", name);
                 result.put("cypher", cypherQuery("MATCH (p) WHERE p.name = '" + name + "' RETURN p, labels(p)"));
 
-                return response(request, result, 0);
+                return response(request, result);
             }
 
             public JsonNode help(JsonNode request) {
-                ObjectNode result = JsonNodeFactory.instance.objectNode();
-                result.put("name", "node");
-                result.put("description", "Node gets all properties and labels of a Neo4j node.");
-                return result;
+                return jsonFromResource("help/framehelper.node.json");
             }
         };
     }
@@ -77,14 +71,11 @@ public class FrameHelper extends BaseActor {
                 result.put("name", name);
                 result.put("cypher", cypherQuery("MATCH (p) WHERE p.name =~ '.*(?i)" + name + ".*' RETURN p"));
 
-                return response(request, result, 0);
+                return response(request, result);
             }
 
             public JsonNode help(JsonNode request) {
-                ObjectNode result = JsonNodeFactory.instance.objectNode();
-                result.put("name", "search");
-                result.put("description", "Search Neo4j database with a given parameter.");
-                return result;
+                return jsonFromResource("help/framehelper.search.json");
             }
         };
     }

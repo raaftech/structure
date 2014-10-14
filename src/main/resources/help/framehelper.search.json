@@ -1,0 +1,10 @@
+{
+    "name": "search",
+    "synopsis": {
+        "msgh": "search",
+        "args": {
+            "name": "somename"
+        }
+    },
+    "description": "The search handler finds a node in the database, specified by the name argument. If name is not specified or if a name is not found, this handler will default to the base Component object."
+}

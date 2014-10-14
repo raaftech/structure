@@ -1,0 +1,10 @@
+{
+    "name": "component",
+    "synopsis": {
+        "msgh": "component",
+        "args": {
+            "name": "somename"
+        }
+    },
+    "description": "The component handler gets all children of a given component, specified by the name argument. If name is not specified or if a name is not found, this handler will default to the base Component object which has all components as children."
+}

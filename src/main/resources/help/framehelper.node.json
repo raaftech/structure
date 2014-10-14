@@ -1,0 +1,10 @@
+{
+    "name": "node",
+    "synopsis": {
+        "msgh": "node",
+        "args": {
+            "name": "somename"
+        }
+    },
+    "description": "The node handler gets all properties and labels of a node, specified by the name argument. If name is not specified or if a name is not found, this handler will default to the base Component object."
+}
