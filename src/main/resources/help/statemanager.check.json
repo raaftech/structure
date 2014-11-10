@@ -1,0 +1,10 @@
+{
+    "name": "check",
+    "synopsis": {
+        "msgh": "check",
+        "args": {
+            "name": "somename"
+        }
+    },
+    "description": "The check handler can check the state of a given component and store the results of that check as a state result object associated with the given component."
+}

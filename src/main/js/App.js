@@ -19,6 +19,7 @@ var webServerConfig = {
 container.deployModule("io.vertx~mod-web-server~2.0.0-final", webServerConfig, 1, deploymentCompleteHandler);
 
 // Deploy our verticles.
+container.deployVerticle("org.openpcf.universal.actor.StateManager", deploymentCompleteHandler);
 container.deployVerticle("org.openpcf.universal.actor.SchemaManager", deploymentCompleteHandler);
 container.deployVerticle("org.openpcf.universal.actor.FrameHelper", deploymentCompleteHandler);
 

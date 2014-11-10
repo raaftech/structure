@@ -149,9 +149,9 @@ $(document).ready(function() {
         }
     });
 
-    $('#version').on('click', '#cfu', function(e) {
+    $('#version').on('click', '#cfu', function (e) {
         e.preventDefault();
-        eventBus.send('org.openpcf.universal.actor.schemamanager', { "msgh": "update", "args": { "dryRun": true, "confirmString": "I Confirm" } }, function(data) {
+        eventBus.send('org.openpcf.universal.actor.statemanager', { "msgh": "check", "args": { "name": "MyComputer" } }, function(data) {
             displayDialog(data);
         });
     })

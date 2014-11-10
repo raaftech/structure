@@ -197,6 +197,33 @@ public abstract class BaseActor extends Verticle {
         return response;
     }
 
+    // Get a string value from the argument object.
+    public String getArgs(JsonNode args, String key, String fallback) {
+        if (args.has(key)) {
+            return args.get(key).asText();
+        } else {
+            return fallback;
+        }
+    }
+
+    // Get an integer value from the argument object.
+    public int getArgs(JsonNode args, String key, int fallback) {
+        if (args.has(key)) {
+            return args.get(key).asInt();
+        } else {
+            return fallback;
+        }
+    }
+
+    // Get a JSON object from the argument object.
+    public JsonNode getArgs(JsonNode args, String key, JsonNode fallback) {
+        if (args.has(key)) {
+            return args.get(key);
+        } else {
+            return fallback;
+        }
+    }
+
     // Check if some string is valid JSON.
     public boolean isValidJson(String body) {
         try {

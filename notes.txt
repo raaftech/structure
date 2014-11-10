@@ -1,3 +1,22 @@
+state -> componentHasChildren? (traverses outgoing has relationships)
+
+no:
+ lookup state method
+ execute state method
+ store state result
+
+
+yes:
+ recurse and find childless amongst children
+   no/yes/recurse...
+ create aggregate state result from child agregate state results
+
+
+
+
+
+
+
 Hoe bepaal je waar een StatusResult terecht komt?
 (denk aan device status bijvoorbeeld)
 Antwoord: een device heeft geen StatusResult maar een DerivedStatusResult; maw:
@@ -224,18 +243,6 @@ questions that need answers:
 // SSH20 - Can speak the SSH 2.0 protocol.
 // TELNET - Can speak the SSH protocol.
 
-// Handler - A representation of a software handler that gives end user function.
-// CommandHandler - Creates a CommandOperation, executes that CommandOperation, creates CommandResult.
-// VersionHandler - Looks up a VersionOperation, executes command, creates VersionResult.
-// StatusHandler - Executes generic code to get a status or executes CustomStatusOperation if it exists. Creates StatusResult.
-// ExistenceHandler - Executes generic code to get a existence information or executes CustomExistenceOperation if it exists. Creates ExistenceResult.
-// UsageHandler - Executes generic code to derive usage of resources or executes CustomUsageOperation if it exists. Creates UsageResult.
-// InstallHandler - Executes generic code to derive install method and executes or executes CustomInstallOperation if it exists.
-// UninstallHandler - Executes generic code to derive uninstall method and executes or executes CustomUninstallOperation if it exists.
-// StartHandler - Executes generic code to derive start method and executes or executes CustomStartOperation if it exists.
-// StopHandler - Executes generic code to derive stop method and executes or executes CustomStopOperation if it exists.
-// RestartHandler - Executes generic code to derive restart method and executes or executes CustomRestartOperation if it exists.
-
 // Operation - A command or method that can be called, with or without schedule.
 // CommandOperation - An arbitrary command.
 // VersionOperation - A command that displays a version string.
@@ -251,6 +258,7 @@ questions that need answers:
 // Result - A result from an operation.
 // CommandResult - A generic textual result from a command operation.
 // VersionResult - A textual result representing a version string.
+
 // StatusResult - A result that represents a status.
 // DerivedStatusResult - A derived status. 1/ok, 0/not-ok.
 // LocalDerivedStatusResult - A derived 1/0 status from all statuses known to the software itself.
@@ -260,6 +268,7 @@ questions that need answers:
 // IpAddressReachableStatusResult - 1/reachable, 0/unreachable.
 // ListenerAvailableStatusResult - 1/open, 0/closed.
 // DnsNameResolvableStatusResult - 1/resolved, 0/not-resolved.
+
 // ExistenceResult - A generic result from an ExistenceHandler.
 // DirectoryExistenceResult - A generic directory existence result from an ExistenceHandler.
 // PrefixDirectoryExistenceResult - A possible result from an ExistenceHandler, parsing a PrefixDirectoryMap.

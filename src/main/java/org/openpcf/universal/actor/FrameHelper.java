@@ -15,20 +15,12 @@ import org.openpcf.universal.base.BaseActor;
  */
 public class FrameHelper extends BaseActor {
 
-    private String setName(JsonNode args, String pFrame) {
-        if (args.has("name")) {
-            return args.get("name").asText();
-        } else {
-            return pFrame;
-        }
-    }
-
     public MessageHandler component() {
         return new MessageHandler() {
             public JsonNode exec(JsonNode request) {
                 ObjectNode result = JsonNodeFactory.instance.objectNode();
                 JsonNode args = request.get("args");
-                String name = setName(args, "Component");
+                String name = getArgs(args, "name", "Component");
 
                 result.put("name", name);
                 result.put("cypher", cypherQuery("MATCH (p:Component)<-[:ISA]-(c) WHERE p.name = '" + name + "' RETURN c"));
@@ -47,7 +39,7 @@ public class FrameHelper extends BaseActor {
             public JsonNode exec(JsonNode request) {
                 ObjectNode result = JsonNodeFactory.instance.objectNode();
                 JsonNode args = request.get("args");
-                String name = setName(args, "Component");
+                String name = getArgs(args, "name", "Component");
 
                 result.put("name", name);
                 result.put("cypher", cypherQuery("MATCH (p) WHERE p.name = '" + name + "' RETURN p, labels(p)"));
@@ -66,7 +58,7 @@ public class FrameHelper extends BaseActor {
             public JsonNode exec(JsonNode request) {
                 ObjectNode result = JsonNodeFactory.instance.objectNode();
                 JsonNode args = request.get("args");
-                String name = setName(args, "Component");
+                String name = getArgs(args, "name", "Component");
 
                 result.put("name", name);
                 result.put("cypher", cypherQuery("MATCH (p) WHERE p.name =~ '.*(?i)" + name + ".*' RETURN p"));
