@@ -17,8 +17,8 @@ src/main/java/org/openpcf/universal/actor/FrameHelper.java -text
 src/main/java/org/openpcf/universal/actor/SchemaManager.java -text
 src/main/java/org/openpcf/universal/actor/StateManager.java -text
 src/main/java/org/openpcf/universal/base/BaseActor.java -text
-src/main/java/org/openpcf/universal/base/XMLDoclet.java -text
-src/main/java/org/openpcf/universal/base/XMLNode.java -text
+src/main/java/org/openpcf/universal/base/SpringConfig.java -text
+src/main/java/org/openpcf/universal/base/SpringContext.java -text
 src/main/java/org/openpcf/universal/model/Accessable.java -text
 src/main/java/org/openpcf/universal/model/Checkable.java -text
 src/main/java/org/openpcf/universal/model/CloudSystem.java -text
@@ -44,6 +44,7 @@ src/main/java/org/openpcf/universal/model/Startable.java -text
 src/main/java/org/openpcf/universal/model/Stoppable.java -text
 src/main/java/org/openpcf/universal/model/TextualAccessor.java -text
 src/main/java/org/openpcf/universal/model/Virtualizable.java -text
+src/main/java/org/openpcf/universal/repositories/ComponentRepository.java -text
 src/main/js/App.js -text
 src/main/js/Frame.js -text
 src/main/js/Query.js -text

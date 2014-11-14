@@ -13,6 +13,7 @@ import com.github.fge.jsonschema.main.JsonSchemaFactory;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
+import org.springframework.context.ApplicationContext;
 import org.vertx.java.core.Handler;
 import org.vertx.java.core.eventbus.Message;
 import org.vertx.java.core.json.JsonObject;
@@ -32,6 +33,8 @@ import java.util.*;
  * @since 2014-09-15
  */
 public abstract class BaseActor extends Verticle {
+
+    ApplicationContext spring;
 
     JsonNode settings;
 
@@ -100,6 +103,9 @@ public abstract class BaseActor extends Verticle {
         schemaForRequest = jsonFromResource("schema/request.schema.json");
         schemaForResponse = jsonFromResource("schema/response.schema.json");
         schemaForManual = jsonFromResource("schema/manual.schema.json");
+
+        // Spring application context singleton.
+        spring = SpringContext.INSTANCE.getApplicationContext();
     }
 
 

@@ -4,6 +4,9 @@
 
 package org.openpcf.universal.model;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.neo4j.annotation.NodeEntity;
+
 import java.util.Set;
 
 /**
