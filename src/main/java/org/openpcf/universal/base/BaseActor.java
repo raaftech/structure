@@ -13,11 +13,11 @@ import com.github.fge.jsonschema.main.JsonSchemaFactory;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
+import io.vertx.core.Handler;
+import io.vertx.core.eventbus.Message;
 import org.springframework.context.ApplicationContext;
-import org.vertx.java.core.Handler;
-import org.vertx.java.core.eventbus.Message;
-import org.vertx.java.core.json.JsonObject;
-import org.vertx.java.platform.Verticle;
+import io.vertx.core.AbstractVerticle;
+import io.vertx.core.Future;
 
 import javax.ws.rs.core.MediaType;
 import java.io.IOException;
@@ -32,7 +32,7 @@ import java.util.*;
  * @author Rubin Simons <rubin.simons@raaftech.com>
  * @since 2014-09-15
  */
-public abstract class BaseActor extends Verticle {
+public abstract class BaseActor extends AbstractVerticle {
 
     ApplicationContext spring;
 
@@ -43,7 +43,6 @@ public abstract class BaseActor extends Verticle {
     JsonNode schemaForManual;
 
     Map<String, MessageHandler> handlers;
-    Map<String, Loggable> loggers;
     ObjectMapper mapper = new ObjectMapper();
 
     // Constructor.
@@ -70,34 +69,6 @@ public abstract class BaseActor extends Verticle {
             }
         }
 
-        // Create the loggers hash map.
-        loggers = new HashMap<>();
-        loggers.put("info", new Loggable() {
-            public void log(String message) {
-                container.logger().info(getActorName() + ": " + message);
-            }
-        });
-        loggers.put("warn", new Loggable() {
-            public void log(String message) {
-                container.logger().warn(getActorName() + ": " + message);
-            }
-        });
-        loggers.put("error", new Loggable() {
-            public void log(String message) {
-                container.logger().error(getActorName() + ": " + message);
-            }
-        });
-        loggers.put("fatal", new Loggable() {
-            public void log(String message) {
-                container.logger().fatal(getActorName() + ": " + message);
-            }
-        });
-        loggers.put("debug", new Loggable() {
-            public void log(String message) {
-                container.logger().debug(getActorName() + ": " + message);
-            }
-        });
-
         // Read settings and initialize schema documents.
         settings = jsonFromResource("settings.json");
         schemaForRequest = jsonFromResource("schema/request.schema.json");
@@ -108,25 +79,14 @@ public abstract class BaseActor extends Verticle {
         spring = SpringContext.INSTANCE.getApplicationContext();
     }
 
-
     // Get the name of the actor (used with registerHandler).
     private String getActorName() {
         return this.getClass().getName().toLowerCase();
     }
 
-    // A private interface for the log helper method.
-    private interface Loggable {
-        public abstract void log(String message);
-    }
-
     // A logger for actors with nice defaults.
     public void log(String level, String message) {
-        if (!loggers.containsKey(level)) {
-            container.logger().error(getActorName() + ": invalid level " + level + "specified");
-            container.logger().warn(getActorName() + ": setting level to \"info\"");
-            level = "info";
-        }
-        loggers.get(level).log(message);
+        System.out.println(level.toUpperCase() + ": " + message);
     }
 
     // A json file loader (looks in your classpath/resources.)
@@ -186,20 +146,8 @@ public abstract class BaseActor extends Verticle {
     public JsonNode response(JsonNode request, JsonNode result) {
         ObjectNode response = JsonNodeFactory.instance.objectNode();
 
-        response.put("request", request);
-        response.put("result", result);
-        return response;
-    }
-
-    // The response helper (with statistics).
-    public JsonNode response(JsonNode request, JsonNode result, int exit, JsonNode stats) {
-        ObjectNode response = JsonNodeFactory.instance.objectNode();
-
-        response.put("request", request);
-        response.put("result", result);
-        response.put("exit", exit);
-        response.put("stats", stats);
-
+        response.set("request", request);
+        response.set("result", result);
         return response;
     }
 
@@ -233,7 +181,7 @@ public abstract class BaseActor extends Verticle {
     // Check if some string is valid JSON.
     public boolean isValidJson(String body) {
         try {
-            new JsonObject(body);
+            mapper.readTree(body);
         } catch (Exception x) {
             return false;
         }
@@ -261,8 +209,8 @@ public abstract class BaseActor extends Verticle {
         return jsonDoc;
     }
 
-    // Filter a given JsonObject body and enforce basic validity.
-    public JsonNode requestFilter(JsonObject body) {
+    // Filter a given JsonNode body and enforce basic validity.
+    public JsonNode requestFilter(JsonNode body) {
 
         // Bodies; original and sanitized.
         JsonNode bodyRetrieved;
@@ -322,18 +270,18 @@ public abstract class BaseActor extends Verticle {
                 argsRetrieved = bodyRetrieved.get("args");
                 // Verify if args is a json object.
                 if (isValidJson(argsRetrieved.toString())) {
-                    bodyFiltered.put("args", argsRetrieved);
+                    bodyFiltered.set("args", argsRetrieved);
                 } else {
                     // Invalid args, replace args.
                     log("error", "Field \"args\" not of type JSON object: " + argsRetrieved);
                     valid = false;
 
                     log("warn", "Setting \"args\" to empty JSON object: " + argsDefault);
-                    bodyFiltered.put("args", argsDefault);
+                    bodyFiltered.set("args", argsDefault);
                 }
             } else {
                 // Non-existing args, which is ok, adding default args.
-                bodyFiltered.put("args", argsDefault);
+                bodyFiltered.set("args", argsDefault);
             }
 
             // Set validity.
@@ -342,8 +290,8 @@ public abstract class BaseActor extends Verticle {
             // If an error occurred, copy the original body to error.
             if (!valid) {
                 log("warn", "Copying original request body to error object");
-                errorDefault.put("original-request", bodyRetrieved);
-                bodyFiltered.put("error", errorDefault);
+                errorDefault.set("original-request", bodyRetrieved);
+                bodyFiltered.set("error", errorDefault);
             }
 
         } catch (Exception x) {
@@ -355,23 +303,24 @@ public abstract class BaseActor extends Verticle {
     }
 
     // The Vert.x Verticle start method.
-    public void start() {
-        vertx.eventBus().registerHandler(getActorName(), new Handler<Message<JsonObject>>() {
+    @Override
+    public void start(Future<Void> startFuture) {
+        vertx.eventBus().registerHandler(getActorName(), new Handler<Message<JsonNode>>() {
             @Override
-            public void handle(Message<JsonObject> message) {
+            public void handle(Message<JsonNode> message) {
 
-                // Request! Convert "Vert.x JsonObject" to "Jackson JsonNode".
+                // Request!
                 JsonNode request = requestFilter(message.body());
                 String msgh = request.get("msgh").asText();
 
-                // Response! Convert "Jackson JsonNode" to "Vert.x JsonObject".
-                JsonObject response = new JsonObject(validate(schemaForResponse, handlers.get(msgh).exec(request)).toString());
+                // Response!
+                JsonNode response = validate(schemaForResponse, handlers.get(msgh).exec(request));
                 message.reply(response);
             }
         });
 
         // Tell the console we're up and running.
-        log("info", "ready to serve");
+        log("info", getActorName() + " ready to serve");
     }
 
     // A public interface for MessageHandler objects.
@@ -388,7 +337,7 @@ public abstract class BaseActor extends Verticle {
 
                     for (String msgh : handlers.keySet()) {
                         try {
-                            result.put(msgh, handlers.get(msgh).help(request));
+                            result.set(msgh, handlers.get(msgh).help(request));
                         } catch (NullPointerException x) {
                             log("error", x.getMessage());
                         }
