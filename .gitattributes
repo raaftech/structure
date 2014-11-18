@@ -16,6 +16,7 @@ src/main/cql/org.openpcf.model.services.cql -text
 src/main/java/org/openpcf/universal/actor/FrameHelper.java -text
 src/main/java/org/openpcf/universal/actor/SchemaManager.java -text
 src/main/java/org/openpcf/universal/actor/StateManager.java -text
+src/main/java/org/openpcf/universal/base/Application.java -text
 src/main/java/org/openpcf/universal/base/BaseActor.java -text
 src/main/java/org/openpcf/universal/base/SpringConfig.java -text
 src/main/java/org/openpcf/universal/base/SpringContext.java -text

@@ -13,18 +13,20 @@ import com.github.fge.jsonschema.main.JsonSchemaFactory;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
-import io.vertx.core.Handler;
-import io.vertx.core.eventbus.Message;
-import org.springframework.context.ApplicationContext;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
+import io.vertx.core.Handler;
+import io.vertx.core.eventbus.Message;
 
 import javax.ws.rs.core.MediaType;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Give a description of BaseActor here.
@@ -33,8 +35,6 @@ import java.util.*;
  * @since 2014-09-15
  */
 public abstract class BaseActor extends AbstractVerticle {
-
-    ApplicationContext spring;
 
     JsonNode settings;
 
@@ -74,9 +74,6 @@ public abstract class BaseActor extends AbstractVerticle {
         schemaForRequest = jsonFromResource("schema/request.schema.json");
         schemaForResponse = jsonFromResource("schema/response.schema.json");
         schemaForManual = jsonFromResource("schema/manual.schema.json");
-
-        // Spring application context singleton.
-        spring = SpringContext.INSTANCE.getApplicationContext();
     }
 
     // Get the name of the actor (used with registerHandler).
@@ -305,22 +302,21 @@ public abstract class BaseActor extends AbstractVerticle {
     // The Vert.x Verticle start method.
     @Override
     public void start(Future<Void> startFuture) {
-        vertx.eventBus().registerHandler(getActorName(), new Handler<Message<JsonNode>>() {
-            @Override
-            public void handle(Message<JsonNode> message) {
-
-                // Request!
-                JsonNode request = requestFilter(message.body());
-                String msgh = request.get("msgh").asText();
-
-                // Response!
-                JsonNode response = validate(schemaForResponse, handlers.get(msgh).exec(request));
-                message.reply(response);
-            }
-        });
-
         // Tell the console we're up and running.
         log("info", getActorName() + " ready to serve");
+        vertx.eventBus().consumer(getActorName(), new Handler<Message<JsonNode>>() {
+        @Override
+        public void handle(Message<JsonNode> message) {
+
+            // Request!
+            JsonNode request = requestFilter(message.body());
+            String msgh = request.get("msgh").asText();
+
+            // Response!
+            JsonNode response = validate(schemaForResponse, handlers.get(msgh).exec(request));
+            message.reply(response);
+        }
+    });
     }
 
     // A public interface for MessageHandler objects.

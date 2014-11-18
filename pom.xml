@@ -100,7 +100,7 @@
         <maven.compiler.plugin.version>3.1</maven.compiler.plugin.version>
         <maven.resources.plugin.version>2.6</maven.resources.plugin.version>
         <maven.clean.plugin.version>2.5</maven.clean.plugin.version>
-        <maven.vertx.plugin.version>2.0.8-final</maven.vertx.plugin.version>
+        <maven.vertx.plugin.version>${vertx.version}</maven.vertx.plugin.version>
         <maven.surefire.plugin.version>2.17</maven.surefire.plugin.version>
         <maven.failsafe.plugin.version>2.17</maven.failsafe.plugin.version>
         <maven.surefire.report.plugin.version>2.17</maven.surefire.report.plugin.version>
@@ -115,19 +115,19 @@
             <groupId>io.vertx</groupId>
             <artifactId>vertx-core</artifactId>
             <version>${vertx.version}</version>
-            <scope>provided</scope>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>io.vertx</groupId>
             <artifactId>vertx-js</artifactId>
             <version>${vertx.version}</version>
-            <scope>provided</scope>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>io.vertx</groupId>
             <artifactId>ext-sockjs</artifactId>
             <version>${vertx.version}</version>
-            <scope>provided</scope>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.mozilla</groupId>
@@ -186,6 +186,11 @@
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot</artifactId>
+            <version>1.1.8.RELEASE</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -202,6 +207,9 @@
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
+            </resource>
+            <resource>
+                <directory>web</directory>
             </resource>
         </resources>
 
@@ -242,8 +250,7 @@
                                 <transformer
                                         implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                     <manifestEntries>
-                                        <Main-Class>io.vertx.core.Starter</Main-Class>
-                                        <Main-Verticle>js:javascript/app.js</Main-Verticle>
+                                        <Main-Class>org.openpcf.universal.base.Application</Main-Class>
                                     </manifestEntries>
                                 </transformer>
                                 <transformer
@@ -258,7 +265,6 @@
                                     <exclude>junit:junit</exclude>
                                     <exclude>org.mvel:mvel2</exclude>
                                     <exclude>log4j:log4j</exclude>
-                                    <exclude>org.slf4j:slf4j-api</exclude>
                                 </excludes>
                             </artifactSet>
                             <outputFile>${project.build.directory}/${project.artifactId}-${project.version}-fat.jar</outputFile>
