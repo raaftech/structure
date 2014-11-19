@@ -41,7 +41,6 @@ public class Application extends Neo4jConfiguration implements CommandLineRunner
 
         // Setup vertx
         vertx = Vertx.vertx();
-        JsonObject config = vertx.context().config();
         // Setup HTTP server on port 8080
         httpServer = vertx.createHttpServer(new HttpServerOptions().setPort(8080));
 

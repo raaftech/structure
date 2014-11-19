@@ -302,21 +302,21 @@ public abstract class BaseActor extends AbstractVerticle {
     // The Vert.x Verticle start method.
     @Override
     public void start(Future<Void> startFuture) {
+        vertx.eventBus().consumer(getActorName(), new Handler<Message<JsonNode>>() {
+            @Override
+            public void handle(Message<JsonNode> message) {
+
+                // Request!
+                JsonNode request = requestFilter(message.body());
+                String msgh = request.get("msgh").asText();
+
+                // Response!
+                JsonNode response = validate(schemaForResponse, handlers.get(msgh).exec(request));
+                message.reply(response);
+            }
+        });
         // Tell the console we're up and running.
         log("info", getActorName() + " ready to serve");
-        vertx.eventBus().consumer(getActorName(), new Handler<Message<JsonNode>>() {
-        @Override
-        public void handle(Message<JsonNode> message) {
-
-            // Request!
-            JsonNode request = requestFilter(message.body());
-            String msgh = request.get("msgh").asText();
-
-            // Response!
-            JsonNode response = validate(schemaForResponse, handlers.get(msgh).exec(request));
-            message.reply(response);
-        }
-    });
     }
 
     // A public interface for MessageHandler objects.
