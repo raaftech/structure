@@ -133,7 +133,7 @@
             <groupId>org.mozilla</groupId>
             <artifactId>rhino</artifactId>
             <version>1.7R4</version>
-            <scope>provided</scope>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.github.fge</groupId>

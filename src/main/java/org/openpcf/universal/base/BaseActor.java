@@ -15,8 +15,7 @@ import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
-import io.vertx.core.Handler;
-import io.vertx.core.eventbus.Message;
+import io.vertx.core.json.JsonObject;
 
 import javax.ws.rs.core.MediaType;
 import java.io.IOException;
@@ -98,6 +97,19 @@ public abstract class BaseActor extends AbstractVerticle {
         }
 
         return result;
+    }
+
+    // Convert a Vert.x JsonObject to a Jackson JsonNode
+    public JsonNode convertFromJsonObject(JsonObject jsonObject) {
+        JsonNode jsonNode = JsonNodeFactory.instance.objectNode();
+
+        try {
+            jsonNode = mapper.readTree(jsonObject.toString());
+        } catch (IOException x) {
+            log("error", x.getMessage());
+        }
+
+        return jsonNode;
     }
 
     // The Neo4j cypher query helper (accepts a string query parameter).
@@ -302,18 +314,17 @@ public abstract class BaseActor extends AbstractVerticle {
     // The Vert.x Verticle start method.
     @Override
     public void start(Future<Void> startFuture) {
-        vertx.eventBus().consumer(getActorName(), new Handler<Message<JsonNode>>() {
-            @Override
-            public void handle(Message<JsonNode> message) {
+        vertx.eventBus().consumer(getActorName(), message -> {
+            // Request!
+            JsonObject body = (JsonObject)message.body();
+            JsonNode request = convertFromJsonObject(body);
+            String msgh = request.get("msgh").asText();
 
-                // Request!
-                JsonNode request = requestFilter(message.body());
-                String msgh = request.get("msgh").asText();
+            // Response! Convert "Jackson JsonNode" to "Vert.x JsonObject".
+            JsonObject response =new JsonObject(
+                    validate(schemaForResponse, handlers.get(msgh).exec(request)).toString());
+            message.reply(response);
 
-                // Response!
-                JsonNode response = validate(schemaForResponse, handlers.get(msgh).exec(request));
-                message.reply(response);
-            }
         });
         // Tell the console we're up and running.
         log("info", getActorName() + " ready to serve");
