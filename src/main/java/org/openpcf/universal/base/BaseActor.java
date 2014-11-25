@@ -238,7 +238,7 @@ public abstract class BaseActor extends AbstractVerticle {
 
         // Validate bodyRetrieved, construct sanitized bodyFiltered.
         try {
-            bodyRetrieved = validate(schemaForRequest, mapper.readTree(body.toString()));
+            bodyRetrieved = validate(schemaForRequest, body);
 
             // Verify if msgh field exists.
             if (bodyRetrieved.has("msgh")) {

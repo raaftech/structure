@@ -4,8 +4,10 @@
 
 package org.openpcf.universal.base;
 
+import org.openpcf.universal.repositories.ComponentRepository;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.data.neo4j.core.GraphDatabase;
 
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -22,11 +24,18 @@ public enum SpringContext {
     private static final ReentrantLock initLock = new ReentrantLock();
 
     private SpringContext() {
-        System.out.println("CREATING SINGLETON");
         context = new AnnotationConfigApplicationContext(SpringConfig.class);
     }
 
     public ApplicationContext getApplicationContext() {
         return context;
+    }
+
+    public ComponentRepository getComponentRepository() {
+        return (ComponentRepository)context.getBean("componentRepository");
+    }
+
+    public GraphDatabase getGraphDatabase() {
+        return (GraphDatabase)context.getBean("graphDatabase");
     }
 }

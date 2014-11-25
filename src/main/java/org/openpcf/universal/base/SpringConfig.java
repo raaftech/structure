@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.neo4j.config.EnableNeo4jRepositories;
 import org.springframework.data.neo4j.config.Neo4jConfiguration;
+import org.springframework.data.neo4j.core.GraphDatabase;
 import org.springframework.data.neo4j.rest.SpringRestGraphDatabase;
 
 
@@ -35,4 +36,7 @@ public class SpringConfig extends Neo4jConfiguration {
 
     @Autowired
     ComponentRepository componentRepository;
+
+    @Autowired
+    GraphDatabase graphDatabase;
 }

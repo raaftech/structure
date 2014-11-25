@@ -11,33 +11,24 @@ import io.vertx.ext.routematcher.RouteMatcher;
 import io.vertx.ext.sockjs.BridgeOptions;
 import io.vertx.ext.sockjs.SockJSServer;
 import io.vertx.ext.sockjs.SockJSServerOptions;
-import org.neo4j.graphdb.GraphDatabaseService;
-import org.openpcf.universal.repositories.ComponentRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.boot.SpringApplication;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.data.neo4j.config.EnableNeo4jRepositories;
-import org.springframework.data.neo4j.config.Neo4jConfiguration;
-import org.springframework.data.neo4j.rest.SpringRestGraphDatabase;
+import org.springframework.context.ApplicationContext;
+
 /**
  * Give a description of Application here.
  *
  * @author Boy van Duuren <boy.van.duuren@raaftech.com>
  * @since 2014-11-17
  */
-@Configuration
-@EnableNeo4jRepositories(basePackages="org.openpcf.universal.repositories")
-public class Application extends Neo4jConfiguration implements CommandLineRunner {
+public class Application {
 
-    Vertx vertx;
-    HttpServer httpServer;
-    SockJSServer sockJSServer;
-    EventBus eventBus;
+    public static void handleInterfaceRequest(HttpServerRequest httpServerRequest) {
+    }
 
-    public Application() {
-        setBasePackage("org.openpcf.universal.model");
+    public static void main(String[] args) {
+        Vertx vertx;
+        HttpServer httpServer;
+        SockJSServer sockJSServer;
+        EventBus eventBus;
 
         // Setup vertx
         vertx = Vertx.vertx();
@@ -47,8 +38,18 @@ public class Application extends Neo4jConfiguration implements CommandLineRunner
         // Setup Routematcher to serve our web-interface
         // This needs to be done before setting up SockJS
         RouteMatcher routeMatcher = RouteMatcher.routeMatcher();
-        // TODO: tighten up the pattern
-        routeMatcher.matchMethodWithRegEx(HttpMethod.GET, "/.*", this::handleInterfaceRequest);
+        // Handle our requests
+        routeMatcher.matchMethodWithRegEx(HttpMethod.GET, "/.*", httpServerRequest -> {
+            if (httpServerRequest.path().contains("..")) {
+                // Disallow urls crafted to see resources outside of the webroot
+                // TODO: more sophisticated checks
+                httpServerRequest.response().setStatusCode(403).end();
+            } else if (httpServerRequest.path().equals("/html/")) {
+                httpServerRequest.response().sendFile("web/html/index.html");
+            } else {
+                httpServerRequest.response().sendFile("web/" + httpServerRequest.path());
+            }
+        });
         httpServer.requestHandler(routeMatcher::accept);
 
         // Enable sockJS Server on our HTTP server
@@ -69,35 +70,13 @@ public class Application extends Neo4jConfiguration implements CommandLineRunner
 
         httpServer.listen();
         eventBus = vertx.eventBus();
-    }
 
-    public void handleInterfaceRequest(HttpServerRequest httpServerRequest) {
-        if (httpServerRequest.path().contains("..")) {
-            // Disallow urls crafted to see resources outside of the webroot
-            // TODO: more sophisticated checks
-            httpServerRequest.response().setStatusCode(403).end();
-        } else if (httpServerRequest.path().equals("/html/")) {
-            httpServerRequest.response().sendFile("web/html/index.html");
-        } else {
-            httpServerRequest.response().sendFile("web/" + httpServerRequest.path());
-        }
-    }
+        // Instantiate our Spring context
+        ApplicationContext applicationContext =
+                SpringContext.INSTANCE.getApplicationContext();
 
-    @Bean
-    GraphDatabaseService graphDatabaseService() {
-        return new SpringRestGraphDatabase("http://localhost:7474/db/data");
-    }
-
-    @Autowired
-    ComponentRepository componentRepository;
-
-    public void run(String... args) throws Exception {
         vertx.deployVerticle("org.openpcf.universal.actor.FrameHelper");
         vertx.deployVerticle("org.openpcf.universal.actor.SchemaManager");
         vertx.deployVerticle("org.openpcf.universal.actor.StateManager");
-    }
-
-    public static void main(String[] args) {
-        SpringApplication.run(Application.class, args);
     }
 }
