@@ -5,7 +5,6 @@ import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.HttpServerOptions;
-import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.routematcher.RouteMatcher;
 import io.vertx.ext.sockjs.BridgeOptions;
@@ -21,62 +20,69 @@ import org.springframework.context.ApplicationContext;
  */
 public class Application {
 
-    public static void handleInterfaceRequest(HttpServerRequest httpServerRequest) {
-    }
-
     public static void main(String[] args) {
+        ApplicationContext applicationContext;
         Vertx vertx;
         HttpServer httpServer;
         SockJSServer sockJSServer;
         EventBus eventBus;
 
-        // Setup vertx
-        vertx = Vertx.vertx();
-        // Setup HTTP server on port 8080
-        httpServer = vertx.createHttpServer(new HttpServerOptions().setPort(8080));
-
-        // Setup Routematcher to serve our web-interface
-        // This needs to be done before setting up SockJS
-        RouteMatcher routeMatcher = RouteMatcher.routeMatcher();
-        // Handle our requests
-        routeMatcher.matchMethodWithRegEx(HttpMethod.GET, "/.*", httpServerRequest -> {
-            if (httpServerRequest.path().contains("..")) {
-                // Disallow urls crafted to see resources outside of the webroot
-                // TODO: more sophisticated checks
-                httpServerRequest.response().setStatusCode(403).end();
-            } else if (httpServerRequest.path().equals("/html/")) {
-                httpServerRequest.response().sendFile("web/html/index.html");
-            } else {
-                httpServerRequest.response().sendFile("web/" + httpServerRequest.path());
-            }
-        });
-        httpServer.requestHandler(routeMatcher::accept);
-
-        // Enable sockJS Server on our HTTP server
-        sockJSServer = SockJSServer.sockJSServer(vertx, httpServer);
-        // Enable bridging on /eventbus, and add some in- and outbound permissions
-        sockJSServer.bridge(
-                new SockJSServerOptions().setPrefix("/eventbus"),
-                new BridgeOptions()
-                        .addInboundPermitted(new JsonObject().put(
-                                "address", "org.openpcf.universal.actor.framehelper"))
-                        .addInboundPermitted(new JsonObject().put(
-                                "address", "org.openpcf.universal.actor.schemamanager"))
-                        .addInboundPermitted(new JsonObject().put(
-                                "address", "org.openpcf.universal.actor.statemanager"))
-                        .addOutboundPermitted(new JsonObject().put(
-                                "address", "beacon"))
-        );
-
-        httpServer.listen();
-        eventBus = vertx.eventBus();
-
         // Instantiate our Spring context
-        ApplicationContext applicationContext =
+        applicationContext =
                 SpringContext.INSTANCE.getApplicationContext();
 
-        vertx.deployVerticle("org.openpcf.universal.actor.FrameHelper");
-        vertx.deployVerticle("org.openpcf.universal.actor.SchemaManager");
-        vertx.deployVerticle("org.openpcf.universal.actor.StateManager");
+        if (args.length < 1) {
+            System.out.println("Need arg (start or createdb)");
+            System.exit(1);
+        }
+        if (args[0].equals("start")) {
+            // Setup vertx
+            vertx = Vertx.vertx();
+            // Setup HTTP server on port 8080
+            httpServer = vertx.createHttpServer(new HttpServerOptions().setPort(8080));
+
+            // Setup Routematcher to serve our web-interface
+            // This needs to be done before setting up SockJS
+            RouteMatcher routeMatcher = RouteMatcher.routeMatcher();
+            // Handle our requests
+            routeMatcher.matchMethodWithRegEx(HttpMethod.GET, "/.*", httpServerRequest -> {
+                if (httpServerRequest.path().contains("..")) {
+                    // Disallow urls crafted to see resources outside of the webroot
+                    // TODO: more sophisticated checks
+                    httpServerRequest.response().setStatusCode(403).end();
+                } else if (httpServerRequest.path().equals("/html/")) {
+                    httpServerRequest.response().sendFile("web/html/index.html");
+                } else {
+                    httpServerRequest.response().sendFile("web/" + httpServerRequest.path());
+                }
+            });
+            httpServer.requestHandler(routeMatcher::accept);
+
+            // Enable sockJS Server on our HTTP server
+            sockJSServer = SockJSServer.sockJSServer(vertx, httpServer);
+            // Enable bridging on /eventbus, and add some in- and outbound permissions
+            sockJSServer.bridge(
+                    new SockJSServerOptions().setPrefix("/eventbus"),
+                    new BridgeOptions()
+                            .addInboundPermitted(new JsonObject().put(
+                                    "address", "org.openpcf.universal.actor.framehelper"))
+                            .addInboundPermitted(new JsonObject().put(
+                                    "address", "org.openpcf.universal.actor.schemamanager"))
+                            .addInboundPermitted(new JsonObject().put(
+                                    "address", "org.openpcf.universal.actor.statemanager"))
+                            .addOutboundPermitted(new JsonObject().put(
+                                    "address", "beacon"))
+            );
+
+            httpServer.listen();
+            eventBus = vertx.eventBus();
+
+            vertx.deployVerticle("org.openpcf.universal.actor.FrameHelper");
+            vertx.deployVerticle("org.openpcf.universal.actor.SchemaManager");
+            vertx.deployVerticle("org.openpcf.universal.actor.StateManager");
+        } else if (args[0].equals("createdb")) {
+            SetupDatabase setupDatabase = new SetupDatabase();
+            setupDatabase.createDatabase();
+        }
     }
 }

@@ -4,14 +4,8 @@
 
 package org.openpcf.universal.model;
 
-import org.neo4j.graphdb.Direction;
-import org.springframework.data.neo4j.annotation.GraphId;
-import org.springframework.data.neo4j.annotation.Indexed;
 import org.springframework.data.neo4j.annotation.NodeEntity;
-import org.springframework.data.neo4j.annotation.RelatedTo;
-import org.springframework.data.neo4j.support.index.IndexType;
 
-import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -24,25 +18,15 @@ import java.util.Set;
  * @since 2014-01-06
  */
 @NodeEntity
-public class Component {
-
-    @GraphId
-    private Long id;
-
-    @Indexed
-    private String name;
-
-    @Indexed(indexType = IndexType.FULLTEXT, indexName = "descriptions")
-    private String desc;
-
-    @Indexed(unique=true)
-    private String uuid;
-
-    @RelatedTo(type="ISA", direction = Direction.OUTGOING)
-    private Set<Component> isa = new HashSet<Component>();
-
-    @RelatedTo(type="HAS", direction = Direction.OUTGOING)
-    private Set<Component> has = new HashSet<Component>();
+public class Component extends Node {
 
     public Component() {}
+
+    public Component(String name, String desc, String uuid, Set<Node> isa) {
+        super(name, desc, uuid, isa);
+    }
+
+    public Component(String name, String desc, Set<Node> isa) {
+        super(name, desc, isa);
+    }
 }

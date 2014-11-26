@@ -5,7 +5,7 @@
 package org.openpcf.universal.base;
 
 import org.neo4j.graphdb.GraphDatabaseService;
-import org.openpcf.universal.repositories.ComponentRepository;
+import org.openpcf.universal.repositories.NodeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -35,7 +35,7 @@ public class SpringConfig extends Neo4jConfiguration {
     }
 
     @Autowired
-    ComponentRepository componentRepository;
+    NodeRepository nodeRepository;
 
     @Autowired
     GraphDatabase graphDatabase;
