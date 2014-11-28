@@ -4,6 +4,8 @@
 
 package org.openpcf.universal.model;
 
+import org.openpcf.universal.graph.Node;
+
 import java.util.Set;
 
 /**

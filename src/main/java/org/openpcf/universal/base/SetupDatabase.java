@@ -2,7 +2,8 @@ package org.openpcf.universal.base;
 
 import org.neo4j.graphdb.Transaction;
 import org.openpcf.universal.model.*;
-import org.openpcf.universal.repositories.NodeRepository;
+import org.openpcf.universal.graph.Node;
+import org.openpcf.universal.graph.repositories.NodeRepository;
 import org.springframework.data.neo4j.core.GraphDatabase;
 
 import java.util.GregorianCalendar;

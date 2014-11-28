@@ -4,6 +4,7 @@
 
 package org.openpcf.universal.model;
 
+import org.openpcf.universal.graph.Node;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.neo4j.fieldaccess.DynamicProperties;
 import org.springframework.data.neo4j.fieldaccess.DynamicPropertiesContainer;

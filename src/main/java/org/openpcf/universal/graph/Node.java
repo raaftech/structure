@@ -1,15 +1,16 @@
-package org.openpcf.universal.model;
+package org.openpcf.universal.graph;
 
 import org.neo4j.graphdb.Direction;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.neo4j.annotation.GraphId;
 import org.springframework.data.neo4j.annotation.Indexed;
 import org.springframework.data.neo4j.annotation.NodeEntity;
 import org.springframework.data.neo4j.annotation.RelatedTo;
+import org.springframework.data.neo4j.fieldaccess.DynamicProperties;
+import org.springframework.data.neo4j.fieldaccess.DynamicPropertiesContainer;
 import org.springframework.data.neo4j.support.index.IndexType;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Give a description of Node here.
@@ -33,32 +34,9 @@ public class Node {
     private String uuid;
 
     @RelatedTo(type="ISA", direction = Direction.OUTGOING)
-    private Set<Node> isa = new HashSet<>();
+    private Node isa = new Node();
 
     @RelatedTo(type="HAS", direction = Direction.OUTGOING)
-    private Set<Component> has = new HashSet<Component>();
+    private Set<Node> has = new HashSet<>();
 
-    public Node() {}
-
-    public Node(String name, String desc, String uuid, Set<Node> isa) {
-        this.name = name;
-        this.desc = desc;
-        this.uuid = uuid;
-        if (isa != null) {
-            this.isa = isa;
-        }
-    }
-
-    public Node(String name, String desc, Set<Node> isa) {
-        this.name = name;
-        this.desc = desc;
-        this.uuid = UUID.randomUUID().toString();
-        if (isa != null) {
-            this.isa = isa;
-        }
-    }
-
-    public String getUuid() {
-        return uuid;
-    }
 }

@@ -21,12 +21,6 @@ public class OperatingSystem extends Software implements Stoppable, Restartable 
     public OperatingSystem() {
     };
 
-    public void check() {
-    }
-
-    public void discover() {
-    }
-
     public void stop() {
     }
 

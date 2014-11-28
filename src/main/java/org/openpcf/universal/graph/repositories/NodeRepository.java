@@ -1,6 +1,6 @@
-package org.openpcf.universal.repositories;
+package org.openpcf.universal.graph.repositories;
 
-import org.openpcf.universal.model.Node;
+import org.openpcf.universal.graph.Node;
 import org.springframework.data.neo4j.repository.GraphRepository;
 
 /**

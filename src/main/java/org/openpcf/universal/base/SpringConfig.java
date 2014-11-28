@@ -5,7 +5,7 @@
 package org.openpcf.universal.base;
 
 import org.neo4j.graphdb.GraphDatabaseService;
-import org.openpcf.universal.repositories.NodeRepository;
+import org.openpcf.universal.graph.repositories.NodeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,7 +22,7 @@ import org.springframework.data.neo4j.rest.SpringRestGraphDatabase;
  * @since 2014-11-04
  */
 @Configuration
-@EnableNeo4jRepositories("org.openpcf.universal.repositories")
+@EnableNeo4jRepositories("org.openpcf.universal.graph.repositories")
 public class SpringConfig extends Neo4jConfiguration {
 
     public SpringConfig() {

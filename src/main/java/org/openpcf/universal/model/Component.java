@@ -4,9 +4,8 @@
 
 package org.openpcf.universal.model;
 
+import org.openpcf.universal.graph.TypeNode;
 import org.springframework.data.neo4j.annotation.NodeEntity;
-
-import java.util.Set;
 
 /**
  * Component represents the most abstract part within the Domain Model.
@@ -18,15 +17,9 @@ import java.util.Set;
  * @since 2014-01-06
  */
 @NodeEntity
-public class Component extends Node {
+public class Component extends TypeNode {
 
-    public Component() {}
+    public Component() {
 
-    public Component(String name, String desc, String uuid, Set<Node> isa) {
-        super(name, desc, uuid, isa);
-    }
-
-    public Component(String name, String desc, Set<Node> isa) {
-        super(name, desc, isa);
     }
 }

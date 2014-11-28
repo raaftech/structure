@@ -4,7 +4,7 @@
 
 package org.openpcf.universal.base;
 
-import org.openpcf.universal.repositories.NodeRepository;
+import org.openpcf.universal.graph.repositories.NodeRepository;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.data.neo4j.core.GraphDatabase;

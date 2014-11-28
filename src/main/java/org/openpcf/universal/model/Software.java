@@ -20,22 +20,6 @@ public class Software extends Component implements Checkable, Discoverable {
 
     public Software() {};
 
-    public Software(String name, String desc, String uuid, String ver,
-                    String shortName, String longName, Set<Node> isa) {
-        super(name, desc, uuid, isa);
-        this.ver = ver;
-        this.shortName = shortName;
-        this.longName = longName;
-    }
-
-    public Software(String name, String desc, String ver, String shortName,
-                    String longName, Set<Node> isa) {
-        super(name, desc, isa);
-        this.ver = ver;
-        this.shortName = shortName;
-        this.longName = longName;
-    }
-
     @Override
     public void check() {
 
