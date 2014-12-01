@@ -1,12 +1,8 @@
 package org.openpcf.universal.graph;
 
-import org.springframework.data.annotation.Transient;
 import org.springframework.data.neo4j.annotation.NodeEntity;
 import org.springframework.data.neo4j.fieldaccess.DynamicProperties;
 import org.springframework.data.neo4j.fieldaccess.DynamicPropertiesContainer;
-
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Give a description of TypeNode here.
@@ -17,18 +13,32 @@ import java.util.Set;
 @NodeEntity
 public class TypeNode extends Node {
 
-    @Transient
-    private Set<String> allowedKvs = new HashSet<>();
+    private DynamicProperties optionalKv = new DynamicPropertiesContainer();
 
-    @Transient
-    private Set<String> requiredKvs = new HashSet<>();
+    private DynamicProperties requiredKv = new DynamicPropertiesContainer();
 
-    private DynamicProperties kv = new DynamicPropertiesContainer();
+    public TypeNode() {}
 
-    public Node addKv(String k, String v) {
-        if (allowedKvs.contains(k)) {
-            kv.setProperty(k, v);
-        }
+    public TypeNode(String name, String desc) {
+        super(name, desc);
+    }
+
+    public TypeNode(String name, String desc, String uuid) {
+        super(name, desc, uuid);
+    }
+
+    public TypeNode setOptionalKv(String k, String v) {
+        optionalKv.setProperty(k, v);
+        return this;
+    }
+
+    public TypeNode setRequiredKv(String k, String v) {
+        optionalKv.setProperty(k, v);
+        return this;
+    }
+
+    public TypeNode setIsa(TypeNode isa) {
+        super.setIsa(isa);
         return this;
     }
 }

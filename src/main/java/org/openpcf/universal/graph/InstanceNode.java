@@ -11,4 +11,13 @@ import org.springframework.data.neo4j.annotation.NodeEntity;
 @NodeEntity
 public class InstanceNode extends Node {
 
+    public InstanceNode() {}
+
+    public InstanceNode(String name, String desc) {
+        super(name, desc);
+    }
+
+    public InstanceNode(String name, String desc, String uuid) {
+        super(name, desc, uuid);
+    }
 }

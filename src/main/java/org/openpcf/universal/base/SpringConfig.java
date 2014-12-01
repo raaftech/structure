@@ -26,7 +26,7 @@ import org.springframework.data.neo4j.rest.SpringRestGraphDatabase;
 public class SpringConfig extends Neo4jConfiguration {
 
     public SpringConfig() {
-        setBasePackage("org.openpcf.universal.model");
+        setBasePackage("org.openpcf.universal.graph");
     }
 
     @Bean

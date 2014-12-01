@@ -1,16 +1,15 @@
 package org.openpcf.universal.graph;
 
 import org.neo4j.graphdb.Direction;
-import org.springframework.data.annotation.Transient;
 import org.springframework.data.neo4j.annotation.GraphId;
 import org.springframework.data.neo4j.annotation.Indexed;
 import org.springframework.data.neo4j.annotation.NodeEntity;
 import org.springframework.data.neo4j.annotation.RelatedTo;
-import org.springframework.data.neo4j.fieldaccess.DynamicProperties;
-import org.springframework.data.neo4j.fieldaccess.DynamicPropertiesContainer;
 import org.springframework.data.neo4j.support.index.IndexType;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 
 /**
  * Give a description of Node here.
@@ -34,9 +33,36 @@ public class Node {
     private String uuid;
 
     @RelatedTo(type="ISA", direction = Direction.OUTGOING)
-    private Node isa = new Node();
+    private Node isa;
 
     @RelatedTo(type="HAS", direction = Direction.OUTGOING)
     private Set<Node> has = new HashSet<>();
 
+    public Node() {}
+
+    public Node(String name, String desc) {
+        this.name = name;
+        this.desc = desc;
+        this.uuid = UUID.randomUUID().toString();
+    }
+
+    public Node(String name, String desc, String uuid) {
+
+        this.name = name;
+        this.desc = desc;
+        this.uuid = uuid;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public Node getIsa() {
+        return isa;
+    }
+
+    public Node setIsa(Node isa) {
+        this.isa = isa;
+        return this;
+    }
 }
