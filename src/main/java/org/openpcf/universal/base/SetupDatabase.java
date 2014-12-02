@@ -5,6 +5,7 @@ import org.openpcf.universal.graph.Node;
 import org.openpcf.universal.graph.TypeNode;
 import org.openpcf.universal.graph.repositories.NodeRepository;
 import org.springframework.data.neo4j.core.GraphDatabase;
+import org.openpcf.universal.graph.TypeNode.Constraint;
 
 /**
  * Give a description of SetupDatabase here.
@@ -58,24 +59,25 @@ public class SetupDatabase {
             createNode(new TypeNode("Component", "An abstract base component.", "a79ce509-a021-4177-ae61-73abd01fb479")
                     .setIsa(object));
             createNode(new TypeNode("Model", "A model object.", "4e2dccfa-b5ca-4992-a76e-c390b7d90084")
-                    .setRequiredKv("ns", "Specifies a namespace for the model.")
-                    .setRequiredKv("ver", "Specifies a version number for the model.")
+                    .setKvs("ns", Constraint.REQUIRED)
+                    .setKvs("ver", Constraint.OPTIONAL)
                     .setIsa(object));
             createNode(new TypeNode("Result", "A result from an operation.", "f3498c02-58c6-486b-87c6-9d54607fdb12")
-                    .setRequiredKv("data", "The result data.")
-                    .setRequiredKv("dateCreated", "The date + time when the result was created.")
+                    .setKvs("data", Constraint.REQUIRED)
+                    .setKvs("dateCreated", Constraint.REQUIRED)
                     .setIsa(object));
             createNode(new TypeNode("Operation", "A command or method that can be called, with or without schedule.",
                     "46294722-b14e-438e-9fbc-95ff137b6b18")
-                    .setRequiredKv("timesInvoked", "The number of times this operation was invoked.")
-                    .setRequiredKv("data", "The date + time when the operation was finished.")
-                    .setRequiredKv("dateCreated", "The date + time when the operation was created")
-                    .setRequiredKv("dateStarted", "The date + time when the operation was started.")
-                    .setRequiredKv("dateFinished", "The date + time when the operation was finished.")
+                    .setKvs("timesInvoked", Constraint.REQUIRED, Constraint.NUMERIC)
+                    .setKvs("data", Constraint.REQUIRED)
+                    .setKvs("dateCreated", Constraint.REQUIRED)
+                    .setKvs("dateStarted", Constraint.REQUIRED)
+                    .setKvs("dateFinished", Constraint.REQUIRED)
                     .setIsa(object));
             createNode(new TypeNode("Handler", "A representation of a software handler that gives end user function.",
                     "14dbfbfa-b50a-466f-8539-55d5d3f15e4a").setIsa(object));
             createNode(new TypeNode("Protocol", "A protocol.", "db0c3c65-52fd-4dec-907c-6c8a669e88f3").setIsa(object));
+
             tx.success();
         } finally {
             tx.close();

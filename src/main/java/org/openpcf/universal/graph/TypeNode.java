@@ -13,9 +13,11 @@ import org.springframework.data.neo4j.fieldaccess.DynamicPropertiesContainer;
 @NodeEntity
 public class TypeNode extends Node {
 
-    private DynamicProperties optionalKv = new DynamicPropertiesContainer();
+    public enum Constraint {
+        REQUIRED, OPTIONAL, NUMERIC
+    };
 
-    private DynamicProperties requiredKv = new DynamicPropertiesContainer();
+    private DynamicProperties kvs = new DynamicPropertiesContainer();
 
     public TypeNode() {}
 
@@ -27,13 +29,8 @@ public class TypeNode extends Node {
         super(name, desc, uuid);
     }
 
-    public TypeNode setOptionalKv(String k, String v) {
-        optionalKv.setProperty(k, v);
-        return this;
-    }
-
-    public TypeNode setRequiredKv(String k, String v) {
-        optionalKv.setProperty(k, v);
+    public TypeNode setKvs(String k, Constraint... constraint) {
+        kvs.setProperty(k, constraint);
         return this;
     }
 
