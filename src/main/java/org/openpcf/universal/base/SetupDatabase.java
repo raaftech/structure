@@ -5,7 +5,6 @@ import org.openpcf.universal.graph.Node;
 import org.openpcf.universal.graph.TypeNode;
 import org.openpcf.universal.graph.repositories.NodeRepository;
 import org.springframework.data.neo4j.core.GraphDatabase;
-import org.openpcf.universal.graph.TypeNode.Constraint;
 
 /**
  * Give a description of SetupDatabase here.
@@ -59,20 +58,20 @@ public class SetupDatabase {
             createNode(new TypeNode("Component", "An abstract base component.", "a79ce509-a021-4177-ae61-73abd01fb479")
                     .setIsa(object));
             createNode(new TypeNode("Model", "A model object.", "4e2dccfa-b5ca-4992-a76e-c390b7d90084")
-                    .setKvs("ns", Constraint.REQUIRED)
-                    .setKvs("ver", Constraint.OPTIONAL)
+                    .setKvs("ns", "String", true)
+                    .setKvs("ver", "String", false)
                     .setIsa(object));
             createNode(new TypeNode("Result", "A result from an operation.", "f3498c02-58c6-486b-87c6-9d54607fdb12")
-                    .setKvs("data", Constraint.REQUIRED)
-                    .setKvs("dateCreated", Constraint.REQUIRED)
+                    .setKvs("data", "String", true)
+                    .setKvs("dateCreated", "TimeDate", true)
                     .setIsa(object));
             createNode(new TypeNode("Operation", "A command or method that can be called, with or without schedule.",
                     "46294722-b14e-438e-9fbc-95ff137b6b18")
-                    .setKvs("timesInvoked", Constraint.REQUIRED, Constraint.NUMERIC)
-                    .setKvs("data", Constraint.REQUIRED)
-                    .setKvs("dateCreated", Constraint.REQUIRED)
-                    .setKvs("dateStarted", Constraint.REQUIRED)
-                    .setKvs("dateFinished", Constraint.REQUIRED)
+                    .setKvs("timesInvoked", "Integer", true)
+                    .setKvs("data", "String", true)
+                    .setKvs("dateCreated", "DateTime", true)
+                    .setKvs("dateStarted", "DateTime", true)
+                    .setKvs("dateFinished", "DateTime", true)
                     .setIsa(object));
             createNode(new TypeNode("Handler", "A representation of a software handler that gives end user function.",
                     "14dbfbfa-b50a-466f-8539-55d5d3f15e4a").setIsa(object));

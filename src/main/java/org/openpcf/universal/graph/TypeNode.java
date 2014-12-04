@@ -13,8 +13,9 @@ import org.springframework.data.neo4j.fieldaccess.DynamicPropertiesContainer;
 @NodeEntity
 public class TypeNode extends Node {
 
-    public enum Constraint {
-        REQUIRED, OPTIONAL, NUMERIC
+    public enum TypeConstraint {
+        REQUIRED, OPTIONAL,
+        STRING, INTEGER, DATETIME, BOOLEAN
     };
 
     private DynamicProperties kvs = new DynamicPropertiesContainer();
@@ -29,8 +30,25 @@ public class TypeNode extends Node {
         super(name, desc, uuid);
     }
 
-    public TypeNode setKvs(String k, Constraint... constraint) {
-        kvs.setProperty(k, constraint);
+    public TypeNode setKvs(String k, String type, Boolean required) {
+        TypeConstraint[] constraints = new TypeConstraint[2];
+        TypeConstraint realType = null;
+
+        switch (type) {
+            case "String":
+            case "Integer":
+            case "DateTime":
+            case "Boolean":
+                realType = TypeConstraint.valueOf(type.toUpperCase());
+        }
+        if (realType != null) {
+            constraints[0] = realType;
+            constraints[1] = required ? TypeConstraint.REQUIRED : TypeConstraint.OPTIONAL;
+        } else {
+            // TODO: Throw exception?
+            return this;
+        }
+        kvs.setProperty(k, constraints);
         return this;
     }
 
