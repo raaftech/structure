@@ -24,7 +24,7 @@ public enum SpringContext {
     private static final ReentrantLock initLock = new ReentrantLock();
 
     private SpringContext() {
-        context = new AnnotationConfigApplicationContext(SpringConfig.class);
+        context = new AnnotationConfigApplicationContext(SpringConfig.class, ConverterConfig.class);
     }
 
     public ApplicationContext getApplicationContext() {

@@ -18,12 +18,16 @@ src/main/java/org/openpcf/universal/actor/SchemaManager.java -text
 src/main/java/org/openpcf/universal/actor/StateManager.java -text
 src/main/java/org/openpcf/universal/base/Application.java -text
 src/main/java/org/openpcf/universal/base/BaseActor.java -text
+src/main/java/org/openpcf/universal/base/ConverterConfig.java -text
 src/main/java/org/openpcf/universal/base/SetupDatabase.java -text
 src/main/java/org/openpcf/universal/base/SpringConfig.java -text
 src/main/java/org/openpcf/universal/base/SpringContext.java -text
+src/main/java/org/openpcf/universal/graph/Constraint.java -text
 src/main/java/org/openpcf/universal/graph/InstanceNode.java -text
 src/main/java/org/openpcf/universal/graph/Node.java -text
 src/main/java/org/openpcf/universal/graph/TypeNode.java -text
+src/main/java/org/openpcf/universal/graph/converters/ConstraintReader.java -text
+src/main/java/org/openpcf/universal/graph/converters/ConstraintWriter.java -text
 src/main/java/org/openpcf/universal/graph/repositories/NodeRepository.java -text
 src/main/js/App.js -text
 src/main/js/Frame.js -text
