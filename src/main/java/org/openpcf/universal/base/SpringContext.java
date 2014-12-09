@@ -5,6 +5,7 @@
 package org.openpcf.universal.base;
 
 import org.openpcf.universal.graph.repositories.NodeRepository;
+import org.openpcf.universal.graph.repositories.TypeNodeRepository;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.data.neo4j.core.GraphDatabase;
@@ -33,6 +34,10 @@ public enum SpringContext {
 
     public NodeRepository getNodeRepository() {
         return (NodeRepository)context.getBean("nodeRepository");
+    }
+
+    public TypeNodeRepository getTypeNodeRepository() {
+        return (TypeNodeRepository)context.getBean("typeNodeRepository");
     }
 
     public GraphDatabase getGraphDatabase() {

@@ -77,6 +77,8 @@ public class SetupDatabase {
                     "14dbfbfa-b50a-466f-8539-55d5d3f15e4a").setIsa(object));
             createNode(new TypeNode("Protocol", "A protocol.", "db0c3c65-52fd-4dec-907c-6c8a669e88f3").setIsa(object));
 
+            System.out.println("Node creation completed.");
+
             tx.success();
         } finally {
             tx.close();
