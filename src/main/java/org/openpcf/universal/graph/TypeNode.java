@@ -15,7 +15,7 @@ import java.util.HashMap;
 @NodeEntity
 public class TypeNode extends Node {
 
-    private HashMap<String, Constraint> kvs;
+    private HashMap<String, Descriptor> schema;
     private TypeNodeRepository typeNodeRepository = SpringContext.INSTANCE.getTypeNodeRepository();
 
     public TypeNode() {}
@@ -29,15 +29,15 @@ public class TypeNode extends Node {
     }
 
     public TypeNode setKvs(String kvName, String kvType, boolean required) {
-        if (kvs == null) {
-            kvs = new HashMap<>();
+        if (schema == null) {
+            schema = new HashMap<>();
         }
 
         TypeNode parentNode = (TypeNode)getIsa();
-        if (parentNode != null && parentNode.getKvs().containsKey(kvName)) {
-            throw new RuntimeException("Can't override parent kvs.");
+        if (parentNode != null && parentNode.getSchema().containsKey(kvName)) {
+            throw new RuntimeException("Can't override parent schema.");
         } else {
-            kvs.put(kvName, new Constraint(kvType, required));
+            schema.put(kvName, new Descriptor(kvType, required));
         }
 
         return this;
@@ -46,31 +46,31 @@ public class TypeNode extends Node {
     public TypeNode setIsa(TypeNode isa) {
         super.setIsa(isa);
 
-        if (kvs == null) {
-            kvs = new HashMap<>();
+        if (schema == null) {
+            schema = new HashMap<>();
         }
 
-        HashMap<String, Constraint> parentConstraints = typeNodeRepository.findByUuid(isa.getUuid()).getKvs();
+        HashMap<String, Descriptor> parentConstraints = typeNodeRepository.findByUuid(isa.getUuid()).getSchema();
         if (parentConstraints != null) {
             // We can go around setKvs here, because we don't need
             // the checks setKvs does.
-            kvs.putAll(parentConstraints);
+            schema.putAll(parentConstraints);
         }
 
         return this;
     }
 
-    public HashMap<String, Constraint> getKvs() {
-        return kvs;
+    public HashMap<String, Descriptor> getSchema() {
+        return schema;
     }
 
     @Override
     public String toString() {
         String s = "createNode(new TypeNode(\"" + getName() + "\", \"" + getDesc() + "\", \"" + getUuid() + "\")";
         boolean set = false;
-        if (kvs != null) {
-            for (String k : kvs.keySet()) {
-                Constraint constraint = kvs.get(k);
+        if (schema != null) {
+            for (String k : schema.keySet()) {
+                Descriptor constraint = schema.get(k);
                 s += "\n\t.setKvs(\"" + k + "\", \"" + constraint.getKvType() + "\", " + constraint.getRequired() + ")";
             }
             set = true;

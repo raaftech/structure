@@ -1,7 +1,7 @@
 package org.openpcf.universal.base;
 
-import org.openpcf.universal.graph.converters.ConstraintWriter;
-import org.openpcf.universal.graph.converters.ConstraintReader;
+import org.openpcf.universal.graph.converters.DescriptorWriter;
+import org.openpcf.universal.graph.converters.DescriptorReader;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ConversionServiceFactoryBean;
@@ -23,8 +23,8 @@ public class ConverterConfig {
     public ConversionServiceFactoryBean conversionService() {
         Set<Converter> converters = new HashSet<>();
 
-        converters.add(new ConstraintReader());
-        converters.add(new ConstraintWriter());
+        converters.add(new DescriptorReader());
+        converters.add(new DescriptorWriter());
 
         ConversionServiceFactoryBean bean = new ConversionServiceFactoryBean();
         bean.setConverters(converters);

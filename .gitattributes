@@ -22,12 +22,12 @@ src/main/java/org/openpcf/universal/base/ConverterConfig.java -text
 src/main/java/org/openpcf/universal/base/SetupDatabase.java -text
 src/main/java/org/openpcf/universal/base/SpringConfig.java -text
 src/main/java/org/openpcf/universal/base/SpringContext.java -text
-src/main/java/org/openpcf/universal/graph/Constraint.java -text
+src/main/java/org/openpcf/universal/graph/Descriptor.java -text
 src/main/java/org/openpcf/universal/graph/InstanceNode.java -text
 src/main/java/org/openpcf/universal/graph/Node.java -text
 src/main/java/org/openpcf/universal/graph/TypeNode.java -text
-src/main/java/org/openpcf/universal/graph/converters/ConstraintReader.java -text
-src/main/java/org/openpcf/universal/graph/converters/ConstraintWriter.java -text
+src/main/java/org/openpcf/universal/graph/converters/DescriptorReader.java -text
+src/main/java/org/openpcf/universal/graph/converters/DescriptorWriter.java -text
 src/main/java/org/openpcf/universal/graph/repositories/NodeRepository.java -text
 src/main/java/org/openpcf/universal/graph/repositories/TypeNodeRepository.java -text
 src/main/js/App.js -text

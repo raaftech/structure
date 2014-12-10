@@ -8,12 +8,12 @@ import java.security.InvalidParameterException;
  * @author Boy van Duuren <boy.van.duuren@raaftech.com>
  * @since 2014-12-05
  */
-public class Constraint {
+public class Descriptor {
 
     private String kvType;
     private Boolean required;
 
-    public Constraint(String kvType, Boolean required) {
+    public Descriptor(String kvType, Boolean required) {
         this.required = required;
 
         switch (kvType) {
