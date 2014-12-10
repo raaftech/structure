@@ -1,10 +1,7 @@
 package org.openpcf.universal.graph;
 
 import org.neo4j.graphdb.Direction;
-import org.springframework.data.neo4j.annotation.GraphId;
-import org.springframework.data.neo4j.annotation.Indexed;
-import org.springframework.data.neo4j.annotation.NodeEntity;
-import org.springframework.data.neo4j.annotation.RelatedTo;
+import org.springframework.data.neo4j.annotation.*;
 import org.springframework.data.neo4j.support.index.IndexType;
 
 import java.util.HashSet;
@@ -33,6 +30,7 @@ public class Node {
     private String uuid;
 
     @RelatedTo(type="ISA", direction = Direction.OUTGOING)
+    @Fetch
     private Node isa;
 
     @RelatedTo(type="HAS", direction = Direction.OUTGOING)
@@ -64,5 +62,13 @@ public class Node {
     public Node setIsa(Node isa) {
         this.isa = isa;
         return this;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getDesc() {
+        return desc;
     }
 }

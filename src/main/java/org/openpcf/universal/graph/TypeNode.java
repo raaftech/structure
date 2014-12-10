@@ -63,4 +63,23 @@ public class TypeNode extends Node {
     public HashMap<String, Constraint> getKvs() {
         return kvs;
     }
+
+    @Override
+    public String toString() {
+        String s = "createNode(new TypeNode(\"" + getName() + "\", \"" + getDesc() + "\", \"" + getUuid() + "\")";
+        boolean set = false;
+        if (kvs != null) {
+            for (String k : kvs.keySet()) {
+                Constraint constraint = kvs.get(k);
+                s += "\n\t.setKvs(\"" + k + "\", \"" + constraint.getKvType() + "\", " + constraint.getRequired() + ")";
+            }
+            set = true;
+        }
+        if (getIsa() != null) {
+            s += "\n\t.setIsa(typeNodeRepository.findByUuid(\"" + getIsa().getUuid() + "\")";
+            set = true;
+        }
+        s += set ? "));" : ");";
+        return s;
+    }
 }
