@@ -740,8 +740,6 @@ public class SetupDatabase {
 
             long endTime = System.nanoTime();
             System.out.println("Created the TypeNode database in " + (endTime - startTime) / 1000000 + "ms.");
-            TypeNode foo = typeNodeRepository.findByUuid("91c999a0-33ec-42ee-bae0-6f8adae42535");
-            System.out.println(foo);
             tx.success();
         } finally {
             tx.close();
