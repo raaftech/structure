@@ -19,6 +19,7 @@ public class Descriptor {
         switch (kvType) {
             case "string":
             case "integer":
+            case "double":
             case "datetime":
             case "boolean":
                 this.kvType = kvType;

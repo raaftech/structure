@@ -63,6 +63,7 @@ public class SetupDatabase {
             createNode(new TypeNode("Configuration", "An abstract configuration component.", "3f4a43f7-b558-4bf0-ba7e-66b99cffaf16")
                     .setIsa(typeNodeRepository.findByUuid("a79ce509-a021-4177-ae61-73abd01fb479")));
             createNode(new TypeNode("IpAddress", "An IP address (address only, can be assigned to a network interface).",
+                    .setKvs("addr", "string", true)
                     "299001a6-1091-4c0d-87be-c512af03e179")
                     .setIsa(typeNodeRepository.findByUuid("3f4a43f7-b558-4bf0-ba7e-66b99cffaf16")));
             createNode(new TypeNode("Ipv4Address", "An IPv4 address (address only, can be assigned to a network interface).",
@@ -72,6 +73,8 @@ public class SetupDatabase {
                     "47b5804d-5f5d-4bf8-89f6-a189c29b05ae")
                     .setIsa(typeNodeRepository.findByUuid("299001a6-1091-4c0d-87be-c512af03e179")));
             createNode(new TypeNode("IpListener", "An IP listener (address and port, can be assigned to a network service).",
+                    .set("addr", "string", true)
+                    .set("port", "integer", true)
                     "91c999a0-33ec-42ee-bae0-6f8adae42535")
                     .setIsa(typeNodeRepository.findByUuid("3f4a43f7-b558-4bf0-ba7e-66b99cffaf16")));
             createNode(new TypeNode("Ipv4Listener", "An IPv4 listener (address and port, can be assigned to a network service).",
@@ -81,12 +84,15 @@ public class SetupDatabase {
                     "6a79b4e9-13ce-4a09-bc5b-b429d23b34d7")
                     .setIsa(typeNodeRepository.findByUuid("91c999a0-33ec-42ee-bae0-6f8adae42535")));
             createNode(new TypeNode("Url", "a uniform resource locator.", "0e9f72bd-5bc5-43dc-ab86-30a8f7171bc6")
+                    .setKvs("url", "string", true)
                     .setIsa(typeNodeRepository.findByUuid("3f4a43f7-b558-4bf0-ba7e-66b99cffaf16")));
             createNode(new TypeNode("DnsName", "Either a short name or a fully-qualified domain name.",
+                    .setKvs("dnsname", "string", true)
                     "99c0da37-3599-418d-8ecc-de36d37ae9f4")
                     .setIsa(typeNodeRepository.findByUuid("3f4a43f7-b558-4bf0-ba7e-66b99cffaf16")));
             createNode(new TypeNode("Map", "A configuration object that maps keys to multi-valued attributes in the JSON format" +
                     ".", "c970f6d3-4898-4596-bfac-9d6d1f6b2541")
+                    .setKvs("map", "string", true)
                     .setIsa(typeNodeRepository.findByUuid("3f4a43f7-b558-4bf0-ba7e-66b99cffaf16")));
             createNode(new TypeNode("DirectoryMap", "A generic map of possible directories this software has. Key: os-shortname, " +
                     "Values: list of directories, Format: JSON.", "64d50e90-8be2-4d97-9dba-dd8518eb3f84")
@@ -145,6 +151,7 @@ public class SetupDatabase {
                     "Values: version string pattern, Format: JSON.", "1c1af482-f0e0-45f1-9aa1-f7702040067d")
                     .setIsa(typeNodeRepository.findByUuid("0d554a04-67d6-428f-8e6f-6cdcdaca39cb")));
             createNode(new TypeNode("Device", "An abstract device component.", "ea6a7487-867c-4a74-8849-fb8539b8169f")
+                    .setKvs("rev", "string", false)
                     .setIsa(typeNodeRepository.findByUuid("a79ce509-a021-4177-ae61-73abd01fb479")));
             createNode(new TypeNode("AssembledDevice", "An assembled device, containing various components.",
                     "dbb2884f-7c31-4f7d-a92e-d6a76dd1b7fe")
@@ -152,16 +159,37 @@ public class SetupDatabase {
             createNode(new TypeNode("Computer", "An assembled computer device.", "ec11db91-6973-4285-b018-b461fbb432d7")
                     .setIsa(typeNodeRepository.findByUuid("dbb2884f-7c31-4f7d-a92e-d6a76dd1b7fe")));
             createNode(new TypeNode("ConsoleDevice", "A console device.", "3d0865a2-3ecf-4035-886b-0bb603c0e2c2")
+                    .setKvs("baudRate", "integer", false)
+                    .setKvs("stopBits", "double", false)
+                    .setKvs("parity", "string", false)
+                    .setKvs("dataBits", "integer", false)
                     .setIsa(typeNodeRepository.findByUuid("ea6a7487-867c-4a74-8849-fb8539b8169f")));
             createNode(new TypeNode("GenericSerial", "A serial communication device.", "f5b25736-ec12-4a7e-b198-548b97ebc36f")
                     .setIsa(typeNodeRepository.findByUuid("3d0865a2-3ecf-4035-886b-0bb603c0e2c2")));
             createNode(new TypeNode("GraphicsDevice", "A graphics device.", "a642b995-c073-4c27-a611-c5bf3854958f")
+                    .setKvs("renderOutputCores", "integer", false)
+                    .setKvs("memClockHz", "integer", false)
+                    .setKvs("gpuCoreCount", "integer", false)
+                    .setKvs("memSizekb", "integer", false)
+                    .setKvs("flops", "integer", false)
+                    .setKvs("pixelRatesPerSec", "integer", false)
+                    .setKvs("texelRatesPerSec", "integer", false)
+                    .setKvs("memBusBits", "integer", false)
+                    .setKvs("maxColorBitsPerChannel", "integer", false)
+                    .setKvs("memBandwidthKbs", "integer", false)
+                    .setKvs("maxColorBitsPerScreen", "integer", false)
+                    .setKvs("textureMapUnits", "integer", false)
+                    .setKvs("gpuClockhz", "integer", false)
+                    .setKvs("shadingUnits", "integer", false)
+                    .setKvs("maxVerticalRefreshHz", "integer", false)
                     .setIsa(typeNodeRepository.findByUuid("ea6a7487-867c-4a74-8849-fb8539b8169f")));
             createNode(new TypeNode("GenericVga", "A VGA graphics device.", "b3a2ac7c-ad8a-4047-a460-2ac41a7ddfef")
                     .setIsa(typeNodeRepository.findByUuid("a642b995-c073-4c27-a611-c5bf3854958f")));
             createNode(new TypeNode("MemoryDevice", "A memory device", "1c87c672-1f69-4a02-9bc8-9eff28dda5e5")
+                    .setKvs("memSizeKb", "integer", true)
                     .setIsa(typeNodeRepository.findByUuid("ea6a7487-867c-4a74-8849-fb8539b8169f")));
             createNode(new TypeNode("VolatileMemory", "A generic volatile memory device.", "44131d46-c1b0-4030-ae5a-9a3108627749")
+                    .setKvs("memClockHz", "integer", true)
                     .setIsa(typeNodeRepository.findByUuid("1c87c672-1f69-4a02-9bc8-9eff28dda5e5")));
             createNode(new TypeNode("RandomAccessMemory", "Random access memory.", "4c0a0638-1fa7-4f5b-9d69-1d199dcedccc")
                     .setIsa(typeNodeRepository.findByUuid("44131d46-c1b0-4030-ae5a-9a3108627749")));
@@ -189,20 +217,34 @@ public class SetupDatabase {
             createNode(new TypeNode("WiredNetworkDevice", "A wired network device.", "0d4c880d-d888-435f-b3a3-3d3eb9e70ddf")
                     .setIsa(typeNodeRepository.findByUuid("86786ed6-d62a-4011-9ae8-0082000e48fa")));
             createNode(new TypeNode("ModemDevice", "A modem networking device.", "f34b76e4-f5a6-4bae-968e-f22ef09b1e35")
+                    .setKvs("baudRate", "integer", true)
                     .setIsa(typeNodeRepository.findByUuid("0d4c880d-d888-435f-b3a3-3d3eb9e70ddf")));
             createNode(new TypeNode("EthernetDevice", "A wired ethernet device.", "0dbd26f2-baff-446c-9241-46eaa3e03736")
+                    .setKvs("speedMbit", "integer", true)
+                    .setKvs("macAddr", "string", true)
                     .setIsa(typeNodeRepository.findByUuid("0d4c880d-d888-435f-b3a3-3d3eb9e70ddf")));
             createNode(new TypeNode("WirelessNetworkDevice", "A wireless network device.", "61328f83-db43-4efe-81be-df47e17814a5")
                     .setIsa(typeNodeRepository.findByUuid("86786ed6-d62a-4011-9ae8-0082000e48fa")));
             createNode(new TypeNode("BluetoothDevice", "A Bluetooth device.", "009cf823-39c0-4b17-ae81-ad98ed0d4585")
+                    .setKvs("macAddr", "string", true)
+                    .setKvs("speedKbit", "integer", true)
                     .setIsa(typeNodeRepository.findByUuid("61328f83-db43-4efe-81be-df47e17814a5")));
             createNode(new TypeNode("IrdaDevice", "An IrDA device.", "42c7997c-0c56-4f93-956f-5fd0778c47c6")
+                    .setKvs("speedKbit", "integer", true)
                     .setIsa(typeNodeRepository.findByUuid("61328f83-db43-4efe-81be-df47e17814a5")));
             createNode(new TypeNode("WifiDevice", "A WiFi device.", "78ff02be-2abe-4a8f-a082-a0d9c3cdae70")
+                    .setKvs("speedMbit", "integer", true)
+                    .setKvs("macAddr", "string", true)
                     .setIsa(typeNodeRepository.findByUuid("61328f83-db43-4efe-81be-df47e17814a5")));
             createNode(new TypeNode("WwanDevice", "A wireless WAN device.", "8d6e0956-033e-4efc-8846-e85bfddc8f98")
+                    .setKvs("speedKbit", "integer", true)
                     .setIsa(typeNodeRepository.findByUuid("61328f83-db43-4efe-81be-df47e17814a5")));
             createNode(new TypeNode("ProcessingUnit", "A processing unit.", "b7b2a2ff-3af7-469b-afbf-e52f1b80be91")
+                    .setKvs("cacheSizeKb", "integer", true)
+                    .setKvs("cpuCoreCount", "integer", true)
+                    .setKvs("cpuClockHz", "integer", true)
+                    .setKvs("smtEnabled", "boolean", true)
+                    .setKvs("bits", "integer", true)
                     .setIsa(typeNodeRepository.findByUuid("ea6a7487-867c-4a74-8849-fb8539b8169f")));
             createNode(new TypeNode("AlphaProcessor", "An Alpha processor.", "95b9f7a2-1a17-4cb9-8088-3e2e478ce638")
                     .setIsa(typeNodeRepository.findByUuid("b7b2a2ff-3af7-469b-afbf-e52f1b80be91")));
@@ -227,6 +269,9 @@ public class SetupDatabase {
             createNode(new TypeNode("ZilogProcessor", "A ZiLOG processor.", "a68f42c5-2a1d-43cb-bebd-55339f5e61ee")
                     .setIsa(typeNodeRepository.findByUuid("b7b2a2ff-3af7-469b-afbf-e52f1b80be91")));
             createNode(new TypeNode("Software", "An abstract software component.", "8db2b492-9a4a-41fe-97a5-bc625da042ea")
+                    .setKvs("ver", "string", true)
+                    .setKvs("shortName", "string", true)
+                    .setKvs("longName", "string", true)
                     .setIsa(typeNodeRepository.findByUuid("a79ce509-a021-4177-ae61-73abd01fb479")));
             createNode(new TypeNode("CloudSystem", "A cloud (operating) system and/or environment.",
                     "86c0439a-4219-46e6-82a3-6fb2ee774aa4")
@@ -251,8 +296,13 @@ public class SetupDatabase {
             createNode(new TypeNode("Grouping", "A group of references to things.", "5f1eb7c5-ec5e-4563-be6a-fc50774fc374")
                     .setIsa(typeNodeRepository.findByUuid("b1bc963a-19cc-4518-aecb-a35d028c49e3")));
             createNode(new TypeNode("Locational", "A place/location.", "f31b8dc9-7b9a-47cc-bd3d-20b94b6daac1")
+                    .setKvs("code", "string", false)
                     .setIsa(typeNodeRepository.findByUuid("5f1eb7c5-ec5e-4563-be6a-fc50774fc374")));
             createNode(new TypeNode("Building", "A building.", "44197148-678f-4421-a618-dc6807beaf30")
+                    .setKvs("city", "string", true)
+                    .setKvs("streetAddress", "string", true)
+                    .setKvs("country", "string", true)
+                    .setKvs("postalCode", "string", false)
                     .setIsa(typeNodeRepository.findByUuid("f31b8dc9-7b9a-47cc-bd3d-20b94b6daac1")));
             createNode(new TypeNode("Floor", "A floor.", "9ca8061a-898c-4f2f-aeb3-c77d1747559f")
                     .setIsa(typeNodeRepository.findByUuid("f31b8dc9-7b9a-47cc-bd3d-20b94b6daac1")));
@@ -273,8 +323,14 @@ public class SetupDatabase {
                     "3175d762-dd97-434f-a288-21e4591480cf")
                     .setIsa(typeNodeRepository.findByUuid("b1bc963a-19cc-4518-aecb-a35d028c49e3")));
             createNode(new TypeNode("User", "A user.", "88d8630d-54ce-4aa5-8505-2068c31df5b1")
+                    .setKvs("emailAddress", "string", true)
+                    .setKvs("title", "string", false)
+                    .setKvs("firstName", "string", true)
+                    .setKvs("lastName", "string", true)
+                    .setKvs("birthDate", "datetime", false)
                     .setIsa(typeNodeRepository.findByUuid("3175d762-dd97-434f-a288-21e4591480cf")));
             createNode(new TypeNode("Batch", "A batch user.", "395d3e08-842b-4640-8b57-751e1b0c9e4b")
+                    .setKvs("emailAddress", "string", true)
                     .setIsa(typeNodeRepository.findByUuid("3175d762-dd97-434f-a288-21e4591480cf")));
             createNode(new TypeNode("Capability", "A software component gives capabilities to its parent or to siblings.",
                     "916e04a9-c773-4eaf-9c08-450016426e5a")
