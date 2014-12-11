@@ -30,7 +30,7 @@ public class DescriptorReader implements Converter<String, HashMap<String, Descr
                 Map.Entry<String, JsonNode> node = itr.next();
                 String key = node.getKey();
                 JsonNode value = node.getValue();
-                constraints.put(key, new Descriptor(value.get("kvType").asText(), value.get("required").asBoolean(),
+                constraints.put(key, new Descriptor(value.get("valueType").asText(), value.get("required").asBoolean(),
                         value.get("description").asText(), value.get("defaultValue").asText(), value.get("exampleValue").asText()));
             }
         } catch (IOException e) {

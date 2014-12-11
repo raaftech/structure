@@ -28,17 +28,17 @@ public class TypeNode extends Node {
         super(name, desc, uuid);
     }
 
-    public TypeNode setKvs(String kvName, String kvType, boolean required, String description, String defaultValue,
-                           String example) {
+    public TypeNode setDescriptor(String key, String valueType, boolean required, String description, String defaultValue,
+                                  String example) {
         if (schema == null) {
             schema = new HashMap<>();
         }
 
         TypeNode parentNode = (TypeNode)getIsa();
-        if (parentNode != null && parentNode.getSchema().containsKey(kvName)) {
+        if (parentNode != null && parentNode.getSchema().containsKey(key)) {
             throw new RuntimeException("Can't override parent schema.");
         } else {
-            schema.put(kvName, new Descriptor(kvType, required, description, defaultValue, example));
+            schema.put(key, new Descriptor(valueType, required, description, defaultValue, example));
         }
 
         return this;
@@ -53,8 +53,8 @@ public class TypeNode extends Node {
 
         HashMap<String, Descriptor> parentConstraints = typeNodeRepository.findByUuid(isa.getUuid()).getSchema();
         if (parentConstraints != null) {
-            // We can go around setKvs here, because we don't need
-            // the checks setKvs does.
+            // We can go around setDescriptor here, because we don't need
+            // the checks setDescriptor does.
             schema.putAll(parentConstraints);
         }
 
@@ -72,7 +72,7 @@ public class TypeNode extends Node {
         if (schema != null) {
             for (String k : schema.keySet()) {
                 Descriptor constraint = schema.get(k);
-                s += "\n\t.setKvs(\"" + k + "\", \"" + constraint.getKvType() + "\", " + constraint.getRequired() + ", \"" +
+                s += "\n\t.setDescriptor(\"" + k + "\", \"" + constraint.getValueType() + "\", " + constraint.getRequired() + ", \"" +
                         constraint.getDescription() + "\", \"" + constraint.getDefaultValue() + "\", \"" +
                         constraint.getExampleValue() + "\")";
             }

@@ -10,33 +10,33 @@ import java.security.InvalidParameterException;
  */
 public class Descriptor {
 
-    private String kvType;
+    private String valueType;
     private Boolean required;
     private String description;
     private String defaultValue;
     private String exampleValue;
 
-    public Descriptor(String kvType, Boolean required, String description, String defaultValue, String exampleValue) {
+    public Descriptor(String valueType, Boolean required, String description, String defaultValue, String exampleValue) {
         this.required = required;
         this.description = description;
         this.defaultValue = defaultValue;
         this.exampleValue = exampleValue;
 
-        switch (kvType) {
+        switch (valueType) {
             case "string":
             case "integer":
             case "double":
             case "datetime":
             case "boolean":
-                this.kvType = kvType;
+                this.valueType = valueType;
                 break;
             default:
-                throw new InvalidParameterException("kvType must be of value string, integer, datetime or boolean.");
+                throw new InvalidParameterException("valueType must be of value string, integer, datetime or boolean.");
         }
     }
 
-    public String getKvType() {
-        return kvType;
+    public String getValueType() {
+        return valueType;
     }
 
     public Boolean getRequired() {
