@@ -28,7 +28,8 @@ public class TypeNode extends Node {
         super(name, desc, uuid);
     }
 
-    public TypeNode setKvs(String kvName, String kvType, boolean required) {
+    public TypeNode setKvs(String kvName, String kvType, boolean required, String description, String defaultValue,
+                           String example) {
         if (schema == null) {
             schema = new HashMap<>();
         }
@@ -37,7 +38,7 @@ public class TypeNode extends Node {
         if (parentNode != null && parentNode.getSchema().containsKey(kvName)) {
             throw new RuntimeException("Can't override parent schema.");
         } else {
-            schema.put(kvName, new Descriptor(kvType, required));
+            schema.put(kvName, new Descriptor(kvType, required, description, defaultValue, example));
         }
 
         return this;
@@ -71,7 +72,9 @@ public class TypeNode extends Node {
         if (schema != null) {
             for (String k : schema.keySet()) {
                 Descriptor constraint = schema.get(k);
-                s += "\n\t.setKvs(\"" + k + "\", \"" + constraint.getKvType() + "\", " + constraint.getRequired() + ")";
+                s += "\n\t.setKvs(\"" + k + "\", \"" + constraint.getKvType() + "\", " + constraint.getRequired() + ", \"" +
+                        constraint.getDescription() + "\", \"" + constraint.getDefaultValue() + "\", \"" +
+                        constraint.getExampleValue() + "\")";
             }
             set = true;
         }

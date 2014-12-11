@@ -12,9 +12,15 @@ public class Descriptor {
 
     private String kvType;
     private Boolean required;
+    private String description;
+    private String defaultValue;
+    private String exampleValue;
 
-    public Descriptor(String kvType, Boolean required) {
+    public Descriptor(String kvType, Boolean required, String description, String defaultValue, String exampleValue) {
         this.required = required;
+        this.description = description;
+        this.defaultValue = defaultValue;
+        this.exampleValue = exampleValue;
 
         switch (kvType) {
             case "string":
@@ -35,5 +41,17 @@ public class Descriptor {
 
     public Boolean getRequired() {
         return required;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public String getDefaultValue() {
+        return defaultValue;
+    }
+
+    public String getExampleValue() {
+        return exampleValue;
     }
 }
