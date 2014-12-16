@@ -1,0 +1,115 @@
+package org.openpcf.universal.graph.schema;
+
+import org.openpcf.universal.base.SpringContext;
+import org.openpcf.universal.graph.Node;
+import org.openpcf.universal.graph.SchemaNode;
+import org.openpcf.universal.graph.TypeNode;
+import org.openpcf.universal.graph.repositories.SchemaNodeRepository;
+import org.openpcf.universal.graph.repositories.TypeNodeRepository;
+
+/**
+ * SchemaUpdate is an abstract class that has to be implemented for every update to the schema.
+ * It has a SchemaNode attribute that keeps track of the version, dependencies, etc of the SchemaUpdate.
+ * Dependency checks and other tasks is done in SchemaUpdate-implementations.
+ *
+ * @author Boy van Duuren <boy.van.duuren@raaftech.com>
+ * @since 2014-12-12
+ */
+public abstract class SchemaUpdate {
+
+    protected SchemaNode updateInformation;
+
+    /**
+     * This method couples a SchemaNode to an implementation of SchemaUpdate.
+     */
+    protected abstract void setUpdateInformation();
+
+    /**
+     * This method should contain the actual code an implementation of SchemaUpdate needs to apply changes to the schema.
+     * @return true if everything succeeded, false if not.
+     */
+    protected abstract boolean createNodes();
+
+    protected SchemaNodeRepository schemaNodeRepository = SpringContext.INSTANCE.getSchemaNodeRepository();
+    protected TypeNodeRepository typeNodeRepository = SpringContext.INSTANCE.getTypeNodeRepository();
+
+    /**
+     * Create a new node.
+     * The node's uuid has to be unique in the database. If this
+     * is not the case, we'll return false.
+     *
+     * @param node the node to be saved to the database.
+     * @return Whether the node was saved to the database.
+     */
+    protected boolean createNode(TypeNode node) {
+        if (node == null) {
+            return false;
+        }
+        Node existingNode = typeNodeRepository.findByUuid(node.getUuid());
+        if (existingNode == null) {
+            System.out.print(".");
+            typeNodeRepository.save(node);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * This method is called when a SchemaUpdate/SchemaNode pair's dependencies have been resolved.
+     * It calls createNodes() which is implemented in SchemaUpdate implementations. When everything is successful, we call
+     * setApplied() on the SchemaNode and persist it to the database.
+     * @return Returns true if createNodes() was successful, false if not.
+     */
+    private boolean applyAndSet() {
+        System.out.print(updateInformation.getName() + " R" + updateInformation.getRevision() + ": creating nodes...");
+        if (createNodes()) {
+            System.out.println("done");
+            updateInformation.setApplied();
+            schemaNodeRepository.save(updateInformation);
+            return true;
+        } else {
+            System.out.println("failed");
+            return false;
+        }
+    }
+
+    /**
+     * This method is the only public method, it checks if functional and ancestral dependencies are resolved and takes action
+     * accordingly.
+     */
+    public boolean apply() {
+        setUpdateInformation();
+        if (updateInformation == null) {
+            return false;
+        }
+
+        SchemaNode requires = updateInformation.getRequires();
+        SchemaNode ancestor = updateInformation.getUpdateOf();
+
+        // if Schema is already applied, return true
+        if (updateInformation.isApplied()) {
+            return true;
+        }
+        // no required and ancestoral dependency: createNodes()
+        if (!updateInformation.hasRequirement()) {
+            if (updateInformation.getRevision() == 1) {
+                return applyAndSet();
+            // no required and ancestoral dependency applied: createNodes()
+            } else if (ancestor != null && ancestor.isApplied()) {
+                return applyAndSet();
+            }
+        // no ancestoral dependency and required applied: createNode()
+        } else if (updateInformation.getRevision() == 1) {
+            if (requires != null && requires.isApplied()) {
+                return applyAndSet();
+            }
+        // required and ancestoral dependency applied: createNode()
+        } else if ((requires != null && requires.isApplied()) && (ancestor != null && ancestor.isApplied())) {
+            return applyAndSet();
+        }
+
+        throw new RuntimeException("Schema " + updateInformation.getName() + " v" + updateInformation.getRevision() + " is " +
+                "leaning on a functional or ancestral dependency that doesn't exist.");
+    }
+}
