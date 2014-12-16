@@ -48,6 +48,7 @@ public abstract class SchemaUpdate {
         Node existingNode = typeNodeRepository.findByUuid(node.getUuid());
         if (existingNode == null) {
             System.out.print(".");
+            updateInformation.created(node);
             typeNodeRepository.save(node);
             return true;
         } else {
@@ -84,8 +85,8 @@ public abstract class SchemaUpdate {
             return false;
         }
 
-        SchemaNode requires = updateInformation.getRequires();
-        SchemaNode ancestor = updateInformation.getUpdateOf();
+        SchemaNode requires = updateInformation.getRequiresSchemaNode();
+        SchemaNode ancestor = updateInformation.getRevisesSchemaNode();
 
         // if Schema is already applied, return true
         if (updateInformation.isApplied()) {

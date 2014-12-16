@@ -29,16 +29,16 @@ public class SchemaNode extends Node {
     private int requiredRevision;
 
     @RelatedTo(type="REQUIRES", direction = Direction.OUTGOING)
-    private SchemaNode requires;
+    private SchemaNode requiresSchemaNode;
 
-    @RelatedTo(type="UPDATE_OF", direction = Direction.OUTGOING)
-    private SchemaNode updateOf;
+    @RelatedTo(type="REVISES", direction = Direction.OUTGOING)
+    private SchemaNode revisesSchemaNode;
 
     @RelatedTo(type="CREATED", direction = Direction.OUTGOING)
-    private Set<Node> typeNodesCreated;
+    private Set<Node> createdTypeNodes;
 
     @RelatedTo(type="UPDATED", direction = Direction.OUTGOING)
-    private Set<Node> typeNodesUpdated;
+    private Set<Node> updatedTypeNodes;
 
     private static SchemaNodeRepository schemaNodeRepository = SpringContext.INSTANCE.getSchemaNodeRepository();
 
@@ -57,7 +57,7 @@ public class SchemaNode extends Node {
         super(name, desc, uuid);
         this.revision = revision;
         if (revision > 1) {
-            this.updateOf = schemaNodeRepository.findByNameAndRevision(name, revision - 1);
+            this.revisesSchemaNode = schemaNodeRepository.findByNameAndRevision(name, revision - 1);
         }
     }
 
@@ -73,8 +73,8 @@ public class SchemaNode extends Node {
             this.requiredPackage = requiredPackage;
             this.requiredRevision = requiredRevision;
             // In case the requirement hasn't ran yet, this will be set to null
-            // By the time getRequires is ran in SchemaUpdate, this might have changed.
-            requires = schemaNodeRepository.findByNameAndRevision(requiredPackage, requiredRevision);
+            // By the time getRequiresSchemaNode is ran in SchemaUpdate, this might have changed.
+            requiresSchemaNode = schemaNodeRepository.findByNameAndRevision(requiredPackage, requiredRevision);
         } else {
             throw new RuntimeException("Package can't be null and revision has to be higher than 0.");
         }
@@ -106,11 +106,11 @@ public class SchemaNode extends Node {
         return requiredPackage != null && requiredRevision > 0;
     }
 
-    public SchemaNode creates(Node node) {
-        if (typeNodesCreated == null) {
-            typeNodesCreated = new HashSet<>();
+    public SchemaNode created(Node node) {
+        if (createdTypeNodes == null) {
+            createdTypeNodes = new HashSet<>();
         }
-        typeNodesCreated.add(node);
+        createdTypeNodes.add(node);
         return this;
     }
 
@@ -119,11 +119,11 @@ public class SchemaNode extends Node {
      * @param node Instance of a node updated by this SchemaNode/SchemaUpdate pair.
      * @return Returns itself.
      */
-    public SchemaNode updates(Node node) {
-        if (typeNodesUpdated == null) {
-            typeNodesUpdated = new HashSet<>();
+    public SchemaNode updated(Node node) {
+        if (updatedTypeNodes == null) {
+            updatedTypeNodes = new HashSet<>();
         }
-        typeNodesUpdated.add(node);
+        updatedTypeNodes.add(node);
         return this;
     }
 
@@ -133,21 +133,21 @@ public class SchemaNode extends Node {
      * we run requires() again in case we have a requirement. This created the actual requirement relation.
      * @return Returns itself.
      */
-    public SchemaNode getRequires() {
+    public SchemaNode getRequiresSchemaNode() {
         // Our requirement might not have existed during initialization of this SchemaNode,
         // but might exist now. For this reason we need to set required again.
         if (hasRequirement()) {
             requires(requiredPackage, requiredRevision);
         }
-        return requires;
+        return requiresSchemaNode;
     }
 
     /**
      * Gets parent dependency of the SchemaNode.
      * @return The parent dependency.
      */
-    public SchemaNode getUpdateOf() {
-        return updateOf;
+    public SchemaNode getRevisesSchemaNode() {
+        return revisesSchemaNode;
     }
 
     /**

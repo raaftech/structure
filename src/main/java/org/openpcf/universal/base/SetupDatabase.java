@@ -6,7 +6,6 @@ import org.openpcf.universal.graph.repositories.TypeNodeRepository;
 import org.openpcf.universal.graph.schema.SchemaUpdate;
 import org.openpcf.universal.graph.schema.base.BaseR1;
 import org.openpcf.universal.graph.schema.cloudsystems.CloudSystemsR1;
-import org.openpcf.universal.graph.schema.cloudsystems.CloudSystemsR2;
 import org.openpcf.universal.graph.schema.emulators.EmulatorsR1;
 import org.openpcf.universal.graph.schema.hypervisors.HypervisorsR1;
 import org.openpcf.universal.graph.schema.interpreters.InterpretersR1;
@@ -49,9 +48,6 @@ public class SetupDatabase {
         schemas.add(new PackageManagersR1());
         schemas.add(new ServiceManagersR1());
         schemas.add(new ServicesR1());
-
-        // Demo purposes
-        schemas.add(new CloudSystemsR2());
 
         try {
             long startTime = System.nanoTime();

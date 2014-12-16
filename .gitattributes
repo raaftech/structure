@@ -35,7 +35,6 @@ src/main/java/org/openpcf/universal/graph/repositories/TypeNodeRepository.java -
 src/main/java/org/openpcf/universal/graph/schema/SchemaUpdate.java -text
 src/main/java/org/openpcf/universal/graph/schema/base/BaseR1.java -text
 src/main/java/org/openpcf/universal/graph/schema/cloudsystems/CloudSystemsR1.java -text
-src/main/java/org/openpcf/universal/graph/schema/cloudsystems/CloudSystemsR2.java -text
 src/main/java/org/openpcf/universal/graph/schema/emulators/EmulatorsR1.java -text
 src/main/java/org/openpcf/universal/graph/schema/hypervisors/HypervisorsR1.java -text
 src/main/java/org/openpcf/universal/graph/schema/interpreters/InterpretersR1.java -text
