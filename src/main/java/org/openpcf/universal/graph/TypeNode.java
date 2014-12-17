@@ -5,6 +5,8 @@ import org.openpcf.universal.graph.repositories.TypeNodeRepository;
 import org.springframework.data.neo4j.annotation.NodeEntity;
 
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Give a description of TypeNode here.
@@ -59,6 +61,17 @@ public class TypeNode extends Node {
         }
 
         return this;
+    }
+
+    public Set<TypeNode> getChildIsaSetAsTypeNodes() {
+        HashSet<TypeNode> childIsaSet = new HashSet<>();
+
+        getChildIsaSet().stream()
+                .filter(node -> node instanceof TypeNode)
+                .map(node -> (TypeNode)node)
+                .forEach(node -> childIsaSet.add(node));
+
+        return childIsaSet;
     }
 
     public HashMap<String, Descriptor> getSchema() {

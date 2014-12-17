@@ -1,11 +1,14 @@
 package org.openpcf.universal.graph.schema;
 
 import org.openpcf.universal.base.SpringContext;
-import org.openpcf.universal.graph.Node;
+import org.openpcf.universal.graph.Descriptor;
 import org.openpcf.universal.graph.SchemaNode;
 import org.openpcf.universal.graph.TypeNode;
 import org.openpcf.universal.graph.repositories.SchemaNodeRepository;
 import org.openpcf.universal.graph.repositories.TypeNodeRepository;
+
+import java.util.HashMap;
+import java.util.Set;
 
 /**
  * SchemaUpdate is an abstract class that has to be implemented for every update to the schema.
@@ -45,7 +48,7 @@ public abstract class SchemaUpdate {
         if (node == null) {
             return false;
         }
-        Node existingNode = typeNodeRepository.findByUuid(node.getUuid());
+        TypeNode existingNode = typeNodeRepository.findByUuid(node.getUuid());
         if (existingNode == null) {
             System.out.print(".");
             updateInformation.created(node);
@@ -54,6 +57,48 @@ public abstract class SchemaUpdate {
         } else {
             return false;
         }
+    }
+
+    /**
+     * Update an existing node, cascading changes down to child nodes for inherited data.
+     * The existing node is queried using it's UUID.
+     * @param node A TypeNode containing an existing UUID.
+     * @return Returns true if we found and updated the TypeNode, false if not.
+     */
+    protected boolean updateNode(TypeNode node) {
+        if (node == null) {
+            return false;
+        }
+        TypeNode existingNode = typeNodeRepository.findByUuid(node.getUuid());
+        if (existingNode == null) {
+            return false;
+        } else {
+            System.out.print(".");
+            // We'll only keep track of which node was directly updated by this SchemaUpdate, because
+            // cascading is done automatically.
+            updateInformation.updated(node);
+            typeNodeRepository.save(node);
+            cascadeDescription(existingNode, existingNode.getSchema(), node.getSchema());
+
+            return true;
+        }
+    }
+
+    /**
+     * Recursive function that cascades TypeNode schema-updates to every ISA child of a given starting point in the graph.
+     * @param start Starting point from where to cascade down.
+     * @param oldSchema The old schema has to be passed so we know which keys to remove from the child nodes.
+     * @param newSchema The new schema is put into every child node's schema HashMap.
+     */
+    private void cascadeDescription(TypeNode start, HashMap<String, Descriptor> oldSchema, HashMap<String, Descriptor> newSchema) {
+        Set<TypeNode> childIsaSet = start.getChildIsaSetAsTypeNodes();
+        childIsaSet.stream()
+                .forEach(childNode -> {
+                    oldSchema.forEach((key, value) -> childNode.getSchema().remove(key));
+                    childNode.getSchema().putAll(newSchema);
+                    typeNodeRepository.save(childNode);
+                    cascadeDescription(childNode, oldSchema, newSchema);
+                });
     }
 
     /**

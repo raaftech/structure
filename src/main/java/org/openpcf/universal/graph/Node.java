@@ -33,6 +33,10 @@ public class Node {
     @Fetch
     private Node isa;
 
+    @RelatedTo(type="ISA", direction = Direction.INCOMING)
+    @Fetch
+    private Set<Node> childIsaSet;
+
     @RelatedTo(type="HAS", direction = Direction.OUTGOING)
     private Set<Node> has = new HashSet<>();
 
@@ -62,6 +66,10 @@ public class Node {
     public Node setIsa(Node isa) {
         this.isa = isa;
         return this;
+    }
+
+    public Set<Node> getChildIsaSet() {
+        return childIsaSet;
     }
 
     public String getName() {
