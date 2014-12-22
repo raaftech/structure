@@ -147,6 +147,11 @@ public class SchemaNode extends Node {
      * @return The parent dependency.
      */
     public SchemaNode getRevisesSchemaNode() {
+        // revisesSchemaNode might be null if this node was instantiated before its' parent.
+        // That means we have to query the database if revisesSchemaNode is null.
+        if (revisesSchemaNode == null) {
+            revisesSchemaNode = schemaNodeRepository.findByNameAndRevision(getName(), getRevision() - 1);
+        }
         return revisesSchemaNode;
     }
 
@@ -171,5 +176,13 @@ public class SchemaNode extends Node {
      */
     public void setApplied() {
         applied = true;
+    }
+
+    public String getRequiredPackage() {
+        return requiredPackage;
+    }
+
+    public int getRequiredRevision() {
+        return requiredRevision;
     }
 }

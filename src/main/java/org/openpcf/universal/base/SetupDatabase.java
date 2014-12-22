@@ -1,21 +1,25 @@
 package org.openpcf.universal.base;
 
 import org.neo4j.graphdb.Transaction;
+import org.openpcf.universal.graph.SchemaNode;
 import org.openpcf.universal.graph.repositories.NodeRepository;
 import org.openpcf.universal.graph.repositories.TypeNodeRepository;
 import org.openpcf.universal.graph.schema.SchemaUpdate;
-import org.openpcf.universal.graph.schema.base.BaseR1;
-import org.openpcf.universal.graph.schema.cloudsystems.CloudSystemsR1;
-import org.openpcf.universal.graph.schema.emulators.EmulatorsR1;
-import org.openpcf.universal.graph.schema.hypervisors.HypervisorsR1;
-import org.openpcf.universal.graph.schema.interpreters.InterpretersR1;
-import org.openpcf.universal.graph.schema.operatingsystems.OperatingSystemsR1;
-import org.openpcf.universal.graph.schema.packagemanagers.PackageManagersR1;
-import org.openpcf.universal.graph.schema.servicemanagers.ServiceManagersR1;
-import org.openpcf.universal.graph.schema.services.ServicesR1;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.core.io.support.ResourcePatternResolver;
+import org.springframework.core.type.classreading.CachingMetadataReaderFactory;
+import org.springframework.core.type.classreading.MetadataReader;
+import org.springframework.core.type.classreading.MetadataReaderFactory;
 import org.springframework.data.neo4j.core.GraphDatabase;
+import org.springframework.util.ClassUtils;
+import org.springframework.util.SystemPropertyUtils;
 
+import java.io.IOException;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.TreeMap;
 
 /**
  * Give a description of SetupDatabase here.
@@ -35,23 +39,94 @@ public class SetupDatabase {
         this.typeNodeRepository = SpringContext.INSTANCE.getTypeNodeRepository();
     }
 
+    private List<Class> findMyTypes(String basePackage) throws IOException, ClassNotFoundException
+    {
+        ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
+        MetadataReaderFactory metadataReaderFactory = new CachingMetadataReaderFactory(resourcePatternResolver);
+
+        List<Class> candidates = new ArrayList<Class>();
+        String packageSearchPath = ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX +
+                                   resolveBasePackage(basePackage) + "/" + "**/*.class";
+        Resource[] resources = resourcePatternResolver.getResources(packageSearchPath);
+        for (Resource resource : resources) {
+            if (resource.isReadable()) {
+                MetadataReader metadataReader = metadataReaderFactory.getMetadataReader(resource);
+                if (isCandidate(metadataReader)) {
+                    candidates.add(Class.forName(metadataReader.getClassMetadata().getClassName()));
+                }
+            }
+        }
+        return candidates;
+    }
+
+    private String resolveBasePackage(String basePackage) {
+        return ClassUtils.convertClassNameToResourcePath(SystemPropertyUtils.resolvePlaceholders(basePackage));
+    }
+
+    private boolean isCandidate(MetadataReader metadataReader) throws ClassNotFoundException
+    {
+        try {
+            Class c = Class.forName(metadataReader.getClassMetadata().getClassName());
+            if (!Modifier.isAbstract(c.getModifiers())) {
+                return true;
+            }
+        }
+        catch(Throwable e){
+        }
+        return false;
+    }
+
     public boolean createDatabase() {
-        ArrayList<SchemaUpdate> schemas = new ArrayList<>();
+        ArrayList<SchemaUpdate> schemaUpdateInstances = new ArrayList<>();
         Transaction tx = graphDatabase.beginTx();
 
-        schemas.add(new BaseR1());
-        schemas.add(new CloudSystemsR1());
-        schemas.add(new EmulatorsR1());
-        schemas.add(new HypervisorsR1());
-        schemas.add(new InterpretersR1());
-        schemas.add(new OperatingSystemsR1());
-        schemas.add(new PackageManagersR1());
-        schemas.add(new ServiceManagersR1());
-        schemas.add(new ServicesR1());
+        try {
+            findMyTypes("org.openpcf.universal.graph.schema").stream()
+                    .forEach(schemaUpdateClass -> {
+                        try {
+                            schemaUpdateInstances.add((SchemaUpdate) schemaUpdateClass.newInstance());
+                        } catch (InstantiationException e) {
+                            e.printStackTrace();
+                        } catch (IllegalAccessException e) {
+                            e.printStackTrace();
+                        }
+                    });
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
 
         try {
             long startTime = System.nanoTime();
-            schemas.forEach(schema -> schema.apply());
+            ArrayList<String> done = new ArrayList<>();
+            TreeMap<Integer, Integer> packagesPerRevision = new TreeMap<>();
+            for (SchemaUpdate schemaUpdate: schemaUpdateInstances) {
+                int revision = schemaUpdate.getUpdateInformation().getRevision();
+                if (packagesPerRevision.containsKey(revision)) {
+                    packagesPerRevision.put(revision, packagesPerRevision.get(revision)+1);
+                } else {
+                    packagesPerRevision.put(revision, 1);
+                }
+            }
+
+            for (int revision: packagesPerRevision.keySet()) {
+                while (packagesPerRevision.get(revision) > 0) {
+                    for (SchemaUpdate schemaUpdate: schemaUpdateInstances) {
+                        SchemaNode updateInformation = schemaUpdate.getUpdateInformation();
+                        String dependency = updateInformation.getRequiredPackage() + updateInformation.getRequiredRevision();
+                        String self = updateInformation.getName() + updateInformation.getRevision();
+                        if (!done.contains(self) && updateInformation.getRevision() == revision) {
+                            if (updateInformation.hasRequirement() == false ||
+                                    done.contains(dependency)) {
+                                schemaUpdate.apply();
+                                packagesPerRevision.put(revision, packagesPerRevision.get(revision) - 1);
+                                done.add(self);
+                            }
+                        }
+                    }
+                }
+            }
             long endTime = System.nanoTime();
             System.out.println("Created the TypeNode database in " + (endTime - startTime) / 1000000 + "ms.");
             tx.success();

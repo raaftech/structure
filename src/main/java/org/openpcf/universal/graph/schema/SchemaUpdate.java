@@ -22,6 +22,10 @@ public abstract class SchemaUpdate {
 
     protected SchemaNode updateInformation;
 
+    public SchemaUpdate() {
+        setUpdateInformation();
+    }
+
     /**
      * This method couples a SchemaNode to an implementation of SchemaUpdate.
      */
@@ -125,7 +129,6 @@ public abstract class SchemaUpdate {
      * accordingly.
      */
     public boolean apply() {
-        setUpdateInformation();
         if (updateInformation == null) {
             return false;
         }
@@ -157,5 +160,9 @@ public abstract class SchemaUpdate {
 
         throw new RuntimeException("Schema " + updateInformation.getName() + " v" + updateInformation.getRevision() + " is " +
                 "leaning on a functional or ancestral dependency that doesn't exist.");
+    }
+
+    public SchemaNode getUpdateInformation() {
+        return updateInformation;
     }
 }
