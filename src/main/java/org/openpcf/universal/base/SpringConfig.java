@@ -15,6 +15,7 @@ import org.springframework.data.neo4j.config.EnableNeo4jRepositories;
 import org.springframework.data.neo4j.config.Neo4jConfiguration;
 import org.springframework.data.neo4j.core.GraphDatabase;
 import org.springframework.data.neo4j.rest.SpringRestGraphDatabase;
+import org.springframework.data.neo4j.support.Neo4jTemplate;
 
 
 /**
@@ -38,6 +39,9 @@ public class SpringConfig extends Neo4jConfiguration {
 
     @Autowired
     NodeRepository nodeRepository;
+
+    @Autowired
+    Neo4jTemplate neo4jTemplate;
 
     @Autowired
     TypeNodeRepository typeNodeRepository;

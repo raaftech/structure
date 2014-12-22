@@ -10,6 +10,7 @@ import org.openpcf.universal.graph.repositories.TypeNodeRepository;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.data.neo4j.core.GraphDatabase;
+import org.springframework.data.neo4j.support.Neo4jTemplate;
 
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -47,5 +48,9 @@ public enum SpringContext {
 
     public GraphDatabase getGraphDatabase() {
         return (GraphDatabase)context.getBean("graphDatabase");
+    }
+
+    public Neo4jTemplate getNeo4jTemplate() {
+        return (Neo4jTemplate)context.getBean("neo4jTemplate");
     }
 }

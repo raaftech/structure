@@ -66,6 +66,7 @@ public class TypeNode extends Node {
     public Set<TypeNode> getChildIsaSetAsTypeNodes() {
         HashSet<TypeNode> childIsaSet = new HashSet<>();
 
+        SpringContext.INSTANCE.getNeo4jTemplate().fetch(getChildIsaSet());
         getChildIsaSet().stream()
                 .filter(node -> node instanceof TypeNode)
                 .map(node -> (TypeNode)node)

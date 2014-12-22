@@ -34,7 +34,6 @@ public class Node {
     private Node isa;
 
     @RelatedTo(type="ISA", direction = Direction.INCOMING)
-    @Fetch
     private Set<Node> childIsaSet;
 
     @RelatedTo(type="HAS", direction = Direction.OUTGOING)
