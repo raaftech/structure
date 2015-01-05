@@ -101,32 +101,53 @@ public class SetupDatabase {
             long startTime = System.nanoTime();
             ArrayList<String> done = new ArrayList<>();
             TreeMap<Integer, Integer> packagesPerRevision = new TreeMap<>();
-            for (SchemaUpdate schemaUpdate: schemaUpdateInstances) {
-                int revision = schemaUpdate.getUpdateInformation().getRevision();
-                if (packagesPerRevision.containsKey(revision)) {
-                    packagesPerRevision.put(revision, packagesPerRevision.get(revision)+1);
-                } else {
-                    packagesPerRevision.put(revision, 1);
-                }
-            }
 
-            for (int revision: packagesPerRevision.keySet()) {
-                while (packagesPerRevision.get(revision) > 0) {
-                    for (SchemaUpdate schemaUpdate: schemaUpdateInstances) {
-                        SchemaNode updateInformation = schemaUpdate.getUpdateInformation();
-                        String dependency = updateInformation.getRequiredPackage() + updateInformation.getRequiredRevision();
-                        String self = updateInformation.getName() + updateInformation.getRevision();
-                        if (!done.contains(self) && updateInformation.getRevision() == revision) {
-                            if (updateInformation.hasRequirement() == false ||
-                                    done.contains(dependency)) {
-                                schemaUpdate.apply();
-                                packagesPerRevision.put(revision, packagesPerRevision.get(revision) - 1);
-                                done.add(self);
-                            }
+            // Get a count of the amount of packages per revision number.
+            schemaUpdateInstances.stream()
+                    .forEach(schemaUpdate -> {
+                        int revision = schemaUpdate.getUpdateInformation().getRevision();
+                        if (packagesPerRevision.containsKey(revision)) {
+                            packagesPerRevision.put(revision, packagesPerRevision.get(revision) + 1);
+                        } else {
+                            packagesPerRevision.put(revision, 1);
                         }
-                    }
-                }
-            }
+                    });
+
+            // For every schemaUpdate revision number we have, we're going to
+            // first apply the schemaUpdate that doesn't have dependencies, the second
+            // iteration, we're going to apply schemaUpdates that rely on the schemaUpdates
+            // applied in the previous iteration, and so on until every schemaUpdate for that
+            // revision number is applied. Then we move onto the next revision number and repeat.
+            packagesPerRevision.keySet().stream()
+                    .forEach(revision -> {
+                        // While we still have unapplied schemaUpdates for the current revision
+                        while (packagesPerRevision.get(revision) > 0) {
+                            schemaUpdateInstances.stream()
+                                    .forEach(schemaUpdate -> {
+                                        SchemaNode updateInformation = schemaUpdate.getUpdateInformation();
+                                        // Build a string representation of the schemaUpdate's dependency version information
+                                        String dependency = updateInformation.getRequiredPackage() +
+                                                updateInformation.getRequiredRevision();
+
+                                        // Build a string representation of our own version information
+                                        String self = updateInformation.getName() + updateInformation.getRevision();
+                                        // If we didn't apply this schemaUpdate yet and its' revision number is the
+                                        // revision number we're currently applying
+                                        if (!done.contains(self) && updateInformation.getRevision() == revision) {
+                                            // If the schemaUpdate doesn't have a functional dependency, or its' functional
+                                            // dependency is already applied, apply this schemaUpdate
+                                            if (updateInformation.hasRequirement() == false ||
+                                                    done.contains(dependency)) {
+                                                schemaUpdate.apply();
+                                                // Decrease the number of packages we have to apply for this revision by 1
+                                                packagesPerRevision.put(revision, packagesPerRevision.get(revision) - 1);
+                                                // Add this schemaUpdate to the done list
+                                                done.add(self);
+                                            }
+                                        }
+                                    });
+                        }
+                    });
             long endTime = System.nanoTime();
             System.out.println("Created the TypeNode database in " + (endTime - startTime) / 1000000 + "ms.");
             tx.success();
