@@ -19,7 +19,6 @@ src/main/java/org/openpcf/universal/actor/StateManager.java -text
 src/main/java/org/openpcf/universal/base/Application.java -text
 src/main/java/org/openpcf/universal/base/BaseActor.java -text
 src/main/java/org/openpcf/universal/base/ConverterConfig.java -text
-src/main/java/org/openpcf/universal/base/SetupDatabase.java -text
 src/main/java/org/openpcf/universal/base/SpringConfig.java -text
 src/main/java/org/openpcf/universal/base/SpringContext.java -text
 src/main/java/org/openpcf/universal/graph/Descriptor.java -text
