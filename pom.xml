@@ -92,7 +92,7 @@
         <!-- Generic settings -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spring-data-neo4j.version>3.2.1.RELEASE</spring-data-neo4j.version>
-        <vertx.version>3.0.0-SNAPSHOT</vertx.version>
+        <vertx.version>3.0.0-dev_preview1</vertx.version>
         <junit.version>4.11</junit.version>
         <gpg.keyname>C6E91526</gpg.keyname>
 
@@ -119,13 +119,13 @@
         </dependency>
         <dependency>
             <groupId>io.vertx</groupId>
-            <artifactId>vertx-js</artifactId>
+            <artifactId>vertx-lang-js</artifactId>
             <version>${vertx.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>io.vertx</groupId>
-            <artifactId>ext-sockjs</artifactId>
+            <artifactId>vertx-sockjs</artifactId>
             <version>${vertx.version}</version>
             <scope>compile</scope>
         </dependency>
