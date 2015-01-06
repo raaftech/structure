@@ -3,7 +3,6 @@ package org.openpcf.universal.base;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
-import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.HttpServerOptions;
@@ -12,7 +11,6 @@ import io.vertx.ext.routematcher.RouteMatcher;
 import io.vertx.ext.sockjs.BridgeOptions;
 import io.vertx.ext.sockjs.SockJSServer;
 import io.vertx.ext.sockjs.SockJSServerOptions;
-import org.springframework.context.ApplicationContext;
 
 /**
  * Give a description of Application here.
@@ -23,15 +21,9 @@ import org.springframework.context.ApplicationContext;
 public class Application {
 
     public static void main(String[] args) {
-        ApplicationContext applicationContext;
         Vertx vertx;
         HttpServer httpServer;
         SockJSServer sockJSServer;
-        EventBus eventBus;
-
-        // Instantiate our Spring context
-        applicationContext =
-                SpringContext.INSTANCE.getApplicationContext();
 
         // Setup vertx with a maxWorkerExecuteTime of 5 minutes
         // TODO: Make maxWorkerExecuteTime user configurable?
@@ -68,12 +60,9 @@ public class Application {
                                 "address", "org.openpcf.universal.actor.schemamanager"))
                         .addInboundPermitted(new JsonObject().put(
                                 "address", "org.openpcf.universal.actor.statemanager"))
-                        .addOutboundPermitted(new JsonObject().put(
-                                "address", "beacon"))
         );
 
         httpServer.listen();
-        eventBus = vertx.eventBus();
 
         vertx.deployVerticle("org.openpcf.universal.actor.FrameHelper");
         vertx.deployVerticle("org.openpcf.universal.actor.StateManager");
