@@ -14,7 +14,7 @@ public class BaseR1 extends SchemaUpdate {
 
     protected void setUpdateInformation() {
         updateInformation = SchemaNode.getOrCreateSchemaNode("BaseModel", "The first model object, all base types.",
-                "The first model object, all base types.", 1);
+                "1d924647-6815-4772-a38d-ca86717185ee", 1);
     }
 
     protected boolean createNodes() {
