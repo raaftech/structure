@@ -41,6 +41,7 @@ src/main/java/org/openpcf/universal/graph/schema/operatingsystems/OperatingSyste
 src/main/java/org/openpcf/universal/graph/schema/packagemanagers/PackageManagersR1.java -text
 src/main/java/org/openpcf/universal/graph/schema/servicemanagers/ServiceManagersR1.java -text
 src/main/java/org/openpcf/universal/graph/schema/services/ServicesR1.java -text
+src/main/java/org/openpcf/universal/worker/SchemaManagerUpdate.java -text
 src/main/js/App.js -text
 src/main/js/Frame.js -text
 src/main/js/Query.js -text

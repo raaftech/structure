@@ -4,6 +4,7 @@
 
 package org.openpcf.universal.base;
 
+import io.vertx.core.Vertx;
 import org.openpcf.universal.graph.repositories.NodeRepository;
 import org.openpcf.universal.graph.repositories.SchemaNodeRepository;
 import org.openpcf.universal.graph.repositories.TypeNodeRepository;
@@ -24,6 +25,7 @@ public enum SpringContext {
     INSTANCE;
 
     private final ApplicationContext context;
+    private Vertx vertx = null;
     private static final ReentrantLock initLock = new ReentrantLock();
 
     private SpringContext() {
@@ -52,5 +54,13 @@ public enum SpringContext {
 
     public Neo4jTemplate getNeo4jTemplate() {
         return (Neo4jTemplate)context.getBean("neo4jTemplate");
+    }
+
+    public Vertx getVertx() {
+        return vertx;
+    }
+
+    public void setVertx(Vertx vertx) {
+        this.vertx = vertx;
     }
 }

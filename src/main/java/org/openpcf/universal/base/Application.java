@@ -28,6 +28,7 @@ public class Application {
         // Setup vertx with a maxWorkerExecuteTime of 5 minutes
         // TODO: Make maxWorkerExecuteTime user configurable?
         vertx = Vertx.vertx(new VertxOptions().setMaxWorkerExecuteTime(5l * 60 * 1000 * 1000000));
+        SpringContext.INSTANCE.setVertx(vertx);
         // Setup HTTP server on port 8080
         httpServer = vertx.createHttpServer(new HttpServerOptions().setPort(8080));
 
@@ -60,6 +61,9 @@ public class Application {
                                 "address", "org.openpcf.universal.actor.schemamanager"))
                         .addInboundPermitted(new JsonObject().put(
                                 "address", "org.openpcf.universal.actor.statemanager"))
+                        .addOutboundPermitted(new JsonObject().put(
+                                "address_re", "org.openpcf.universal.worker" +
+                                        ".status_[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"))
         );
 
         httpServer.listen();
