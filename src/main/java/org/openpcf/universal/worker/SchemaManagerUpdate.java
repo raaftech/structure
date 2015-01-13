@@ -70,7 +70,7 @@ public class SchemaManagerUpdate extends AbstractVerticle {
         return false;
     }
 
-    private void applySchemaUpdates() {
+    private void applySchemaUpdates() throws RuntimeException {
         ArrayList<SchemaUpdate> schemaUpdateInstances = new ArrayList<>();
         Transaction tx = graphDatabase.beginTx();
 
@@ -132,11 +132,16 @@ public class SchemaManagerUpdate extends AbstractVerticle {
                                             // dependency is already applied, apply this schemaUpdate
                                             if (updateInformation.hasRequirement() == false ||
                                                     done.contains(dependency)) {
-                                                schemaUpdate.apply();
-                                                // Decrease the number of packages we have to apply for this revision by 1
-                                                packagesPerRevision.put(revision, packagesPerRevision.get(revision) - 1);
-                                                // Add this schemaUpdate to the done list
-                                                done.add(self);
+                                                if (schemaUpdate.apply()) {
+                                                    // Decrease the number of packages we have to apply for this revision by 1
+                                                    packagesPerRevision.put(revision, packagesPerRevision.get(revision) - 1);
+                                                    // Add this schemaUpdate to the done list
+                                                    done.add(self);
+                                                } else {
+                                                    throw new RuntimeException("Could not apply SchemaUpdate: " +
+                                                            updateInformation.getName() + "R" + updateInformation.getRevision() +
+                                                            "\n" +  "Transaction failed.");
+                                                }
                                             }
                                         }
                                     });
@@ -145,6 +150,9 @@ public class SchemaManagerUpdate extends AbstractVerticle {
             long endTime = System.nanoTime();
             System.out.println("Created the TypeNode database in " + (endTime - startTime) / 1000000 + "ms.");
             tx.success();
+        } catch (RuntimeException e) {
+            tx.failure();
+            throw e;
         } finally {
             tx.close();
         }
@@ -153,11 +161,17 @@ public class SchemaManagerUpdate extends AbstractVerticle {
     @Override
     public void start(Future<Void> startFuture) throws Exception {
         Vertx vertx = SpringContext.INSTANCE.getVertx();
-        Thread.sleep(1000);
-        vertx.eventBus().publish("org.openpcf.universal.worker.status_" + config().getString("id"),
-                "Starting applySchemaUpdates...");
-        applySchemaUpdates();
-        vertx.eventBus().publish("org.openpcf.universal.worker.status_" + config().getString("id"), "done");
-        this.getVertx().undeployVerticle(this.deploymentID());
+        try {
+            Thread.sleep(1000);
+            vertx.eventBus().publish("org.openpcf.universal.worker.status_" + config().getString("id"),
+                    "Starting applySchemaUpdates...");
+            applySchemaUpdates();
+            vertx.eventBus().publish("org.openpcf.universal.worker.status_" + config().getString("id"), "done");
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+        } finally {
+            vertx.eventBus().publish("org.openpcf.universal.worker.status_" + config().getString("id"), "failed");
+            this.getVertx().undeployVerticle(this.deploymentID());
+        }
     }
 }

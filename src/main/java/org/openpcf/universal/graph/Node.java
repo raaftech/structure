@@ -1,6 +1,7 @@
 package org.openpcf.universal.graph;
 
 import org.neo4j.graphdb.Direction;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.neo4j.annotation.*;
 import org.springframework.data.neo4j.support.index.IndexType;
 
@@ -38,6 +39,11 @@ public class Node {
 
     @RelatedTo(type="HAS", direction = Direction.OUTGOING)
     private Set<Node> has = new HashSet<>();
+
+    // isaUuid exists only to temporarily save a UUID of a TypeNode's parent
+    // in case the parent doesn't exist in the database yet.
+    @Transient
+    private String isaUuid;
 
     public Node() {}
 
@@ -77,5 +83,13 @@ public class Node {
 
     public String getDesc() {
         return desc;
+    }
+
+    public String getIsaUuid() {
+        return isaUuid;
+    }
+
+    public void setIsaUuid(String isaUuid) {
+        this.isaUuid = isaUuid;
     }
 }

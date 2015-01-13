@@ -8,6 +8,8 @@ import org.openpcf.universal.graph.repositories.SchemaNodeRepository;
 import org.openpcf.universal.graph.repositories.TypeNodeRepository;
 
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -35,10 +37,11 @@ public abstract class SchemaUpdate {
      * This method should contain the actual code an implementation of SchemaUpdate needs to apply changes to the schema.
      * @return true if everything succeeded, false if not.
      */
-    protected abstract boolean createNodes();
+    protected abstract void initNodes();
 
     protected SchemaNodeRepository schemaNodeRepository = SpringContext.INSTANCE.getSchemaNodeRepository();
     protected TypeNodeRepository typeNodeRepository = SpringContext.INSTANCE.getTypeNodeRepository();
+    protected List<TypeNode> typeNodeList;
 
     /**
      * Create a new node.
@@ -48,10 +51,20 @@ public abstract class SchemaUpdate {
      * @param node the node to be saved to the database.
      * @return Whether the node was saved to the database.
      */
-    protected boolean createNode(TypeNode node) {
+    private boolean createNode(TypeNode node) {
         if (node == null) {
             return false;
         }
+
+        TypeNode isaNode = node.getIsa();
+
+        // If we only know about our parent(isa) UUID, but not the actual
+        // object, fetch the object from the database.
+        if (isaNode == null && node.getIsaUuid() != null) {
+            isaNode = typeNodeRepository.findByUuid(node.getIsaUuid());
+            node.setIsa(isaNode);
+        }
+
         TypeNode existingNode = typeNodeRepository.findByUuid(node.getUuid());
         if (existingNode == null) {
             System.out.print(".");
@@ -60,6 +73,23 @@ public abstract class SchemaUpdate {
             return true;
         } else {
             return false;
+        }
+    }
+
+    private boolean createAllNodes() {
+        if (typeNodeList != null) {
+            boolean succeeded = true;
+            Iterator<TypeNode> typeNodeIterator = typeNodeList.iterator();
+
+            while (typeNodeIterator.hasNext() && succeeded) {
+                succeeded &= createNode(typeNodeIterator.next());
+            }
+
+            return succeeded;
+        } else {
+            throw new RuntimeException("Could not apply SchemaUpdate: " +
+                    updateInformation.getName() + "R" + updateInformation.getRevision() +
+                    " (typeNodeList wasn't initialized)\n" +  "Transaction failed.");
         }
     }
 
@@ -113,13 +143,13 @@ public abstract class SchemaUpdate {
      */
     private boolean applyAndSet() {
         System.out.print(updateInformation.getName() + " R" + updateInformation.getRevision() + ": creating nodes...");
-        if (createNodes()) {
+        initNodes();
+        if (createAllNodes()) {
             System.out.println("done");
             updateInformation.setApplied();
             schemaNodeRepository.save(updateInformation);
             return true;
         } else {
-            System.out.println("failed");
             return false;
         }
     }
