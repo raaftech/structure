@@ -1,6 +1,6 @@
 package org.openpcf.universal.graph;
 
-import org.openpcf.universal.base.SpringContext;
+import org.openpcf.universal.base.Context;
 import org.openpcf.universal.graph.repositories.TypeNodeRepository;
 import org.springframework.data.neo4j.annotation.NodeEntity;
 
@@ -18,7 +18,7 @@ import java.util.Set;
 public class TypeNode extends Node {
 
     private HashMap<String, Descriptor> schema;
-    private TypeNodeRepository typeNodeRepository = SpringContext.INSTANCE.getTypeNodeRepository();
+    private TypeNodeRepository typeNodeRepository = Context.INSTANCE.getTypeNodeRepository();
 
     public TypeNode() {}
 
@@ -79,7 +79,7 @@ public class TypeNode extends Node {
     public Set<TypeNode> getChildIsaSetAsTypeNodes() {
         HashSet<TypeNode> childIsaSet = new HashSet<>();
 
-        SpringContext.INSTANCE.getNeo4jTemplate().fetch(getChildIsaSet());
+        Context.INSTANCE.getNeo4jTemplate().fetch(getChildIsaSet());
         getChildIsaSet().stream()
                 .filter(node -> node instanceof TypeNode)
                 .map(node -> (TypeNode)node)

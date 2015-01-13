@@ -21,14 +21,14 @@ import java.util.concurrent.locks.ReentrantLock;
  * @author Rubin Simons <rubin.simons@raaftech.com>
  * @since 2014-11-12
  */
-public enum SpringContext {
+public enum Context {
     INSTANCE;
 
     private final ApplicationContext context;
     private Vertx vertx = null;
     private static final ReentrantLock initLock = new ReentrantLock();
 
-    private SpringContext() {
+    private Context() {
         context = new AnnotationConfigApplicationContext(SpringConfig.class, ConverterConfig.class);
     }
 

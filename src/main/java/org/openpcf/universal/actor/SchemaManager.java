@@ -11,7 +11,7 @@ import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import org.openpcf.universal.base.BaseActor;
-import org.openpcf.universal.base.SpringContext;
+import org.openpcf.universal.base.Context;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -96,7 +96,7 @@ public class SchemaManager extends BaseActor {
     public MessageHandler update() {
         return new MessageHandler() {
             public JsonNode exec(JsonNode request) {
-                Vertx vertx = SpringContext.INSTANCE.getVertx();
+                Vertx vertx = Context.INSTANCE.getVertx();
 
                 ObjectNode result = JsonNodeFactory.instance.objectNode();
                 String id = UUID.randomUUID().toString();

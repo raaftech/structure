@@ -1,7 +1,7 @@
 package org.openpcf.universal.graph;
 
 import org.neo4j.graphdb.Direction;
-import org.openpcf.universal.base.SpringContext;
+import org.openpcf.universal.base.Context;
 import org.openpcf.universal.graph.repositories.SchemaNodeRepository;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.neo4j.annotation.RelatedTo;
@@ -40,7 +40,7 @@ public class SchemaNode extends Node {
     @RelatedTo(type="UPDATED", direction = Direction.OUTGOING)
     private Set<Node> updatedTypeNodes;
 
-    private static SchemaNodeRepository schemaNodeRepository = SpringContext.INSTANCE.getSchemaNodeRepository();
+    private static SchemaNodeRepository schemaNodeRepository = Context.INSTANCE.getSchemaNodeRepository();
 
     public SchemaNode() {}
 

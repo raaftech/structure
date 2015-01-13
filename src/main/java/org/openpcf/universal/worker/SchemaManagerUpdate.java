@@ -4,7 +4,7 @@ import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import org.neo4j.graphdb.Transaction;
-import org.openpcf.universal.base.SpringContext;
+import org.openpcf.universal.base.Context;
 import org.openpcf.universal.graph.SchemaNode;
 import org.openpcf.universal.graph.schema.SchemaUpdate;
 import org.springframework.core.io.Resource;
@@ -31,7 +31,7 @@ import java.util.TreeMap;
  */
 public class SchemaManagerUpdate extends AbstractVerticle {
 
-    GraphDatabase graphDatabase = SpringContext.INSTANCE.getGraphDatabase();
+    GraphDatabase graphDatabase = Context.INSTANCE.getGraphDatabase();
 
     private List<Class> findMyTypes(String basePackage) throws IOException, ClassNotFoundException
     {
@@ -160,7 +160,7 @@ public class SchemaManagerUpdate extends AbstractVerticle {
 
     @Override
     public void start(Future<Void> startFuture) throws Exception {
-        Vertx vertx = SpringContext.INSTANCE.getVertx();
+        Vertx vertx = Context.INSTANCE.getVertx();
         try {
             Thread.sleep(1000);
             vertx.eventBus().publish("org.openpcf.universal.worker.status_" + config().getString("id"),

@@ -1,6 +1,6 @@
 package org.openpcf.universal.graph.schema;
 
-import org.openpcf.universal.base.SpringContext;
+import org.openpcf.universal.base.Context;
 import org.openpcf.universal.graph.Descriptor;
 import org.openpcf.universal.graph.SchemaNode;
 import org.openpcf.universal.graph.TypeNode;
@@ -39,8 +39,8 @@ public abstract class SchemaUpdate {
      */
     protected abstract void initNodes();
 
-    protected SchemaNodeRepository schemaNodeRepository = SpringContext.INSTANCE.getSchemaNodeRepository();
-    protected TypeNodeRepository typeNodeRepository = SpringContext.INSTANCE.getTypeNodeRepository();
+    protected SchemaNodeRepository schemaNodeRepository = Context.INSTANCE.getSchemaNodeRepository();
+    protected TypeNodeRepository typeNodeRepository = Context.INSTANCE.getTypeNodeRepository();
     protected List<TypeNode> typeNodeList;
 
     /**
