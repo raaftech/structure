@@ -169,8 +169,8 @@ public class SchemaManagerUpdate extends AbstractVerticle {
             vertx.eventBus().publish("org.openpcf.universal.worker.status_" + config().getString("id"), "done");
         } catch (RuntimeException e) {
             e.printStackTrace();
-        } finally {
             vertx.eventBus().publish("org.openpcf.universal.worker.status_" + config().getString("id"), "failed");
+        } finally {
             this.getVertx().undeployVerticle(this.deploymentID());
         }
     }
