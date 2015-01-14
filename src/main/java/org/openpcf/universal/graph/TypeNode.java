@@ -50,27 +50,35 @@ public class TypeNode extends Node {
         return (TypeNode)super.getIsa();
     }
 
-    public TypeNode setIsa(String isa) {
-        // We can't assume our parentNode has been persisted to the database yet at this point.
-        // If the parentNode doesn't exist in the database yet, we just save it's UUID to a
-        // transient field for later use (at createNode time).
-        // If it does exist, we create the relations and inherit constraints.
+    public TypeNode setIsa(TypeNode isa) {
         if (schema == null) {
             schema = new HashMap<>();
         }
 
-        TypeNode parentNode = typeNodeRepository.findByUuid(isa);
-        if (parentNode != null) {
-            setIsa(parentNode);
-            HashMap<String, Descriptor> parentConstraints = parentNode.getSchema();
+        if (isa != null) {
+            super.setIsa(isa);
+            HashMap<String, Descriptor> parentConstraints = isa.getSchema();
             if (parentConstraints != null) {
                 // We can go around setDescriptor here, because we don't need
                 // the checks setDescriptor does.
                 schema.putAll(parentConstraints);
             }
+        }
+        return this;
+    }
+
+    public TypeNode setIsa(String isa) {
+        // We can't assume our parentNode has been persisted to the database yet at this point.
+        // If the parentNode doesn't exist in the database yet, we just save it's UUID to a
+        // transient field for later use (at createNode time).
+        // If it does exist, we create the relations and inherit constraints in setIsa(TypeNode isa).
+
+        TypeNode parentNode = typeNodeRepository.findByUuid(isa);
+        if (parentNode != null) {
+            setIsa(parentNode);
         } else {
             // This means our parent node hasn't been persisted to DB yet. Save UUID for later.
-            super.setIsaUuid(isa);
+            setIsaUuid(isa);
         }
 
         return this;
