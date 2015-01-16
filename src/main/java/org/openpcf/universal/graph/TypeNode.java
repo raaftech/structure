@@ -1,11 +1,14 @@
 package org.openpcf.universal.graph;
 
+import org.neo4j.graphdb.Direction;
 import org.openpcf.universal.base.Context;
 import org.openpcf.universal.graph.repositories.TypeNodeRepository;
+import org.springframework.data.annotation.Transient;
+import org.springframework.data.neo4j.annotation.Fetch;
 import org.springframework.data.neo4j.annotation.NodeEntity;
+import org.springframework.data.neo4j.annotation.RelatedTo;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -16,6 +19,19 @@ import java.util.Set;
  */
 @NodeEntity
 public class TypeNode extends Node {
+
+    @RelatedTo(type="ISA", direction = Direction.OUTGOING)
+    @Fetch
+    private TypeNode isa;
+
+    @RelatedTo(type="ISA", direction = Direction.INCOMING)
+    private Set<TypeNode> childIsaSet;
+
+    // isaUuid exists only to temporarily save a UUID of a TypeNode's parent
+    // in case the parent doesn't exist in the database yet.
+    @Transient
+    private String isaUuid;
+
 
     private HashMap<String, Descriptor> schema;
     private TypeNodeRepository typeNodeRepository = Context.INSTANCE.getTypeNodeRepository();
@@ -36,7 +52,7 @@ public class TypeNode extends Node {
             schema = new HashMap<>();
         }
 
-        TypeNode parentNode = (TypeNode)getIsa();
+        TypeNode parentNode = getIsa();
         if (parentNode != null && parentNode.getSchema().containsKey(key)) {
             throw new RuntimeException("Can't override parent schema.");
         } else {
@@ -47,7 +63,7 @@ public class TypeNode extends Node {
     }
 
     public TypeNode getIsa() {
-        return (TypeNode)super.getIsa();
+        return isa;
     }
 
     public TypeNode setIsa(TypeNode isa) {
@@ -56,7 +72,7 @@ public class TypeNode extends Node {
         }
 
         if (isa != null) {
-            super.setIsa(isa);
+            this.isa = isa;
             HashMap<String, Descriptor> parentConstraints = isa.getSchema();
             if (parentConstraints != null) {
                 // We can go around setDescriptor here, because we don't need
@@ -84,15 +100,15 @@ public class TypeNode extends Node {
         return this;
     }
 
-    public Set<TypeNode> getChildIsaSetAsTypeNodes() {
-        HashSet<TypeNode> childIsaSet = new HashSet<>();
+    public String getIsaUuid() {
+        return isaUuid;
+    }
 
-        Context.INSTANCE.getNeo4jTemplate().fetch(getChildIsaSet());
-        getChildIsaSet().stream()
-                .filter(node -> node instanceof TypeNode)
-                .map(node -> (TypeNode)node)
-                .forEach(node -> childIsaSet.add(node));
+    public void setIsaUuid(String isaUuid) {
+        this.isaUuid = isaUuid;
+    }
 
+    public Set<TypeNode> getChildIsaSet() {
         return childIsaSet;
     }
 

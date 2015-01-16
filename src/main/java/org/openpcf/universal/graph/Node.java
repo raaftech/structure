@@ -1,12 +1,11 @@
 package org.openpcf.universal.graph;
 
-import org.neo4j.graphdb.Direction;
 import org.springframework.data.annotation.Transient;
-import org.springframework.data.neo4j.annotation.*;
+import org.springframework.data.neo4j.annotation.GraphId;
+import org.springframework.data.neo4j.annotation.Indexed;
+import org.springframework.data.neo4j.annotation.NodeEntity;
 import org.springframework.data.neo4j.support.index.IndexType;
 
-import java.util.HashSet;
-import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -30,21 +29,6 @@ public class Node {
     @Indexed(unique=true)
     private String uuid;
 
-    @RelatedTo(type="ISA", direction = Direction.OUTGOING)
-    @Fetch
-    private Node isa;
-
-    @RelatedTo(type="ISA", direction = Direction.INCOMING)
-    private Set<Node> childIsaSet;
-
-    @RelatedTo(type="HAS", direction = Direction.OUTGOING)
-    private Set<Node> has = new HashSet<>();
-
-    // isaUuid exists only to temporarily save a UUID of a TypeNode's parent
-    // in case the parent doesn't exist in the database yet.
-    @Transient
-    private String isaUuid;
-
     public Node() {}
 
     public Node(String name, String desc) {
@@ -64,32 +48,11 @@ public class Node {
         return uuid;
     }
 
-    public Node getIsa() {
-        return isa;
-    }
-
-    public Node setIsa(Node isa) {
-        this.isa = isa;
-        return this;
-    }
-
-    public Set<Node> getChildIsaSet() {
-        return childIsaSet;
-    }
-
     public String getName() {
         return name;
     }
 
     public String getDesc() {
         return desc;
-    }
-
-    public String getIsaUuid() {
-        return isaUuid;
-    }
-
-    public void setIsaUuid(String isaUuid) {
-        this.isaUuid = isaUuid;
     }
 }

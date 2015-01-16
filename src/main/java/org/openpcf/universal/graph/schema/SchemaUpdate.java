@@ -125,7 +125,7 @@ public abstract class SchemaUpdate {
      * @param newSchema The new schema is put into every child node's schema HashMap.
      */
     private void cascadeDescription(TypeNode start, HashMap<String, Descriptor> oldSchema, HashMap<String, Descriptor> newSchema) {
-        Set<TypeNode> childIsaSet = start.getChildIsaSetAsTypeNodes();
+        Set<TypeNode> childIsaSet = start.getChildIsaSet();
         childIsaSet.stream()
                 .forEach(childNode -> {
                     oldSchema.forEach((key, value) -> childNode.getSchema().remove(key));
