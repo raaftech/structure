@@ -5,6 +5,7 @@
 package org.openpcf.universal.base;
 
 import io.vertx.core.Vertx;
+import org.openpcf.universal.graph.repositories.InstanceNodeRepository;
 import org.openpcf.universal.graph.repositories.NodeRepository;
 import org.openpcf.universal.graph.repositories.SchemaNodeRepository;
 import org.openpcf.universal.graph.repositories.TypeNodeRepository;
@@ -46,6 +47,10 @@ public enum Context {
 
     public SchemaNodeRepository getSchemaNodeRepository() {
         return (SchemaNodeRepository)context.getBean("schemaNodeRepository");
+    }
+
+    public InstanceNodeRepository getInstanceNodeRepository() {
+        return (InstanceNodeRepository)context.getBean("instanceNodeRepository");
     }
 
     public GraphDatabase getGraphDatabase() {
