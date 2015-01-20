@@ -159,7 +159,11 @@ public class InstanceNode extends Node {
 
     public InstanceNode save() {
         if (instanceNodeRepository.findByUuid(getUuid()) == null) {
-            instanceNodeRepository.save(this);
+            if (instanceOf.getSchema().size() == kv.asMap().size()) {
+                instanceNodeRepository.save(this);
+            } else {
+                throw new RuntimeException("Can't create instanceNode, missing properties.");
+            }
         }
         return this;
     }
