@@ -5,6 +5,8 @@
 package org.openpcf.universal.base;
 
 import org.neo4j.graphdb.GraphDatabaseService;
+import org.neo4j.graphdb.factory.GraphDatabaseBuilder;
+import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 import org.openpcf.universal.graph.repositories.InstanceNodeRepository;
 import org.openpcf.universal.graph.repositories.NodeRepository;
 import org.openpcf.universal.graph.repositories.SchemaNodeRepository;
@@ -15,7 +17,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.neo4j.config.EnableNeo4jRepositories;
 import org.springframework.data.neo4j.config.Neo4jConfiguration;
 import org.springframework.data.neo4j.core.GraphDatabase;
-import org.springframework.data.neo4j.rest.SpringRestGraphDatabase;
 import org.springframework.data.neo4j.support.Neo4jTemplate;
 
 
@@ -35,7 +36,10 @@ public class SpringConfig extends Neo4jConfiguration {
 
     @Bean
     GraphDatabaseService graphDatabaseService() {
-        return new SpringRestGraphDatabase("http://localhost:7474/db/data");
+        // TODO: make path configurable
+        GraphDatabaseBuilder graphDatabaseBuilder = new GraphDatabaseFactory().newEmbeddedDatabaseBuilder("universal.db");
+        graphDatabaseBuilder.setConfig("remote_shell_enabled", "true");
+        return graphDatabaseBuilder.newGraphDatabase();
     }
 
     @Autowired
