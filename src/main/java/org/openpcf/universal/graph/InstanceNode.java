@@ -52,7 +52,7 @@ public class InstanceNode extends Node {
 
     InstanceNodeRepository instanceNodeRepository = Context.INSTANCE.getInstanceNodeRepository();
 
-    LinkedHashMap<String, String> kv = new LinkedHashMap<>();
+    private LinkedHashMap<String, String> kv = new LinkedHashMap<>();
 
     private TypeNodeRepository typeNodeRepository = Context.INSTANCE.getTypeNodeRepository();
 
@@ -161,9 +161,5 @@ public class InstanceNode extends Node {
             }
         }
         return this;
-    }
-
-    public LinkedHashMap<String, String> getKv() {
-        return kv;
     }
 }
