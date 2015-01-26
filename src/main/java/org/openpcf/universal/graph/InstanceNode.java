@@ -6,15 +6,10 @@ import org.openpcf.universal.graph.repositories.InstanceNodeRepository;
 import org.openpcf.universal.graph.repositories.TypeNodeRepository;
 import org.springframework.data.neo4j.annotation.NodeEntity;
 import org.springframework.data.neo4j.annotation.RelatedTo;
-import org.springframework.data.neo4j.fieldaccess.DynamicProperties;
-import org.springframework.data.neo4j.fieldaccess.DynamicPropertiesContainer;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Give a description of InstanceNode here.
@@ -57,7 +52,7 @@ public class InstanceNode extends Node {
 
     InstanceNodeRepository instanceNodeRepository = Context.INSTANCE.getInstanceNodeRepository();
 
-    DynamicProperties kv = new DynamicPropertiesContainer();
+    LinkedHashMap<String, String> kv = new LinkedHashMap<>();
 
     private TypeNodeRepository typeNodeRepository = Context.INSTANCE.getTypeNodeRepository();
 
@@ -131,7 +126,7 @@ public class InstanceNode extends Node {
                         break;
                 }
                 if (valid) {
-                    kv.setProperty(key, properties.get(key));
+                    kv.put(key, properties.get(key));
                     properties.remove(key);
                 } else {
                     throw new RuntimeException("Value for key '" + key + "' not of type '" + descriptor.getValueType() +
@@ -143,7 +138,7 @@ public class InstanceNode extends Node {
                     throw new RuntimeException("Can't create InstanceNode, missing property '" + key +"'");
                 } else {
                     // this is an optional key that isn't supplied, use default value from TypeNode
-                    kv.setProperty(key, descriptor.getDefaultValue());
+                    kv.put(key, descriptor.getDefaultValue());
                     properties.remove(key);
                 }
             }
@@ -159,12 +154,16 @@ public class InstanceNode extends Node {
 
     public InstanceNode save() {
         if (instanceNodeRepository.findByUuid(getUuid()) == null) {
-            if (instanceOf.getSchema().size() == kv.asMap().size()) {
+            if (instanceOf.getSchema().size() == kv.size()) {
                 instanceNodeRepository.save(this);
             } else {
                 throw new RuntimeException("Can't create instanceNode, missing properties.");
             }
         }
         return this;
+    }
+
+    public LinkedHashMap<String, String> getKv() {
+        return kv;
     }
 }

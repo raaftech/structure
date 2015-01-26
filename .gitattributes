@@ -28,6 +28,8 @@ src/main/java/org/openpcf/universal/graph/SchemaNode.java -text
 src/main/java/org/openpcf/universal/graph/TypeNode.java -text
 src/main/java/org/openpcf/universal/graph/converters/DescriptorReader.java -text
 src/main/java/org/openpcf/universal/graph/converters/DescriptorWriter.java -text
+src/main/java/org/openpcf/universal/graph/converters/LinkedHashMapReader.java -text
+src/main/java/org/openpcf/universal/graph/converters/LinkedHashMapWriter.java -text
 src/main/java/org/openpcf/universal/graph/repositories/InstanceNodeRepository.java -text
 src/main/java/org/openpcf/universal/graph/repositories/NodeRepository.java -text
 src/main/java/org/openpcf/universal/graph/repositories/SchemaNodeRepository.java -text

@@ -2,6 +2,8 @@ package org.openpcf.universal.base;
 
 import org.openpcf.universal.graph.converters.DescriptorWriter;
 import org.openpcf.universal.graph.converters.DescriptorReader;
+import org.openpcf.universal.graph.converters.LinkedHashMapReader;
+import org.openpcf.universal.graph.converters.LinkedHashMapWriter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ConversionServiceFactoryBean;
@@ -25,6 +27,8 @@ public class ConverterConfig {
 
         converters.add(new DescriptorReader());
         converters.add(new DescriptorWriter());
+        converters.add(new LinkedHashMapWriter());
+        converters.add(new LinkedHashMapReader());
 
         ConversionServiceFactoryBean bean = new ConversionServiceFactoryBean();
         bean.setConverters(converters);
