@@ -1,15 +1,22 @@
 package org.openpcf.universal.graph;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.neo4j.graphdb.Direction;
 import org.openpcf.universal.base.Context;
 import org.openpcf.universal.graph.repositories.InstanceNodeRepository;
 import org.openpcf.universal.graph.repositories.TypeNodeRepository;
+import org.springframework.data.neo4j.annotation.Fetch;
 import org.springframework.data.neo4j.annotation.NodeEntity;
 import org.springframework.data.neo4j.annotation.RelatedTo;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.Set;
 
 /**
  * Give a description of InstanceNode here.
@@ -44,6 +51,7 @@ public class InstanceNode extends Node {
     @RelatedTo(type="HAS_ACTOR", direction = Direction.OUTGOING)
     private Set<InstanceNode> actors = new HashSet<>();
 
+    @Fetch
     @RelatedTo(type="INSTANCE_OF", direction=Direction.OUTGOING)
     private TypeNode instanceOf;
 
@@ -92,7 +100,7 @@ public class InstanceNode extends Node {
         }
     }
 
-    public InstanceNode setProperties(Map<String, String> properties) {
+    public InstanceNode setProperties(LinkedHashMap<String, String> properties) {
         HashMap<String, Descriptor> schema = instanceOf.getSchema();
 
         schema.forEach((key, descriptor) -> {
@@ -161,5 +169,25 @@ public class InstanceNode extends Node {
             }
         }
         return this;
+    }
+
+    public ObjectNode toJson() {
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode result = mapper.createObjectNode();
+        ArrayNode kvJson = mapper.createArrayNode();
+        kv.forEach((key, val) -> {
+            ObjectNode kvObj = mapper.createObjectNode();
+            kvObj.put(key, val);
+            kvJson.add(kvObj.toString());
+        });
+
+
+        result.put("name", getName());
+        result.put("uuid", getUuid());
+        result.put("desc", getDesc());
+        result.put("instanceof", instanceOf.getUuid());
+        result.put("kv", kvJson);
+
+        return result;
     }
 }

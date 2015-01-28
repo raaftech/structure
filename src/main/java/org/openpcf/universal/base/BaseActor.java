@@ -22,10 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Give a description of BaseActor here.
@@ -200,6 +197,16 @@ public abstract class BaseActor extends AbstractVerticle {
     // Check if a string is alpha-numeric.
     public boolean isAlphaNumeric(String str) {
         return str.matches("[0-9a-zA-Z]+");
+    }
+
+    // Check if a string is a valid UUID.
+    public boolean isUuid(String str) {
+        try {
+            UUID.fromString(str);
+            return true;
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
     }
 
     // The validator.

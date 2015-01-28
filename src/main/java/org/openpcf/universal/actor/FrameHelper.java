@@ -5,7 +5,16 @@ package org.openpcf.universal.actor;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.neo4j.graphdb.Transaction;
 import org.openpcf.universal.base.BaseActor;
+import org.openpcf.universal.base.Context;
+import org.openpcf.universal.graph.InstanceNode;
+import org.openpcf.universal.graph.TypeNode;
+import org.openpcf.universal.graph.repositories.InstanceNodeRepository;
+import org.openpcf.universal.graph.repositories.TypeNodeRepository;
+
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 
 /**
  * The FrameHelper actor.
@@ -15,17 +24,29 @@ import org.openpcf.universal.base.BaseActor;
  */
 public class FrameHelper extends BaseActor {
 
-    public MessageHandler component() {
+    TypeNodeRepository typeNodeRepository = Context.INSTANCE.getTypeNodeRepository();
+    InstanceNodeRepository instanceNodeRepository = Context.INSTANCE.getInstanceNodeRepository();
+
+    public MessageHandler typenode() {
         return new MessageHandler() {
             public JsonNode exec(JsonNode request) {
                 ObjectNode result = JsonNodeFactory.instance.objectNode();
+                TypeNode found = null;
                 JsonNode args = request.get("args");
-                String name = getArgs(args, "name", "Component");
+                String node = getArgs(args, "node", "Component");
 
-                result.put("name", name);
-                result.put("cypher", cypherQuery("MATCH (p:Component)<-[:ISA]-(c) WHERE p.name = '" + name + "' RETURN c"));
+                if (isUuid(node)) {
+                    found = typeNodeRepository.findByUuid(node);
+                } else {
+                    found = typeNodeRepository.findByName(node);
+                }
 
-                return response(request, result);
+                if (found == null) {
+                    result.put("error", "Couldn't find TypeNode.");
+                    return response(request, result);
+                } else {
+                    return response(request, found.toJson());
+                }
             }
 
             public JsonNode help(JsonNode request) {
@@ -34,21 +55,74 @@ public class FrameHelper extends BaseActor {
         };
     }
 
-    public MessageHandler node() {
+    public MessageHandler instancenode() {
         return new MessageHandler() {
             public JsonNode exec(JsonNode request) {
                 ObjectNode result = JsonNodeFactory.instance.objectNode();
+                InstanceNode found = null;
                 JsonNode args = request.get("args");
-                String name = getArgs(args, "name", "Component");
+                String node = getArgs(args, "node", "Component");
 
-                result.put("name", name);
-                result.put("cypher", cypherQuery("MATCH (p) WHERE p.name = '" + name + "' RETURN p, labels(p)"));
+                if (isUuid(node)) {
+                    found = instanceNodeRepository.findByUuid(node);
+                }
+
+                if (found == null) {
+                    result.put("error", "Couldn't find InstanceNode.");
+                    return response(request, result);
+                } else {
+                    return response(request, found.toJson());
+                }
+            }
+
+            public JsonNode help(JsonNode request) {
+                return jsonFromResource("help/framehelper.node.json");
+            }
+        };
+    }
+
+    public MessageHandler createinstancenode() {
+        return new MessageHandler() {
+            public JsonNode exec(JsonNode request) {
+                ObjectNode result = JsonNodeFactory.instance.objectNode();
+                TypeNode instanceOf = null;
+                JsonNode args = request.get("args");
+                LinkedHashMap<String, String> prop = new LinkedHashMap<>();
+
+                // We're setting the default values to ERR_INVALID.
+                // The values don't really matter, as long as instanceOfUuid is not
+                // set to a valid and existing UUID.
+                String name = getArgs(args, "name", "ERR_INVALID");
+                String desc = getArgs(args, "desc", "ERR_INVALID");
+                String instanceOfUuid = getArgs(args, "instanceofuuid", "ERR_INVALID");
+                JsonNode kvs = getArgs(args, "kvs", (JsonNode)null);
+
+                Iterator<String> kvElements = kvs.fieldNames();
+                while (kvElements.hasNext()) {
+                    String field = kvElements.next();
+                    prop.put(field, kvs.get(field).toString());
+                }
+
+                Transaction tx = Context.INSTANCE.getGraphDatabase().beginTx();
+                try {
+                    InstanceNode newInstanceNode = new InstanceNode(name, desc,
+                            instanceOfUuid);
+                    newInstanceNode.setProperties(prop);
+                    newInstanceNode.save();
+                    tx.success();
+                    result.put("uuid", newInstanceNode.getUuid());
+                } catch (RuntimeException e) {
+                    tx.failure();
+                    result.put("error", "Error creating new InstanceNode.");
+                } finally {
+                    tx.close();
+                }
 
                 return response(request, result);
             }
 
             public JsonNode help(JsonNode request) {
-                return jsonFromResource("help/framehelper.node.json");
+                return JsonNodeFactory.instance.objectNode();
             }
         };
     }

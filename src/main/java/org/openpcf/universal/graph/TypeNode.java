@@ -1,15 +1,22 @@
 package org.openpcf.universal.graph;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.neo4j.graphdb.Direction;
+import org.neo4j.graphdb.Transaction;
 import org.openpcf.universal.base.Context;
 import org.openpcf.universal.graph.repositories.TypeNodeRepository;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.neo4j.annotation.Fetch;
 import org.springframework.data.neo4j.annotation.NodeEntity;
 import org.springframework.data.neo4j.annotation.RelatedTo;
+import org.springframework.data.neo4j.core.GraphDatabase;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Give a description of TypeNode here.
@@ -109,11 +116,39 @@ public class TypeNode extends Node {
     }
 
     public Set<TypeNode> getChildIsaSet() {
+        GraphDatabase graphDatabase = Context.INSTANCE.getGraphDatabase();
+        Transaction tx = graphDatabase.beginTx();
+        Context.INSTANCE.getNeo4jTemplate().fetch(childIsaSet);
+        tx.success();
         return childIsaSet;
     }
 
     public HashMap<String, Descriptor> getSchema() {
         return schema;
+    }
+
+    public ObjectNode toJson() {
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode json = mapper.createObjectNode();
+
+        List<String> childIsaUuids = getChildIsaSet().stream()
+                .map(childIsa -> childIsa.getUuid())
+                .collect(Collectors.toList());
+
+        json.put("name", getName());
+        json.put("uuid", getUuid());
+        if (getIsa() != null) {
+            json.put("isa", getIsa().getUuid());
+        }
+        json.put("desc", getDesc());
+        try {
+            json.put("schema", mapper.writeValueAsString(getSchema()));
+            json.put("children", mapper.writeValueAsString(childIsaUuids));
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+
+        return json;
     }
 
     @Override

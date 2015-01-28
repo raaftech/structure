@@ -12,4 +12,5 @@ import org.springframework.data.neo4j.repository.GraphRepository;
 public interface TypeNodeRepository extends GraphRepository<TypeNode> {
 
     TypeNode findByUuid(String uuid);
+    TypeNode findByName(String name);
 }
