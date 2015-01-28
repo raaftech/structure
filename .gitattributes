@@ -71,6 +71,8 @@ src/main/uml/model.uml -text
 web/config.rb -text
 web/css/reset.css -text
 web/css/style.css -text
+web/html/debug/client.js -text
+web/html/debug/index.html -text
 web/html/index.html -text
 web/img/icons-s26f22fe01f.png -text
 web/img/icons/li-square-white.png -text
