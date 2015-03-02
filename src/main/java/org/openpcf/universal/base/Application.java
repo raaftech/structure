@@ -1,6 +1,5 @@
 package org.openpcf.universal.base;
 
-import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.http.HttpMethod;
@@ -24,6 +23,13 @@ public class Application {
         Vertx vertx;
         HttpServer httpServer;
         SockJSServer sockJSServer;
+        final boolean serveDebug;
+
+        if (args.length < 1) {
+            serveDebug = false;
+        } else {
+            serveDebug = args[0].equals("--debug");
+        }
 
         // Setup vertx with a maxWorkerExecuteTime of 5 minutes
         // TODO: Make maxWorkerExecuteTime user configurable?
@@ -36,6 +42,7 @@ public class Application {
         // This needs to be done before setting up SockJS
         RouteMatcher routeMatcher = RouteMatcher.routeMatcher();
         // Handle our requests
+        // TODO: 404 for non-existing pages
         routeMatcher.matchMethodWithRegEx(HttpMethod.GET, "/.*", httpServerRequest -> {
             if (httpServerRequest.path().contains("..")) {
                 // Disallow urls crafted to see resources outside of the webroot
@@ -43,6 +50,17 @@ public class Application {
                 httpServerRequest.response().setStatusCode(403).end();
             } else if (httpServerRequest.path().equals("/html/")) {
                 httpServerRequest.response().sendFile("web/html/index.html");
+            } else if (!serveDebug && httpServerRequest.path().contains("/debug/")) {
+                httpServerRequest.response().setStatusCode(404);
+                httpServerRequest.response().sendFile("web/html/error/404.html");
+            } else if (httpServerRequest.path().matches("^/debug/.*$")) {
+                if (serveDebug) {
+                    if (httpServerRequest.path().matches("^.*/$")) {
+                        httpServerRequest.response().sendFile("web/html/debug/index.html");
+                    } else {
+                        httpServerRequest.response().sendFile("web/html" + httpServerRequest.path());
+                    }
+                }
             } else {
                 httpServerRequest.response().sendFile("web/" + httpServerRequest.path());
             }
@@ -70,7 +88,16 @@ public class Application {
 
         vertx.deployVerticle("org.openpcf.universal.actor.FrameHelper");
         vertx.deployVerticle("org.openpcf.universal.actor.StateManager");
-        // SchemaManager is blocking, so we're deploying it as a worker.
-        vertx.deployVerticle("org.openpcf.universal.actor.SchemaManager", new DeploymentOptions().setWorker(true));
+        vertx.deployVerticle("org.openpcf.universal.actor.SchemaManager");
+
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        System.out.println("Universal is running at http://localhost:8080/html/");
+        if (serveDebug) {
+            System.out.println("Debug interface is running at http://localhost:8080/debug/");
+        }
     }
 }

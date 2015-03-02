@@ -215,9 +215,6 @@
             </resource>
             <resource>
                 <directory>web</directory>
-                <excludes>
-                    <exclude>/debug/</exclude>
-                </excludes>
             </resource>
         </resources>
 
