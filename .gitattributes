@@ -25,6 +25,8 @@ src/main/java/org/openpcf/universal/graph/Descriptor.java -text
 src/main/java/org/openpcf/universal/graph/InstanceNode.java -text
 src/main/java/org/openpcf/universal/graph/Node.java -text
 src/main/java/org/openpcf/universal/graph/SchemaNode.java -text
+src/main/java/org/openpcf/universal/graph/Template.java -text
+src/main/java/org/openpcf/universal/graph/TemplateNode.java -text
 src/main/java/org/openpcf/universal/graph/TypeNode.java -text
 src/main/java/org/openpcf/universal/graph/converters/DescriptorReader.java -text
 src/main/java/org/openpcf/universal/graph/converters/DescriptorWriter.java -text
@@ -33,6 +35,7 @@ src/main/java/org/openpcf/universal/graph/converters/LinkedHashMapWriter.java -t
 src/main/java/org/openpcf/universal/graph/repositories/InstanceNodeRepository.java -text
 src/main/java/org/openpcf/universal/graph/repositories/NodeRepository.java -text
 src/main/java/org/openpcf/universal/graph/repositories/SchemaNodeRepository.java -text
+src/main/java/org/openpcf/universal/graph/repositories/TemplateNodeRepository.java -text
 src/main/java/org/openpcf/universal/graph/repositories/TypeNodeRepository.java -text
 src/main/java/org/openpcf/universal/graph/schema/SchemaUpdate.java -text
 src/main/java/org/openpcf/universal/graph/schema/base/BaseR1.java -text

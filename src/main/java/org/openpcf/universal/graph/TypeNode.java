@@ -8,7 +8,6 @@ import org.neo4j.graphdb.Transaction;
 import org.openpcf.universal.base.Context;
 import org.openpcf.universal.graph.repositories.TypeNodeRepository;
 import org.springframework.data.annotation.Transient;
-import org.springframework.data.neo4j.annotation.Fetch;
 import org.springframework.data.neo4j.annotation.NodeEntity;
 import org.springframework.data.neo4j.annotation.RelatedTo;
 import org.springframework.data.neo4j.core.GraphDatabase;
@@ -25,10 +24,9 @@ import java.util.stream.Collectors;
  * @since 2014-11-27
  */
 @NodeEntity
-public class TypeNode extends Node {
+public class TypeNode extends Node implements Template {
 
     @RelatedTo(type="ISA", direction = Direction.OUTGOING)
-    @Fetch
     private TypeNode isa;
 
     @RelatedTo(type="ISA", direction = Direction.INCOMING)
@@ -70,6 +68,10 @@ public class TypeNode extends Node {
     }
 
     public TypeNode getIsa() {
+        GraphDatabase graphDatabase = Context.INSTANCE.getGraphDatabase();
+        Transaction tx = graphDatabase.beginTx();
+        Context.INSTANCE.getNeo4jTemplate().fetch(isa);
+        tx.success();
         return isa;
     }
 
@@ -170,5 +172,22 @@ public class TypeNode extends Node {
         }
         s += set ? "));" : ");";
         return s;
+    }
+
+    @Override
+    public ObjectNode getTemplateAsJson() {
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode json = mapper.createObjectNode();
+
+        json.put("name", getName());
+        json.put("desc", getDesc());
+        json.put("uuid", getUuid());
+        try {
+            json.put("schema", mapper.writeValueAsString(getSchema()));
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+
+        return json;
     }
 }

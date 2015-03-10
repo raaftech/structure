@@ -5,10 +5,7 @@
 package org.openpcf.universal.base;
 
 import io.vertx.core.Vertx;
-import org.openpcf.universal.graph.repositories.InstanceNodeRepository;
-import org.openpcf.universal.graph.repositories.NodeRepository;
-import org.openpcf.universal.graph.repositories.SchemaNodeRepository;
-import org.openpcf.universal.graph.repositories.TypeNodeRepository;
+import org.openpcf.universal.graph.repositories.*;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.data.neo4j.core.GraphDatabase;
@@ -51,6 +48,10 @@ public enum Context {
 
     public InstanceNodeRepository getInstanceNodeRepository() {
         return (InstanceNodeRepository)context.getBean("instanceNodeRepository");
+    }
+
+    public TemplateNodeRepository getTemplateNodeRepository() {
+        return (TemplateNodeRepository)context.getBean("templateNodeRepository");
     }
 
     public GraphDatabase getGraphDatabase() {
