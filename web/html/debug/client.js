@@ -150,13 +150,13 @@ function createTemplateNode(name, desc) {
     return false;
 }
 
-function recurseTemplate(data) {
+function recurseTemplate(data, belongsTo) {
 //    var html = []
     for (var i = 0; i < data.length; i++) {
         obj = data[i];
 
         if (obj.hasOwnProperty("comprises")) {
-            ret = recurseTemplate(obj.comprises);
+            ret = recurseTemplate(obj.comprises, obj.uuid);
             html.concat(ret);
         } else {
             html.push('<tr><td colspan="2"><h3>' + obj.name + '</h3><p><font size="3">' + obj.desc + '</font></p></td></tr>');
@@ -173,25 +173,23 @@ function recurseTemplate(data) {
                 }
                 html.push('<tr><td>' + key + '</td><td><input type="text" name="' + key + '" id="kvs" value="' + defaultValue + '" title="' + val.description + '"></td></tr>');
             }
+            html.push('<tr><td><input type="hidden" id="templateUuid" value="' + belongsTo + '">');
+            html.push('<input type="hidden" id="nodeUuid" value="' + obj.uuid + '">');
+            html.push('<a href="#" onclick="javascript:removeNodeFromTemplate(this.parentNode.childNodes[0].value, this.parentNode.childNodes[2].value)">remove</a></td></tr>');
         }
     }
     return html;
 }
 
 function fillTemplateTable(data) {
-    console.log(data.result);
     if (data.result.error == null) {
         table = document.getElementById("templateResult");
         html = ['<tr><td colspan="2"><h3>' + data.result.name + '</h3>',
                 '<p>' + data.result.desc + '</p></td></tr>'];
 
-        console.log(html);
-
-        //html = []
         comprises = data.result.comprises;
-        html.concat(recurseTemplate(comprises));
+        html.concat(recurseTemplate(comprises, data.result.uuid));
         table.innerHTML = html.join('\n');
-        console.log(html);
     } else {
         alert("ERROR: " + data.result.error);
     }
@@ -201,14 +199,12 @@ function fillTemplateNodeList() {
     if (eventBus.readyState()) {
         eventBus.send("org.openpcf.universal.actor.framehelper",
             {"msgh":"findalltemplatenodes", "args":{}}, function(data) {
-                console.log(data);
                 list = document.getElementById("templateNodesList");
                 for (el in data.result) {
                     option = document.createElement("option");
                     option.text = el;
                     option.value = data.result[el];
                     list.add(option);
-                    console.log(el);
                 }
             });
         return true;
@@ -239,5 +235,25 @@ function clearTemplateNodesList() {
     var i;
     for (i = list.options.length-1; i >= 0; i--) {
         list.remove(i);
+    }
+}
+
+function removeNodeFromTemplate(templateUuid, nodeUuid) {
+    if (eventBus.readyState()) {
+        list = document.getElementById("templateNodesList");
+        args = { templateUuid: templateUuid,
+               nodeUuid: nodeUuid };
+
+        if (list.options[list.selectedIndex].value != templateUuid) {
+            confirm = window.confirm("Trying to delete element from template that's in a subtemplate. Remove from original template?");
+        }
+        if (confirm || list.options[list.selectedIndex].value == templateUuid) {
+            eventBus.send("org.openpcf.universal.actor.framehelper",
+            {"msgh":"removenodefromtemplate", "args":args},
+            function(data) {
+                console.log(data);
+                findTemplateNode(list.options[list.selectedIndex].value);
+            });
+        }
     }
 }

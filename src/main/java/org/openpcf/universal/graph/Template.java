@@ -13,4 +13,5 @@ import org.springframework.data.neo4j.annotation.NodeEntity;
 public interface Template {
 
     public ObjectNode getTemplateAsJson();
+    public String getUuid();
 }

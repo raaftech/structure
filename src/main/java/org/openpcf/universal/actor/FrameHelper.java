@@ -267,6 +267,35 @@ public class FrameHelper extends BaseActor {
         };
     }
 
+    public MessageHandler removenodefromtemplate() {
+        return new MessageHandler() {
+            @Override
+            public JsonNode exec(JsonNode request) {
+                ObjectNode result = JsonNodeFactory.instance.objectNode();
+                JsonNode args = request.get("args");
+
+                String nodeUuid = getArgs(args, "nodeUuid", "ERR_INVALID");
+                String templateUuid = getArgs(args, "templateUuid", "ERR_INVALID");
+
+                TemplateNode template = templateNodeRepository.findByUuid(templateUuid);
+                if (template != null) {
+                    if (template.remove(nodeUuid)) {
+                        result.put("information", "Removed node " + nodeUuid + " from TemplateNode " + templateUuid);
+                    } else {
+                        result.put("error", "Didn't remove node " + nodeUuid + " from TemplateNode " + templateUuid);
+                    }
+                }
+
+                return response(request, result);
+            }
+
+            @Override
+            public JsonNode help(JsonNode request) {
+                return null;
+            }
+        };
+    }
+
     public MessageHandler search() {
         return new MessageHandler() {
             public JsonNode exec(JsonNode request) {

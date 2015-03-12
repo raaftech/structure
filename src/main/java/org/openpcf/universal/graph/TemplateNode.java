@@ -27,8 +27,6 @@ public class TemplateNode extends Node implements Template {
     @RelatedTo(type = "COMPRISES", direction = Direction.OUTGOING)
     private Set<Template> comprises;
 
-    private TemplateNodeRepository templateNodeRepository = Context.INSTANCE.getTemplateNodeRepository();
-
     public TemplateNode() {}
 
     public TemplateNode(String name, String desc) {
@@ -98,6 +96,48 @@ public class TemplateNode extends Node implements Template {
                 throw new RuntimeException("Couldn't find TemplateNode or TypeNode with uuid " + uuid);
             }
         }
+    }
+
+    public boolean remove(Template template) {
+        loadTemplate();
+        boolean ret = false;
+        if (comprises != null) {
+            Template found = null;
+            for (Template t: comprises) {
+                if (t.getUuid() == template.getUuid()) {
+                    found = t;
+                }
+            }
+
+            if (found != null) {
+                Transaction tx = Context.INSTANCE.getGraphDatabase().beginTx();
+                try {
+                    ret = comprises.remove(found);
+                    tx.success();
+                } catch (Exception e) {
+                    tx.failure();
+                } finally {
+                    tx.close();
+                }
+            }
+        }
+        return ret;
+    }
+
+    public boolean remove(String uuid) {
+        TypeNodeRepository typeNodeRepository = Context.INSTANCE.getTypeNodeRepository();
+        TemplateNodeRepository templateNodeRepository = Context.INSTANCE.getTemplateNodeRepository();
+        if (comprises != null) {
+            Template node = typeNodeRepository.findByUuid(uuid);
+            if (node == null) {
+                node = templateNodeRepository.findByUuid(uuid);
+            }
+
+            if (node != null) {
+                return remove(node);
+            }
+        }
+        return false;
     }
 
     public TemplateNode save() {
