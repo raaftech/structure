@@ -72,6 +72,7 @@ public class TypeNode extends Node implements Template {
         Transaction tx = graphDatabase.beginTx();
         Context.INSTANCE.getNeo4jTemplate().fetch(isa);
         tx.success();
+        tx.close();
         return isa;
     }
 
@@ -122,6 +123,7 @@ public class TypeNode extends Node implements Template {
         Transaction tx = graphDatabase.beginTx();
         Context.INSTANCE.getNeo4jTemplate().fetch(childIsaSet);
         tx.success();
+        tx.close();
         return childIsaSet;
     }
 

@@ -61,6 +61,22 @@
                         <td><div id="instanceNodeDesc">Placeholder</div></td>
                     </tr>-->
                 </table></p>
+            <p>
+                <h2>Create Empty TemplateNode</h2>
+                <form action="#" onsubmit="javascript:createTemplateNode(document.getElementById('nameNewTemplateNode'), document.getElementById('descNewTemplateNode'))">
+                    <table>
+                        <tr><td>Name:</td><td><input type="text" id="nameNewTemplateNode"></td></tr>
+                        <tr><td>Desc:</td><td><input type="text" id="descNewTemplateNode"></td></tr>
+                        <tr><td>UUID:</td><td><input type="text" id="uuidNewTemplateNode" readonly></td></tr>
+                        <tr><td></td><td><button type="submit">Create TemplateNode</button></td></tr>
+                    </table>
+                </form>
+            <p>
+                <h2>Find TemplateNode</h2>
+                <select id="templateNodesList" onchange="javascript:findTemplateNode(this.options[this.selectedIndex].value)" onfocus="this.selectedIndex=-1"></select><div id="selectedTemplateUuid"></div>
+                <p><table border="1" id="templateResult"></table></p>
+                <p><form action="#" onsubmit="javascript:addNodeToTemplate(document.getElementById('addUuidToTemplate').value, document.getElementById('templateNodesList').options[document.getElementById('templateNodesList').selectedIndex].value)">UUID: <input type="text" id="addUuidToTemplate"><button type="submit">Add node to selected Template</button></form></p>
+            </p>
         </p>
     </body>
 </html>

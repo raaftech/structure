@@ -27,6 +27,8 @@ public class TemplateNode extends Node implements Template {
     @RelatedTo(type = "COMPRISES", direction = Direction.OUTGOING)
     private Set<Template> comprises;
 
+    private TemplateNodeRepository templateNodeRepository = Context.INSTANCE.getTemplateNodeRepository();
+
     public TemplateNode() {}
 
     public TemplateNode(String name, String desc) {
@@ -42,6 +44,7 @@ public class TemplateNode extends Node implements Template {
         Transaction tx = graphDatabase.beginTx();
         Context.INSTANCE.getNeo4jTemplate().fetch(comprises);
         tx.success();
+        tx.close();
     }
 
     @Override
@@ -69,7 +72,15 @@ public class TemplateNode extends Node implements Template {
             comprises = new HashSet<>();
         }
 
-        comprises.add(template);
+        Transaction tx = Context.INSTANCE.getGraphDatabase().beginTx();
+        try {
+            comprises.add(template);
+            tx.success();
+        } catch (Exception e) {
+            tx.failure();
+        } finally {
+            tx.close();
+        }
     }
 
     public void add(String uuid) {
@@ -87,5 +98,20 @@ public class TemplateNode extends Node implements Template {
                 throw new RuntimeException("Couldn't find TemplateNode or TypeNode with uuid " + uuid);
             }
         }
+    }
+
+    public TemplateNode save() {
+        TemplateNodeRepository templateNodeRepository = Context.INSTANCE.getTemplateNodeRepository();
+        Transaction tx = Context.INSTANCE.getGraphDatabase().beginTx();
+        try {
+            templateNodeRepository.save(this);
+            tx.success();
+        } catch (Exception e) {
+            tx.failure();
+            throw new RuntimeException("Failed to save TemplateNode");
+        } finally {
+            tx.close();
+        }
+        return this;
     }
 }
