@@ -27,6 +27,8 @@ public class TemplateNode extends Node implements Template {
     @RelatedTo(type = "COMPRISES", direction = Direction.OUTGOING)
     private Set<Template> comprises;
 
+    private final static int MAXRECURSION = 50;
+
     public TemplateNode() {}
 
     public TemplateNode(String name, String desc) {
@@ -35,6 +37,24 @@ public class TemplateNode extends Node implements Template {
 
     public TemplateNode(String name, String desc, String uuid) {
         super(name, desc, uuid);
+    }
+
+    private boolean checkRecurseDepth(Set<Template> templates, int depth) {
+        if (depth > MAXRECURSION) {
+            return false;
+        } else {
+            boolean ret = true;
+            for (Template t: templates) {
+                if (t.getClass() == TemplateNode.class) {
+                    TemplateNode templateNode = (TemplateNode)t;
+                    templateNode.loadTemplate();
+                    if (ret == true) {
+                        ret = checkRecurseDepth(templateNode.comprises, depth + 1);
+                    }
+                }
+            }
+            return ret;
+        }
     }
 
     public void loadTemplate() {
@@ -65,7 +85,7 @@ public class TemplateNode extends Node implements Template {
         return json;
     }
 
-    public void add(Template template) {
+    public boolean add(Template template) {
         if (comprises == null) {
             comprises = new HashSet<>();
         }
@@ -79,19 +99,35 @@ public class TemplateNode extends Node implements Template {
         } finally {
             tx.close();
         }
+
+        loadTemplate();
+        if (!checkRecurseDepth(comprises, 1)) {
+            tx = Context.INSTANCE.getGraphDatabase().beginTx();
+            try {
+                comprises.remove(template);
+                tx.success();
+            } catch (Exception e) {
+                tx.failure();
+                e.printStackTrace();
+            } finally {
+                tx.close();
+                return false;
+            }
+        }
+        return true;
     }
 
-    public void add(String uuid) {
+    public boolean add(String uuid) {
         TemplateNodeRepository templateNodeRepository = Context.INSTANCE.getTemplateNodeRepository();
         TypeNodeRepository typeNodeRepository = Context.INSTANCE.getTypeNodeRepository();
 
         Template template = templateNodeRepository.findByUuid(uuid);
         if (template != null) {
-            add(template);
+            return add(template);
         } else {
             template = typeNodeRepository.findByUuid(uuid);
             if (template != null) {
-                add(template);
+                return add(template);
             } else {
                 throw new RuntimeException("Couldn't find TemplateNode or TypeNode with uuid " + uuid);
             }

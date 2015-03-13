@@ -248,9 +248,12 @@ public class FrameHelper extends BaseActor {
                 }
 
                 if (newNode != null) {
-                    template.add(newNode);
-                    template.save();
-                    result.put("information", "Added Node " + newUuid + " to TemplateNode " + templateUuid);
+                    if (template.add(newNode)) {
+                        result.put("information", "Added Node " + newUuid + " to TemplateNode " + templateUuid);
+                    } else {
+                        result.put("error", "Could not add new node to TemplateNode " + templateUuid + ", likely due to depth of " +
+                                "recursion.");
+                    }
                 } else {
                     result.put("error", "Could not add new node to TemplateNode " + templateUuid + ", node " + newUuid + " wasn't" +
                             " found.");
