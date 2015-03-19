@@ -127,6 +127,19 @@ function fillInstanceNodeTable(data) {
             }
         }
 
+        html.push('<tr><td colspan="2">');
+        if (data.result.hasOwnProperty('incomponent')) {
+            html.push('<a href="javascript:findInstanceNode(\'' + data.result.incomponent + '\')">parent component</a><br>');
+        }
+        if (data.result.hasOwnProperty('components')) {
+            html.push('<select onchange="javascript:findInstanceNode(this.options[this.selectedIndex].value)" onfocus="this.selectedIndex=-1">');
+            for (var i in data.result.components) {
+                var obj = data.result.components[i];
+                html.push('<option value="' + obj.uuid + '">' + obj.name + '</option>');
+            }
+            html.push('</select>');
+        }
+
         table.innerHTML = html.join('\n');
     } else {
         alert("ERROR: " + data.result.error);

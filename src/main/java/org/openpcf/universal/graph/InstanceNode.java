@@ -32,6 +32,10 @@ public class InstanceNode extends Node {
     @Fetch
     private Set<InstanceNode> components = new HashSet<>();
 
+    @RelatedTo(type="HAS_COMPONENT", direction = Direction.INCOMING)
+    @Fetch
+    private InstanceNode inComponent;
+
     @RelatedTo(type="HAS_GROUPING", direction = Direction.OUTGOING)
     private Set<InstanceNode> groupings = new HashSet<>();
 
@@ -217,13 +221,25 @@ public class InstanceNode extends Node {
             kvObj.put(key, val);
             kvJson.add(kvObj.toString());
         });
-
+        ArrayNode componentsJson = mapper.createArrayNode();
+        components.forEach(component -> {
+            ObjectNode componentNameUuid = mapper.createObjectNode();
+            componentNameUuid.put("name", component.getName());
+            componentNameUuid.put("uuid", component.getUuid());
+            componentsJson.add(componentNameUuid);
+        });
 
         result.put("name", getName());
         result.put("uuid", getUuid());
         result.put("desc", getDesc());
         result.put("instanceof", instanceOf.getUuid());
         result.put("kv", kvJson);
+        if (componentsJson.size() > 0) {
+            result.put("components", componentsJson);
+        }
+        if (inComponent != null) {
+            result.put("incomponent", inComponent.getUuid());
+        }
 
         return result;
     }
