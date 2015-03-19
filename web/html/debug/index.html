@@ -10,7 +10,7 @@
     <body>
         <p>
             <h1>Universal debug screen</h1>
-            <p>Used to test/simulate user interaction with Universal over the eventbus.</p>
+            <p>Used to test/simulate user interaction with Universal over the eventbus.<br><b>This is in no way production-code.</b></p>
             <h2>Actions</h2>
             <a href="javascript:startUpdate();">Update</a><br>
             <a href="javascript:createInstanceNode();">Create InstanceNode</a>
@@ -63,8 +63,9 @@
                 </table></p>
             <p>
                 <h2>Create Empty TemplateNode</h2>
-                <form action="#" onsubmit="javascript:createTemplateNode(document.getElementById('nameNewTemplateNode'), document.getElementById('descNewTemplateNode'))">
+                <form action="#" onsubmit="javascript:createTemplateNode(document.getElementById('nameNewTemplateNode'), document.getElementById('descNewTemplateNode'), document.getElementById('ownerNewTemplateNode'))">
                     <table>
+                        <tr><td>Owner:</td><td><input type="text" id="ownerNewTemplateNode"></td></tr>
                         <tr><td>Name:</td><td><input type="text" id="nameNewTemplateNode"></td></tr>
                         <tr><td>Desc:</td><td><input type="text" id="descNewTemplateNode"></td></tr>
                         <tr><td>UUID:</td><td><input type="text" id="uuidNewTemplateNode" readonly></td></tr>
@@ -74,7 +75,10 @@
             <p>
                 <h2>Find TemplateNode</h2>
                 <select id="templateNodesList" onchange="javascript:findTemplateNode(this.options[this.selectedIndex].value)" onfocus="this.selectedIndex=-1"></select><div id="selectedTemplateUuid"></div>
-                <p><table border="1" id="templateResult"></table></p>
+                <p><form id="instantiateTemplate" action="#" onsubmit="javascript:instantiateTemplate(this)">
+                    <table border="1" id="templateResult"></table>
+                    <input type="button" onclick="instantiateTemplate(document.getElementById('instantiateTemplate'))" value="submit">
+                </form></p>
                 <p><form action="#" onsubmit="javascript:addNodeToTemplate(document.getElementById('addUuidToTemplate').value, document.getElementById('templateNodesList').options[document.getElementById('templateNodesList').selectedIndex].value)">UUID: <input type="text" id="addUuidToTemplate"><button type="submit">Add node to selected Template</button></form></p>
             </p>
         </p>

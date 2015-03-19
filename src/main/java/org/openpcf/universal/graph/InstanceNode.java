@@ -1,5 +1,6 @@
 package org.openpcf.universal.graph;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -13,10 +14,7 @@ import org.springframework.data.neo4j.annotation.RelatedTo;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Give a description of InstanceNode here.
@@ -31,6 +29,7 @@ public class InstanceNode extends Node {
     private Set<InstanceNode> results = new HashSet<>();
 
     @RelatedTo(type="HAS_COMPONENT", direction = Direction.OUTGOING)
+    @Fetch
     private Set<InstanceNode> components = new HashSet<>();
 
     @RelatedTo(type="HAS_GROUPING", direction = Direction.OUTGOING)
@@ -82,6 +81,22 @@ public class InstanceNode extends Node {
         }
     }
 
+    public InstanceNode(JsonNode json) {
+        this(json.get("name").asText(), json.get("desc").asText(), json.get("nodeuuid").asText());
+
+        JsonNode kvs = json.get("kvs");
+
+        if (kvs != null) {
+            LinkedHashMap<String, String> prop = new LinkedHashMap<>();
+            Iterator<String> kvElements = kvs.fieldNames();
+            while (kvElements.hasNext()) {
+                String field = kvElements.next();
+                prop.put(field, kvs.get(field).asText());
+            }
+            setProperties(prop);
+        }
+    }
+
     public void addResult(InstanceNode result) {
         if (results == null) {
             results = new HashSet<>();
@@ -98,6 +113,28 @@ public class InstanceNode extends Node {
                 addResult(result);
             }
         }
+    }
+
+    public void addComponent(InstanceNode component) {
+        if (components == null) {
+            components = new HashSet<>();
+        }
+        components.add(component);
+    }
+
+    public void addComponent(String componentUuid) {
+        InstanceNode component = null;
+
+        if (componentUuid != null) {
+            component = instanceNodeRepository.findByUuid(componentUuid);
+            if (component != null) {
+                addComponent(component);
+            }
+        }
+    }
+
+    public Set<InstanceNode> getComponents() {
+        return components;
     }
 
     public InstanceNode setProperties(LinkedHashMap<String, String> properties) {

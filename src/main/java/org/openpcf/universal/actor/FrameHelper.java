@@ -17,9 +17,6 @@ import org.openpcf.universal.graph.repositories.TemplateNodeRepository;
 import org.openpcf.universal.graph.repositories.TypeNodeRepository;
 import org.springframework.data.neo4j.conversion.Result;
 
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-
 /**
  * The FrameHelper actor.
  *
@@ -120,27 +117,10 @@ public class FrameHelper extends BaseActor {
                 ObjectNode result = JsonNodeFactory.instance.objectNode();
                 TypeNode instanceOf = null;
                 JsonNode args = request.get("args");
-                LinkedHashMap<String, String> prop = new LinkedHashMap<>();
-
-                // We're setting the default values to ERR_INVALID.
-                // The values don't really matter, as long as instanceOfUuid is not
-                // set to a valid and existing UUID.
-                String name = getArgs(args, "name", "ERR_INVALID");
-                String desc = getArgs(args, "desc", "ERR_INVALID");
-                String instanceOfUuid = getArgs(args, "instanceofuuid", "ERR_INVALID");
-                JsonNode kvs = getArgs(args, "kvs", (JsonNode)null);
-
-                Iterator<String> kvElements = kvs.fieldNames();
-                while (kvElements.hasNext()) {
-                    String field = kvElements.next();
-                    prop.put(field, kvs.get(field).toString());
-                }
 
                 Transaction tx = Context.INSTANCE.getGraphDatabase().beginTx();
                 try {
-                    InstanceNode newInstanceNode = new InstanceNode(name, desc,
-                            instanceOfUuid);
-                    newInstanceNode.setProperties(prop);
+                    InstanceNode newInstanceNode = new InstanceNode(args);
                     newInstanceNode.save();
                     tx.success();
                     result.put("uuid", newInstanceNode.getUuid());
@@ -171,16 +151,23 @@ public class FrameHelper extends BaseActor {
                 // set to a valid and existing UUID.
                 String name = getArgs(args, "name", "ERR_INVALID");
                 String desc = getArgs(args, "desc", "ERR_INVALID");
+                String owner = getArgs(args, "owner", "ERR_INVALID");
 
-                if (name.equals("ERR_INVALID") || desc.equals("ERR_INVALID")) {
+                if (name.equals("ERR_INVALID") || desc.equals("ERR_INVALID") || owner.equals("ERR_INVALID")) {
                     throw new RuntimeException("Did not get valid name and description for new TemplateNode.");
                 }
 
                 try {
-                    TemplateNode newTemplateNode = new TemplateNode(name, desc);
-                    newTemplateNode.save();
-                    result.put("uuid", newTemplateNode.getUuid());
+                    TypeNode groupType = typeNodeRepository.findByUuid(owner);
+                    if (groupType != null) {
+                        TemplateNode newTemplateNode = new TemplateNode(name, desc, groupType);
+                        newTemplateNode.save();
+                        result.put("uuid", newTemplateNode.getUuid());
+                    } else {
+                        throw new RuntimeException("Could not find TypeNode by which to group the Template.");
+                    }
                 } catch (RuntimeException e) {
+                    e.printStackTrace();
                     result.put("error", "Error creating new TemplateNode.");
                 }
 
@@ -287,6 +274,44 @@ public class FrameHelper extends BaseActor {
                     } else {
                         result.put("error", "Didn't remove node " + nodeUuid + " from TemplateNode " + templateUuid);
                     }
+                }
+
+                return response(request, result);
+            }
+
+            @Override
+            public JsonNode help(JsonNode request) {
+                return null;
+            }
+        };
+    }
+
+    public MessageHandler instantiatetemplate() {
+        return new MessageHandler() {
+            @Override
+            public JsonNode exec(JsonNode request) {
+                ObjectNode result = JsonNodeFactory.instance.objectNode();
+                JsonNode args = request.get("args");
+                JsonNode children = getArgs(args, "children", (JsonNode)null);
+                String template = getArgs(args, "template", "ERR_INVALID");
+
+                TemplateNode templateNode = templateNodeRepository.findByUuid(template);
+
+                if (templateNode != null && children != null) {
+                    Transaction tx = Context.INSTANCE.getGraphDatabase().beginTx();
+                    try {
+                        result.put("uuid", templateNode.instantiate(templateNode, null, children));
+                        tx.success();
+                        result.put("information", "Successfully instantiated TemplateNode " + template);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        tx.failure();
+                        result.put("error", "Error while instantiating TemplateNode " + template + ", transaction failed.");
+                    } finally {
+                        tx.close();
+                    }
+                } else {
+                    result.put("error", "No template UUID or instantiation data found in request.");
                 }
 
                 return response(request, result);

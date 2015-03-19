@@ -181,11 +181,11 @@ public class TypeNode extends Node implements Template {
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode json = mapper.createObjectNode();
 
-        json.put("name", getName());
-        json.put("desc", getDesc());
-        json.put("uuid", getUuid());
+        json.put("typeName", getName());
+        json.put("typeDesc", getDesc());
+        json.put("typeUuid", getUuid());
         try {
-            json.put("schema", mapper.writeValueAsString(getSchema()));
+            json.put("typeSchema", mapper.writeValueAsString(getSchema()));
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
