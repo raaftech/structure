@@ -63,12 +63,16 @@
                 </table></p>
             <p>
                 <h2>Create Empty TemplateNode</h2>
-                <form action="#" onsubmit="javascript:createTemplateNode(document.getElementById('nameNewTemplateNode'), document.getElementById('descNewTemplateNode'), document.getElementById('ownerNewTemplateNode'))">
+                <form action="#" onsubmit="javascript:createTemplateNode(document.getElementById('parentNewTemplateNode'), document.getElementById('nameNewTemplateNode'), document.getElementById('descNewTemplateNode'), document.getElementById('ownerNewTemplateNode'), document.getElementById('requiredNewTemplateNode').checked, document.getElementById('uniqueNewTemplateNode').checked, document.getElementById('startNewTemplateNode').checked)">
                     <table>
-                        <tr><td>Owner:</td><td><input type="text" id="ownerNewTemplateNode"></td></tr>
+                        <tr><td>Parent:</td><td><input type="text" id="parentNewTemplateNode"></td></tr>
+                        <tr><td>ISA:</td><td><input type="text" id="ownerNewTemplateNode"></td></tr>
                         <tr><td>Name:</td><td><input type="text" id="nameNewTemplateNode"></td></tr>
                         <tr><td>Desc:</td><td><input type="text" id="descNewTemplateNode"></td></tr>
                         <tr><td>UUID:</td><td><input type="text" id="uuidNewTemplateNode" readonly></td></tr>
+                        <tr><td colspan="2"><p align="center"><input type="checkbox" id="requiredNewTemplateNode">required</input>
+                            <input type="checkbox" id="startNewTemplateNode">start</input>
+                            <input type="checkbox" id="uniqueNewTemplateNode">unique</input></p></tr>
                         <tr><td></td><td><button type="submit">Create TemplateNode</button></td></tr>
                     </table>
                 </form>
@@ -79,7 +83,6 @@
                     <table border="1" id="templateResult"></table>
                     <input type="button" onclick="instantiateTemplate(document.getElementById('instantiateTemplate'))" value="submit">
                 </form></p>
-                <p><form action="#" onsubmit="javascript:addNodeToTemplate(document.getElementById('addUuidToTemplate').value, document.getElementById('templateNodesList').options[document.getElementById('templateNodesList').selectedIndex].value)">UUID: <input type="text" id="addUuidToTemplate"><button type="submit">Add node to selected Template</button></form></p>
             </p>
         </p>
     </body>

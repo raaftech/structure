@@ -3,6 +3,7 @@ package org.openpcf.universal.graph.schema;
 import org.openpcf.universal.base.Context;
 import org.openpcf.universal.graph.Descriptor;
 import org.openpcf.universal.graph.SchemaNode;
+import org.openpcf.universal.graph.Template;
 import org.openpcf.universal.graph.TypeNode;
 import org.openpcf.universal.graph.repositories.SchemaNodeRepository;
 import org.openpcf.universal.graph.repositories.TypeNodeRepository;
@@ -125,8 +126,10 @@ public abstract class SchemaUpdate {
      * @param newSchema The new schema is put into every child node's schema HashMap.
      */
     private void cascadeDescription(TypeNode start, HashMap<String, Descriptor> oldSchema, HashMap<String, Descriptor> newSchema) {
-        Set<TypeNode> childIsaSet = start.getChildIsaSet();
+        Set<Template> childIsaSet = start.getChildIsaSet();
         childIsaSet.stream()
+                .filter(childNode -> childNode.getClass() == TypeNode.class)
+                .map(TypeNode.class::cast)
                 .forEach(childNode -> {
                     oldSchema.forEach((key, value) -> childNode.getSchema().remove(key));
                     childNode.getSchema().putAll(newSchema);

@@ -41,6 +41,7 @@ function findTemplateNode(node) {
     if (eventBus.readyState()) {
         eventBus.send("org.openpcf.universal.actor.framehelper",
                 {"msgh":"templatenode", "args":{"node":node}}, function(data) {
+                    console.log(data);
                     label = document.getElementById("selectedTemplateUuid");
                     label.innerHTML = node;
                     fillTemplateTable(data);
@@ -146,72 +147,60 @@ function fillInstanceNodeTable(data) {
     }
 }
 
-function createTemplateNode(name, desc, owner) {
+function createTemplateNode(parenttmpl, name, desc, isa, required, unique, start) {
     if (eventBus.readyState()) {
-        args = { name: name.value,
+        args = { parent: parenttmpl.value,
+                 name: name.value,
                  desc: desc.value,
-                 owner: owner.value };
+                 isa: isa.value,
+                 required: required,
+                 unique: unique,
+                 start: start};
 
         eventBus.send("org.openpcf.universal.actor.framehelper",
                 {"msgh":"createtemplatenode", "args":args}, function(data) {
                     console.log(data);
                     document.getElementById("uuidNewTemplateNode").value = data.result.uuid;
                 });
-        clearTemplateNodesList();
-        fillTemplateNodeList();
+        if (start == true) {
+            clearTemplateNodesList();
+            fillTemplateNodeList();
+        } else {
+            list = document.getElementById("templateNodesList");
+            findTemplateNode(list.options[list.selectedIndex].value);
+        }
     }
     return false;
 }
 
 function recurseTemplate(data, belongsTo) {
-//    var html = []
     for (var i = 0; i < data.length; i++) {
         obj = data[i];
 
-        if (obj.hasOwnProperty("comprises")) {
-            html.push('<tr><td><fieldset name="' + obj.groupUuid + '"><legend><h3>' + obj.templateName + '</h3></legend>',
-                '<p>' + obj.templateDesc + '</p>',
-                '<table>',
-                '<tr><td>Name:</td><td><input type="text" name="name"></td></tr>',
-                '<tr><td>Desc:</td><td><input type="text" name="desc"></td></tr>');
-
-            schema = JSON.parse(obj.groupSchema);
-            for (var key in schema) {
-                val = schema[key];
-
-                if (val.defaultValue == "null") {
-                    defaultValue = "";
-                } else {
-                    defaultValue = val.defaultValue;
-                }
-                html.push('<tr><td>' + key + '</td><td><input type="text" name="' + key + '" id="kvs" value="' + defaultValue + '" title="' + val.description + '"></td></tr>');
-            }
-            html.push('<tr><td><input type="hidden" name="templateuuid" id="templateUuid" value="' + belongsTo + '">');
-            html.push('<tr><td><input type="hidden" name="nodeuuid" id="nodeUuid" value="' + obj.groupUuid + '">');
-            html.push('</table></fieldset></td></tr>');
-            ret = recurseTemplate(obj.comprises, obj.templateUuid);
-            html.concat(ret);
-        } else {
-            html.push('<tr><td><fieldset name="' + obj.typeUuid + '"><legend><h3>' + obj.typeName + '</h3></legend>',
-            '<p>' + obj.typeDesc + '</p>',
+        html.push('<tr><td><fieldset name="' + obj.isa + '"><legend><h3>' + obj.name + '</h3></legend>',
+            '<p>' + obj.desc + '<br><small>' + obj.uuid + '</small></p>',
             '<table>',
             '<tr><td>Name:</td><td><input type="text" name="name"></td></tr>',
             '<tr><td>Desc:</td><td><input type="text" name="desc"></td></tr>');
-            schema = JSON.parse(obj.typeSchema);
-            for (var key in schema) {
-                val = schema[key];
 
-                if (val.defaultValue == "null") {
-                    defaultValue = "";
-                } else {
-                    defaultValue = val.defaultValue;
-                }
-                html.push('<tr><td>' + key + '</td><td><input type="text" name="' + key + '" id="kvs" value="' + defaultValue + '" title="' + val.description + '"></td></tr>');
+        schema = JSON.parse(obj.schema);
+        for (var key in schema) {
+            val = schema[key];
+
+            if (val.defaultValue == "null") {
+                defaultValue = "";
+            } else {
+                defaultValue = val.defaultValue;
             }
-            html.push('<tr><td><input type="hidden" name="templateuuid" id="templateUuid" value="' + belongsTo + '">');
-            html.push('<input type="hidden" name="nodeuuid" id="nodeUuid" value="' + obj.typeUuid + '">');
-            html.push('<a href="#" onclick="javascript:removeNodeFromTemplate(this.parentNode.childNodes[0].value, this.parentNode.childNodes[2].value)">remove</a></td></tr>');
-            html.push('</table></fieldset></td></tr>');
+            html.push('<tr><td>' + key + '</td><td><input type="text" name="' + key + '" id="kvs" value="' + defaultValue + '" title="' + val.description + '"></td></tr>');
+        }
+        html.push('<tr><td><input type="hidden" name="templateuuid" id="templateUuid" value="' + belongsTo + '">');
+        html.push('<tr><td><input type="hidden" name="nodeuuid" id="nodeUuid" value="' + obj.isa + '">');
+        html.push('<tr><td colspan="2"><p align="right"><a href="javascript:removeNodeFromTemplate(\'' + belongsTo + '\', \'' + obj.uuid + '\')">remove</a></p></td></tr>')
+        html.push('</table></fieldset></td></tr>');
+        if (obj.hasOwnProperty("children")) {
+            ret = recurseTemplate(obj.children, obj.uuid);
+            html.concat(ret);
         }
     }
     return html;
@@ -220,13 +209,13 @@ function recurseTemplate(data, belongsTo) {
 function fillTemplateTable(data) {
     if (data.result.error == null) {
         table = document.getElementById("templateResult");
-        html = ['<tr><td><fieldset name="' + data.result.groupUuid + '"><legend><h3>' + data.result.templateName + '</h3></legend>',
-                '<p>' + data.result.templateDesc + '</p>',
+        html = ['<tr><td><fieldset name="' + data.result.isa + '"><legend><h3>' + data.result.name + '</h3></legend>',
+                '<p>' + data.result.desc + '<br><small>' + data.result.uuid + '</small></p>',
                 '<table>',
                 '<tr><td>Name:</td><td><input type="text" name="name"></td></tr>',
                 '<tr><td>Desc:</td><td><input type="text" name="desc"></td></tr>'];
 
-        schema = JSON.parse(data.result.groupSchema);
+        schema = JSON.parse(data.result.schema);
         for (var key in schema) {
             val = schema[key];
 
@@ -238,13 +227,14 @@ function fillTemplateTable(data) {
             html.push('<tr><td>' + key + '</td><td><input type="text" name="' + key + '" id="kvs" value="' + defaultValue + '" title="' + val.description + '"></td></tr>');
         }
 
-        html.push('<tr><td><input type="hidden" name="templateuuid" id="templateUuid" value="' + data.result.templateUuid + '">');
-        html.push('<tr><td><input type="hidden" name="nodeuuid" id="nodeUuid" value="' + data.result.groupUuid + '">');
+        html.push('<tr><td><input type="hidden" name="templateuuid" id="templateUuid" value="' + data.result.uuid + '">');
+        html.push('<tr><td><input type="hidden" name="nodeuuid" id="nodeUuid" value="' + data.result.isa + '">');
         html.push('</table></fieldset></td></tr>');
 
-        comprises = data.result.comprises;
-        html.concat(recurseTemplate(comprises, data.result.templateUuid));
-        console.log(html);
+        if (data.result.hasOwnProperty("children")) {
+            comprises = data.result.children;
+            html.concat(recurseTemplate(comprises, data.result.uuid));
+        }
         table.innerHTML = html.join('\n');
     } else {
         alert("ERROR: " + data.result.error);
@@ -275,6 +265,7 @@ function instantiateTemplate(form) {
                 }
             }
         }
+        console.log(jsonform);
         eventBus.send("org.openpcf.universal.actor.framehelper",
             {"msgh":"instantiatetemplate", "args":jsonform}, function(data) {
                 console.log(data);
@@ -302,15 +293,12 @@ function fillTemplateNodeList() {
 function addNodeToTemplate(uuid, templateUuid) {
     if (eventBus.readyState()) {
         console.log(uuid);
-        console.log(templateUuid);
         args  = { uuid: uuid,
                   templateUuid: templateUuid };
         console.log(args);
         eventBus.send("org.openpcf.universal.actor.framehelper",
         {"msgh":"addnodetotemplate", "args":args},
         function(data) {
-            list = document.getElementById("templateNodesList");
-            findTemplateNode(list.options[list.selectedIndex].value);
         });
     }
 }

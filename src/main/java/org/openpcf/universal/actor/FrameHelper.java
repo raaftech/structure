@@ -9,13 +9,13 @@ import org.neo4j.graphdb.Transaction;
 import org.openpcf.universal.base.BaseActor;
 import org.openpcf.universal.base.Context;
 import org.openpcf.universal.graph.InstanceNode;
-import org.openpcf.universal.graph.Template;
 import org.openpcf.universal.graph.TemplateNode;
 import org.openpcf.universal.graph.TypeNode;
 import org.openpcf.universal.graph.repositories.InstanceNodeRepository;
 import org.openpcf.universal.graph.repositories.TemplateNodeRepository;
 import org.openpcf.universal.graph.repositories.TypeNodeRepository;
-import org.springframework.data.neo4j.conversion.Result;
+
+import java.util.Set;
 
 /**
  * The FrameHelper actor.
@@ -100,7 +100,7 @@ public class FrameHelper extends BaseActor {
                     result.put("error", "Couldn't find TemplateNode.");
                     return response(request, result);
                 } else {
-                    return response(request, found.getTemplateAsJson());
+                    return response(request, found.toJson());
                 }
             }
 
@@ -149,26 +149,49 @@ public class FrameHelper extends BaseActor {
                 // We're setting the default values to ERR_INVALID.
                 // The values don't really matter, as long as instanceOfUuid is not
                 // set to a valid and existing UUID.
-                String name = getArgs(args, "name", "ERR_INVALID");
-                String desc = getArgs(args, "desc", "ERR_INVALID");
-                String owner = getArgs(args, "owner", "ERR_INVALID");
-
-                if (name.equals("ERR_INVALID") || desc.equals("ERR_INVALID") || owner.equals("ERR_INVALID")) {
-                    throw new RuntimeException("Did not get valid name and description for new TemplateNode.");
-                }
+                String parent = getArgs(args, "parent", "");
+                String name = getArgs(args, "name", "");
+                String desc = getArgs(args, "desc", "");
+                String isa = getArgs(args, "isa", "");
+                // We're using Boolean.parseBoolean, so this will evaluate to true only when the
+                // string has value true (case ignored). Anything else will evaluate to false.
+                boolean unique = Boolean.parseBoolean(getArgs(args, "unique", "ERR_INVALID"));
+                boolean required = Boolean.parseBoolean(getArgs(args, "required", "ERR_INVALID"));
+                boolean start = Boolean.parseBoolean(getArgs(args, "start", "ERR_INVALID"));
 
                 try {
-                    TypeNode groupType = typeNodeRepository.findByUuid(owner);
-                    if (groupType != null) {
-                        TemplateNode newTemplateNode = new TemplateNode(name, desc, groupType);
+                    if (!parent.equals("") && start == true) {
+                        throw new RuntimeException("Cannot create TemplateNode that's both the start of a template and has a parent " +
+                                "TemplateNode.");
+                    }
+                    if (name.equals("") || desc.equals("") || isa.equals("")) {
+                        throw new RuntimeException("Did not get valid name, description or ISA for new TemplateNode.");
+                    }
+
+                    TypeNode isaTypeNode = typeNodeRepository.findByUuid(isa);
+                    if (isaTypeNode != null) {
+                        TemplateNode newTemplateNode = new TemplateNode(name, desc);
+                        newTemplateNode.setIsa(isaTypeNode)
+                                .setStartOfTemplate(start)
+                                .setRequired(required)
+                                .setUnique(unique);
+
+                        if (!parent.equals("")) {
+                            TemplateNode parentTemplateNode = templateNodeRepository.findByUuid(parent);
+                            if (parentTemplateNode != null) {
+                                parentTemplateNode.addComponent(newTemplateNode);
+                                parentTemplateNode.save();
+                            }
+                        }
                         newTemplateNode.save();
+
                         result.put("uuid", newTemplateNode.getUuid());
                     } else {
                         throw new RuntimeException("Could not find TypeNode by which to group the Template.");
                     }
                 } catch (RuntimeException e) {
                     e.printStackTrace();
-                    result.put("error", "Error creating new TemplateNode.");
+                    result.put("error", e.getMessage());
                 }
 
                 return response(request, result);
@@ -186,7 +209,7 @@ public class FrameHelper extends BaseActor {
             public JsonNode exec(JsonNode request) {
                 ObjectNode result = JsonNodeFactory.instance.objectNode();
                 Transaction tx = Context.INSTANCE.getGraphDatabase().beginTx();
-                Result allTemplateNodes = templateNodeRepository.findAll();
+                Set<TemplateNode> allTemplateNodes = templateNodeRepository.findAllTemplates();
 
                 try {
                     allTemplateNodes.forEach(res -> {
@@ -213,50 +236,6 @@ public class FrameHelper extends BaseActor {
         };
     }
 
-    public MessageHandler addnodetotemplate() {
-        return new MessageHandler() {
-            @Override
-            public JsonNode exec(JsonNode request) {
-                ObjectNode result = JsonNodeFactory.instance.objectNode();
-                JsonNode args = request.get("args");
-
-                String newUuid = getArgs(args, "uuid", "ERR_INVALID");
-                String templateUuid = getArgs(args, "templateUuid", "ERR_INVALID");
-
-                TemplateNode template = templateNodeRepository.findByUuid(templateUuid);
-                if (template == null) {
-                    result.put("error", "Could not find TemplateNode with uuid " + templateUuid);
-                    response(request, result);
-                }
-
-                Template newNode = templateNodeRepository.findByUuid(newUuid);
-                if (newNode == null) {
-                    newNode = typeNodeRepository.findByUuid(newUuid);
-                }
-
-                if (newNode != null) {
-                    if (template.add(newNode)) {
-                        result.put("information", "Added Node " + newUuid + " to TemplateNode " + templateUuid);
-                    } else {
-                        result.put("error", "Could not add new node to TemplateNode " + templateUuid + ", likely due to depth of " +
-                                "recursion.");
-                    }
-                } else {
-                    result.put("error", "Could not add new node to TemplateNode " + templateUuid + ", node " + newUuid + " wasn't" +
-                            " found.");
-                    response(request, result);
-                }
-
-                return response(request, result);
-            }
-
-            @Override
-            public JsonNode help(JsonNode request) {
-                return JsonNodeFactory.instance.objectNode();
-            }
-        };
-    }
-
     public MessageHandler removenodefromtemplate() {
         return new MessageHandler() {
             @Override
@@ -264,12 +243,16 @@ public class FrameHelper extends BaseActor {
                 ObjectNode result = JsonNodeFactory.instance.objectNode();
                 JsonNode args = request.get("args");
 
-                String nodeUuid = getArgs(args, "nodeUuid", "ERR_INVALID");
-                String templateUuid = getArgs(args, "templateUuid", "ERR_INVALID");
+                String nodeUuid = getArgs(args, "nodeUuid", "");
+                String templateUuid = getArgs(args, "templateUuid", "");
 
-                TemplateNode template = templateNodeRepository.findByUuid(templateUuid);
-                if (template != null) {
-                    if (template.remove(nodeUuid)) {
+                TemplateNode parent = templateNodeRepository.findByUuid(templateUuid);
+                TemplateNode node = templateNodeRepository.findByUuid(nodeUuid);
+
+                if (parent != null) {
+                    if (parent.removeComponent(node)) {
+                        templateNodeRepository.delete(node);
+                        parent.save();
                         result.put("information", "Removed node " + nodeUuid + " from TemplateNode " + templateUuid);
                     } else {
                         result.put("error", "Didn't remove node " + nodeUuid + " from TemplateNode " + templateUuid);

@@ -30,7 +30,7 @@ public class TypeNode extends Node implements Template {
     private TypeNode isa;
 
     @RelatedTo(type="ISA", direction = Direction.INCOMING)
-    private Set<TypeNode> childIsaSet;
+    private Set<Template> childIsaSet;
 
     // isaUuid exists only to temporarily save a UUID of a TypeNode's parent
     // in case the parent doesn't exist in the database yet.
@@ -118,7 +118,7 @@ public class TypeNode extends Node implements Template {
         this.isaUuid = isaUuid;
     }
 
-    public Set<TypeNode> getChildIsaSet() {
+    public Set<Template> getChildIsaSet() {
         GraphDatabase graphDatabase = Context.INSTANCE.getGraphDatabase();
         Transaction tx = graphDatabase.beginTx();
         Context.INSTANCE.getNeo4jTemplate().fetch(childIsaSet);
@@ -174,22 +174,5 @@ public class TypeNode extends Node implements Template {
         }
         s += set ? "));" : ");";
         return s;
-    }
-
-    @Override
-    public ObjectNode getTemplateAsJson() {
-        ObjectMapper mapper = new ObjectMapper();
-        ObjectNode json = mapper.createObjectNode();
-
-        json.put("typeName", getName());
-        json.put("typeDesc", getDesc());
-        json.put("typeUuid", getUuid());
-        try {
-            json.put("typeSchema", mapper.writeValueAsString(getSchema()));
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-
-        return json;
     }
 }
