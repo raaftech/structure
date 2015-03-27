@@ -110,10 +110,24 @@ public class TemplateNode extends Node implements Template {
     }
 
     public boolean removeComponent(TemplateNode component) {
-        List<TemplateNode> found = hasComponents.stream()
+        // UUID will is unique, so we can safely assume
+        // the resulting list will have only 1 element.
+        List<TemplateNode> placeholder = hasComponents.stream()
                 .filter(c -> c.getUuid() == component.getUuid())
                 .collect(Collectors.toList());
-        return hasComponents.remove(found.get(0));
+        TemplateNode found = placeholder.get(0);
+
+        found.hasComponents.stream()
+                .forEach(TemplateNode::cascadeRemoval);
+
+        return hasComponents.remove(found);
+    }
+
+    private static void cascadeRemoval(TemplateNode child) {
+        TemplateNodeRepository templateNodeRepository = Context.INSTANCE.getTemplateNodeRepository();
+        child.hasComponents.stream()
+                .forEach(TemplateNode::cascadeRemoval);
+        templateNodeRepository.delete(child);
     }
 
     public ObjectNode toJson() {

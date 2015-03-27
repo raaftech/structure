@@ -249,14 +249,26 @@ public class FrameHelper extends BaseActor {
                 TemplateNode parent = templateNodeRepository.findByUuid(templateUuid);
                 TemplateNode node = templateNodeRepository.findByUuid(nodeUuid);
 
-                if (parent != null) {
-                    if (parent.removeComponent(node)) {
-                        templateNodeRepository.delete(node);
-                        parent.save();
-                        result.put("information", "Removed node " + nodeUuid + " from TemplateNode " + templateUuid);
-                    } else {
-                        result.put("error", "Didn't remove node " + nodeUuid + " from TemplateNode " + templateUuid);
+                Transaction tx = Context.INSTANCE.getGraphDatabase().beginTx();
+                try {
+                    if (parent != null) {
+                        if (parent.removeComponent(node)) {
+                            templateNodeRepository.delete(node);
+                            parent.save();
+                            result.put("information", "Removed node " + nodeUuid + " from TemplateNode " + templateUuid);
+                        } else {
+                            result.put("error", "Didn't remove node " + nodeUuid + " from TemplateNode " + templateUuid + ", " +
+                                    "rolled back transaction.");
+                            tx.failure();
+                        }
                     }
+                    tx.success();
+                } catch (Exception e) {
+                    tx.failure();
+                    e.printStackTrace();
+                    result.put("error", e.getMessage());
+                } finally {
+                    tx.close();
                 }
 
                 return response(request, result);
