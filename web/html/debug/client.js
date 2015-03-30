@@ -59,7 +59,7 @@ function createInstanceNode(form) {
         }
         args = { name: form.elements.namedItem("instanceName").value,
                  desc: form.elements.namedItem("instanceDesc").value,
-                 instanceofuuid: form.elements.namedItem("instanceOf").value,
+                 nodeuuid: form.elements.namedItem("instanceOf").value,
                  kvs: kvs };
         eventBus.send("org.openpcf.universal.actor.framehelper",
                 {"msgh":"createinstancenode", "args":args}, function(data) {

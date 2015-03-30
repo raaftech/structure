@@ -115,7 +115,6 @@ public class FrameHelper extends BaseActor {
         return new MessageHandler() {
             public JsonNode exec(JsonNode request) {
                 ObjectNode result = JsonNodeFactory.instance.objectNode();
-                TypeNode instanceOf = null;
                 JsonNode args = request.get("args");
 
                 Transaction tx = Context.INSTANCE.getGraphDatabase().beginTx();
@@ -126,6 +125,7 @@ public class FrameHelper extends BaseActor {
                     result.put("uuid", newInstanceNode.getUuid());
                 } catch (RuntimeException e) {
                     tx.failure();
+                    e.printStackTrace();
                     result.put("error", "Error creating new InstanceNode.");
                 } finally {
                     tx.close();
