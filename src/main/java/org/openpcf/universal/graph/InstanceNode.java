@@ -85,8 +85,8 @@ public class InstanceNode extends Node {
         }
     }
 
-    public InstanceNode(JsonNode json) {
-        this(json.get("name").asText(), json.get("desc").asText(), json.get("nodeuuid").asText());
+    public InstanceNode(JsonNode json, String isa) {
+        this(json.get("name").asText(), json.get("desc").asText(), isa);
 
         JsonNode kvs = json.get("kvs");
 

@@ -104,7 +104,12 @@ public class TemplateNode extends Node implements Template {
         if (hasComponents == null) {
             hasComponents = new HashSet<>();
         }
-        hasComponents.add(component);
+        if (required && unique) {
+            hasComponents.add(component);
+        } else {
+            throw new RuntimeException("Cannot add a child TemplateNode to " + getName() + " (" + getUuid()
+                    + ") because " + getName() + " isn't set to required and unique.");
+        }
 
         return this;
     }
@@ -154,37 +159,64 @@ public class TemplateNode extends Node implements Template {
         return json;
     }
 
-    public String instantiate(TemplateNode template, InstanceNode parent, JsonNode json) {
+    public String instantiate(TemplateNode template, InstanceNode parent, JsonNode json, int depth) {
         if (!startOfTemplate && parent == null) {
             throw new RuntimeException("Cannot instantiate a TemplateNode that is not the start of a template without a parent.");
         }
 
-        TypeNode group = template.isa;
-        JsonNode groupInstanceData = json.get(group.getUuid());
-        String groupInstanceUuid = null;
+        TypeNode typeNode = template.isa;
+        String instanceUuid = null;
+        JsonNode instanceDataArray = null;
+        JsonNode instanceData = null;
+        try {
+            instanceDataArray = json.get(typeNode.getUuid()).get(Integer.toString(depth));
+            instanceData = instanceDataArray.get(0);
+        } catch (Exception e) {
+            // NPE might be thrown here, but don't do anything, we'll check for nulls below
+        }
 
-        if (groupInstanceData != null) {
-            final InstanceNode groupInstanceNode = new InstanceNode(groupInstanceData);
-            groupInstanceUuid = groupInstanceNode.getUuid();
-            if (parent != null) parent.addComponent(groupInstanceNode);
+        // Constraint checks
+        if (required && instanceDataArray == null) {
+            throw new RuntimeException("Cannot instantiate TemplateNode " + getName() + " (" + getUuid() + "). "
+                    + "It's required, but we didn't receive data for it.");
+        }
+        if (unique && instanceDataArray != null && instanceDataArray.size() > 1) {
+            throw new RuntimeException("Cannot instantiate TemplateNode " + getName() + " (" + getUuid() + "). "
+                    + "It's set to unique, but we received more than one set of data matching it.");
+        }
+        if (required && unique) {
+            if (instanceDataArray == null) {
+                throw new RuntimeException("Cannot instantiate TemplateNode " + getName() + " (" + getUuid() + "). "
+                        + "It's required and set to unique, but we didn't receive data for it.");
+            } else if (instanceDataArray.size() > 1) {
+                throw new RuntimeException("Cannot instantiate TemplateNode " + getName() + " (" + getUuid() + "). "
+                        + "It's required and set to unique, but we received more than one set of data matching it.");
+            }
+        }
 
-            template.hasComponents.stream()
-                    .forEach(t -> {
-                        JsonNode newInstanceData = json.get(t.isa.getUuid());
-                        if (newInstanceData != null) {
-                            t.instantiate(t, groupInstanceNode, json);
-                        } else {
-                            throw new RuntimeException("Couldn't get data for TypeNode " + t.getName() + "(" + t.getUuid() + ") to instantiate TemplateNode");
-                        }
-                    });
+        if (instanceData != null) {
+            // If this TemplateNode has components (implies required and unique)
+            if (hasComponents.size() > 0) {
+                final InstanceNode instanceNode = new InstanceNode(instanceData, isa.getUuid());
+                instanceUuid = instanceNode.getUuid();
+                if (parent != null) parent.addComponent(instanceNode);
 
-            groupInstanceNode.save();
-        } else {
+                template.hasComponents.stream()
+                        .forEach(t -> t.instantiate(t, instanceNode, json, depth+1));
+                instanceNode.save();
+            } else {
+                instanceDataArray.forEach(data -> {
+                    InstanceNode instanceNode = new InstanceNode(data, isa.getUuid());
+                    parent.addComponent(instanceNode);
+                    instanceNode.save();
+                });
+            }
+        } else if (required) {
             throw new RuntimeException("Couldn't get data for TypeNode " + template.isa.getName() + "(" + template
                     .isa.getUuid() + ") to instantiate TemplateNode");
         }
 
-        return groupInstanceUuid;
+        return instanceUuid;
     }
 
     public TemplateNode save() {
@@ -192,11 +224,15 @@ public class TemplateNode extends Node implements Template {
         TemplateNodeRepository templateNodeRepository = Context.INSTANCE.getTemplateNodeRepository();
 
         try {
+            if (startOfTemplate && !(required && unique)) {
+                throw new RuntimeException("Can't save TemplateNode " + getName() + " as the start of a template "
+                        + "because the start of a template should also be unique and required.");
+            }
             templateNodeRepository.save(this);
             tx.success();
         } catch (Exception e) {
-            e.printStackTrace();
             tx.failure();
+            throw e;
         } finally {
             tx.close();
         }

@@ -116,10 +116,11 @@ public class FrameHelper extends BaseActor {
             public JsonNode exec(JsonNode request) {
                 ObjectNode result = JsonNodeFactory.instance.objectNode();
                 JsonNode args = request.get("args");
+                String isa = request.get("nodeuuid").asText();
 
                 Transaction tx = Context.INSTANCE.getGraphDatabase().beginTx();
                 try {
-                    InstanceNode newInstanceNode = new InstanceNode(args);
+                    InstanceNode newInstanceNode = new InstanceNode(args, isa);
                     newInstanceNode.save();
                     tx.success();
                     result.put("uuid", newInstanceNode.getUuid());
@@ -287,15 +288,15 @@ public class FrameHelper extends BaseActor {
             public JsonNode exec(JsonNode request) {
                 ObjectNode result = JsonNodeFactory.instance.objectNode();
                 JsonNode args = request.get("args");
-                JsonNode children = getArgs(args, "children", (JsonNode)null);
+                JsonNode nodes = getArgs(args, "nodes", (JsonNode)null);
                 String template = getArgs(args, "template", "ERR_INVALID");
 
                 TemplateNode templateNode = templateNodeRepository.findByUuid(template);
 
-                if (templateNode != null && children != null) {
+                if (templateNode != null && nodes != null) {
                     Transaction tx = Context.INSTANCE.getGraphDatabase().beginTx();
                     try {
-                        result.put("uuid", templateNode.instantiate(templateNode, null, children));
+                        result.put("uuid", templateNode.instantiate(templateNode, null, nodes, 0));
                         tx.success();
                         result.put("information", "Successfully instantiated TemplateNode " + template);
                     } catch (Exception e) {

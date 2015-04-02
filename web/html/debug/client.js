@@ -173,7 +173,7 @@ function createTemplateNode(parenttmpl, name, desc, isa, required, unique, start
     return false;
 }
 
-function recurseTemplate(data, belongsTo) {
+function recurseTemplate(data, belongsTo, depth) {
     for (var i = 0; i < data.length; i++) {
         obj = data[i];
 
@@ -194,12 +194,13 @@ function recurseTemplate(data, belongsTo) {
             }
             html.push('<tr><td>' + key + '</td><td><input type="text" name="' + key + '" id="kvs" value="' + defaultValue + '" title="' + val.description + '"></td></tr>');
         }
-        html.push('<tr><td><input type="hidden" name="templateuuid" id="templateUuid" value="' + belongsTo + '">');
-        html.push('<tr><td><input type="hidden" name="nodeuuid" id="nodeUuid" value="' + obj.isa + '">');
+        html.push('<input type="hidden" name="templateuuid" id="templateUuid" value="' + belongsTo + '">');
+        html.push('<input type="hidden" name="nodeuuid" id="nodeUuid" value="' + obj.isa + '">');
+        html.push('<input type="hidden" class="depth" name="depth" id="depth" value="' + depth + '">');
         html.push('<tr><td colspan="2"><p align="right"><a href="javascript:removeNodeFromTemplate(\'' + belongsTo + '\', \'' + obj.uuid + '\')">remove</a></p></td></tr>')
         html.push('</table></fieldset></td></tr>');
         if (obj.hasOwnProperty("children")) {
-            ret = recurseTemplate(obj.children, obj.uuid);
+            ret = recurseTemplate(obj.children, obj.uuid, depth+1);
             html.concat(ret);
         }
     }
@@ -227,13 +228,14 @@ function fillTemplateTable(data) {
             html.push('<tr><td>' + key + '</td><td><input type="text" name="' + key + '" id="kvs" value="' + defaultValue + '" title="' + val.description + '"></td></tr>');
         }
 
-        html.push('<tr><td><input type="hidden" name="templateuuid" id="templateUuid" value="' + data.result.uuid + '">');
-        html.push('<tr><td><input type="hidden" name="nodeuuid" id="nodeUuid" value="' + data.result.isa + '">');
+        html.push('<input type="hidden" name="templateuuid" id="templateUuid" value="' + data.result.uuid + '">');
+        html.push('<input type="hidden" name="nodeuuid" id="nodeUuid" value="' + data.result.isa + '">');
+        html.push('<input type="hidden" class="depth" name="depth" id="depth" value="0">');
         html.push('</table></fieldset></td></tr>');
 
         if (data.result.hasOwnProperty("children")) {
             comprises = data.result.children;
-            html.concat(recurseTemplate(comprises, data.result.uuid));
+            html.concat(recurseTemplate(comprises, data.result.uuid, 1));
         }
         table.innerHTML = html.join('\n');
     } else {
@@ -242,30 +244,39 @@ function fillTemplateTable(data) {
 }
 
 function instantiateTemplate(form) {
-    if (eventBus.readyState()) {
-        list = document.getElementById("templateNodesList");
-        var selectedtemplate = list.options[list.selectedIndex].value;
-        var jsonform = { template: selectedtemplate,
-                         children: {}};
-        var fieldsets = form.getElementsByTagName("fieldset");
-        for (var i = 0; i < fieldsets.length; i++) {
-            var fieldsetname = fieldsets[i].name;
-            jsonform["children"][fieldsetname] = {};
-            jsonform["children"][fieldsetname]["kvs"] = {};
-            console.log(fieldsetname);
-            var inputs = fieldsets[i].getElementsByTagName("input");
-            for (var j = 0; j < inputs.length; j++) {
-                var name = inputs[j].name;
-                var id = inputs[j].id;
-                var value = inputs[j].value;
-                if (id == "kvs") {
-                    jsonform["children"][fieldsetname]["kvs"][name] = value;
-                } else {
-                    jsonform["children"][fieldsetname][name] = value;
-                }
-            }
-        }
-        console.log(jsonform);
+	if (eventBus.readyState()) {
+		list = document.getElementById("templateNodesList");
+		var selectedtemplate = list.options[list.selectedIndex].value;
+		var jsonform = { template: selectedtemplate,
+				nodes: {}};
+		var fieldsets = form.getElementsByTagName("fieldset");
+		for (var i = 0; i < fieldsets.length; i++) {
+			var fieldsetname = fieldsets[i].name;
+			//jsonform["nodes"][fieldsetname]["kvs"] = {};
+			var inputs = fieldsets[i].getElementsByTagName("input");
+			var depth = fieldsets[i].getElementsByClassName("depth")[0].value;
+			if (!jsonform.nodes.hasOwnProperty(fieldsetname)) {
+				jsonform["nodes"][fieldsetname] = {};
+			}
+			jsonform["nodes"][fieldsetname][depth] = [];
+
+			var obj = {};
+			obj["kvs"] = {};
+			for (var j = 0; j < inputs.length; j++) {
+				var name = inputs[j].name;
+				var id = inputs[j].id;
+				var value = inputs[j].value;
+				if (name != "depth" && name != "templateuuid" && name != "nodeuuid") {
+					if (id  == "kvs") {
+						obj["kvs"][name] = value;
+					} else {
+						obj[name] = value;
+					}
+				}
+			}
+			jsonform["nodes"][fieldsetname][depth].push(obj);
+			console.log(JSON.stringify(jsonform));
+		}
         eventBus.send("org.openpcf.universal.actor.framehelper",
             {"msgh":"instantiatetemplate", "args":jsonform}, function(data) {
                 console.log(data);
