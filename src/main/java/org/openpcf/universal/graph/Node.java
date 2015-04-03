@@ -31,17 +31,18 @@ public class Node {
 
     public Node() {}
 
-    public Node(String name, String desc) {
-        this.name = name;
-        this.desc = desc;
-        this.uuid = UUID.randomUUID().toString();
-    }
-
     public Node(String name, String desc, String uuid) {
-
+        UUID.fromString(uuid); // throws exception on invalid uuid
+        if (name.length() == 0 || desc.length() == 0) {
+            throw new RuntimeException("Cannot create node with an empty name or description.");
+        }
         this.name = name;
         this.desc = desc;
         this.uuid = uuid;
+    }
+
+    public Node(String name, String desc) {
+        this(name, desc, UUID.randomUUID().toString());
     }
 
     public String getUuid() {

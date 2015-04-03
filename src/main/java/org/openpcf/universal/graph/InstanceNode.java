@@ -152,6 +152,10 @@ public class InstanceNode extends Node {
 
                 String value = properties.get(key);
 
+                if (value.length() == 0 && descriptor.getRequired()) {
+                    throw new RuntimeException("Can't create InstanceNode, found property '" + key +"', but didn't get a value for it.");
+                }
+
                 switch(descriptor.getValueType()) {
                     case "datetime":
                         DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
