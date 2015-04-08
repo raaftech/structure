@@ -12,7 +12,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.openpcf.jsonschema.JsonSchemaBuilder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -165,8 +164,6 @@ public class JsonSchemaBuilderTest {
         jsonSchema.addProperty("name", "string", true);
         jsonSchema.addProperty("desc", "string", true);
         jsonSchema.setAdditionalProperties(false);
-
-        System.out.println(jsonSchema.getAsObjectNode());
 
         // Valid according to our JsonSchema
         json.put("uuid", "adf58c7d-098f-4c58-a37b-8f1e07b917ba");
