@@ -47,6 +47,7 @@ src/main/java/org/openpcf/universal/graph/schema/operatingsystems/OperatingSyste
 src/main/java/org/openpcf/universal/graph/schema/packagemanagers/PackageManagersR1.java -text
 src/main/java/org/openpcf/universal/graph/schema/servicemanagers/ServiceManagersR1.java -text
 src/main/java/org/openpcf/universal/graph/schema/services/ServicesR1.java -text
+src/main/java/org/openpcf/universal/helper/JsonSchemaBuilder.java -text
 src/main/java/org/openpcf/universal/worker/SchemaManagerUpdate.java -text
 src/main/js/App.js -text
 src/main/js/Frame.js -text
@@ -70,6 +71,7 @@ src/main/resources/schema/request.schema.json -text
 src/main/resources/schema/response.schema.json -text
 src/main/resources/settings.json -text
 src/main/uml/model.uml -text
+src/test/java/org/openpcf/universal/helper/JsonSchemaBuilderTest.java -text
 /vertx_classpath.txt -text
 web/config.rb -text
 web/css/reset.css -text
