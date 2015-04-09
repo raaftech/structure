@@ -1,0 +1,21 @@
+{
+  "name": "debug",
+  "version": "0.0.0",
+  "authors": [
+    "Boy van Duuren <boy@raaftech.com>"
+  ],
+  "license": "GPLv3",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "js/libs",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular-vertxbus": "~1.1.0",
+    "jquery": ">= 1.9.1",
+    "bootstrap": ">= 3.3.4"
+  }
+}

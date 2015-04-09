@@ -76,8 +76,13 @@ src/test/java/org/openpcf/universal/helper/JsonSchemaBuilderTest.java -text
 web/config.rb -text
 web/css/reset.css -text
 web/css/style.css -text
-web/html/debug/client.js -text
+web/html/debug/.bowerrc -text
+web/html/debug/bower.json -text
+web/html/debug/css/style.css -text
 web/html/debug/index.html -text
+web/html/debug/js/app.js -text
+web/html/debug/old/client.js -text
+web/html/debug/old/index.html -text
 web/html/error/403.html -text
 web/html/error/404.html -text
 web/html/index.html -text

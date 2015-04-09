@@ -1,89 +1,95 @@
-<html>
-    <head>
-        <title>Debug</title>
-        <meta charset="utf-8">
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/0.3.4/sockjs.min.js"></script>
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/vertx/2.0.0/vertxbus.min.js"></script>
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-        <script src="client.js"></script>
-    </head>
-    <body>
-        <p>
-            <h1>Universal debug screen</h1>
-            <p>Used to test/simulate user interaction with Universal over the eventbus.<br><b>This is in no way production-code.</b></p>
-            <h2>Actions</h2>
-            <a href="javascript:startUpdate();">Update</a><br>
-            <a href="javascript:createInstanceNode();">Create InstanceNode</a>
-            <p>
-                <h2>Find TypeNode</h2>
-                <form action="#" onsubmit="javascript:findTypeNode(document.getElementById('nameOfTypeNode').value)">
-                    Name: <input type="text" id="nameOfTypeNode"><button type="submit" >Find TypeNode</button>
-                </form>
-                <p><table border="1">
-                    <tr>
-                        <td>name</td>
-                        <td><div id="typeNodeName">Placeholder</div></td>
-                    </tr>
-                    <tr>
-                        <td>uuid</td>
-                        <td><div id="typeNodeUuid">Placeholder</div></td>
-                    </tr>
-                    <tr>
-                        <td>desc</td>
-                        <td><div id="typeNodeDesc">Placeholder</div></td>
-                    </tr>
-                    <tr>
-                        <td>parent</td>
-                        <td><div id="typeNodeIsa">Placeholder</div></td>
-                    </tr>
-                </table></p>
-            </p>
-            <p>
-                <h2>Create instance of found TypeNode</h2>
-                <div id="createInstance"></div>
-            </p>
-            <p>
-                <h2>Find InstanceNode</h2>
-                <form action="#" onsubmit="javascript:findInstanceNode(document.getElementById('nameOfInstanceNode').value)">
-                    Name: <input type="text" id="nameOfInstanceNode"><button type="submit" >Find InstanceNode</button>
-                </form>
-                <p><table border="1" id="instanceNodeResult">
-                    <!--<tr>
-                        <td>name</td>
-                        <td><div id="instanceNodeName">Placeholder</div></td>
-                    </tr>
-                    <tr>
-                        <td>uuid</td>
-                        <td><div id="instanceNodeUuid">Placeholder</div></td>
-                    </tr>
-                    <tr>
-                        <td>desc</td>
-                        <td><div id="instanceNodeDesc">Placeholder</div></td>
-                    </tr>-->
-                </table></p>
-            <p>
-                <h2>Create Empty TemplateNode</h2>
-                <form action="#" onsubmit="javascript:createTemplateNode(document.getElementById('parentNewTemplateNode'), document.getElementById('nameNewTemplateNode'), document.getElementById('descNewTemplateNode'), document.getElementById('ownerNewTemplateNode'), document.getElementById('requiredNewTemplateNode').checked, document.getElementById('uniqueNewTemplateNode').checked, document.getElementById('startNewTemplateNode').checked)">
-                    <table>
-                        <tr><td>Parent:</td><td><input type="text" id="parentNewTemplateNode"></td></tr>
-                        <tr><td>ISA:</td><td><input type="text" id="ownerNewTemplateNode"></td></tr>
-                        <tr><td>Name:</td><td><input type="text" id="nameNewTemplateNode"></td></tr>
-                        <tr><td>Desc:</td><td><input type="text" id="descNewTemplateNode"></td></tr>
-                        <tr><td>UUID:</td><td><input type="text" id="uuidNewTemplateNode" readonly></td></tr>
-                        <tr><td colspan="2"><p align="center"><input type="checkbox" id="requiredNewTemplateNode">required</input>
-                            <input type="checkbox" id="startNewTemplateNode">start</input>
-                            <input type="checkbox" id="uniqueNewTemplateNode">unique</input></p></tr>
-                        <tr><td></td><td><button type="submit">Create TemplateNode</button></td></tr>
-                    </table>
-                </form>
-            <p>
-                <h2>Find TemplateNode</h2>
-                <select id="templateNodesList" onchange="javascript:findTemplateNode(this.options[this.selectedIndex].value)" onfocus="this.selectedIndex=-1"></select><div id="selectedTemplateUuid"></div>
-                <p><form id="instantiateTemplate" action="#" onsubmit="javascript:instantiateTemplate(this)">
-                    <table border="1" id="templateResult"></table>
-                    <input type="button" onclick="instantiateTemplate(document.getElementById('instantiateTemplate'))" value="submit">
-                </form></p>
-            </p>
-        </p>
-    </body>
+<!DOCTYPE html>
+<html ng-app="universal">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet"
+	href="js/libs/bootstrap/dist/css/bootstrap.css">
+<link rel="stylesheet" href="css/style.css">
+<script type="text/javascript"
+	src="js/libs/sockjs-client/dist/sockjs.js"></script>
+<script type="text/javascript" src="js/libs/vertxbus.js/index.js"></script>
+<script type="text/javascript" src="js/libs/angular/angular.min.js"></script>
+<script type="text/javascript"
+	src="js/libs/angular-vertxbus/dist/angular-vertxbus.min.js"></script>
+<script type="text/javascript" src="js/libs/jquery/dist/jquery.min.js"></script>
+<script type="text/javascript" src="js/libs/bootstrap/dist/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="js/app.js"></script>
+</head>
+<body>
+	<div class="appContainer" ng-controller="ContainerController as containerCtrl">
+		<ul class="nav nav-pills">
+			<li role="presentation" ng-class="{ active:containerCtrl.isSelected(1) }"><a href="#" ng-click="containerCtrl.changeTab(1)">Create
+					TemplateNode</a></li>
+			<li role="presentation" ng-class="{ active:containerCtrl.isSelected(2) }"><a href="#" ng-click="containerCtrl.changeTab(2)">View Templates</a></li>
+		</ul>
+		<div id="templateForm"
+			ng-controller="TemplateController as templateCtrl" ng-show="containerCtrl.isSelected(1)">
+			<form name="newTemplateForm"
+				ng-submit="newTemplateForm.$valid && templateCtrl.createNewTemplate()"
+				novalidate>
+				<h4>Create a new Template</h4>
+				<fieldset class="form-group">
+					<input ng-model="newTemplate.parent" class="form-control"
+						type="text" placeholder="The UUID of the parent.">
+				</fieldset>
+				<fieldset class="form-group">
+					<input ng-model="newTemplate.isa" class="form-control" type="text"
+						placeholder="The UUID of the TypeNode." required>
+				</fieldset>
+				<fieldset class="form-group">
+					<input ng-model="newTemplate.name" class="form-control" type="text"
+						placeholder="The name of the template." required>
+				</fieldset>
+				<fieldset class="form-group">
+					<textarea ng-model="newTemplate.desc" class="form-control"
+						placeholder="A description of the template." required></textarea>
+				</fieldset>
+				<fieldset class="form-group">
+					<input ng-model="newTemplate.uuid" class="form-control" type="text"
+						placeholder="The resulting UUID of the new TemplateNode." readonly>
+				</fieldset>
+				<fieldset class="form-group">
+					<div class="checkbox container-fluid">
+						<div class="col-md-4">
+							<label><input ng-model="newTemplate.start"
+								ng-click="templateCtrl.clickStart()" type="checkbox">
+								start</label>
+						</div>
+						<div class="col-md-4">
+							<label><input ng-model="newTemplate.required"
+								type="checkbox"> required</label>
+						</div>
+						<div class="col-md-4">
+							<label><input ng-model="newTemplate.unique"
+								type="checkbox"> unique</label>
+						</div>
+					</div>
+				</fieldset>
+				<div ng-show="submitSucceeded.flag" class="alert alert-success"
+					role="alert">
+					<button type="button" class="close" data-dismiss="alert"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+					{{ submitSucceeded.message }}
+				</div>
+				<div ng-show="submitError.flag" class="alert alert-danger"
+					role="alert">
+					<button type="button" class="close" data-dismiss="alert"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+					{{ submitError.message }}
+				</div>
+				<fieldset class="form-group">
+					<input class="btn btn-primary pull-right" type="submit"
+						value="Create Template">
+				</fieldset>
+			</form>
+		</div>
+		<div id="templateView" ng-show="containerCtrl.isSelected(2)">
+			<strong>foo</strong>
+		</div>
+	</div>
+</body>
 </html>

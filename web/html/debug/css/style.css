@@ -1,0 +1,17 @@
+.ng-invalid.ng-dirty {
+	border-color: red;
+}
+
+.ng-valid.ng-dirty {
+	border-color: green;
+}
+
+.appContainer {
+	width: 400px;
+	margin-left: 10px;
+	margin-top: 10px;
+}
+
+.appForm {
+	width: 400px;
+}
