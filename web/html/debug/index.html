@@ -25,9 +25,19 @@
 		<div id="templateForm"
 			ng-controller="TemplateController as templateCtrl" ng-show="containerCtrl.isSelected(1)">
 			<form name="newTemplateForm"
-				ng-submit="newTemplateForm.$valid && templateCtrl.createNewTemplate()"
+				ng-submit="newTemplateForm.$valid && templateCtrl.createNewTemplate()" ng-click="templateCtrl.checkDatabaseInit()"
 				novalidate>
 				<h4>Create a new Template</h4>
+				<div ng-show="databaseInitError.flagged" class="alert alert-danger"
+					role="alert">
+					<p>
+						<strong>Error!</strong> It seems the database isn't initialized.
+					</p>
+					<p>
+						<input ng-click="templateCtrl.databaseInit()" class="btn btn-danger" type="submit" value="Initialize">
+						<input ng-click="databaseInitErrorClear()" class="btn btn-default" type="submit" value="Do nothing">
+					</p>
+				</div>
 				<fieldset class="form-group">
 					<input ng-model="newTemplate.parent" class="form-control"
 						type="text" placeholder="The UUID of the parent.">

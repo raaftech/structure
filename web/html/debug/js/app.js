@@ -22,8 +22,45 @@
 	app.controller('TemplateController', ['$scope', '$timeout', 'vertxEventBus', 'vertxEventBusService',
 	                                      function($scope, $timeout, vertxEventBus, vertxEventBusService) {
 		$scope.newTemplate = { required: false, unique: false, start: false };
+		$scope.databaseInitError = { checked: false, flag: false };
 		$scope.submitError = {};
 		$scope.submitSucceeded = {};
+
+		this.checkDatabaseInit = function() {
+			if ($scope.databaseInitError.checked == false && vertxEventBus.readyState()) {
+				vertxEventBusService.send('org.openpcf.universal.actor.framehelper',
+						{'msgh':'typenode', 'args':{'node':'b1bc963a-19cc-4518-aecb-a35d028c49e3'}})
+						.then(function(reply) {
+							if (reply.result.error != null) {
+								$timeout(function() {
+									$scope.databaseInitError.flagged = true;
+								}, 0);
+							}
+						});
+				$timeout(function() {
+					$scope.databaseInitError.checked = true;
+				});
+			}
+		}
+
+		this.databaseInit = function() {
+			if (vertxEventBus.readyState()) {
+				vertxEventBusService.send('org.openpcf.universal.actor.schemamanager',
+						{'msgh':'update', 'args':{}})
+						.then(function(reply) {
+							$timeout(function() {
+								$scope.databaseInitErrorClear();
+							}, 0);
+						});
+			}
+		}
+
+		$scope.databaseInitErrorClear = function() {
+			$timeout(function() {
+				$scope.databaseInitError.flagged = false;
+			}, 0);
+		};
+
 
 		this.createNewTemplate = function() {
 			if (vertxEventBus.readyState()) {
