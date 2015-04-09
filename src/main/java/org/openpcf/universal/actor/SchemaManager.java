@@ -5,13 +5,16 @@ package org.openpcf.universal.actor;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+
 import io.vertx.core.AsyncResult;
 import io.vertx.core.AsyncResultHandler;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
+
 import org.openpcf.universal.base.BaseActor;
 import org.openpcf.universal.base.Context;
+import org.openpcf.universal.helper.SchemaManagerUpdate;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -96,27 +99,15 @@ public class SchemaManager extends BaseActor {
     public MessageHandler update() {
         return new MessageHandler() {
             public JsonNode exec(JsonNode request) {
-                Vertx vertx = Context.INSTANCE.getVertx();
-
                 ObjectNode result = JsonNodeFactory.instance.objectNode();
-                String id = UUID.randomUUID().toString();
-                result.put("says", id);
-                // Deploy a worker verticle that runs the update schema process.
-                vertx.deployVerticle("org.openpcf.universal.worker.SchemaManagerUpdate",
-                        new DeploymentOptions()
-                                .setWorker(true)
-                                .setConfig(new JsonObject().put("id", id)),
-                        new AsyncResultHandler<String>() {
-                            @Override
-                            public void handle(AsyncResult<String> stringAsyncResult) {
-                                if (stringAsyncResult.succeeded()) {
-                                    // TODO: log result
-                                    System.out.println("Deployed worker.");
-                                } else {
-                                    throw new RuntimeException(stringAsyncResult.cause());
-                                }
-                            }
-                        });
+                SchemaManagerUpdate schemaManagerUpdate = new SchemaManagerUpdate();
+                try {
+                    schemaManagerUpdate.applySchemaUpdates();
+                    result.put("says", "success!");
+                } catch (RuntimeException e) {
+                    e.printStackTrace();
+                    result.put("error", e.getMessage());
+                }
                 return response(request, result);
             }
 

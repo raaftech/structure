@@ -1,8 +1,9 @@
-package org.openpcf.universal.worker;
+package org.openpcf.universal.helper;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
+
 import org.neo4j.graphdb.Transaction;
 import org.openpcf.universal.base.Context;
 import org.openpcf.universal.graph.SchemaNode;
@@ -29,7 +30,7 @@ import java.util.TreeMap;
  * @author Boy van Duuren <boy.van.duuren@raaftech.com>
  * @since 2015-01-08
  */
-public class SchemaManagerUpdate extends AbstractVerticle {
+public class SchemaManagerUpdate {
 
     GraphDatabase graphDatabase = Context.INSTANCE.getGraphDatabase();
 
@@ -70,7 +71,7 @@ public class SchemaManagerUpdate extends AbstractVerticle {
         return false;
     }
 
-    private void applySchemaUpdates() throws RuntimeException {
+    public synchronized void applySchemaUpdates() throws RuntimeException {
         ArrayList<SchemaUpdate> schemaUpdateInstances = new ArrayList<>();
         Transaction tx = graphDatabase.beginTx();
 
@@ -155,23 +156,6 @@ public class SchemaManagerUpdate extends AbstractVerticle {
             throw e;
         } finally {
             tx.close();
-        }
-    }
-
-    @Override
-    public void start(Future<Void> startFuture) throws Exception {
-        Vertx vertx = Context.INSTANCE.getVertx();
-        try {
-            Thread.sleep(1000);
-            vertx.eventBus().publish("org.openpcf.universal.worker.status_" + config().getString("id"),
-                    "Starting applySchemaUpdates...");
-            applySchemaUpdates();
-            vertx.eventBus().publish("org.openpcf.universal.worker.status_" + config().getString("id"), "done");
-        } catch (RuntimeException e) {
-            e.printStackTrace();
-            vertx.eventBus().publish("org.openpcf.universal.worker.status_" + config().getString("id"), "failed");
-        } finally {
-            this.getVertx().undeployVerticle(this.deploymentID());
         }
     }
 }
