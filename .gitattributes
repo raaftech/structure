@@ -77,6 +77,7 @@ web/config.rb -text
 web/css/reset.css -text
 web/css/style.css -text
 web/html/debug/.bowerrc -text
+web/html/debug/README.md -text
 web/html/debug/bower.json -text
 web/html/debug/css/style.css -text
 web/html/debug/index.html -text
