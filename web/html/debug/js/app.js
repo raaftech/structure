@@ -48,9 +48,13 @@
 				vertxEventBusService.send('org.openpcf.universal.actor.schemamanager',
 						{'msgh':'update', 'args':{}})
 						.then(function(reply) {
-							$timeout(function() {
-								$scope.databaseInitErrorClear();
-							}, 0);
+							if (reply.result.error == null) {
+								$timeout(function() {
+									$scope.databaseInitErrorClear();
+								}, 0);
+							} else {
+								alert(reply.result.error);
+							}
 						});
 			}
 		}
