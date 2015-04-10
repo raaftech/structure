@@ -29,7 +29,7 @@
 				ng-submit="newTemplateForm.$valid && templateCtrl.createNewTemplate()" ng-click="templateCtrl.checkDatabaseInit()"
 				novalidate>
 				<h4>Create a new Template</h4>
-				<div ng-show="databaseInitError.flagged" class="alert alert-danger"
+				<div ng-show="ui.databaseInitError.flagged" class="alert alert-danger"
 					role="alert">
 					<p>
 						<strong>Error!</strong> It seems the database isn't initialized.
@@ -44,7 +44,7 @@
 					</p>
 					<p>
 						<input ng-click="initializing = true;templateCtrl.databaseInit()" ng-disabled="initializing" class="btn btn-danger" type="submit" value="Initialize">
-						<input ng-click="databaseInitErrorClear()" ng-disabled="initializing" class="btn btn-default" type="submit" value="Do nothing">
+						<input ng-click="ui.databaseInitErrorClear()" ng-disabled="initializing" class="btn btn-default" type="submit" value="Do nothing">
 					</p>
 				</div>
 				<fieldset class="form-group">
@@ -63,7 +63,7 @@
 						<input ng-model="newTemplate.isa" class="form-control" type="text"
 							placeholder="The UUID of the TypeNode." required>
 								<span class="input-group-btn">
-									<button type="button" class="btn btn-default">
+									<button ng-click="templateCtrl.findTypeNode()" type="button" class="btn btn-default">
 								<span class="glyphicon glyphicon-search" aria-hidden="true"></span>
 							</button>
 						</span>
@@ -94,21 +94,21 @@
 						</div>
 					</div>
 				</fieldset>
-				<div ng-show="submitSucceeded.flag" class="alert alert-success"
+				<div ng-show="ui.submitSucceeded.flag" class="alert alert-success"
 					role="alert">
 					<button type="button" class="close" data-dismiss="alert"
 						aria-label="Close">
 						<span aria-hidden="true">&times;</span>
 					</button>
-					{{ submitSucceeded.message }}
+					{{ ui.submitSucceeded.message }}
 				</div>
-				<div ng-show="submitError.flag" class="alert alert-danger"
+				<div ng-show="ui.submitError.flag" class="alert alert-danger"
 					role="alert">
 					<button type="button" class="close" data-dismiss="alert"
 						aria-label="Close">
 						<span aria-hidden="true">&times;</span>
 					</button>
-					{{ submitError.message }}
+					{{ ui.submitError.message }}
 				</div>
 				<fieldset class="form-group">
 					<input class="btn btn-primary pull-right" type="submit"
