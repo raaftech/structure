@@ -151,6 +151,13 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
+    public void testJsonSchemaContainsProperty() {
+        jsonSchema.setType("object");
+        jsonSchema.addProperty("foo", "number", true);
+        assertTrue(jsonSchema.containsProperty("foo"));
+    }
+
+    @Test
     public void testJsonSchemaValidate() throws ProcessingException {
         final ObjectMapper mapper = new ObjectMapper();
         final JsonSchemaFactory factory = JsonSchemaFactory.byDefault();

@@ -21,15 +21,12 @@ src/main/java/org/openpcf/universal/base/BaseActor.java -text
 src/main/java/org/openpcf/universal/base/Context.java -text
 src/main/java/org/openpcf/universal/base/ConverterConfig.java -text
 src/main/java/org/openpcf/universal/base/SpringConfig.java -text
-src/main/java/org/openpcf/universal/graph/Descriptor.java -text
 src/main/java/org/openpcf/universal/graph/InstanceNode.java -text
 src/main/java/org/openpcf/universal/graph/Node.java -text
 src/main/java/org/openpcf/universal/graph/SchemaNode.java -text
 src/main/java/org/openpcf/universal/graph/Template.java -text
 src/main/java/org/openpcf/universal/graph/TemplateNode.java -text
 src/main/java/org/openpcf/universal/graph/TypeNode.java -text
-src/main/java/org/openpcf/universal/graph/converters/DescriptorReader.java -text
-src/main/java/org/openpcf/universal/graph/converters/DescriptorWriter.java -text
 src/main/java/org/openpcf/universal/graph/converters/JsonSchemaBuilderReader.java -text
 src/main/java/org/openpcf/universal/graph/converters/JsonSchemaBuilderWriter.java -text
 src/main/java/org/openpcf/universal/graph/converters/LinkedHashMapReader.java -text

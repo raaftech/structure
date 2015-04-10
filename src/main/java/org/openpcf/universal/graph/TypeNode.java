@@ -1,21 +1,23 @@
 package org.openpcf.universal.graph;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.Transaction;
 import org.openpcf.universal.base.Context;
 import org.openpcf.universal.graph.repositories.TypeNodeRepository;
+import org.openpcf.universal.helper.JsonSchemaBuilder;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.neo4j.annotation.NodeEntity;
 import org.springframework.data.neo4j.annotation.RelatedTo;
 import org.springframework.data.neo4j.core.GraphDatabase;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.github.fge.jsonschema.core.exceptions.ProcessingException;
 
 /**
  * Give a description of TypeNode here.
@@ -38,7 +40,7 @@ public class TypeNode extends Node implements Template {
     private String isaUuid;
 
 
-    private HashMap<String, Descriptor> schema;
+    public JsonSchemaBuilder schema;
     private TypeNodeRepository typeNodeRepository = Context.INSTANCE.getTypeNodeRepository();
 
     public TypeNode() {}
@@ -54,14 +56,16 @@ public class TypeNode extends Node implements Template {
     public TypeNode setDescriptor(String key, String valueType, boolean required, String description, String defaultValue,
                                   String example) {
         if (schema == null) {
-            schema = new HashMap<>();
+            schema = new JsonSchemaBuilder();
+            schema.setType("object");
+            schema.setAdditionalProperties(false);
         }
 
         TypeNode parentNode = getIsa();
-        if (parentNode != null && parentNode.getSchema().containsKey(key)) {
+        if (parentNode != null && parentNode.getSchema().containsProperty(key)) {
             throw new RuntimeException("Can't override parent schema.");
         } else {
-            schema.put(key, new Descriptor(valueType, required, description, defaultValue, example));
+            schema.addProperty(key, valueType, required);
         }
 
         return this;
@@ -77,17 +81,15 @@ public class TypeNode extends Node implements Template {
     }
 
     public TypeNode setIsa(TypeNode isa) {
-        if (schema == null) {
-            schema = new HashMap<>();
-        }
-
         if (isa != null) {
             this.isa = isa;
-            HashMap<String, Descriptor> parentConstraints = isa.getSchema();
+            JsonSchemaBuilder parentConstraints = isa.getSchema();
             if (parentConstraints != null) {
-                // We can go around setDescriptor here, because we don't need
-                // the checks setDescriptor does.
-                schema.putAll(parentConstraints);
+                try {
+                    schema = new JsonSchemaBuilder(parentConstraints.getAsObjectNode());
+                } catch (ProcessingException e) {
+                    e.printStackTrace();
+                }
             }
         }
         return this;
@@ -127,7 +129,7 @@ public class TypeNode extends Node implements Template {
         return childIsaSet;
     }
 
-    public HashMap<String, Descriptor> getSchema() {
+    public JsonSchemaBuilder getSchema() {
         return schema;
     }
 
@@ -153,26 +155,5 @@ public class TypeNode extends Node implements Template {
         }
 
         return json;
-    }
-
-    @Override
-    public String toString() {
-        String s = "createNode(new TypeNode(\"" + getName() + "\", \"" + getDesc() + "\", \"" + getUuid() + "\")";
-        boolean set = false;
-        if (schema != null) {
-            for (String k : schema.keySet()) {
-                Descriptor constraint = schema.get(k);
-                s += "\n\t.setDescriptor(\"" + k + "\", \"" + constraint.getValueType() + "\", " + constraint.getRequired() + ", \"" +
-                        constraint.getDescription() + "\", \"" + constraint.getDefaultValue() + "\", \"" +
-                        constraint.getExampleValue() + "\")";
-            }
-            set = true;
-        }
-        if (getIsa() != null) {
-            s += "\n\t.setIsa(typeNodeRepository.findByUuid(\"" + getIsa().getUuid() + "\")";
-            set = true;
-        }
-        s += set ? "));" : ");";
-        return s;
     }
 }

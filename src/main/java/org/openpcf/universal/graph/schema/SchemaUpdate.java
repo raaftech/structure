@@ -1,17 +1,16 @@
 package org.openpcf.universal.graph.schema;
 
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+
 import org.openpcf.universal.base.Context;
-import org.openpcf.universal.graph.Descriptor;
 import org.openpcf.universal.graph.SchemaNode;
 import org.openpcf.universal.graph.Template;
 import org.openpcf.universal.graph.TypeNode;
 import org.openpcf.universal.graph.repositories.SchemaNodeRepository;
 import org.openpcf.universal.graph.repositories.TypeNodeRepository;
-
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
 
 /**
  * SchemaUpdate is an abstract class that has to be implemented for every update to the schema.

@@ -137,6 +137,20 @@ public class JsonSchemaBuilder {
     }
 
     /**
+     * Check if JsonSchemaBuilder contains a certain property.
+     * @param name The name of the property to match.
+     * @return True when it has the property, false if not.
+     */
+    public boolean containsProperty(String name) {
+        ObjectNode properties = getProperties();
+        if (properties != null) {
+            return properties.has(name);
+        } else {
+            return false;
+        }
+    }
+
+    /**
      * Set whether or not this JsonSchemaBuilder accepts JSON that isn't
      * defined in the schema.
      * @param bool Accept undefined JSON

@@ -3,8 +3,6 @@ package org.openpcf.universal.base;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.openpcf.universal.graph.converters.DescriptorReader;
-import org.openpcf.universal.graph.converters.DescriptorWriter;
 import org.openpcf.universal.graph.converters.JsonSchemaBuilderReader;
 import org.openpcf.universal.graph.converters.JsonSchemaBuilderWriter;
 import org.openpcf.universal.graph.converters.LinkedHashMapReader;
@@ -27,8 +25,6 @@ public class ConverterConfig {
     public ConversionServiceFactoryBean conversionService() {
         Set<Converter> converters = new HashSet<>();
 
-        converters.add(new DescriptorReader());
-        converters.add(new DescriptorWriter());
         converters.add(new LinkedHashMapWriter());
         converters.add(new LinkedHashMapReader());
         converters.add(new JsonSchemaBuilderWriter());

@@ -1,20 +1,27 @@
 package org.openpcf.universal.graph;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Set;
+
 import org.neo4j.graphdb.Direction;
 import org.openpcf.universal.base.Context;
 import org.openpcf.universal.graph.repositories.InstanceNodeRepository;
 import org.openpcf.universal.graph.repositories.TypeNodeRepository;
+import org.openpcf.universal.helper.JsonSchemaBuilder;
 import org.springframework.data.neo4j.annotation.Fetch;
 import org.springframework.data.neo4j.annotation.NodeEntity;
 import org.springframework.data.neo4j.annotation.RelatedTo;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.github.fge.jsonschema.core.exceptions.ProcessingException;
+import com.github.fge.jsonschema.core.report.ProcessingReport;
+import com.github.fge.jsonschema.main.JsonSchema;
+import com.github.fge.jsonschema.main.JsonSchemaFactory;
 
 /**
  * Give a description of InstanceNode here.
@@ -91,13 +98,7 @@ public class InstanceNode extends Node {
         JsonNode kvs = json.get("kvs");
 
         if (kvs != null) {
-            LinkedHashMap<String, String> prop = new LinkedHashMap<>();
-            Iterator<String> kvElements = kvs.fieldNames();
-            while (kvElements.hasNext()) {
-                String field = kvElements.next();
-                prop.put(field, kvs.get(field).asText());
-            }
-            setProperties(prop);
+            setProperties(kvs);
         }
     }
 
@@ -141,65 +142,27 @@ public class InstanceNode extends Node {
         return components;
     }
 
-    public InstanceNode setProperties(LinkedHashMap<String, String> properties) {
-        HashMap<String, Descriptor> schema = instanceOf.getSchema();
+    public InstanceNode setProperties(JsonNode properties) {
+        try {
+            JsonSchemaBuilder jsonSchema = instanceOf.getSchema();
+            final JsonSchemaFactory factory = JsonSchemaFactory.byDefault();
+            final JsonSchema schema = factory.getJsonSchema(jsonSchema.getAsObjectNode());
+            ProcessingReport report;
 
-        schema.forEach((key, descriptor) -> {
-            if (properties.containsKey(key)) {
-                // validate
-                // TODO: create a pluggable validation system
-                boolean valid = false;
+            report = schema.validate(properties);
 
-                String value = properties.get(key);
-
-                if (value.length() == 0 && descriptor.getRequired()) {
-                    throw new RuntimeException("Can't create InstanceNode, found property '" + key +"', but didn't get a value for it.");
-                }
-
-                switch(descriptor.getValueType()) {
-                    case "datetime":
-                        DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
-                        LocalDateTime.parse(value);
-                        valid = true;
-                        break;
-                    case "string":
-                        valid = true;
-                        break;
-                    case "integer":
-                        Integer.parseInt(value);
-                        valid = true;
-                        break;
-                    case "double":
-                        Double.parseDouble(value);
-                        break;
-                    case "boolean":
-                        if (value.equals("true") || value.equals("false")) {
-                            valid = true;
-                        }
-                        break;
-                }
-                if (valid) {
-                    kv.put(key, properties.get(key));
-                    properties.remove(key);
-                } else {
-                    throw new RuntimeException("Value for key '" + key + "' not of type '" + descriptor.getValueType() +
-                            "'");
+            if (report.isSuccess()) {
+                Iterator<String> iter = properties.fieldNames();
+                while (iter.hasNext()) {
+                    String key = iter.next();
+                    kv.put(key, properties.get(key).asText());
                 }
             } else {
-                if (descriptor.getRequired() == true) {
-                    // this is a required key that isn't supplied
-                    throw new RuntimeException("Can't create InstanceNode, missing property '" + key +"'");
-                } else {
-                    // this is an optional key that isn't supplied, use default value from TypeNode
-                    kv.put(key, descriptor.getDefaultValue());
-                    properties.remove(key);
-                }
+                throw new RuntimeException("Supplied JSON did not match TypeNode schema.");
             }
-        });
-
-        // properties should be empty by now, if not, unsupported properties were supplied.
-        if (properties.size() > 0) {
-            throw new RuntimeException("Can't create instanceNode, unsupported properties supplied");
+        } catch (ProcessingException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Supplied JSON did not match TypeNode schema.");
         }
 
         return this;
@@ -207,7 +170,7 @@ public class InstanceNode extends Node {
 
     public InstanceNode save() {
         if (instanceNodeRepository.findByUuid(getUuid()) == null) {
-            if (instanceOf.getSchema().size() == kv.size()) {
+            if (instanceOf.getSchema().getProperties().size() == kv.size()) {
                 instanceNodeRepository.save(this);
             } else {
                 throw new RuntimeException("Can't create instanceNode, missing properties.");
