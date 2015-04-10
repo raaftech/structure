@@ -30,6 +30,7 @@
         $scope.ui.databaseInitError = { checked: false, flag: false };
         $scope.ui.submitError = {};
         $scope.ui.submitSucceeded = {};
+        $scope.ui.parentMenu = [];
 
         // This checks if the database is initialized and shows an db-init screen if not
         this.checkDatabaseInit = function() {
@@ -111,6 +112,44 @@
                                 $scope.ui.submitError.flag = true;
                                 $scope.ui.submitError.message = 'Error while communicating with eventbus';
                             }, 0);
+                        });
+            }
+        };
+
+        // Build object for the dropdown for parent selection
+        this.getTemplates = function() {
+            if (vertxEventBus.readyState()) {
+                vertxEventBusService.send('org.openpcf.universal.actor.framehelper',
+                        {'msgh':'findalltemplatenodes', 'args':{}})
+                        .then(function(reply) {
+                            $scope.ui.parentMenu = [];
+                            // Inner recursion function to recurse over subtemplates
+                            function recurse(template, count) {
+                                var indent = '';
+                                for (i = 0; i < count; i++) {
+                                    indent = indent + ' ';
+                                };
+                                indent = indent + '└ ';
+                                $scope.ui.parentMenu.push({'name': indent + template.name, 'uuid': template.uuid});
+                                // Iterate over children
+                                if (template.children != null) {
+                                    for (i in template.children) {
+                                        recurse(template.children[i], count+1);
+                                    }
+                                }
+                            }
+                            // Iterate over found templates
+                            for (i in reply.result.templates) {
+                                node = reply.result.templates[i];
+                                $scope.ui.parentMenu.push({'name': node.name, 'uuid': node.uuid});
+                                // Recurse over children
+                                if (node.children != null) {
+                                    for (i in node.children) {
+                                        recurse(node.children[i], 1);
+                                    }
+                                }
+                            }
+                        }).catch(function() {
                         });
             }
         };

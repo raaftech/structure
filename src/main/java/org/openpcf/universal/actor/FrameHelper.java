@@ -2,9 +2,8 @@
 
 package org.openpcf.universal.actor;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import java.util.Set;
+
 import org.neo4j.graphdb.Transaction;
 import org.openpcf.universal.base.BaseActor;
 import org.openpcf.universal.base.Context;
@@ -15,7 +14,10 @@ import org.openpcf.universal.graph.repositories.InstanceNodeRepository;
 import org.openpcf.universal.graph.repositories.TemplateNodeRepository;
 import org.openpcf.universal.graph.repositories.TypeNodeRepository;
 
-import java.util.Set;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * The FrameHelper actor.
@@ -31,6 +33,7 @@ public class FrameHelper extends BaseActor {
 
     public MessageHandler typenode() {
         return new MessageHandler() {
+            @Override
             public JsonNode exec(JsonNode request) {
                 ObjectNode result = JsonNodeFactory.instance.objectNode();
                 TypeNode found = null;
@@ -51,6 +54,7 @@ public class FrameHelper extends BaseActor {
                 }
             }
 
+            @Override
             public JsonNode help(JsonNode request) {
                 return jsonFromResource("help/framehelper.component.json");
             }
@@ -59,6 +63,7 @@ public class FrameHelper extends BaseActor {
 
     public MessageHandler instancenode() {
         return new MessageHandler() {
+            @Override
             public JsonNode exec(JsonNode request) {
                 ObjectNode result = JsonNodeFactory.instance.objectNode();
                 InstanceNode found = null;
@@ -77,6 +82,7 @@ public class FrameHelper extends BaseActor {
                 }
             }
 
+            @Override
             public JsonNode help(JsonNode request) {
                 return jsonFromResource("help/framehelper.node.json");
             }
@@ -113,6 +119,7 @@ public class FrameHelper extends BaseActor {
 
     public MessageHandler createinstancenode() {
         return new MessageHandler() {
+            @Override
             public JsonNode exec(JsonNode request) {
                 ObjectNode result = JsonNodeFactory.instance.objectNode();
                 JsonNode args = request.get("args");
@@ -135,6 +142,7 @@ public class FrameHelper extends BaseActor {
                 return response(request, result);
             }
 
+            @Override
             public JsonNode help(JsonNode request) {
                 return JsonNodeFactory.instance.objectNode();
             }
@@ -143,6 +151,7 @@ public class FrameHelper extends BaseActor {
 
     public MessageHandler createtemplatenode() {
         return new MessageHandler() {
+            @Override
             public JsonNode exec(JsonNode request) {
                 ObjectNode result = JsonNodeFactory.instance.objectNode();
                 JsonNode args = request.get("args");
@@ -198,6 +207,7 @@ public class FrameHelper extends BaseActor {
                 return response(request, result);
             }
 
+            @Override
             public JsonNode help(JsonNode request) {
                 return JsonNodeFactory.instance.objectNode();
             }
@@ -209,14 +219,14 @@ public class FrameHelper extends BaseActor {
             @Override
             public JsonNode exec(JsonNode request) {
                 ObjectNode result = JsonNodeFactory.instance.objectNode();
+                ArrayNode templateNodes = result.putArray("templates");
                 Transaction tx = Context.INSTANCE.getGraphDatabase().beginTx();
                 Set<TemplateNode> allTemplateNodes = templateNodeRepository.findAllTemplates();
 
                 try {
                     allTemplateNodes.forEach(res -> {
                         if (res.getClass() == TemplateNode.class) {
-                            TemplateNode template = (TemplateNode) res;
-                            result.put(template.getName(), template.getUuid());
+                            templateNodes.add(res.toJson());
                         }
                     });
                     tx.success();
@@ -322,6 +332,7 @@ public class FrameHelper extends BaseActor {
 
     public MessageHandler search() {
         return new MessageHandler() {
+            @Override
             public JsonNode exec(JsonNode request) {
                 ObjectNode result = JsonNodeFactory.instance.objectNode();
                 JsonNode args = request.get("args");
@@ -333,6 +344,7 @@ public class FrameHelper extends BaseActor {
                 return response(request, result);
             }
 
+            @Override
             public JsonNode help(JsonNode request) {
                 return jsonFromResource("help/framehelper.search.json");
             }
