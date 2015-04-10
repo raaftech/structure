@@ -148,7 +148,7 @@ public class TypeNode extends Node implements Template {
         }
         json.put("desc", getDesc());
         try {
-            json.put("schema", mapper.writeValueAsString(getSchema()));
+            json.put("schema", getSchema().getAsObjectNode());
             json.put("children", mapper.writeValueAsString(childIsaUuids));
         } catch (JsonProcessingException e) {
             e.printStackTrace();

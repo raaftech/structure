@@ -1,5 +1,5 @@
 (function() {
-    var app = angular.module('universal', ['knalli.angular-vertxbus'])
+    var app = angular.module('universal', ['knalli.angular-vertxbus', 'schemaForm'])
 
     app.config(function(vertxEventBusProvider) {
         vertxEventBusProvider
@@ -19,6 +19,33 @@
             this.tab = setTab;
         }
     });
+
+    // InstanceController
+    app.controller('InstanceController', ['$scope', '$timeout', 'schemaForm', 'vertxEventBus', 'vertxEventBusService',
+                                          function($scope, $timeout, schemaForm, vertxEventBus, vertxEventBusService) {
+        $scope.schema = {};
+        $scope.form = ["*", { type: "submit", title: "Save" }];
+        $scope.model = {};
+
+        // Find a TypeNode either by name or by UUID
+        this.findTypeNode = function() {
+            if (vertxEventBus.readyState()) {
+                vertxEventBusService.send('org.openpcf.universal.actor.framehelper',
+                        {'msgh':'typenode', 'args':{'node': $scope.newTemplate.isa}})
+                        .then(function(reply) {
+                            console.log(reply);
+                            if (reply.result.error == null) {
+                                $timeout(function() {
+                                    $scope.newTemplate.isa = reply.result.uuid;
+                                    $scope.schema = reply.result.schema;
+                                });
+                            }
+                        }).catch(function() {
+                            console.warn(reply);
+                        });
+            }
+        };
+    }]);
 
     // TemplateController, controlling everything to do with templates
     app.controller('TemplateController', ['$scope', '$timeout', 'vertxEventBus', 'vertxEventBusService',

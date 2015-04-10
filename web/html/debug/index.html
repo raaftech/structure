@@ -9,6 +9,11 @@
 	src="js/libs/sockjs-client/dist/sockjs.js"></script>
 <script type="text/javascript" src="js/libs/vertxbus.js/index.js"></script>
 <script type="text/javascript" src="js/libs/angular/angular.min.js"></script>
+<script type="text/javascript" src="js/libs/angular-sanitize/angular-sanitize.min.js"></script>
+<script type="text/javascript" src="js/libs/tv4/tv4.js"></script>
+<script type="text/javascript" src="js/libs/objectpath/lib/ObjectPath.js"></script>
+<script type="text/javascript" src="js/libs/angular-schema-form/dist/schema-form.min.js"></script>
+<script type="text/javascript" src="js/libs/angular-schema-form/dist/bootstrap-decorator.min.js"></script>
 <script type="text/javascript"
 	src="js/libs/angular-vertxbus/dist/angular-vertxbus.min.js"></script>
 <script type="text/javascript" src="js/libs/jquery/dist/jquery.min.js"></script>
@@ -128,7 +133,19 @@
 			</form>
 		</div>
 		<div id="templateView" ng-show="containerCtrl.isSelected(2)">
-			<strong>foo</strong>
+			<div ng-controller="InstanceController as instanceCtrl">
+				<div class="input-group">
+					<input ng-model="newTemplate.isa" class="form-control" type="text"
+						placeholder="The UUID of the TypeNode." required> <span
+						class="input-group-btn">
+						<button ng-click="instanceCtrl.findTypeNode()" type="button"
+							class="btn btn-default">
+							<span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+						</button>
+					</span>
+				</div>
+				<form sf-schema="schema" sf-form="form" sf-model="model"></form>
+			</div>
 		</div>
 	</div>
 </body>
