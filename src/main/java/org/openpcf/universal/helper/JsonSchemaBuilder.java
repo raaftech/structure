@@ -55,7 +55,12 @@ public class JsonSchemaBuilder {
         json.put("description", description);
     }
 
-    private JsonSchemaBuilder(ObjectNode objectNode) throws ProcessingException {
+    /**
+     * Construct a JsonSchemaBuilder using a ObjectNode
+     * @param objectNode An ObjectNode that is valid JSON Schema
+     * @throws ProcessingException When the ObjectNode does not comply to the JSON Schema specification
+     */
+    public JsonSchemaBuilder(ObjectNode objectNode) throws ProcessingException {
         final JsonSchemaFactory factory = JsonSchemaFactory.byDefault();
         final SyntaxValidator syntaxValidator = factory.getSyntaxValidator();
         ProcessingReport report = syntaxValidator.validateSchema(objectNode);
@@ -108,7 +113,6 @@ public class JsonSchemaBuilder {
         }
 
         ObjectNode properties = getOrCreateProperties();
-        ArrayNode required = getOrCreateRequired();
 
         JsonSchemaBuilder property = null;
         try {
@@ -118,6 +122,7 @@ public class JsonSchemaBuilder {
             return null;
         }
         if (req) {
+            ArrayNode required = getOrCreateRequired();
             required.add(name);
         }
 
