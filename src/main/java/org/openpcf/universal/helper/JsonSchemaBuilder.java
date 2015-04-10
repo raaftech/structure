@@ -1,5 +1,6 @@
 package org.openpcf.universal.helper;
 
+import java.util.Iterator;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
@@ -190,6 +191,27 @@ public class JsonSchemaBuilder {
         }
 
         return required;
+    }
+
+    /**
+     * Check if a property is required.
+     * @param property The name of the property
+     * @return True when it's required, false if not.
+     */
+    public boolean isRequired(String property) {
+        ArrayNode required = getRequired();
+        if (required == null) {
+            return false;
+        } else {
+            boolean ret = false;
+            Iterator<JsonNode> fields = required.elements();
+            while (fields.hasNext()) {
+                if (property.equals(fields.next().asText())) {
+                    ret = true;
+                }
+            }
+            return ret;
+        }
     }
 
     /**

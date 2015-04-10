@@ -158,6 +158,13 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
+    public void testJsonSchemaIsRequired() {
+        jsonSchema.setType("object");
+        jsonSchema.addProperty("foo", "number", true);
+        assertTrue(jsonSchema.isRequired("foo"));
+    }
+
+    @Test
     public void testJsonSchemaValidate() throws ProcessingException {
         final ObjectMapper mapper = new ObjectMapper();
         final JsonSchemaFactory factory = JsonSchemaFactory.byDefault();

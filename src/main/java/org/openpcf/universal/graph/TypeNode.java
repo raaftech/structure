@@ -1,5 +1,6 @@
 package org.openpcf.universal.graph;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -15,6 +16,7 @@ import org.springframework.data.neo4j.annotation.RelatedTo;
 import org.springframework.data.neo4j.core.GraphDatabase;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.fge.jsonschema.core.exceptions.ProcessingException;
@@ -86,7 +88,19 @@ public class TypeNode extends Node implements Template {
             JsonSchemaBuilder parentConstraints = isa.getSchema();
             if (parentConstraints != null) {
                 try {
-                    schema = new JsonSchemaBuilder(parentConstraints.getAsObjectNode());
+                    System.out.println(parentConstraints.getProperties());
+                    if (schema == null) {
+                        schema = new JsonSchemaBuilder(parentConstraints.getAsObjectNode());
+                    } else {
+                        Iterator<String> propertyIterator = parentConstraints.getProperties().fieldNames();
+                        while (propertyIterator.hasNext()) {
+                            String propertyName = propertyIterator.next();
+                            if (!schema.containsProperty(propertyName)) {
+                                JsonNode propertyJson = parentConstraints.getProperties().get(propertyName);
+                                schema.addProperty(propertyName, propertyJson.get("type").asText(), parentConstraints.isRequired(propertyName));
+                            }
+                        }
+                    }
                 } catch (ProcessingException e) {
                     e.printStackTrace();
                 }
