@@ -138,6 +138,24 @@ public class JsonSchemaBuilder {
     }
 
     /**
+     * Remove a property from the JsonSchema.
+     * @param name The name of the property.
+     * @return The object the method was called on.
+     * @throws RuntimeException Thrown when property doesn't exist.
+     */
+    public JsonSchemaBuilder removeProperty(String name) {
+        ObjectNode properties = getProperties();
+
+        if (properties != null) {
+            properties.remove(name);
+        } else {
+            throw new RuntimeException("Can't remove property that doesn't exist.");
+        }
+
+        return this;
+    }
+
+    /**
      * Check if JsonSchemaBuilder contains a certain property.
      * @param name The name of the property to match.
      * @return True when it has the property, false if not.

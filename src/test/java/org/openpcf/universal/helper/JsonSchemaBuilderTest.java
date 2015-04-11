@@ -158,6 +158,15 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
+    public void testJsonSchemaRemoveProperty() {
+        jsonSchema.setType("object");
+        jsonSchema.addProperty("foo", "number", true);
+        assertTrue(jsonSchema.containsProperty("foo"));
+        jsonSchema.removeProperty("foo");
+        assertFalse(jsonSchema.containsProperty("foo"));
+    }
+
+    @Test
     public void testJsonSchemaIsRequired() {
         jsonSchema.setType("object");
         jsonSchema.addProperty("foo", "number", true);

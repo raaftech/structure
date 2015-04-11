@@ -11,6 +11,9 @@ import org.openpcf.universal.graph.Template;
 import org.openpcf.universal.graph.TypeNode;
 import org.openpcf.universal.graph.repositories.SchemaNodeRepository;
 import org.openpcf.universal.graph.repositories.TypeNodeRepository;
+import org.openpcf.universal.helper.JsonSchemaBuilder;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 /**
  * SchemaUpdate is an abstract class that has to be implemented for every update to the schema.
@@ -124,14 +127,30 @@ public abstract class SchemaUpdate {
      * @param oldSchema The old schema has to be passed so we know which keys to remove from the child nodes.
      * @param newSchema The new schema is put into every child node's schema HashMap.
      */
-    private void cascadeDescription(TypeNode start, HashMap<String, Descriptor> oldSchema, HashMap<String, Descriptor> newSchema) {
+    private void cascadeDescription(TypeNode start, JsonSchemaBuilder oldSchema, JsonSchemaBuilder newSchema) {
         Set<Template> childIsaSet = start.getChildIsaSet();
         childIsaSet.stream()
                 .filter(childNode -> childNode.getClass() == TypeNode.class)
                 .map(TypeNode.class::cast)
                 .forEach(childNode -> {
-                    oldSchema.forEach((key, value) -> childNode.getSchema().remove(key));
-                    childNode.getSchema().putAll(newSchema);
+                    JsonSchemaBuilder childSchema = childNode.getSchema();
+                    Iterator<String> propertyIterator = oldSchema.getProperties().fieldNames();
+                    while (propertyIterator.hasNext()) {
+                        String propertyName = propertyIterator.next();
+                        if (childSchema.containsProperty(propertyName)) {
+                            childSchema.removeProperty(propertyName);
+                        }
+                    }
+
+                    propertyIterator = newSchema.getProperties().fieldNames();
+                    while (propertyIterator.hasNext()) {
+                        String propertyName = propertyIterator.next();
+                        if (childSchema.containsProperty(propertyName)) {
+                            JsonNode propertyJson = newSchema.getProperties().get(propertyName);
+                            childSchema.addProperty(propertyName, propertyJson.get("type").asText(), newSchema.isRequired(propertyName));
+                        }
+                    }
+
                     typeNodeRepository.save(childNode);
                     cascadeDescription(childNode, oldSchema, newSchema);
                 });
