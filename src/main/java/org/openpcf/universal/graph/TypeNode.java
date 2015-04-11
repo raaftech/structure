@@ -88,7 +88,6 @@ public class TypeNode extends Node implements Template {
             JsonSchemaBuilder parentConstraints = isa.getSchema();
             if (parentConstraints != null) {
                 try {
-                    System.out.println(parentConstraints.getProperties());
                     if (schema == null) {
                         schema = new JsonSchemaBuilder(parentConstraints.getAsObjectNode());
                     } else {
@@ -162,7 +161,9 @@ public class TypeNode extends Node implements Template {
         }
         json.put("desc", getDesc());
         try {
-            json.put("schema", getSchema().getAsObjectNode());
+            if (getSchema() != null) {
+                json.put("schema", getSchema().getAsObjectNode());
+            }
             json.put("children", mapper.writeValueAsString(childIsaUuids));
         } catch (JsonProcessingException e) {
             e.printStackTrace();
