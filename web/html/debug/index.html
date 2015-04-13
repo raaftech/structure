@@ -53,26 +53,22 @@
 					</p>
 				</div>
 				<fieldset class="form-group">
-					<div class="input-group">
-						<input ng-model="newTemplate.parent" class="form-control"
-							type="text" placeholder="The UUID of the parent."> <span
-							class="input-group-btn">
-							<button type="button" class="btn btn-default">
-								<span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+					<input ng-model="newTemplate.parent" class="form-control"
+						type="text" placeholder="The UUID of the parent."> <span
+						class="input-group-btn">
+						<div class="dropdown">
+							<button ng-click="templateCtrl.getTemplates()"
+								class="btn btn-default dropdown-toggle" type="button"
+								id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
+								Choose a parent <span class="caret"></span>
 							</button>
-						</span>
-					</div>
-					<div class="dropdown">
-						<button ng-click="templateCtrl.getTemplates()" class="btn btn-default dropdown-toggle" type="button"
-							id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
-							Choose a parent <span class="caret"></span>
-						</button>
-						<ul class="dropdown-menu" role="menu"
-							aria-labelledby="dropdownMenu1">
-							<li ng-repeat="item in ui.parentMenu" ng-click="newTemplate.parent=item.uuid" role="presentation"><a role="menuitem" tabindex="-1"
-								href="#">{{ item.name }}</a></li>
-						</ul>
-					</div>
+							<ul class="dropdown-menu" role="menu"
+								aria-labelledby="dropdownMenu1">
+								<li ng-repeat="item in ui.parentMenu"
+									ng-click="newTemplate.parent=item.uuid" role="presentation"><a
+									role="menuitem" tabindex="-1" href="#">{{ item.name }}</a></li>
+							</ul>
+						</div>
 				</fieldset>
 				<fieldset class="form-group">
 					<div class="input-group">
