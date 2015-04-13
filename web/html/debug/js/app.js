@@ -23,28 +23,46 @@
     // InstanceController
     app.controller('InstanceController', ['$scope', '$timeout', 'schemaForm', 'vertxEventBus', 'vertxEventBusService',
                                           function($scope, $timeout, schemaForm, vertxEventBus, vertxEventBusService) {
-        $scope.schema = {};
-        $scope.form = ["*", { type: "submit", title: "Save" }];
-        $scope.model = {};
+        // Used to generate the forms
+        $scope.schemas = [];
+        $scope.form = ["*"];
+        $scope.model = [];
 
-        // Find a TypeNode either by name or by UUID
-        this.findTypeNode = function() {
+        // Object containing everything that's used for the UI
+        $scope.ui = {};
+        // Object containing all our templates, eagerly fetched.
+        $scope.templates = {};
+
+        // Get all templates from the database.
+        this.getTemplates = function() {
             if (vertxEventBus.readyState()) {
                 vertxEventBusService.send('org.openpcf.universal.actor.framehelper',
-                        {'msgh':'typenode', 'args':{'node': $scope.newTemplate.isa}})
+                        {'msgh':'findalltemplatenodes', 'args':{}})
                         .then(function(reply) {
-                            console.log(reply);
-                            if (reply.result.error == null) {
-                                $timeout(function() {
-                                    $scope.newTemplate.isa = reply.result.uuid;
-                                    $scope.schema = reply.result.schema;
-                                });
-                            }
-                        }).catch(function() {
-                            console.warn(reply);
+                            $scope.ui.templates = reply.result.templates;
                         });
             }
         };
+
+        // Create a form using the selected template
+        this.createForm = function(index) {
+            function recurse(template) {
+               $scope.schemas.push({ name: template.name, uuid: template.uuid, schema: JSON.parse(template.schema)});
+               $scope.model.push({uuid: template.uuid, data: {}});
+               if (template.children != null) {
+                   var childrenLength = template.children.length;
+                   if (childrenLength > 0) {
+                       for (var i = 0; i < childrenLength; i++) {
+                           recurse(template.children[i]);
+                       }
+                   }
+               }
+            }
+
+            $scope.schemas = [];
+            $scope.model = [];
+            recurse($scope.ui.templates[index]);
+        }
     }]);
 
     // TemplateController, controlling everything to do with templates

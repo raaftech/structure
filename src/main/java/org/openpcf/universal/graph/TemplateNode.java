@@ -145,7 +145,7 @@ public class TemplateNode extends Node implements Template {
         json.put("uuid", getUuid());
         json.put("isa", isa.getUuid());
         try {
-            json.put("schema", mapper.writeValueAsString(isa.getSchema()));
+            json.put("schema", mapper.writeValueAsString(isa.getSchema().getAsObjectNode()));
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
