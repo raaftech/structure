@@ -191,6 +191,8 @@ public class FrameHelper extends BaseActor {
                             if (parentTemplateNode != null) {
                                 parentTemplateNode.addComponent(newTemplateNode);
                                 parentTemplateNode.save();
+                            } else {
+                                throw new RuntimeException("Couldn't find parent node.");
                             }
                         }
                         newTemplateNode.save();
