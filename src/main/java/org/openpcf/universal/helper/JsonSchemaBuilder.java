@@ -92,6 +92,10 @@ public class JsonSchemaBuilder {
      * @return An ObjectNode containing the schema's properties.
      */
     public ObjectNode getOrCreateProperties() {
+        if (getType() == null || !getType().equals("object")) {
+            throw new RuntimeException("Can't create properties for something that's not an object.");
+        }
+
         ObjectNode properties = getProperties();
         if (properties == null) {
             properties = json.putObject("properties");
@@ -110,7 +114,7 @@ public class JsonSchemaBuilder {
      */
     public JsonSchemaBuilder addProperty(String name, String type, boolean req) {
         if (getType() == null || !getType().equals("object")) {
-            throw new RuntimeException("Can't add properties to something that's not a object.");
+            throw new RuntimeException("Can't add properties to something that's not an object.");
         }
 
         ObjectNode properties = getOrCreateProperties();
@@ -122,16 +126,15 @@ public class JsonSchemaBuilder {
             e.printStackTrace();
             return null;
         }
-        if (req) {
-            ArrayNode required = getOrCreateRequired();
-            required.add(name);
-        }
-
         try {
             property.setType(type);
         } catch (Exception e) {
             properties.remove(name);
             throw e;
+        }
+        if (req) {
+            ArrayNode required = getOrCreateRequired();
+            required.add(name);
         }
 
         return property;
@@ -167,6 +170,58 @@ public class JsonSchemaBuilder {
         } else {
             return false;
         }
+    }
+
+    public ObjectNode getItems() {
+        JsonNode jsonNode = json.get("items");
+        ObjectNode items = null;
+        if (jsonNode != null && jsonNode.isObject()) {
+            items = (ObjectNode)jsonNode;
+        }
+
+        return items;
+    }
+
+    public ObjectNode getOrCreateItems() {
+        if (getType() == null | !getType().equals("array")) {
+            throw new RuntimeException("Can't create an items object on something that's not of type array.");
+        }
+
+        ObjectNode items = getItems();
+        if (items == null) {
+            items = json.putObject("items");
+        }
+
+        return items;
+    }
+
+    public JsonSchemaBuilder addItem(String name, String type, boolean req) {
+        if (getType() == null | !getType().equals("array")) {
+            throw new RuntimeException("Can't add an item to something that's not of type array.");
+        }
+
+        ObjectNode items = getOrCreateItems();
+        JsonSchemaBuilder item = null;
+        ArrayNode required;
+
+        try {
+            item = new JsonSchemaBuilder(items.putObject(name));
+        } catch (ProcessingException e) {
+            e.printStackTrace();
+            return null;
+        }
+        try {
+            item.setType(type);
+        } catch (Exception e) {
+            items.remove(name);
+            throw e;
+        }
+        if (req) {
+            required = getOrCreateRequired();
+            required.add(name);
+        }
+
+        return item;
     }
 
     /**

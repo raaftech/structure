@@ -174,6 +174,21 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
+    public void testJsonSchemaAddItem() {
+        jsonSchema.setType("object");
+        JsonSchemaBuilder foo = jsonSchema.addProperty("foo", "array", true);
+        foo.addItem("bar", "number", false);
+
+        System.out.println(foo.getAsObjectNode());
+        assertEquals("number", foo.getAsObjectNode().get("items").get("bar").get("type").asText());
+        assertEquals(false, foo.isRequired("bar"));
+
+        foo.addItem("baz", "string", true);
+        assertEquals("string", foo.getAsObjectNode().get("items").get("baz").get("type").asText());
+        assertEquals(true, foo.isRequired("baz"));
+    }
+
+    @Test
     public void testJsonSchemaValidate() throws ProcessingException {
         final ObjectMapper mapper = new ObjectMapper();
         final JsonSchemaFactory factory = JsonSchemaFactory.byDefault();
