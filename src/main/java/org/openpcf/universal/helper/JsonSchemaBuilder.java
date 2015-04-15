@@ -172,6 +172,11 @@ public class JsonSchemaBuilder {
         }
     }
 
+    /**
+     * Get the JsonSchema's items as ObjectNode.
+     * This is only callable on an object representing an array.
+     * @return An ObjectNode containing the schema's items.
+     */
     public ObjectNode getItems() {
         JsonNode jsonNode = json.get("items");
         ObjectNode items = null;
@@ -182,6 +187,10 @@ public class JsonSchemaBuilder {
         return items;
     }
 
+    /**
+     * Does the same as getItems(), except it creates the items if necessary.
+     * @return An ObjectNode containing the schema's items.
+     */
     public ObjectNode getOrCreateItems() {
         if (getType() == null | !getType().equals("array")) {
             throw new RuntimeException("Can't create an items object on something that's not of type array.");
@@ -195,6 +204,13 @@ public class JsonSchemaBuilder {
         return items;
     }
 
+    /**
+     * Add an item to the item array.
+     * @param name The name of the item.
+     * @param type The type of the item.
+     * @param req Is the item required or not.
+     * @return A JsonSchemaBuilder of the newly created item.
+     */
     public JsonSchemaBuilder addItem(String name, String type, boolean req) {
         if (getType() == null | !getType().equals("array")) {
             throw new RuntimeException("Can't add an item to something that's not of type array.");
@@ -224,6 +240,12 @@ public class JsonSchemaBuilder {
         return item;
     }
 
+    /**
+     * Override the item array completely with a ObjectNode containing a valid JSON schema.
+     * @param objectNode An ObjectNode containing a valid JSON schema.
+     * @return The JsonSchemaBuilder this method is called on.
+     * @throws ProcessingException Thrown when the ObjectNode isn't valid JSON schema.
+     */
     public JsonSchemaBuilder setItemToSchema(ObjectNode objectNode) throws ProcessingException {
         if (getType() == null | !getType().equals("array")) {
             throw new RuntimeException("Can't add an item to something that's not of type array.");
