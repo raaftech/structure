@@ -257,6 +257,11 @@ public class JsonSchemaBuilder {
 
         if (report.isSuccess()) {
             ObjectNode items = getOrCreateItems();
+            ArrayNode required = getRequired();
+            items.removeAll();
+            if (required != null) {
+                required.removeAll();
+            }
             items.putAll(objectNode);
         } else {
             throw new ProcessingException("Can't construct JsonSchemaBuilder with invalid JSON schema as argument.");
