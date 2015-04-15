@@ -1,5 +1,4 @@
 * text=auto !eol
-/jsonschemamultiple.txt -text
 /license.txt -text
 /notes.txt -text
 /pom.xml -text
