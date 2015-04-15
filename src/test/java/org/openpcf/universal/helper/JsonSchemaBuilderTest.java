@@ -178,14 +178,28 @@ public class JsonSchemaBuilderTest {
         jsonSchema.setType("object");
         JsonSchemaBuilder foo = jsonSchema.addProperty("foo", "array", true);
         foo.addItem("bar", "number", false);
+        ObjectNode items = foo.getItems();
 
-        System.out.println(foo.getAsObjectNode());
-        assertEquals("number", foo.getAsObjectNode().get("items").get("bar").get("type").asText());
+        assertEquals("number", items.get("bar").get("type").asText());
         assertEquals(false, foo.isRequired("bar"));
 
         foo.addItem("baz", "string", true);
-        assertEquals("string", foo.getAsObjectNode().get("items").get("baz").get("type").asText());
+        assertEquals("string", items.get("baz").get("type").asText());
         assertEquals(true, foo.isRequired("baz"));
+    }
+
+    @Test
+    public void testJsonSchemaSetItemToSchema() throws ProcessingException {
+        jsonSchema.setType("array");
+        jsonSchema.addItem("a", "string", true);
+
+        JsonSchemaBuilder schema = new JsonSchemaBuilder();
+        schema.setType("object");
+        schema.addProperty("foo", "boolean", true);
+        jsonSchema.setItemToSchema(schema.getAsObjectNode());
+
+        assertEquals(null, jsonSchema.getItems().get("a"));
+        assertEquals(null, jsonSchema.getRequired().get(0));
     }
 
     @Test
