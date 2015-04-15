@@ -47,7 +47,7 @@
         // Create a form using the selected template
         this.createForm = function(index) {
             function recurse(template) {
-               $scope.schemas.push({ name: template.name, uuid: template.uuid, schema: JSON.parse(template.schema)});
+               $scope.schemas.push({ name: template.name, uuid: template.uuid, form: template.form, schema: JSON.parse(template.schema)});
                $scope.model.push({uuid: template.uuid, data: {}});
                if (template.children != null) {
                    var childrenLength = template.children.length;

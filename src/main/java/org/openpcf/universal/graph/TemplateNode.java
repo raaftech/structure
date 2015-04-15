@@ -1,6 +1,7 @@
 package org.openpcf.universal.graph;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -10,6 +11,7 @@ import org.neo4j.graphdb.Transaction;
 import org.openpcf.universal.base.Context;
 import org.openpcf.universal.graph.repositories.TemplateNodeRepository;
 import org.openpcf.universal.graph.repositories.TypeNodeRepository;
+import org.openpcf.universal.helper.JsonSchemaBuilder;
 import org.springframework.data.neo4j.annotation.Fetch;
 import org.springframework.data.neo4j.annotation.NodeEntity;
 import org.springframework.data.neo4j.annotation.RelatedTo;
@@ -19,6 +21,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.github.fge.jsonschema.core.exceptions.ProcessingException;
 
 /**
  * Give a description of TemplateNode here.
@@ -144,9 +147,24 @@ public class TemplateNode extends Node implements Template {
         json.put("desc", getDesc());
         json.put("uuid", getUuid());
         json.put("isa", isa.getUuid());
+        json.put("form", getForm());
         try {
-            json.put("schema", mapper.writeValueAsString(isa.getSchema().getAsObjectNode()));
+            if (unique) {
+                json.put("schema", mapper.writeValueAsString(isa.getSchema().getAsObjectNode()));
+            } else {
+                // We need to wrap the TypeNode schema in another schema when it's not unique.
+                // This is done to be able to take multiple instances of this TypeNode from the
+                // client-side.
+                JsonSchemaBuilder wrappingSchema = new JsonSchemaBuilder()
+                .setType("object")
+                .setAdditionalProperties(false);
+                JsonSchemaBuilder wrappingArray = wrappingSchema.addProperty(getName(), "array", true);
+                wrappingArray.setItemToSchema(isa.getSchema().getAsObjectNode());
+                json.put("schema", mapper.writeValueAsString(wrappingSchema.getAsObjectNode()));
+            }
         } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        } catch (ProcessingException e) {
             e.printStackTrace();
         }
 
@@ -158,6 +176,35 @@ public class TemplateNode extends Node implements Template {
         }
 
         return json;
+    }
+
+    // Create a form layout for the generated form.
+    // For now this will only create a form when a TemplateNode
+    // isn't unique (else it'll just contain [ "*" ]).
+    // TODO: Add functionality to create custom form layouts
+    public ArrayNode getForm() {
+        ObjectMapper mapper = new ObjectMapper();
+        ArrayNode form = mapper.createArrayNode();
+
+        if (unique) {
+            form.add("*");
+        } else {
+            ObjectNode formItems = form.addObject();
+            formItems.put("key", getName());
+            formItems.put("add", "New");
+            formItems.putObject("style").put("add", "btn-success");
+            ArrayNode fields = formItems.putArray("items");
+
+            JsonSchemaBuilder isaSchema = isa.getSchema();
+            Iterator<String> fieldIterator = isaSchema.getProperties().fieldNames();
+
+            while (fieldIterator.hasNext()) {
+                String fieldname = fieldIterator.next();
+                fields.add(getName() + "[]." + fieldname);
+            }
+        }
+
+        return form;
     }
 
     public String instantiate(TemplateNode template, InstanceNode parent, JsonNode json, int depth) {

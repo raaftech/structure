@@ -1,0 +1,65 @@
+Form:
+
+[
+  {
+    "type": "help",
+    "helpvalue": "<h4>Array Example</h4><p>Try adding a couple of forms, reorder by drag'n'drop.</p>"
+  },
+  {
+    "key": "foo",
+    "add": "New",
+    "style": {
+      "add": "btn-success"
+    },
+    "items": [
+      "comments[].rev"
+    ]
+  },
+  {
+    "type": "submit",
+    "style": "btn-info",
+    "title": "OK"
+  }
+]
+
+Schema:
+
+{
+    "$schema": "http://json-schema.org/schema#",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "foo": {
+      "type": "array",
+      "items": {
+          "type": "object",
+          "properties": {
+            "rev": {
+                "type": "string"
+                }
+          }
+      }
+        }
+    }
+}
+
+{
+  "$schema": "http://json-schema.org/schema#",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "foo": {
+      "type": "array",
+      "items": {
+        "$schema": "http://json-schema.org/schema#",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "rev": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

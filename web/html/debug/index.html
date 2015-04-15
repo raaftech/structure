@@ -145,10 +145,11 @@
 				</div>
 				<div ng-repeat="schema in schemas track by $index">
 					<h4>{{ schema.name }}</h4>
-					<form sf-schema="schema.schema" sf-form="form" sf-model="model[$index].data"></form>
+					<form sf-schema="schema.schema" sf-form="schema.form" sf-model="model[$index].data"></form>
 				</div>
 				<button ng-click="instanceCtrl.instantiateTemplate()" type="button"
 					class="btn btn-default">Instantiate template</button>
+				<br/>{{ model | json }}
 			</div>
 		</div>
 	</div>

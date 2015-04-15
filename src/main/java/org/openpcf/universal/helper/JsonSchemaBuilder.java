@@ -224,6 +224,25 @@ public class JsonSchemaBuilder {
         return item;
     }
 
+    public JsonSchemaBuilder setItemToSchema(ObjectNode objectNode) throws ProcessingException {
+        if (getType() == null | !getType().equals("array")) {
+            throw new RuntimeException("Can't add an item to something that's not of type array.");
+        }
+
+        final JsonSchemaFactory factory = JsonSchemaFactory.byDefault();
+        final SyntaxValidator syntaxValidator = factory.getSyntaxValidator();
+        ProcessingReport report = syntaxValidator.validateSchema(objectNode);
+
+        if (report.isSuccess()) {
+            ObjectNode items = getOrCreateItems();
+            items.putAll(objectNode);
+        } else {
+            throw new ProcessingException("Can't construct JsonSchemaBuilder with invalid JSON schema as argument.");
+        }
+
+        return this;
+    }
+
     /**
      * Set whether or not this JsonSchemaBuilder accepts JSON that isn't
      * defined in the schema.
