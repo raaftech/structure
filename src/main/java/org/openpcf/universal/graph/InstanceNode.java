@@ -14,7 +14,6 @@ import org.springframework.data.neo4j.annotation.Fetch;
 import org.springframework.data.neo4j.annotation.NodeEntity;
 import org.springframework.data.neo4j.annotation.RelatedTo;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -92,14 +91,9 @@ public class InstanceNode extends Node {
         }
     }
 
-    public InstanceNode(JsonNode json, String isa) {
+    public InstanceNode(ObjectNode json, String isa) {
         this(json.get("name").asText(), json.get("desc").asText(), isa);
-
-        JsonNode kvs = json.get("kvs");
-
-        if (kvs != null) {
-            setProperties(kvs);
-        }
+        setProperties(json);
     }
 
     public void addResult(InstanceNode result) {
@@ -142,7 +136,7 @@ public class InstanceNode extends Node {
         return components;
     }
 
-    public InstanceNode setProperties(JsonNode properties) {
+    public InstanceNode setProperties(ObjectNode properties) {
         try {
             JsonSchemaBuilder jsonSchema = instanceOf.getSchema();
             final JsonSchemaFactory factory = JsonSchemaFactory.byDefault();
@@ -150,8 +144,13 @@ public class InstanceNode extends Node {
             ProcessingReport report;
 
             report = schema.validate(properties);
+            System.out.println(jsonSchema.getAsObjectNode());
+            System.out.println(properties);
 
             if (report.isSuccess()) {
+                // Name and desc are saved already, so we can remove those.
+                properties.remove("name");
+                properties.remove("desc");
                 Iterator<String> iter = properties.fieldNames();
                 while (iter.hasNext()) {
                     String key = iter.next();
@@ -170,7 +169,8 @@ public class InstanceNode extends Node {
 
     public InstanceNode save() {
         if (instanceNodeRepository.findByUuid(getUuid()) == null) {
-            if (instanceOf.getSchema().getProperties().size() == kv.size()) {
+            // -2 for the name and desc property.
+            if (instanceOf.getSchema().getProperties().size()-2 == kv.size()) {
                 instanceNodeRepository.save(this);
             } else {
                 throw new RuntimeException("Can't create instanceNode, missing properties.");

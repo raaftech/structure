@@ -25,7 +25,6 @@
                                           function($scope, $timeout, schemaForm, vertxEventBus, vertxEventBusService) {
         // Used to generate the forms
         $scope.schemas = [];
-        $scope.form = ["*"];
         $scope.model = [];
 
         // Object containing everything that's used for the UI
@@ -48,6 +47,7 @@
         this.createForm = function(index) {
             function recurse(template) {
                $scope.schemas.push({ name: template.name, uuid: template.uuid, form: template.form, schema: JSON.parse(template.schema)});
+               console.log(template.form);
                $scope.model.push({uuid: template.uuid, data: {}});
                if (template.children != null) {
                    var childrenLength = template.children.length;
@@ -61,8 +61,28 @@
 
             $scope.schemas = [];
             $scope.model = [];
+            $scope.selectedTemplate = $scope.ui.templates[index].uuid;
             recurse($scope.ui.templates[index]);
         }
+
+        // Instantiate the template
+        this.instantiateTemplate = function() {
+            if (vertxEventBus.readyState()) { //&& ($scope.outerForm.$dirty && $scope.outerForm.$valid)) {
+                vertxEventBusService.send('org.openpcf.universal.actor.framehelper',
+                        {'msgh':'instantiatetemplate', 'args':{'template': $scope.selectedTemplate, 'instancedata': $scope.model}})
+                        .then(function(reply) {
+                            if (reply.result.error == null) {
+                                $scope.ui.instantiateSucceeded = {};
+                                $scope.ui.instantiateSucceeded.flag = true;
+                                $scope.ui.instantiateSucceeded.message = "Created instances starting at uuid " + reply.result.uuid;
+                            } else if (reply.result.error != null) {
+                                $scope.ui.instantiateError = {};
+                                $scope.ui.instantiateError.flag = true;
+                                $scope.ui.instantiateError.message = reply.result.error;
+                            }
+                        });
+            }
+        };
     }]);
 
     // TemplateController, controlling everything to do with templates

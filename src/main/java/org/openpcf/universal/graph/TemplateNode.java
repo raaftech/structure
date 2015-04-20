@@ -3,6 +3,7 @@ package org.openpcf.universal.graph;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -149,22 +150,8 @@ public class TemplateNode extends Node implements Template {
         json.put("isa", isa.getUuid());
         json.put("form", getForm());
         try {
-            if (unique) {
-                json.put("schema", mapper.writeValueAsString(isa.getSchema().getAsObjectNode()));
-            } else {
-                // We need to wrap the TypeNode schema in another schema when it's not unique.
-                // This is done to be able to take multiple instances of this TypeNode from the
-                // client-side.
-                JsonSchemaBuilder wrappingSchema = new JsonSchemaBuilder()
-                .setType("object")
-                .setAdditionalProperties(false);
-                JsonSchemaBuilder wrappingArray = wrappingSchema.addProperty(getName(), "array", true);
-                wrappingArray.setItemToSchema(isa.getSchema().getAsObjectNode());
-                json.put("schema", mapper.writeValueAsString(wrappingSchema.getAsObjectNode()));
-            }
+            json.put("schema", mapper.writeValueAsString(getSchema().getAsObjectNode()));
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        } catch (ProcessingException e) {
             e.printStackTrace();
         }
 
@@ -178,6 +165,32 @@ public class TemplateNode extends Node implements Template {
         return json;
     }
 
+    public JsonSchemaBuilder getSchema() {
+        // We're going to wrap our schema in another schema. This is done to allow for
+        // multiple instantiations of one TypeNode (if the template allows it).
+        // The reason we wrap all the schema's this way is so we have uniform JSON schema
+        // for all types of TypeNodes. We'll just set different min/maxItems on it.
+        JsonSchemaBuilder wrappingSchema = null;
+        try {
+            wrappingSchema = new JsonSchemaBuilder()
+                    .setType("object")
+                    .setAdditionalProperties(false);
+            JsonSchemaBuilder wrappingArray = wrappingSchema.addProperty("instances", "array", required)
+                    .setItemToSchema(isa.getSchema().getAsObjectNode());
+
+            if (required) {
+                wrappingArray.setMinItems(1);
+            }
+            if (unique) {
+                wrappingArray.setMaxItems(1);
+            }
+        } catch (ProcessingException e) {
+            // Shouldn't be possible.
+            throw new RuntimeException("TypeNode didn't contain a valid JSON schema.");
+        }
+        return wrappingSchema;
+    }
+
     // Create a form layout for the generated form.
     // For now this will only create a form when a TemplateNode
     // isn't unique (else it'll just contain [ "*" ]).
@@ -186,82 +199,59 @@ public class TemplateNode extends Node implements Template {
         ObjectMapper mapper = new ObjectMapper();
         ArrayNode form = mapper.createArrayNode();
 
+        ObjectNode formItems = form.addObject();
+        ArrayNode fields = formItems.putArray("items");
+
+        formItems.put("key", "instances");
+        formItems.put("add", "New");
         if (unique) {
-            form.add("*");
+            formItems.putObject("style").put("add", "hidden");
         } else {
-            ObjectNode formItems = form.addObject();
-            formItems.put("key", getName());
-            formItems.put("add", "New");
             formItems.putObject("style").put("add", "btn-success");
-            ArrayNode fields = formItems.putArray("items");
+        }
 
-            JsonSchemaBuilder isaSchema = isa.getSchema();
-            Iterator<String> fieldIterator = isaSchema.getProperties().fieldNames();
+        JsonSchemaBuilder isaSchema = isa.getSchema();
+        Iterator<String> fieldIterator = isaSchema.getProperties().fieldNames();
 
-            while (fieldIterator.hasNext()) {
-                String fieldname = fieldIterator.next();
-                fields.add(getName() + "[]." + fieldname);
-            }
+        while (fieldIterator.hasNext()) {
+            String fieldname = fieldIterator.next();
+            fields.add("instances[]." + fieldname);
         }
 
         return form;
     }
 
-    public String instantiate(TemplateNode template, InstanceNode parent, JsonNode json, int depth) {
+    public String instantiate(TemplateNode template, InstanceNode parent, Map<String, JsonNode> dataMap, int depth) {
         if (!startOfTemplate && parent == null) {
             throw new RuntimeException("Cannot instantiate a TemplateNode that is not the start of a template without a parent.");
         }
 
+        JsonNode json = dataMap.get(template.getUuid());
+        if (!getSchema().validateJson(json)) {
+            throw new RuntimeException("JSON didn't not succesfully validate against the template's schema!");
+        }
+
         TypeNode typeNode = template.isa;
         String instanceUuid = null;
-        JsonNode instanceDataArray = null;
-        JsonNode instanceData = null;
-        try {
-            instanceDataArray = json.get(typeNode.getUuid()).get(Integer.toString(depth));
-            instanceData = instanceDataArray.get(0);
-        } catch (Exception e) {
-            // NPE might be thrown here, but don't do anything, we'll check for nulls below
-        }
+        JsonNode instanceDataArray = json.get("instances");
 
-        // Constraint checks
-        if (required && instanceDataArray == null) {
-            throw new RuntimeException("Cannot instantiate TemplateNode " + getName() + " (" + getUuid() + "). "
-                    + "It's required, but we didn't receive data for it.");
-        }
-        if (unique && instanceDataArray != null && instanceDataArray.size() > 1) {
-            throw new RuntimeException("Cannot instantiate TemplateNode " + getName() + " (" + getUuid() + "). "
-                    + "It's set to unique, but we received more than one set of data matching it.");
-        }
-        if (required && unique) {
-            if (instanceDataArray == null) {
-                throw new RuntimeException("Cannot instantiate TemplateNode " + getName() + " (" + getUuid() + "). "
-                        + "It's required and set to unique, but we didn't receive data for it.");
-            } else if (instanceDataArray.size() > 1) {
-                throw new RuntimeException("Cannot instantiate TemplateNode " + getName() + " (" + getUuid() + "). "
-                        + "It's required and set to unique, but we received more than one set of data matching it.");
-            }
-        }
-
-        if (instanceData != null) {
+        if (instanceDataArray != null) {
             // If this TemplateNode has components (implies required and unique)
             if (hasComponents.size() > 0) {
-                final InstanceNode instanceNode = new InstanceNode(instanceData, isa.getUuid());
+                final InstanceNode instanceNode = new InstanceNode((ObjectNode)instanceDataArray.get(0), isa.getUuid());
                 instanceUuid = instanceNode.getUuid();
                 if (parent != null) parent.addComponent(instanceNode);
 
                 template.hasComponents.stream()
-                        .forEach(t -> t.instantiate(t, instanceNode, json, depth+1));
+                        .forEach(t -> t.instantiate(t, instanceNode, dataMap, depth+1));
                 instanceNode.save();
             } else {
                 instanceDataArray.forEach(data -> {
-                    InstanceNode instanceNode = new InstanceNode(data, isa.getUuid());
+                    InstanceNode instanceNode = new InstanceNode((ObjectNode)data, isa.getUuid());
                     parent.addComponent(instanceNode);
                     instanceNode.save();
                 });
             }
-        } else if (required) {
-            throw new RuntimeException("Couldn't get data for TypeNode " + template.isa.getName() + "(" + template
-                    .isa.getUuid() + ") to instantiate TemplateNode");
         }
 
         return instanceUuid;

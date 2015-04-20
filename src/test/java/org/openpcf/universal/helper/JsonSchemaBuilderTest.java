@@ -17,9 +17,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.fge.jsonschema.core.exceptions.ProcessingException;
-import com.github.fge.jsonschema.core.report.ProcessingReport;
-import com.github.fge.jsonschema.main.JsonSchema;
-import com.github.fge.jsonschema.main.JsonSchemaFactory;
 
 public class JsonSchemaBuilderTest {
 
@@ -205,9 +202,6 @@ public class JsonSchemaBuilderTest {
     @Test
     public void testJsonSchemaValidate() throws ProcessingException {
         final ObjectMapper mapper = new ObjectMapper();
-        final JsonSchemaFactory factory = JsonSchemaFactory.byDefault();
-        final JsonSchema schema = factory.getJsonSchema(jsonSchema.getAsObjectNode());
-        ProcessingReport report;
         ObjectNode json = mapper.createObjectNode();
 
         jsonSchema.setType("object");
@@ -222,30 +216,25 @@ public class JsonSchemaBuilderTest {
         json.put("name", "foo");
         json.put("desc", "description");
 
-        report = schema.validate(json);
-        assertTrue(report.isSuccess());
+        assertTrue(jsonSchema.validateJson(json));
 
         // Invalid, because we only allow known properties (additionalProperties set to false)
         json.put("invalid", "foo");
-        report = schema.validate(json);
-        assertFalse(report.isSuccess());
+        assertFalse(jsonSchema.validateJson(json));
 
         // Start again
         json = mapper.createObjectNode();
         json.put("uuid", "adf58c7d-098f-4c58-a37b-8f1e07b917ba");
         json.put("name", "foo");
         // desc is missing
-        report = schema.validate(json);
-        assertFalse(report.isSuccess());
+        assertFalse(jsonSchema.validateJson(json));
 
         // False again, because desc should be a string
         json.put("desc", 1);
-        report = schema.validate(json);
-        assertFalse(report.isSuccess());
+        assertFalse(jsonSchema.validateJson(json));
 
         // Valid again
         json.put("desc", "valid");
-        report = schema.validate(json);
-        assertTrue(report.isSuccess());
+        assertTrue(jsonSchema.validateJson(json));
     }
 }

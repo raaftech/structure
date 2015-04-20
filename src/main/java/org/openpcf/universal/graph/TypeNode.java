@@ -42,27 +42,30 @@ public class TypeNode extends Node implements Template {
     private String isaUuid;
 
 
-    public JsonSchemaBuilder schema;
+    public JsonSchemaBuilder schema = new JsonSchemaBuilder();
     private TypeNodeRepository typeNodeRepository = Context.INSTANCE.getTypeNodeRepository();
 
     public TypeNode() {}
 
     public TypeNode(String name, String desc) {
         super(name, desc);
+        initSchema();
     }
 
     public TypeNode(String name, String desc, String uuid) {
         super(name, desc, uuid);
+        initSchema();
+    }
+
+    private void initSchema() {
+        schema.setType("object");
+        schema.setAdditionalProperties(false);
+        schema.addProperty("name", "string", true);
+        schema.addProperty("desc", "string", true);
     }
 
     public TypeNode setDescriptor(String key, String valueType, boolean required, String description, String defaultValue,
                                   String example) {
-        if (schema == null) {
-            schema = new JsonSchemaBuilder();
-            schema.setType("object");
-            schema.setAdditionalProperties(false);
-        }
-
         TypeNode parentNode = getIsa();
         if (parentNode != null && parentNode.getSchema().containsProperty(key)) {
             throw new RuntimeException("Can't override parent schema.");

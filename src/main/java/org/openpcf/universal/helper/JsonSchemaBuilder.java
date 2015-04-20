@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.fge.jsonschema.core.exceptions.ProcessingException;
 import com.github.fge.jsonschema.core.report.ProcessingReport;
+import com.github.fge.jsonschema.main.JsonSchema;
 import com.github.fge.jsonschema.main.JsonSchemaFactory;
 import com.github.fge.jsonschema.processors.syntax.SyntaxValidator;
 
@@ -28,6 +29,8 @@ public class JsonSchemaBuilder {
 
     private ObjectMapper mapper;
     private ObjectNode json;
+    private final JsonSchemaFactory factory = JsonSchemaFactory.byDefault();
+    private final SyntaxValidator syntaxValidator = factory.getSyntaxValidator();
 
     /**
      * Parameterless constructor for JsonSchemaBuilder.
@@ -62,8 +65,6 @@ public class JsonSchemaBuilder {
      * @throws ProcessingException When the ObjectNode does not comply to the JSON Schema specification
      */
     public JsonSchemaBuilder(ObjectNode objectNode) throws ProcessingException {
-        final JsonSchemaFactory factory = JsonSchemaFactory.byDefault();
-        final SyntaxValidator syntaxValidator = factory.getSyntaxValidator();
         ProcessingReport report = syntaxValidator.validateSchema(objectNode);
 
         if (report.isSuccess()) {
@@ -410,5 +411,50 @@ public class JsonSchemaBuilder {
      */
     public ObjectNode getAsObjectNode() {
         return json;
+    }
+
+    /**
+     * Validate JSON against the schema built with this JsonSchemaBuilder.
+     * @param data The JSON data you want to validate.
+     * @return True when the JSON successfully validated, false if not.
+     */
+    public boolean validateJson(JsonNode data) {
+        try {
+            final JsonSchema schema = factory.getJsonSchema(json);
+            ProcessingReport report;
+            report = schema.validate(data);
+            return report.isSuccess();
+        } catch (ProcessingException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
+     * Set the minimum amount of items on an array.
+     * @param amount The minimum amount of items.
+     * @return The object this method was called on.
+     */
+    public JsonSchemaBuilder setMinItems(int amount) {
+        if (!getType().equals("array")) {
+            throw new RuntimeException("setMinItems can only be called on an array.");
+        }
+        json.put("minItems", amount);
+
+        return this;
+    }
+
+    /**
+     * Set the maximum amount of items on an array.
+     * @param amount The maximum amount of items.
+     * @return The object this method was called on.
+     */
+    public JsonSchemaBuilder setMaxItems(int amount) {
+        if (!getType().equals("array")) {
+            throw new RuntimeException("setMaxItems can only be called on an array.");
+        }
+        json.put("maxItems", amount);
+
+        return this;
     }
 }

@@ -2,6 +2,8 @@
 
 package org.openpcf.universal.actor;
 
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Set;
 
 import org.neo4j.graphdb.Transaction;
@@ -18,6 +20,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.github.fge.jsonschema.core.exceptions.ProcessingException;
+import com.github.fge.jsonschema.core.report.ProcessingReport;
+import com.github.fge.jsonschema.main.JsonSchema;
+import com.github.fge.jsonschema.main.JsonSchemaFactory;
+import com.github.fge.jsonschema.processors.syntax.SyntaxValidator;
 
 /**
  * The FrameHelper actor.
@@ -30,6 +37,9 @@ public class FrameHelper extends BaseActor {
     TypeNodeRepository typeNodeRepository = Context.INSTANCE.getTypeNodeRepository();
     InstanceNodeRepository instanceNodeRepository = Context.INSTANCE.getInstanceNodeRepository();
     TemplateNodeRepository templateNodeRepository = Context.INSTANCE.getTemplateNodeRepository();
+
+    private final JsonSchemaFactory factory = JsonSchemaFactory.byDefault();
+    private final SyntaxValidator syntaxValidator = factory.getSyntaxValidator();
 
     public MessageHandler typenode() {
         return new MessageHandler() {
@@ -127,7 +137,7 @@ public class FrameHelper extends BaseActor {
 
                 Transaction tx = Context.INSTANCE.getGraphDatabase().beginTx();
                 try {
-                    InstanceNode newInstanceNode = new InstanceNode(args, isa);
+                    InstanceNode newInstanceNode = new InstanceNode((ObjectNode)args, isa);
                     newInstanceNode.save();
                     tx.success();
                     result.put("uuid", newInstanceNode.getUuid());
@@ -300,28 +310,44 @@ public class FrameHelper extends BaseActor {
             public JsonNode exec(JsonNode request) {
                 ObjectNode result = JsonNodeFactory.instance.objectNode();
                 JsonNode args = request.get("args");
-                JsonNode nodes = getArgs(args, "nodes", (JsonNode)null);
-                String template = getArgs(args, "template", "ERR_INVALID");
 
-                TemplateNode templateNode = templateNodeRepository.findByUuid(template);
+                // validate args
+                try {
+                    JsonSchema schema = factory.getJsonSchema(jsonFromResource("schema/framehelper/instantiatetemplate.schema.json"));
+                    ProcessingReport report = schema.validate(args);
+                    if (report.isSuccess()) {
+                        JsonNode instancedata = getArgs(args, "instancedata", (JsonNode)null);
+                        String template = getArgs(args, "template", "ERR_INVALID");
+                        TemplateNode templateNode = templateNodeRepository.findByUuid(template);
 
-                if (templateNode != null && nodes != null) {
-                    Transaction tx = Context.INSTANCE.getGraphDatabase().beginTx();
-                    try {
-                        result.put("uuid", templateNode.instantiate(templateNode, null, nodes, 0));
-                        tx.success();
-                        result.put("information", "Successfully instantiated TemplateNode " + template);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        tx.failure();
-                        result.put("error", "Error while instantiating TemplateNode " + template + ", transaction failed.");
-                    } finally {
-                        tx.close();
+                        if (templateNode != null && instancedata != null) {
+                            // Map stuff
+                            HashMap<String, JsonNode> uuidToDataMap = new HashMap<>();
+                            Iterator<JsonNode> elements = instancedata.elements();
+                            while (elements.hasNext()) {
+                                JsonNode element = elements.next();
+                                uuidToDataMap.put(element.get("uuid").asText(), element.get("data"));
+                            }
+
+                            Transaction tx = Context.INSTANCE.getGraphDatabase().beginTx();
+                            try {
+                                result.put("uuid", templateNode.instantiate(templateNode, null, uuidToDataMap, 0));
+                                tx.success();
+                            } catch (Exception e) {
+                                tx.failure();
+                                e.printStackTrace();
+                                result.put("error", e.getMessage());
+                            } finally {
+                                tx.close();
+                            }
+                        }
+                    } else {
+                        result.put("error", "JSON didn't pass validation.");
                     }
-                } else {
-                    result.put("error", "No template UUID or instantiation data found in request.");
+                } catch (ProcessingException e) {
+                    e.printStackTrace();
+                    result.put("error", "Error loading JSON schema.");
                 }
-
                 return response(request, result);
             }
 
