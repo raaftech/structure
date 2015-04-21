@@ -1,5 +1,5 @@
 {
-    "id": "https://repo.openpcf.org/schema/framehelper/instantiatetemplate.json#",
+    "id": "https://repo.raaftech.com/schema/framehelper/instantiatetemplate.json#",
     "$schema": "http://json-schema.org/draft-04/schema#",
     "description": "Schema for Structure's FrameHelper instantiatetemplate method.",
     "type": "object",

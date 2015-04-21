@@ -1,7 +1,7 @@
 {
-    "id": "https://repo.openpcf.org/schema/response.schema.json#",
+    "id": "https://repo.raaftech.com/schema/response.schema.json#",
     "$schema": "http://json-schema.org/draft-04/schema#",
-    "description": "Schema for OpenPCF, Universal and Structure responses to requests.",
+    "description": "Schema for Structure responses to requests.",
     "type": "object",
     "required": [ "request", "result"],
     "properties": {

@@ -1,7 +1,7 @@
 {
-    "id": "https://repo.openpcf.org/schema/manual.schema.json#",
+    "id": "https://repo.raaftech.com/schema/manual.schema.json#",
     "$schema": "http://json-schema.org/draft-04/schema#",
-    "description": "Schema for OpenPCF, Universal and Structure manual and/or documentation format.",
+    "description": "Schema for Structure manual and/or documentation format.",
     "type": "object",
     "required": [ "name", "synopsis", "description" ],
     "properties": {
