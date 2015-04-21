@@ -6,10 +6,6 @@ import java.util.LinkedHashMap;
 import java.util.Set;
 
 import org.neo4j.graphdb.Direction;
-import com.raaftech.structure.base.Context;
-import com.raaftech.structure.graph.repositories.InstanceNodeRepository;
-import com.raaftech.structure.graph.repositories.TypeNodeRepository;
-import com.raaftech.structure.helper.JsonSchemaBuilder;
 import org.springframework.data.neo4j.annotation.Fetch;
 import org.springframework.data.neo4j.annotation.NodeEntity;
 import org.springframework.data.neo4j.annotation.RelatedTo;
@@ -21,6 +17,10 @@ import com.github.fge.jsonschema.core.exceptions.ProcessingException;
 import com.github.fge.jsonschema.core.report.ProcessingReport;
 import com.github.fge.jsonschema.main.JsonSchema;
 import com.github.fge.jsonschema.main.JsonSchemaFactory;
+import com.raaftech.structure.base.Context;
+import com.raaftech.structure.graph.repositories.InstanceNodeRepository;
+import com.raaftech.structure.graph.repositories.TypeNodeRepository;
+import com.raaftech.structure.helper.JsonSchemaBuilder;
 
 /**
  * Give a description of InstanceNode here.
@@ -144,8 +144,6 @@ public class InstanceNode extends Node {
             ProcessingReport report;
 
             report = schema.validate(properties);
-            System.out.println(jsonSchema.getAsObjectNode());
-            System.out.println(properties);
 
             if (report.isSuccess()) {
                 // Name and desc are saved already, so we can remove those.
