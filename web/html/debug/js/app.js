@@ -35,7 +35,7 @@
         // Get all templates from the database.
         this.getTemplates = function() {
             if (vertxEventBus.readyState()) {
-                vertxEventBusService.send('org.openpcf.universal.actor.framehelper',
+                vertxEventBusService.send('com.raaftech.structure.actor.framehelper',
                         {'msgh':'findalltemplatenodes', 'args':{}})
                         .then(function(reply) {
                             $scope.ui.templates = reply.result.templates;
@@ -68,7 +68,7 @@
         // Instantiate the template
         this.instantiateTemplate = function() {
             if (vertxEventBus.readyState()) { //&& ($scope.outerForm.$dirty && $scope.outerForm.$valid)) {
-                vertxEventBusService.send('org.openpcf.universal.actor.framehelper',
+                vertxEventBusService.send('com.raaftech.structure.actor.framehelper',
                         {'msgh':'instantiatetemplate', 'args':{'template': $scope.selectedTemplate, 'instancedata': $scope.model}})
                         .then(function(reply) {
                             if (reply.result.error == null) {
@@ -102,7 +102,7 @@
             // Did we check already? Is the eventbus ready?
             if ($scope.ui.databaseInitError.checked == false && vertxEventBus.readyState()) {
                 // Query the database for the root-node
-                vertxEventBusService.send('org.openpcf.universal.actor.framehelper',
+                vertxEventBusService.send('com.raaftech.structure.actor.framehelper',
                         {'msgh':'typenode', 'args':{'node':'b1bc963a-19cc-4518-aecb-a35d028c49e3'}})
                         .then(function(reply) {
                             // if we got an error we didn't find the root-node
@@ -124,7 +124,7 @@
         this.databaseInit = function() {
             if (vertxEventBus.readyState()) {
                 // Send the db-init message over the eventbus
-                vertxEventBusService.send('org.openpcf.universal.actor.schemamanager',
+                vertxEventBusService.send('com.raaftech.structure.actor.schemamanager',
                         {'msgh':'update', 'args':{}})
                         .then(function(reply) {
                             // If everything went as expected clear the error flag
@@ -151,7 +151,7 @@
         this.createNewTemplate = function() {
             if (vertxEventBus.readyState()) {
                 // Send our newTemplate object over the eventbus
-                vertxEventBusService.send('org.openpcf.universal.actor.framehelper',
+                vertxEventBusService.send('com.raaftech.structure.actor.framehelper',
                         {'msgh':'createtemplatenode', 'args':$scope.newTemplate})
                         .then(function(reply) {
                             // If everything went alright clear the form and show an informational message
@@ -184,7 +184,7 @@
         // Build object for the dropdown for parent selection
         this.getTemplates = function() {
             if (vertxEventBus.readyState()) {
-                vertxEventBusService.send('org.openpcf.universal.actor.framehelper',
+                vertxEventBusService.send('com.raaftech.structure.actor.framehelper',
                         {'msgh':'findalltemplatenodes', 'args':{}})
                         .then(function(reply) {
                             $scope.ui.parentMenu = [];
@@ -222,7 +222,7 @@
         // Find a TypeNode either by name or by UUID
         this.findTypeNode = function() {
             if (vertxEventBus.readyState()) {
-                vertxEventBusService.send('org.openpcf.universal.actor.framehelper',
+                vertxEventBusService.send('com.raaftech.structure.actor.framehelper',
                         {'msgh':'typenode', 'args':{'node': $scope.newTemplate.isa}})
                         .then(function(reply) {
                             console.log(reply);

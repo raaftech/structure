@@ -9,8 +9,8 @@
         <version>7</version>
     </parent>
 
-    <groupId>org.openpcf</groupId>
-    <artifactId>universal</artifactId>
+    <groupId>com.raaftech</groupId>
+    <artifactId>structure</artifactId>
     <packaging>jar</packaging>
     <version>0.6.1</version>
     <name>universal</name>
@@ -19,72 +19,64 @@
         Vert.x and Neo4j application to manage computing environments.
     </description>
 
-    <url>https://www.openpcf.org/projects/universal</url>
-
-    <licenses>
-        <license>
-            <name>GNU General Public License, Version 3</name>
-            <url>http://www.gnu.org/licenses/gpl-3.0.txt</url>
-            <distribution>repo</distribution>
-        </license>
-    </licenses>
+    <url>https://stash.raaftech.com/projects/STR</url>
 
     <organization>
-        <name>Open Provisioning and Control Framework</name>
-        <url>https://www.openpcf.org/</url>
+        <name>RAAF Technology</name>
+        <url>https://raaftech.com</url>
     </organization>
 
     <scm>
-        <url>https://svn.openpcf.org/universal/trunk</url>
-        <connection>scm:svn:https://svn.openpcf.org/universal/trunk</connection>
-        <developerConnection>scm:svn:https://svn.openpcf.org/universal/trunk</developerConnection>
+        <url>https://stash.raaftech.com/projects/STR</url>
+        <connection>ssh://git@git.raaftech.com:8022/str/structure.git</connection>
+        <developerConnection>ssh://git@git.raaftech.com:8022/str/structure.git</developerConnection>
     </scm>
 
     <issueManagement>
-        <system>OpenPCF JIRA</system>
-        <url>https://jira.openpcf.org/</url>
+        <system>RAAF JIRA</system>
+        <url>https://jira.raaftech.com/</url>
     </issueManagement>
 
     <ciManagement>
-        <system>OpenPCF Bamboo</system>
-        <url>https://boo.openpcf.org/</url>
+        <system>RAAF Bamboo</system>
+        <url>https://boo.raaftech.com/</url>
     </ciManagement>
 
     <developers>
         <developer>
             <id>rubin</id>
-            <email>rubin@openpcf.org</email>
+            <email>rubin@raaftech.com</email>
             <name>Rubin Simons</name>
-            <organization>Open Provisioning and Control Framework</organization>
-            <organizationUrl>https://www.openpcf.org/</organizationUrl>
+            <organization>RAAF Technology</organization>
+            <organizationUrl>https://www.raaftech.com/</organizationUrl>
         </developer>
         <developer>
             <id>freek</id>
-            <email>freek@openpcf.org</email>
+            <email>freek@raaftech.com</email>
             <name>Freek Alleman</name>
-            <organization>Open Provisioning and Control Framework</organization>
-            <organizationUrl>https://www.openpcf.org/</organizationUrl>
+            <organization>RAAF Technology</organization>
+            <organizationUrl>https://www.raaftech.com/</organizationUrl>
         </developer>
         <developer>
             <id>maurice</id>
-            <email>maurice@openpcf.org</email>
+            <email>maurice@raaftech.com</email>
             <name>Maurice Schillemans</name>
-            <organization>Open Provisioning and Control Framework</organization>
-            <organizationUrl>https://www.openpcf.org/</organizationUrl>
+            <organization>RAAF Technology</organization>
+            <organizationUrl>https://www.raaftech.com/</organizationUrl>
         </developer>
         <developer>
             <id>stephan</id>
-            <email>stephan@openpcf.org</email>
+            <email>stephan@raaftech.com</email>
             <name>Stephan Kaffa</name>
-            <organization>Open Provisioning and Control Framework</organization>
-            <organizationUrl>https://www.openpcf.org/</organizationUrl>
+            <organization>RAAF Technology</organization>
+            <organizationUrl>https://www.raaftech.com/</organizationUrl>
         </developer>
         <developer>
             <id>boy</id>
-            <email>boy@openpcf.org</email>
+            <email>boy@raaftech.com</email>
             <name>Boy van Duuren</name>
-            <organization>Open Provisioning and Control Framework</organization>
-            <organizationUrl>https://www.openpcf.org/</organizationUrl>
+            <organization>RAAF Technology</organization>
+            <organizationUrl>https://www.raaftech.com/</organizationUrl>
         </developer>
     </developers>
 
@@ -265,7 +257,7 @@
                                 <transformer
                                         implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                     <manifestEntries>
-                                        <Main-Class>org.openpcf.universal.base.Application</Main-Class>
+                                        <Main-Class>com.raaftech.structure.base.Application</Main-Class>
                                     </manifestEntries>
                                 </transformer>
                                 <transformer

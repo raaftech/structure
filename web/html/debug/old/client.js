@@ -9,9 +9,9 @@ eventBus.onopen = function() {
 
 function startUpdate() {
     if (eventBus.readyState()) {
-        eventBus.send("org.openpcf.universal.actor.schemamanager",
+        eventBus.send("com.raaftech.structure.actor.schemamanager",
                 {"msgh":"update", "args":{}}, function(data) {
-                    eventBus.registerHandler("org.openpcf.universal.worker.status_"
+                    eventBus.registerHandler("com.raaftech.structure.worker.status_"
                         + data.result.says, function(msg) {
                         console.log(msg);
                     });
@@ -21,7 +21,7 @@ function startUpdate() {
 
 function findTypeNode(node) {
     if (eventBus.readyState()) {
-        eventBus.send("org.openpcf.universal.actor.framehelper",
+        eventBus.send("com.raaftech.structure.actor.framehelper",
                 {"msgh":"typenode", "args":{"node":node}}, function(data) {
                     fillTypeNodeTable(data);
                 });
@@ -30,7 +30,7 @@ function findTypeNode(node) {
 
 function findInstanceNode(node) {
     if (eventBus.readyState()) {
-        eventBus.send("org.openpcf.universal.actor.framehelper",
+        eventBus.send("com.raaftech.structure.actor.framehelper",
                 {"msgh":"instancenode", "args":{"node":node}}, function(data) {
                     fillInstanceNodeTable(data);
                 });
@@ -39,7 +39,7 @@ function findInstanceNode(node) {
 
 function findTemplateNode(node) {
     if (eventBus.readyState()) {
-        eventBus.send("org.openpcf.universal.actor.framehelper",
+        eventBus.send("com.raaftech.structure.actor.framehelper",
                 {"msgh":"templatenode", "args":{"node":node}}, function(data) {
                     console.log(data);
                     label = document.getElementById("selectedTemplateUuid");
@@ -61,7 +61,7 @@ function createInstanceNode(form) {
                  desc: form.elements.namedItem("instanceDesc").value,
                  nodeuuid: form.elements.namedItem("instanceOf").value,
                  kvs: kvs };
-        eventBus.send("org.openpcf.universal.actor.framehelper",
+        eventBus.send("com.raaftech.structure.actor.framehelper",
                 {"msgh":"createinstancenode", "args":args}, function(data) {
                     console.log(data);
                 });
@@ -157,7 +157,7 @@ function createTemplateNode(parenttmpl, name, desc, isa, required, unique, start
                  unique: unique,
                  start: start};
 
-        eventBus.send("org.openpcf.universal.actor.framehelper",
+        eventBus.send("com.raaftech.structure.actor.framehelper",
                 {"msgh":"createtemplatenode", "args":args}, function(data) {
                     console.log(data);
                     document.getElementById("uuidNewTemplateNode").value = data.result.uuid;
@@ -277,7 +277,7 @@ function instantiateTemplate(form) {
 			jsonform["nodes"][fieldsetname][depth].push(obj);
 			console.log(JSON.stringify(jsonform));
 		}
-        eventBus.send("org.openpcf.universal.actor.framehelper",
+        eventBus.send("com.raaftech.structure.actor.framehelper",
             {"msgh":"instantiatetemplate", "args":jsonform}, function(data) {
                 console.log(data);
             });
@@ -286,7 +286,7 @@ function instantiateTemplate(form) {
 
 function fillTemplateNodeList() {
     if (eventBus.readyState()) {
-        eventBus.send("org.openpcf.universal.actor.framehelper",
+        eventBus.send("com.raaftech.structure.actor.framehelper",
             {"msgh":"findalltemplatenodes", "args":{}}, function(data) {
                 list = document.getElementById("templateNodesList");
                 for (el in data.result) {
@@ -307,7 +307,7 @@ function addNodeToTemplate(uuid, templateUuid) {
         args  = { uuid: uuid,
                   templateUuid: templateUuid };
         console.log(args);
-        eventBus.send("org.openpcf.universal.actor.framehelper",
+        eventBus.send("com.raaftech.structure.actor.framehelper",
         {"msgh":"addnodetotemplate", "args":args},
         function(data) {
         });
@@ -334,7 +334,7 @@ function removeNodeFromTemplate(templateUuid, nodeUuid) {
             confirm = window.confirm("Trying to delete element from template that's in a subtemplate. Remove from original template?");
         }
         if (confirm || list.options[list.selectedIndex].value == templateUuid) {
-            eventBus.send("org.openpcf.universal.actor.framehelper",
+            eventBus.send("com.raaftech.structure.actor.framehelper",
             {"msgh":"removenodefromtemplate", "args":args},
             function(data) {
                 console.log(data);
