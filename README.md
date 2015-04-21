@@ -8,4 +8,4 @@ How to run
     cd web/html/debug/
     bower install
     cd -
-    java -jar target/universal-0.6.1-fat.jar --debug
+    java -jar target/structure-0.6.1-fat.jar --debug

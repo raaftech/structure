@@ -1,5 +1,5 @@
 (function() {
-    var app = angular.module('universal', ['knalli.angular-vertxbus', 'schemaForm'])
+    var app = angular.module('structure', ['knalli.angular-vertxbus', 'schemaForm'])
 
     app.config(function(vertxEventBusProvider) {
         vertxEventBusProvider
