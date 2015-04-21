@@ -23,7 +23,7 @@ public class ServiceManagersR1 extends SchemaUpdate {
 
     @Override
     protected void initNodes() {
-        // org.openpcf.model.servicemanagers-0.0.1
+        // raaftech.com.model.servicemanagers-0.0.1
         typeNodeList = Arrays.asList(
             new TypeNode("SysvInit", "SysV Init Service Manager.", "608bfaf1-9edc-4609-b5cd-56d8aeff8174")
                     .setIsa("c3008eec-b454-4ef6-bf7e-0bd92c13d3c3"),

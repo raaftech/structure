@@ -23,7 +23,7 @@ public class CloudSystemsR1 extends SchemaUpdate {
 
     @Override
     protected void initNodes() {
-        // org.openpcf.model.cloudsystems-0.0.1
+        // raaftech.com.model.cloudsystems-0.0.1
         typeNodeList = Arrays.asList(
             new TypeNode("ApacheCloudStack", "The Apache CloudStack platform.",
                     "c1d0eada-0d22-4026-aa2d-d865c1583482")

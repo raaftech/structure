@@ -20,7 +20,7 @@ public class BaseR1 extends SchemaUpdate {
     }
 
     protected void initNodes() {
-        // org.openpcf.model.base
+        // raaftech.com.model.base
         typeNodeList = Arrays.asList(
 	        new TypeNode("Type", "The root type.", "b1bc963a-19cc-4518-aecb-a35d028c49e3"),
 	        new TypeNode("Component", "An abstract base component.", "a79ce509-a021-4177-ae61-73abd01fb479")

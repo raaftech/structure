@@ -23,7 +23,7 @@ public class InterpretersR1 extends SchemaUpdate {
 
     @Override
     protected void initNodes() {
-        // org.openpcf.model.interpreters-0.0.1
+        // raaftech.com.model.interpreters-0.0.1
         typeNodeList = Arrays.asList(
             new TypeNode("UnixShell", "A generic UNIX shell.", "86168e4a-8c99-43c9-ad95-c8f88d96ac32")
                     .setIsa("d047f415-734c-4bd3-92b9-d68d5521ce69"),

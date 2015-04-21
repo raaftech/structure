@@ -23,7 +23,7 @@ public class PackageManagersR1 extends SchemaUpdate {
 
     @Override
     protected void initNodes() {
-        // org.openpcf.model.packagemanagers-0.0.1
+        // raaftech.com.model.packagemanagers-0.0.1
         typeNodeList = Arrays.asList(
             new TypeNode("PacMan", "Arch Linux Pacman Package Manager.", "ad047d85-792a-4385-a14c-b85266bc5176")
                     .setIsa("e2b8b9ee-b66f-4252-8fba-4fb172f741bc"),

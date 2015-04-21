@@ -23,7 +23,7 @@ public class EmulatorsR1 extends SchemaUpdate {
 
     @Override
     protected void initNodes() {
-        // org.openpcf.model.emulators-0.0.1
+        // raaftech.com.model.emulators-0.0.1
         typeNodeList = Arrays.asList(
             new TypeNode("Bochs", "The Bochs Emulator.", "cd8f940e-219b-488e-8b75-d9fece8b3b35")
                     .setIsa("59aeae81-9741-4986-b9c2-931504cfc9e3"),

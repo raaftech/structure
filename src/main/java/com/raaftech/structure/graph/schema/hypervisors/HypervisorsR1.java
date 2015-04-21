@@ -23,7 +23,7 @@ public class HypervisorsR1 extends SchemaUpdate {
 
     @Override
     protected void initNodes() {
-        // org.openpcf.model.hypervisors-0.0.1
+        // raaftech.com.model.hypervisors-0.0.1
         typeNodeList = Arrays.asList(
             new TypeNode("Kvm", "The Linux kernel-based virtual machine.", "04b4bd73-fcec-42f6-bb03-7686ad019fbb")
                     .setIsa("c5c7fcb5-8ac3-40cc-b195-b2b6af368e81"),

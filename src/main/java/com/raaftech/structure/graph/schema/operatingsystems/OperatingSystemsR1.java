@@ -23,7 +23,7 @@ public class OperatingSystemsR1 extends SchemaUpdate {
 
     @Override
     protected void initNodes() {
-        // org.openpcf.model.operatingsystems-0.0.1
+        // raaftech.com.model.operatingsystems-0.0.1
         typeNodeList = Arrays.asList(
             new TypeNode("DosLike", "A DOS-like operating system.", "e181e9e8-7f30-42a3-b87f-b8e183ddfd6f")
                     .setIsa("f05e325e-1aee-4892-96e4-8bcd6e97c528"),

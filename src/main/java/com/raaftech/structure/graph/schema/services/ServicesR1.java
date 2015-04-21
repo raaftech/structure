@@ -23,7 +23,7 @@ public class ServicesR1 extends SchemaUpdate {
 
     @Override
     protected void initNodes() {
-        // org.openpcf.model.services-0.0.1
+        // raaftech.com.model.services-0.0.1
         typeNodeList = Arrays.asList(
             new TypeNode("HttpServer", "A generic HTTP Server.", "b46cb520-caaf-4d26-b59d-58edca723b8d")
                     .setIsa("3fb4603b-281e-47c0-b338-768ea05d4660"),
