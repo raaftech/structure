@@ -7,5 +7,5 @@
             "confirmString": "somestring"
         }
     },
-    "description": "The reinit handler can initialize a clean, empty Neo4j database with OpenPCF schema. the confirmString argument allows you to specify a confirmation string that has to be typed interactively for reinitialization to actually occur. The dryRun argument allows one to execute the handler in a way that is non-destructive, simply showing what the handler would do without actually modifying any data."
+    "description": "The reinit handler can initialize a clean, empty Neo4j database with Structure schema. the confirmString argument allows you to specify a confirmation string that has to be typed interactively for reinitialization to actually occur. The dryRun argument allows one to execute the handler in a way that is non-destructive, simply showing what the handler would do without actually modifying any data."
 }

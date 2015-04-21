@@ -6,5 +6,5 @@
             "dryRun": true
         }
     },
-    "description": "The update handler can update or create a neo4j database with OpenPCF schema. Calling update will make SchemaHandler check for updated schema definition files and apply them if newer. The dryRun argument allows you to run the updater without actually modifying any data."
+    "description": "The update handler can update or create a neo4j database with Structure schema. Calling update will make SchemaHandler check for updated schema definition files and apply them if newer. The dryRun argument allows you to run the updater without actually modifying any data."
 }
