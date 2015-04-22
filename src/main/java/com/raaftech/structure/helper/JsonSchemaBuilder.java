@@ -113,9 +113,13 @@ public class JsonSchemaBuilder {
      * @return A new JsonSchemaBuilder with the newly created property as root, or null when
      * we catch a ProcessingException.
      */
-    public JsonSchemaBuilder addProperty(String name, String type, boolean req) {
+    public JsonSchemaBuilder addProperty(String name, String type, boolean req, String description) {
         if (getType() == null || !getType().equals("object")) {
             throw new RuntimeException("Can't add properties to something that's not an object.");
+        }
+
+        if (name == null || type == null || description == null) {
+            throw new RuntimeException("Can't call addProperty using null arguments.");
         }
 
         ObjectNode properties = getOrCreateProperties();
@@ -129,6 +133,7 @@ public class JsonSchemaBuilder {
         }
         try {
             property.setType(type);
+            property.setDescription(description);
         } catch (Exception e) {
             properties.remove(name);
             throw e;
@@ -403,6 +408,30 @@ public class JsonSchemaBuilder {
         }
 
         return null;
+    }
+
+    /**
+     * Set the description of a JSON schema (node).
+     * @param description The description.
+     * @return The object this method was called on.
+     */
+    public JsonSchemaBuilder setDescription(String description) {
+        json.put("description", description);
+
+        return this;
+    }
+
+    /**
+     * Get the description of this JSON schema (node).
+     * @return The description, or null.
+     */
+    public String getDescription() {
+        JsonNode description = json.get("description");
+        if (description != null) {
+            return description.asText();
+        } else {
+            return null;
+        }
     }
 
     /**

@@ -7,9 +7,6 @@ import java.util.stream.Collectors;
 
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.Transaction;
-import com.raaftech.structure.base.Context;
-import com.raaftech.structure.graph.repositories.TypeNodeRepository;
-import com.raaftech.structure.helper.JsonSchemaBuilder;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.neo4j.annotation.NodeEntity;
 import org.springframework.data.neo4j.annotation.RelatedTo;
@@ -20,6 +17,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.fge.jsonschema.core.exceptions.ProcessingException;
+import com.raaftech.structure.base.Context;
+import com.raaftech.structure.graph.repositories.TypeNodeRepository;
+import com.raaftech.structure.helper.JsonSchemaBuilder;
 
 /**
  * Give a description of TypeNode here.
@@ -60,8 +60,8 @@ public class TypeNode extends Node implements Template {
     private void initSchema() {
         schema.setType("object");
         schema.setAdditionalProperties(false);
-        schema.addProperty("name", "string", true);
-        schema.addProperty("desc", "string", true);
+        schema.addProperty("name", "string", true, "The name of this node.");
+        schema.addProperty("desc", "string", true, "The description of this node.");
     }
 
     public TypeNode setDescriptor(String key, String valueType, boolean required, String description, String defaultValue,
@@ -70,7 +70,7 @@ public class TypeNode extends Node implements Template {
         if (parentNode != null && parentNode.getSchema().containsProperty(key)) {
             throw new RuntimeException("Can't override parent schema.");
         } else {
-            schema.addProperty(key, valueType, required);
+            schema.addProperty(key, valueType, required, description);
         }
 
         return this;
@@ -99,7 +99,8 @@ public class TypeNode extends Node implements Template {
                             String propertyName = propertyIterator.next();
                             if (!schema.containsProperty(propertyName)) {
                                 JsonNode propertyJson = parentConstraints.getProperties().get(propertyName);
-                                schema.addProperty(propertyName, propertyJson.get("type").asText(), parentConstraints.isRequired(propertyName));
+                                schema.addProperty(propertyName, propertyJson.get("type").asText(),
+                                        parentConstraints.isRequired(propertyName), propertyJson.get("description").asText());
                             }
                         }
                     }
