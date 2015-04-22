@@ -1,10 +1,10 @@
 package com.raaftech.structure.graph.schema;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.graph.SchemaNode;
 import com.raaftech.structure.graph.Template;
@@ -12,6 +12,8 @@ import com.raaftech.structure.graph.TypeNode;
 import com.raaftech.structure.graph.repositories.SchemaNodeRepository;
 import com.raaftech.structure.graph.repositories.TypeNodeRepository;
 import com.raaftech.structure.helper.JsonSchemaBuilder;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 /**
  * SchemaUpdate is an abstract class that has to be implemented for every update to the schema.
@@ -145,8 +147,7 @@ public abstract class SchemaUpdate {
                         String propertyName = propertyIterator.next();
                         if (childSchema.containsProperty(propertyName)) {
                             JsonNode propertyJson = newSchema.getProperties().get(propertyName);
-                            childSchema.addProperty(propertyName, propertyJson.get("type").asText(),
-                                    newSchema.isRequired(propertyName), propertyJson.get("description").asText());
+                            childSchema.addProperty(propertyName, propertyJson.get("type").asText(), newSchema.isRequired(propertyName));
                         }
                     }
 
