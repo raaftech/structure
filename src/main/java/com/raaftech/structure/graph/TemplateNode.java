@@ -9,10 +9,6 @@ import java.util.stream.Collectors;
 
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.Transaction;
-import com.raaftech.structure.base.Context;
-import com.raaftech.structure.graph.repositories.TemplateNodeRepository;
-import com.raaftech.structure.graph.repositories.TypeNodeRepository;
-import com.raaftech.structure.helper.JsonSchemaBuilder;
 import org.springframework.data.neo4j.annotation.Fetch;
 import org.springframework.data.neo4j.annotation.NodeEntity;
 import org.springframework.data.neo4j.annotation.RelatedTo;
@@ -23,6 +19,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.fge.jsonschema.core.exceptions.ProcessingException;
+import com.raaftech.structure.base.Context;
+import com.raaftech.structure.graph.repositories.TemplateNodeRepository;
+import com.raaftech.structure.graph.repositories.TypeNodeRepository;
+import com.raaftech.structure.helper.JsonSchemaBuilder;
 
 /**
  * Give a description of TemplateNode here.
@@ -175,7 +175,7 @@ public class TemplateNode extends Node implements Template {
             wrappingSchema = new JsonSchemaBuilder()
                     .setType("object")
                     .setAdditionalProperties(false);
-            JsonSchemaBuilder wrappingArray = wrappingSchema.addProperty("instances", "array", required)
+            JsonSchemaBuilder wrappingArray = wrappingSchema.addProperty("instances", "array", required, "Wrapping array.")
                     .setItemToSchema(isa.getSchema().getAsObjectNode());
 
             if (required) {
