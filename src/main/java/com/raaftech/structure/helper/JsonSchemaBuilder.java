@@ -435,6 +435,47 @@ public class JsonSchemaBuilder {
     }
 
     /**
+     * Set the default value of a JSON schema (node).
+     * The given parameter will be parsed according to the type of the node.
+     * This is a NOOP on anything that doesn't have type string, number
+     * or boolean and on a null parameter.
+     * @param value The default value to be set.
+     * @return The object this method was called on.
+     */
+    public JsonSchemaBuilder setDefault(String value) {
+        if (value == null) {
+            return this;
+        }
+
+        switch (getType()) {
+        case "string":
+            json.put("default", value);
+            break;
+        case "number":
+            if (value.contains("."))
+                json.put("default", Double.parseDouble(value));
+            else
+                json.put("default", Integer.parseInt(value));
+            break;
+        case "boolean":
+            json.put("default", Boolean.parseBoolean(value));
+
+        }
+
+        return this;
+    }
+
+    /**
+     * Get the default value of this JSON schema (node).
+     * @return The default value as JsonNode. We're returning a JsonNode
+     * object because we don't know what's being stored in there. It could be
+     * a String, Integer, Double or Boolean.
+     */
+    public JsonNode getDefault() {
+        return json.get("default");
+    }
+
+    /**
      * Get the actual JSON schema as ObjectNode.
      * @return The wrapped ObjectNode.
      */

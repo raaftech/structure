@@ -75,7 +75,6 @@ public class JsonSchemaBuilderTest {
         exception.expect(IllegalArgumentException.class);
         jsonSchema.setType("foo");
     }
-
     @Test
     public void testJsonSchemaAddProperty() {
         ObjectNode node;
@@ -204,6 +203,26 @@ public class JsonSchemaBuilderTest {
         jsonSchema.setDescription("foobar");
         assertTrue(jsonSchema.getDescription().equals("foobar"));
     }
+
+    @Test
+    public void testJsonSchemaSetDefault() {
+        jsonSchema.setType("string");
+        jsonSchema.setDefault("foobar");
+        assertEquals("foobar", jsonSchema.getDefault().asText());
+
+        jsonSchema = new JsonSchemaBuilder();
+        jsonSchema.setType("number");
+        jsonSchema.setDefault("1");
+        assertEquals(1, jsonSchema.getDefault().asInt());
+        jsonSchema.setDefault("1.23");
+        assertEquals(1.23, jsonSchema.getDefault().asDouble(), 1e-15);
+
+        jsonSchema = new JsonSchemaBuilder();
+        jsonSchema.setType("boolean");
+        jsonSchema.setDefault("true");
+        assertTrue(jsonSchema.getDefault().asBoolean());
+    }
+
 
     @Test
     public void testJsonSchemaValidate() throws ProcessingException {

@@ -70,7 +70,8 @@ public class TypeNode extends Node implements Template {
         if (parentNode != null && parentNode.getSchema().containsProperty(key)) {
             throw new RuntimeException("Can't override parent schema.");
         } else {
-            schema.addProperty(key, valueType, required, description);
+            schema.addProperty(key, valueType, required, description)
+                .setDefault(defaultValue);
         }
 
         return this;
