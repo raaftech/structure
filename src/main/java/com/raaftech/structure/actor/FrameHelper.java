@@ -7,14 +7,6 @@ import java.util.Iterator;
 import java.util.Set;
 
 import org.neo4j.graphdb.Transaction;
-import com.raaftech.structure.base.BaseActor;
-import com.raaftech.structure.base.Context;
-import com.raaftech.structure.graph.InstanceNode;
-import com.raaftech.structure.graph.TemplateNode;
-import com.raaftech.structure.graph.TypeNode;
-import com.raaftech.structure.graph.repositories.InstanceNodeRepository;
-import com.raaftech.structure.graph.repositories.TemplateNodeRepository;
-import com.raaftech.structure.graph.repositories.TypeNodeRepository;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -25,6 +17,14 @@ import com.github.fge.jsonschema.core.report.ProcessingReport;
 import com.github.fge.jsonschema.main.JsonSchema;
 import com.github.fge.jsonschema.main.JsonSchemaFactory;
 import com.github.fge.jsonschema.processors.syntax.SyntaxValidator;
+import com.raaftech.structure.base.BaseActor;
+import com.raaftech.structure.base.Context;
+import com.raaftech.structure.graph.InstanceNode;
+import com.raaftech.structure.graph.TemplateNode;
+import com.raaftech.structure.graph.TypeNode;
+import com.raaftech.structure.graph.repositories.InstanceNodeRepository;
+import com.raaftech.structure.graph.repositories.TemplateNodeRepository;
+import com.raaftech.structure.graph.repositories.TypeNodeRepository;
 
 /**
  * The FrameHelper actor.
@@ -183,6 +183,9 @@ public class FrameHelper extends BaseActor {
                     if (!parent.equals("") && start == true) {
                         throw new RuntimeException("Cannot create TemplateNode that's both the start of a template and has a parent " +
                                 "TemplateNode.");
+                    }
+                    if (parent.equals("") && start == false) {
+                        throw new RuntimeException("Cannot create TemplateNode that has no parent and isn't the start of a template.");
                     }
                     if (name.equals("") || desc.equals("") || isa.equals("")) {
                         throw new RuntimeException("Did not get valid name, description or ISA for new TemplateNode.");
