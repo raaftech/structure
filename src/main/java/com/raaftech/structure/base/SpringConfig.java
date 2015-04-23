@@ -7,10 +7,6 @@ package com.raaftech.structure.base;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.factory.GraphDatabaseBuilder;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
-import com.raaftech.structure.graph.repositories.InstanceNodeRepository;
-import com.raaftech.structure.graph.repositories.NodeRepository;
-import com.raaftech.structure.graph.repositories.SchemaNodeRepository;
-import com.raaftech.structure.graph.repositories.TypeNodeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,6 +14,11 @@ import org.springframework.data.neo4j.config.EnableNeo4jRepositories;
 import org.springframework.data.neo4j.config.Neo4jConfiguration;
 import org.springframework.data.neo4j.core.GraphDatabase;
 import org.springframework.data.neo4j.support.Neo4jTemplate;
+
+import com.raaftech.structure.graph.repositories.InstanceNodeRepository;
+import com.raaftech.structure.graph.repositories.NodeRepository;
+import com.raaftech.structure.graph.repositories.SchemaNodeRepository;
+import com.raaftech.structure.graph.repositories.TypeNodeRepository;
 
 
 /**
@@ -37,7 +38,7 @@ public class SpringConfig extends Neo4jConfiguration {
     @Bean
     GraphDatabaseService graphDatabaseService() {
         // TODO: make path configurable
-        GraphDatabaseBuilder graphDatabaseBuilder = new GraphDatabaseFactory().newEmbeddedDatabaseBuilder("universal.db");
+        GraphDatabaseBuilder graphDatabaseBuilder = new GraphDatabaseFactory().newEmbeddedDatabaseBuilder("structure.db");
         graphDatabaseBuilder.setConfig("remote_shell_enabled", "true");
         return graphDatabaseBuilder.newGraphDatabase();
     }

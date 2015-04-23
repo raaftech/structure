@@ -95,7 +95,7 @@ public class Application {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        System.out.println("Universal is running at http://localhost:8080/html/");
+        System.out.println("Structure is running at http://localhost:8080/html/");
         if (serveDebug) {
             System.out.println("Debug interface is running at http://localhost:8080/debug/");
         }
