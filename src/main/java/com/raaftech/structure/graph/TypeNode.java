@@ -65,13 +65,14 @@ public class TypeNode extends Node implements Template {
     }
 
     public TypeNode setDescriptor(String key, String valueType, boolean required, String description, String defaultValue,
-                                  String example) {
+                                  String pattern) {
         TypeNode parentNode = getIsa();
         if (parentNode != null && parentNode.getSchema().containsProperty(key)) {
             throw new RuntimeException("Can't override parent schema.");
         } else {
             schema.addProperty(key, valueType, required, description)
-                .setDefault(defaultValue);
+                .setDefault(defaultValue)
+                .setPattern(pattern);
         }
 
         return this;

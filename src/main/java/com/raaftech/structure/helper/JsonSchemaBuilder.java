@@ -387,6 +387,9 @@ public class JsonSchemaBuilder {
      * @return The JsonSchemaBuilder this method was called on.
      */
     public JsonSchemaBuilder setPattern(String pattern) {
+        if (pattern == null) {
+            return this;
+        }
         if (getType().equals("string")) {
             Pattern.compile(pattern);
             json.put("pattern", pattern);
