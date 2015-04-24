@@ -90,6 +90,8 @@
                                           function($scope, $timeout, vertxEventBus, vertxEventBusService) {
         // newTemplate is used to create the new TemplateNode via the eventbus
         $scope.newTemplate = { required: false, unique: false, start: false };
+        // Used to delete from templates
+        $scope.deleteTemplateUuid = "";
         // Data that's only used for the view
         $scope.ui = {};
         $scope.ui.databaseInitError = { checked: false, flag: false };
@@ -180,6 +182,20 @@
                         });
             }
         };
+
+        // Delete a TemplateNode, removing it form it's parent (if it has one)
+        // and removing all its children.
+        this.deleteTemplate = function() {
+            if (vertxEventBus.readyState()) {
+                vertxEventBusService.send('com.raaftech.structure.actor.framehelper',
+                        {'msgh':'removenodefromtemplate', 'args':{'uuid': $scope.deleteTemplateUuid}})
+                        .then(function(reply) {
+                            console.log(reply.result);
+                        }).catch(function() {
+                            console.warn("troubles");
+                        });
+            }
+        }
 
         // Build object for the dropdown for parent selection
         this.getTemplates = function() {

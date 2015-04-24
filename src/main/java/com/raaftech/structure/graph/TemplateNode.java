@@ -41,6 +41,10 @@ public class TemplateNode extends Node implements Template {
     @Fetch
     Set<TemplateNode> hasComponents;
 
+    @RelatedTo(type = "HAS_COMPONENT", direction = Direction.INCOMING)
+    @Fetch
+    TemplateNode parentComponent;
+
     boolean startOfTemplate;
     boolean required;
     boolean unique;
@@ -71,6 +75,16 @@ public class TemplateNode extends Node implements Template {
         } else {
             throw new RuntimeException("Could not find TypeNode " + isa + " to set ISA relation.");
         }
+
+        return this;
+    }
+
+    public TemplateNode getParentComponent() {
+        return parentComponent;
+    }
+
+    public TemplateNode setParentComponent(TemplateNode parentComponent) {
+        this.parentComponent = parentComponent;
 
         return this;
     }
@@ -111,6 +125,7 @@ public class TemplateNode extends Node implements Template {
         }
         if (required && unique) {
             hasComponents.add(component);
+            component.setParentComponent(this);
         } else {
             throw new RuntimeException("Cannot add a child TemplateNode to " + getName() + " (" + getUuid()
                     + ") because " + getName() + " isn't set to required and unique.");
@@ -122,6 +137,7 @@ public class TemplateNode extends Node implements Template {
     public boolean removeComponent(TemplateNode component) {
         // UUID will is unique, so we can safely assume
         // the resulting list will have only 1 element.
+        TemplateNodeRepository templateNodeRepository = Context.INSTANCE.getTemplateNodeRepository();
         List<TemplateNode> placeholder = hasComponents.stream()
                 .filter(c -> c.getUuid() == component.getUuid())
                 .collect(Collectors.toList());
@@ -130,7 +146,20 @@ public class TemplateNode extends Node implements Template {
         found.hasComponents.stream()
                 .forEach(TemplateNode::cascadeRemoval);
 
+        templateNodeRepository.delete(found);
+
         return hasComponents.remove(found);
+    }
+
+    /**
+     * Removes all components from a TemplateNode.
+     * @return The number of components removed.
+     */
+    public long removeAllComponents() {
+        return hasComponents.stream()
+                .peek(component -> removeComponent(component))
+                .count();
+
     }
 
     private static void cascadeRemoval(TemplateNode child) {

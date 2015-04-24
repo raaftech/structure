@@ -24,7 +24,7 @@
 <body>
 	<div class="appContainer" ng-controller="ContainerController as containerCtrl">
 		<ul class="nav nav-pills">
-			<li role="presentation" ng-class="{ active:containerCtrl.isSelected(1) }"><a href="#" ng-click="containerCtrl.changeTab(1)">Create
+			<li role="presentation" ng-class="{ active:containerCtrl.isSelected(1) }"><a href="#" ng-click="containerCtrl.changeTab(1)">Create/edit
 					TemplateNode</a></li>
 			<li role="presentation" ng-class="{ active:containerCtrl.isSelected(2) }"><a href="#" ng-click="containerCtrl.changeTab(2)">View Templates</a></li>
 		</ul>
@@ -125,6 +125,18 @@
 				<fieldset class="form-group">
 					<input class="btn btn-primary pull-right" type="submit"
 						value="Create Template">
+				</fieldset>
+			</form>
+			<form name="deleteTemplateForm"
+				ng-submit="templateCtrl.deleteTemplate()" class="form-horizontal">
+				<h4>Remove (part of) a Template</h4>
+				<fieldset class="form-group">
+					<div class="col-sm-9">
+						<input ng-model="deleteTemplateUuid" class="form-control"
+							type="text" placeholder="The UUID to delete">
+					</div>
+					<input class="col-sm-3 btn btn-danger pull-right" type="submit"
+						value="Remove node">
 				</fieldset>
 			</form>
 		</div>

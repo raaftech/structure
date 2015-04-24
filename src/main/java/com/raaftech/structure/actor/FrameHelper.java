@@ -269,15 +269,19 @@ public class FrameHelper extends BaseActor {
                 ObjectNode result = JsonNodeFactory.instance.objectNode();
                 JsonNode args = request.get("args");
 
-                String nodeUuid = getArgs(args, "nodeUuid", "");
-                String templateUuid = getArgs(args, "templateUuid", "");
+                String nodeUuid = getArgs(args, "uuid", "");
 
-                TemplateNode parent = templateNodeRepository.findByUuid(templateUuid);
                 TemplateNode node = templateNodeRepository.findByUuid(nodeUuid);
+                if (node == null) {
+                    result.put("error", "Could not find TemplateNode " + nodeUuid);
+                    return response(request, result);
+                }
+                TemplateNode parent = node.getParentComponent();
 
                 Transaction tx = Context.INSTANCE.getGraphDatabase().beginTx();
                 try {
                     if (parent != null) {
+                        String templateUuid = parent.getUuid();
                         if (parent.removeComponent(node)) {
                             templateNodeRepository.delete(node);
                             parent.save();
@@ -287,6 +291,10 @@ public class FrameHelper extends BaseActor {
                                     "rolled back transaction.");
                             tx.failure();
                         }
+                    } else {
+                        long components = node.removeAllComponents() + 1;
+                        templateNodeRepository.delete(node);
+                        result.put("information", "Removed TemplateNode " + node.getUuid() + " and its children.");
                     }
                     tx.success();
                 } catch (Exception e) {
