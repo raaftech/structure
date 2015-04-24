@@ -16,7 +16,6 @@ import com.github.fge.jsonschema.core.exceptions.ProcessingException;
 import com.github.fge.jsonschema.core.report.ProcessingReport;
 import com.github.fge.jsonschema.main.JsonSchema;
 import com.github.fge.jsonschema.main.JsonSchemaFactory;
-import com.github.fge.jsonschema.processors.syntax.SyntaxValidator;
 import com.raaftech.structure.base.BaseActor;
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.graph.InstanceNode;
@@ -39,7 +38,6 @@ public class FrameHelper extends BaseActor {
     TemplateNodeRepository templateNodeRepository = Context.INSTANCE.getTemplateNodeRepository();
 
     private final JsonSchemaFactory factory = JsonSchemaFactory.byDefault();
-    private final SyntaxValidator syntaxValidator = factory.getSyntaxValidator();
 
     public MessageHandler typenode() {
         return new MessageHandler() {
