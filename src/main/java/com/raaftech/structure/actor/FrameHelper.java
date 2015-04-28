@@ -12,10 +12,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.github.fge.jsonschema.core.exceptions.ProcessingException;
-import com.github.fge.jsonschema.core.report.ProcessingReport;
-import com.github.fge.jsonschema.main.JsonSchema;
-import com.github.fge.jsonschema.main.JsonSchemaFactory;
 import com.raaftech.structure.base.BaseActor;
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.graph.InstanceNode;
@@ -36,8 +32,6 @@ public class FrameHelper extends BaseActor {
     TypeNodeRepository typeNodeRepository = Context.INSTANCE.getTypeNodeRepository();
     InstanceNodeRepository instanceNodeRepository = Context.INSTANCE.getInstanceNodeRepository();
     TemplateNodeRepository templateNodeRepository = Context.INSTANCE.getTemplateNodeRepository();
-
-    private final JsonSchemaFactory factory = JsonSchemaFactory.byDefault();
 
     public MessageHandler typenode() {
         return new MessageHandler() {
@@ -321,41 +315,35 @@ public class FrameHelper extends BaseActor {
                 JsonNode args = request.get("args");
 
                 // validate args
-                try {
-                    JsonSchema schema = factory.getJsonSchema(jsonFromResource("schema/framehelper/instantiatetemplate.schema.json"));
-                    ProcessingReport report = schema.validate(args);
-                    if (report.isSuccess()) {
-                        JsonNode instancedata = getArgs(args, "instancedata", (JsonNode)null);
-                        String template = getArgs(args, "template", "ERR_INVALID");
-                        TemplateNode templateNode = templateNodeRepository.findByUuid(template);
+                JsonNode schema = jsonFromResource("schema/framehelper/instantiatetemplate.schema.json");
+                if (isValidJson(schema, args)) {
+                    JsonNode instancedata = getArgs(args, "instancedata", (JsonNode)null);
+                    String template = getArgs(args, "template", "ERR_INVALID");
+                    TemplateNode templateNode = templateNodeRepository.findByUuid(template);
 
-                        if (templateNode != null && instancedata != null) {
-                            // Map stuff
-                            HashMap<String, JsonNode> uuidToDataMap = new HashMap<>();
-                            Iterator<JsonNode> elements = instancedata.elements();
-                            while (elements.hasNext()) {
-                                JsonNode element = elements.next();
-                                uuidToDataMap.put(element.get("uuid").asText(), element.get("data"));
-                            }
-
-                            Transaction tx = Context.INSTANCE.getGraphDatabase().beginTx();
-                            try {
-                                result.put("uuid", templateNode.instantiate(templateNode, null, uuidToDataMap, 0));
-                                tx.success();
-                            } catch (Exception e) {
-                                tx.failure();
-                                e.printStackTrace();
-                                result.put("error", e.getMessage());
-                            } finally {
-                                tx.close();
-                            }
+                    if (templateNode != null && instancedata != null) {
+                        // Map stuff
+                        HashMap<String, JsonNode> uuidToDataMap = new HashMap<>();
+                        Iterator<JsonNode> elements = instancedata.elements();
+                        while (elements.hasNext()) {
+                            JsonNode element = elements.next();
+                            uuidToDataMap.put(element.get("uuid").asText(), element.get("data"));
                         }
-                    } else {
-                        result.put("error", "JSON didn't pass validation.");
+
+                        Transaction tx = Context.INSTANCE.getGraphDatabase().beginTx();
+                        try {
+                            result.put("uuid", templateNode.instantiate(templateNode, null, uuidToDataMap, 0));
+                            tx.success();
+                        } catch (Exception e) {
+                            tx.failure();
+                            e.printStackTrace();
+                            result.put("error", e.getMessage());
+                        } finally {
+                            tx.close();
+                        }
                     }
-                } catch (ProcessingException e) {
-                    e.printStackTrace();
-                    result.put("error", "Error loading JSON schema.");
+                } else {
+                    result.put("error", "JSON didn't pass validation.");
                 }
                 return response(request, result);
             }

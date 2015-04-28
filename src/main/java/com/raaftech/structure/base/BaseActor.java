@@ -2,6 +2,22 @@
 
 package com.raaftech.structure.base;
 
+import io.vertx.core.AbstractVerticle;
+import io.vertx.core.Future;
+import io.vertx.core.json.JsonObject;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+import javax.ws.rs.core.MediaType;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
@@ -13,16 +29,6 @@ import com.github.fge.jsonschema.main.JsonSchemaFactory;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
-import io.vertx.core.AbstractVerticle;
-import io.vertx.core.Future;
-import io.vertx.core.json.JsonObject;
-
-import javax.ws.rs.core.MediaType;
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.*;
 
 /**
  * Give a description of BaseActor here.
@@ -225,6 +231,23 @@ public abstract class BaseActor extends AbstractVerticle {
         return jsonDoc;
     }
 
+    // Return whether JSON is valid according to JSON Schema
+    public boolean isValidJson(JsonNode schemaDoc, JsonNode jsonDoc) {
+        try {
+            final JsonSchemaFactory factory = JsonSchemaFactory.byDefault();
+            final JsonSchema schema = factory.getJsonSchema(schemaDoc);
+            ProcessingReport report = schema.validate(jsonDoc);
+
+            if (!report.isSuccess()) {
+                log("error", report.toString());
+            }
+            return report.isSuccess();
+        } catch (ProcessingException x) {
+            log("error", x.getMessage());
+            return false;
+        }
+    }
+
     // Filter a given JsonNode body and enforce basic validity.
     public JsonNode requestFilter(JsonNode body) {
 
@@ -346,6 +369,7 @@ public abstract class BaseActor extends AbstractVerticle {
     // The default usage handler.
     public MessageHandler help() {
         return new MessageHandler() {
+            @Override
             public JsonNode exec(JsonNode request) {
                 ObjectNode result = JsonNodeFactory.instance.objectNode();
 
@@ -360,6 +384,7 @@ public abstract class BaseActor extends AbstractVerticle {
                 return response(request, result);
             }
 
+            @Override
             public JsonNode help(JsonNode request) {
                 return jsonFromResource("help/baseactor.help.json");
             }
@@ -369,11 +394,13 @@ public abstract class BaseActor extends AbstractVerticle {
     // The default version handler.
     public MessageHandler version() {
         return new MessageHandler() {
+            @Override
             public JsonNode exec(JsonNode request) {
                 JsonNode result = jsonFromResource("release.json");
                 return response(request, result);
             }
 
+            @Override
             public JsonNode help(JsonNode request) {
                 return jsonFromResource("help/baseactor.version.json");
             }
