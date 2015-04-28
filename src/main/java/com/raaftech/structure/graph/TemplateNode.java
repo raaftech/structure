@@ -277,7 +277,7 @@ public class TemplateNode extends Node implements Template {
             } else {
                 instanceDataArray.forEach(data -> {
                     InstanceNode instanceNode = new InstanceNode((ObjectNode)data, isa.getUuid());
-                    parent.addComponent(instanceNode);
+                    if (parent != null) parent.addComponent(instanceNode);
                     instanceNode.save();
                 });
             }
