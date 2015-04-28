@@ -40,20 +40,25 @@ public class FrameHelper extends BaseActor {
                 ObjectNode result = JsonNodeFactory.instance.objectNode();
                 TypeNode found = null;
                 JsonNode args = request.get("args");
-                String node = getArgs(args, "node", "Component");
+                JsonNode schema = jsonFromResource("schema/framehelper/getnode.schema.json");
+                if (isValidJson(schema, args)) {
+                    String node = getArgs(args, "node", "Component");
 
-                if (isUuid(node)) {
-                    found = typeNodeRepository.findByUuid(node);
-                } else {
-                    found = typeNodeRepository.findByName(node);
-                }
+                    if (isUuid(node)) {
+                        found = typeNodeRepository.findByUuid(node);
+                    } else {
+                        found = typeNodeRepository.findByName(node);
+                    }
 
-                if (found == null) {
-                    result.put("error", "Couldn't find TypeNode.");
-                    return response(request, result);
+                    if (found == null) {
+                        result.put("error", "Couldn't find TypeNode.");
+                    } else {
+                        result = found.toJson();
+                    }
                 } else {
-                    return response(request, found.toJson());
+                    result.put("error", "JSON didn't pass validation.");
                 }
+                return response(request, result);
             }
 
             @Override
@@ -70,18 +75,23 @@ public class FrameHelper extends BaseActor {
                 ObjectNode result = JsonNodeFactory.instance.objectNode();
                 InstanceNode found = null;
                 JsonNode args = request.get("args");
-                String node = getArgs(args, "node", "Component");
+                JsonNode schema = jsonFromResource("schema/framehelper/getnode.schema.json");
+                if (isValidJson(schema, args)) {
+                    String node = getArgs(args, "node", "Component");
 
-                if (isUuid(node)) {
-                    found = instanceNodeRepository.findByUuid(node);
-                }
+                    if (isUuid(node)) {
+                        found = instanceNodeRepository.findByUuid(node);
+                    }
 
-                if (found == null) {
-                    result.put("error", "Couldn't find InstanceNode.");
-                    return response(request, result);
+                    if (found == null) {
+                        result.put("error", "Couldn't find InstanceNode.");
+                    } else {
+                        result = found.toJson();
+                    }
                 } else {
-                    return response(request, found.toJson());
+                    result.put("error", "JSON didn't pass validation.");
                 }
+                return response(request, result);
             }
 
             @Override
@@ -97,19 +107,24 @@ public class FrameHelper extends BaseActor {
             public JsonNode exec(JsonNode request) {
                 ObjectNode result = JsonNodeFactory.instance.objectNode();
                 JsonNode args = request.get("args");
-                String node = getArgs(args, "node", "");
-                TemplateNode found = null;
+                JsonNode schema = jsonFromResource("schema/framehelper/getnode.schema.json");
+                if (isValidJson(schema, args)) {
+                    String node = getArgs(args, "node", "");
+                    TemplateNode found = null;
 
-                if (isUuid(node)) {
-                    found = templateNodeRepository.findByUuid(node);
-                }
+                    if (isUuid(node)) {
+                        found = templateNodeRepository.findByUuid(node);
+                    }
 
-                if (found == null) {
-                    result.put("error", "Couldn't find TemplateNode.");
-                    return response(request, result);
+                    if (found == null) {
+                        result.put("error", "Couldn't find TemplateNode.");
+                    } else {
+                        result = found.toJson();
+                    }
                 } else {
-                    return response(request, found.toJson());
+                    result.put("error", "JSON didn't pass validation.");
                 }
+                return response(request, result);
             }
 
             @Override

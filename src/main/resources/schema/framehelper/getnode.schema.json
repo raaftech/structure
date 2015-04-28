@@ -1,0 +1,13 @@
+{
+    "id": "https://repo.raaftech.com/schema/framehelper/getnode.json#",
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "description": "Schema for the instancenode, typenode, templatenode methods in FrameHelper.",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "node": {
+            "type": "string"
+        }
+    },
+    "required": [ "node" ]
+}
