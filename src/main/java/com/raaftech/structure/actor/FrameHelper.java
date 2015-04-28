@@ -178,57 +178,63 @@ public class FrameHelper extends BaseActor {
                 ObjectNode result = JsonNodeFactory.instance.objectNode();
                 JsonNode args = request.get("args");
 
-                // We're setting the default values to ERR_INVALID.
-                // The values don't really matter, as long as instanceOfUuid is not
-                // set to a valid and existing UUID.
-                String parent = getArgs(args, "parent", "");
-                String name = getArgs(args, "name", "");
-                String desc = getArgs(args, "desc", "");
-                String isa = getArgs(args, "isa", "");
-                // We're using Boolean.parseBoolean, so this will evaluate to true only when the
-                // string has value true (case ignored). Anything else will evaluate to false.
-                boolean unique = Boolean.parseBoolean(getArgs(args, "unique", "ERR_INVALID"));
-                boolean required = Boolean.parseBoolean(getArgs(args, "required", "ERR_INVALID"));
-                boolean start = Boolean.parseBoolean(getArgs(args, "start", "ERR_INVALID"));
+                JsonNode schema = jsonFromResource("schema/framehelper/createtemplatenode.schema.json");
+                System.out.println(args);
+                if (isValidJson(schema, args)) {
+                    // We're setting the default values to ERR_INVALID.
+                    // The values don't really matter, as long as instanceOfUuid is not
+                    // set to a valid and existing UUID.
+                    String parent = getArgs(args, "parent", "");
+                    String name = getArgs(args, "name", "");
+                    String desc = getArgs(args, "desc", "");
+                    String isa = getArgs(args, "isa", "");
+                    // We're using Boolean.parseBoolean, so this will evaluate to true only when the
+                    // string has value true (case ignored). Anything else will evaluate to false.
+                    boolean unique = Boolean.parseBoolean(getArgs(args, "unique", "ERR_INVALID"));
+                    boolean required = Boolean.parseBoolean(getArgs(args, "required", "ERR_INVALID"));
+                    boolean start = Boolean.parseBoolean(getArgs(args, "start", "ERR_INVALID"));
 
-                try {
-                    if (!parent.equals("") && start == true) {
-                        throw new RuntimeException("Cannot create TemplateNode that's both the start of a template and has a parent " +
-                                "TemplateNode.");
-                    }
-                    if (parent.equals("") && start == false) {
-                        throw new RuntimeException("Cannot create TemplateNode that has no parent and isn't the start of a template.");
-                    }
-                    if (name.equals("") || desc.equals("") || isa.equals("")) {
-                        throw new RuntimeException("Did not get valid name, description or ISA for new TemplateNode.");
-                    }
-
-                    TypeNode isaTypeNode = typeNodeRepository.findByUuid(isa);
-                    if (isaTypeNode != null) {
-                        TemplateNode newTemplateNode = new TemplateNode(name, desc);
-                        newTemplateNode.setIsa(isaTypeNode)
-                                .setStartOfTemplate(start)
-                                .setRequired(required)
-                                .setUnique(unique);
-
-                        if (!parent.equals("")) {
-                            TemplateNode parentTemplateNode = templateNodeRepository.findByUuid(parent);
-                            if (parentTemplateNode != null) {
-                                parentTemplateNode.addComponent(newTemplateNode);
-                                parentTemplateNode.save();
-                            } else {
-                                throw new RuntimeException("Cannot create TemplateNode, given parent was not found in the database.");
-                            }
+                    try {
+                        if (!parent.equals("") && start == true) {
+                            throw new RuntimeException("Cannot create TemplateNode that's both the start of a template and has a parent " +
+                                    "TemplateNode.");
                         }
-                        newTemplateNode.save();
+                        if (parent.equals("") && start == false) {
+                            throw new RuntimeException("Cannot create TemplateNode that has no parent and isn't the start of a template.");
+                        }
+                        if (name.equals("") || desc.equals("") || isa.equals("")) {
+                            throw new RuntimeException("Did not get valid name, description or ISA for new TemplateNode.");
+                        }
 
-                        result.put("uuid", newTemplateNode.getUuid());
-                    } else {
-                        throw new RuntimeException("Could not find TypeNode by which to group the Template.");
+                        TypeNode isaTypeNode = typeNodeRepository.findByUuid(isa);
+                        if (isaTypeNode != null) {
+                            TemplateNode newTemplateNode = new TemplateNode(name, desc);
+                            newTemplateNode.setIsa(isaTypeNode)
+                            .setStartOfTemplate(start)
+                            .setRequired(required)
+                            .setUnique(unique);
+
+                            if (!parent.equals("")) {
+                                TemplateNode parentTemplateNode = templateNodeRepository.findByUuid(parent);
+                                if (parentTemplateNode != null) {
+                                    parentTemplateNode.addComponent(newTemplateNode);
+                                    parentTemplateNode.save();
+                                } else {
+                                    throw new RuntimeException("Cannot create TemplateNode, given parent was not found in the database.");
+                                }
+                            }
+                            newTemplateNode.save();
+
+                            result.put("uuid", newTemplateNode.getUuid());
+                        } else {
+                            throw new RuntimeException("Could not find TypeNode by which to group the Template.");
+                        }
+                    } catch (RuntimeException e) {
+                        e.printStackTrace();
+                        result.put("error", e.getMessage());
                     }
-                } catch (RuntimeException e) {
-                    e.printStackTrace();
-                    result.put("error", e.getMessage());
+                } else {
+                    result.put("error", "JSON didn't pass validation.");
                 }
 
                 return response(request, result);

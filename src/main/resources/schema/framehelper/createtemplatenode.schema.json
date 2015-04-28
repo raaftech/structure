@@ -1,0 +1,33 @@
+{
+    "id": "https://repo.raaftech.com/schema/framehelper/createtemplatenode.json#",
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "description": "Schema for Structure's FrameHelper createtemplatenode method.",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "parent": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89aAbB][a-f0-9]{3}-[a-f0-9]{12}$"
+        },
+        "isa": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89aAbB][a-f0-9]{3}-[a-f0-9]{12}$"
+        },
+        "name": {
+            "type": "string"
+        },
+        "desc": {
+			"type": "string"
+        },
+        "unique": {
+            "type": "boolean"
+        },
+        "required": {
+            "type": "boolean"
+        },
+        "start": {
+            "type": "boolean"
+        }
+    },
+    "required": [ "isa", "name", "desc" ]
+}
