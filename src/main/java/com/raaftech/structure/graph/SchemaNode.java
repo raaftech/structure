@@ -1,13 +1,14 @@
 package com.raaftech.structure.graph;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.neo4j.graphdb.Direction;
-import com.raaftech.structure.base.Context;
-import com.raaftech.structure.graph.repositories.SchemaNodeRepository;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.neo4j.annotation.RelatedTo;
 
-import java.util.HashSet;
-import java.util.Set;
+import com.raaftech.structure.base.Context;
+import com.raaftech.structure.graph.repositories.SchemaNodeRepository;
 
 /**
  * SchemaNode is used to track information of applied SchemaUpdates to the database.
@@ -40,6 +41,7 @@ public class SchemaNode extends Node {
     @RelatedTo(type="UPDATED", direction = Direction.OUTGOING)
     private Set<TypeNode> updatedTypeNodes;
 
+    @Transient
     private static SchemaNodeRepository schemaNodeRepository = Context.INSTANCE.getSchemaNodeRepository();
 
     public SchemaNode() {}

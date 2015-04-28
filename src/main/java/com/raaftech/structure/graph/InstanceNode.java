@@ -6,6 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.Set;
 
 import org.neo4j.graphdb.Direction;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.neo4j.annotation.Fetch;
 import org.springframework.data.neo4j.annotation.NodeEntity;
 import org.springframework.data.neo4j.annotation.RelatedTo;
@@ -67,10 +68,12 @@ public class InstanceNode extends Node {
     @RelatedTo(type="HAS_COMPONENT", direction=Direction.OUTGOING)
     private Set<InstanceNode> hasComponents;
 
-    InstanceNodeRepository instanceNodeRepository = Context.INSTANCE.getInstanceNodeRepository();
-
     private LinkedHashMap<String, String> kv = new LinkedHashMap<>();
 
+    @Transient
+    InstanceNodeRepository instanceNodeRepository = Context.INSTANCE.getInstanceNodeRepository();
+
+    @Transient
     private TypeNodeRepository typeNodeRepository = Context.INSTANCE.getTypeNodeRepository();
 
     public InstanceNode() {}

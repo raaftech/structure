@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.Transaction;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.neo4j.annotation.Fetch;
 import org.springframework.data.neo4j.annotation.NodeEntity;
 import org.springframework.data.neo4j.annotation.RelatedTo;
@@ -49,7 +50,9 @@ public class TemplateNode extends Node implements Template {
     boolean required;
     boolean unique;
 
+    @Transient
     TemplateNodeRepository templateNodeRepository = Context.INSTANCE.getTemplateNodeRepository();
+    @Transient
     TypeNodeRepository typeNodeRepository = Context.INSTANCE.getTypeNodeRepository();
 
     public TemplateNode() {}

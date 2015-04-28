@@ -43,6 +43,7 @@ public class TypeNode extends Node implements Template {
 
 
     public JsonSchemaBuilder schema = new JsonSchemaBuilder();
+    @Transient
     private TypeNodeRepository typeNodeRepository = Context.INSTANCE.getTypeNodeRepository();
 
     public TypeNode() {}
