@@ -140,20 +140,25 @@ public class FrameHelper extends BaseActor {
             public JsonNode exec(JsonNode request) {
                 ObjectNode result = JsonNodeFactory.instance.objectNode();
                 JsonNode args = request.get("args");
-                String isa = request.get("nodeuuid").asText();
+                JsonNode schema = jsonFromResource("schema/framehelper/createinstancenode.schema.json");
+                if (isValidJson(schema, args)) {
+                    String isa = args.get("node").asText();
 
-                Transaction tx = Context.INSTANCE.getGraphDatabase().beginTx();
-                try {
-                    InstanceNode newInstanceNode = new InstanceNode((ObjectNode)args, isa);
-                    newInstanceNode.save();
-                    tx.success();
-                    result.put("uuid", newInstanceNode.getUuid());
-                } catch (RuntimeException e) {
-                    tx.failure();
-                    e.printStackTrace();
-                    result.put("error", "Error creating new InstanceNode.");
-                } finally {
-                    tx.close();
+                    Transaction tx = Context.INSTANCE.getGraphDatabase().beginTx();
+                    try {
+                        InstanceNode newInstanceNode = new InstanceNode((ObjectNode)args, isa);
+                        newInstanceNode.save();
+                        tx.success();
+                        result.put("uuid", newInstanceNode.getUuid());
+                    } catch (RuntimeException e) {
+                        tx.failure();
+                        e.printStackTrace();
+                        result.put("error", e.getMessage());
+                    } finally {
+                        tx.close();
+                    }
+                } else {
+                    result.put("error", "JSON didn't pass validation.");
                 }
 
                 return response(request, result);
