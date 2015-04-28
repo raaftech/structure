@@ -179,7 +179,6 @@ public class FrameHelper extends BaseActor {
                 JsonNode args = request.get("args");
 
                 JsonNode schema = jsonFromResource("schema/framehelper/createtemplatenode.schema.json");
-                System.out.println(args);
                 if (isValidJson(schema, args)) {
                     // We're setting the default values to ERR_INVALID.
                     // The values don't really matter, as long as instanceOfUuid is not
