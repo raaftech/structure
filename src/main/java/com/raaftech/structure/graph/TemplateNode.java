@@ -268,8 +268,16 @@ public class TemplateNode extends Node implements Template {
         JsonNode instanceDataArray = json.get("instances");
 
         if (instanceDataArray != null) {
+            if (startOfTemplate) {
+                final InstanceNode instanceNode = new InstanceNode((ObjectNode)instanceDataArray.get(0), isa.getUuid());
+                instanceUuid = instanceNode.getUuid();
+
+                template.hasComponents.stream()
+                        .forEach(t -> t.instantiate(t, instanceNode, dataMap, depth+1));
+                instanceNode.save();
+            }
             // If this TemplateNode has components (implies required and unique)
-            if (hasComponents.size() > 0) {
+            else if (hasComponents.size() > 0) {
                 final InstanceNode instanceNode = new InstanceNode((ObjectNode)instanceDataArray.get(0), isa.getUuid());
                 instanceUuid = instanceNode.getUuid();
                 if (parent != null) parent.addComponent(instanceNode);
