@@ -188,7 +188,7 @@
         this.deleteTemplate = function() {
             if (vertxEventBus.readyState()) {
                 vertxEventBusService.send('com.raaftech.structure.actor.framehelper',
-                        {'msgh':'removenodefromtemplate', 'args':{'uuid': $scope.deleteTemplateUuid}})
+                        {'msgh':'removenodefromtemplate', 'args':{'node': $scope.deleteTemplateUuid}})
                         .then(function(reply) {
                             console.log(reply.result);
                         }).catch(function() {

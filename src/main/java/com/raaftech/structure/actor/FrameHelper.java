@@ -286,40 +286,45 @@ public class FrameHelper extends BaseActor {
                 ObjectNode result = JsonNodeFactory.instance.objectNode();
                 JsonNode args = request.get("args");
 
-                String nodeUuid = getArgs(args, "uuid", "");
+                JsonNode schema = jsonFromResource("schema/framehelper/removenodefromtemplate.schema.json");
+                if (isValidJson(schema, args)) {
+                    String nodeUuid = getArgs(args, "node", "");
 
-                TemplateNode node = templateNodeRepository.findByUuid(nodeUuid);
-                if (node == null) {
-                    result.put("error", "Could not find TemplateNode " + nodeUuid);
-                    return response(request, result);
-                }
-                TemplateNode parent = node.getParentComponent();
-
-                Transaction tx = Context.INSTANCE.getGraphDatabase().beginTx();
-                try {
-                    if (parent != null) {
-                        String templateUuid = parent.getUuid();
-                        if (parent.removeComponent(node)) {
-                            templateNodeRepository.delete(node);
-                            parent.save();
-                            result.put("information", "Removed node " + nodeUuid + " from TemplateNode " + templateUuid);
-                        } else {
-                            result.put("error", "Didn't remove node " + nodeUuid + " from TemplateNode " + templateUuid + ", " +
-                                    "rolled back transaction.");
-                            tx.failure();
-                        }
-                    } else {
-                        long components = node.removeAllComponents() + 1;
-                        templateNodeRepository.delete(node);
-                        result.put("information", "Removed TemplateNode " + node.getUuid() + " and its children.");
+                    TemplateNode node = templateNodeRepository.findByUuid(nodeUuid);
+                    if (node == null) {
+                        result.put("error", "Could not find TemplateNode " + nodeUuid);
+                        return response(request, result);
                     }
-                    tx.success();
-                } catch (Exception e) {
-                    tx.failure();
-                    e.printStackTrace();
-                    result.put("error", e.getMessage());
-                } finally {
-                    tx.close();
+                    TemplateNode parent = node.getParentComponent();
+
+                    Transaction tx = Context.INSTANCE.getGraphDatabase().beginTx();
+                    try {
+                        if (parent != null) {
+                            String templateUuid = parent.getUuid();
+                            if (parent.removeComponent(node)) {
+                                templateNodeRepository.delete(node);
+                                parent.save();
+                                result.put("information", "Removed node " + nodeUuid + " from TemplateNode " + templateUuid);
+                            } else {
+                                result.put("error", "Didn't remove node " + nodeUuid + " from TemplateNode " + templateUuid + ", " +
+                                        "rolled back transaction.");
+                                tx.failure();
+                            }
+                        } else {
+                            long components = node.removeAllComponents() + 1;
+                            templateNodeRepository.delete(node);
+                            result.put("information", "Removed TemplateNode " + node.getUuid() + " and its children.");
+                        }
+                        tx.success();
+                    } catch (Exception e) {
+                        tx.failure();
+                        e.printStackTrace();
+                        result.put("error", e.getMessage());
+                    } finally {
+                        tx.close();
+                    }
+                } else {
+                    result.put("error", "JSON didn't pass validation.");
                 }
 
                 return response(request, result);
