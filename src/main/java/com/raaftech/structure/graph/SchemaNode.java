@@ -1,5 +1,6 @@
 package com.raaftech.structure.graph;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -25,12 +26,10 @@ public class SchemaNode extends Node {
     private boolean applied;
 
     @Transient
-    private String requiredPackage;
-    @Transient
-    private int requiredRevision;
+    private HashMap<String, Integer> dependencies;
 
     @RelatedTo(type="REQUIRES", direction = Direction.OUTGOING)
-    private SchemaNode requiresSchemaNode;
+    private Set<SchemaNode> requiresSchemaNode;
 
     @RelatedTo(type="REVISES", direction = Direction.OUTGOING)
     private SchemaNode revisesSchemaNode;
@@ -61,6 +60,12 @@ public class SchemaNode extends Node {
         if (revision > 1) {
             this.revisesSchemaNode = schemaNodeRepository.findByNameAndRevision(name, revision - 1);
         }
+        if (dependencies == null) {
+            dependencies = new HashMap<>();
+        }
+        if (requiresSchemaNode == null) {
+            requiresSchemaNode = new HashSet<>();
+        }
     }
 
     /**
@@ -70,13 +75,15 @@ public class SchemaNode extends Node {
      * @param requiredRevision Revision of the required SchemaNode.
      * @return Returns itself.
      */
-    public SchemaNode requires(String requiredPackage, int requiredRevision) {
+    public SchemaNode requires(String requiredPackage, Integer requiredRevision) {
         if (requiredPackage != null && requiredRevision > 0) {
-            this.requiredPackage = requiredPackage;
-            this.requiredRevision = requiredRevision;
+            this.dependencies.put(requiredPackage, requiredRevision);
             // In case the requirement hasn't ran yet, this will be set to null
             // By the time getRequiresSchemaNode is ran in SchemaUpdate, this might have changed.
-            requiresSchemaNode = schemaNodeRepository.findByNameAndRevision(requiredPackage, requiredRevision);
+            SchemaNode requiredNode = schemaNodeRepository.findByNameAndRevision(requiredPackage, requiredRevision);
+            if (requiredNode != null) {
+                requiresSchemaNode.add(requiredNode);
+            }
         } else {
             throw new RuntimeException("Package can't be null and revision has to be higher than 0.");
         }
@@ -105,7 +112,7 @@ public class SchemaNode extends Node {
      * @return return true if we have a functional requirement, false if not.
      */
     public boolean hasRequirement() {
-        return requiredPackage != null && requiredRevision > 0;
+        return dependencies.size() > 0;
     }
 
     public SchemaNode created(TypeNode node) {
@@ -135,11 +142,14 @@ public class SchemaNode extends Node {
      * we run requires() again in case we have a requirement. This created the actual requirement relation.
      * @return Returns itself.
      */
-    public SchemaNode getRequiresSchemaNode() {
+    public Set<SchemaNode> getRequiresSchemaNode() {
         // Our requirement might not have existed during initialization of this SchemaNode,
         // but might exist now. For this reason we need to set required again.
         if (hasRequirement()) {
-            requires(requiredPackage, requiredRevision);
+            dependencies.entrySet().stream()
+                .forEach(dependency -> {
+                    requires(dependency.getKey(), dependency.getValue());
+                });
         }
         return requiresSchemaNode;
     }
@@ -180,11 +190,7 @@ public class SchemaNode extends Node {
         applied = true;
     }
 
-    public String getRequiredPackage() {
-        return requiredPackage;
-    }
-
-    public int getRequiredRevision() {
-        return requiredRevision;
+    public HashMap<String, Integer> getDependencies() {
+        return dependencies;
     }
 }

@@ -183,8 +183,11 @@ public abstract class SchemaUpdate {
             return false;
         }
 
-        SchemaNode requires = updateInformation.getRequiresSchemaNode();
+        Set<SchemaNode> requires = updateInformation.getRequiresSchemaNode();
         SchemaNode ancestor = updateInformation.getRevisesSchemaNode();
+
+        boolean allApplied = requires.stream()
+                .allMatch(r -> r.isApplied());
 
         // if Schema is already applied, return true
         if (updateInformation.isApplied()) {
@@ -200,11 +203,11 @@ public abstract class SchemaUpdate {
             }
         // no ancestoral dependency and required applied: createNode()
         } else if (updateInformation.getRevision() == 1) {
-            if (requires != null && requires.isApplied()) {
+            if (requires != null && allApplied) {
                 return applyAndSet();
             }
         // required and ancestoral dependency applied: createNode()
-        } else if ((requires != null && requires.isApplied()) && (ancestor != null && ancestor.isApplied())) {
+        } else if ((requires != null && allApplied) && (ancestor != null && ancestor.isApplied())) {
             return applyAndSet();
         }
 

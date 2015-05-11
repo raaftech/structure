@@ -1,13 +1,13 @@
 package com.raaftech.structure.helper;
 
-import io.vertx.core.AbstractVerticle;
-import io.vertx.core.Future;
-import io.vertx.core.Vertx;
+import java.io.IOException;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.TreeMap;
 
 import org.neo4j.graphdb.Transaction;
-import com.raaftech.structure.base.Context;
-import com.raaftech.structure.graph.SchemaNode;
-import com.raaftech.structure.graph.schema.SchemaUpdate;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
@@ -18,11 +18,9 @@ import org.springframework.data.neo4j.core.GraphDatabase;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.SystemPropertyUtils;
 
-import java.io.IOException;
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.TreeMap;
+import com.raaftech.structure.base.Context;
+import com.raaftech.structure.graph.SchemaNode;
+import com.raaftech.structure.graph.schema.SchemaUpdate;
 
 /**
  * Give a description of SchemaManagerUpdate here.
@@ -120,9 +118,11 @@ public class SchemaManagerUpdate {
                             schemaUpdateInstances.stream()
                                     .forEach(schemaUpdate -> {
                                         SchemaNode updateInformation = schemaUpdate.getUpdateInformation();
-                                        // Build a string representation of the schemaUpdate's dependency version information
-                                        String dependency = updateInformation.getRequiredPackage() +
-                                                updateInformation.getRequiredRevision();
+                                        // Check if our dependencies are satisfied.
+                                        HashMap<String, Integer> dependencies = updateInformation.getDependencies();
+                                        boolean dependenciesMet = true;
+                                        dependenciesMet = dependencies.entrySet().stream()
+                                                .allMatch(t -> done.contains(t.getKey() + t.getValue()));
 
                                         // Build a string representation of our own version information
                                         String self = updateInformation.getName() + updateInformation.getRevision();
@@ -132,7 +132,7 @@ public class SchemaManagerUpdate {
                                             // If the schemaUpdate doesn't have a functional dependency, or its' functional
                                             // dependency is already applied, apply this schemaUpdate
                                             if (updateInformation.hasRequirement() == false ||
-                                                    done.contains(dependency)) {
+                                                    dependenciesMet) {
                                                 if (schemaUpdate.apply()) {
                                                     // Decrease the number of packages we have to apply for this revision by 1
                                                     packagesPerRevision.put(revision, packagesPerRevision.get(revision) - 1);
