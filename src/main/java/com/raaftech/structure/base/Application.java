@@ -1,5 +1,6 @@
 package com.raaftech.structure.base;
 
+import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.http.HttpMethod;
@@ -88,7 +89,8 @@ public class Application {
 
         vertx.deployVerticle("com.raaftech.structure.actor.FrameHelper");
         vertx.deployVerticle("com.raaftech.structure.actor.StateManager");
-        vertx.deployVerticle("com.raaftech.structure.actor.SchemaManager");
+        DeploymentOptions deploymentOptions = new DeploymentOptions().setWorker(true);
+        vertx.deployVerticle("com.raaftech.structure.actor.SchemaManager", deploymentOptions);
 
         try {
             Thread.sleep(1000);
