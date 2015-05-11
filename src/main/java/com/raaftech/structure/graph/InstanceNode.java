@@ -6,6 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.Set;
 
 import org.neo4j.graphdb.Direction;
+import org.neo4j.graphdb.Transaction;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.neo4j.annotation.Fetch;
 import org.springframework.data.neo4j.annotation.NodeEntity;
@@ -50,19 +51,17 @@ public class InstanceNode extends Node {
     private Set<InstanceNode> operations = new HashSet<>();
 
     @RelatedTo(type="HAS_HANDLER", direction = Direction.OUTGOING)
-    private Set<InstanceNode> handlers = new HashSet<>();
+    @Fetch
+    private Set<InstanceNode> handlers;
 
     @RelatedTo(type="HAS_PROTOCOL", direction = Direction.OUTGOING)
     private Set<InstanceNode> protocols = new HashSet<>();
 
-    @RelatedTo(type="HAS_CAPABILITY", direction = Direction.OUTGOING)
-    private Set<InstanceNode> capabilities = new HashSet<>();
-
     @RelatedTo(type="HAS_ACTOR", direction = Direction.OUTGOING)
     private Set<InstanceNode> actors = new HashSet<>();
 
-    @Fetch
     @RelatedTo(type="INSTANCE_OF", direction=Direction.OUTGOING)
+    @Fetch
     private TypeNode instanceOf;
 
     @RelatedTo(type="HAS_COMPONENT", direction=Direction.OUTGOING)
@@ -83,8 +82,24 @@ public class InstanceNode extends Node {
         this.instanceOf = instanceOf;
     }
 
+    public InstanceNode(String name, String desc, TypeNode instanceOf, String uuid) {
+        super(name, desc, uuid);
+        this.instanceOf = instanceOf;
+    }
+
     public InstanceNode(String name, String desc, String instanceOfUuid) {
         super(name, desc);
+
+        TypeNode instanceOf = typeNodeRepository.findByUuid(instanceOfUuid);
+        if (instanceOf != null) {
+            this.instanceOf = typeNodeRepository.findByUuid(instanceOfUuid);
+        } else {
+            throw new RuntimeException("ERROR: can't create InstanceNode, UUID " + instanceOfUuid + " unknown.");
+        }
+    }
+
+    public InstanceNode(String name, String desc, String instanceOfUuid, String uuid) {
+        super(name, desc, uuid);
 
         TypeNode instanceOf = typeNodeRepository.findByUuid(instanceOfUuid);
         if (instanceOf != null) {
@@ -137,6 +152,58 @@ public class InstanceNode extends Node {
 
     public Set<InstanceNode> getComponents() {
         return components;
+    }
+
+    public InstanceNode addHandler(InstanceNode handler) {
+        if (handler == null) {
+            throw new RuntimeException("Cannot add handler, null argument.");
+        }
+        if (handlers == null) {
+            handlers = new HashSet<>();
+        }
+        TypeNode handlerType = typeNodeRepository.findByUuid("14dbfbfa-b50a-466f-8539-55d5d3f15e4a");
+        TypeNode capabilityType = typeNodeRepository.findByUuid("916e04a9-c773-4eaf-9c08-450016426e5a");
+        // Check if the given argument is part of the Handler tree
+        boolean isHandler = handlerType.getChildIsaSet().stream()
+            .anyMatch(h -> h.getUuid().equals(handler.instanceOf.getUuid()));
+        // Check if this InstanceNode is an instance of a node in the Capability tree
+        boolean isCapability = capabilityType.getChildIsaSet().stream()
+            .anyMatch(c -> c.getUuid().equals(instanceOf.getUuid()));
+
+        if (!isHandler) {
+            throw new RuntimeException("Cannot add handler, it's not a handler type.");
+        }
+        if (!isCapability) {
+            throw new RuntimeException("Cannot add handler to non Capability type.");
+        }
+
+        // Everything checked out, add handler.
+        Transaction tx = Context.INSTANCE.getGraphDatabase().beginTx();
+        try {
+            handlers.add(handler);
+            this.save();
+            handler.save();
+            tx.success();
+        } catch (Exception e) {
+            tx.failure();
+            throw e;
+        } finally {
+            tx.close();
+        }
+
+        return handler;
+    }
+
+    public InstanceNode addHandler(String handlerUuid) {
+        return addHandler(instanceNodeRepository.findByUuid(handlerUuid));
+    }
+
+    public Set<InstanceNode> getHandlers() {
+        return handlers;
+    }
+
+    public TypeNode getInstanceOf() {
+        return instanceOf;
     }
 
     public InstanceNode setProperties(ObjectNode properties) {

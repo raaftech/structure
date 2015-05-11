@@ -1,5 +1,6 @@
 package com.raaftech.structure.graph;
 
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -35,6 +36,9 @@ public class TypeNode extends Node implements Template {
 
     @RelatedTo(type="ISA", direction = Direction.INCOMING)
     private Set<Template> childIsaSet;
+
+    @RelatedTo(type="HAS_CAPABILITY", direction = Direction.OUTGOING)
+    private Set<InstanceNode> capabilities = new HashSet<>();
 
     // isaUuid exists only to temporarily save a UUID of a TypeNode's parent
     // in case the parent doesn't exist in the database yet.
@@ -147,6 +151,27 @@ public class TypeNode extends Node implements Template {
         tx.success();
         tx.close();
         return childIsaSet;
+    }
+
+    public TypeNode addCapability(InstanceNode capability) {
+        if (capability == null) {
+            throw new RuntimeException("Method can't be called with a null argument.");
+        }
+        if (capabilities == null) {
+            capabilities = new HashSet<>();
+        }
+
+        TypeNode rootCapability = typeNodeRepository.findByUuid("916e04a9-c773-4eaf-9c08-450016426e5a");
+        boolean isCapability = rootCapability.getChildIsaSet().stream()
+                .anyMatch(c -> c.getUuid().equals(capability.getInstanceOf().getUuid()));
+
+        if (isCapability) {
+            capabilities.add(capability);
+        } else {
+            throw new RuntimeException("Method can't be called with an argument that's not part of the Capability tree.");
+        }
+
+        return this;
     }
 
     public JsonSchemaBuilder getSchema() {
