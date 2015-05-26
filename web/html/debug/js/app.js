@@ -127,7 +127,7 @@
             if (vertxEventBus.readyState()) {
                 // Send the db-init message over the eventbus
                 vertxEventBusService.send('com.raaftech.structure.actor.schemamanager',
-                        {'msgh':'update', 'args':{}})
+                        {'msgh':'update', 'args':{}}, 20000)
                         .then(function(reply) {
                             // If everything went as expected clear the error flag
                             if (reply.result.error == null) {
