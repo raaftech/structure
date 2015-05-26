@@ -1,10 +1,10 @@
 package com.raaftech.structure.graph.schema.hypervisors;
 
+import java.util.Arrays;
+
 import com.raaftech.structure.graph.SchemaNode;
 import com.raaftech.structure.graph.TypeNode;
 import com.raaftech.structure.graph.schema.SchemaUpdate;
-
-import java.util.Arrays;
 
 /**
  * Give a description of HypervisorsR1 here.
@@ -36,6 +36,14 @@ public class HypervisorsR1 extends SchemaUpdate {
                     "897281c1-05be-43aa-a49c-50fd9ed4fc88")
                     .setIsa("c5c7fcb5-8ac3-40cc-b195-b2b6af368e81"),
             new TypeNode("Xen", "The Xen Project virtual machine.", "54916142-640a-41df-82ad-974e92d3371c")
+                    .setIsa("c5c7fcb5-8ac3-40cc-b195-b2b6af368e81"),
+            new TypeNode("HpVm", "The HP Integrity virtual machine.", "af0ecba0-9c1f-43ec-b555-9a665f904dd3")
+                    .setIsa("c5c7fcb5-8ac3-40cc-b195-b2b6af368e81"),
+            new TypeNode("PowerVm", "The IBM PowerVM virtual machine.", "50a2e964-ed70-4a96-988d-62aa9bfec5a5")
+                    .setIsa("c5c7fcb5-8ac3-40cc-b195-b2b6af368e81"),
+            new TypeNode("OracleVm", "The Oracle VM Server for SPARC virtual machine.", "b1722662-e3ca-423a-9217-d226e32ab6f4")
+                    .setIsa("c5c7fcb5-8ac3-40cc-b195-b2b6af368e81"),
+            new TypeNode("VmwareVsphere", "The vSphere virtual machine manager.", "ea00099d-5284-4a34-940f-7c0844e137b1")
                     .setIsa("c5c7fcb5-8ac3-40cc-b195-b2b6af368e81")
         );
     }

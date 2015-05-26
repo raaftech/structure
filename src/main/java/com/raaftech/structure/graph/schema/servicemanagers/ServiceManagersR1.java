@@ -1,10 +1,10 @@
 package com.raaftech.structure.graph.schema.servicemanagers;
 
+import java.util.Arrays;
+
 import com.raaftech.structure.graph.SchemaNode;
 import com.raaftech.structure.graph.TypeNode;
 import com.raaftech.structure.graph.schema.SchemaUpdate;
-
-import java.util.Arrays;
 
 /**
  * Give a description of ServiceManagersR1 here.
@@ -38,6 +38,9 @@ public class ServiceManagersR1 extends SchemaUpdate {
             new TypeNode("Launchd", "Mac OS X Launchd.", "7b0bfefb-2212-4c58-a7c5-46ff66f0166a")
                     .setIsa("c3008eec-b454-4ef6-bf7e-0bd92c13d3c3"),
             new TypeNode("Scm", "Service Control Manager.", "198435e1-cf1d-4d0a-9fb8-c760b5e8ac2b")
+                    .setIsa("c3008eec-b454-4ef6-bf7e-0bd92c13d3c3"),
+
+            new TypeNode("Smf", "The Solaris Service Management Facility.", "300beaaf-5b4c-48b1-be5b-a5fe3fa547b2")
                     .setIsa("c3008eec-b454-4ef6-bf7e-0bd92c13d3c3")
         );
     }

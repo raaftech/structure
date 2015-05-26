@@ -1,10 +1,10 @@
 package com.raaftech.structure.graph.schema.packagemanagers;
 
+import java.util.Arrays;
+
 import com.raaftech.structure.graph.SchemaNode;
 import com.raaftech.structure.graph.TypeNode;
 import com.raaftech.structure.graph.schema.SchemaUpdate;
-
-import java.util.Arrays;
 
 /**
  * Give a description of PackageManagersR1 here.
@@ -39,6 +39,15 @@ public class PackageManagersR1 extends SchemaUpdate {
                     .setIsa("e2b8b9ee-b66f-4252-8fba-4fb172f741bc"),
             new TypeNode("OptZip", "The very simple unzip-in /opt package manager.",
                     "2115cfc1-a2e8-4efe-aa58-60ef64a729ca")
+                    .setIsa("e2b8b9ee-b66f-4252-8fba-4fb172f741bc"),
+
+            new TypeNode("SdUx", "SD/UX, the HP/UX Software Distributor.", "92e1ff01-8f01-4882-be63-ed9d0777924d")
+                    .setIsa("e2b8b9ee-b66f-4252-8fba-4fb172f741bc"),
+            new TypeNode("AixLpp", "IBM Licensed Program Product Manager.", "5da69c0f-ac1f-4fbf-8365-77c2706874aa")
+                    .setIsa("e2b8b9ee-b66f-4252-8fba-4fb172f741bc"),
+            new TypeNode("SolarisIps", "Solaris Image Packaging System Manager.", "e70e7353-4e74-4a58-a7ca-eef0005ad5ec")
+                    .setIsa("e2b8b9ee-b66f-4252-8fba-4fb172f741bc"),
+            new TypeNode("SolarisPkg", "Older Solaris Package System Manager.", "7ed426f2-c163-4bdc-b1a0-0dc05e31f691")
                     .setIsa("e2b8b9ee-b66f-4252-8fba-4fb172f741bc")
         );
     }
