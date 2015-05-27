@@ -348,11 +348,17 @@ public abstract class BaseActor extends AbstractVerticle {
             // Request!
             JsonObject body = (JsonObject)message.body();
             JsonNode request = convertFromJsonObject(body);
+            JsonObject response = null;
             String msgh = request.get("msgh").asText();
 
-            // Response! Convert "Jackson JsonNode" to "Vert.x JsonObject".
-            JsonObject response =new JsonObject(
-                    validate(schemaForResponse, handlers.get(msgh).exec(request)).toString());
+            if (handlers.containsKey(msgh)) {
+                // Response! Convert "Jackson JsonNode" to "Vert.x JsonObject".
+                response = new JsonObject(
+                        validate(schemaForResponse, handlers.get(msgh).exec(request)).toString());
+            } else {
+                JsonNode error = JsonNodeFactory.instance.objectNode().put("error", "No handler for called method.");
+                response = new JsonObject(validate(schemaForResponse, response(request, error)).toString());
+            }
             message.reply(response);
 
         });
