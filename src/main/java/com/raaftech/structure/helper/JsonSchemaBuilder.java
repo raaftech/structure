@@ -198,7 +198,7 @@ public class JsonSchemaBuilder {
      * @return An ObjectNode containing the schema's items.
      */
     public ObjectNode getOrCreateItems() {
-        if (getType() == null | !getType().equals("array")) {
+        if (getType() == null || !getType().equals("array")) {
             throw new RuntimeException("Can't create an items object on something that's not of type array.");
         }
 
@@ -218,7 +218,7 @@ public class JsonSchemaBuilder {
      * @return A JsonSchemaBuilder of the newly created item.
      */
     public JsonSchemaBuilder addItem(String name, String type, boolean req) {
-        if (getType() == null | !getType().equals("array")) {
+        if (getType() == null || !getType().equals("array")) {
             throw new RuntimeException("Can't add an item to something that's not of type array.");
         }
 
@@ -253,7 +253,7 @@ public class JsonSchemaBuilder {
      * @throws ProcessingException Thrown when the ObjectNode isn't valid JSON schema.
      */
     public JsonSchemaBuilder setItemToSchema(ObjectNode objectNode) throws ProcessingException {
-        if (getType() == null | !getType().equals("array")) {
+        if (getType() == null || !getType().equals("array")) {
             throw new RuntimeException("Can't add an item to something that's not of type array.");
         }
 
