@@ -384,25 +384,4 @@ public class FrameHelper extends BaseActor {
             }
         };
     }
-
-    public MessageHandler search() {
-        return new MessageHandler() {
-            @Override
-            public JsonNode exec(JsonNode request) {
-                ObjectNode result = JsonNodeFactory.instance.objectNode();
-                JsonNode args = request.get("args");
-                String name = getArgs(args, "name", "Component");
-
-                result.put("name", name);
-                result.put("cypher", cypherQuery("MATCH (p) WHERE p.name =~ '.*(?i)" + name + ".*' RETURN p"));
-
-                return response(request, result);
-            }
-
-            @Override
-            public JsonNode help(JsonNode request) {
-                return jsonFromResource("help/framehelper.search.json");
-            }
-        };
-    }
 }
