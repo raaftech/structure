@@ -1,0 +1,20 @@
+{
+    "id": "https://repo.raaftech.com/schema/framehelper/createcommandresult.json#",
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "description": "Schema for Structure's FrameHelper createcommandresult method.",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "node": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89aAbB][a-f0-9]{3}-[a-f0-9]{12}$"
+        },
+        "task": {
+            "type": "string"
+        },
+        "status": {
+            "type": "boolean"
+        }
+    },
+    "required": [ "node", "task", "status" ]
+}

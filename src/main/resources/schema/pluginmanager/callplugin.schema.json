@@ -1,0 +1,18 @@
+{
+    "id": "https://repo.raaftech.com/schema/pluginmanager/callplugin.json#",
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "description": "Schema for Structure's PluginManager's callplugin method.",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "address": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-z0-9-]+[A-Za-z0-9]$"
+        },
+        "node": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89aAbB][a-f0-9]{3}-[a-f0-9]{12}$"
+        }
+    },
+    "required": [ "address", "node" ]
+}

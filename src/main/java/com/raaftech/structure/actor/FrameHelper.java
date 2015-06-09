@@ -81,6 +81,8 @@ public class FrameHelper extends BaseActor {
 
                     if (isUuid(node)) {
                         found = instanceNodeRepository.findByUuid(node);
+                    } else {
+                        found = instanceNodeRepository.findByName(node);
                     }
 
                     if (found == null) {
@@ -168,6 +170,72 @@ public class FrameHelper extends BaseActor {
             public JsonNode help(JsonNode request) {
                 return JsonNodeFactory.instance.objectNode();
             }
+        };
+    }
+
+    public MessageHandler instanceresults() {
+        return new MessageHandler() {
+
+            @Override
+            public JsonNode exec(JsonNode request) {
+                ObjectNode result = JsonNodeFactory.instance.objectNode();
+                JsonNode args = request.get("args");
+                JsonNode schema = jsonFromResource("schema/framehelper/instanceresults.schema.json");
+                if (isValidJson(schema, args)) {
+                    String node = args.get("node").asText();
+                    InstanceNode instanceNode = instanceNodeRepository.findByUuid(node);
+
+                    ArrayNode allResults = result.putArray("results");
+                    if (instanceNode != null) {
+                        if (args.get("task") == null) {
+                            instanceNode.getResults().stream()
+                                    .forEachOrdered(r -> allResults.add(r.toJson()));
+                        } else {
+                            instanceNode.getResults(args.get("task").asText()).stream()
+                                    .forEachOrdered(r -> allResults.add(r.toJson()));
+                        }
+                    }
+                }
+
+                return response(request, result);
+            }
+
+            @Override
+            public JsonNode help(JsonNode request) {
+                // TODO Auto-generated method stub
+                return null;
+            }
+
+        };
+    }
+
+    public MessageHandler componentbytype() {
+        return new MessageHandler() {
+
+            @Override
+            public JsonNode exec(JsonNode request) {
+                ObjectNode result = JsonNodeFactory.instance.objectNode();
+                JsonNode args = request.get("args");
+                JsonNode schema = jsonFromResource("schema/framehelper/componentbytype.schema.json");
+                if (isValidJson(schema, args)) {
+                    InstanceNode found = instanceNodeRepository.findComponentByType(args.get("node").asText(), args.get("type").asText());
+                    if (found != null) {
+                        result = found.toJson();
+                    } else {
+                        result.put("error", "Couldn't find InstanceNode.");
+                    }
+                } else {
+                    result.put("error", "JSON didn't pass validation.");
+                }
+                return response(request, result);
+            }
+
+            @Override
+            public JsonNode help(JsonNode request) {
+                // TODO Auto-generated method stub
+                return null;
+            }
+
         };
     }
 

@@ -9,3 +9,7 @@ How to run
     bower install
     cd -
     java -jar target/structure-0.6.1-fat.jar --debug
+
+SSH
+---
+The SSH plugin expects a RSA keypair in the plugin directory (resources/plugins/raaftech_sshexec).

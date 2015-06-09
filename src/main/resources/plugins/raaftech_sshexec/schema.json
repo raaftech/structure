@@ -1,0 +1,15 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "description": "Schema for raaftech_sshexec plugin.",
+    "type":"object",
+    "additionalProperties": false,
+    "properties": {
+        "command": {
+            "type": "string"
+        },
+        "address": {
+            "type": "string"
+        }
+    },
+    "required": [ "command", "address" ]
+}

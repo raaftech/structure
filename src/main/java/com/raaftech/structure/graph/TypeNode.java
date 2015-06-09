@@ -174,6 +174,28 @@ public class TypeNode extends Node implements Template {
         return this;
     }
 
+    public JsonNode getCapabilitiesAndHandlers() {
+        GraphDatabase graphDatabase = Context.INSTANCE.getGraphDatabase();
+        Transaction tx = graphDatabase.beginTx();
+        Context.INSTANCE.getNeo4jTemplate().fetch(capabilities);
+        tx.success();
+        tx.close();
+
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode capabilitiesAndHandlers = mapper.createObjectNode();
+
+        capabilities.stream()
+            .filter(c -> c.getHandlers().size() > 0)
+            .forEach(c -> {
+                ObjectNode handlers = capabilitiesAndHandlers.putObject(c.getName());
+                c.getHandlers().stream()
+                    .forEachOrdered(h -> {
+                        handlers.put(h.getName(), h.getProperty("plugin"));
+                    });
+            });
+        return capabilitiesAndHandlers;
+    }
+
     public JsonSchemaBuilder getSchema() {
         return schema;
     }

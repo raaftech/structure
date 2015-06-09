@@ -5,3 +5,4 @@
 /target/
 /web/html/debug/js/libs/
 /structure.db/
+id_rsa*

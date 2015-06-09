@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.Transaction;
@@ -11,6 +12,7 @@ import org.springframework.data.annotation.Transient;
 import org.springframework.data.neo4j.annotation.Fetch;
 import org.springframework.data.neo4j.annotation.NodeEntity;
 import org.springframework.data.neo4j.annotation.RelatedTo;
+import org.springframework.data.neo4j.core.GraphDatabase;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -114,22 +116,54 @@ public class InstanceNode extends Node {
         setProperties(json);
     }
 
+    public InstanceNode(ObjectNode json, TypeNode isa,
+            String uuid) {
+        this(json.get("name").asText(), json.get("desc").asText(), isa, uuid);
+        setProperties(json);
+    }
+
     public void addResult(InstanceNode result) {
+        // TODO: check if result is an actual Result
         if (results == null) {
             results = new HashSet<>();
         }
-        results.add(result);
+        if (instanceNodeRepository.isOfType(result.getInstanceOf().getUuid(), "Result") > 0) {
+            results.add(result);
+        }
     }
 
     public void addResult(String resultUuid) {
         InstanceNode result = null;
 
         if (resultUuid != null) {
+            // TODO: check if result is an actual Result
             result = instanceNodeRepository.findByUuid(resultUuid);
             if (result != null) {
                 addResult(result);
             }
         }
+    }
+
+    // Get all the results belonging to this InstanceNode
+    public Set<InstanceNode> getResults() {
+        // Fetch results from database
+        GraphDatabase graphDatabase = Context.INSTANCE.getGraphDatabase();
+        Transaction tx = graphDatabase.beginTx();
+        Context.INSTANCE.getNeo4jTemplate().fetch(results);
+        tx.success();
+        tx.close();
+
+        return results;
+    }
+
+    // Get all the results belonging to this InstanceNode
+    // filtering on the task ID.
+    public Set<InstanceNode> getResults(String task) {
+        Set<InstanceNode> filteredResults = getResults().stream()
+                .filter(r -> r.getProperty("task").equals(task))
+                .collect(Collectors.toSet());
+
+        return filteredResults;
     }
 
     public void addComponent(InstanceNode component) {
@@ -225,6 +259,7 @@ public class InstanceNode extends Node {
                     kv.put(key, properties.get(key).asText());
                 }
             } else {
+                System.out.println(report);
                 throw new RuntimeException("Supplied JSON did not match TypeNode schema.");
             }
         } catch (ProcessingException e) {
@@ -233,6 +268,10 @@ public class InstanceNode extends Node {
         }
 
         return this;
+    }
+
+    public String getProperty(String key) {
+        return kv.get(key);
     }
 
     public InstanceNode save() {
@@ -250,11 +289,9 @@ public class InstanceNode extends Node {
     public ObjectNode toJson() {
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode result = mapper.createObjectNode();
-        ArrayNode kvJson = mapper.createArrayNode();
+        ObjectNode kvJson = result.putObject("kv");
         kv.forEach((key, val) -> {
-            ObjectNode kvObj = mapper.createObjectNode();
-            kvObj.put(key, val);
-            kvJson.add(kvObj.toString());
+            kvJson.put(key, val);
         });
         ArrayNode componentsJson = mapper.createArrayNode();
         components.forEach(component -> {
@@ -268,7 +305,7 @@ public class InstanceNode extends Node {
         result.put("uuid", getUuid());
         result.put("desc", getDesc());
         result.put("instanceof", instanceOf.getUuid());
-        result.put("kv", kvJson);
+        result.put("capabilities", instanceOf.getCapabilitiesAndHandlers());
         if (componentsJson.size() > 0) {
             result.put("components", componentsJson);
         }

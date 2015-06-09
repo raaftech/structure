@@ -1,10 +1,10 @@
 package com.raaftech.structure.graph.schema.base;
 
+import java.util.Arrays;
+
 import com.raaftech.structure.graph.SchemaNode;
 import com.raaftech.structure.graph.TypeNode;
 import com.raaftech.structure.graph.schema.SchemaUpdate;
-
-import java.util.Arrays;
 
 /**
  * Give a description of Base here.
@@ -14,11 +14,13 @@ import java.util.Arrays;
  */
 public class BaseR1 extends SchemaUpdate {
 
+    @Override
     protected void setUpdateInformation() {
         updateInformation = SchemaNode.getOrCreateSchemaNode("BaseModel", "The first model object, all base types.",
                 "1d924647-6815-4772-a38d-ca86717185ee", 1);
     }
 
+    @Override
     protected void initNodes() {
         // raaftech.com.model.base
         typeNodeList = Arrays.asList(
@@ -379,6 +381,7 @@ public class BaseR1 extends SchemaUpdate {
 	                .setIsa("db0c3c65-52fd-4dec-907c-6c8a669e88f3"),
 	        new TypeNode("Handler", "A representation of a software handler that gives end user function.",
 	                "14dbfbfa-b50a-466f-8539-55d5d3f15e4a")
+	                .setDescriptor("plugin", "string", true, "The address on the eventbus of the plugin implementing the handler", null, null)
 	                .setIsa("b1bc963a-19cc-4518-aecb-a35d028c49e3"),
 	        new TypeNode("CommandHandler", "Creates a CommandOperation, executes that CommandOperation, creates " +
 	                "CommandResult.", "6ac7f3f8-4a1f-42aa-87b8-b2f5516b5d7c")
@@ -456,18 +459,20 @@ public class BaseR1 extends SchemaUpdate {
 	                "3d5300bf-7b4d-443c-b33a-159c00572eb9")
 	                .setIsa("46294722-b14e-438e-9fbc-95ff137b6b18"),
 	        new TypeNode("Result", "A result from an operation.", "f3498c02-58c6-486b-87c6-9d54607fdb12")
-	                .setDescriptor("data", "string", true, "The result data.", null, null)
+	                .setDescriptor("task", "string", true, "The task ID.", null, null)
 	                .setDescriptor("dateCreated", "number", true, "The date + time when the result was created.", null, null)
 	                .setIsa("b1bc963a-19cc-4518-aecb-a35d028c49e3"),
 	        new TypeNode("CommandResult", "A generic textual result from a command operation.",
 	                "6991d878-52be-467d-893a-6b95074f04c2")
+	                .setDescriptor("data", "string", true, "The result data.", null, null)
 	                .setIsa("f3498c02-58c6-486b-87c6-9d54607fdb12"),
 	        new TypeNode("VersionResult", "A textual result representing a version string.",
 	                "2f9703cb-3d68-44fa-99bf-935ed658ca5a")
 	                .setIsa("f3498c02-58c6-486b-87c6-9d54607fdb12"),
 	        new TypeNode("StatusResult", "A result that represents a status.", "48839d5c-8ebc-4989-80ec-f6fb90299a56")
+	                .setDescriptor("status", "boolean", true, "true/ok, false/not-ok", null, null)
 	                .setIsa("f3498c02-58c6-486b-87c6-9d54607fdb12"),
-	        new TypeNode("DerivedStatusResult", "A derived status. 1/ok, 0/not-ok.",
+	        new TypeNode("DerivedStatusResult", "A derived status. true/ok, false/not-ok.",
 	                "9565a2ca-29e4-4c36-8f17-97e9a0074ded")
 	                .setIsa("48839d5c-8ebc-4989-80ec-f6fb90299a56"),
 	        new TypeNode("LocalDerivedStatusResult", "A derived 1/0 status from all statuses known to the software" +

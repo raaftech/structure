@@ -1,10 +1,18 @@
 (function() {
-    var app = angular.module('structure', ['knalli.angular-vertxbus', 'schemaForm'])
+
+    var app = angular.module('structure', ['knalli.angular-vertxbus', 'schemaForm']);
 
     app.config(function(vertxEventBusProvider) {
         vertxEventBusProvider
         .enable()
         .useUrlServer('http://localhost:8080');
+    });
+
+    app.filter('epochtohuman', function() {
+        return function(input) {
+            var date = new Date(parseInt(input));
+            return date.toLocaleString();
+        }
     });
 
     // UI controller, switching between tabs, that kinda stuff
@@ -257,6 +265,66 @@
         this.clickStart = function() {
             $scope.newTemplate.required = true;
             $scope.newTemplate.unique = true;
+        }
+    }]);
+
+    // HandleController, controlling everything to do with InstanceNodes and handlers
+    app.controller('HandleController', ['$scope', '$timeout', 'vertxEventBus', 'vertxEventBusService',
+                                          function($scope, $timeout, vertxEventBus, vertxEventBusService) {
+        $scope.findInstanceNodeUuid = "";
+        $scope.taskId = "";
+        $scope.foundInstanceNode = {};
+        $scope.lastResult = {};
+
+        // Find an InstanceNode by UUID or name
+        this.findInstanceNode = function() {
+            if (vertxEventBus.readyState()) {
+                vertxEventBusService.send('com.raaftech.structure.actor.framehelper',
+                        {'msgh':'instancenode', 'args':{'node': $scope.findInstanceNodeUuid}})
+                        .then(function(reply) {
+                            if (reply.result.error == null) {
+                                $scope.foundInstanceNode = reply.result;
+                                console.log(reply.result);
+                            } else {
+                                $scope.foundInstanceNode = {};
+                                console.warn(reply.result);
+                            }
+                        }).catch(function() {
+                            console.warn("timeout");
+                        });
+            }
+        }
+
+        // Call a plugin
+        this.sendMessage = function(address) {
+            if (vertxEventBus.readyState()) {
+                vertxEventBusService.send("com.raaftech.structure.actor.pluginmanager",
+                        {"msgh":"callplugin", "args":{'node': $scope.foundInstanceNode.uuid, 'address': address}})
+                        .then(function(reply) {
+                            if (reply.result.error == null) {
+                                $scope.taskId = reply.result.task;
+                            } else {
+                                console.warn(reply.result.error);
+                            }
+                        }).catch(function() {
+                            console.warn("timeout");
+                        });
+            }
+        }
+
+        // Get results of an InstanceNode
+        this.getResults = function(task) {
+            if (vertxEventBus.readyState()) {
+                vertxEventBusService.send('com.raaftech.structure.actor.framehelper',
+                        {'msgh': 'instanceresults', 'args':{'node': $scope.foundInstanceNode.uuid, 'task': task}})
+                        .then(function(reply) {
+                            if (reply.result.error == null) {
+                                $scope.lastResult = reply.result;
+                            } else {
+                                console.warn(reply.result);
+                            }
+                        });
+            }
         }
     }]);
 })();

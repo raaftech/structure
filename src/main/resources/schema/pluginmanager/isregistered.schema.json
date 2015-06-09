@@ -1,0 +1,14 @@
+{
+    "id": "https://repo.raaftech.com/schema/pluginmanager/isregistered.json#",
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "description": "Schema for Structure's PluginManager's isregistered method.",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "address": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-z0-9-]+[A-Za-z0-9]$"
+        }
+    },
+    "required": [ "address" ]
+}

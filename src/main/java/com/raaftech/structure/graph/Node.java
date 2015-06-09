@@ -1,12 +1,11 @@
 package com.raaftech.structure.graph;
 
-import org.springframework.data.annotation.Transient;
+import java.util.UUID;
+
 import org.springframework.data.neo4j.annotation.GraphId;
 import org.springframework.data.neo4j.annotation.Indexed;
 import org.springframework.data.neo4j.annotation.NodeEntity;
 import org.springframework.data.neo4j.support.index.IndexType;
-
-import java.util.UUID;
 
 /**
  * Give a description of Node here.
@@ -20,13 +19,13 @@ public class Node {
     @GraphId
     private Long id;
 
-    @Indexed
+    @Indexed(indexType = IndexType.FULLTEXT, indexName = "name")
     private String name;
 
-    @Indexed(indexType = IndexType.FULLTEXT, indexName = "descriptions")
+    @Indexed(indexType = IndexType.FULLTEXT, indexName = "description")
     private String desc;
 
-    @Indexed(unique=true)
+    @Indexed(indexType = IndexType.FULLTEXT, unique=true, indexName = "uuid")
     private String uuid;
 
     public Node() {}

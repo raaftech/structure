@@ -12,6 +12,10 @@ import io.vertx.ext.sockjs.BridgeOptions;
 import io.vertx.ext.sockjs.SockJSServer;
 import io.vertx.ext.sockjs.SockJSServerOptions;
 
+import java.io.IOException;
+
+import com.raaftech.structure.helper.PluginLoader;
+
 /**
  * Give a description of Application here.
  *
@@ -71,26 +75,38 @@ public class Application {
         // Enable sockJS Server on our HTTP server
         sockJSServer = SockJSServer.sockJSServer(vertx, httpServer);
         // Enable bridging on /eventbus, and add some in- and outbound permissions
+        BridgeOptions bridgeOptions  = new BridgeOptions()
+                .addInboundPermitted(new JsonObject().put(
+                        "address", "com.raaftech.structure.actor.framehelper"))
+                .addInboundPermitted(new JsonObject().put(
+                        "address", "com.raaftech.structure.actor.schemamanager"))
+                .addInboundPermitted(new JsonObject().put(
+                        "address", "com.raaftech.structure.actor.statemanager"))
+                .addInboundPermitted(new JsonObject().put(
+                        "address", "com.raaftech.structure.actor.pluginmanager"));
+        if (serveDebug) {
+            bridgeOptions.addInboundPermitted(new JsonObject().put(
+                        "address_re", "com.raaftech.structure.plugins.*"));
+        }
         sockJSServer.bridge(
                 new SockJSServerOptions().setPrefix("/eventbus"),
-                new BridgeOptions()
-                        .addInboundPermitted(new JsonObject().put(
-                                "address", "com.raaftech.structure.actor.framehelper"))
-                        .addInboundPermitted(new JsonObject().put(
-                                "address", "com.raaftech.structure.actor.schemamanager"))
-                        .addInboundPermitted(new JsonObject().put(
-                                "address", "com.raaftech.structure.actor.statemanager"))
-                        .addOutboundPermitted(new JsonObject().put(
-                                "address_re", "com.raaftech.structure.worker" +
-                                        ".status_[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"))
+                bridgeOptions
         );
 
         httpServer.listen();
 
         vertx.deployVerticle("com.raaftech.structure.actor.FrameHelper");
         vertx.deployVerticle("com.raaftech.structure.actor.StateManager");
+        vertx.deployVerticle("com.raaftech.structure.actor.PluginManager");
         DeploymentOptions deploymentOptions = new DeploymentOptions().setWorker(true);
         vertx.deployVerticle("com.raaftech.structure.actor.SchemaManager", deploymentOptions);
+
+        PluginLoader pluginLoader = new PluginLoader(vertx);
+        try {
+            pluginLoader.loadPlugins();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         try {
             Thread.sleep(1000);
