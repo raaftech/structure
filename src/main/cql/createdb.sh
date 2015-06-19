@@ -57,5 +57,45 @@ sleep 3
 "$neo4j_repl" -file org.openpcf.model.services.cql
 echo ""
 
+echo "RAAF CloudSystems"
+sleep 3
+"$neo4j_repl" -file com.raaftech.model.cloudsystems.cql
+echo ""
+
+echo "RAAF Emulators"
+sleep 3
+"$neo4j_repl" -file com.raaftech.model.emulators.cql
+echo ""
+
+echo "RAAF Hypervisors"
+sleep 3
+"$neo4j_repl" -file com.raaftech.model.hypervisors.cql
+echo ""
+
+echo "RAAF Interpreters"
+sleep 3
+"$neo4j_repl" -file com.raaftech.model.interpreters.cql
+echo ""
+
+echo "RAAF Operating Systems"
+sleep 3
+"$neo4j_repl" -file com.raaftech.model.operatingsystems.cql
+echo ""
+
+echo "RAAF Package Managers"
+sleep 3
+"$neo4j_repl" -file com.raaftech.model.packagemanagers.cql
+echo ""
+
+echo "RAAF Service Managers"
+sleep 3
+"$neo4j_repl" -file com.raaftech.model.servicemanagers.cql
+echo ""
+
+echo "RAAF Services"
+sleep 3
+"$neo4j_repl" -file com.raaftech.model.services.cql
+echo ""
+
 echo Done
 echo ""
