@@ -3,14 +3,12 @@ package com.raaftech.structure.base;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
-import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServer;
-import io.vertx.core.http.HttpServerOptions;
-import io.vertx.core.json.JsonObject;
-import io.vertx.ext.routematcher.RouteMatcher;
-import io.vertx.ext.sockjs.BridgeOptions;
-import io.vertx.ext.sockjs.SockJSServer;
-import io.vertx.ext.sockjs.SockJSServerOptions;
+import io.vertx.ext.web.Router;
+import io.vertx.ext.web.handler.StaticHandler;
+import io.vertx.ext.web.handler.sockjs.BridgeOptions;
+import io.vertx.ext.web.handler.sockjs.PermittedOptions;
+import io.vertx.ext.web.handler.sockjs.SockJSHandler;
 
 import java.io.IOException;
 
@@ -27,8 +25,10 @@ public class Application {
     public static void main(String[] args) {
         Vertx vertx;
         HttpServer httpServer;
-        SockJSServer sockJSServer;
+        Router router;
+        SockJSHandler sockJsHandler;
         final boolean serveDebug;
+        final int port = 8080;
 
         if (args.length < 1) {
             serveDebug = false;
@@ -39,67 +39,40 @@ public class Application {
         // Setup vertx with a maxWorkerExecuteTime of 5 minutes
         // TODO: Make maxWorkerExecuteTime user configurable?
         vertx = Vertx.vertx(new VertxOptions().setMaxWorkerExecuteTime(5l * 60 * 1000 * 1000000));
-        Context.INSTANCE.setVertx(vertx);
-        // Setup HTTP server on port 8080
-        httpServer = vertx.createHttpServer(new HttpServerOptions().setPort(8080));
+        router = Router.router(vertx);
+        sockJsHandler = SockJSHandler.create(vertx);
+        httpServer = vertx.createHttpServer();
 
-        // Setup Routematcher to serve our web-interface
-        // This needs to be done before setting up SockJS
-        RouteMatcher routeMatcher = RouteMatcher.routeMatcher();
-        // Handle our requests
-        // TODO: 404 for non-existing pages
-        routeMatcher.matchMethodWithRegEx(HttpMethod.GET, "/.*", httpServerRequest -> {
-            if (httpServerRequest.path().contains("..")) {
-                // Disallow urls crafted to see resources outside of the webroot
-                // TODO: more sophisticated checks
-                httpServerRequest.response().setStatusCode(403).end();
-            } else if (httpServerRequest.path().equals("/html/")) {
-                httpServerRequest.response().sendFile("web/html/index.html");
-            } else if (!serveDebug && httpServerRequest.path().contains("/debug/")) {
-                httpServerRequest.response().setStatusCode(404);
-                httpServerRequest.response().sendFile("web/html/error/404.html");
-            } else if (httpServerRequest.path().matches("^/debug/.*$")) {
-                if (serveDebug) {
-                    if (httpServerRequest.path().matches("^.*/$")) {
-                        httpServerRequest.response().sendFile("web/html/debug/index.html");
-                    } else {
-                        httpServerRequest.response().sendFile("web/html" + httpServerRequest.path());
-                    }
-                }
-            } else {
-                httpServerRequest.response().sendFile("web/" + httpServerRequest.path());
-            }
-        });
-        httpServer.requestHandler(routeMatcher::accept);
+        Context.INSTANCE.setVertx(vertx);
 
         // Enable sockJS Server on our HTTP server
-        sockJSServer = SockJSServer.sockJSServer(vertx, httpServer);
         // Enable bridging on /eventbus, and add some in- and outbound permissions
         BridgeOptions bridgeOptions  = new BridgeOptions()
-                .addInboundPermitted(new JsonObject().put(
-                        "address", "com.raaftech.structure.actor.framehelper"))
-                .addInboundPermitted(new JsonObject().put(
-                        "address", "com.raaftech.structure.actor.schemamanager"))
-                .addInboundPermitted(new JsonObject().put(
-                        "address", "com.raaftech.structure.actor.statemanager"))
-                .addInboundPermitted(new JsonObject().put(
-                        "address", "com.raaftech.structure.actor.pluginmanager"));
+                .addInboundPermitted(new PermittedOptions().setAddress(
+                        "com.raaftech.structure.actor.framehelper"))
+                .addInboundPermitted(new PermittedOptions().setAddress(
+                        "com.raaftech.structure.actor.schemamanager"))
+                .addInboundPermitted(new PermittedOptions().setAddress(
+                        "com.raaftech.structure.actor.statemanager"))
+                .addInboundPermitted(new PermittedOptions().setAddress(
+                        "com.raaftech.structure.actor.pluginmanager"));
+        // If we're in debug mode allow direct access to handler plugins on the eventbus
+        // and serve the debug page
         if (serveDebug) {
-            bridgeOptions.addInboundPermitted(new JsonObject().put(
-                        "address_re", "com.raaftech.structure.plugins.*"));
+            router.route("/debug/*").handler(StaticHandler.create().setWebRoot("web/html/debug/"));
+            bridgeOptions.addInboundPermitted(new PermittedOptions().setAddressRegex(
+                        "com.raaftech.structure.plugins.*"));
         }
-        sockJSServer.bridge(
-                new SockJSServerOptions().setPrefix("/eventbus"),
-                bridgeOptions
-        );
 
-        httpServer.listen();
+        sockJsHandler.bridge(bridgeOptions);
+        router.route("/eventbus/*").handler(sockJsHandler);
+        httpServer.requestHandler(router::accept).listen(port);
 
         vertx.deployVerticle("com.raaftech.structure.actor.FrameHelper");
         vertx.deployVerticle("com.raaftech.structure.actor.StateManager");
         vertx.deployVerticle("com.raaftech.structure.actor.PluginManager");
-        DeploymentOptions deploymentOptions = new DeploymentOptions().setWorker(true);
-        vertx.deployVerticle("com.raaftech.structure.actor.SchemaManager", deploymentOptions);
+        vertx.deployVerticle("com.raaftech.structure.actor.SchemaManager",
+                new DeploymentOptions().setWorker(true));
 
         PluginLoader pluginLoader = new PluginLoader(vertx);
         try {
@@ -113,9 +86,9 @@ public class Application {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        System.out.println("Structure is running at http://localhost:8080/html/");
+        System.out.println("Structure is running at http://localhost:" + port + "/html/");
         if (serveDebug) {
-            System.out.println("Debug interface is running at http://localhost:8080/debug/");
+            System.out.println("Debug interface is running at http://localhost:" + port + "/debug/");
         }
     }
 }
