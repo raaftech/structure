@@ -44,7 +44,7 @@ import com.raaftech.structure.helper.JsonSchemaBuilder;
  * @since 2015-03-09
  */
 @NodeEntity
-public class TemplateNode extends Node implements Template {
+public class TemplateNode extends Node {
 
     @RelatedTo(type = "ISA", direction = Direction.OUTGOING)
     @Fetch

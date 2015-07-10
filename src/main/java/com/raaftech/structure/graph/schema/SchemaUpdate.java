@@ -7,7 +7,6 @@ import java.util.Set;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.graph.SchemaNode;
-import com.raaftech.structure.graph.Template;
 import com.raaftech.structure.graph.TypeNode;
 import com.raaftech.structure.graph.repositories.SchemaNodeRepository;
 import com.raaftech.structure.graph.repositories.TypeNodeRepository;
@@ -126,7 +125,7 @@ public abstract class SchemaUpdate {
      * @param newSchema The new schema is put into every child node's schema HashMap.
      */
     private void cascadeDescription(TypeNode start, JsonSchemaBuilder oldSchema, JsonSchemaBuilder newSchema) {
-        Set<Template> childIsaSet = start.getChildIsaSet();
+        Set<TypeNode> childIsaSet = start.getChildIsaSet();
         childIsaSet.stream()
                 .filter(childNode -> childNode.getClass() == TypeNode.class)
                 .map(TypeNode.class::cast)

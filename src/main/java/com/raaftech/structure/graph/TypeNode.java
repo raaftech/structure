@@ -29,13 +29,13 @@ import com.raaftech.structure.helper.JsonSchemaBuilder;
  * @since 2014-11-27
  */
 @NodeEntity
-public class TypeNode extends Node implements Template {
+public class TypeNode extends Node {
 
     @RelatedTo(type="ISA", direction = Direction.OUTGOING)
     private TypeNode isa;
 
     @RelatedTo(type="ISA", direction = Direction.INCOMING)
-    private Set<Template> childIsaSet;
+    private Set<TypeNode> childIsaSet;
 
     @RelatedTo(type="HAS_CAPABILITY", direction = Direction.OUTGOING)
     private Set<InstanceNode> capabilities = new HashSet<>();
@@ -144,7 +144,7 @@ public class TypeNode extends Node implements Template {
         this.isaUuid = isaUuid;
     }
 
-    public Set<Template> getChildIsaSet() {
+    public Set<TypeNode> getChildIsaSet() {
         GraphDatabase graphDatabase = Context.INSTANCE.getGraphDatabase();
         Transaction tx = graphDatabase.beginTx();
         Context.INSTANCE.getNeo4jTemplate().fetch(childIsaSet);
