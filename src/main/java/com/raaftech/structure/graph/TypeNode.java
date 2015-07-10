@@ -31,10 +31,10 @@ import com.raaftech.structure.helper.JsonSchemaBuilder;
 @NodeEntity
 public class TypeNode extends Node {
 
-    @RelatedTo(type="ISA", direction = Direction.OUTGOING)
+    @RelatedTo(type="ISA", direction = Direction.OUTGOING, elementClass = TypeNode.class, enforceTargetType = true)
     private TypeNode isa;
 
-    @RelatedTo(type="ISA", direction = Direction.INCOMING)
+    @RelatedTo(type="ISA", direction = Direction.INCOMING, elementClass = TypeNode.class, enforceTargetType = true)
     private Set<TypeNode> childIsaSet;
 
     @RelatedTo(type="HAS_CAPABILITY", direction = Direction.OUTGOING)

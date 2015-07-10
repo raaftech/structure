@@ -1,12 +1,5 @@
 package com.raaftech.structure.graph;
 
-import io.vertx.core.AsyncResult;
-import io.vertx.core.eventbus.EventBus;
-import io.vertx.core.eventbus.Message;
-import io.vertx.core.json.JsonObject;
-import io.vertx.rx.java.ObservableHandler;
-import io.vertx.rx.java.RxHelper;
-
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -23,8 +16,6 @@ import org.springframework.data.neo4j.annotation.Fetch;
 import org.springframework.data.neo4j.annotation.NodeEntity;
 import org.springframework.data.neo4j.annotation.RelatedTo;
 
-import rx.Observable;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -37,6 +28,14 @@ import com.raaftech.structure.graph.repositories.TemplateNodeRepository;
 import com.raaftech.structure.graph.repositories.TypeNodeRepository;
 import com.raaftech.structure.helper.JsonSchemaBuilder;
 
+import io.vertx.core.AsyncResult;
+import io.vertx.core.eventbus.EventBus;
+import io.vertx.core.eventbus.Message;
+import io.vertx.core.json.JsonObject;
+import io.vertx.rx.java.ObservableHandler;
+import io.vertx.rx.java.RxHelper;
+import rx.Observable;
+
 /**
  * Give a description of TemplateNode here.
  *
@@ -46,7 +45,7 @@ import com.raaftech.structure.helper.JsonSchemaBuilder;
 @NodeEntity
 public class TemplateNode extends Node {
 
-    @RelatedTo(type = "ISA", direction = Direction.OUTGOING)
+    @RelatedTo(type = "ISA", direction = Direction.OUTGOING, elementClass = TypeNode.class, enforceTargetType = true)
     @Fetch
     TypeNode isa;
 
