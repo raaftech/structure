@@ -10,8 +10,6 @@ import io.vertx.ext.web.handler.sockjs.BridgeOptions;
 import io.vertx.ext.web.handler.sockjs.PermittedOptions;
 import io.vertx.ext.web.handler.sockjs.SockJSHandler;
 
-import java.io.IOException;
-
 import com.raaftech.structure.helper.PluginLoader;
 
 /**
@@ -73,13 +71,12 @@ public class Application {
         vertx.deployVerticle("com.raaftech.structure.actor.PluginManager");
         vertx.deployVerticle("com.raaftech.structure.actor.SchemaManager",
                 new DeploymentOptions().setWorker(true));
+        vertx.deployVerticle("com.raaftech.structure.actor.DiscoveryManager");
+        vertx.deployVerticle("com.raaftech.structure.actor.worker.ScanWorker",
+                new DeploymentOptions().setWorker(true).setInstances(256));
 
         PluginLoader pluginLoader = new PluginLoader(vertx);
-        try {
-            pluginLoader.loadPlugins();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        pluginLoader.loadSystemPlugins();
 
         try {
             Thread.sleep(1000);

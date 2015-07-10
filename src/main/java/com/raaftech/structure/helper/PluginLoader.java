@@ -11,6 +11,7 @@ import java.net.URL;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.Properties;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -27,15 +28,27 @@ public class PluginLoader {
         this.vertx = vertx;
     }
 
-    public void loadPlugins() throws IOException {
+    public void loadSystemPlugins() {
         ClassLoader classLoader = PluginLoader.class.getClassLoader();
+        Arrays.asList(
+                classLoader.getResource("plugins/checkable"),
+                classLoader.getResource("plugins/commandable"),
+                classLoader.getResource("plugins/discoverable")
+        ).stream()
+            .forEach(url -> {
+                try {
+                    loadPlugins(url);
+                } catch (IOException e) {
+                    // FATAL!
+                    System.out.println("Couldn't load system plugins. Fatal.");
+                    System.exit(1);
+                }
+            });
+    }
+
+    public void loadPlugins(URL directory) throws IOException {
         Path pluginPath;
-        URL res = classLoader.getResource("plugins");
-        if (res != null) {
-            pluginPath = FileSystems.getDefault().getPath(res.getPath());
-        } else {
-            throw new IOException("Can't open plugins directory.");
-        }
+        pluginPath = FileSystems.getDefault().getPath(directory.getPath());
 
         Files.list(pluginPath)
             .filter(Files::isDirectory)
@@ -93,7 +106,9 @@ public class PluginLoader {
                     .put("path", path);
             DeploymentOptions options = new DeploymentOptions().setConfig(metadata);
             registeredPlugins.add(address);
-            vertx.deployVerticle("plugins" + File.separator + new File(path).getName() + File.separator + verticle, options, res -> {
+            vertx.deployVerticle("plugins" + File.separator +
+                    new File(new File(path).getParent()).getName() + File.separator +
+                    new File(path).getName() + File.separator + verticle, options, res -> {
                 if (res.failed()) {
                     System.out.println("Error while deploying plugin, unregistering.");
                     res.cause().printStackTrace();

@@ -344,6 +344,9 @@ public class BaseR1 extends SchemaUpdate {
 	        new TypeNode("Commandable", "A capability that makes it possible to run commands.",
 	                "76fb3116-d4a8-459a-b62b-a2641bcb7e7d")
 	                .setIsa("916e04a9-c773-4eaf-9c08-450016426e5a"),
+	        new TypeNode("Discoverable", "A capability that makes it possible to discover something.",
+	                "3c170a27-05ee-4999-97d4-e7cc9135cb96")
+	                .setIsa("916e04a9-c773-4eaf-9c08-450016426e5a"),
 	        new TypeNode("Protocol", "A protocol.", "db0c3c65-52fd-4dec-907c-6c8a669e88f3")
 	                .setIsa("b1bc963a-19cc-4518-aecb-a35d028c49e3"),
 	        new TypeNode("HTTP", "The hypertext transfer protocol.", "9fd04885-179f-4c72-99a2-52c692e61b19")
@@ -417,6 +420,9 @@ public class BaseR1 extends SchemaUpdate {
 	                .setIsa("14dbfbfa-b50a-466f-8539-55d5d3f15e4a"),
 	        new TypeNode("RestartHandler", "Executes generic code to derive restart method and executes or executes " +
 	                "CustomRestartOperation if it exists.", "c61c2f8c-0ba2-4e0d-99f2-66a5580a59a6")
+	                .setIsa("14dbfbfa-b50a-466f-8539-55d5d3f15e4a"),
+	        new TypeNode("DiscoverHandler", "Executes a routine to discover an instance of a TypeNode, creating " +
+	                "a new InstanceNode with the right information.", "c5e838c7-5b61-47ff-9285-aa5a108f6867")
 	                .setIsa("14dbfbfa-b50a-466f-8539-55d5d3f15e4a"),
 	        new TypeNode("Operation", "A command or method that can be called, with or without schedule.",
 	                "46294722-b14e-438e-9fbc-95ff137b6b18")

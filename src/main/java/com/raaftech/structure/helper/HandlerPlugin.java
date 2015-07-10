@@ -25,10 +25,6 @@ public abstract class HandlerPlugin extends AbstractVerticle {
     protected JsonObject metadata;
     // The arguments the plugin was called with
     protected JsonNode args;
-    // The UUID this handler was called on (also in args, for convenience)
-    protected String node;
-    // The task ID of this action (also in args, for convenience)
-    protected String task;
     // Result we get back from a implementation
     protected JsonObject pluginResult = new JsonObject();
 
@@ -45,9 +41,6 @@ public abstract class HandlerPlugin extends AbstractVerticle {
         try {
             ObjectNode pluginSchema = (ObjectNode)loadSchema(metadata.getString("path") + File.separator + "schema.json");
             schema = new JsonSchemaBuilder(pluginSchema);
-            schema.addProperty("node", "string", true, "UUID of the node this was called on.")
-                .setPattern("^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89aAbB][a-f0-9]{3}-[a-f0-9]{12}$");
-            schema.addProperty("task", "string", true, "The ID of this particular task.");
 
             JsonSchemaBuilder bodySchema = new JsonSchemaBuilder()
                 .setType("object")
@@ -65,8 +58,6 @@ public abstract class HandlerPlugin extends AbstractVerticle {
                         if (msgh.equals("execute")) {
                             args = body.get("args");
                             if(schema.validateJson(args)) {
-                                node = args.get("node").asText();
-                                task = args.get("task").asText();
                                 implementation();
                             } else {
                                 log("info", "Received message didn't validate against plugin's schema.");
@@ -127,6 +118,11 @@ public abstract class HandlerPlugin extends AbstractVerticle {
         return jsonNode;
     }
 
+    // Convert a Jackson JsonNode to a Vert.x JsonObject
+    protected JsonObject convertFromJsonNode(JsonNode jsonNode) {
+        return new JsonObject(jsonNode.toString());
+    }
+
     // A logger for actors with nice defaults.
     protected void log(String level, String message) {
         System.out.println(level.toUpperCase() + ": " + message);
@@ -144,7 +140,7 @@ public abstract class HandlerPlugin extends AbstractVerticle {
     }
 
     // Log a CommandResult to the database
-    protected void createCommandResult(String result) {
+    protected void createCommandResult(String node, String task, String result) {
         JsonObject resultMessage = new JsonObject()
                 .put("msgh", "createcommandresult")
                 .put("args", new JsonObject()
@@ -154,7 +150,7 @@ public abstract class HandlerPlugin extends AbstractVerticle {
         vertx.eventBus().send("com.raaftech.structure.actor.statemanager", resultMessage);
     }
     // Log a DerivedStatusResult to the database
-    protected void createDerivedStatusResult(boolean result) {
+    protected void createDerivedStatusResult(String node, String task, boolean result) {
         JsonObject resultMessage = new JsonObject()
                 .put("msgh", "createderivedstatusresult")
                 .put("args", new JsonObject()

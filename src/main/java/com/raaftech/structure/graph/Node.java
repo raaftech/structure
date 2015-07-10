@@ -20,15 +20,17 @@ public class Node {
     private Long id;
 
     @Indexed(indexType = IndexType.FULLTEXT, indexName = "name")
-    private String name;
+    protected String name;
 
     @Indexed(indexType = IndexType.FULLTEXT, indexName = "description")
-    private String desc;
+    protected String desc;
 
     @Indexed(indexType = IndexType.FULLTEXT, unique=true, indexName = "uuid")
     private String uuid;
 
-    public Node() {}
+    public Node() {
+        this.uuid = UUID.randomUUID().toString();
+    }
 
     public Node(String name, String desc, String uuid) {
         UUID.fromString(uuid); // throws exception on invalid uuid

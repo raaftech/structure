@@ -2,8 +2,6 @@
 
 package com.raaftech.structure.actor;
 
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Set;
 
 import org.neo4j.graphdb.Transaction;
@@ -420,24 +418,11 @@ public class FrameHelper extends BaseActor {
                     TemplateNode templateNode = templateNodeRepository.findByUuid(template);
 
                     if (templateNode != null && instancedata != null) {
-                        // Map stuff
-                        HashMap<String, JsonNode> uuidToDataMap = new HashMap<>();
-                        Iterator<JsonNode> elements = instancedata.elements();
-                        while (elements.hasNext()) {
-                            JsonNode element = elements.next();
-                            uuidToDataMap.put(element.get("uuid").asText(), element.get("data"));
-                        }
-
-                        Transaction tx = Context.INSTANCE.getGraphDatabase().beginTx();
-                        try {
-                            result.put("uuid", templateNode.instantiate(templateNode, null, uuidToDataMap, 0));
-                            tx.success();
-                        } catch (Exception e) {
-                            tx.failure();
-                            e.printStackTrace();
-                            result.put("error", e.getMessage());
-                        } finally {
-                            tx.close();
+                        String uuid = templateNode.instantiate(instancedata);
+                        if (uuid != null) {
+                            result.put("uuid", uuid);
+                        } else {
+                            result.put("error", "Error while instantiating template.");
                         }
                     }
                 } else {
@@ -450,6 +435,42 @@ public class FrameHelper extends BaseActor {
             public JsonNode help(JsonNode request) {
                 return null;
             }
+        };
+    }
+
+    public MessageHandler discovertemplate() {
+        return new MessageHandler() {
+
+            @Override
+            public JsonNode exec(JsonNode request) {
+                ObjectNode result = JsonNodeFactory.instance.objectNode();
+                JsonNode args = request.get("args");
+
+                // validate args
+                JsonNode schema = jsonFromResource("schema/framehelper/discovertemplate.schema.json");
+                if (isValidJson(schema, args)) {
+                    String templateNodeUuid = args.get("node").asText();
+                    TemplateNode startOfTemplate = templateNodeRepository.findByUuid(templateNodeUuid);
+                    try {
+                        startOfTemplate.discover(args.get("data"));
+                        result.put("information", "Started discovery routine(s) for template.");
+                    } catch (Exception e) {
+                        result.put("error", e.getMessage());
+                        e.printStackTrace();
+                    }
+                } else {
+                    result.put("error", "JSON didn't pass validation.");
+                }
+
+                return response(request, result);
+            }
+
+            @Override
+            public JsonNode help(JsonNode request) {
+                // TODO Auto-generated method stub
+                return null;
+            }
+
         };
     }
 }
