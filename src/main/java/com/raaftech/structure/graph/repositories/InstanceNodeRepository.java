@@ -17,7 +17,8 @@ import com.raaftech.structure.graph.InstanceNode;
 public interface InstanceNodeRepository extends GraphRepository<InstanceNode> {
 
     InstanceNode findByUuid(String uuid);
-    InstanceNode findByName(String name);
+    @Query ("START node=node:name(name={name}) MATCH (node:InstanceNode) return node")
+    InstanceNode findByName(@Param("name") String name);
 
     @Query ("START start=node:uuid(uuid={uuid}) " +
             "MATCH start-[:HAS_COMPONENT*1..]->(n)-[:ISA|INSTANCE_OF*1..]->({name:{type}}) " +
