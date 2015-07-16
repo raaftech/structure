@@ -7,6 +7,10 @@ package com.raaftech.structure.base;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.factory.GraphDatabaseBuilder;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
+import org.neo4j.kernel.GraphDatabaseAPI;
+import org.neo4j.server.Bootstrapper;
+import org.neo4j.server.WrappingNeoServerBootstrapper;
+import org.neo4j.server.configuration.ServerConfigurator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -38,9 +42,20 @@ public class SpringConfig extends Neo4jConfiguration {
     @Bean
     GraphDatabaseService graphDatabaseService() {
         // TODO: make path configurable
+        Bootstrapper bootStrapper;
+
         GraphDatabaseBuilder graphDatabaseBuilder = new GraphDatabaseFactory().newEmbeddedDatabaseBuilder("structure.db");
         graphDatabaseBuilder.setConfig("remote_shell_enabled", "true");
-        return graphDatabaseBuilder.newGraphDatabase();
+
+        GraphDatabaseService graphDatabaseService = graphDatabaseBuilder.newGraphDatabase();
+
+        ServerConfigurator webConfig = new ServerConfigurator((GraphDatabaseAPI) graphDatabaseService);
+        webConfig.configuration().setProperty("webserver_bind_address", "localhost");
+
+        bootStrapper = new WrappingNeoServerBootstrapper((GraphDatabaseAPI) graphDatabaseService, webConfig);
+        bootStrapper.start();
+
+        return graphDatabaseService;
     }
 
     @Autowired
