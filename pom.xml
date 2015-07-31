@@ -3,17 +3,11 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>org.sonatype.oss</groupId>
-        <artifactId>oss-parent</artifactId>
-        <version>7</version>
-    </parent>
-
     <groupId>com.raaftech</groupId>
     <artifactId>structure</artifactId>
     <packaging>jar</packaging>
     <version>0.6.1</version>
-    <name>structure</name>
+    <name>Structure</name>
 
     <description>
         Vert.x and Neo4j application to manage computing environments.
@@ -210,11 +204,6 @@
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot</artifactId>
-            <version>1.1.8.RELEASE</version>
-        </dependency>
     </dependencies>
 
     <build>
@@ -248,7 +237,7 @@
                 <!-- We specify the Maven compiler plugin as we need to set it to Java 1.8 -->
                 <plugin>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.1</version>
+                    <version>3.3</version>
                     <configuration>
                         <source>1.8</source>
                         <target>1.8</target>
