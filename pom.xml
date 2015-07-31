@@ -13,7 +13,7 @@
     <artifactId>structure</artifactId>
     <packaging>jar</packaging>
     <version>0.6.1</version>
-    <name>universal</name>
+    <name>structure</name>
 
     <description>
         Vert.x and Neo4j application to manage computing environments.
@@ -218,7 +218,7 @@
     </dependencies>
 
     <build>
-        <finalName>universal-${project.version}-trunk</finalName>
+        <finalName>structure-${project.version}-trunk</finalName>
 
         <directory>target</directory>
 
