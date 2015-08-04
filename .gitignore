@@ -7,3 +7,5 @@
 /structure.db/
 id_rsa*
 /.metadata
+.idea
+structure.iml
