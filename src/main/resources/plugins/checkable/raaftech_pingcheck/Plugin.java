@@ -19,33 +19,35 @@ public class Plugin extends HandlerPlugin {
         String node = args.get("node").asText();
         String task = args.get("task").asText();
         JsonObject msg = new JsonObject()
-        .put("msgh", "instancenode")
+        .put("msgh", "findOne")
         .put("args", new JsonObject().put("node", node));
-        vertx.eventBus().send("com.raaftech.structure.actor.framehelper", msg,
+        vertx.eventBus().send("com.raaftech.structure.repository.instancenodes", msg,
                 handler -> {
                     try {
-                        JsonNode reply = convertFromJsonObject((JsonObject)handler.result().body());
+                        JsonNode reply = convertFromJsonObject((JsonObject) handler.result().body());
                         JsonNode result = reply.get("result");
-                        String ipAddress = result.get("kv").get("addr").asText();
+                        if (result.get("error") == null) {
+                            String ipAddress = result.get("data").get("kv").get("addr").asText();
 
-                        // TODO: Check for safety!
-                        // TODO: Make multiplatform
-                        Process p = Runtime.getRuntime().exec(new String[] { "ping", "-c1", ipAddress });
-                        BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
-                        String line;
-                        p.waitFor();
-                        String output = new String();
-                        while ((line = reader.readLine()) != null) {
-                            if (output.length() == 0) {
-                                output = output.concat(line);
-                            } else {
-                                output = output.concat("\n" + line);
+                            // TODO: Check for safety!
+                            // TODO: Make multiplatform
+                            Process p = Runtime.getRuntime().exec(new String[]{"ping", "-c1", ipAddress});
+                            BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
+                            String line;
+                            p.waitFor();
+                            String output = new String();
+                            while ((line = reader.readLine()) != null) {
+                                if (output.length() == 0) {
+                                    output = output.concat(line);
+                                } else {
+                                    output = output.concat("\n" + line);
+                                }
                             }
+                            createCommandResult(node, task, output);
                         }
-                        createCommandResult(node, task, output);
-                    } catch (IOException | InterruptedException e) {
-                        e.printStackTrace();
-                    }
+                        }catch(IOException | InterruptedException e){
+                            e.printStackTrace();
+                        }
                 });
     }
 }

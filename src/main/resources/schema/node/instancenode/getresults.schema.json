@@ -1,0 +1,12 @@
+{
+    "id": "https://repo.raaftech.com/schema/node/instancenode/getresult.schema.json#",
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "description": "Schema for the getResult method of an InstanceNodeActor.",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "task": {
+            "type": "string"
+        }
+    }
+}

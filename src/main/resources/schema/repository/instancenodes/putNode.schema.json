@@ -1,7 +1,7 @@
 {
-    "id": "https://repo.raaftech.com/schema/framehelper/createinstancenode.json#",
+    "id": "https://repo.raaftech.com/schema/repository/instancenodes/putNode.schema.json#",
     "$schema": "http://json-schema.org/draft-04/schema#",
-    "description": "Schema for Structure's FrameHelper createinstancenode method.",
+    "description": "Schema for the InstanceNode repository's putNode method.",
     "type": "object",
     "additionalProperties": true,
     "properties": {

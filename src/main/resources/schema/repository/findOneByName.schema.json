@@ -1,0 +1,13 @@
+{
+    "id": "https://repo.raaftech.com/schema/repository/findOneByName.json#",
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "description": "Schema for the findOneByName method every repository inherits.",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "name": {
+            "type": "string"
+        }
+    },
+    "required": [ "name" ]
+}

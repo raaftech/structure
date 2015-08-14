@@ -147,7 +147,7 @@ public abstract class HandlerPlugin extends AbstractVerticle {
                 .put("node", node)
                 .put("task", task)
                 .put("commandresult", result));
-        vertx.eventBus().send("com.raaftech.structure.actor.statemanager", resultMessage);
+        vertx.eventBus().send("com.raaftech.structure.statemanager", resultMessage);
     }
     // Log a DerivedStatusResult to the database
     protected void createDerivedStatusResult(String node, String task, boolean result) {
@@ -157,6 +157,6 @@ public abstract class HandlerPlugin extends AbstractVerticle {
                 .put("node", node)
                 .put("task", task)
                 .put("status", result));
-        vertx.eventBus().send("com.raaftech.structure.actor.statemanager", resultMessage);
+        vertx.eventBus().send("com.raaftech.structure.statemanager", resultMessage);
     }
 }

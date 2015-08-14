@@ -2,10 +2,13 @@ package com.raaftech.structure.graph;
 
 import java.util.UUID;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.data.neo4j.annotation.GraphId;
 import org.springframework.data.neo4j.annotation.Indexed;
 import org.springframework.data.neo4j.annotation.NodeEntity;
 import org.springframework.data.neo4j.support.index.IndexType;
+
+import com.raaftech.structure.base.NodeActor;
 
 /**
  * Give a description of Node here.
@@ -14,7 +17,7 @@ import org.springframework.data.neo4j.support.index.IndexType;
  * @since 2014-11-26
  */
 @NodeEntity
-public class Node {
+public abstract class Node {
 
     @GraphId
     private Long id;
@@ -57,4 +60,10 @@ public class Node {
     public String getDesc() {
         return desc;
     }
+
+    public Long getId() {
+        return id;
+    }
+
+    public abstract ObjectNode toJson();
 }

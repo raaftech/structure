@@ -15,12 +15,17 @@ import com.raaftech.structure.graph.TemplateNode;
  * @author Boy van Duuren <boy.van.duuren@raaftech.com>
  * @since 2015-03-09
  */
-public interface TemplateNodeRepository extends GraphRepository<TemplateNode> {
+public interface TemplateNodeRepository extends GenericRepository<TemplateNode> {
 
-    TemplateNode findByUuid(String uuid);
-    TemplateNode findByName(String name);
+	@Override
+    @Query ("START node=node:name(name={name}) MATCH (node:TemplateNode) return node")
+    Set<TemplateNode> findByName(@Param("name") String name);
 
-    @Query("MATCH (n {startOfTemplate:true}) return n")
+	@Override
+    @Query ("START node=node:name(name={name}) MATCH (node:TemplateNode) return node LIMIT 1")
+    TemplateNode findOneByName(@Param("name") String name);
+
+    @Query("MATCH (n:TemplateNode {startOfTemplate:true}) return n")
     Set<TemplateNode> findAllTemplates();
 
     // This query returns all the UUID's + connected Discovery Handler addresses of a TemplateNode group

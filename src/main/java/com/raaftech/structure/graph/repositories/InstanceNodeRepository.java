@@ -14,16 +14,20 @@ import com.raaftech.structure.graph.InstanceNode;
  * @author Boy van Duuren <boy.van.duuren@raaftech.com>
  * @since 2015-01-14
  */
-public interface InstanceNodeRepository extends GraphRepository<InstanceNode> {
+public interface InstanceNodeRepository extends GenericRepository<InstanceNode> {
 
-    InstanceNode findByUuid(String uuid);
+    @Override
     @Query ("START node=node:name(name={name}) MATCH (node:InstanceNode) return node")
-    InstanceNode findByName(@Param("name") String name);
+    Set<InstanceNode> findByName(@Param("name") String name);
+
+    @Override
+    @Query ("START node=node:name(name={name}) MATCH (node:InstanceNode) return node LIMIT 1")
+    InstanceNode findOneByName(@Param("name") String name);
 
     @Query ("START start=node:uuid(uuid={uuid}) " +
             "MATCH start-[:HAS_COMPONENT*1..]->(n)-[:ISA|INSTANCE_OF*1..]->({name:{type}}) " +
             "RETURN n")
-    InstanceNode findComponentByType(@Param("uuid") String uuid, @Param("type") String type);
+    Set<InstanceNode> findComponentsByType(@Param("uuid") String uuid, @Param("type") String type);
 
     // Workaround, returning count(n) > 0 returns null when n is NULL.
     @Query ("START start=node:uuid(uuid={uuid}) " +

@@ -1,40 +1,33 @@
 package com.raaftech.structure.graph;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.neo4j.graphdb.Direction;
-import org.neo4j.graphdb.Transaction;
-import org.springframework.data.annotation.Transient;
-import org.springframework.data.neo4j.annotation.Fetch;
-import org.springframework.data.neo4j.annotation.NodeEntity;
-import org.springframework.data.neo4j.annotation.RelatedTo;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.fge.jsonschema.core.exceptions.ProcessingException;
+import com.raaftech.structure.actor.node.TemplateNodeActor;
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.graph.repositories.InstanceNodeRepository;
 import com.raaftech.structure.graph.repositories.TemplateNodeRepository;
 import com.raaftech.structure.graph.repositories.TypeNodeRepository;
 import com.raaftech.structure.helper.JsonSchemaBuilder;
-
 import io.vertx.core.AsyncResult;
 import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.json.JsonObject;
 import io.vertx.rx.java.ObservableHandler;
 import io.vertx.rx.java.RxHelper;
+import org.neo4j.graphdb.Direction;
+import org.neo4j.graphdb.Transaction;
+import org.springframework.data.annotation.Transient;
+import org.springframework.data.neo4j.annotation.Fetch;
+import org.springframework.data.neo4j.annotation.NodeEntity;
+import org.springframework.data.neo4j.annotation.RelatedTo;
 import rx.Observable;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Give a description of TemplateNode here.
@@ -184,10 +177,13 @@ public class TemplateNode extends Node {
      * @return The number of components removed.
      */
     public long removeAllComponents() {
-        return hasComponents.stream()
+        Set<TemplateNode> copy = hasComponents.stream().collect(Collectors.toSet());
+        long count = copy.stream()
                 .peek(component -> removeComponent(component))
                 .count();
+        hasComponents.clear();
 
+        return count;
     }
 
     private static void cascadeRemoval(TemplateNode child) {
@@ -434,6 +430,7 @@ public class TemplateNode extends Node {
     public TemplateNode save() {
         Transaction tx = Context.INSTANCE.getGraphDatabase().beginTx();
         TemplateNodeRepository templateNodeRepository = Context.INSTANCE.getTemplateNodeRepository();
+        boolean newNode = getId() == null || getId() < 0;
 
         try {
             if (startOfTemplate && !(required && unique)) {
@@ -447,6 +444,11 @@ public class TemplateNode extends Node {
             throw e;
         } finally {
             tx.close();
+        }
+
+        if (newNode) {
+            Context.INSTANCE.getVertx().deployVerticle(
+                    new TemplateNodeActor(this));
         }
 
         return this;

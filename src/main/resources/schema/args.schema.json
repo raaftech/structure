@@ -1,0 +1,6 @@
+{
+    "id": "https://repo.raaftech.com/schema/args.schema.json#",
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "description": "Schema for arguments to Structure request messages. This is a default when no schema is specified.",
+    "type": "object"
+}

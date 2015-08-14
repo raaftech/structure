@@ -1,0 +1,147 @@
+package com.raaftech.structure.actor.node;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.raaftech.structure.annotations.SchemaPath;
+import com.raaftech.structure.base.Context;
+import com.raaftech.structure.base.NodeActor;
+import com.raaftech.structure.graph.TemplateNode;
+import com.raaftech.structure.graph.repositories.TemplateNodeRepository;
+import org.neo4j.graphdb.Transaction;
+
+/**
+ * Created by boy on 8/14/15.
+ */
+public class TemplateNodeActor extends NodeActor<TemplateNode> {
+
+    public TemplateNodeActor(TemplateNode node) {
+        super(node);
+    }
+
+    @Override
+    protected String getSecondaryAddress() {
+        return null;
+    }
+
+    // Next methods are exposed on the eventbus
+
+    /**
+     * Remove a TemplateNode from a Template, or
+     * when the TemplateNode this is called on is the start of
+     * a Template, remove the whole template.
+     * @return A JSON object with an error field if an error occurred.
+     */
+    // TODO: Undeploy TemplateNodes when they are removed from the database
+    public MessageHandler removeFromTemplate() {
+        return new MessageHandler() {
+            @Override
+            public JsonNode exec(JsonNode request) {
+                ObjectNode result = mapper.createObjectNode();
+                JsonNode args = request.get("args");
+
+                TemplateNodeRepository templateNodeRepository = Context.INSTANCE.getTemplateNodeRepository();
+                TemplateNode node = getNode();
+                TemplateNode parent = node.getParentComponent();
+
+                Transaction tx = Context.INSTANCE.getGraphDatabase().beginTx();
+                try {
+                    if (parent != null) {
+                        String templateUuid = parent.getUuid();
+                        if (parent.removeComponent(node)) {
+                            parent.save();
+                            result.put("data", "Removed node " + uuid + " from TemplateNode " + templateUuid);
+                        } else {
+                            result.put("error", "Didn't remove node " + uuid + " from TemplateNode " + templateUuid + ", " +
+                                    "rolled back transaction.");
+                            tx.failure();
+                        }
+                    } else {
+                        long components = node.removeAllComponents() + 1;
+                        templateNodeRepository.delete(node);
+                        result.put("data", "Removed TemplateNode " + uuid + " and its children.");
+                    }
+                    tx.success();
+                } catch (Exception e) {
+                    tx.failure();
+                    e.printStackTrace();
+                    result.put("error", e.getMessage());
+                } finally {
+                    tx.close();
+                }
+
+                return response(request, result);
+            }
+
+            @Override
+            public JsonNode help(JsonNode request) {
+                return null;
+            }
+        };
+    }
+
+    /**
+     * Instantiate a template resulting in a new InstanceNode group.
+     * @return A JSON object containing the first InstanceNode in the group's uuid,
+     * or a JSON object with an error field when an error occurs.
+     */
+    @SchemaPath("schema/node/templatenode/instantiate.schema.json")
+    public MessageHandler instantiate() {
+        return new MessageHandler() {
+            @Override
+            public JsonNode exec(JsonNode request) {
+                TemplateNodeRepository templateNodeRepository = Context.INSTANCE.getTemplateNodeRepository();
+                ObjectNode result = mapper.createObjectNode();
+                JsonNode args = request.get("args");
+
+                JsonNode instancedata = args.get("instancedata");
+                TemplateNode templateNode = getNode();
+
+                if (templateNode != null && instancedata != null) {
+                    String uuid = templateNode.instantiate(instancedata);
+                    if (uuid != null) {
+                        result.put("data", uuid);
+                    } else {
+                        result.put("error", "Error while instantiating template.");
+                    }
+                }
+                return response(request, result);
+            }
+
+            @Override
+            public JsonNode help(JsonNode request) {
+                return null;
+            }
+        };
+    }
+
+    /**
+     * Run a discovery routine on a template.
+     * @return Nothing really informative... WIP
+     */
+    @SchemaPath("schema/node/templatenode/discover.schema.json")
+    public MessageHandler discover() {
+        return new MessageHandler() {
+            @Override
+            public JsonNode exec(JsonNode request) {
+                ObjectNode result = mapper.createObjectNode();
+                JsonNode args = request.get("args");
+
+                TemplateNode startOfTemplate = getNode();
+                try {
+                    startOfTemplate.discover(args.get("data"));
+                    result.put("information", "Started discovery routine(s) for template.");
+                } catch (Exception e) {
+                    result.put("error", e.getMessage());
+                    e.printStackTrace();
+                }
+
+                return response(request, result);
+            }
+
+            @Override
+            public JsonNode help(JsonNode request) {
+                return null;
+            }
+        };
+    }
+}

@@ -24,13 +24,13 @@ public class Plugin extends HandlerPlugin {
         String node = args.get("node").asText();
         String task = args.get("task").asText();
         JsonObject msg = new JsonObject()
-        .put("msgh", "instancenode")
+        .put("msgh", "findOne")
         .put("args", new JsonObject().put("node", node));
-        vertx.eventBus().send("com.raaftech.structure.actor.framehelper", msg,
+        vertx.eventBus().send("com.raaftech.structure.repository.instancenodes", msg,
                 handler -> {
                     try {
                         JsonNode reply = convertFromJsonObject((JsonObject)handler.result().body());
-                        JsonNode result = reply.get("result");
+                        JsonNode result = reply.get("result").get("data");
                         String ipAddress = result.get("kv").get("addr").asText();
                         int port = result.get("kv").get("port").asInt();
 

@@ -233,7 +233,7 @@
 				<p>
 					<br />Latest task: <a href="#" ng-click="handleCtrl.getResults(taskId)">{{ taskId }}</a>
 				</p>
-				<div ng-repeat="result in lastResult.results">{{ result.kv.dateCreated | epochtohuman }}<pre ng-bind-html="result.kv.data + result.kv.status"></pre></div>
+				<div ng-repeat="result in lastResult.data">{{ result.kv.dateCreated | epochtohuman }}<pre ng-bind-html="result.kv.data + result.kv.status"></pre></div>
 		</div>
 	</div>
 </body>

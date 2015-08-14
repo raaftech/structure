@@ -1,0 +1,12 @@
+{
+    "id": "https://repo.raaftech.com/schema/node/templatenode/discover.schema.json#",
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "description": "Schema for TemplateNodeActor's discover method.",
+    "type": "object",
+    "additionalProperties": true,
+    "properties": {
+        "data": {
+        }
+    },
+    "required": [ "data" ]
+}

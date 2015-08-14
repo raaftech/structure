@@ -4,6 +4,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.neo4j.graphdb.Direction;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.neo4j.annotation.RelatedTo;
@@ -112,7 +115,7 @@ public class SchemaNode extends Node {
      * @return return true if we have a functional requirement, false if not.
      */
     public boolean hasRequirement() {
-        return dependencies.size() > 0;
+        return dependencies != null && dependencies.size() > 0;
     }
 
     public SchemaNode created(TypeNode node) {
@@ -192,5 +195,34 @@ public class SchemaNode extends Node {
 
     public HashMap<String, Integer> getDependencies() {
         return dependencies;
+    }
+
+    public String getHierarchyPath() {
+        return null;
+    }
+
+    public ObjectNode toJson() {
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode json = mapper.createObjectNode();
+        SchemaNode revises = getRevisesSchemaNode();
+        Set<SchemaNode> requires = getRequiresSchemaNode();
+
+        json.put("name", getName());
+        json.put("uuid", getUuid());
+        json.put("desc", getDesc());
+        json.put("revision", getRevision());
+        json.put("applied", isApplied());
+
+        if (requires != null && requires.size() > 0) {
+            ArrayNode requiredSchemas = json.putArray("requires");
+            getRequiresSchemaNode().stream()
+                    .forEach(schemaNode -> requiredSchemas.add(schemaNode.getUuid()));
+        }
+
+        if (getRevisesSchemaNode() != null) {
+            json.put("revises", getRevisesSchemaNode().getUuid());
+        }
+
+        return json;
     }
 }

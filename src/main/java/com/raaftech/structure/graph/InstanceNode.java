@@ -6,6 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.raaftech.structure.actor.node.InstanceNodeActor;
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.Transaction;
 import org.springframework.data.annotation.Transient;
@@ -275,14 +276,26 @@ public class InstanceNode extends Node {
     }
 
     public InstanceNode save() {
+        boolean newNode = getId() == null || getId() < 0;
+        Transaction tx = Context.INSTANCE.getGraphDatabase().beginTx();
         if (instanceNodeRepository.findByUuid(getUuid()) == null) {
             // -2 for the name and desc property.
             if (instanceOf.getSchema().getProperties().size()-2 == kv.size()) {
                 instanceNodeRepository.save(this);
+                tx.success();
+                tx.close();
             } else {
+                tx.failure();
+                tx.close();
                 throw new RuntimeException("Can't create instanceNode, missing properties.");
             }
         }
+
+        if (newNode) {
+            Context.INSTANCE.getVertx().deployVerticle(
+                    new InstanceNodeActor(this));
+        }
+
         return this;
     }
 
@@ -314,5 +327,9 @@ public class InstanceNode extends Node {
         }
 
         return result;
+    }
+
+    public String getHierarchyPath() {
+        return null;
     }
 }

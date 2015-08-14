@@ -1,5 +1,16 @@
 package com.raaftech.structure.base;
 
+import com.raaftech.structure.actor.node.InstanceNodeActor;
+import com.raaftech.structure.actor.node.TemplateNodeActor;
+import com.raaftech.structure.actor.node.TypeNodeActor;
+import com.raaftech.structure.actor.repository.*;
+import com.raaftech.structure.graph.InstanceNode;
+import com.raaftech.structure.graph.TemplateNode;
+import com.raaftech.structure.graph.TypeNode;
+import com.raaftech.structure.graph.repositories.InstanceNodeRepository;
+import com.raaftech.structure.graph.repositories.TemplateNodeRepository;
+import com.raaftech.structure.graph.repositories.TypeNodeRepository;
+import com.raaftech.structure.helper.PluginLoader;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
@@ -9,8 +20,9 @@ import io.vertx.ext.web.handler.StaticHandler;
 import io.vertx.ext.web.handler.sockjs.BridgeOptions;
 import io.vertx.ext.web.handler.sockjs.PermittedOptions;
 import io.vertx.ext.web.handler.sockjs.SockJSHandler;
+import org.neo4j.graphdb.Transaction;
 
-import com.raaftech.structure.helper.PluginLoader;
+import java.util.Iterator;
 
 /**
  * Give a description of Application here.
@@ -54,19 +66,17 @@ public class Application {
                         "com.raaftech.structure.actor.statemanager"))
                 .addInboundPermitted(new PermittedOptions().setAddress(
                         "com.raaftech.structure.actor.pluginmanager"));
-        // If we're in debug mode allow direct access to handler plugins on the eventbus
+        // If we're in debug mode allow direct access to everything on the eventbus
         // and serve the debug page
         if (serveDebug) {
             router.route("/debug/*").handler(StaticHandler.create().setWebRoot("web/html/debug/"));
-            bridgeOptions.addInboundPermitted(new PermittedOptions().setAddressRegex(
-                        "com.raaftech.structure.plugins.*"));
+            bridgeOptions.addInboundPermitted(new PermittedOptions().setAddressRegex(".*"));
         }
 
         sockJsHandler.bridge(bridgeOptions);
         router.route("/eventbus/*").handler(sockJsHandler);
         httpServer.requestHandler(router::accept).listen(port);
 
-        vertx.deployVerticle("com.raaftech.structure.actor.FrameHelper");
         vertx.deployVerticle("com.raaftech.structure.actor.StateManager");
         vertx.deployVerticle("com.raaftech.structure.actor.PluginManager");
         vertx.deployVerticle("com.raaftech.structure.actor.SchemaManager",
@@ -74,6 +84,13 @@ public class Application {
         vertx.deployVerticle("com.raaftech.structure.actor.DiscoveryManager");
         vertx.deployVerticle("com.raaftech.structure.actor.worker.ScanWorker",
                 new DeploymentOptions().setWorker(true).setInstances(256));
+
+        // Deploy interfaces to the NodeRepositories
+        vertx.deployVerticle(new Nodes(Context.INSTANCE.getNodeRepository()));
+        vertx.deployVerticle(new InstanceNodes(Context.INSTANCE.getInstanceNodeRepository()));
+        vertx.deployVerticle(new SchemaNodes(Context.INSTANCE.getSchemaNodeRepository()));
+        vertx.deployVerticle(new TemplateNodes(Context.INSTANCE.getTemplateNodeRepository()));
+        vertx.deployVerticle(new TypeNodes(Context.INSTANCE.getTypeNodeRepository()));
 
         PluginLoader pluginLoader = new PluginLoader(vertx);
         pluginLoader.loadSystemPlugins();
@@ -87,5 +104,41 @@ public class Application {
         if (serveDebug) {
             System.out.println("Debug interface is running at http://localhost:" + port + "/debug/");
         }
+
+        System.out.print("Deploying TypeNodeActors...");
+        TypeNodeRepository typeNodeRepository = Context.INSTANCE.getTypeNodeRepository();
+        Transaction tx = Context.INSTANCE.getGraphDatabase().beginTx();
+        Iterator<TypeNode> typeNodeIterator = typeNodeRepository.findAll().iterator();
+        while (typeNodeIterator.hasNext()) {
+            TypeNode typeNode = typeNodeIterator.next();
+            TypeNodeActor typeNodeActor = new TypeNodeActor(typeNode);
+            vertx.deployVerticle(typeNodeActor);
+        }
+        tx.close();
+        System.out.println("done.");
+
+        System.out.print("Deploying InstanceNodeActors...");
+        InstanceNodeRepository instanceNodeRepository = Context.INSTANCE.getInstanceNodeRepository();
+        tx = Context.INSTANCE.getGraphDatabase().beginTx();
+        Iterator<InstanceNode> instanceNodeIterator = instanceNodeRepository.findAll().iterator();
+        while (instanceNodeIterator.hasNext()) {
+            InstanceNode instanceNode = instanceNodeIterator.next();
+            InstanceNodeActor instanceNodeActor = new InstanceNodeActor(instanceNode);
+            vertx.deployVerticle(instanceNodeActor);
+        }
+        tx.close();
+        System.out.println("done.");
+
+        System.out.print("Deploying TemplateNodeActors...");
+        TemplateNodeRepository templateNodeRepository = Context.INSTANCE.getTemplateNodeRepository();
+        tx = Context.INSTANCE.getGraphDatabase().beginTx();
+        Iterator<TemplateNode> templateNodeIterator = templateNodeRepository.findAll().iterator();
+        while (templateNodeIterator.hasNext()) {
+            TemplateNode templateNode = templateNodeIterator.next();
+            TemplateNodeActor templateNodeActor = new TemplateNodeActor(templateNode);
+            vertx.deployVerticle(templateNodeActor);
+        }
+        tx.close();
+        System.out.println("done.");
     }
 }

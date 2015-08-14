@@ -43,10 +43,10 @@
         // Get all templates from the database.
         this.getTemplates = function() {
             if (vertxEventBus.readyState()) {
-                vertxEventBusService.send('com.raaftech.structure.actor.framehelper',
-                        {'msgh':'findalltemplatenodes', 'args':{}})
+                vertxEventBusService.send('com.raaftech.structure.repository.templatenodes',
+                        {'msgh':'findAllTemplates', 'args':{}})
                         .then(function(reply) {
-                            $scope.ui.templates = reply.result.templates;
+                            $scope.ui.templates = reply.result.data;
                         });
             }
         };
@@ -76,13 +76,14 @@
         // Instantiate the template
         this.instantiateTemplate = function() {
             if (vertxEventBus.readyState()) { //&& ($scope.outerForm.$dirty && $scope.outerForm.$valid)) {
-                vertxEventBusService.send('com.raaftech.structure.actor.framehelper',
-                        {'msgh':'instantiatetemplate', 'args':{'template': $scope.selectedTemplate, 'instancedata': $scope.model}})
+                vertxEventBusService.send('com.raaftech.structure.node.template.'
+                    + $scope.selectedTemplate,
+                        {'msgh':'instantiate', 'args':{'instancedata': $scope.model}})
                         .then(function(reply) {
                             if (reply.result.error == null) {
                                 $scope.ui.instantiateSucceeded = {};
                                 $scope.ui.instantiateSucceeded.flag = true;
-                                $scope.ui.instantiateSucceeded.message = "Created instances starting at uuid " + reply.result.uuid;
+                                $scope.ui.instantiateSucceeded.message = "Created instances starting at uuid " + reply.result.data;
                             } else if (reply.result.error != null) {
                                 $scope.ui.instantiateError = {};
                                 $scope.ui.instantiateError.flag = true;
@@ -112,8 +113,8 @@
             // Did we check already? Is the eventbus ready?
             if ($scope.ui.databaseInitError.checked == false && vertxEventBus.readyState()) {
                 // Query the database for the root-node
-                vertxEventBusService.send('com.raaftech.structure.actor.framehelper',
-                        {'msgh':'typenode', 'args':{'node':'b1bc963a-19cc-4518-aecb-a35d028c49e3'}})
+                vertxEventBusService.send('com.raaftech.structure.repository.typenodes',
+                        {'msgh':'findOne', 'args':{'node':'b1bc963a-19cc-4518-aecb-a35d028c49e3'}})
                         .then(function(reply) {
                             // if we got an error we didn't find the root-node
                             if (reply.result.error != null) {
@@ -134,7 +135,7 @@
         this.databaseInit = function() {
             if (vertxEventBus.readyState()) {
                 // Send the db-init message over the eventbus
-                vertxEventBusService.send('com.raaftech.structure.actor.schemamanager',
+                vertxEventBusService.send('com.raaftech.structure.schemamanager',
                         {'msgh':'update', 'args':{}}, 20000)
                         .then(function(reply) {
                             // If everything went as expected clear the error flag
@@ -161,8 +162,8 @@
         this.createNewTemplate = function() {
             if (vertxEventBus.readyState()) {
                 // Send our newTemplate object over the eventbus
-                vertxEventBusService.send('com.raaftech.structure.actor.framehelper',
-                        {'msgh':'createtemplatenode', 'args':$scope.newTemplate})
+                vertxEventBusService.send('com.raaftech.structure.repository.templatenodes',
+                        {'msgh':'putNode', 'args':$scope.newTemplate})
                         .then(function(reply) {
                             // If everything went alright clear the form and show an informational message
                             if (reply.result.error == null) {
@@ -171,7 +172,7 @@
                                     $scope.newTemplateForm.$setPristine(true);
                                     $scope.ui.submitError.flag = false;
                                     $scope.ui.submitSucceeded.flag = true;
-                                    $scope.ui.submitSucceeded.message = 'New node has been created with UUID: ' + reply.result.uuid;
+                                    $scope.ui.submitSucceeded.message = 'New node has been created with UUID: ' + reply.result.data;
                                 }, 0);
                             } else {
                                 // Else we'll show an error message
@@ -195,8 +196,9 @@
         // and removing all its children.
         this.deleteTemplate = function() {
             if (vertxEventBus.readyState()) {
-                vertxEventBusService.send('com.raaftech.structure.actor.framehelper',
-                        {'msgh':'removenodefromtemplate', 'args':{'node': $scope.deleteTemplateUuid}})
+                vertxEventBusService.send('com.raaftech.structure.node.template.'
+                    + $scope.deleteTemplateUuid,
+                        {'msgh':'removeFromTemplate', 'args':{}})
                         .then(function(reply) {
                             console.log(reply.result);
                         }).catch(function() {
@@ -208,8 +210,8 @@
         // Build object for the dropdown for parent selection
         this.getTemplates = function() {
             if (vertxEventBus.readyState()) {
-                vertxEventBusService.send('com.raaftech.structure.actor.framehelper',
-                        {'msgh':'findalltemplatenodes', 'args':{}})
+                vertxEventBusService.send('com.raaftech.structure.repository.templatenodes',
+                        {'msgh':'findAllTemplates', 'args':{}})
                         .then(function(reply) {
                             $scope.ui.parentMenu = [];
                             // Inner recursion function to recurse over subtemplates
@@ -228,8 +230,8 @@
                                 }
                             }
                             // Iterate over found templates
-                            for (i in reply.result.templates) {
-                                node = reply.result.templates[i];
+                            for (i in reply.result.data) {
+                                node = reply.result.data[i];
                                 $scope.ui.parentMenu.push({'name': node.name, 'uuid': node.uuid});
                                 // Recurse over children
                                 if (node.children != null) {
@@ -246,13 +248,13 @@
         // Find a TypeNode either by name or by UUID
         this.findTypeNode = function() {
             if (vertxEventBus.readyState()) {
-                vertxEventBusService.send('com.raaftech.structure.actor.framehelper',
-                        {'msgh':'typenode', 'args':{'node': $scope.newTemplate.isa}})
+                vertxEventBusService.send('com.raaftech.structure.repository.typenodes',
+                        {'msgh':'findOne', 'args':{'node': $scope.newTemplate.isa}})
                         .then(function(reply) {
                             console.log(reply);
                             if (reply.result.error == null) {
                                 $timeout(function() {
-                                    $scope.newTemplate.isa = reply.result.uuid;
+                                    $scope.newTemplate.isa = reply.result.data.uuid;
                                 });
                             }
                         }).catch(function() {
@@ -279,12 +281,12 @@
         // Find an InstanceNode by UUID or name
         this.findInstanceNode = function() {
             if (vertxEventBus.readyState()) {
-                vertxEventBusService.send('com.raaftech.structure.actor.framehelper',
-                        {'msgh':'instancenode', 'args':{'node': $scope.findInstanceNodeUuid}})
+                vertxEventBusService.send('com.raaftech.structure.repository.instancenodes',
+                        {'msgh':'findOne', 'args':{'node': $scope.findInstanceNodeUuid}})
                         .then(function(reply) {
                             if (reply.result.error == null) {
-                                $scope.foundInstanceNode = reply.result;
-                                console.log(reply.result);
+                                $scope.foundInstanceNode = reply.result.data;
+                                console.log(reply.result.data);
                             } else {
                                 $scope.foundInstanceNode = {};
                                 console.warn(reply.result);
@@ -298,7 +300,7 @@
         // Call a plugin
         this.sendMessage = function(address) {
             if (vertxEventBus.readyState()) {
-                vertxEventBusService.send("com.raaftech.structure.actor.pluginmanager",
+                vertxEventBusService.send("com.raaftech.structure.pluginmanager",
                         {"msgh":"callplugin", "args":{'node': $scope.foundInstanceNode.uuid, 'address': address}})
                         .then(function(reply) {
                             if (reply.result.error == null) {
@@ -315,11 +317,13 @@
         // Get results of an InstanceNode
         this.getResults = function(task) {
             if (vertxEventBus.readyState()) {
-                vertxEventBusService.send('com.raaftech.structure.actor.framehelper',
-                        {'msgh': 'instanceresults', 'args':{'node': $scope.foundInstanceNode.uuid, 'task': task}})
+                vertxEventBusService.send('com.raaftech.structure.node.instance.'
+                    + $scope.foundInstanceNode.uuid,
+                        {'msgh': 'getResults', 'args':{'task': task}})
                         .then(function(reply) {
                             if (reply.result.error == null) {
                                 $scope.lastResult = reply.result;
+                                console.log(reply.result.data);
                             } else {
                                 console.warn(reply.result);
                             }
