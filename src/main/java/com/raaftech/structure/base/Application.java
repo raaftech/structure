@@ -1,9 +1,17 @@
 package com.raaftech.structure.base;
 
+import java.util.Iterator;
+
+import org.neo4j.graphdb.Transaction;
+
 import com.raaftech.structure.actor.node.InstanceNodeActor;
 import com.raaftech.structure.actor.node.TemplateNodeActor;
 import com.raaftech.structure.actor.node.TypeNodeActor;
-import com.raaftech.structure.actor.repository.*;
+import com.raaftech.structure.actor.repository.InstanceNodes;
+import com.raaftech.structure.actor.repository.Nodes;
+import com.raaftech.structure.actor.repository.SchemaNodes;
+import com.raaftech.structure.actor.repository.TemplateNodes;
+import com.raaftech.structure.actor.repository.TypeNodes;
 import com.raaftech.structure.graph.InstanceNode;
 import com.raaftech.structure.graph.TemplateNode;
 import com.raaftech.structure.graph.TypeNode;
@@ -11,6 +19,7 @@ import com.raaftech.structure.graph.repositories.InstanceNodeRepository;
 import com.raaftech.structure.graph.repositories.TemplateNodeRepository;
 import com.raaftech.structure.graph.repositories.TypeNodeRepository;
 import com.raaftech.structure.helper.PluginLoader;
+
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
@@ -20,12 +29,9 @@ import io.vertx.ext.web.handler.StaticHandler;
 import io.vertx.ext.web.handler.sockjs.BridgeOptions;
 import io.vertx.ext.web.handler.sockjs.PermittedOptions;
 import io.vertx.ext.web.handler.sockjs.SockJSHandler;
-import org.neo4j.graphdb.Transaction;
-
-import java.util.Iterator;
 
 /**
- * Give a description of Application here.
+ * The main application entry point.
  *
  * @author Boy van Duuren <boy.van.duuren@raaftech.com>
  * @since 2014-11-17
@@ -46,7 +52,7 @@ public class Application {
             serveDebug = args[0].equals("--debug");
         }
 
-        // Setup vertx with a maxWorkerExecuteTime of 5 minutes
+        // Setup vertx with a maxWorkerExecuteTime of 5 minutes.
         // TODO: Make maxWorkerExecuteTime user configurable?
         vertx = Vertx.vertx(new VertxOptions().setMaxWorkerExecuteTime(5l * 60 * 1000 * 1000000));
         router = Router.router(vertx);
@@ -55,56 +61,57 @@ public class Application {
 
         Context.INSTANCE.setVertx(vertx);
 
-        // Enable sockJS Server on our HTTP server
-        // Enable bridging on /eventbus, and add some in- and outbound permissions
-        BridgeOptions bridgeOptions  = new BridgeOptions()
-                .addInboundPermitted(new PermittedOptions().setAddress(
-                        "com.raaftech.structure.actor.framehelper"))
-                .addInboundPermitted(new PermittedOptions().setAddress(
-                        "com.raaftech.structure.actor.schemamanager"))
-                .addInboundPermitted(new PermittedOptions().setAddress(
-                        "com.raaftech.structure.actor.statemanager"))
-                .addInboundPermitted(new PermittedOptions().setAddress(
-                        "com.raaftech.structure.actor.pluginmanager"));
-        // If we're in debug mode allow direct access to everything on the eventbus
-        // and serve the debug page
+        // Enable bridging on /eventbus, and add some in- and outbound permissions.
+        BridgeOptions bridgeOptions = new BridgeOptions()
+                .addInboundPermitted(new PermittedOptions().setAddress("com.raaftech.structure.actor.schemamanager"))
+                .addInboundPermitted(new PermittedOptions().setAddress("com.raaftech.structure.actor.pluginmanager"))
+                .addInboundPermitted(new PermittedOptions().setAddress("com.raaftech.structure.actor.statemanager"))
+                .addInboundPermitted(new PermittedOptions().setAddress("com.raaftech.structure.actor.discoverymanager"));
+
+        // If we're in debug mode allow direct access to everything
+        // on the eventbus and serve the debug page.
         if (serveDebug) {
             router.route("/debug/*").handler(StaticHandler.create().setWebRoot("web/html/debug/"));
             bridgeOptions.addInboundPermitted(new PermittedOptions().setAddressRegex(".*"));
         }
 
+        // Enable sockJS Server on our HTTP server.
         sockJsHandler.bridge(bridgeOptions);
         router.route("/eventbus/*").handler(sockJsHandler);
         httpServer.requestHandler(router::accept).listen(port);
 
-        vertx.deployVerticle("com.raaftech.structure.actor.StateManager");
+        // Deploy our main actors.
+        vertx.deployVerticle("com.raaftech.structure.actor.SchemaManager");
         vertx.deployVerticle("com.raaftech.structure.actor.PluginManager");
-        vertx.deployVerticle("com.raaftech.structure.actor.SchemaManager",
+        vertx.deployVerticle("com.raaftech.structure.actor.StateManager",
                 new DeploymentOptions().setWorker(true));
         vertx.deployVerticle("com.raaftech.structure.actor.DiscoveryManager");
+
+        // A tryout state handler that can can check if an IP address is up.
+        // Will be done differently, but kept as reference for a bit.
+        // (hint: state handlers are scripts executed by a generic handler)
         vertx.deployVerticle("com.raaftech.structure.actor.worker.ScanWorker",
                 new DeploymentOptions().setWorker(true).setInstances(256));
 
-        // Deploy interfaces to the NodeRepositories
+        // Deploy interfaces to the NodeRepositories.
         vertx.deployVerticle(new Nodes(Context.INSTANCE.getNodeRepository()));
         vertx.deployVerticle(new InstanceNodes(Context.INSTANCE.getInstanceNodeRepository()));
         vertx.deployVerticle(new SchemaNodes(Context.INSTANCE.getSchemaNodeRepository()));
         vertx.deployVerticle(new TemplateNodes(Context.INSTANCE.getTemplateNodeRepository()));
         vertx.deployVerticle(new TypeNodes(Context.INSTANCE.getTypeNodeRepository()));
 
+        // Load system plugins (not sure if this will be superseded by new state scripts idea).
         PluginLoader pluginLoader = new PluginLoader(vertx);
         pluginLoader.loadSystemPlugins();
 
+        // Wait a second?
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        System.out.println("Structure is running at http://localhost:" + port + "/html/");
-        if (serveDebug) {
-            System.out.println("Debug interface is running at http://localhost:" + port + "/debug/");
-        }
 
+        // Deploy TypeNodeActors.
         System.out.print("Deploying TypeNodeActors...");
         TypeNodeRepository typeNodeRepository = Context.INSTANCE.getTypeNodeRepository();
         Transaction tx = Context.INSTANCE.getGraphDatabase().beginTx();
@@ -117,6 +124,7 @@ public class Application {
         tx.close();
         System.out.println("done.");
 
+        // Deploy InstanceNodeActors.
         System.out.print("Deploying InstanceNodeActors...");
         InstanceNodeRepository instanceNodeRepository = Context.INSTANCE.getInstanceNodeRepository();
         tx = Context.INSTANCE.getGraphDatabase().beginTx();
@@ -129,6 +137,7 @@ public class Application {
         tx.close();
         System.out.println("done.");
 
+        // Deploy TemplateNodeActors.
         System.out.print("Deploying TemplateNodeActors...");
         TemplateNodeRepository templateNodeRepository = Context.INSTANCE.getTemplateNodeRepository();
         tx = Context.INSTANCE.getGraphDatabase().beginTx();
@@ -140,5 +149,11 @@ public class Application {
         }
         tx.close();
         System.out.println("done.");
+
+        // A friendly message telling the user we're done.
+        System.out.println("Structure is running at http://localhost:" + port + "/html/");
+        if (serveDebug) {
+            System.out.println("Debug interface is running at http://localhost:" + port + "/debug/");
+        }
     }
 }
