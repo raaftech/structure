@@ -3,6 +3,8 @@ package com.raaftech.structure.base;
 import java.util.Iterator;
 
 import org.neo4j.graphdb.Transaction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.raaftech.structure.actor.node.InstanceNodeActor;
 import com.raaftech.structure.actor.node.TemplateNodeActor;
@@ -18,8 +20,8 @@ import com.raaftech.structure.graph.TypeNode;
 import com.raaftech.structure.graph.repositories.InstanceNodeRepository;
 import com.raaftech.structure.graph.repositories.TemplateNodeRepository;
 import com.raaftech.structure.graph.repositories.TypeNodeRepository;
-import com.raaftech.structure.helper.PluginLoader;
 
+import ch.qos.logback.classic.Level;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
@@ -38,6 +40,8 @@ import io.vertx.ext.web.handler.sockjs.SockJSHandler;
  */
 public class Application {
 
+    final static Logger logger = LoggerFactory.getLogger(Application.class);
+
     public static void main(String[] args) {
         Vertx vertx;
         HttpServer httpServer;
@@ -50,6 +54,10 @@ public class Application {
             serveDebug = false;
         } else {
             serveDebug = args[0].equals("--debug");
+            //ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+            ch.qos.logback.classic.Logger classic = (ch.qos.logback.classic.Logger) logger;
+            classic.setLevel(Level.DEBUG);
+            logger.debug("Enabling debug output..");
         }
 
         // Setup vertx with a maxWorkerExecuteTime of 5 minutes.
@@ -101,18 +109,18 @@ public class Application {
         vertx.deployVerticle(new TypeNodes(Context.INSTANCE.getTypeNodeRepository()));
 
         // Load system plugins (not sure if this will be superseded by new state scripts idea).
-        PluginLoader pluginLoader = new PluginLoader(vertx);
-        pluginLoader.loadSystemPlugins();
+        //PluginLoader pluginLoader = new PluginLoader(vertx);
+        //pluginLoader.loadSystemPlugins();
 
         // Wait a second?
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());;
         }
 
         // Deploy TypeNodeActors.
-        System.out.print("Deploying TypeNodeActors...");
+        logger.info("Deploying TypeNodeActors..");
         TypeNodeRepository typeNodeRepository = Context.INSTANCE.getTypeNodeRepository();
         Transaction tx = Context.INSTANCE.getGraphDatabase().beginTx();
         Iterator<TypeNode> typeNodeIterator = typeNodeRepository.findAll().iterator();
@@ -122,10 +130,9 @@ public class Application {
             vertx.deployVerticle(typeNodeActor);
         }
         tx.close();
-        System.out.println("done.");
 
         // Deploy InstanceNodeActors.
-        System.out.print("Deploying InstanceNodeActors...");
+        logger.info("Deploying InstanceNodeActors..");
         InstanceNodeRepository instanceNodeRepository = Context.INSTANCE.getInstanceNodeRepository();
         tx = Context.INSTANCE.getGraphDatabase().beginTx();
         Iterator<InstanceNode> instanceNodeIterator = instanceNodeRepository.findAll().iterator();
@@ -135,10 +142,9 @@ public class Application {
             vertx.deployVerticle(instanceNodeActor);
         }
         tx.close();
-        System.out.println("done.");
 
         // Deploy TemplateNodeActors.
-        System.out.print("Deploying TemplateNodeActors...");
+        logger.info("Deploying TemplateNodeActors..");
         TemplateNodeRepository templateNodeRepository = Context.INSTANCE.getTemplateNodeRepository();
         tx = Context.INSTANCE.getGraphDatabase().beginTx();
         Iterator<TemplateNode> templateNodeIterator = templateNodeRepository.findAll().iterator();
@@ -148,12 +154,11 @@ public class Application {
             vertx.deployVerticle(templateNodeActor);
         }
         tx.close();
-        System.out.println("done.");
 
         // A friendly message telling the user we're done.
-        System.out.println("Structure is running at http://localhost:" + port + "/html/");
+        logger.info("Structure is running at http://localhost:" + port + "/html/");
         if (serveDebug) {
-            System.out.println("Debug interface is running at http://localhost:" + port + "/debug/");
+            logger.debug("Debug interface is running at http://localhost:" + port + "/debug/");
         }
     }
 }
