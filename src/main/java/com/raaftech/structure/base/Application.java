@@ -5,6 +5,7 @@ import java.util.Iterator;
 import org.neo4j.graphdb.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import com.raaftech.structure.actor.node.InstanceNodeActor;
 import com.raaftech.structure.actor.node.TemplateNodeActor;
@@ -49,6 +50,10 @@ public class Application {
         SockJSHandler sockJsHandler;
         final boolean serveDebug;
         final int port = 8080;
+
+        // Black magic.
+        SLF4JBridgeHandler.removeHandlersForRootLogger();
+        SLF4JBridgeHandler.install();
 
         if (args.length < 1) {
             serveDebug = false;
