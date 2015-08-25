@@ -4,6 +4,9 @@ import java.util.Iterator;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -26,6 +29,8 @@ import com.github.fge.jsonschema.processors.syntax.SyntaxValidator;
  *
  */
 public class JsonSchemaBuilder {
+
+    final static Logger log = LoggerFactory.getLogger(JsonSchemaBuilder.class);
 
     private ObjectMapper mapper;
     private ObjectNode json;
@@ -68,7 +73,7 @@ public class JsonSchemaBuilder {
         ProcessingReport report = syntaxValidator.validateSchema(objectNode);
 
         if (report.isSuccess()) {
-                json = objectNode;
+            json = objectNode;
         } else {
             throw new ProcessingException("Can't construct JsonSchemaBuilder with invalid JSON schema as argument.");
         }
@@ -128,7 +133,8 @@ public class JsonSchemaBuilder {
         try {
             property = new JsonSchemaBuilder(properties.putObject(name));
         } catch (ProcessingException e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
+            // TODO: Explicit return null?
             return null;
         }
         try {
@@ -229,7 +235,8 @@ public class JsonSchemaBuilder {
         try {
             item = new JsonSchemaBuilder(items.putObject(name));
         } catch (ProcessingException e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
+            // TODO: Explicit return null?
             return null;
         }
         try {
@@ -498,7 +505,7 @@ public class JsonSchemaBuilder {
             report = schema.validate(data);
             return report.isSuccess();
         } catch (ProcessingException e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
             return false;
         }
     }

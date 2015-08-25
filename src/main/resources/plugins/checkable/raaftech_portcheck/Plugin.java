@@ -10,15 +10,22 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 import java.net.Socket;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.net.InetSocketAddress;
 import java.net.ConnectException;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.raaftech.structure.base.Application;
 import com.raaftech.structure.helper.HandlerPlugin;
 
 public class Plugin extends HandlerPlugin {
+
+    final static Logger log = LoggerFactory.getLogger(Plugin.class);
 
     public void implementation() {
         String node = args.get("node").asText();
@@ -43,7 +50,7 @@ public class Plugin extends HandlerPlugin {
                             createDerivedStatusResult(node, task, false);
                         }
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        log.error(e.getMessage());
                     }
                 });
     }

@@ -1,5 +1,10 @@
 package com.raaftech.structure.actor.node;
 
+import java.util.Set;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -9,9 +14,9 @@ import com.raaftech.structure.base.NodeActor;
 import com.raaftech.structure.graph.InstanceNode;
 import com.raaftech.structure.graph.repositories.InstanceNodeRepository;
 
-import java.util.Set;
-
 public class InstanceNodeActor extends NodeActor<InstanceNode> {
+
+    private Logger log = LoggerFactory.getLogger(InstanceNodeActor.class);
 
     private InstanceNodeRepository instanceNodeRepository = Context.INSTANCE.getInstanceNodeRepository();
 
@@ -43,10 +48,10 @@ public class InstanceNodeActor extends NodeActor<InstanceNode> {
                 if (instanceNode != null) {
                     if (args.get("task") == null) {
                         instanceNode.getResults().stream()
-                                .forEachOrdered(r -> allResults.add(r.toJson()));
+                        .forEachOrdered(r -> allResults.add(r.toJson()));
                     } else {
                         instanceNode.getResults(args.get("task").asText()).stream()
-                                .forEachOrdered(r -> allResults.add(r.toJson()));
+                        .forEachOrdered(r -> allResults.add(r.toJson()));
                     }
                 }
 
@@ -77,8 +82,8 @@ public class InstanceNodeActor extends NodeActor<InstanceNode> {
                 if (found != null && found.size() > 0) {
                     ArrayNode foundComponents = result.putArray("data");
                     found.stream()
-                            .map(n -> n.toJson())
-                            .forEach(json -> foundComponents.add(json));
+                    .map(n -> n.toJson())
+                    .forEach(json -> foundComponents.add(json));
                 } else {
                     result.put("error", "Couldn't find components of type \"" + type + "\".");
                 }

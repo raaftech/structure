@@ -3,6 +3,8 @@ package com.raaftech.structure.actor;
 import java.util.Iterator;
 
 import org.neo4j.graphdb.Transaction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -20,6 +22,8 @@ import com.raaftech.structure.graph.repositories.InstanceNodeRepository;
  * @since 2014-10-15
  */
 public class StateManager extends BaseActor {
+
+    private Logger log = LoggerFactory.getLogger(StateManager.class);
 
     private InstanceNodeRepository instanceNodeRepository = Context.INSTANCE.getInstanceNodeRepository();
 
@@ -95,7 +99,7 @@ public class StateManager extends BaseActor {
                         tx.success();
                     } catch (RuntimeException e) {
                         tx.failure();
-                        e.printStackTrace();
+                        log.error(e.getMessage());
                         result.put("error", e.getMessage());
                     } finally {
                         tx.close();
@@ -152,7 +156,7 @@ public class StateManager extends BaseActor {
                         tx.success();
                     } catch (RuntimeException e) {
                         tx.failure();
-                        e.printStackTrace();
+                        log.error(e.getMessage());
                         result.put("error", e.getMessage());
                     } finally {
                         tx.close();

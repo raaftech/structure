@@ -6,8 +6,7 @@
 		<!-- encoders are assigned ch.qos.logback.classic.encoder.PatternLayoutEncoder 
 			by default -->
 		<encoder>
-            <!-- <pattern>[%-5level] %logger{5}: %msg%n</pattern> - much nicer, but vertx logs like below-->
-			<pattern>%level: %msg%n</pattern>
+            <pattern>[%-5level] %logger{5}: %msg%n</pattern>
 		</encoder>
 	</appender>
 

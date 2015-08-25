@@ -40,7 +40,7 @@ import io.vertx.ext.web.handler.sockjs.SockJSHandler;
  */
 public class Application {
 
-    final static Logger logger = LoggerFactory.getLogger(Application.class);
+    final static Logger log = LoggerFactory.getLogger(Application.class);
 
     public static void main(String[] args) {
         Vertx vertx;
@@ -52,12 +52,14 @@ public class Application {
 
         if (args.length < 1) {
             serveDebug = false;
+            ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+            log.info("Setting global log level to INFO..");
+            root.setLevel(Level.INFO);
         } else {
             serveDebug = args[0].equals("--debug");
-            //ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
-            ch.qos.logback.classic.Logger classic = (ch.qos.logback.classic.Logger) logger;
-            classic.setLevel(Level.DEBUG);
-            logger.debug("Enabling debug output..");
+            ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+            log.debug("Setting global log level to DEBUG..");
+            root.setLevel(Level.DEBUG);
         }
 
         // Setup vertx with a maxWorkerExecuteTime of 5 minutes.
@@ -116,11 +118,11 @@ public class Application {
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {
-            logger.error(e.getMessage());;
+            log.error(e.getMessage());;
         }
 
         // Deploy TypeNodeActors.
-        logger.info("Deploying TypeNodeActors..");
+        log.info("Deploying TypeNodeActors..");
         TypeNodeRepository typeNodeRepository = Context.INSTANCE.getTypeNodeRepository();
         Transaction tx = Context.INSTANCE.getGraphDatabase().beginTx();
         Iterator<TypeNode> typeNodeIterator = typeNodeRepository.findAll().iterator();
@@ -132,7 +134,7 @@ public class Application {
         tx.close();
 
         // Deploy InstanceNodeActors.
-        logger.info("Deploying InstanceNodeActors..");
+        log.info("Deploying InstanceNodeActors..");
         InstanceNodeRepository instanceNodeRepository = Context.INSTANCE.getInstanceNodeRepository();
         tx = Context.INSTANCE.getGraphDatabase().beginTx();
         Iterator<InstanceNode> instanceNodeIterator = instanceNodeRepository.findAll().iterator();
@@ -144,7 +146,7 @@ public class Application {
         tx.close();
 
         // Deploy TemplateNodeActors.
-        logger.info("Deploying TemplateNodeActors..");
+        log.info("Deploying TemplateNodeActors..");
         TemplateNodeRepository templateNodeRepository = Context.INSTANCE.getTemplateNodeRepository();
         tx = Context.INSTANCE.getGraphDatabase().beginTx();
         Iterator<TemplateNode> templateNodeIterator = templateNodeRepository.findAll().iterator();
@@ -156,9 +158,9 @@ public class Application {
         tx.close();
 
         // A friendly message telling the user we're done.
-        logger.info("Structure is running at http://localhost:" + port + "/html/");
+        log.info("Structure is running at http://localhost:" + port + "/html/");
         if (serveDebug) {
-            logger.debug("Debug interface is running at http://localhost:" + port + "/debug/");
+            log.debug("Debug interface is running at http://localhost:" + port + "/debug/");
         }
     }
 }

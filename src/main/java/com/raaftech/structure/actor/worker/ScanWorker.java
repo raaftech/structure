@@ -1,11 +1,11 @@
 package com.raaftech.structure.actor.worker;
 
+import java.net.InetSocketAddress;
+import java.net.Socket;
+
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
 import io.vertx.core.json.JsonObject;
-
-import java.net.InetSocketAddress;
-import java.net.Socket;
 
 
 public class ScanWorker extends AbstractVerticle {
@@ -22,7 +22,6 @@ public class ScanWorker extends AbstractVerticle {
                 sock.close();
             } catch (Exception e) {
                 // TODO Auto-generated catch block
-//                e.printStackTrace();
             }
         });
     }

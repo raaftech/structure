@@ -1,18 +1,17 @@
 package com.raaftech.structure.actor.repository;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.raaftech.structure.actor.node.InstanceNodeActor;
 import com.raaftech.structure.annotations.SchemaPath;
-import com.raaftech.structure.base.Context;
 import com.raaftech.structure.graph.InstanceNode;
-import com.raaftech.structure.graph.Node;
-import com.raaftech.structure.graph.repositories.GenericRepository;
 import com.raaftech.structure.graph.repositories.InstanceNodeRepository;
-import com.raaftech.structure.graph.repositories.NodeRepository;
-import org.neo4j.graphdb.Transaction;
 
 public class InstanceNodes extends Repository<InstanceNode> {
+
+    private Logger log = LoggerFactory.getLogger(InstanceNodes.class);
 
     private InstanceNodeRepository repository;
 
@@ -42,7 +41,7 @@ public class InstanceNodes extends Repository<InstanceNode> {
                     newInstanceNode.save();
                     result.put("data", newInstanceNode.getUuid());
                 } catch (RuntimeException e) {
-                    e.printStackTrace();
+                    log.error(e.getMessage());
                     result.put("error", e.getMessage());
                 }
 

@@ -11,6 +11,8 @@ import java.util.stream.StreamSupport;
 
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.Transaction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.neo4j.annotation.NodeEntity;
 import org.springframework.data.neo4j.annotation.RelatedTo;
@@ -33,6 +35,8 @@ import com.raaftech.structure.helper.JsonSchemaBuilder;
  */
 @NodeEntity
 public class TypeNode extends Node {
+
+    final static Logger log = LoggerFactory.getLogger(TypeNode.class);
 
     @RelatedTo(type="ISA", direction = Direction.OUTGOING, elementClass = TypeNode.class, enforceTargetType = true)
     private TypeNode isa;
@@ -73,14 +77,14 @@ public class TypeNode extends Node {
     }
 
     public TypeNode setDescriptor(String key, String valueType, boolean required, String description, String defaultValue,
-                                  String pattern) {
+            String pattern) {
         TypeNode parentNode = getIsa();
         if (parentNode != null && parentNode.getSchema().containsProperty(key)) {
             throw new RuntimeException("Can't override parent schema.");
         } else {
             schema.addProperty(key, valueType, required, description)
-                .setDefault(defaultValue)
-                .setPattern(pattern);
+            .setDefault(defaultValue)
+            .setPattern(pattern);
         }
 
         return this;
@@ -115,7 +119,7 @@ public class TypeNode extends Node {
                         }
                     }
                 } catch (ProcessingException e) {
-                    e.printStackTrace();
+                    log.error(e.getMessage());
                 }
             }
         }
@@ -188,14 +192,14 @@ public class TypeNode extends Node {
         ObjectNode capabilitiesAndHandlers = mapper.createObjectNode();
 
         capabilities.stream()
-            .filter(c -> c.getHandlers().size() > 0)
-            .forEach(c -> {
-                ObjectNode handlers = capabilitiesAndHandlers.putObject(c.getName());
-                c.getHandlers().stream()
-                    .forEachOrdered(h -> {
-                        handlers.put(h.getName(), h.getProperty("plugin"));
-                    });
+        .filter(c -> c.getHandlers().size() > 0)
+        .forEach(c -> {
+            ObjectNode handlers = capabilitiesAndHandlers.putObject(c.getName());
+            c.getHandlers().stream()
+            .forEachOrdered(h -> {
+                handlers.put(h.getName(), h.getProperty("plugin"));
             });
+        });
         return capabilitiesAndHandlers;
     }
 
@@ -223,7 +227,7 @@ public class TypeNode extends Node {
             }
             json.put("children", mapper.writeValueAsString(childIsaUuids));
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
         }
 
         return json;
@@ -250,8 +254,8 @@ public class TypeNode extends Node {
         Stream<String> reversePathStream = StreamSupport.stream(reversePathIterable.spliterator(), false);
         // Collect every element of the path, joining on "." and casting to lower case
         String path = reversePathStream
-            .map(s -> s.toLowerCase())
-            .collect(Collectors.joining("."));
+                .map(s -> s.toLowerCase())
+                .collect(Collectors.joining("."));
 
         return path;
     }

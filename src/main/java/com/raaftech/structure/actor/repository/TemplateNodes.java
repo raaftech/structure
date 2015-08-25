@@ -1,5 +1,10 @@
 package com.raaftech.structure.actor.repository;
 
+import java.util.Set;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -7,13 +12,12 @@ import com.raaftech.structure.annotations.SchemaPath;
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.graph.TemplateNode;
 import com.raaftech.structure.graph.TypeNode;
-import com.raaftech.structure.graph.repositories.GenericRepository;
 import com.raaftech.structure.graph.repositories.TemplateNodeRepository;
 import com.raaftech.structure.graph.repositories.TypeNodeRepository;
 
-import java.util.Set;
-
 public class TemplateNodes extends Repository<TemplateNode> {
+
+    private Logger log = LoggerFactory.getLogger(TemplateNodes.class);
 
     private TemplateNodeRepository repository;
 
@@ -35,7 +39,7 @@ public class TemplateNodes extends Repository<TemplateNode> {
                 ArrayNode templates = result.putArray("data");
 
                 allTemplates.stream()
-                        .forEach(templateNode -> templates.add(templateNode.toJson()));
+                .forEach(templateNode -> templates.add(templateNode.toJson()));
 
                 return response(request, result);
             }
@@ -84,9 +88,9 @@ public class TemplateNodes extends Repository<TemplateNode> {
                     if (isaTypeNode != null) {
                         TemplateNode newTemplateNode = new TemplateNode(name, desc);
                         newTemplateNode.setIsa(isaTypeNode)
-                                .setStartOfTemplate(start)
-                                .setRequired(required)
-                                .setUnique(unique);
+                        .setStartOfTemplate(start)
+                        .setRequired(required)
+                        .setUnique(unique);
 
                         if (parent != null) {
                             TemplateNode parentTemplateNode = repository.findByUuid(parent);
@@ -104,7 +108,7 @@ public class TemplateNodes extends Repository<TemplateNode> {
                         throw new RuntimeException("Could not find TypeNode by which to group the Template.");
                     }
                 } catch (RuntimeException e) {
-                    e.printStackTrace();
+                    log.error(e.getMessage());
                     result.put("error", e.getMessage());
                 }
 

@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.TreeMap;
 
 import org.neo4j.graphdb.Transaction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
@@ -29,6 +31,8 @@ import com.raaftech.structure.graph.schema.SchemaUpdate;
  * @since 2015-01-08
  */
 public class SchemaManagerUpdate {
+
+    private Logger log = LoggerFactory.getLogger(SchemaManagerUpdate.class);
 
     GraphDatabase graphDatabase = Context.INSTANCE.getGraphDatabase();
 
@@ -75,19 +79,19 @@ public class SchemaManagerUpdate {
 
         try {
             findMyTypes("com.raaftech.structure.graph.schema").stream()
-                    .forEach(schemaUpdateClass -> {
-                        try {
-                            schemaUpdateInstances.add((SchemaUpdate) schemaUpdateClass.newInstance());
-                        } catch (InstantiationException e) {
-                            e.printStackTrace();
-                        } catch (IllegalAccessException e) {
-                            e.printStackTrace();
-                        }
-                    });
+            .forEach(schemaUpdateClass -> {
+                try {
+                    schemaUpdateInstances.add((SchemaUpdate) schemaUpdateClass.newInstance());
+                } catch (InstantiationException e) {
+                    log.error(e.getMessage());
+                } catch (IllegalAccessException e) {
+                    log.error(e.getMessage());
+                }
+            });
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
         }
 
         try {
@@ -97,14 +101,14 @@ public class SchemaManagerUpdate {
 
             // Get a count of the amount of packages per revision number.
             schemaUpdateInstances.stream()
-                    .forEach(schemaUpdate -> {
-                        int revision = schemaUpdate.getUpdateInformation().getRevision();
-                        if (packagesPerRevision.containsKey(revision)) {
-                            packagesPerRevision.put(revision, packagesPerRevision.get(revision) + 1);
-                        } else {
-                            packagesPerRevision.put(revision, 1);
-                        }
-                    });
+            .forEach(schemaUpdate -> {
+                int revision = schemaUpdate.getUpdateInformation().getRevision();
+                if (packagesPerRevision.containsKey(revision)) {
+                    packagesPerRevision.put(revision, packagesPerRevision.get(revision) + 1);
+                } else {
+                    packagesPerRevision.put(revision, 1);
+                }
+            });
 
             // For every schemaUpdate revision number we have, we're going to
             // first apply the schemaUpdate that doesn't have dependencies, the second
@@ -112,44 +116,44 @@ public class SchemaManagerUpdate {
             // applied in the previous iteration, and so on until every schemaUpdate for that
             // revision number is applied. Then we move onto the next revision number and repeat.
             packagesPerRevision.keySet().stream()
-                    .forEach(revision -> {
-                        // While we still have unapplied schemaUpdates for the current revision
-                        while (packagesPerRevision.get(revision) > 0) {
-                            schemaUpdateInstances.stream()
-                                    .forEach(schemaUpdate -> {
-                                        SchemaNode updateInformation = schemaUpdate.getUpdateInformation();
-                                        // Check if our dependencies are satisfied.
-                                        HashMap<String, Integer> dependencies = updateInformation.getDependencies();
-                                        boolean dependenciesMet = true;
-                                        dependenciesMet = dependencies.entrySet().stream()
-                                                .allMatch(t -> done.contains(t.getKey() + t.getValue()));
+            .forEach(revision -> {
+                // While we still have unapplied schemaUpdates for the current revision
+                while (packagesPerRevision.get(revision) > 0) {
+                    schemaUpdateInstances.stream()
+                    .forEach(schemaUpdate -> {
+                        SchemaNode updateInformation = schemaUpdate.getUpdateInformation();
+                        // Check if our dependencies are satisfied.
+                        HashMap<String, Integer> dependencies = updateInformation.getDependencies();
+                        boolean dependenciesMet = true;
+                        dependenciesMet = dependencies.entrySet().stream()
+                                .allMatch(t -> done.contains(t.getKey() + t.getValue()));
 
-                                        // Build a string representation of our own version information
-                                        String self = updateInformation.getName() + updateInformation.getRevision();
-                                        // If we didn't apply this schemaUpdate yet and its' revision number is the
-                                        // revision number we're currently applying
-                                        if (!done.contains(self) && updateInformation.getRevision() == revision) {
-                                            // If the schemaUpdate doesn't have a functional dependency, or its' functional
-                                            // dependency is already applied, apply this schemaUpdate
-                                            if (updateInformation.hasRequirement() == false ||
-                                                    dependenciesMet) {
-                                                if (schemaUpdate.apply()) {
-                                                    // Decrease the number of packages we have to apply for this revision by 1
-                                                    packagesPerRevision.put(revision, packagesPerRevision.get(revision) - 1);
-                                                    // Add this schemaUpdate to the done list
-                                                    done.add(self);
-                                                } else {
-                                                    throw new RuntimeException("Could not apply SchemaUpdate: " +
-                                                            updateInformation.getName() + "R" + updateInformation.getRevision() +
-                                                            "\n" +  "Transaction failed.");
-                                                }
-                                            }
-                                        }
-                                    });
+                        // Build a string representation of our own version information
+                        String self = updateInformation.getName() + updateInformation.getRevision();
+                        // If we didn't apply this schemaUpdate yet and its' revision number is the
+                        // revision number we're currently applying
+                        if (!done.contains(self) && updateInformation.getRevision() == revision) {
+                            // If the schemaUpdate doesn't have a functional dependency, or its' functional
+                            // dependency is already applied, apply this schemaUpdate
+                            if (updateInformation.hasRequirement() == false ||
+                                    dependenciesMet) {
+                                if (schemaUpdate.apply()) {
+                                    // Decrease the number of packages we have to apply for this revision by 1
+                                    packagesPerRevision.put(revision, packagesPerRevision.get(revision) - 1);
+                                    // Add this schemaUpdate to the done list
+                                    done.add(self);
+                                } else {
+                                    throw new RuntimeException("Could not apply SchemaUpdate: " +
+                                            updateInformation.getName() + "R" + updateInformation.getRevision() +
+                                            "\n" +  "Transaction failed.");
+                                }
+                            }
                         }
                     });
+                }
+            });
             long endTime = System.nanoTime();
-            System.out.println("Created the TypeNode database in " + (endTime - startTime) / 1000000 + "ms.");
+            log.info("Created the TypeNode database in " + (endTime - startTime) / 1000000 + "ms.");
             tx.success();
         } catch (RuntimeException e) {
             tx.failure();

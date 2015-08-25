@@ -2,6 +2,20 @@
 
 package com.raaftech.structure.base;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
+import javax.ws.rs.core.MediaType;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.annotation.Transient;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
@@ -14,19 +28,10 @@ import com.raaftech.structure.annotations.SchemaPath;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
+
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.json.JsonObject;
-import org.springframework.data.annotation.Transient;
-
-import javax.ws.rs.core.MediaType;
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
 
 /**
  * Give a description of BaseActor here.
@@ -35,6 +40,8 @@ import java.util.UUID;
  * @since 2014-09-15
  */
 public abstract class GenericActor extends AbstractVerticle {
+
+    private Logger log = LoggerFactory.getLogger(GenericActor.class);
 
     @Transient
     JsonNode settings;
@@ -80,29 +87,24 @@ public abstract class GenericActor extends AbstractVerticle {
         }
 
         messageHandlersAndSchemas.entrySet().stream()
-            .forEach((entry) -> {
-                Method mh = entry.getKey();
-                String schema = entry.getValue();
-                String s = entry.getKey().getName();
+        .forEach((entry) -> {
+            Method mh = entry.getKey();
+            String schema = entry.getValue();
+            String s = entry.getKey().getName();
 
-                try {
-                    HandlerSchema handlerAndSchema = new HandlerSchema(schema, (MessageHandler) mh.invoke(this));
-                    handlers.put(s, handlerAndSchema);
-                } catch (IllegalAccessException | InvocationTargetException x) {
-                    log("error", "Failed to access or invoke method " + s + ": " + x.getMessage());
-                }
-            });
+            try {
+                HandlerSchema handlerAndSchema = new HandlerSchema(schema, (MessageHandler) mh.invoke(this));
+                handlers.put(s, handlerAndSchema);
+            } catch (IllegalAccessException | InvocationTargetException x) {
+                log.error("Failed to access or invoke method " + s + ": " + x.getMessage());
+            }
+        });
 
         // Read settings and initialize schema documents.
         settings = jsonFromResource("settings.json");
         schemaForRequest = jsonFromResource("schema/request.schema.json");
         schemaForResponse = jsonFromResource("schema/response.schema.json");
         schemaForManual = jsonFromResource("schema/manual.schema.json");
-    }
-
-    // A logger for actors with nice defaults.
-    public void log(String level, String message) {
-        System.out.println(level.toUpperCase() + ": " + message);
     }
 
     // A json file loader (looks in your classpath/resources.)
@@ -113,7 +115,7 @@ public abstract class GenericActor extends AbstractVerticle {
         try {
             result = mapper.readTree(inputStream);
         } catch (IOException x) {
-            log("error", x.getMessage());
+            log.error(x.getMessage());
             return null;
         }
 
@@ -127,7 +129,7 @@ public abstract class GenericActor extends AbstractVerticle {
         try {
             jsonNode = mapper.readTree(jsonObject.toString());
         } catch (IOException x) {
-            log("error", x.getMessage());
+            log.error(x.getMessage());
         }
 
         return jsonNode;
@@ -164,7 +166,7 @@ public abstract class GenericActor extends AbstractVerticle {
         try {
             result = mapper.readTree(cypherResponse.getEntity(String.class));
         } catch (IOException x) {
-            log("error", x.getMessage());
+            log.error(x.getMessage());
         }
 
         cypherResponse.close();
@@ -240,10 +242,10 @@ public abstract class GenericActor extends AbstractVerticle {
             final JsonSchema schema = factory.getJsonSchema(schemaDoc);
             ProcessingReport report = schema.validate(jsonDoc);
             if (!report.isSuccess()) {
-                log("error", report.toString());
+                log.error(report.toString());
             }
         } catch (ProcessingException x) {
-            log("error", x.getMessage());
+            log.error(x.getMessage());
         }
 
         return jsonDoc;
@@ -257,11 +259,11 @@ public abstract class GenericActor extends AbstractVerticle {
             ProcessingReport report = schema.validate(jsonDoc);
 
             if (!report.isSuccess()) {
-                log("error", report.toString());
+                log.error(report.toString());
             }
             return report.isSuccess();
         } catch (ProcessingException x) {
-            log("error", x.getMessage());
+            log.error(x.getMessage());
             return false;
         }
     }
@@ -299,26 +301,26 @@ public abstract class GenericActor extends AbstractVerticle {
                         bodyFiltered.put("msgh", msghRetrieved);
                     } else {
                         // Unknown message handler specified, replace msgh.
-                        log("error", "Field \"msgh\" not a valid message handler: " + msghAlphaNumeric);
+                        log.error("Field \"msgh\" not a valid message handler: " + msghAlphaNumeric);
                         valid = false;
-                        log("warn", "Valid \"msgh\" values are: " + handlers.keySet().toString());
-                        log("warn", "Setting \"msgh\" to default value: " + msghDefault);
+                        log.warn("Valid \"msgh\" values are: " + handlers.keySet().toString());
+                        log.warn("warn", "Setting \"msgh\" to default value: " + msghDefault);
                         bodyFiltered.put("msgh", msghDefault);
                     }
                 } else {
                     // Invalid characters in msgh, replace msgh.
-                    log("error", "Field \"msgh\" contains invalid characters: " + msghRetrieved);
+                    log.warn("Field \"msgh\" contains invalid characters: " + msghRetrieved);
                     valid = false;
 
-                    log("warn", "Setting \"msgh\" to default value: " + msghDefault);
+                    log.warn("Setting \"msgh\" to default value: " + msghDefault);
                     bodyFiltered.put("msgh", msghDefault);
                 }
             } else {
                 // Non-existing msgh, adding default msgh.
-                log("error", "Field \"msgh\" not in JSON body");
+                log.error("Field \"msgh\" not in JSON body");
                 valid = false;
 
-                log("warn", "Setting \"msgh\" to default value: " + msghDefault);
+                log.warn("Setting \"msgh\" to default value: " + msghDefault);
                 bodyFiltered.put("msgh", msghDefault);
             }
 
@@ -330,10 +332,10 @@ public abstract class GenericActor extends AbstractVerticle {
                     bodyFiltered.set("args", argsRetrieved);
                 } else {
                     // Invalid args, replace args.
-                    log("error", "Field \"args\" not of type JSON object: " + argsRetrieved);
+                    log.error("Field \"args\" not of type JSON object: " + argsRetrieved);
                     valid = false;
 
-                    log("warn", "Setting \"args\" to empty JSON object: " + argsDefault);
+                    log.warn("Setting \"args\" to empty JSON object: " + argsDefault);
                     bodyFiltered.set("args", argsDefault);
                 }
             } else {
@@ -346,13 +348,13 @@ public abstract class GenericActor extends AbstractVerticle {
 
             // If an error occurred, copy the original body to error.
             if (!valid) {
-                log("warn", "Copying original request body to error object");
+                log.warn("Copying original request body to error object");
                 errorDefault.set("original-request", bodyRetrieved);
                 bodyFiltered.set("error", errorDefault);
             }
 
         } catch (Exception x) {
-            log("error", x.getMessage());
+            log.error(x.getMessage());
 
         }
 
@@ -372,14 +374,14 @@ public abstract class GenericActor extends AbstractVerticle {
             public JsonNode exec(JsonNode request) {
                 ObjectNode result = JsonNodeFactory.instance.objectNode();
 
-                    for (String msgh : handlers.keySet()) {
-                        try {
-                            HandlerSchema handlerAndSchema = handlers.get(msgh);
-                            result.set(msgh, handlerAndSchema.handler.help(request));
-                        } catch (NullPointerException x) {
-                            log("error", x.getMessage());
-                        }
+                for (String msgh : handlers.keySet()) {
+                    try {
+                        HandlerSchema handlerAndSchema = handlers.get(msgh);
+                        result.set(msgh, handlerAndSchema.handler.help(request));
+                    } catch (NullPointerException x) {
+                        log.error(x.getMessage());
                     }
+                }
 
                 return response(request, result);
             }
@@ -418,7 +420,7 @@ public abstract class GenericActor extends AbstractVerticle {
             HandlerSchema handlerAndSchema = handlers.get(msgh);
             JsonNode schema = jsonFromResource(handlerAndSchema.schemaPath);
             if (schema == null) {
-                log("warning", "Couldn't load " + handlerAndSchema.schemaPath + " using empty schema as default. Validation will always pass.");
+                log.warn("Couldn't load " + handlerAndSchema.schemaPath + " using empty schema as default. Validation will always pass.");
                 schema = jsonFromResource("schema/args.schema.json");
             }
             if (isValidJson(schema, request.get("args"))) {

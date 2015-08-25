@@ -2,22 +2,16 @@
 
 package com.raaftech.structure.actor;
 
+import java.util.ArrayList;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-
-import io.vertx.core.AsyncResult;
-import io.vertx.core.AsyncResultHandler;
-import io.vertx.core.DeploymentOptions;
-import io.vertx.core.Vertx;
-import io.vertx.core.json.JsonObject;
-
 import com.raaftech.structure.base.BaseActor;
-import com.raaftech.structure.base.Context;
 import com.raaftech.structure.helper.SchemaManagerUpdate;
-
-import java.util.ArrayList;
-import java.util.UUID;
 
 /**
  * The SchemaManager actor.
@@ -26,6 +20,8 @@ import java.util.UUID;
  * @since 2014-09-11
  */
 public class SchemaManager extends BaseActor {
+
+    private Logger log = LoggerFactory.getLogger(SchemaManager.class);
 
     // Check if the database is available.
     private Boolean databaseIsAvailable() {
@@ -105,7 +101,7 @@ public class SchemaManager extends BaseActor {
                     schemaManagerUpdate.applySchemaUpdates();
                     result.put("says", "success!");
                 } catch (RuntimeException e) {
-                    e.printStackTrace();
+                    log.error(e.getMessage());
                     result.put("error", e.getMessage());
                 }
                 return response(request, result);

@@ -2,13 +2,15 @@ package com.raaftech.structure.graph.converters;
 
 import java.io.IOException;
 
-import com.raaftech.structure.helper.JsonSchemaBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.convert.converter.Converter;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.fge.jsonschema.core.exceptions.ProcessingException;
+import com.raaftech.structure.helper.JsonSchemaBuilder;
 
 /**
  * ConstraintReader converts from (JSON) String to JsonSchemaBuilder
@@ -18,6 +20,8 @@ import com.github.fge.jsonschema.core.exceptions.ProcessingException;
  */
 public class JsonSchemaBuilderReader implements Converter<String, JsonSchemaBuilder> {
 
+    private Logger log = LoggerFactory.getLogger(JsonSchemaBuilderReader.class);
+
     @Override
     public JsonSchemaBuilder convert(String s) {
         ObjectMapper mapper = new ObjectMapper();
@@ -25,11 +29,11 @@ public class JsonSchemaBuilderReader implements Converter<String, JsonSchemaBuil
         try {
             constraints = new JsonSchemaBuilder((ObjectNode)mapper.readTree(s));
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
         } catch (ProcessingException e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
         }
 
         return constraints;

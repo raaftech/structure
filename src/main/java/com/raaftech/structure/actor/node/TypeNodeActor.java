@@ -1,5 +1,8 @@
 package com.raaftech.structure.actor.node;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.raaftech.structure.base.Context;
@@ -14,6 +17,8 @@ import com.raaftech.structure.graph.repositories.TypeNodeRepository;
  * @since 2015-08-12
  */
 public class TypeNodeActor extends NodeActor<TypeNode> {
+
+    private Logger log = LoggerFactory.getLogger(TypeNodeActor.class);
 
     private TypeNodeRepository typeNodeRepository = Context.INSTANCE.getTypeNodeRepository();
     private String hierarchyPath;

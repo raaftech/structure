@@ -6,9 +6,10 @@ import java.util.LinkedHashMap;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.raaftech.structure.actor.node.InstanceNodeActor;
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.Transaction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.neo4j.annotation.Fetch;
 import org.springframework.data.neo4j.annotation.NodeEntity;
@@ -22,6 +23,7 @@ import com.github.fge.jsonschema.core.exceptions.ProcessingException;
 import com.github.fge.jsonschema.core.report.ProcessingReport;
 import com.github.fge.jsonschema.main.JsonSchema;
 import com.github.fge.jsonschema.main.JsonSchemaFactory;
+import com.raaftech.structure.actor.node.InstanceNodeActor;
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.graph.repositories.InstanceNodeRepository;
 import com.raaftech.structure.graph.repositories.TypeNodeRepository;
@@ -35,6 +37,8 @@ import com.raaftech.structure.helper.JsonSchemaBuilder;
  */
 @NodeEntity
 public class InstanceNode extends Node {
+
+    private Logger log = LoggerFactory.getLogger(InstanceNode.class);
 
     @RelatedTo(type="HAS_RESULT", direction = Direction.OUTGOING)
     private Set<InstanceNode> results = new HashSet<>();
@@ -200,10 +204,10 @@ public class InstanceNode extends Node {
         TypeNode capabilityType = typeNodeRepository.findByUuid("916e04a9-c773-4eaf-9c08-450016426e5a");
         // Check if the given argument is part of the Handler tree
         boolean isHandler = handlerType.getChildIsaSet().stream()
-            .anyMatch(h -> h.getUuid().equals(handler.instanceOf.getUuid()));
+                .anyMatch(h -> h.getUuid().equals(handler.instanceOf.getUuid()));
         // Check if this InstanceNode is an instance of a node in the Capability tree
         boolean isCapability = capabilityType.getChildIsaSet().stream()
-            .anyMatch(c -> c.getUuid().equals(instanceOf.getUuid()));
+                .anyMatch(c -> c.getUuid().equals(instanceOf.getUuid()));
 
         if (!isHandler) {
             throw new RuntimeException("Cannot add handler, it's not a handler type.");
@@ -260,11 +264,10 @@ public class InstanceNode extends Node {
                     kv.put(key, properties.get(key).asText());
                 }
             } else {
-                System.out.println(report);
                 throw new RuntimeException("Supplied JSON did not match TypeNode schema.");
             }
         } catch (ProcessingException e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
             throw new RuntimeException("Supplied JSON did not match TypeNode schema.");
         }
 

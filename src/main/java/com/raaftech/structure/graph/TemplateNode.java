@@ -1,5 +1,23 @@
 package com.raaftech.structure.graph;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.neo4j.graphdb.Direction;
+import org.neo4j.graphdb.Transaction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.annotation.Transient;
+import org.springframework.data.neo4j.annotation.Fetch;
+import org.springframework.data.neo4j.annotation.NodeEntity;
+import org.springframework.data.neo4j.annotation.RelatedTo;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -12,22 +30,14 @@ import com.raaftech.structure.graph.repositories.InstanceNodeRepository;
 import com.raaftech.structure.graph.repositories.TemplateNodeRepository;
 import com.raaftech.structure.graph.repositories.TypeNodeRepository;
 import com.raaftech.structure.helper.JsonSchemaBuilder;
+
 import io.vertx.core.AsyncResult;
 import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.json.JsonObject;
 import io.vertx.rx.java.ObservableHandler;
 import io.vertx.rx.java.RxHelper;
-import org.neo4j.graphdb.Direction;
-import org.neo4j.graphdb.Transaction;
-import org.springframework.data.annotation.Transient;
-import org.springframework.data.neo4j.annotation.Fetch;
-import org.springframework.data.neo4j.annotation.NodeEntity;
-import org.springframework.data.neo4j.annotation.RelatedTo;
 import rx.Observable;
-
-import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Give a description of TemplateNode here.
@@ -37,6 +47,8 @@ import java.util.stream.Collectors;
  */
 @NodeEntity
 public class TemplateNode extends Node {
+
+    final static Logger log = LoggerFactory.getLogger(TemplateNode.class);
 
     @RelatedTo(type = "ISA", direction = Direction.OUTGOING, elementClass = TypeNode.class, enforceTargetType = true)
     @Fetch
@@ -149,7 +161,7 @@ public class TemplateNode extends Node {
             component.setParentComponent(this);
         } else {
             throw new RuntimeException("Cannot add a child TemplateNode to " + getName() + " (" + getUuid()
-                    + ") because " + getName() + " isn't set to required and unique.");
+            + ") because " + getName() + " isn't set to required and unique.");
         }
 
         return this;
@@ -165,7 +177,7 @@ public class TemplateNode extends Node {
         TemplateNode found = placeholder.get(0);
 
         found.hasComponents.stream()
-                .forEach(TemplateNode::cascadeRemoval);
+        .forEach(TemplateNode::cascadeRemoval);
 
         templateNodeRepository.delete(found);
 
@@ -189,7 +201,7 @@ public class TemplateNode extends Node {
     private static void cascadeRemoval(TemplateNode child) {
         TemplateNodeRepository templateNodeRepository = Context.INSTANCE.getTemplateNodeRepository();
         child.hasComponents.stream()
-                .forEach(TemplateNode::cascadeRemoval);
+        .forEach(TemplateNode::cascadeRemoval);
         templateNodeRepository.delete(child);
     }
 
@@ -205,7 +217,7 @@ public class TemplateNode extends Node {
         try {
             json.put("schema", mapper.writeValueAsString(getSchema().getAsObjectNode()));
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
         }
 
         if (hasComponents != null && hasComponents.size() > 0) {
@@ -291,7 +303,7 @@ public class TemplateNode extends Node {
             tx.success();
         } catch (Exception e) {
             tx.failure();
-            e.printStackTrace();
+            log.error(e.getMessage());
         } finally {
             tx.close();
         }
@@ -319,7 +331,7 @@ public class TemplateNode extends Node {
                 instanceUuid = instanceNode.getUuid();
 
                 template.hasComponents.stream()
-                        .forEach(t -> t.instantiate(t, instanceNode, dataMap, depth+1));
+                .forEach(t -> t.instantiate(t, instanceNode, dataMap, depth+1));
                 instanceNode.save();
             }
             // If this TemplateNode has components (implies required and unique)
@@ -329,7 +341,7 @@ public class TemplateNode extends Node {
                 if (parent != null) parent.addComponent(instanceNode);
 
                 template.hasComponents.stream()
-                        .forEach(t -> t.instantiate(t, instanceNode, dataMap, depth+1));
+                .forEach(t -> t.instantiate(t, instanceNode, dataMap, depth+1));
                 instanceNode.save();
             } else {
                 instanceDataArray.forEach(data -> {
@@ -358,27 +370,27 @@ public class TemplateNode extends Node {
         Iterator<Map<String, String>> discoveryData = templateNodeRepository.getDiscoveryData(this.getUuid()).iterator();
         // Fairly certain there's a better type for this map.
         Map<ObservableHandler<AsyncResult<Message<JsonObject>>>, List<String>>
-            discoveryHandlerMap = new HashMap<>();
+        discoveryHandlerMap = new HashMap<>();
         // Iterate over discoveryData (UUID + JSON containing Discovery Handler address)
         while(discoveryData.hasNext()) {
             Map<String, String> entry = discoveryData.next();
             // We'll use this map to collect the UUID + address
             HashMap<String, String> collect = new HashMap<>();
             entry.entrySet().stream()
-                .forEach((e) -> {
-                    // If this entry is the kv entry parse it as JSON and get the plugin field
-                    if (e.getKey().equals("kv")) {
-                        try {
-                            collect.put("address", mapper.readTree(e.getValue()).get("plugin").asText());
-                        } catch (Exception e1) {
-                            e1.printStackTrace();
-                            throw new RuntimeException("Error while building address map.");
-                        }
-                    // Else we're dealing with the uuid field which is already a string
-                    } else {
-                        collect.put("uuid", e.getValue());
+            .forEach((e) -> {
+                // If this entry is the kv entry parse it as JSON and get the plugin field
+                if (e.getKey().equals("kv")) {
+                    try {
+                        collect.put("address", mapper.readTree(e.getValue()).get("plugin").asText());
+                    } catch (Exception e1) {
+                        log.error(e1.getMessage());
+                        throw new RuntimeException("Error while building address map.");
                     }
-                });
+                    // Else we're dealing with the uuid field which is already a string
+                } else {
+                    collect.put("uuid", e.getValue());
+                }
+            });
             // Put a new ObservableHandler, the UUID and the address in a map.
             discoveryHandlerMap.put(RxHelper.observableHandler(),
                     Arrays.asList(collect.get("uuid"), collect.get("address")));
@@ -390,35 +402,35 @@ public class TemplateNode extends Node {
         // discovery failed.
         Observable<JsonNode> zippedHandlers = Observable.zip(
                 discoveryHandlerMap.entrySet().stream()
-                    .map((entry) -> entry.getKey())
-                    .collect(Collectors.toList()),
-                    results -> {
-                        ArrayNode instanceJson = mapper.createArrayNode();
+                .map((entry) -> entry.getKey())
+                .collect(Collectors.toList()),
+                results -> {
+                    ArrayNode instanceJson = mapper.createArrayNode();
 
-                        for (Object obj: results) {
-                            AsyncResult<Message<Object>> result = (AsyncResult<Message<Object>>) obj;
-                            if (result.succeeded()) {
-                                try {
-                                    instanceJson.add(mapper.readTree(result.result().body().toString()));
-                                } catch (Exception e) {
-                                    throw new RuntimeException(e.getMessage());
-                                }
-                            } else {
-                                throw new RuntimeException("Error while calling one of the discovery handlers.");
+                    for (Object obj: results) {
+                        AsyncResult<Message<Object>> result = (AsyncResult<Message<Object>>) obj;
+                        if (result.succeeded()) {
+                            try {
+                                instanceJson.add(mapper.readTree(result.result().body().toString()));
+                            } catch (Exception e) {
+                                throw new RuntimeException(e.getMessage());
                             }
+                        } else {
+                            throw new RuntimeException("Error while calling one of the discovery handlers.");
                         }
+                    }
 
-                        return instanceJson;
-                    });
+                    return instanceJson;
+                });
 
         // Instantiate template using data from our zippedHandlers Observable
-        zippedHandlers.subscribe(data -> instantiate(data), fail -> fail.printStackTrace());
+        zippedHandlers.subscribe(data -> instantiate(data), fail -> log.error(fail.getMessage()));
 
         // Send  messages to all the DiscoveryHandlers using an ObservableHandler for callbacks
         discoveryHandlerMap.forEach((observableHandler, uuidAddressList) -> {
             JsonObject message = new JsonObject()
-                .put("msgh", "execute")
-                .put("args", new JsonObject(args.toString()).put("node", uuidAddressList.get(0)));
+                    .put("msgh", "execute")
+                    .put("args", new JsonObject(args.toString()).put("node", uuidAddressList.get(0)));
             eventBus.send("com.raaftech.structure.plugins." + uuidAddressList.get(1),
                     message, observableHandler.toHandler());
         });

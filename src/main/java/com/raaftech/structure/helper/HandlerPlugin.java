@@ -1,13 +1,12 @@
 package com.raaftech.structure.helper;
 
-import io.vertx.core.AbstractVerticle;
-import io.vertx.core.Future;
-import io.vertx.core.json.JsonObject;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -18,7 +17,13 @@ import com.github.fge.jsonschema.core.report.ProcessingReport;
 import com.github.fge.jsonschema.main.JsonSchema;
 import com.github.fge.jsonschema.main.JsonSchemaFactory;
 
+import io.vertx.core.AbstractVerticle;
+import io.vertx.core.Future;
+import io.vertx.core.json.JsonObject;
+
 public abstract class HandlerPlugin extends AbstractVerticle {
+
+    private Logger log = LoggerFactory.getLogger(HandlerPlugin.class);
 
     // Metadata object containing the name and address defined
     // in the plugin.properties file.
@@ -43,8 +48,8 @@ public abstract class HandlerPlugin extends AbstractVerticle {
             schema = new JsonSchemaBuilder(pluginSchema);
 
             JsonSchemaBuilder bodySchema = new JsonSchemaBuilder()
-                .setType("object")
-                .setAdditionalProperties(false);
+                    .setType("object")
+                    .setAdditionalProperties(false);
             bodySchema.addProperty("msgh", "string", true, "The action called (ping or execute).");
             bodySchema.addProperty("args", "object", true, "The arguments needed for the action.");
 
@@ -60,18 +65,16 @@ public abstract class HandlerPlugin extends AbstractVerticle {
                             if(schema.validateJson(args)) {
                                 implementation();
                             } else {
-                                log("info", "Received message didn't validate against plugin's schema.");
+                                log.warn("Received message didn't validate against plugin's schema.");
                             }
                         } else if (msgh.equals("ping")) {
                             message.reply("pong");
                         }
                     } else {
-                        log("info", "Received message didn't validate against PluginHandler schema.");
-                        System.out.println(bodySchema.getAsObjectNode());
-                        System.out.println(body);
+                        log.warn("Received message didn't validate against plugin's schema.");
                     }
                 } else {
-                    log("info", "Received non-JSON on eventbus.");
+                    log.warn("Received non-JSON on eventbus.");
                 }
 
                 if (pluginResult.size() > 0) {
@@ -96,11 +99,11 @@ public abstract class HandlerPlugin extends AbstractVerticle {
             ProcessingReport report = schema.validate(jsonDoc);
 
             if (!report.isSuccess()) {
-                log("error", report.toString());
+                log.error(report.toString());
             }
             return report.isSuccess();
         } catch (ProcessingException x) {
-            log("error", x.getMessage());
+            log.error(x.getMessage());
             return false;
         }
     }
@@ -112,7 +115,7 @@ public abstract class HandlerPlugin extends AbstractVerticle {
         try {
             jsonNode = mapper.readTree(jsonObject.toString());
         } catch (IOException x) {
-            log("error", x.getMessage());
+            log.error(x.getMessage());
         }
 
         return jsonNode;
@@ -121,11 +124,6 @@ public abstract class HandlerPlugin extends AbstractVerticle {
     // Convert a Jackson JsonNode to a Vert.x JsonObject
     protected JsonObject convertFromJsonNode(JsonNode jsonNode) {
         return new JsonObject(jsonNode.toString());
-    }
-
-    // A logger for actors with nice defaults.
-    protected void log(String level, String message) {
-        System.out.println(level.toUpperCase() + ": " + message);
     }
 
     // Load a JSON file
@@ -144,9 +142,9 @@ public abstract class HandlerPlugin extends AbstractVerticle {
         JsonObject resultMessage = new JsonObject()
                 .put("msgh", "createcommandresult")
                 .put("args", new JsonObject()
-                .put("node", node)
-                .put("task", task)
-                .put("commandresult", result));
+                        .put("node", node)
+                        .put("task", task)
+                        .put("commandresult", result));
         vertx.eventBus().send("com.raaftech.structure.statemanager", resultMessage);
     }
     // Log a DerivedStatusResult to the database
@@ -154,9 +152,9 @@ public abstract class HandlerPlugin extends AbstractVerticle {
         JsonObject resultMessage = new JsonObject()
                 .put("msgh", "createderivedstatusresult")
                 .put("args", new JsonObject()
-                .put("node", node)
-                .put("task", task)
-                .put("status", result));
+                        .put("node", node)
+                        .put("task", task)
+                        .put("status", result));
         vertx.eventBus().send("com.raaftech.structure.statemanager", resultMessage);
     }
 }

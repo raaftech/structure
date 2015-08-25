@@ -1,14 +1,20 @@
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
+import com.raaftech.structure.base.Application;
 import com.raaftech.structure.helper.HandlerPlugin;
 
 public class Plugin extends HandlerPlugin {
+
+    final static Logger log = LoggerFactory.getLogger(Plugin.class);
 
     private String privateKey;
     private String strictHostKeyChecking;
@@ -82,11 +88,11 @@ public class Plugin extends HandlerPlugin {
 
         } catch (JSchException e) {
             pluginResult.put("error", e.getMessage());
-            e.printStackTrace();
+            log.error(e.getMessage());
             return null;
         } catch (IOException e) {
             pluginResult.put("error", e.getMessage());
-            e.printStackTrace();
+            log.error(e.getMessage());
             return null;
         } finally {
             if (channel != null) {

@@ -8,12 +8,18 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.raaftech.structure.base.Application;
 import com.raaftech.structure.helper.HandlerPlugin;
 
 public class Plugin extends HandlerPlugin {
+
+    final static Logger log = LoggerFactory.getLogger(Plugin.class);
 
     public void implementation() {
         String node = args.get("node").asText();
@@ -46,7 +52,7 @@ public class Plugin extends HandlerPlugin {
                             createCommandResult(node, task, output);
                         }
                         }catch(IOException | InterruptedException e){
-                            e.printStackTrace();
+                            log.error(e.getMessage());
                         }
                 });
     }

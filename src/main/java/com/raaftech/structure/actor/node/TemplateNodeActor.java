@@ -1,5 +1,9 @@
 package com.raaftech.structure.actor.node;
 
+import org.neo4j.graphdb.Transaction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.raaftech.structure.annotations.SchemaPath;
@@ -7,12 +11,13 @@ import com.raaftech.structure.base.Context;
 import com.raaftech.structure.base.NodeActor;
 import com.raaftech.structure.graph.TemplateNode;
 import com.raaftech.structure.graph.repositories.TemplateNodeRepository;
-import org.neo4j.graphdb.Transaction;
 
 /**
  * Created by boy on 8/14/15.
  */
 public class TemplateNodeActor extends NodeActor<TemplateNode> {
+
+    private Logger log = LoggerFactory.getLogger(TemplateNodeActor.class);
 
     public TemplateNodeActor(TemplateNode node) {
         super(node);
@@ -63,7 +68,7 @@ public class TemplateNodeActor extends NodeActor<TemplateNode> {
                     tx.success();
                 } catch (Exception e) {
                     tx.failure();
-                    e.printStackTrace();
+                    log.error(e.getMessage());
                     result.put("error", e.getMessage());
                 } finally {
                     tx.close();
@@ -131,8 +136,8 @@ public class TemplateNodeActor extends NodeActor<TemplateNode> {
                     startOfTemplate.discover(args.get("data"));
                     result.put("information", "Started discovery routine(s) for template.");
                 } catch (Exception e) {
+                    log.error(e.getMessage());
                     result.put("error", e.getMessage());
-                    e.printStackTrace();
                 }
 
                 return response(request, result);
