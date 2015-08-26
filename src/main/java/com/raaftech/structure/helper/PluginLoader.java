@@ -60,7 +60,7 @@ public class PluginLoader {
         .forEach(p -> {
             File properties = new File(p + File.separator + "plugin.properties");
             if (properties.exists()) {
-                log.info("Deploying plugin " + p.getFileName());
+                log.debug("Deploying plugin " + p.getFileName());
                 deployPlugin(properties);
             } else {
                 log.warn("Plugin directory " + p.getFileName() + " does not contain " +

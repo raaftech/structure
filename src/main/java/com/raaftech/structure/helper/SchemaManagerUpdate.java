@@ -153,7 +153,7 @@ public class SchemaManagerUpdate {
                 }
             });
             long endTime = System.nanoTime();
-            log.info("Created the TypeNode database in " + (endTime - startTime) / 1000000 + "ms.");
+            log.debug("Created the TypeNode database in " + (endTime - startTime) / 1000000 + "ms.");
             tx.success();
         } catch (RuntimeException e) {
             tx.failure();

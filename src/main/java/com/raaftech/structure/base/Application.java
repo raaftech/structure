@@ -58,14 +58,17 @@ public class Application {
         if (args.length < 1) {
             serveDebug = false;
             ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
-            log.info("Setting global log level to INFO..");
+            log.info("Setting log level to INFO..");
             root.setLevel(Level.INFO);
         } else {
             serveDebug = args[0].equals("--debug");
             ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
-            log.debug("Setting global log level to DEBUG..");
+            log.debug("Setting log level to DEBUG..");
             root.setLevel(Level.DEBUG);
         }
+
+        // Tell the user we're starting up.
+        log.info("Structure is starting up..");
 
         // Setup vertx with a maxWorkerExecuteTime of 5 minutes.
         // TODO: Make maxWorkerExecuteTime user configurable?
@@ -127,7 +130,7 @@ public class Application {
         }
 
         // Deploy TypeNodeActors.
-        log.info("Deploying TypeNodeActors..");
+        log.debug("Deploying TypeNodeActors..");
         TypeNodeRepository typeNodeRepository = Context.INSTANCE.getTypeNodeRepository();
         Transaction tx = Context.INSTANCE.getGraphDatabase().beginTx();
         Iterator<TypeNode> typeNodeIterator = typeNodeRepository.findAll().iterator();
@@ -139,7 +142,7 @@ public class Application {
         tx.close();
 
         // Deploy InstanceNodeActors.
-        log.info("Deploying InstanceNodeActors..");
+        log.debug("Deploying InstanceNodeActors..");
         InstanceNodeRepository instanceNodeRepository = Context.INSTANCE.getInstanceNodeRepository();
         tx = Context.INSTANCE.getGraphDatabase().beginTx();
         Iterator<InstanceNode> instanceNodeIterator = instanceNodeRepository.findAll().iterator();
@@ -151,7 +154,7 @@ public class Application {
         tx.close();
 
         // Deploy TemplateNodeActors.
-        log.info("Deploying TemplateNodeActors..");
+        log.debug("Deploying TemplateNodeActors..");
         TemplateNodeRepository templateNodeRepository = Context.INSTANCE.getTemplateNodeRepository();
         tx = Context.INSTANCE.getGraphDatabase().beginTx();
         Iterator<TemplateNode> templateNodeIterator = templateNodeRepository.findAll().iterator();

@@ -15,7 +15,7 @@ public abstract class BaseActor extends GenericActor {
         vertx.eventBus().consumer(getActorName(), this::handleMessage);
 
         // Tell the console we're up and running.
-        log.info(getActorName() + " ready to serve");
+        log.debug(getActorName() + " ready to serve");
     }
 
     // Get the name of the actor (used with registerHandler).
