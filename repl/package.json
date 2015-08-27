@@ -1,0 +1,16 @@
+{
+  "name": "structure-repl",
+  "version": "0.0.1",
+  "description": "Structure command line client and read-eval-print-loop.",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "sockjs-client": "1.0.0",
+    "vertx3-eventbus-client": "3.0.0",
+  },
+  "author": "Rubin Simons <rubin@raaftech.com>",
+  "license": "LicenseRef-LICENSE",
+  "private": true
+}
