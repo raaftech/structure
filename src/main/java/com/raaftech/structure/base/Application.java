@@ -90,6 +90,7 @@ public class Application {
         // on the eventbus and serve the debug page.
         if (serveDebug) {
             router.route("/debug/*").handler(StaticHandler.create().setWebRoot("web/html/debug/"));
+            log.debug("Setting InboundPermitted to any address (\".*\")");
             bridgeOptions.addInboundPermitted(new PermittedOptions().setAddressRegex(".*"));
         }
 

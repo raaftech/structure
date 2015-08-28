@@ -2,12 +2,11 @@ package com.raaftech.structure.base;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-
 import com.raaftech.structure.graph.Node;
 import com.raaftech.structure.graph.repositories.NodeRepository;
+
 import io.vertx.core.Future;
 import io.vertx.core.eventbus.MessageConsumer;
-import org.neo4j.graphdb.Transaction;
 
 public abstract class NodeActor<T extends Node> extends BaseActor {
 
