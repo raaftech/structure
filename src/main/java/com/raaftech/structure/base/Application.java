@@ -100,6 +100,7 @@ public class Application {
         httpServer.requestHandler(router::accept).listen(port);
 
         // Deploy our main actors.
+        vertx.deployVerticle("com.raaftech.structure.actor.BusManager");
         vertx.deployVerticle("com.raaftech.structure.actor.SchemaManager");
         vertx.deployVerticle("com.raaftech.structure.actor.PluginManager");
         vertx.deployVerticle("com.raaftech.structure.actor.StateManager",

@@ -6,7 +6,7 @@ var eb = new EventBus('http://localhost:8080/eventbus');
 
 
 eb.onopen = function () {
-  eb.send('com.raaftech.structure.schemamanager', {"msgh":"help","args":{}}, function(data) {
+  eb.send('com.raaftech.structure.busmanager', {"msgh":"list","args":{}}, function(data) {
     console.log(data);
     eb.close();
   });
