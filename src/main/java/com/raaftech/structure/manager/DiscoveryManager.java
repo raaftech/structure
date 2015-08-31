@@ -11,11 +11,11 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.raaftech.structure.base.BaseActor;
+import com.raaftech.structure.base.GenericActor;
 
 import io.vertx.core.json.JsonObject;
 
-public class DiscoveryManager extends BaseActor {
+public class DiscoveryManager extends GenericActor {
 
     private Logger log = LoggerFactory.getLogger(DiscoveryManager.class);
 
@@ -33,8 +33,7 @@ public class DiscoveryManager extends BaseActor {
                     Arrays.stream(utils.getInfo().getAllAddresses()).forEach(addr -> {
                         if (isPrivateAddress(addr)) {
                             JsonObject message = new JsonObject(
-                                    "{ \"msgh\" : \"scanhostlive\", \"args\" :" +
-                                            "  { \"address\" : \"" + addr + "\" } }");
+                                    "{ \"msgh\" : \"scanhostlive\", \"args\" :" + "  { \"address\" : \"" + addr + "\" } }");
 
                             vertx.eventBus().send("com.raaftech.structure.worker.scanworker", message);
                         } else {

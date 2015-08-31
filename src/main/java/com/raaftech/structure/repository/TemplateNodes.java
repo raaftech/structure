@@ -17,9 +17,9 @@ import com.raaftech.structure.graph.repositories.TypeNodeRepository;
 
 public class TemplateNodes extends Repository<TemplateNode> {
 
-    private Logger log = LoggerFactory.getLogger(TemplateNodes.class);
-
     private TemplateNodeRepository repository;
+
+    private Logger log = LoggerFactory.getLogger(TemplateNodes.class);
 
     public TemplateNodes(TemplateNodeRepository repository) {
         super(repository);

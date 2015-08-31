@@ -10,8 +10,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.raaftech.structure.base.BaseActor;
 import com.raaftech.structure.base.Context;
+import com.raaftech.structure.base.GenericActor;
 import com.raaftech.structure.graph.InstanceNode;
 import com.raaftech.structure.graph.repositories.InstanceNodeRepository;
 
@@ -21,11 +21,11 @@ import com.raaftech.structure.graph.repositories.InstanceNodeRepository;
  * @author Rubin Simons <rubin.simons@raaftech.com>
  * @since 2014-10-15
  */
-public class StateManager extends BaseActor {
-
-    private Logger log = LoggerFactory.getLogger(StateManager.class);
+public class StateManager extends GenericActor {
 
     private InstanceNodeRepository instanceNodeRepository = Context.INSTANCE.getInstanceNodeRepository();
+
+    private Logger log = LoggerFactory.getLogger(StateManager.class);
 
     public void printAll(JsonNode node) {
         Iterator<String> fieldNames = node.fieldNames();

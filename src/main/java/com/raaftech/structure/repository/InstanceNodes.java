@@ -11,9 +11,9 @@ import com.raaftech.structure.graph.repositories.InstanceNodeRepository;
 
 public class InstanceNodes extends Repository<InstanceNode> {
 
-    private Logger log = LoggerFactory.getLogger(InstanceNodes.class);
-
     private InstanceNodeRepository repository;
+
+    private Logger log = LoggerFactory.getLogger(InstanceNodes.class);
 
     public InstanceNodes(InstanceNodeRepository repository) {
         super(repository);

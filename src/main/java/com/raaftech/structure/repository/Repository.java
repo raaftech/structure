@@ -4,11 +4,10 @@ package com.raaftech.structure.repository;
 import java.util.Set;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.raaftech.structure.annotations.SchemaPath;
-import com.raaftech.structure.base.BaseActor;
+import com.raaftech.structure.base.GenericActor;
 import com.raaftech.structure.graph.Node;
 import com.raaftech.structure.graph.repositories.GenericRepository;
 
@@ -20,7 +19,7 @@ import com.raaftech.structure.graph.repositories.GenericRepository;
  *
  * @param <T> The type of node that will be used.
  */
-public abstract class Repository<T extends Node> extends BaseActor {
+public abstract class Repository<T extends Node> extends GenericActor {
 
     private GenericRepository<T> repository;
 

@@ -1,11 +1,16 @@
 package com.raaftech.structure.manager;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.raaftech.structure.base.BaseActor;
+import com.raaftech.structure.base.GenericActor;
 
-public class BusManager extends BaseActor {
+public class BusManager extends GenericActor {
+
+    private Logger log = LoggerFactory.getLogger(BusManager.class);
 
     public MessageHandler list() {
         return new MessageHandler() {

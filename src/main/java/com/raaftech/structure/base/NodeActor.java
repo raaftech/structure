@@ -1,5 +1,8 @@
 package com.raaftech.structure.base;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.raaftech.structure.graph.Node;
@@ -7,7 +10,7 @@ import com.raaftech.structure.graph.repositories.NodeRepository;
 
 import io.vertx.core.eventbus.MessageConsumer;
 
-public abstract class NodeActor<T extends Node> extends BaseActor {
+public abstract class NodeActor<T extends Node> extends GenericActor {
 
     protected final String startOfAddress = "com.raaftech.structure.node.";
 
@@ -26,12 +29,16 @@ public abstract class NodeActor<T extends Node> extends BaseActor {
         primaryConsumerAddress = startOfAddress + getActorName(node);
     }
 
-    // The Vert.x Verticle start method.
+    private Logger log = LoggerFactory.getLogger(NodeActor.class);
+
     @Override
     public void start() {
         primaryConsumer = vertx.eventBus().consumer(primaryConsumerAddress, this::handleMessage);
+        log.debug("Listen for {} on addr: {}", this.getClass().getSimpleName(), primaryConsumerAddress);
         if (getSecondaryAddress() != null) {
-            secondaryConsumer = vertx.eventBus().consumer(startOfAddress + getSecondaryAddress(), this::handleMessage);
+            String secondaryConsumerAddress = startOfAddress + getSecondaryAddress();
+            secondaryConsumer = vertx.eventBus().consumer(secondaryConsumerAddress, this::handleMessage);
+            log.debug("Listen for {} on addr: {}", this.getClass().getSimpleName(), secondaryConsumerAddress);
         }
     }
 

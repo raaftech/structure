@@ -8,16 +8,16 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.raaftech.structure.base.BaseActor;
 import com.raaftech.structure.base.Context;
+import com.raaftech.structure.base.GenericActor;
 
 import io.vertx.core.json.JsonObject;
 
-public class PluginManager extends BaseActor {
-
-    private Logger log = LoggerFactory.getLogger(PluginManager.class);
+public class PluginManager extends GenericActor {
 
     private Set<String> registeredPlugins = Context.INSTANCE.getRegisteredPlugins();
+
+    private Logger log = LoggerFactory.getLogger(PluginManager.class);
 
     public MessageHandler isregistered() {
         return new MessageHandler() {

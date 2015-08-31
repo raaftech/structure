@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.raaftech.structure.base.BaseActor;
+import com.raaftech.structure.base.GenericActor;
 import com.raaftech.structure.helper.SchemaManagerUpdate;
 
 /**
@@ -19,7 +19,7 @@ import com.raaftech.structure.helper.SchemaManagerUpdate;
  * @author Rubin Simons <rubin.simons@raaftech.com>
  * @since 2014-09-11
  */
-public class SchemaManager extends BaseActor {
+public class SchemaManager extends GenericActor {
 
     private Logger log = LoggerFactory.getLogger(SchemaManager.class);
 

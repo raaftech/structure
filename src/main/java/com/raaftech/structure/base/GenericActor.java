@@ -173,6 +173,11 @@ public abstract class GenericActor extends AbstractVerticle {
         return result;
     }
 
+    // Get the name of the actor (used with registerHandler).
+    public String getActorName() {
+        return this.getClass().getName().toLowerCase();
+    }
+
     // The response helper.
     public JsonNode response(JsonNode request, JsonNode result) {
         ObjectNode response = JsonNodeFactory.instance.objectNode();
@@ -408,6 +413,14 @@ public abstract class GenericActor extends AbstractVerticle {
         };
     }
 
+    // Logs and registers the actors on the bus.
+    @Override
+    public void start() {
+        log.debug("Listen for {} on addr: {}", this.getClass().getSimpleName(), getActorName());
+        vertx.eventBus().consumer(getActorName(), this::handleMessage);
+    }
+
+    // Our message handler.
     public void handleMessage(Message<Object> message) {
         // Request!
         JsonObject body = (JsonObject)message.body();

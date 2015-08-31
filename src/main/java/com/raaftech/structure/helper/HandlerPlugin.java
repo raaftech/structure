@@ -53,7 +53,9 @@ public abstract class HandlerPlugin extends AbstractVerticle {
             bodySchema.addProperty("args", "object", true, "The arguments needed for the action.");
 
             // Listen on specified address
-            vertx.eventBus().consumer("com.raaftech.structure.plugins." + metadata.getString("address"), message -> {
+            String handlerPluginAddress = "com.raaftech.structure.plugins." + metadata.getString("address");
+            log.debug("Listen for {} on addr: {}", this.getClass().getSimpleName(), handlerPluginAddress);
+            vertx.eventBus().consumer(handlerPluginAddress, message -> {
                 if (message.body() instanceof JsonObject) {
                     JsonNode body = convertFromJsonObject((JsonObject)message.body());
                     // Validate body to JSON schema

@@ -16,9 +16,9 @@ import com.raaftech.structure.graph.repositories.InstanceNodeRepository;
 
 public class InstanceNodeActor extends NodeActor<InstanceNode> {
 
-    private Logger log = LoggerFactory.getLogger(InstanceNodeActor.class);
-
     private InstanceNodeRepository instanceNodeRepository = Context.INSTANCE.getInstanceNodeRepository();
+
+    private Logger log = LoggerFactory.getLogger(InstanceNodeActor.class);
 
     public InstanceNodeActor(InstanceNode node) {
         super(node);

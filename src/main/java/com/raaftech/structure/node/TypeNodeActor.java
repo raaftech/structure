@@ -18,10 +18,11 @@ import com.raaftech.structure.graph.repositories.TypeNodeRepository;
  */
 public class TypeNodeActor extends NodeActor<TypeNode> {
 
-    private Logger log = LoggerFactory.getLogger(TypeNodeActor.class);
-
     private TypeNodeRepository typeNodeRepository = Context.INSTANCE.getTypeNodeRepository();
+
     private String hierarchyPath;
+
+    private Logger log = LoggerFactory.getLogger(TypeNodeActor.class);
 
     public TypeNodeActor(TypeNode node) {
         super(node);
