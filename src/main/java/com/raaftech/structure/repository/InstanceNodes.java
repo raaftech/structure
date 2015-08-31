@@ -1,4 +1,4 @@
-package com.raaftech.structure.actor.repository;
+package com.raaftech.structure.repository;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

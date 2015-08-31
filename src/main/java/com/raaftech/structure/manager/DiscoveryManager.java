@@ -1,4 +1,4 @@
-package com.raaftech.structure.actor;
+package com.raaftech.structure.manager;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -36,7 +36,7 @@ public class DiscoveryManager extends BaseActor {
                                     "{ \"msgh\" : \"scanhostlive\", \"args\" :" +
                                             "  { \"address\" : \"" + addr + "\" } }");
 
-                            vertx.eventBus().send("com.raaftech.structure.actor.worker.scanworker", message);
+                            vertx.eventBus().send("com.raaftech.structure.worker.scanworker", message);
                         } else {
                             log.warn("Didn't scan " + addr + ", because it's not a site local address.");
                         }

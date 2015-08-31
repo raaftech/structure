@@ -1,4 +1,4 @@
-package com.raaftech.structure.actor.repository;
+package com.raaftech.structure.repository;
 
 import com.raaftech.structure.graph.TypeNode;
 import com.raaftech.structure.graph.repositories.TypeNodeRepository;

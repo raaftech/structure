@@ -1,18 +1,17 @@
-package com.raaftech.structure.actor.worker;
+package com.raaftech.structure.worker;
 
 import java.net.InetSocketAddress;
 import java.net.Socket;
 
 import io.vertx.core.AbstractVerticle;
-import io.vertx.core.Future;
 import io.vertx.core.json.JsonObject;
 
 
 public class ScanWorker extends AbstractVerticle {
 
     @Override
-    public void start(Future<Void> startFuture) {
-        vertx.eventBus().consumer("com.raaftech.structure.actor.worker.scanworker", handler -> {
+    public void start() {
+        vertx.eventBus().consumer("com.raaftech.structure.worker.scanworker", handler -> {
             JsonObject body = (JsonObject)handler.body();
             try {
                 Socket sock = new Socket();

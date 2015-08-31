@@ -1,4 +1,4 @@
-package com.raaftech.structure.actor.repository;
+package com.raaftech.structure.repository;
 
 
 import java.util.Set;

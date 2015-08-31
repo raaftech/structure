@@ -101,7 +101,6 @@ public abstract class GenericActor extends AbstractVerticle {
         });
 
         // Read settings and initialize schema documents.
-        settings = jsonFromResource("settings.json");
         schemaForRequest = jsonFromResource("schema/request.schema.json");
         schemaForResponse = jsonFromResource("schema/response.schema.json");
         schemaForManual = jsonFromResource("schema/manual.schema.json");

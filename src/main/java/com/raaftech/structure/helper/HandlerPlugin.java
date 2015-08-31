@@ -18,7 +18,6 @@ import com.github.fge.jsonschema.main.JsonSchema;
 import com.github.fge.jsonschema.main.JsonSchemaFactory;
 
 import io.vertx.core.AbstractVerticle;
-import io.vertx.core.Future;
 import io.vertx.core.json.JsonObject;
 
 public abstract class HandlerPlugin extends AbstractVerticle {
@@ -39,7 +38,7 @@ public abstract class HandlerPlugin extends AbstractVerticle {
     protected abstract void implementation();
 
     @Override
-    public void start(Future<Void> startFuture) throws Exception {
+    public void start() throws Exception {
         metadata = context.config();
         JsonSchemaBuilder schema;
 
@@ -82,7 +81,7 @@ public abstract class HandlerPlugin extends AbstractVerticle {
                 }
             });
         } catch (IOException | RuntimeException e) {
-            startFuture.fail(e);
+            log.error(e.getMessage());
             this.stop();
         }
     }

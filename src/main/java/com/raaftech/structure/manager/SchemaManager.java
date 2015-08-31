@@ -1,6 +1,6 @@
 // Copyright © 2008-2014 RAAF Technology bv
 
-package com.raaftech.structure.actor;
+package com.raaftech.structure.manager;
 
 import java.util.ArrayList;
 

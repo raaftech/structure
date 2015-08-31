@@ -1,4 +1,4 @@
-package com.raaftech.structure.actor;
+package com.raaftech.structure.manager;
 
 import java.util.Set;
 

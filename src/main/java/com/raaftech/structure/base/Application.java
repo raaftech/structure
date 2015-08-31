@@ -7,23 +7,22 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
-import com.raaftech.structure.actor.node.InstanceNodeActor;
-import com.raaftech.structure.actor.node.TemplateNodeActor;
-import com.raaftech.structure.actor.node.TypeNodeActor;
-import com.raaftech.structure.actor.repository.InstanceNodes;
-import com.raaftech.structure.actor.repository.Nodes;
-import com.raaftech.structure.actor.repository.SchemaNodes;
-import com.raaftech.structure.actor.repository.TemplateNodes;
-import com.raaftech.structure.actor.repository.TypeNodes;
 import com.raaftech.structure.graph.InstanceNode;
 import com.raaftech.structure.graph.TemplateNode;
 import com.raaftech.structure.graph.TypeNode;
 import com.raaftech.structure.graph.repositories.InstanceNodeRepository;
 import com.raaftech.structure.graph.repositories.TemplateNodeRepository;
 import com.raaftech.structure.graph.repositories.TypeNodeRepository;
+import com.raaftech.structure.node.InstanceNodeActor;
+import com.raaftech.structure.node.TemplateNodeActor;
+import com.raaftech.structure.node.TypeNodeActor;
+import com.raaftech.structure.repository.InstanceNodes;
+import com.raaftech.structure.repository.Nodes;
+import com.raaftech.structure.repository.SchemaNodes;
+import com.raaftech.structure.repository.TemplateNodes;
+import com.raaftech.structure.repository.TypeNodes;
 
 import ch.qos.logback.classic.Level;
-import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.http.HttpServer;
@@ -81,10 +80,10 @@ public class Application {
 
         // Enable bridging on /eventbus, and add some in- and outbound permissions.
         BridgeOptions bridgeOptions = new BridgeOptions()
-                .addInboundPermitted(new PermittedOptions().setAddress("com.raaftech.structure.actor.schemamanager"))
-                .addInboundPermitted(new PermittedOptions().setAddress("com.raaftech.structure.actor.pluginmanager"))
-                .addInboundPermitted(new PermittedOptions().setAddress("com.raaftech.structure.actor.statemanager"))
-                .addInboundPermitted(new PermittedOptions().setAddress("com.raaftech.structure.actor.discoverymanager"));
+                .addInboundPermitted(new PermittedOptions().setAddress("com.raaftech.structure.manager.schemamanager"))
+                .addInboundPermitted(new PermittedOptions().setAddress("com.raaftech.structure.manager.pluginmanager"))
+                .addInboundPermitted(new PermittedOptions().setAddress("com.raaftech.structure.manager.statemanager"))
+                .addInboundPermitted(new PermittedOptions().setAddress("com.raaftech.structure.manager.discoverymanager"));
 
         // If we're in debug mode allow direct access to everything
         // on the eventbus and serve the debug page.
@@ -100,25 +99,64 @@ public class Application {
         httpServer.requestHandler(router::accept).listen(port);
 
         // Deploy our main actors.
-        vertx.deployVerticle("com.raaftech.structure.actor.BusManager");
-        vertx.deployVerticle("com.raaftech.structure.actor.SchemaManager");
-        vertx.deployVerticle("com.raaftech.structure.actor.PluginManager");
-        vertx.deployVerticle("com.raaftech.structure.actor.StateManager",
-                new DeploymentOptions().setWorker(true));
-        vertx.deployVerticle("com.raaftech.structure.actor.DiscoveryManager");
+        vertx.deployVerticle("com.raaftech.structure.manager.BusManager", ar -> {
+            if (ar.succeeded()) {
+                log.debug("Successfully deployed BusManager");
+            }
+        });
+        vertx.deployVerticle("com.raaftech.structure.manager.SchemaManager", ar -> {
+            if (ar.succeeded()) {
+                log.debug("Successfully deployed SchemaManager");
+            }
+        });
+        vertx.deployVerticle("com.raaftech.structure.manager.PluginManager", ar -> {
+            if (ar.succeeded()) {
+                log.debug("Successfully deployed PluginManager");
+            }
+        });
+        vertx.deployVerticle("com.raaftech.structure.manager.StateManager", ar -> {
+            if (ar.succeeded()) {
+                log.debug("Successfully deployed StateManager");
+            }
+        });
+        vertx.deployVerticle("com.raaftech.structure.manager.DiscoveryManager", ar -> {
+            if (ar.succeeded()) {
+                log.debug("Successfully deployed DiscoveryManager");
+            }
+        });
+
+        // Deploy interfaces to the NodeRepositories.
+        vertx.deployVerticle(new Nodes(Context.INSTANCE.getNodeRepository()), ar -> {
+            if (ar.succeeded()) {
+                log.debug("Successfully deployed NodeRepository");
+            }
+        });
+        vertx.deployVerticle(new InstanceNodes(Context.INSTANCE.getInstanceNodeRepository()), ar -> {
+            if (ar.succeeded()) {
+                log.debug("Successfully deployed InstanceNodeRepository");
+            }
+        });
+        vertx.deployVerticle(new SchemaNodes(Context.INSTANCE.getSchemaNodeRepository()), ar -> {
+            if (ar.succeeded()) {
+                log.debug("Successfully deployed SchemaNodeRepository");
+            }
+        });
+        vertx.deployVerticle(new TemplateNodes(Context.INSTANCE.getTemplateNodeRepository()), ar -> {
+            if (ar.succeeded()) {
+                log.debug("Successfully deployed TemplateNodeRepository");
+            }
+        });
+        vertx.deployVerticle(new TypeNodes(Context.INSTANCE.getTypeNodeRepository()), ar -> {
+            if (ar.succeeded()) {
+                log.debug("Successfully deployed TypeNodeRepository");
+            }
+        });
 
         // A tryout state handler that can can check if an IP address is up.
         // Will be done differently, but kept as reference for a bit.
         // (hint: state handlers are scripts executed by a generic handler)
-        vertx.deployVerticle("com.raaftech.structure.actor.worker.ScanWorker",
-                new DeploymentOptions().setWorker(true).setInstances(256));
-
-        // Deploy interfaces to the NodeRepositories.
-        vertx.deployVerticle(new Nodes(Context.INSTANCE.getNodeRepository()));
-        vertx.deployVerticle(new InstanceNodes(Context.INSTANCE.getInstanceNodeRepository()));
-        vertx.deployVerticle(new SchemaNodes(Context.INSTANCE.getSchemaNodeRepository()));
-        vertx.deployVerticle(new TemplateNodes(Context.INSTANCE.getTemplateNodeRepository()));
-        vertx.deployVerticle(new TypeNodes(Context.INSTANCE.getTypeNodeRepository()));
+        //vertx.deployVerticle("com.raaftech.structure.worker.ScanWorker",
+        //        new DeploymentOptions().setWorker(true).setInstances(256));
 
         // Load system plugins (not sure if this will be superseded by new state scripts idea).
         //PluginLoader pluginLoader = new PluginLoader(vertx);

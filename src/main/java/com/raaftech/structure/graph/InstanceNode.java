@@ -23,11 +23,11 @@ import com.github.fge.jsonschema.core.exceptions.ProcessingException;
 import com.github.fge.jsonschema.core.report.ProcessingReport;
 import com.github.fge.jsonschema.main.JsonSchema;
 import com.github.fge.jsonschema.main.JsonSchemaFactory;
-import com.raaftech.structure.actor.node.InstanceNodeActor;
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.graph.repositories.InstanceNodeRepository;
 import com.raaftech.structure.graph.repositories.TypeNodeRepository;
 import com.raaftech.structure.helper.JsonSchemaBuilder;
+import com.raaftech.structure.node.InstanceNodeActor;
 
 /**
  * Give a description of InstanceNode here.

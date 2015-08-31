@@ -1,4 +1,4 @@
-package com.raaftech.structure.actor.node;
+package com.raaftech.structure.node;
 
 import org.neo4j.graphdb.Transaction;
 import org.slf4j.Logger;

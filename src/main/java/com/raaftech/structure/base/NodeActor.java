@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.raaftech.structure.graph.Node;
 import com.raaftech.structure.graph.repositories.NodeRepository;
 
-import io.vertx.core.Future;
 import io.vertx.core.eventbus.MessageConsumer;
 
 public abstract class NodeActor<T extends Node> extends BaseActor {
@@ -29,10 +28,7 @@ public abstract class NodeActor<T extends Node> extends BaseActor {
 
     // The Vert.x Verticle start method.
     @Override
-    public void start(Future<Void> startFuture) {
-        if (getActorName() == null) {
-            startFuture.fail("Couldn't get the primary consumer address.");
-        }
+    public void start() {
         primaryConsumer = vertx.eventBus().consumer(primaryConsumerAddress, this::handleMessage);
         if (getSecondaryAddress() != null) {
             secondaryConsumer = vertx.eventBus().consumer(startOfAddress + getSecondaryAddress(), this::handleMessage);

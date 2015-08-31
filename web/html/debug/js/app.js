@@ -135,7 +135,7 @@
         this.databaseInit = function() {
             if (vertxEventBus.readyState()) {
                 // Send the db-init message over the eventbus
-                vertxEventBusService.send('com.raaftech.structure.schemamanager',
+                vertxEventBusService.send('com.raaftech.structure.manager.schemamanager',
                         {'msgh':'update', 'args':{}}, 20000)
                         .then(function(reply) {
                             // If everything went as expected clear the error flag
@@ -300,7 +300,7 @@
         // Call a plugin
         this.sendMessage = function(address) {
             if (vertxEventBus.readyState()) {
-                vertxEventBusService.send("com.raaftech.structure.pluginmanager",
+                vertxEventBusService.send("com.raaftech.structure.manager.pluginmanager",
                         {"msgh":"callplugin", "args":{'node': $scope.foundInstanceNode.uuid, 'address': address}})
                         .then(function(reply) {
                             if (reply.result.error == null) {
