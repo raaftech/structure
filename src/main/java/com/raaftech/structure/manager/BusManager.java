@@ -15,6 +15,7 @@ public class BusManager extends BaseActor {
                 result.put("list", "yes, you reached me.");
 
                 for (String id :vertx.deploymentIDs()) {
+
                     result.put("actor", id);
 
                 }

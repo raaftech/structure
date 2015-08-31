@@ -101,54 +101,54 @@ public class Application {
         // Deploy our main actors.
         vertx.deployVerticle("com.raaftech.structure.manager.BusManager", ar -> {
             if (ar.succeeded()) {
-                log.debug("Successfully deployed BusManager");
+                log.info("Deployed BusManager with id: {}", ar.result());
             }
         });
         vertx.deployVerticle("com.raaftech.structure.manager.SchemaManager", ar -> {
             if (ar.succeeded()) {
-                log.debug("Successfully deployed SchemaManager");
+                log.info("Deployed SchemaManager with id: {}", ar.result());
             }
         });
         vertx.deployVerticle("com.raaftech.structure.manager.PluginManager", ar -> {
             if (ar.succeeded()) {
-                log.debug("Successfully deployed PluginManager");
+                log.info("Deployed PluginManager with id: {}", ar.result());
             }
         });
         vertx.deployVerticle("com.raaftech.structure.manager.StateManager", ar -> {
             if (ar.succeeded()) {
-                log.debug("Successfully deployed StateManager");
+                log.info("Deployed StateManager with id: {}", ar.result());
             }
         });
         vertx.deployVerticle("com.raaftech.structure.manager.DiscoveryManager", ar -> {
             if (ar.succeeded()) {
-                log.debug("Successfully deployed DiscoveryManager");
+                log.info("Deployed DiscoveryManager with id: {}", ar.result());
             }
         });
 
         // Deploy interfaces to the NodeRepositories.
         vertx.deployVerticle(new Nodes(Context.INSTANCE.getNodeRepository()), ar -> {
             if (ar.succeeded()) {
-                log.debug("Successfully deployed NodeRepository");
+                log.info("Deployed NodeRepository with id: {}", ar.result());
             }
         });
         vertx.deployVerticle(new InstanceNodes(Context.INSTANCE.getInstanceNodeRepository()), ar -> {
             if (ar.succeeded()) {
-                log.debug("Successfully deployed InstanceNodeRepository");
+                log.info("Deployed InstanceNodeRepository with id: {}", ar.result());
             }
         });
         vertx.deployVerticle(new SchemaNodes(Context.INSTANCE.getSchemaNodeRepository()), ar -> {
             if (ar.succeeded()) {
-                log.debug("Successfully deployed SchemaNodeRepository");
+                log.info("Deployed SchemaNodeRepository with id: {}", ar.result());
             }
         });
         vertx.deployVerticle(new TemplateNodes(Context.INSTANCE.getTemplateNodeRepository()), ar -> {
             if (ar.succeeded()) {
-                log.debug("Successfully deployed TemplateNodeRepository");
+                log.info("Deployed TemplateNodeRepository with id: {}", ar.result());
             }
         });
         vertx.deployVerticle(new TypeNodes(Context.INSTANCE.getTypeNodeRepository()), ar -> {
             if (ar.succeeded()) {
-                log.debug("Successfully deployed TypeNodeRepository");
+                log.info("Deployed TypeNodeRepository with id: {}", ar.result());
             }
         });
 
