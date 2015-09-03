@@ -18,11 +18,10 @@ public class BusManager extends GenericActor {
                 ObjectNode result = JsonNodeFactory.instance.objectNode();
 
                 result.put("list", "yes, you reached me.");
-
+                int count = 1;
                 for (String id :vertx.deploymentIDs()) {
-
-                    result.put("actor", id);
-
+                    result.put("actor" + count, id);
+                    count++;
                 }
                 return response(request, result);
             }
