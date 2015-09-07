@@ -65,6 +65,14 @@ public class TemplateNodeActor extends NodeActor<TemplateNode> {
                         templateNodeRepository.delete(node);
                         result.put("data", "Removed TemplateNode " + uuid + " and its children.");
                     }
+                    vertx.undeploy(deploymentID(), res -> {
+                        if (res.succeeded()) {
+                            log.info("Undeployed template verticle with ID {} on removal from database.", deploymentID());
+                        } else {
+                            log.error("Couldn't undeploy template verticle {} on removal from database.", deploymentID());
+                            log.debug(res.cause().getMessage());
+                        }
+                    });
                     tx.success();
                 } catch (Exception e) {
                     tx.failure();
