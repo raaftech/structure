@@ -234,7 +234,7 @@ public class BaseR1 extends SchemaUpdate {
 	                .setIsa("b7b2a2ff-3af7-469b-afbf-e52f1b80be91"),
 	        new TypeNode("M68kProcessor", "A Motorola 68000 series processor.", "33920524-4989-4322-a0ca-1cea614d7fef")
 	                .setIsa("b7b2a2ff-3af7-469b-afbf-e52f1b80be91"),
-	        new TypeNode("MipsProcessor", "A Motorola 68000 series processor.", "cbe81157-97f6-401b-bbaa-cfbc4f479298")
+	        new TypeNode("MipsProcessor", "A processor using the MIPS ISA.", "cbe81157-97f6-401b-bbaa-cfbc4f479298")
 	                .setIsa("b7b2a2ff-3af7-469b-afbf-e52f1b80be91"),
 	        new TypeNode("MosProcessor", "A MOS Technology processor.", "b4f67698-7eca-4ca1-a4cf-b7ef9737785c")
 	                .setIsa("b7b2a2ff-3af7-469b-afbf-e52f1b80be91"),
