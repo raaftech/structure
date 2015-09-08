@@ -2,6 +2,7 @@ package com.raaftech.structure.base;
 
 import java.util.Iterator;
 
+import io.vertx.core.DeploymentOptions;
 import org.neo4j.graphdb.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -104,7 +105,7 @@ public class Application {
                 log.info("Deployed BusManager with id: {}", ar.result());
             }
         });
-        vertx.deployVerticle("com.raaftech.structure.manager.SchemaManager", ar -> {
+        vertx.deployVerticle("com.raaftech.structure.manager.SchemaManager", new DeploymentOptions().setWorker(true), ar -> {
             if (ar.succeeded()) {
                 log.info("Deployed SchemaManager with id: {}", ar.result());
             }
