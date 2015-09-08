@@ -1,5 +1,6 @@
 package com.raaftech.structure.manager;
 
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,13 +17,11 @@ public class BusManager extends GenericActor {
         return new MessageHandler() {
             public JsonNode exec(JsonNode request) {
                 ObjectNode result = JsonNodeFactory.instance.objectNode();
+                ArrayNode data = result.putArray("data");
 
-                result.put("list", "yes, you reached me.");
-                int count = 1;
-                for (String id :vertx.deploymentIDs()) {
-                    result.put("actor" + count, id);
-                    count++;
-                }
+                vertx.deploymentIDs().stream()
+                        .forEach(id -> data.add(id));
+
                 return response(request, result);
             }
 

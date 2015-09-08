@@ -110,21 +110,6 @@ public class Application {
                 log.info("Deployed SchemaManager with id: {}", ar.result());
             }
         });
-        vertx.deployVerticle("com.raaftech.structure.manager.PluginManager", ar -> {
-            if (ar.succeeded()) {
-                log.info("Deployed PluginManager with id: {}", ar.result());
-            }
-        });
-        vertx.deployVerticle("com.raaftech.structure.manager.StateManager", ar -> {
-            if (ar.succeeded()) {
-                log.info("Deployed StateManager with id: {}", ar.result());
-            }
-        });
-        vertx.deployVerticle("com.raaftech.structure.manager.DiscoveryManager", ar -> {
-            if (ar.succeeded()) {
-                log.info("Deployed DiscoveryManager with id: {}", ar.result());
-            }
-        });
 
         // Deploy interfaces to the NodeRepositories.
         vertx.deployVerticle(new Nodes(Context.INSTANCE.getNodeRepository()), ar -> {
@@ -158,17 +143,6 @@ public class Application {
         // (hint: state handlers are scripts executed by a generic handler)
         //vertx.deployVerticle("com.raaftech.structure.worker.ScanWorker",
         //        new DeploymentOptions().setWorker(true).setInstances(256));
-
-        // Load system plugins (not sure if this will be superseded by new state scripts idea).
-        //PluginLoader pluginLoader = new PluginLoader(vertx);
-        //pluginLoader.loadSystemPlugins();
-
-        // Wait a second?
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            log.error(e.getMessage());;
-        }
 
         // Deploy TypeNodeActors.
         log.debug("Deploying TypeNodeActors..");
@@ -205,6 +179,13 @@ public class Application {
             vertx.deployVerticle(templateNodeActor);
         }
         tx.close();
+
+        // Wait a second so debug messages are done
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            log.error(e.getMessage());;
+        }
 
         // A friendly message telling the user we're done.
         log.info("Structure is running at http://localhost:" + port + "/html/");
