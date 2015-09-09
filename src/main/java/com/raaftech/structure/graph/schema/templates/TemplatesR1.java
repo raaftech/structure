@@ -23,17 +23,17 @@ public class TemplatesR1 extends SchemaUpdate {
         TemplateNode server, networkInterface, operatingSystem, ipv4Listener;
 
         server = new TemplateNode("ec11db91-6973-4285-b018-b461fbb432d7")
-                .setUnique(true)
-                .setRequired(true)
-                .setStartOfTemplate(true);
+            .setUnique(true)
+            .setRequired(true)
+            .setStartOfTemplate(true);
 
         networkInterface = new TemplateNode("0d4c880d-d888-435f-b3a3-3d3eb9e70ddf")
-                .setRequired(true)
-                .setIsa("0d4c880d-d888-435f-b3a3-3d3eb9e70ddf");
+            .setRequired(true)
+            .setIsa("0d4c880d-d888-435f-b3a3-3d3eb9e70ddf");
 
         operatingSystem = new TemplateNode("f05e325e-1aee-4892-96e4-8bcd6e97c528")
-                .setUnique(true)
-                .setRequired(true);
+            .setUnique(true)
+            .setRequired(true);
 
         server.addComponent(networkInterface);
         server.addComponent(operatingSystem);
