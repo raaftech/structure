@@ -138,12 +138,6 @@ public class Application {
             }
         });
 
-        // A tryout state handler that can can check if an IP address is up.
-        // Will be done differently, but kept as reference for a bit.
-        // (hint: state handlers are scripts executed by a generic handler)
-        //vertx.deployVerticle("com.raaftech.structure.worker.ScanWorker",
-        //        new DeploymentOptions().setWorker(true).setInstances(256));
-
         // Deploy TypeNodeActors.
         log.debug("Deploying TypeNodeActors..");
         TypeNodeRepository typeNodeRepository = Context.INSTANCE.getTypeNodeRepository();
