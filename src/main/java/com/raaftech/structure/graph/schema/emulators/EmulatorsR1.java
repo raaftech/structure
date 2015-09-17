@@ -25,12 +25,12 @@ public class EmulatorsR1 extends SchemaUpdate {
     protected void initNodes() {
         // raaftech.com.model.emulators-0.0.1
         typeNodeList = Arrays.asList(
-            new TypeNode("Bochs", "The Bochs Emulator.", "cd8f940e-219b-488e-8b75-d9fece8b3b35")
-                    .setIsa("59aeae81-9741-4986-b9c2-931504cfc9e3"),
-            new TypeNode("DosBox", "The DOSBox Emulator.", "7e0135dc-b720-440a-9f4e-76747f7a7fe5")
-                    .setIsa("59aeae81-9741-4986-b9c2-931504cfc9e3"),
-            new TypeNode("Qemu", "The QEMU Emulator.", "c80fddb7-bdbf-44b9-ac54-f7dd7ce4dbd0")
-                    .setIsa("59aeae81-9741-4986-b9c2-931504cfc9e3")
+                new TypeNode("Bochs", "The Bochs Emulator.", "cd8f940e-219b-488e-8b75-d9fece8b3b35")
+                        .setIsa("59aeae81-9741-4986-b9c2-931504cfc9e3"),
+                new TypeNode("DosBox", "The DOSBox Emulator.", "7e0135dc-b720-440a-9f4e-76747f7a7fe5")
+                        .setIsa("59aeae81-9741-4986-b9c2-931504cfc9e3"),
+                new TypeNode("Qemu", "The QEMU Emulator.", "c80fddb7-bdbf-44b9-ac54-f7dd7ce4dbd0")
+                        .setIsa("59aeae81-9741-4986-b9c2-931504cfc9e3")
         );
     }
 }
