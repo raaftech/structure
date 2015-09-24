@@ -3,9 +3,9 @@
 /.classpath
 /.settings/
 /target/
-/web/html/debug/js/libs/
 /structure.db/
 id_rsa*
 /.metadata
 .idea
 structure.iml
+web/js/vendor/

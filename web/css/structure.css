@@ -1,0 +1,355 @@
+/*
+ * Base structure
+ */
+
+/* Move down content because we have a fixed navbar that is 50px tall */
+body {
+  padding-top: 51px;
+}
+
+
+/*
+ * Global add-ons
+ */
+
+.sub-header {
+  padding-bottom: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+/*
+ * Top navigation
+ * Hide default border to remove 1px line.
+ */
+.navbar-fixed-top {
+  border: 0;
+}
+
+.navbar {
+  border-bottom: 1px solid #393b40;
+}
+
+.navbar-logo {
+  position: absolute;
+  left: 0;
+  background: white url("/img/logo_structure.png") no-repeat;
+  background-size: 50px;
+  height: 50px;
+  width: 50px;
+}
+
+.navbar-brand {
+  padding-left: 65px;
+  font-size: 14px;
+}
+
+.navbar-brand,
+.navbar-nav > li > a {
+  text-transform: uppercase;
+}
+
+.navbar-nav > li > a:hover {
+  border-bottom: 1px solid #fff;
+  margin-bottom: -1px;
+}
+
+/*
+ * Sidebar
+ */
+
+/* Hide for mobile, show later */
+.sidebar {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .sidebar {
+    position: fixed;
+    top: 51px;
+    bottom: 0;
+    left: 0;
+    z-index: 1000;
+    display: block;
+    padding: 20px;
+    overflow-x: hidden;
+    overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
+    background-color: #222326;
+  }
+}
+
+/* Sidebar navigation */
+.nav-sidebar {
+  margin-right: -21px; /* 20px padding + 1px border */
+  margin-top: 20px;
+  margin-left: -20px;
+}
+
+.nav-sidebar > li > a {
+  padding-right: 20px;
+  padding-left: 20px;
+}
+
+.nav-sidebar > .active > a {
+  border-left: 3px solid #e27f07;
+  padding-left: 17px;
+}
+
+.nav-sidebar > li > a:hover,
+.nav-sidebar > li > a:focus {
+  border-left: 3px solid #fff;
+  padding-left: 17px;
+}
+
+
+/*
+ * Main content
+ */
+
+.main {
+  padding: 20px;
+}
+
+@media (min-width: 768px) {
+  .main {
+    padding-right: 40px;
+    padding-left: 40px;
+  }
+}
+
+.main .page-header {
+  margin-top: 0;
+}
+
+.main .page-header,
+.placeholders,
+.sub-header {
+  /* display: none; */
+}
+
+
+/*
+ * Form adjustments
+ */
+fieldset,
+.list-group-item {
+	padding: 20px;
+	background-color: #222326;
+	border-radius: 4px;
+	border: 1px solid #393b40;
+}
+
+
+/*
+ * Placeholder dashboard ideas
+ */
+.placeholders {
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.placeholders h4 {
+  margin-bottom: 0;
+}
+
+.placeholder {
+  margin-bottom: 20px;
+}
+
+.placeholder img {
+  display: inline-block;
+  border-radius: 50%;
+}
+
+
+/*
+ * Detailed information
+ */
+.detailed-info {
+  margin-left: 0;
+  margin-right: 0;
+  margin-bottom: 20px;
+}
+
+.basic img {
+  padding-right: 10px;
+}
+
+.basic h1 {
+  font-size: 22px;
+  text-transform: uppercase;
+  color: white;
+  font-weight: normal;
+}
+
+.basic p {
+  margin: 5px 0;
+  padding-right: 35px;
+}
+
+.detail {
+  display: none;
+}
+
+.detail ul {
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+}
+
+.detail h2 {
+  text-transform: uppercase;
+  border-bottom: 1px solid #26272a;
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+  font-size: 14px;
+  font-weight: normal;
+}
+
+.detail li {
+  margin-bottom: 5px;
+}
+
+.detail label {
+  width: 25%;
+  display: inline-block;
+  float: left;
+  font-weight: normal;
+}
+
+.detail label:first-letter {
+  text-transform: uppercase;
+}
+
+.detail p {
+  width: 75%;
+  display: inline-block;
+}
+
+@media (min-width: 992px) {
+  .basic,
+  .detail {
+  	width: 50%;
+  }
+  
+  .basic {
+    padding-right: 4%;
+    float: left;
+  }
+  
+  .detail {
+    display: block;
+    padding-left: 4%;
+    float: right;
+  }
+}
+
+
+/*
+ * List styles
+ */
+.list > thead > tr > th {
+  font-weight: normal;
+  text-transform: uppercase;
+  border-bottom: 1px solid #26272a;
+}
+
+.list > tbody > tr > td {
+  border-top: 1px solid #26272a;
+}
+
+.list > tbody > tr:hover {
+  background-color: #1a1b1d;
+}
+
+.table-responsive {
+  border: 0;
+}
+
+
+/*
+ * Buttons
+ */
+.button-str {
+  background-color: #e27f07;
+  border-radius: 50px;
+  color: white;
+  text-transform: uppercase;
+  margin-right: 5px;
+  padding: 4px 10px;
+}
+
+.button-transparant {
+  background-color: #121314;
+  border-radius: 50px;
+  border: 1px solid #26272a;
+  padding: 4px 8px;
+}
+
+.button-transparant:hover {
+  color: white;
+}
+
+
+/*
+ * Colors
+ */
+body,
+.navbar-inverse {
+  background-color: #121314;
+}
+
+body,
+.navbar-inverse .navbar-nav > li > a,
+.nav-sidebar > li > a {
+  color: #949599;
+}
+
+.nav-sidebar > .active > a {
+  background-color: #2a2b2e;
+}
+
+.nav-sidebar > .active > a:hover,
+.nav-sidebar > .active > a:focus,
+.nav-sidebar > li > a:hover,
+.nav-sidebar > li > a:focus {
+  background-color: #222326;
+  color: #fff;
+}
+
+.nav-sidebar > .active > a,
+.navbar-inverse .navbar-brand,
+.list > tbody > tr > td,
+.detail label {
+  color: #fff;
+}
+
+
+/*
+ * Testing context menu
+ */
+.tools {
+	height: inherit;
+	display: inline;
+	list-style-type: none;
+	position: absolute;
+	right: 0;
+	z-index: 1000;
+	padding-right: 40px;
+}
+
+.tools > li {
+	display: inline;
+	float: left;
+}
+
+.tools > li > a {
+	padding: 10px 15px;
+	background-color: #26272a;
+	text-transform: uppercase;
+	color: #fff;
+}
+
+.tools > li > a:hover {
+	color: #e27f07;
+	text-decoration: none;
+}

@@ -86,17 +86,23 @@ public class Application {
                 .addInboundPermitted(new PermittedOptions().setAddress("com.raaftech.structure.manager.statemanager"))
                 .addInboundPermitted(new PermittedOptions().setAddress("com.raaftech.structure.manager.discoverymanager"));
 
-        // If we're in debug mode allow direct access to everything
-        // on the eventbus and serve the debug page.
-        if (serveDebug) {
-            router.route("/debug/*").handler(StaticHandler.create().setWebRoot("web/html/debug/"));
-            log.debug("Setting InboundPermitted to any address (\".*\")");
-            bridgeOptions.addInboundPermitted(new PermittedOptions().setAddressRegex(".*"));
-        }
-
         // Enable sockJS Server on our HTTP server.
         sockJsHandler.bridge(bridgeOptions);
         router.route("/eventbus/*").handler(sockJsHandler);
+        
+        // If we're in debug mode allow direct access to everything
+        // on the eventbus and serve the debug page.
+        if (serveDebug) {
+            router.route("/debug/*").handler(StaticHandler.create().setWebRoot("web/debug/"));
+            log.debug("Setting InboundPermitted to any address (\".*\")");
+            bridgeOptions.addInboundPermitted(new PermittedOptions().setAddressRegex(".*"));
+        } else {
+        	router.route("/debug/*").handler(StaticHandler.create().setWebRoot("web/"));
+        }
+        
+        // Setup default route.
+        router.route("/*").handler(StaticHandler.create().setWebRoot("web/"));
+
         httpServer.requestHandler(router::accept).listen(port);
 
         // Deploy our main actors.
@@ -182,7 +188,7 @@ public class Application {
         }
 
         // A friendly message telling the user we're done.
-        log.info("Structure is running at http://localhost:" + port + "/html/");
+        log.info("Structure is running at http://localhost:" + port);
         if (serveDebug) {
             log.debug("Debug interface is running at http://localhost:" + port + "/debug/");
         }

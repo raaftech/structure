@@ -1,0 +1,21 @@
+{
+    "name": "Structure",
+    "version": "0.0.0",
+    "authors": [
+        "Maurice Schillemans <maurice@raaftech.com>"
+    ],
+    "license": "GPLv3",
+    "ignore": [
+        "**/.*",
+        "node_modules",
+        "bower_components",
+        "vendors"
+    ],
+    "dependencies": {
+        "angular": "latest",
+        "angular-route": "latest",
+        "angular-schema-form": "latest",
+        "angular-vertxbus": "latest",
+        "bootstrap": "latest"
+    }
+}
