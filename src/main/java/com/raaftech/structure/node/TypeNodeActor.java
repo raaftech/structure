@@ -1,5 +1,6 @@
 package com.raaftech.structure.node;
 
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,6 +61,27 @@ public class TypeNodeActor extends NodeActor<TypeNode> {
             public JsonNode exec(JsonNode request) {
                 ObjectNode result = mapper.createObjectNode();
                 result.set("data", getNode().getSchema().getAsObjectNode());
+                return response(request, result);
+            }
+
+            @Override
+            public JsonNode help(JsonNode request) {
+                return null;
+            }
+        };
+    }
+
+    // Get an array of all the types one level below
+    public MessageHandler getSubtypes() {
+        return new MessageHandler() {
+            @Override
+            public JsonNode exec(JsonNode request) {
+                ObjectNode result = mapper.createObjectNode();
+                ArrayNode data = result.putArray("data");
+
+                getNode().getChildIsaSet().stream()
+                        .forEach(child -> data.add(child.toJson()));
+
                 return response(request, result);
             }
 
