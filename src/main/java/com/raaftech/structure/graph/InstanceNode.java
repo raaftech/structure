@@ -71,9 +71,6 @@ public class InstanceNode extends Node {
     @Fetch
     private TypeNode instanceOf;
 
-    @RelatedTo(type="HAS_COMPONENT", direction=Direction.OUTGOING)
-    private Set<InstanceNode> hasComponents;
-
     private LinkedHashMap<String, String> kv = new LinkedHashMap<>();
 
     @Transient
