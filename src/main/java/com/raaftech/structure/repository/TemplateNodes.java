@@ -2,6 +2,7 @@ package com.raaftech.structure.repository;
 
 import java.util.Set;
 
+import com.raaftech.structure.node.TemplateNodeActor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -97,6 +98,8 @@ public class TemplateNodes extends Repository<TemplateNode> {
                             if (parentTemplateNode != null) {
                                 parentTemplateNode.addComponent(newTemplateNode);
                                 parentTemplateNode.save();
+                                Context.INSTANCE.getVertx().deployVerticle(
+                                        new TemplateNodeActor(newTemplateNode));
                             } else {
                                 throw new RuntimeException("Cannot create TemplateNode, given parent was not found in the database.");
                             }
