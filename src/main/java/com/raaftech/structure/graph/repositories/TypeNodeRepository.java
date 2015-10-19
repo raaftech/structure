@@ -23,4 +23,14 @@ public interface TypeNodeRepository extends GenericRepository<TypeNode> {
 	@Override
     @Query ("START node=node:name(name={name}) MATCH (node:TypeNode) return node LIMIT 1")
     TypeNode findOneByName(@Param("name") String name);
+
+    // Get the hierarchical path of a type
+    @Query ("START deepest=node:uuid(uuid={deepestNode}) " +
+            "MATCH (deepest) " +
+            "OPTIONAL MATCH (deepest)-[:ISA*..]->(m) " +
+            "WITH deepest, m ORDER BY id(m), deepest " +
+            "WITH deepest, collect(m.name) AS names " +
+            "WITH deepest, reduce(path='', n in names| path + n + '.') AS path " +
+            "RETURN path + deepest.name AS path")
+    String getHierarchyPath(@Param("deepestNode") String uuid);
 }

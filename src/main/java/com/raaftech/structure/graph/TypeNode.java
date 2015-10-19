@@ -234,29 +234,6 @@ public class TypeNode extends Node {
     }
 
     public String getHierarchyPath() {
-        LinkedList<String> reversePath = new LinkedList<>();
-        TypeNode pointer = getIsa();
-
-        // Get path in reverse order by traversing parent ISA's
-        reversePath.add(getName());
-        if (pointer != null) {
-            reversePath.add(pointer.getName());
-            while (pointer.getIsa() != null) {
-                pointer = pointer.getIsa();
-                reversePath.add(pointer.getName());
-            }
-        }
-
-        // Change "type" to "typenode" for uniform addressing
-        reversePath.set(reversePath.size()-1, "typenode");
-        // Get a stream from the reverse order of the reversePath
-        Iterable<String> reversePathIterable = () -> reversePath.descendingIterator();
-        Stream<String> reversePathStream = StreamSupport.stream(reversePathIterable.spliterator(), false);
-        // Collect every element of the path, joining on "." and casting to lower case
-        String path = reversePathStream
-                .map(s -> s.toLowerCase())
-                .collect(Collectors.joining("."));
-
-        return path;
+        return typeNodeRepository.getHierarchyPath(getUuid()).toLowerCase();
     }
 }
