@@ -1,10 +1,16 @@
+/**
+ * Include styles
+ */
+@import url('scheme/dark.css');
+
+
 /*
  * Base structure
  */
 
 /* Move down content because we have a fixed navbar that is 50px tall */
 body {
-  padding-top: 51px;
+    padding-top: 51px;
 }
 
 
@@ -13,8 +19,8 @@ body {
  */
 
 .sub-header {
-  padding-bottom: 10px;
-  border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+    border-bottom: 1px solid;
 }
 
 /*
@@ -22,35 +28,35 @@ body {
  * Hide default border to remove 1px line.
  */
 .navbar-fixed-top {
-  border: 0;
+    border: 0;
 }
 
 .navbar {
-  border-bottom: 1px solid #393b40;
+    border-bottom: 1px solid;
 }
 
 .navbar-logo {
-  position: absolute;
-  left: 0;
-  background: white url("/img/logo_structure.png") no-repeat;
-  background-size: 50px;
-  height: 50px;
-  width: 50px;
+    position: absolute;
+    left: 0;
+    background: url("/img/logo_structure.png") no-repeat;
+    background-size: 50px;
+    height: 50px;
+    width: 50px;
 }
 
 .navbar-brand {
-  padding-left: 65px;
-  font-size: 14px;
+    padding-left: 65px;
+    font-size: 14px;
 }
 
 .navbar-brand,
 .navbar-nav > li > a {
-  text-transform: uppercase;
+    text-transform: uppercase;
 }
 
 .navbar-nav > li > a:hover {
-  border-bottom: 1px solid #fff;
-  margin-bottom: -1px;
+    border-bottom: 1px solid;
+    margin-bottom: -1px;
 }
 
 /*
@@ -59,45 +65,44 @@ body {
 
 /* Hide for mobile, show later */
 .sidebar {
-  display: none;
+    display: none;
 }
 
 @media (min-width: 768px) {
-  .sidebar {
-    position: fixed;
-    top: 51px;
-    bottom: 0;
-    left: 0;
-    z-index: 1000;
-    display: block;
-    padding: 20px;
-    overflow-x: hidden;
-    overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
-    background-color: #222326;
-  }
+    .sidebar {
+        position: fixed;
+        top: 51px;
+        bottom: 0;
+        left: 0;
+        z-index: 1000;
+        display: block;
+        padding: 20px;
+        overflow-x: hidden;
+        overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
+    }
 }
 
 /* Sidebar navigation */
 .nav-sidebar {
-  margin-right: -21px; /* 20px padding + 1px border */
-  margin-top: 20px;
-  margin-left: -20px;
+    margin-right: -21px; /* 20px padding + 1px border */
+    margin-top: 20px;
+    margin-left: -20px;
 }
 
 .nav-sidebar > li > a {
-  padding-right: 20px;
-  padding-left: 20px;
+    padding-right: 20px;
+    padding-left: 20px;
 }
 
 .nav-sidebar > .active > a {
-  border-left: 3px solid #e27f07;
-  padding-left: 17px;
+    border-left: 3px solid;
+    padding-left: 17px;
 }
 
 .nav-sidebar > li > a:hover,
 .nav-sidebar > li > a:focus {
-  border-left: 3px solid #fff;
-  padding-left: 17px;
+    border-left: 3px solid;
+    padding-left: 17px;
 }
 
 
@@ -106,24 +111,18 @@ body {
  */
 
 .main {
-  padding: 20px;
+    padding: 20px;
 }
 
 @media (min-width: 768px) {
-  .main {
-    padding-right: 40px;
-    padding-left: 40px;
-  }
+    .main {
+        padding-right: 40px;
+        padding-left: 40px;
+    }
 }
 
 .main .page-header {
-  margin-top: 0;
-}
-
-.main .page-header,
-.placeholders,
-.sub-header {
-  /* display: none; */
+    margin-top: 0;
 }
 
 
@@ -132,10 +131,15 @@ body {
  */
 fieldset,
 .list-group-item {
-	padding: 20px;
-	background-color: #222326;
-	border-radius: 4px;
-	border: 1px solid #393b40;
+    padding: 20px;
+    border-radius: 4px;
+    border: 1px solid;
+}
+
+.alert,
+.btn,
+.form-control {
+    border-radius: 1px;
 }
 
 
@@ -143,21 +147,21 @@ fieldset,
  * Placeholder dashboard ideas
  */
 .placeholders {
-  margin-bottom: 30px;
-  text-align: center;
+    margin-bottom: 30px;
+    text-align: center;
 }
 
 .placeholders h4 {
-  margin-bottom: 0;
+    margin-bottom: 0;
 }
 
 .placeholder {
-  margin-bottom: 20px;
+    margin-bottom: 20px;
 }
 
 .placeholder img {
-  display: inline-block;
-  border-radius: 50%;
+    display: inline-block;
+    border-radius: 50%;
 }
 
 
@@ -165,104 +169,118 @@ fieldset,
  * Detailed information
  */
 .detailed-info {
-  margin-left: 0;
-  margin-right: 0;
-  margin-bottom: 20px;
+    margin-left: 0;
+    margin-right: 0;
+    margin-bottom: 20px;
 }
 
 .basic img {
-  padding-right: 10px;
+    padding-right: 10px;
 }
 
 .basic h1 {
-  font-size: 22px;
-  text-transform: uppercase;
-  color: white;
-  font-weight: normal;
+    font-size: 22px;
+    text-transform: uppercase;
+    font-weight: normal;
 }
 
 .basic p {
-  margin: 5px 0;
-  padding-right: 35px;
+    margin: 5px 0;
+    padding-right: 35px;
 }
 
 .detail {
-  display: none;
+    display: none;
 }
 
 .detail ul {
-  margin: 0;
-  padding: 0;
-  list-style-type: none;
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
 }
 
 .detail h2 {
-  text-transform: uppercase;
-  border-bottom: 1px solid #26272a;
-  padding-bottom: 10px;
-  margin-bottom: 10px;
-  font-size: 14px;
-  font-weight: normal;
+    text-transform: uppercase;
+    border-bottom: 1px solid;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+    font-size: 14px;
+    font-weight: normal;
 }
 
 .detail li {
-  margin-bottom: 5px;
+    margin-bottom: 5px;
 }
 
 .detail label {
-  width: 25%;
-  display: inline-block;
-  float: left;
-  font-weight: normal;
+    width: 25%;
+    display: inline-block;
+    float: left;
+    font-weight: normal;
 }
 
 .detail label:first-letter {
-  text-transform: uppercase;
+    text-transform: uppercase;
 }
 
 .detail p {
-  width: 75%;
-  display: inline-block;
+    width: 75%;
+    display: inline-block;
 }
 
 @media (min-width: 992px) {
-  .basic,
-  .detail {
-  	width: 50%;
-  }
-  
-  .basic {
-    padding-right: 4%;
-    float: left;
-  }
-  
-  .detail {
-    display: block;
-    padding-left: 4%;
-    float: right;
-  }
+    .basic,
+    .detail {
+        width: 50%;
+    }
+
+    .basic {
+        padding-right: 4%;
+        float: left;
+    }
+
+    .detail {
+        display: block;
+        padding-left: 4%;
+        float: right;
+    }
 }
 
 
 /*
  * List styles
  */
+.list:hover {
+    cursor: pointer;
+}
+
 .list > thead > tr > th {
-  font-weight: normal;
-  text-transform: uppercase;
-  border-bottom: 1px solid #26272a;
+    font-weight: normal;
+    text-transform: uppercase;
+    border-bottom: 1px solid;
 }
 
 .list > tbody > tr > td {
-  border-top: 1px solid #26272a;
-}
-
-.list > tbody > tr:hover {
-  background-color: #1a1b1d;
+    border-bottom: 1px solid;
 }
 
 .table-responsive {
-  border: 0;
+    border: 0;
+    overflow: visible;
+}
+
+span.open:before {
+    content: '-';
+    position: relative;
+    margin-left: -17px;
+    padding-right: 11px;
+}
+
+span.closed:before {
+    content: '+';
+    position: relative;
+    margin-left: -17px;
+    padding-right: 8px;
 }
 
 
@@ -270,57 +288,16 @@ fieldset,
  * Buttons
  */
 .button-str {
-  background-color: #e27f07;
-  border-radius: 50px;
-  color: white;
-  text-transform: uppercase;
-  margin-right: 5px;
-  padding: 4px 10px;
+    border-radius: 50px;
+    text-transform: uppercase;
+    margin-right: 5px;
+    padding: 4px 10px;
 }
 
 .button-transparant {
-  background-color: #121314;
-  border-radius: 50px;
-  border: 1px solid #26272a;
-  padding: 4px 8px;
-}
-
-.button-transparant:hover {
-  color: white;
-}
-
-
-/*
- * Colors
- */
-body,
-.navbar-inverse {
-  background-color: #121314;
-}
-
-body,
-.navbar-inverse .navbar-nav > li > a,
-.nav-sidebar > li > a {
-  color: #949599;
-}
-
-.nav-sidebar > .active > a {
-  background-color: #2a2b2e;
-}
-
-.nav-sidebar > .active > a:hover,
-.nav-sidebar > .active > a:focus,
-.nav-sidebar > li > a:hover,
-.nav-sidebar > li > a:focus {
-  background-color: #222326;
-  color: #fff;
-}
-
-.nav-sidebar > .active > a,
-.navbar-inverse .navbar-brand,
-.list > tbody > tr > td,
-.detail label {
-  color: #fff;
+    border-radius: 50px;
+    border: 1px solid;
+    padding: 4px 8px;
 }
 
 
@@ -328,28 +305,49 @@ body,
  * Testing context menu
  */
 .tools {
-	height: inherit;
-	display: inline;
-	list-style-type: none;
-	position: absolute;
-	right: 0;
-	z-index: 1000;
-	padding-right: 40px;
+    height: inherit;
+    display: inline;
+    list-style-type: none;
+    position: absolute;
+    margin-top: -20px;
+    right: 0;
+    z-index: 1000;
+    padding-right: 40px;
 }
 
 .tools > li {
-	display: inline;
-	float: left;
+    display: inline;
+    float: left;
 }
 
 .tools > li > a {
-	padding: 10px 15px;
-	background-color: #26272a;
-	text-transform: uppercase;
-	color: #fff;
+    padding: 10px 15px;
+    text-transform: uppercase;
 }
 
 .tools > li > a:hover {
-	color: #e27f07;
-	text-decoration: none;
+    text-decoration: none;
+}
+
+
+/**
+ * Modal window modifications
+ */
+.modal-backdrop.in {
+    opacity: 0.6;
+}
+
+.modal-content {
+    border-radius: 0;
+    -webkit-box-shadow: 0 10px 46px 6px rgba(0,0,0,0.6);
+       -moz-box-shadow: 0 10px 46px 6px rgba(0,0,0,0.6);
+            box-shadow: 0 10px 46px 6px rgba(0,0,0,0.6);
+}
+
+.modal-header {
+    border-bottom: 1px solid;
+}
+
+.modal-footer {
+    border-top: 1px solid;
 }

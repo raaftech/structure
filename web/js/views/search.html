@@ -1,0 +1,26 @@
+<div ng-controller="searchResultCtrl">
+    <h1>Search results</h1>
+    <p>Show results for: <strong>{{data.query}}</strong></p>
+    <div class="alert alert-danger" ng-show="data.error">{{data.error}}</div>
+    <div class="table-responsive" ng-show="data.results.length > 0">
+        <table class="table list">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>UUID</th>
+                    <th width="35"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="result in data.results | orderBy: 'name'" ng-mouseenter="menuButton = true" ng-mouseleave="menuButton = false">
+                    <td ng-click="getType(result.uuid)">{{result.name}}</td>
+                    <td ng-click="getType(result.uuid)">{{result.desc}}</td>
+                    <td ng-click="getType(result.uuid)">{{result.uuid}}</td>
+                    <td><list-item-hover-menu ng-show="menuButton" uuid="{{result.uuid}}" /></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</div>

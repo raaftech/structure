@@ -1,24 +1,24 @@
 <h1 class="page-header">Templates</h1>
 
-<div class="appContainer" ng-controller="ContainerController as containerCtrl">
+<div class="appContainer" ng-controller="containerCtrl">
 
     <!-- navigation -->
     <ul class="nav nav-pills">
-        <li role="presentation" ng-class="{ active:containerCtrl.isSelected(1) }">
-            <a href="#templates" ng-click="containerCtrl.changeTab(1)">Create/edit TemplateNode</a>
+        <li role="presentation" ng-class="{ active:isSelected(1) }">
+            <a href="#templates" ng-click="changeTab(1)">Create/edit TemplateNode</a>
         </li>
-        <li role="presentation" ng-class="{ active:containerCtrl.isSelected(2) }">
-            <a href="#templates" ng-click="containerCtrl.changeTab(2)">View Templates</a>
+        <li role="presentation" ng-class="{ active:isSelected(2) }">
+            <a href="#templates" ng-click="changeTab(2)">View Templates</a>
         </li>
-        <li role="presentation" ng-class="{ active:containerCtrl.isSelected(3) }">
-            <a href="#templates" ng-click="containerCtrl.changeTab(3)">View Instances</a>
+        <li role="presentation" ng-class="{ active:isSelected(3) }">
+            <a href="#templates" ng-click="changeTab(3)">View Instances</a>
         </li>
     </ul>
 
-    <div id="templateForm" ng-controller="TemplateController as templateCtrl" ng-show="containerCtrl.isSelected(1)">
+    <div id="templateForm" ng-controller="templateCtrl" ng-show="isSelected(1)">
 
         <!-- Begin new template -->
-        <form name="newTemplateForm" ng-submit="newTemplateForm.$valid && templateCtrl.createNewTemplate()" ng-click="templateCtrl.checkDatabaseInit()" novalidate>
+        <form name="newTemplateForm" ng-submit="newTemplateForm.$valid && createNewTemplate()" ng-click="checkDatabaseInit()" novalidate>
             <h4>Create a new Template</h4>
             
             <!-- show when error -->
@@ -30,108 +30,108 @@
                     </div>
                 </p>
                 <p>
-                    <input ng-click="initializing = true;templateCtrl.databaseInit()" ng-disabled="initializing" class="btn btn-danger" type="submit" value="Initialize"> 
+                    <input ng-click="initializing = true; databaseInit()" ng-disabled="initializing" class="btn btn-danger" type="submit" value="Initialize">
                     <input ng-click="ui.databaseInitErrorClear()" ng-disabled="initializing" class="btn btn-default" type="submit" value="Do nothing">
                 </p>
             </div>
-            
+
             <fieldset>
-	            <div class="form-group">
-	                <label>UUID Parent</label>
-	                <input ng-model="newTemplate.parent" class="form-control" type="text" placeholder="The UUID of the parent."> 
-	                <span class="input-group-btn">
-	                    <div class="dropdown">
-	                        <button ng-click="templateCtrl.getTemplates()" class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">Choose a parent <span class="caret"></span></button>
-	                        <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
-	                            <li ng-repeat="item in ui.parentMenu" ng-click="newTemplate.parent=item.uuid" role="presentation">
-	                                <a role="menuitem" tabindex="-1" href="#templates">{{ item.name }}</a>
-	                            </li>
-	                        </ul>
-	                    </div>
-	                </span>
-	            </div>
-	
-	            <div class="form-group">
-	                <label>UUID TypeNode</label>
-	                <div class="input-group">
-	                    <input ng-model="newTemplate.isa" class="form-control" type="text" placeholder="The UUID of the TypeNode." required> 
-	                    <span class="input-group-btn">
-	                        <button ng-click="templateCtrl.findTypeNode()" type="button" class="btn btn-default">
-	                            <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
-	                        </button>
-	                    </span>
-	                </div>
-	            </div>
-	
-	            <div class="form-group">
-	                <label>Name</label>
-	                <input ng-model="newTemplate.name" class="form-control" type="text" placeholder="The name of the template." required>
-	            </div>
-	            <div class="form-group">
-	                <label>Description</label>
-	                <textarea ng-model="newTemplate.desc" class="form-control" placeholder="A description of the template." required></textarea>
-	            </div>
-	
-	
-	            <div class="checkbox">
-	                <label><input ng-model="newTemplate.start" ng-click="templateCtrl.clickStart()" type="checkbox"> Start</label>
-	            </div>
-	            <div class="checkbox">
-	                <label><input ng-model="newTemplate.required" type="checkbox"> Required</label>
-	            </div>
-	            <div class="checkbox">
-	                <label><input ng-model="newTemplate.unique" type="checkbox"> Unique</label>
-	            </div>
-	
-	            <div ng-show="ui.submitSucceeded.flag" class="alert alert-success" role="alert">
-	                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-	                    <span aria-hidden="true">&times;</span>
-	                </button>
-	                {{ ui.submitSucceeded.message }}
-	            </div>
-	
-	            <div ng-show="ui.submitError.flag" class="alert alert-danger" role="alert">
-	                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-	                    <span aria-hidden="true">&times;</span>
-	                </button>
-	                {{ ui.submitError.message }}
-	            </div>
-	
-	            <div class="form-group">
-	                <input class="btn btn-primary pull-right" type="submit" value="Create Template">
-	            </div>
+                <div class="form-group">
+                    <label>UUID Parent</label>
+                    <input ng-model="newTemplate.parent" class="form-control" type="text" placeholder="The UUID of the parent.">
+                    <span class="input-group-btn">
+                        <div class="dropdown">
+                            <button ng-click="getTemplates()" class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">Choose a parent <span class="caret"></span></button>
+                            <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+                                <li ng-repeat="item in ui.parentMenu" ng-click="newTemplate.parent=item.uuid" role="presentation">
+                                    <a role="menuitem" tabindex="-1" href="#templates">{{ item.name }}</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </span>
+                </div>
+
+                <div class="form-group">
+                    <label>UUID TypeNode</label>
+                    <div class="input-group">
+                        <input ng-model="newTemplate.isa" class="form-control" type="text" placeholder="The UUID of the TypeNode." required>
+                        <span class="input-group-btn">
+                            <button ng-click="findTypeNode()" type="button" class="btn btn-default">
+                                <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                            </button>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Name</label>
+                    <input ng-model="newTemplate.name" class="form-control" type="text" placeholder="The name of the template." required>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea ng-model="newTemplate.desc" class="form-control" placeholder="A description of the template." required></textarea>
+                </div>
+
+
+                <div class="checkbox">
+                    <label><input ng-model="newTemplate.start" ng-click="clickStart()" type="checkbox"> Start</label>
+                </div>
+                <div class="checkbox">
+                    <label><input ng-model="newTemplate.required" type="checkbox"> Required</label>
+                </div>
+                <div class="checkbox">
+                    <label><input ng-model="newTemplate.unique" type="checkbox"> Unique</label>
+                </div>
+
+                <div ng-show="ui.submitSucceeded.flag" class="alert alert-success" role="alert">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    {{ ui.submitSucceeded.message }}
+                </div>
+
+                <div ng-show="ui.submitError.flag" class="alert alert-danger" role="alert">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    {{ ui.submitError.message }}
+                </div>
+
+                <div class="form-group">
+                    <input class="btn btn-primary pull-right" type="submit" value="Create Template">
+                </div>
             </fieldset>
         </form>
         <!-- End new template -->
-        
-        <form name="deleteTemplateForm" ng-submit="templateCtrl.deleteTemplate()">
+
+        <form name="deleteTemplateForm" ng-submit="deleteTemplate()">
             <h4>Remove (part of) a Template</h4>
             <fieldset>
-	            <div class="form-group">
-	                <label>UUID</label>
-	                <input ng-model="deleteTemplateUuid" class="form-control" type="text" placeholder="The UUID to delete">
-	            </div>
-	            <div class="form-group">
-	                <input class="btn btn-danger pull-right" type="submit" value="Remove node">
-	            </div>
+                <div class="form-group">
+                    <label>UUID</label>
+                    <input ng-model="deleteTemplateUuid" class="form-control" type="text" placeholder="The UUID to delete">
+                </div>
+                <div class="form-group">
+                    <input class="btn btn-danger pull-right" type="submit" value="Remove node">
+                </div>
             </fieldset>
         </form>
     </div>
 
-    <div class="appContainer" id="templateView" ng-show="containerCtrl.isSelected(2)">
-        <div ng-controller="InstanceController as instanceCtrl">
+    <div class="appContainer" id="templateView" ng-show="isSelected(2)">
+        <div ng-controller="instanceCtrl">
 
             <fieldset>
                 <div class="form-group">
                     <label>Choose a parent template</label>
-		            <div class="dropdown">
-		                <button ng-click="instanceCtrl.getTemplates()" class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">Choose a parent <span class="caret"></span></button>
-		                <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
-		                    <li ng-repeat="item in ui.templates" ng-click="instanceCtrl.createForm($index)" role="presentation">
-		                        <a role="menuitem" tabindex="-1" href="#templates">{{ item.name }}</a>
-		                    </li>
-		                </ul>
-		            </div>
+                    <div class="dropdown">
+                        <button ng-click="getTemplates()" class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">Choose a parent <span class="caret"></span></button>
+                        <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+                            <li ng-repeat="item in ui.templates" ng-click="createForm($index)" role="presentation">
+                                <a role="menuitem" tabindex="-1" href="#templates">{{ item.name }}</a>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </fieldset>
 
@@ -157,40 +157,46 @@
                 <p>&nbsp;</p>
                 <fieldset>
                     <div class="form-group">
-                        <button ng-click="outerForm.$valid && instanceCtrl.instantiateTemplate()" type="submit" class="btn btn-default">Instantiate template</button>
+                        <button ng-click="outerForm.$valid && instantiateTemplate()" type="submit" class="btn btn-default">Instantiate template</button>
                     </div>
                 </fieldset>
             </form>
+
         </div>
     </div>
 
-    <div class="appContainer" id="instanceView" ng-show="containerCtrl.isSelected(3)">
-        <div ng-controller="HandleController as handleCtrl">
+    <div class="appContainer" id="instanceView" ng-show="isSelected(3)">
+        <div ng-controller="handleCtrl">
+
             <h4>Start a handler on an InstanceNode</h4>
             <form>
                 <fieldset>
-                <div class="form-group">
-                    <label>UUID</label>
-                    <div class="input-group">
-                        <input ng-model="findInstanceNodeUuid" class="form-control" type="text" placeholder="The UUID of the InstanceNode to be retrieved." required> 
+                    <div class="form-group">
+                        <label>UUID</label>
+                        <div class="input-group">
+                            <input ng-model="findInstanceNodeUuid" class="form-control" type="text" placeholder="The UUID of the InstanceNode to be retrieved." required>
                         <span class="input-group-btn">
-                            <button ng-click="handleCtrl.findInstanceNode()" type="button" class="btn btn-default">
+                            <button ng-click="findInstanceNode()" type="button" class="btn btn-default">
                                 <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
                             </button>
                         </span>
+                        </div>
                     </div>
-                </div>
                 </fieldset>
             </form>
-            
+
             <div ng-repeat="(capability, handlers) in foundInstanceNode.capabilities">
                 <h5>{{ capability }}</h5>
                 <div ng-repeat="(name, address) in handlers">
-                    <button ng-click="handleCtrl.sendMessage(address)" type="button" class="btn btn-default btn-xs">{{ name }}</button>
+                    <button ng-click="sendMessage(address)" type="button" class="btn btn-default btn-xs">{{ name }}</button>
                 </div>
             </div>
-            <p><br />Latest task: <a href="#templates" ng-click="handleCtrl.getResults(taskId)">{{ taskId }}</a></p>
-            <div ng-repeat="result in lastResult.data">{{ result.kv.dateCreated | epochtohuman }}<pre ng-bind-html="result.kv.data + result.kv.status"></pre></div>
+            <p><br />Latest task: <a href="#templates" ng-click="getResults(taskId)">{{ taskId }}</a></p>
+            <div ng-repeat="result in lastResult.data">
+                {{ result.kv.dateCreated | epochtohuman }}
+                <pre ng-bind-html="result.kv.data + result.kv.status"></pre>
+            </div>
+
         </div>
     </div>
 </div>

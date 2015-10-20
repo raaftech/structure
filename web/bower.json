@@ -13,6 +13,7 @@
     ],
     "dependencies": {
         "angular": "latest",
+        "angular-bootstrap": "latest",
         "angular-route": "latest",
         "angular-schema-form": "latest",
         "angular-vertxbus": "latest",

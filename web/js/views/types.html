@@ -1,0 +1,46 @@
+<div ng-controller="typeCtrl" ng-init="getType('a79ce509-a021-4177-ae61-73abd01fb479')">
+    <div ng-show="type.name" class="row detailed-info">
+        <div class="basic">
+            <div class="body">
+                <img src="/img/logo_dummy.png" align="left" border="0" />
+                <h1>{{type.name}}</h1>
+                <p>{{type.desc}}</p>
+                <p>
+                    <button type="button" class="btn button-str">Edit</button>
+                    <button type="button" class="btn button-transparant">...</button>
+                </p>
+            </div>
+        </div>
+        <div class="detail">
+            <ul>
+                <h2>Details</h2>
+                <li><label>Name</label>{{type.name}}</li>
+                <li><label>Description</label>{{type.desc}}</li>
+                <li><label>UUID</label>{{type.uuid}}</li>
+                <li><label>ISA</label>{{isa.name}}</li>
+            </ul>
+        </div>
+    </div>
+    <div ng-repeat="type in types | orderBy: 'name'">
+        <div class="table-responsive">
+            <table class="table list">
+                <thead>
+                    <tr ng-click="getSubtypes(type)">
+                        <th><span ng-class="{'open': (subtypes[type.uuid] && type.children != '[]'), 'closed': (!subtypes[type.uuid] && type.children != '[]')}"></span>{{type.name}}</th>
+                        <th>{{subtypes[type.uuid].length ? 'Description': '&nbsp;'}}</th>
+                        <th>{{subtypes[type.uuid].length ? 'UUID': '&nbsp;'}}</th>
+                        <th width="35"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="subtype in subtypes[type.uuid] | orderBy: 'name'" ng-mouseenter="menuButton = true" ng-mouseleave="menuButton = false">
+                        <td ng-click="getType(subtype.uuid)">{{subtype.name}}</td>
+                        <td ng-click="getType(subtype.uuid)">{{subtype.desc}}</td>
+                        <td ng-click="getType(subtype.uuid)">{{subtype.uuid}}</td>
+                        <td><list-item-hover-menu ng-show="menuButton" uuid="{{subtype.uuid}}" /></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

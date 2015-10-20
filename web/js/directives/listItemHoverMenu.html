@@ -1,0 +1,8 @@
+<div ng-click="test = true"><span class="glyphicon glyphicon-menu-hamburger" aria-hidden="true"></span></div>
+<ul class="tools" ng-show="test" ng-mouseleave="test = false">
+    <li><a href="#{{uuid}}">Start</a></li>
+    <li><a href="#{{uuid}}">Stop</a></li>
+    <li><a href="#{{uuid}}">Edit</a></li>
+    <li><a href="#{{uuid}}">Remove</a></li>
+    <li><a ng-click="open(uuid)">Create instance</a></li>
+</ul>
