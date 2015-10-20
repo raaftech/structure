@@ -1,0 +1,813 @@
+@font-face {
+    font-family: 'Structure Glyph';
+    src: url('structureglyph.eot');
+    src: url('structureglyph.eot?#iefix') format('embedded-opentype'),
+         url('structureglyph.woff') format('woff'),
+         url('structureglyph.ttf') format('truetype'),
+         url('structureglyph.svg') format('svg');
+}
+
+.strglyph {
+    position: relative;
+    top: 1px;
+    display: inline-block;
+    font-family: 'Structure Glyph';
+    font-style: normal;
+    font-weight: normal;
+    line-height: 1;
+
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.sg-1 {
+    font-size: 1em;
+}
+
+.sg-2 {
+    font-size: 2em;
+}
+
+.sg-3 {
+    font-size: 4em;
+}
+
+.sg-4 {
+    font-size: 7em;
+}
+
+.sg-5 {
+    font-size: 12em;
+}
+
+.sg-6 {
+    font-size: 20em;
+}
+
+.strglyph-accessable:before {
+    content: "\21";
+}
+
+.strglyph-actor:before {
+    content: "\22";
+}
+
+.strglyph-aix:before {
+    content: "\23";
+}
+
+.strglyph-aixlpp:before {
+    content: "\24";
+}
+
+.strglyph-apachecloudstack:before {
+    content: "25";
+}
+
+.strglyph-apt:before {
+    content: "\26";
+}
+
+.strglyph-archlinux:before {
+    content: "\27";
+}
+
+.strglyph-armprocessor:before {
+    content: "\28";
+}
+
+.strglyph-assembleddevice:before {
+    content: "\29";
+}
+
+.strglyph-aws:before {
+    content: "\2A";
+}
+
+.strglyph-basemodel:before {
+    content: "\2B";
+}
+
+.strglyph-bash:before {
+    content: "\2C";
+}
+
+.strglyph-batch:before {
+    content: "\2D";
+}
+
+.strglyph-blu-ray:before {
+    content: "\2E";
+}
+
+.strglyph-bluetooth:before {
+    content: "\2F";
+}
+
+.strglyph-bochs:before {
+    content: "\30";
+}
+
+.strglyph-bsd:before {
+    content: "\31";
+}
+
+.strglyph-bsdpkg:before {
+    content: "\32";
+}
+
+.strglyph-bsdpkgng:before {
+    content: "\33";
+}
+
+.strglyph-bsdrcinit:before {
+    content: "\34";
+}
+
+.strglyph-building:before {
+    content: "\35";
+}
+
+.strglyph-capability:before {
+    content: "\36";
+}
+
+.strglyph-cddrive:before {
+    content: "\37";
+}
+
+.strglyph-centos:before {
+    content: "\38";
+}
+
+.strglyph-checkable:before {
+    content: "\39";
+}
+
+.strglyph-citrixcloudcom:before {
+    content: "\3A";
+}
+
+.strglyph-cloud:before {
+    content: "\3B";
+}
+
+.strglyph-cloudsystem:before {
+    content: "\3C";
+}
+
+.strglyph-company:before {
+    content: "\3D";
+}
+
+.strglyph-component:before {
+    content: "\3E";
+}
+
+.strglyph-componental:before {
+    content: "\3F";
+}
+
+.strglyph-computer:before {
+    content: "\40";
+}
+
+.strglyph-configurable:before {
+    content: "\41";
+}
+
+.strglyph-configuration:before {
+    content: "\42";
+}
+
+.strglyph-consoledevice:before {
+    content: "\43";
+}
+
+.strglyph-csh:before {
+    content: "\44";
+}
+
+.strglyph-database:before {
+    content: "\45";
+}
+
+.strglyph-debian:before {
+    content: "\46";
+}
+
+.strglyph-department:before {
+    content: "\47";
+}
+
+.strglyph-device:before {
+    content: "\48";
+}
+
+.strglyph-discoverable:before {
+    content: "\49";
+}
+
+.strglyph-dnsname:before {
+    content: "\4A";
+}
+
+.strglyph-dosbox:before {
+    content: "\4B";
+}
+
+.strglyph-doslike:before {
+    content: "\4C";
+}
+
+.strglyph-dosshell:before {
+    content: "\4D";
+}
+
+.strglyph-dragonflybsd:before {
+    content: "\4E";
+}
+
+.strglyph-dvddrive:before {
+    content: "\4F";
+}
+
+.strglyph-dyson:before {
+    content: "\50";
+}
+
+.strglyph-emulator:before {
+    content: "\51";
+}
+
+.strglyph-ethernetdevice:before {
+    content: "\52";
+}
+
+.strglyph-eucalyptus:before {
+    content: "\53";
+}
+
+.strglyph-executable:before {
+    content: "\54";
+}
+
+.strglyph-fedora:before {
+    content: "\55";
+}
+
+.strglyph-floor:before {
+    content: "\56";
+}
+
+.strglyph-floppydrive:before {
+    content: "\57";
+}
+
+.strglyph-freebsd:before {
+    content: "\58";
+}
+
+.strglyph-freedos:before {
+    content: "\59";
+}
+
+.strglyph-genericserial:before {
+    content: "\5A";
+}
+
+.strglyph-genericvga:before {
+    content: "\5B";
+}
+
+.strglyph-globe:before {
+    content: "\5C";
+}
+
+.strglyph-googlecloud:before {
+    content: "\5D";
+}
+
+.strglyph-graphicsdevice:before {
+    content: "\5E";
+}
+
+.strglyph-grouping:before {
+    content: "\5F";
+}
+
+.strglyph-handler:before {
+    content: "\60";
+}
+
+.strglyph-herokucloud:before {
+    content: "\61";
+}
+
+.strglyph-hpcloud:before {
+    content: "\62";
+}
+
+.strglyph-hpux:before {
+    content: "\63";
+}
+
+.strglyph-hpvm:before {
+    content: "\64";
+}
+
+.strglyph-http:before {
+    content: "\65";
+}
+
+.strglyph-httpserver:before {
+    content: "\66";
+}
+
+.strglyph-hypervisor:before {
+    content: "\67";
+}
+
+.strglyph-ibmbluemix:before {
+    content: "\68";
+}
+
+.strglyph-identifyable:before {
+    content: "\69";
+}
+
+.strglyph-illumos:before {
+    content: "\6A";
+}
+
+.strglyph-installable:before {
+    content: "\6B";
+}
+
+.strglyph-interpreter:before {
+    content: "\6C";
+}
+
+.strglyph-ipaddress:before {
+    content: "\6D";
+}
+
+.strglyph-iplistener:before {
+    content: "\6E";
+}
+
+.strglyph-ipv4address:before {
+    content: "\6F";
+}
+
+.strglyph-ipv4listener:before {
+    content: "\70";
+}
+
+.strglyph-ipv6address:before {
+    content: "\71";
+}
+
+.strglyph-ipv6listener:before {
+    content: "\72";
+}
+
+.strglyph-irdadevice:before {
+    content: "\73";
+}
+
+.strglyph-itaniumprocessor:before {
+    content: "\74";
+}
+
+.strglyph-joyentcloud:before {
+    content: "\75";
+}
+
+.strglyph-ksh:before {
+    content: "\76";
+}
+
+.strglyph-launchd:before {
+    content: "\77";
+}
+
+.strglyph-linux:before {
+    content: "\78";
+}
+
+.strglyph-locational:before {
+    content: "\79";
+}
+
+.strglyph-m86kprocessor:before {
+    content: "\7A";
+}
+
+.strglyph-macosx:before {
+    content: "\7B";
+}
+
+.strglyph-mageia:before {
+    content: "\7C";
+}
+
+.strglyph-map:before {
+    content: "\7D";
+}
+
+.strglyph-memorydevice:before {
+    content: "\7E";
+}
+
+.strglyph-microsoftazure:before {
+    content: "\A1";
+}
+
+.strglyph-mint:before {
+    content: "\A2";
+}
+
+.strglyph-mipsprocessor:before {
+    content: "\A3";
+}
+
+.strglyph-modemdevice:before {
+    content: "\A4";
+}
+
+.strglyph-mosprocessor:before {
+    content: "\A5";
+}
+
+.strglyph-msdos:before {
+    content: "\A6";
+}
+
+.strglyph-netbsd:before {
+    content: "\A7";
+}
+
+.strglyph-network:before {
+    content: "\A8";
+}
+
+.strglyph-networkdevice:before {
+    content: "\A9";
+}
+
+.strglyph-nexentastor:before {
+    content: "\AA";
+}
+
+.strglyph-nonvolatilememory:before {
+    content: "\AB";
+}
+
+.strglyph-omnios:before {
+    content: "\AC";
+}
+
+.strglyph-onappcloud:before {
+    content: "\AE";
+}
+
+.strglyph-openbsd :before {
+    content: "\AF";
+}
+
+.strglyph-openindiana:before {
+    content: "\B0";
+}
+
+.strglyph-opennebula:before {
+    content: "\B1";
+}
+
+.strglyph-openshift:before {
+    content: "\B4";
+}
+
+.strglyph-openstack:before {
+    content: "\B5";
+}
+
+.strglyph-opensuse:before {
+    content: "\B6";
+}
+
+.strglyph-opensxce:before {
+    content: "\B7";
+}
+
+.strglyph-operatingsystem:before {
+    content: "\B8";
+}
+
+.strglyph-optzip:before {
+    content: "\BA";
+}
+
+.strglyph-oraclecloud:before {
+    content: "\BB";
+}
+
+.strglyph-oraclevm:before {
+    content: "\BC";
+}
+
+.strglyph-organizational:before {
+    content: "\BD";
+}
+
+.strglyph-packagemanager:before {
+    content: "\BE";
+}
+
+.strglyph-pacman:before {
+    content: "\BF";
+}
+
+.strglyph-pariscprocessor:before {
+    content: "\C0";
+}
+
+.strglyph-powerpcprocessor:before {
+    content: "\C1";
+}
+
+.strglyph-powervm:before {
+    content: "\C2";
+}
+
+.strglyph-processingunit:before {
+    content: "\C3";
+}
+
+.strglyph-protocol:before {
+    content: "\C4";
+}
+
+.strglyph-qemu:before {
+    content: "\C5";
+}
+
+.strglyph-randomaccessmemory:before {
+    content: "\C6";
+}
+
+.strglyph-reactos:before {
+    content: "\C7";
+}
+
+.strglyph-restartable:before {
+    content: "\C8";
+}
+
+.strglyph-result:before {
+    content: "\C9";
+}
+
+.strglyph-rhel:before {
+    content: "\CA";
+}
+
+.strglyph-room:before {
+    content: "\CB";
+}
+
+.strglyph-scriptable:before {
+    content: "\CC";
+}
+
+.strglyph-sdux:before {
+    content: "\CD";
+}
+
+.strglyph-service:before {
+    content: "\CE";
+}
+
+.strglyph-servicemanager:before {
+    content: "\CF";
+}
+
+.strglyph-sh:before {
+    content: "\D0";
+}
+
+.strglyph-sles:before {
+    content: "\D1";
+}
+
+.strglyph-smartos:before {
+    content: "\D2";
+}
+
+.strglyph-smb:before {
+    content: "\D3";
+}
+
+.strglyph-smbserver:before {
+    content: "\D4";
+}
+
+.strglyph-smf:before {
+    content: "\D5";
+}
+
+.strglyph-software:before {
+    content: "\D6";
+}
+
+.strglyph-solaris:before {
+    content: "\D8";
+}
+
+.strglyph-solarislps:before {
+    content: "\D9";
+}
+
+.strglyph-solarispkg:before {
+    content: "\DA";
+}
+
+.strglyph-solidstatedrive:before {
+    content: "\DB";
+}
+
+.strglyph-sparcprocessor:before {
+    content: "\DC";
+}
+
+.strglyph-ssh:before {
+    content: "\DD";
+}
+
+.strglyph-sshserver:before {
+    content: "\DE";
+}
+
+.strglyph-startable:before {
+    content: "\DF";
+}
+
+.strglyph-stoppable:before {
+    content: "\E0";
+}
+
+.strglyph-systemd:before {
+    content: "\E1";
+}
+
+.strglyph-systemstarter:before {
+    content: "\E2";
+}
+
+.strglyph-sysvinit:before {
+    content: "\E3";
+}
+
+.strglyph-tapedrive:before {
+    content: "\E4";
+}
+
+.strglyph-tsch:before {
+    content: "\E5";
+}
+
+.strglyph-team:before {
+    content: "\E6";
+}
+
+.strglyph-telnet:before {
+    content: "\E7";
+}
+
+.strglyph-telnetserver:before {
+    content: "\E8";
+}
+
+.strglyph-type:before {
+    content: "\E9";
+}
+
+.strglyph-ubuntu:before {
+    content: "\EA";
+}
+
+.strglyph-uninstallable:before {
+    content: "\EB";
+}
+
+.strglyph-unix:before {
+    content: "\EC";
+}
+
+.strglyph-unixlike:before {
+    content: "\ED";
+}
+
+.strglyph-unixshell:before {
+    content: "\EE";
+}
+
+.strglyph-upstart:before {
+    content: "\EF";
+}
+
+.strglyph-url:before {
+    content: "\F0";
+}
+
+.strglyph-usable:before {
+    content: "\F1";
+}
+
+.strglyph-user:before {
+    content: "\F2";
+}
+
+.strglyph-virtualbox:before {
+    content: "\F3";
+}
+
+.strglyph-virtualizable:before {
+    content: "\F4";
+}
+
+.strglyph-vmwarecloudfoundry:before {
+    content: "\F5";
+}
+
+.strglyph-vmwareesxi:before {
+    content: "\F6";
+}
+
+.strglyph-vmwarevsphere:before {
+    content: "\F7";
+}
+
+.strglyph-vmwareworkstation:before {
+    content: "\F8";
+}
+
+.strglyph-volatilememory:before {
+    content: "\F9";
+}
+
+.strglyph-wifi:before {
+    content: "\FA";
+}
+
+.strglyph-wifidevice:before {
+    content: "\FB";
+}
+
+.strglyph-windows8:before {
+    content: "\FC";
+}
+
+.strglyph-windows95:before {
+    content: "\FD";
+}
+
+.strglyph-windowsvista:before {
+    content: "\FE";
+}
+
+.strglyph-wirednetworkdevice:before {
+    content: "\FF";
+}
+
+.strglyph-wirelessnetworkdevice:before {
+    content: "\100";
+}
+
+.strglyph-wwandevice:before {
+    content: "\101";
+}
+
+.strglyph-x86processor:before {
+    content: "\102";
+}
+
+.strglyph-xen:before {
+    content: "\103";
+}
+
+.strglyph-yum:before {
+    content: "\104";
+}
+
+.strglyph-zilogprocessor:before {
+    content: "\105";
+}
+
+.strglyph-zsh:before {
+    content: "\106";
+}
+
+.strglyph-zypp:before {
+    content: "\107";
+}
