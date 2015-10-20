@@ -93,11 +93,8 @@ public class Application {
         // If we're in debug mode allow direct access to everything
         // on the eventbus and serve the debug page.
         if (serveDebug) {
-            router.route("/debug/*").handler(StaticHandler.create().setWebRoot("web/debug/"));
             log.debug("Setting InboundPermitted to any address (\".*\")");
             bridgeOptions.addInboundPermitted(new PermittedOptions().setAddressRegex(".*"));
-        } else {
-        	router.route("/debug/*").handler(StaticHandler.create().setWebRoot("web/"));
         }
         
         // Setup default route.
