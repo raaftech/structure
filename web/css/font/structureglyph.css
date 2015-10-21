@@ -61,7 +61,7 @@
 }
 
 .strglyph-apachecloudstack:before {
-    content: "25";
+    content: "\25";
 }
 
 .strglyph-apt:before {
