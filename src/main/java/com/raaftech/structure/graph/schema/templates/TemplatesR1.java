@@ -35,9 +35,9 @@ public class TemplatesR1 extends SchemaUpdate {
         TemplateNode processingUnit = new TemplateNode("b7b2a2ff-3af7-469b-afbf-e52f1b80be91");
         TemplateNode volatileMemory = new TemplateNode("44131d46-c1b0-4030-ae5a-9a3108627749");
         TemplateNode nonVolatileMemory = new TemplateNode("7f129e53-ff07-4ed8-9062-daf5f733a3a6");
-        TemplateNode consoleDevice = new TemplateNode("3d0865a2-3ecf-4035-886b-0bb603c0e2c2");
-        TemplateNode graphicsDevice = new TemplateNode("a642b995-c073-4c27-a611-c5bf3854958f");
-        TemplateNode networkDevice = new TemplateNode("86786ed6-d62a-4011-9ae8-0082000e48fa");
+        TemplateNode consoleHardware = new TemplateNode("3d0865a2-3ecf-4035-886b-0bb603c0e2c2");
+        TemplateNode graphicsHardware = new TemplateNode("a642b995-c073-4c27-a611-c5bf3854958f");
+        TemplateNode networkHardware = new TemplateNode("86786ed6-d62a-4011-9ae8-0082000e48fa");
 
         componentalGroup
                 .addComponent(computer);
@@ -45,9 +45,9 @@ public class TemplatesR1 extends SchemaUpdate {
                 .addComponent(processingUnit)
                 .addComponent(volatileMemory)
                 .addComponent(nonVolatileMemory)
-                .addComponent(consoleDevice)
-                .addComponent(graphicsDevice)
-                .addComponent(networkDevice);
+                .addComponent(consoleHardware)
+                .addComponent(graphicsHardware)
+                .addComponent(networkHardware);
 
         // Software
 

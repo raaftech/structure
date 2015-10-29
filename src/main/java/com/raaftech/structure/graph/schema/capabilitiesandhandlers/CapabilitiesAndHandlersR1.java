@@ -105,7 +105,7 @@ public class CapabilitiesAndHandlersR1 extends SchemaUpdate {
                 .put("desc", "Discover a nic.")
                 .put("plugin", "raaftech_discovernic");
         discoverHandlerInstance = new InstanceNode(obj, discoverHandlerType, "db3f4ba6-35e6-4c40-b127-eb90b27fe514");
-        TypeNode nic = typeNodeRepository.findOneByName("WiredNetworkDevice");
+        TypeNode nic = typeNodeRepository.findOneByName("WiredNetworkHardware");
         discoverCapability = new InstanceNode("Discoverable", "Discoverable", "3c170a27-05ee-4999-97d4-e7cc9135cb96");
         discoverCapability.addHandler(discoverHandlerInstance);
         nic.addCapability(discoverCapability);
