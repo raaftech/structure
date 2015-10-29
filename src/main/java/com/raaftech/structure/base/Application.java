@@ -2,6 +2,7 @@ package com.raaftech.structure.base;
 
 import java.util.Iterator;
 
+import com.raaftech.structure.helper.SchemaManagerUpdate;
 import io.vertx.core.DeploymentOptions;
 import org.neo4j.graphdb.Transaction;
 import org.slf4j.Logger;
@@ -50,6 +51,10 @@ public class Application {
         SockJSHandler sockJsHandler;
         final boolean serveDebug;
         final int port = 8080;
+
+        final TypeNodeRepository typeNodeRepository = Context.INSTANCE.getTypeNodeRepository();
+        final InstanceNodeRepository instanceNodeRepository = Context.INSTANCE.getInstanceNodeRepository();
+        final TemplateNodeRepository templateNodeRepository = Context.INSTANCE.getTemplateNodeRepository();
 
         // Black magic.
         SLF4JBridgeHandler.removeHandlersForRootLogger();
@@ -100,7 +105,14 @@ public class Application {
         // Setup default route.
         router.route("/*").handler(StaticHandler.create().setWebRoot("web/"));
 
-        httpServer.requestHandler(router::accept).listen(port);
+        // Apply schema if it isn't applied yet.
+        log.info("Checking for Structure's type hierarchy.");
+        if (typeNodeRepository.findByUuid("b1bc963a-19cc-4518-aecb-a35d028c49e3") == null) {
+            log.info("Didn't find the type hierarchy, creating it.");
+            new SchemaManagerUpdate().applySchemaUpdates();
+        } else {
+            log.info("Type hierarchy found.");
+        }
 
         // Deploy our main actors.
         vertx.deployVerticle("com.raaftech.structure.manager.BusManager", ar -> {
@@ -143,7 +155,6 @@ public class Application {
 
         // Deploy TypeNodeActors.
         log.debug("Deploying TypeNodeActors..");
-        TypeNodeRepository typeNodeRepository = Context.INSTANCE.getTypeNodeRepository();
         Transaction tx = Context.INSTANCE.getGraphDatabase().beginTx();
         Iterator<TypeNode> typeNodeIterator = typeNodeRepository.findAll().iterator();
         while (typeNodeIterator.hasNext()) {
@@ -155,7 +166,6 @@ public class Application {
 
         // Deploy InstanceNodeActors.
         log.debug("Deploying InstanceNodeActors..");
-        InstanceNodeRepository instanceNodeRepository = Context.INSTANCE.getInstanceNodeRepository();
         tx = Context.INSTANCE.getGraphDatabase().beginTx();
         Iterator<InstanceNode> instanceNodeIterator = instanceNodeRepository.findAll().iterator();
         while (instanceNodeIterator.hasNext()) {
@@ -167,7 +177,6 @@ public class Application {
 
         // Deploy TemplateNodeActors.
         log.debug("Deploying TemplateNodeActors..");
-        TemplateNodeRepository templateNodeRepository = Context.INSTANCE.getTemplateNodeRepository();
         tx = Context.INSTANCE.getGraphDatabase().beginTx();
         Iterator<TemplateNode> templateNodeIterator = templateNodeRepository.findAll().iterator();
         while (templateNodeIterator.hasNext()) {
@@ -185,9 +194,7 @@ public class Application {
         }
 
         // A friendly message telling the user we're done.
+        httpServer.requestHandler(router::accept).listen(port);
         log.info("Structure is running at http://localhost:" + port);
-        if (serveDebug) {
-            log.debug("Debug interface is running at http://localhost:" + port + "/debug/");
-        }
     }
 }
