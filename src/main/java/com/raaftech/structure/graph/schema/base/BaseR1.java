@@ -29,7 +29,7 @@ public class BaseR1 extends SchemaUpdate {
                         .setIsa("b1bc963a-19cc-4518-aecb-a35d028c49e3"),
                 new TypeNode("Configuration", "An abstract configuration component.", "3f4a43f7-b558-4bf0-ba7e" +
                         "-66b99cffaf16")
-                        .setIsa("a79ce509-a021-4177-ae61-73abd01fb479"),
+                        .setIsa("b1bc963a-19cc-4518-aecb-a35d028c49e3"),
                 new TypeNode("IpAddress", "An IP address (address only, can be assigned to a network interface).",
                         "299001a6-1091-4c0d-87be-c512af03e179")
                         .setDescriptor("addr", "string", true, "IP addresses should at least have the addr field.", null, null)
