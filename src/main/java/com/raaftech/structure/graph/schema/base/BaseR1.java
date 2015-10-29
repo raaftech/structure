@@ -320,7 +320,7 @@ public class BaseR1 extends SchemaUpdate {
                 new TypeNode("Checkable", "A capability that makes it possible to state-check.",
                         "b3cfd296-1090-43c0-ac2e-00e5d7fe7779")
                         .setIsa("916e04a9-c773-4eaf-9c08-450016426e5a"),
-                new TypeNode("Stopable", "A capability that makes it possible to stop something.",
+                new TypeNode("Stoppable", "A capability that makes it possible to stop something.",
                         "632ca701-2648-4df5-87ee-a41d3d1ef3da")
                         .setIsa("916e04a9-c773-4eaf-9c08-450016426e5a"),
                 new TypeNode("Startable", "A capability that makes it possible to stop something.",
