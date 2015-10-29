@@ -123,15 +123,15 @@ public class BaseR1 extends SchemaUpdate {
                 new TypeNode("VersionStringMap", "A map of possible/known version strings this software has. Key: *, " +
                         "Values: version string pattern, Format: JSON.", "1c1af482-f0e0-45f1-9aa1-f7702040067d")
                         .setIsa("0d554a04-67d6-428f-8e6f-6cdcdaca39cb"),
-                new TypeNode("Device", "An abstract device component.", "ea6a7487-867c-4a74-8849-fb8539b8169f")
+                new TypeNode("Hardware", "A hardware component.", "ea6a7487-867c-4a74-8849-fb8539b8169f")
                         .setDescriptor("rev", "string", false, "The revision of the device.", null, null)
                         .setIsa("a79ce509-a021-4177-ae61-73abd01fb479"),
-                new TypeNode("AssembledDevice", "An assembled device, containing various components.",
+                new TypeNode("AssembledHardware", "An assembled device, containing various components.",
                         "dbb2884f-7c31-4f7d-a92e-d6a76dd1b7fe")
                         .setIsa("ea6a7487-867c-4a74-8849-fb8539b8169f"),
                 new TypeNode("Computer", "An assembled computer device.", "ec11db91-6973-4285-b018-b461fbb432d7")
                         .setIsa("dbb2884f-7c31-4f7d-a92e-d6a76dd1b7fe"),
-                new TypeNode("ConsoleDevice", "A console device.", "3d0865a2-3ecf-4035-886b-0bb603c0e2c2")
+                new TypeNode("ConsoleHardware", "A console device.", "3d0865a2-3ecf-4035-886b-0bb603c0e2c2")
                         .setDescriptor("baudRate", "number", false, "110,300,600,1200,2400,4800,9600,14400,19200,28800,38400,56000," +
                                 "57600 or 115200.", null, null)
                         .setDescriptor("stopBits", "number", false, "1, 1.5 or 2.", null, null)
@@ -141,7 +141,7 @@ public class BaseR1 extends SchemaUpdate {
                 new TypeNode("GenericSerial", "A serial communication device.",
                         "f5b25736-ec12-4a7e-b198-548b97ebc36f")
                         .setIsa("3d0865a2-3ecf-4035-886b-0bb603c0e2c2"),
-                new TypeNode("GraphicsDevice", "A graphics device.", "a642b995-c073-4c27-a611-c5bf3854958f")
+                new TypeNode("GraphicsHardware", "A graphics device.", "a642b995-c073-4c27-a611-c5bf3854958f")
                         .setDescriptor("renderOutputCores", "number", false, "Number of render output cores.", null, null)
                         .setDescriptor("memClockHz", "number", false, "Memory speed in Hz.", null, null)
                         .setDescriptor("gpuCoreCount", "number", false, "Number of GPU cores if applicable.", null, null)
@@ -162,7 +162,7 @@ public class BaseR1 extends SchemaUpdate {
                         .setIsa("ea6a7487-867c-4a74-8849-fb8539b8169f"),
                 new TypeNode("GenericVga", "A VGA graphics device.", "b3a2ac7c-ad8a-4047-a460-2ac41a7ddfef")
                         .setIsa("a642b995-c073-4c27-a611-c5bf3854958f"),
-                new TypeNode("MemoryDevice", "A memory device", "1c87c672-1f69-4a02-9bc8-9eff28dda5e5")
+                new TypeNode("MemoryHardware", "A memory device", "1c87c672-1f69-4a02-9bc8-9eff28dda5e5")
                         .setDescriptor("memSizeKb", "number", true, "Memory size in Kb.", null, null)
                         .setIsa("ea6a7487-867c-4a74-8849-fb8539b8169f"),
                 new TypeNode("VolatileMemory", "A generic volatile memory device.", "44131d46-c1b0-4030-ae5a" +
@@ -190,32 +190,32 @@ public class BaseR1 extends SchemaUpdate {
                         .setIsa("7f129e53-ff07-4ed8-9062-daf5f733a3a6"),
                 new TypeNode("BdDrive", "A Digital Video Disc drive.", "cbc27482-11d1-4890-a3e1-e9f80baea82c")
                         .setIsa("7f129e53-ff07-4ed8-9062-daf5f733a3a6"),
-                new TypeNode("NetworkDevice", "A network device.", "86786ed6-d62a-4011-9ae8-0082000e48fa")
+                new TypeNode("NetworkHardware", "A network device.", "86786ed6-d62a-4011-9ae8-0082000e48fa")
                         .setIsa("ea6a7487-867c-4a74-8849-fb8539b8169f"),
-                new TypeNode("WiredNetworkDevice", "A wired network device.", "0d4c880d-d888-435f-b3a3-3d3eb9e70ddf")
+                new TypeNode("WiredNetworkHardware", "A wired network device.", "0d4c880d-d888-435f-b3a3-3d3eb9e70ddf")
                         .setIsa("86786ed6-d62a-4011-9ae8-0082000e48fa"),
-                new TypeNode("ModemDevice", "A modem networking device.", "f34b76e4-f5a6-4bae-968e-f22ef09b1e35")
+                new TypeNode("ModemHardware", "A modem networking device.", "f34b76e4-f5a6-4bae-968e-f22ef09b1e35")
                         .setDescriptor("baudRate", "number", true, "110,300,600,1200,2400,4800,9600,14400,19200,28800,38400,56000," +
                                 "57600 or 115200.", null, null)
                         .setIsa("0d4c880d-d888-435f-b3a3-3d3eb9e70ddf"),
-                new TypeNode("EthernetDevice", "A wired ethernet device.", "0dbd26f2-baff-446c-9241-46eaa3e03736")
+                new TypeNode("EthernetHardware", "A wired ethernet device.", "0dbd26f2-baff-446c-9241-46eaa3e03736")
                         .setDescriptor("speedMbit", "number", true, "Speed in Mbits.", null, null)
                         .setDescriptor("macAddr", "string", true, "A media access control address.", null, null)
                         .setIsa("0d4c880d-d888-435f-b3a3-3d3eb9e70ddf"),
-                new TypeNode("WirelessNetworkDevice", "A wireless network device.", "61328f83-db43-4efe-81be-df47e17814a5")
+                new TypeNode("WirelessNetworkHardware", "A wireless network device.", "61328f83-db43-4efe-81be-df47e17814a5")
                         .setIsa("86786ed6-d62a-4011-9ae8-0082000e48fa"),
-                new TypeNode("BluetoothDevice", "A Bluetooth device.", "009cf823-39c0-4b17-ae81-ad98ed0d4585")
+                new TypeNode("BluetoothHardware", "A Bluetooth device.", "009cf823-39c0-4b17-ae81-ad98ed0d4585")
                         .setDescriptor("macAddr", "string", true, "A media access control address.", null, null)
                         .setDescriptor("speedKbit", "number", true, "Speed in Kbits.", null, null)
                         .setIsa("61328f83-db43-4efe-81be-df47e17814a5"),
-                new TypeNode("IrdaDevice", "An IrDA device.", "42c7997c-0c56-4f93-956f-5fd0778c47c6")
+                new TypeNode("IrdaHardware", "An IrDA device.", "42c7997c-0c56-4f93-956f-5fd0778c47c6")
                         .setDescriptor("speedKbit", "number", true, "Speed in Kbits.", null, null)
                         .setIsa("61328f83-db43-4efe-81be-df47e17814a5"),
-                new TypeNode("WifiDevice", "A WiFi device.", "78ff02be-2abe-4a8f-a082-a0d9c3cdae70")
+                new TypeNode("WifiHardware", "A WiFi device.", "78ff02be-2abe-4a8f-a082-a0d9c3cdae70")
                         .setDescriptor("speedMbit", "number", true, "Speed in Mbits.", null, null)
                         .setDescriptor("macAddr", "string", true, "A media access control address", null, null)
                         .setIsa("61328f83-db43-4efe-81be-df47e17814a5"),
-                new TypeNode("WwanDevice", "A wireless WAN device.", "8d6e0956-033e-4efc-8846-e85bfddc8f98")
+                new TypeNode("WwanHardware", "A wireless WAN device.", "8d6e0956-033e-4efc-8846-e85bfddc8f98")
                         .setDescriptor("speedKbit", "number", true, "", null, null)
                         .setIsa("61328f83-db43-4efe-81be-df47e17814a5"),
                 new TypeNode("ProcessingUnit", "A processing unit.", "b7b2a2ff-3af7-469b-afbf-e52f1b80be91")
