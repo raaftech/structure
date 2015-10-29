@@ -1,12 +1,6 @@
 package com.raaftech.structure.graph;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.neo4j.graphdb.Direction;
@@ -70,8 +64,6 @@ public class TemplateNode extends Node {
     TemplateNodeRepository templateNodeRepository = Context.INSTANCE.getTemplateNodeRepository();
     @Transient
     TypeNodeRepository typeNodeRepository = Context.INSTANCE.getTypeNodeRepository();
-    @Transient
-    InstanceNodeRepository instanceNodeRepository = Context.INSTANCE.getInstanceNodeRepository();
 
     public TemplateNode() {}
 
@@ -213,7 +205,7 @@ public class TemplateNode extends Node {
         json.put("desc", getDesc());
         json.put("uuid", getUuid());
         json.put("isa", isa.getUuid());
-        json.put("form", getForm());
+        json.set("form", getForm());
         try {
             json.put("schema", mapper.writeValueAsString(getSchema().getAsObjectNode()));
         } catch (JsonProcessingException e) {
@@ -222,9 +214,11 @@ public class TemplateNode extends Node {
 
         if (hasComponents != null && hasComponents.size() > 0) {
             ArrayNode children = json.putArray("children");
-            hasComponents.forEach(component -> {
-                children.add(component.toJson());
-            });
+            hasComponents.stream()
+                    .sorted((a, b) -> a.getId().compareTo(b.getId()))
+                    .forEach(component -> {
+                        children.add(component.toJson());
+                    });
         }
 
         return json;

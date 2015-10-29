@@ -1,5 +1,6 @@
 package com.raaftech.structure.repository;
 
+import java.util.List;
 import java.util.Set;
 
 import com.raaftech.structure.node.TemplateNodeActor;
@@ -36,11 +37,11 @@ public class TemplateNodes extends Repository<TemplateNode> {
             @Override
             public JsonNode exec(JsonNode request) {
                 ObjectNode result = mapper.createObjectNode();
-                Set<TemplateNode> allTemplates = repository.findAllTemplates();
+                List<TemplateNode> allTemplates = repository.findAllTemplates();
                 ArrayNode templates = result.putArray("data");
 
                 allTemplates.stream()
-                .forEach(templateNode -> templates.add(templateNode.toJson()));
+                        .forEach(templateNode -> templates.add(templateNode.toJson()));
 
                 return response(request, result);
             }

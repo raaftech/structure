@@ -1,5 +1,6 @@
 package com.raaftech.structure.graph.repositories;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -26,7 +27,7 @@ public interface TemplateNodeRepository extends GenericRepository<TemplateNode> 
     TemplateNode findOneByName(@Param("name") String name);
 
     @Query("MATCH (n:TemplateNode {startOfTemplate:true}) return n")
-    Set<TemplateNode> findAllTemplates();
+    List<TemplateNode> findAllTemplates();
 
     // This query returns all the UUID's + connected Discovery Handler addresses of a TemplateNode group
     @Query ("START start=node:uuid(uuid={uuid}) " +
