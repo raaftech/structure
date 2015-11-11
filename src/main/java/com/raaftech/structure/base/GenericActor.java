@@ -427,15 +427,21 @@ public abstract class GenericActor extends AbstractVerticle {
         JsonNode request = convertFromJsonObject(body);
         JsonObject response = null;
         String msgh = request.get("msgh").asText();
+        JsonNode args = request.get("args");
 
         if (handlers.containsKey(msgh)) {
+            // If we didn't get any args create an empty JSON object, so we don't get
+            // a NPE when calling isValidJson(schema, args)
+            if (args == null) {
+                args = mapper.createObjectNode();
+            }
             HandlerSchema handlerAndSchema = handlers.get(msgh);
             JsonNode schema = jsonFromResource(handlerAndSchema.schemaPath);
             if (schema == null) {
                 log.warn("Couldn't load " + handlerAndSchema.schemaPath + " using empty schema as default. Validation will always pass.");
                 schema = jsonFromResource("schema/args.schema.json");
             }
-            if (isValidJson(schema, request.get("args"))) {
+            if (isValidJson(schema, args)) {
                 // Response! Convert "Jackson JsonNode" to "Vert.x JsonObject".
                 response = new JsonObject(
                         validate(schemaForResponse, handlerAndSchema.handler.exec(request)).toString());
