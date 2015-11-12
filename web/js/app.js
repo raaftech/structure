@@ -20,6 +20,9 @@ angular.module("structureApp", ["knalli.angular-vertxbus", "schemaForm", "ngRout
             .when("/types", {
                 templateUrl: "js/views/types.html"
             })
+            .when("/debug", {
+                templateUrl: "js/views/debug.html"
+            })
             .otherwise({
                 templateUrl: "js/views/home.html"
             });
