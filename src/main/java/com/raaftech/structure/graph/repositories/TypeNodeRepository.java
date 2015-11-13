@@ -33,4 +33,10 @@ public interface TypeNodeRepository extends GenericRepository<TypeNode> {
             "WITH deepest, reduce(path='', n in names| path + n + '.') AS path " +
             "RETURN path + deepest.name AS path")
     String getHierarchyPath(@Param("deepestNode") String uuid);
+
+    // Workaround, returning count(n) > 0 returns null when n is NULL.
+    @Query ("START start=node:uuid(uuid={typeUuid}) " +
+            "MATCH start<-[:ISA*1..]-(n{name:{subtypeUuid}}) " +
+            "RETURN count(n)")
+    int isSubtype(@Param("typeUuid") String typeUuid, @Param("subtypeUuid") String subtypeUuid);
 }

@@ -208,7 +208,7 @@ angular.module("structureApp")
             function recurse(template) {
                 $scope.schemas.push({ name: template.name, uuid: template.uuid, form: template.form, schema: JSON.parse(template.schema)});
                 console.log(template.form);
-                $scope.model.push({uuid: template.uuid, data: {}});
+                $scope.model.push({templateNodeUuid: template.uuid, data: {}});
                 if (template.children != null) {
                     var childrenLength = template.children.length;
                     if (childrenLength > 0) {

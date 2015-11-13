@@ -110,11 +110,16 @@ public class TemplateNodeActor extends NodeActor<TemplateNode> {
                 TemplateNode templateNode = getNode();
 
                 if (templateNode != null && instancedata != null) {
-                    String uuid = templateNode.instantiate(instancedata);
-                    if (uuid != null) {
-                        result.put("data", uuid);
-                    } else {
-                        result.put("error", "Error while instantiating template.");
+                    try {
+                        String uuid = templateNode.instantiate(instancedata);
+                        if (uuid != null) {
+                            result.put("data", uuid);
+                        } else {
+                            result.put("error", "Error while instantiating template.");
+                        }
+                    } catch (RuntimeException e) {
+                        log.error(e.getMessage());
+                        result.put("error", e.getMessage());
                     }
                 }
                 return response(request, result);

@@ -250,6 +250,24 @@ public class TemplateNode extends Node {
         return wrappingSchema;
     }
 
+    private JsonSchemaBuilder getArraySchema() {
+        JsonSchemaBuilder arraySchema = new JsonSchemaBuilder()
+                .setType("object")
+                .setAdditionalProperties(false);
+        arraySchema.addProperty("templateNodeUuid", "string", true, "UUID of the TemplateNode.").setPattern(getUuid());
+        JsonSchemaBuilder data = arraySchema.addProperty("data", "object", true, "Data object containing the wrapping array.");
+        JsonSchemaBuilder wrappingArray = data.addProperty("instances", "array", required, "Wrapping array.");
+
+        if (required) {
+            wrappingArray.setMinItems(1);
+        }
+        if (unique) {
+            wrappingArray.setMaxItems(1);
+        }
+
+        return arraySchema;
+    }
+
     // Create a form layout for the generated form.
     // For now this will only create a form when a TemplateNode
     // isn't unique (else it'll just contain [ "*" ]).
@@ -281,13 +299,31 @@ public class TemplateNode extends Node {
     }
 
     public String instantiate(JsonNode instanceData) {
-        // TODO: validate instanceData
+        // Initialize schema validation data
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode schema = mapper.createObjectNode();
+        schema.put("type", "array");
+        ArrayNode schemaArrays = schema.putArray("items");
+        schemaArrays.add(getArraySchema().getAsObjectNode());
+        recurseForArraySchemas(schemaArrays, hasComponents);
+        schema.put("additionalItems", false);
+        JsonSchemaBuilder jsonSchema = null;
+
+        try {
+            jsonSchema = new JsonSchemaBuilder(schema);
+            if (!jsonSchema.validateJson(instanceData)) {
+                throw new RuntimeException("Instantiating template failed on first validation.");
+            }
+        } catch (ProcessingException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Error while constructing schema, aborting.");
+        }
         // Map stuff
         HashMap<String, JsonNode> uuidToDataMap = new HashMap<>();
         Iterator<JsonNode> elements = instanceData.elements();
         while (elements.hasNext()) {
             JsonNode element = elements.next();
-            uuidToDataMap.put(element.get("uuid").asText(), element.get("data"));
+            uuidToDataMap.put(element.get("templateNodeUuid").asText(), element.get("data"));
         }
 
         Transaction tx = Context.INSTANCE.getGraphDatabase().beginTx();
@@ -297,22 +333,57 @@ public class TemplateNode extends Node {
             tx.success();
         } catch (Exception e) {
             tx.failure();
-            log.error(e.getMessage());
+            throw new RuntimeException(e.getMessage());
         } finally {
             tx.close();
         }
         return uuid;
     }
 
+    private void recurseForArraySchemas(ArrayNode schema, Set<TemplateNode> templateNodes) {
+        templateNodes.stream()
+                .sorted((a, b) -> Long.compare(a.getId(), b.getId()))
+                .forEach(node -> {
+                    schema.add(node.getArraySchema().getAsObjectNode());
+                    if (node.hasComponents.size() > 0) {
+                        recurseForArraySchemas(schema, node.hasComponents);
+                    }
+                });
+    }
+
     // This is not directly called, use instantiate(Map<String, JsonNode> dataMap) in stead
     private String instantiate(TemplateNode template, InstanceNode parent, Map<String, JsonNode> dataMap, int depth) {
         if (!startOfTemplate && parent == null) {
-            throw new RuntimeException("Cannot instantiate a TemplateNode that is not the start of a template without a parent.");
+            throw new IllegalArgumentException("Cannot instantiate a TemplateNode that is not the start of a template without a parent.");
         }
 
         JsonNode json = dataMap.get(template.getUuid());
-        if (!getSchema().validateJson(json)) {
-            throw new RuntimeException("JSON didn't not succesfully validate against the template's schema!");
+        ArrayNode instances = (ArrayNode)json.get("instances");
+
+        Iterator<JsonNode> instanceIter = instances.iterator();
+        while (instanceIter.hasNext()) {
+            ObjectNode instanceData = (ObjectNode)instanceIter.next();
+            String typeUuid = null;
+            TypeNode typeNode = null;
+            if (instanceData.has("typeUuid")) {
+                typeUuid = instanceData.get("typeUuid").asText();
+                instanceData.remove("typeUuid");
+                if (typeNodeRepository.isSubtype(template.isa.getUuid(), typeUuid) > 1) {
+                    typeNode = typeNodeRepository.findByUuid(typeUuid);
+                } else {
+                    throw new IllegalArgumentException("Type with UUID " + typeUuid + " is not a subtype of " + template.isa.getName() + ".");
+                }
+            }
+            // Get the appropriate schema and validate
+            JsonSchemaBuilder schema = typeNode != null ? typeNode.getSchema() : template.isa.getSchema();
+            if (!schema.validateJson(instanceData)) {
+                throw new IllegalArgumentException("Tried instantiating a template with invalid instantation data.");
+            }
+
+            // write back typeUuid, because we need it for instantiation
+            if (typeUuid != null) {
+                instanceData.put("typeUuid", typeUuid);
+            }
         }
 
         TypeNode typeNode = template.isa;
@@ -321,7 +392,10 @@ public class TemplateNode extends Node {
 
         if (instanceDataArray != null) {
             if (startOfTemplate) {
-                final InstanceNode instanceNode = new InstanceNode((ObjectNode)instanceDataArray.get(0), isa.getUuid());
+                ObjectNode instanceData = (ObjectNode)instanceDataArray.get(0);
+                String typeUuid = instanceData.has("typeUuid") ? instanceData.get("typeUuid").asText() : isa.getUuid();
+                instanceData.remove("typeUuid");
+                final InstanceNode instanceNode = new InstanceNode((ObjectNode)instanceDataArray.get(0), typeUuid);
                 instanceUuid = instanceNode.getUuid();
 
                 template.hasComponents.stream()
@@ -330,7 +404,10 @@ public class TemplateNode extends Node {
             }
             // If this TemplateNode has components (implies required and unique)
             else if (hasComponents.size() > 0) {
-                final InstanceNode instanceNode = new InstanceNode((ObjectNode)instanceDataArray.get(0), isa.getUuid());
+                ObjectNode instanceData = (ObjectNode)instanceDataArray.get(0);
+                String typeUuid = instanceData.has("typeUuid") ? instanceData.get("typeUuid").asText() : isa.getUuid();
+                instanceData.remove("typeUuid");
+                final InstanceNode instanceNode = new InstanceNode((ObjectNode)instanceDataArray.get(0), typeUuid);
                 instanceUuid = instanceNode.getUuid();
                 if (parent != null) parent.addComponent(instanceNode);
 
@@ -339,7 +416,9 @@ public class TemplateNode extends Node {
                 instanceNode.save();
             } else {
                 instanceDataArray.forEach(data -> {
-                    InstanceNode instanceNode = new InstanceNode((ObjectNode)data, isa.getUuid());
+                    String typeUuid = data.has("typeUuid") ? data.get("typeUuid").asText() : isa.getUuid();
+                    ((ObjectNode)data).remove("typeUuid");
+                    InstanceNode instanceNode = new InstanceNode((ObjectNode)data, typeUuid);
                     if (parent != null) parent.addComponent(instanceNode);
                     instanceNode.save();
                 });
