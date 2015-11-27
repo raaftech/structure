@@ -50,15 +50,20 @@ public class SpringConfig extends Neo4jConfiguration {
         Bootstrapper bootStrapper;
 
         GraphDatabaseBuilder graphDatabaseBuilder = new GraphDatabaseFactory().newEmbeddedDatabaseBuilder("structure.db");
-        graphDatabaseBuilder.setConfig("remote_shell_enabled", "true");
+        GraphDatabaseService graphDatabaseService;
+        if (Boolean.parseBoolean(System.getProperty("debugMode"))) {
+            graphDatabaseBuilder.setConfig("remote_shell_enabled", "true");
 
-        GraphDatabaseService graphDatabaseService = graphDatabaseBuilder.newGraphDatabase();
+            graphDatabaseService = graphDatabaseBuilder.newGraphDatabase();
 
-        ServerConfigurator webConfig = new ServerConfigurator((GraphDatabaseAPI) graphDatabaseService);
-        webConfig.configuration().setProperty("webserver_bind_address", "localhost");
+            ServerConfigurator webConfig = new ServerConfigurator((GraphDatabaseAPI) graphDatabaseService);
+            webConfig.configuration().setProperty("webserver_bind_address", "localhost");
 
-        bootStrapper = new WrappingNeoServerBootstrapper((GraphDatabaseAPI) graphDatabaseService, webConfig);
-        bootStrapper.start();
+            bootStrapper = new WrappingNeoServerBootstrapper((GraphDatabaseAPI) graphDatabaseService, webConfig);
+            bootStrapper.start();
+        } else {
+            graphDatabaseService = graphDatabaseBuilder.newGraphDatabase();
+        }
 
         return graphDatabaseService;
     }

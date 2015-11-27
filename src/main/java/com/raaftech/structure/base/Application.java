@@ -45,11 +45,17 @@ public class Application {
     final static Logger log = LoggerFactory.getLogger(Application.class);
 
     public static void main(String[] args) {
+        final boolean serveDebug;
+        if (args.length > 0 && args[0].equals("--debug")) {
+            serveDebug = true;
+            System.setProperty("debugMode", "true");
+        } else {
+            serveDebug = false;
+        }
         Vertx vertx;
         HttpServer httpServer;
         Router router;
         SockJSHandler sockJsHandler;
-        final boolean serveDebug;
         final int port = 8080;
 
         final TypeNodeRepository typeNodeRepository = Context.INSTANCE.getTypeNodeRepository();
@@ -60,16 +66,14 @@ public class Application {
         SLF4JBridgeHandler.removeHandlersForRootLogger();
         SLF4JBridgeHandler.install();
 
-        if (args.length < 1) {
-            serveDebug = false;
-            ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
-            log.info("Setting log level to INFO..");
-            root.setLevel(Level.INFO);
-        } else {
-            serveDebug = args[0].equals("--debug");
+        if (serveDebug) {
             ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
             log.debug("Setting log level to DEBUG..");
             root.setLevel(Level.DEBUG);
+        } else {
+            ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+            log.info("Setting log level to INFO..");
+            root.setLevel(Level.INFO);
         }
 
         // Tell the user we're starting up.
@@ -87,9 +91,8 @@ public class Application {
         // Enable bridging on /eventbus, and add some in- and outbound permissions.
         BridgeOptions bridgeOptions = new BridgeOptions()
                 .addInboundPermitted(new PermittedOptions().setAddress("com.raaftech.structure.manager.schemamanager"))
-                .addInboundPermitted(new PermittedOptions().setAddress("com.raaftech.structure.manager.pluginmanager"))
-                .addInboundPermitted(new PermittedOptions().setAddress("com.raaftech.structure.manager.statemanager"))
-                .addInboundPermitted(new PermittedOptions().setAddress("com.raaftech.structure.manager.discoverymanager"));
+                .addInboundPermitted(new PermittedOptions().setAddressRegex("com\\.raaftech\\.structure\\.repository\\..*"))
+                .addInboundPermitted(new PermittedOptions().setAddressRegex("com\\.raaftech\\.structure\\.node\\..*"));
 
         // Enable sockJS Server on our HTTP server.
         sockJsHandler.bridge(bridgeOptions);
