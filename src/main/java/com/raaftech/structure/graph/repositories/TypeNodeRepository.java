@@ -7,6 +7,7 @@ import org.springframework.data.neo4j.repository.GraphRepository;
 import org.springframework.data.repository.query.Param;
 
 import com.raaftech.structure.graph.TypeNode;
+import org.springframework.stereotype.Repository;
 
 /**
  * Give a description of TypeNodeRepository here.
@@ -14,6 +15,7 @@ import com.raaftech.structure.graph.TypeNode;
  * @author Boy van Duuren <boy.van.duuren@raaftech.com>
  * @since 2014-12-09
  */
+@Repository
 public interface TypeNodeRepository extends GenericRepository<TypeNode> {
 
 	@Override

@@ -9,6 +9,7 @@ import org.springframework.data.neo4j.repository.GraphRepository;
 import org.springframework.data.repository.query.Param;
 
 import com.raaftech.structure.graph.TemplateNode;
+import org.springframework.stereotype.Repository;
 
 /**
  * Give a description of TemplateNodeRepository here.
@@ -16,6 +17,7 @@ import com.raaftech.structure.graph.TemplateNode;
  * @author Boy van Duuren <boy.van.duuren@raaftech.com>
  * @since 2015-03-09
  */
+@Repository
 public interface TemplateNodeRepository extends GenericRepository<TemplateNode> {
 
 	@Override

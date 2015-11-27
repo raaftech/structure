@@ -9,3 +9,4 @@ id_rsa*
 .idea
 structure.iml
 web/js/vendor/
+data/
