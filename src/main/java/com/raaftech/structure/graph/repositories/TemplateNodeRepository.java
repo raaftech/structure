@@ -33,7 +33,7 @@ public interface TemplateNodeRepository extends GenericRepository<TemplateNode> 
 
     // This query returns all the UUID's + connected Discovery Handler addresses of a TemplateNode group
     @Query ("START start=node:uuid(uuid={uuid}) " +
-            "MATCH start-[:HAS_COMPONENT*0..]->(component)-[:ISA]->()-[:HAS_CAPABILITY]->({name:'Discoverable'})-[:HAS_HANDLER]->(handler) " +
+            "MATCH start-[:HAS_COMPONENT*0..]->(component)-[:COMPONENT_FOR]->()-[:HAS_CAPABILITY]->({name:'Discoverable'})-[:HAS_HANDLER]->(handler) " +
             "RETURN component.uuid AS uuid, handler.kv AS kv")
     Iterable<Map<String, String>> getDiscoveryData(@Param("uuid") String uuid);
 }

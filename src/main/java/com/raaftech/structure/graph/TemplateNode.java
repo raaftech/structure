@@ -44,7 +44,7 @@ public class TemplateNode extends Node {
 
     final static Logger log = LoggerFactory.getLogger(TemplateNode.class);
 
-    @RelatedTo(type = "ISA", direction = Direction.OUTGOING, elementClass = TypeNode.class, enforceTargetType = true)
+    @RelatedTo(type = "TEMPLATE_FOR", direction = Direction.OUTGOING)
     @Fetch
     TypeNode isa;
 
