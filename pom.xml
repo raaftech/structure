@@ -77,11 +77,12 @@
 	<properties>
 		<!-- Generic settings -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<vertx.version>3.1.0</vertx.version>
-		<spring-data-neo4j.version>3.4.1.RELEASE</spring-data-neo4j.version>
+		<vertx.version>3.0.0</vertx.version>
+		<neo4j.version>2.1.8</neo4j.version>
 		<jersey.version>1.9</jersey.version>
 		<commons-net.version>3.3</commons-net.version>
 		<json-schema-validator.version>2.2.6</json-schema-validator.version>
+		<spring-data-neo4j.version>3.2.1.RELEASE</spring-data-neo4j.version>
 		<jsch.version>0.1.53</jsch.version>
 		<junit.version>4.11</junit.version>
 		<validation-api.version>1.1.0.Final</validation-api.version>
@@ -158,6 +159,34 @@
 			<artifactId>spring-data-neo4j-rest</artifactId>
 			<version>${spring-data-neo4j.version}</version>
 			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.neo4j</groupId>
+			<artifactId>neo4j</artifactId>
+			<version>${neo4j.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.neo4j</groupId>
+					<artifactId>neo4j-udc</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.neo4j</groupId>
+			<artifactId>neo4j-kernel</artifactId>
+			<version>${neo4j.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.neo4j.app</groupId>
+			<artifactId>neo4j-server</artifactId>
+			<version>${neo4j.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.neo4j.app</groupId>
+			<artifactId>neo4j-server</artifactId>
+			<version>${neo4j.version}</version>
+			<classifier>static-web</classifier>
 		</dependency>
 		<dependency>
 			<groupId>com.jcraft</groupId>

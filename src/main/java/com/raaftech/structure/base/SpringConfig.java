@@ -12,21 +12,17 @@ import org.neo4j.server.Bootstrapper;
 import org.neo4j.server.WrappingNeoServerBootstrapper;
 import org.neo4j.server.configuration.ServerConfigurator;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.AdviceMode;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.neo4j.config.EnableNeo4jRepositories;
 import org.springframework.data.neo4j.config.Neo4jConfiguration;
 import org.springframework.data.neo4j.core.GraphDatabase;
-import org.springframework.data.neo4j.rest.SpringCypherRestGraphDatabase;
-import org.springframework.data.neo4j.rest.SpringRestGraphDatabase;
 import org.springframework.data.neo4j.support.Neo4jTemplate;
 
 import com.raaftech.structure.graph.repositories.InstanceNodeRepository;
 import com.raaftech.structure.graph.repositories.NodeRepository;
 import com.raaftech.structure.graph.repositories.SchemaNodeRepository;
 import com.raaftech.structure.graph.repositories.TypeNodeRepository;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 
 /**
@@ -36,7 +32,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  * @since 2014-11-04
  */
 @Configuration
-@EnableTransactionManagement(mode = AdviceMode.PROXY)
 @EnableNeo4jRepositories("com.raaftech.structure.graph.repositories")
 public class SpringConfig extends Neo4jConfiguration {
 
