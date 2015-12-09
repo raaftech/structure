@@ -160,9 +160,18 @@ public class JsonSchemaBuilder {
      */
     public JsonSchemaBuilder removeProperty(String name) {
         ObjectNode properties = getProperties();
+        ArrayNode required = getRequired();
 
         if (properties != null) {
             properties.remove(name);
+            if (required != null) {
+                for (int i = 0; i < required.size(); i++) {
+                    if (required.get(i).asText().equals(name)) {
+                        required.remove(i);
+                        break;
+                    }
+                }
+            }
         } else {
             throw new RuntimeException("Can't remove property that doesn't exist.");
         }

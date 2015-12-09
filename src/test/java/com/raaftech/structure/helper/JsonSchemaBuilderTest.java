@@ -158,8 +158,10 @@ public class JsonSchemaBuilderTest {
         jsonSchema.setType("object");
         jsonSchema.addProperty("foo", "number", true, "description");
         assertTrue(jsonSchema.containsProperty("foo"));
+        assertEquals("foo", jsonSchema.getRequired().get(0).asText());
         jsonSchema.removeProperty("foo");
         assertFalse(jsonSchema.containsProperty("foo"));
+        assertFalse(jsonSchema.getRequired().size() > 0);
     }
 
     @Test
