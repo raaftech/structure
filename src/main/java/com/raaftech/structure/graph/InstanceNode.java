@@ -6,6 +6,8 @@ import java.util.LinkedHashMap;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.raaftech.structure.helper.HandlerRunner;
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.Transaction;
 import org.slf4j.Logger;
@@ -28,6 +30,8 @@ import com.raaftech.structure.graph.repositories.InstanceNodeRepository;
 import com.raaftech.structure.graph.repositories.TypeNodeRepository;
 import com.raaftech.structure.helper.JsonSchemaBuilder;
 import com.raaftech.structure.node.InstanceNodeActor;
+import org.springframework.data.neo4j.fieldaccess.DynamicProperties;
+import org.springframework.data.neo4j.fieldaccess.DynamicPropertiesContainer;
 
 /**
  * Give a description of InstanceNode here.
@@ -45,7 +49,7 @@ public class InstanceNode extends Node {
 
     @RelatedTo(type="HAS_COMPONENT", direction = Direction.OUTGOING)
     @Fetch
-    private Set<InstanceNode> components = new HashSet<>();
+    private Set<InstanceNode> components;
 
     @RelatedTo(type="HAS_COMPONENT", direction = Direction.INCOMING)
     @Fetch
@@ -57,10 +61,6 @@ public class InstanceNode extends Node {
     @RelatedTo(type="HAS_OPERATION", direction = Direction.OUTGOING)
     private Set<InstanceNode> operations = new HashSet<>();
 
-    @RelatedTo(type="HAS_HANDLER", direction = Direction.OUTGOING)
-    @Fetch
-    private Set<InstanceNode> handlers;
-
     @RelatedTo(type="HAS_PROTOCOL", direction = Direction.OUTGOING)
     private Set<InstanceNode> protocols = new HashSet<>();
 
@@ -71,13 +71,31 @@ public class InstanceNode extends Node {
     @Fetch
     private TypeNode instanceOf;
 
-    private LinkedHashMap<String, String> kv = new LinkedHashMap<>();
+    @RelatedTo(type="HAS_COMPONENT", direction=Direction.OUTGOING)
+    private Set<InstanceNode> hasComponents;
+
+    @RelatedTo(type="GIVES_CAPABILITY", direction=Direction.OUTGOING)
+    private TypeNode capability;
+
+    @RelatedTo(type="HANDLES", direction=Direction.OUTGOING)
+    private Set<TypeNode> handlesTypes;
+
+    private DynamicProperties kv = new DynamicPropertiesContainer();
 
     @Transient
     InstanceNodeRepository instanceNodeRepository = Context.INSTANCE.getInstanceNodeRepository();
 
     @Transient
     private TypeNodeRepository typeNodeRepository = Context.INSTANCE.getTypeNodeRepository();
+
+    @Transient
+    JsonNode instanceData;
+
+    /****************/
+    /* Constructors */
+    /****************/
+
+    // TODO: Move to builder pattern, just too many constructors
 
     public InstanceNode() {}
 
@@ -115,6 +133,7 @@ public class InstanceNode extends Node {
 
     public InstanceNode(ObjectNode json, String isa) {
         this(json.get("name").asText(), json.get("desc").asText(), isa);
+        instanceData = json.deepCopy();
         setProperties(json);
     }
 
@@ -124,26 +143,64 @@ public class InstanceNode extends Node {
         setProperties(json);
     }
 
+    /***********/
+    /* Methods */
+    /***********/
+
+    // Add a handled type.
+    // Handled types are used on Handlers only.
+    public InstanceNode addHandledType(TypeNode type) {
+        if (getInstanceOf().getName().equals("Handler")) {
+            if (handlesTypes == null) {
+                handlesTypes = new HashSet<>();
+            }
+            handlesTypes.add(type);
+            return this;
+        }
+        throw new RuntimeException("Can't call addHandledType on non-handler instance.");
+    }
+
+    // Set the capability of a Handler instance. Should only be called on
+    // a Handler.
+    public void setCapability(TypeNode capability) {
+        // Check if this is a Handler and if capability isn't null and of right type.
+        if (getInstanceOf().getName().equals("Handler") &&
+                capability != null && capability.getIsa().getName().equals("Capability")) {
+            this.capability = capability;
+        }
+    }
+
+    // Set the capability of a Handler instance. Should only be called on
+    // a Handler.
+    public void setCapability(String capabilityUuid) {
+        TypeNode capability = typeNodeRepository.findByUuid(capabilityUuid);
+        setCapability(capability);
+    }
+
+    // Run a handler on this instance
+    public String runHandler(InstanceNode handler, JsonNode interactive) {
+        HandlerRunner commandHelper = new HandlerRunner(this, handler, interactive);
+        return commandHelper.startHandler();
+    }
+
     public void addResult(InstanceNode result) {
-        // TODO: check if result is an actual Result
         if (results == null) {
             results = new HashSet<>();
         }
-        if (instanceNodeRepository.isOfType(result.getInstanceOf().getUuid(), "Result") > 0) {
+        // Check if parameter isn't null and is of right type.
+        if (result != null && result.getInstanceOf().getName().equals("Result")) {
+            Transaction tx = Context.INSTANCE.getGraphDatabase().beginTx();
             results.add(result);
+            tx.success();
+            tx.close();
+        } else {
+            log.error("addResult called with non-result parameter.");
         }
     }
 
     public void addResult(String resultUuid) {
-        InstanceNode result = null;
-
-        if (resultUuid != null) {
-            // TODO: check if result is an actual Result
-            result = instanceNodeRepository.findByUuid(resultUuid);
-            if (result != null) {
-                addResult(result);
-            }
-        }
+        InstanceNode result = instanceNodeRepository.findByUuid(resultUuid);
+        addResult(result);
     }
 
     // Get all the results belonging to this InstanceNode
@@ -187,59 +244,28 @@ public class InstanceNode extends Node {
     }
 
     public Set<InstanceNode> getComponents() {
-        return components;
-    }
-
-    public InstanceNode addHandler(InstanceNode handler) {
-        if (handler == null) {
-            throw new RuntimeException("Cannot add handler, null argument.");
-        }
-        if (handlers == null) {
-            handlers = new HashSet<>();
-        }
-        TypeNode handlerType = typeNodeRepository.findByUuid("14dbfbfa-b50a-466f-8539-55d5d3f15e4a");
-        TypeNode capabilityType = typeNodeRepository.findByUuid("916e04a9-c773-4eaf-9c08-450016426e5a");
-        // Check if the given argument is part of the Handler tree
-        boolean isHandler = handlerType.getChildIsaSet().stream()
-                .anyMatch(h -> h.getUuid().equals(handler.instanceOf.getUuid()));
-        // Check if this InstanceNode is an instance of a node in the Capability tree
-        boolean isCapability = capabilityType.getChildIsaSet().stream()
-                .anyMatch(c -> c.getUuid().equals(instanceOf.getUuid()));
-
-        if (!isHandler) {
-            throw new RuntimeException("Cannot add handler, it's not a handler type.");
-        }
-        if (!isCapability) {
-            throw new RuntimeException("Cannot add handler to non Capability type.");
-        }
-
-        // Everything checked out, add handler.
-        Transaction tx = Context.INSTANCE.getGraphDatabase().beginTx();
-        try {
-            handlers.add(handler);
-            this.save();
-            handler.save();
-            tx.success();
-        } catch (Exception e) {
-            tx.failure();
-            throw e;
-        } finally {
+        if (components.size() < 1 || getFirstComponent().getName() == null) {
+            Transaction tx = Context.INSTANCE.getGraphDatabase().beginTx();
+            Context.INSTANCE.getNeo4jTemplate().fetch(components);
             tx.close();
         }
-
-        return handler;
-    }
-
-    public InstanceNode addHandler(String handlerUuid) {
-        return addHandler(instanceNodeRepository.findByUuid(handlerUuid));
-    }
-
-    public Set<InstanceNode> getHandlers() {
-        return handlers;
+        return components;
     }
 
     public TypeNode getInstanceOf() {
         return instanceOf;
+    }
+
+    public boolean isOfType(String type) {
+        return instanceNodeRepository.isOfType(getUuid(), type) > 0;
+    }
+
+    private InstanceNode getFirstComponent() {
+        if (components == null) {
+            throw new IllegalArgumentException("Components set is empty.");
+        }
+
+        return components.iterator().next();
     }
 
     public InstanceNode setProperties(ObjectNode properties) {
@@ -258,9 +284,10 @@ public class InstanceNode extends Node {
                 Iterator<String> iter = properties.fieldNames();
                 while (iter.hasNext()) {
                     String key = iter.next();
-                    kv.put(key, properties.get(key).asText());
+                    kv.setProperty(key, properties.get(key).asText());
                 }
             } else {
+                log.debug(report.toString());
                 throw new RuntimeException("Supplied JSON did not match TypeNode schema.");
             }
         } catch (ProcessingException e) {
@@ -272,23 +299,25 @@ public class InstanceNode extends Node {
     }
 
     public String getProperty(String key) {
-        return kv.get(key);
+        Object property = kv.getProperty(key);
+        if (property == null) {
+            return null;
+        } else {
+            return property.toString();
+        }
     }
 
     public InstanceNode save() {
         boolean newNode = getId() == null || getId() < 0;
         Transaction tx = Context.INSTANCE.getGraphDatabase().beginTx();
-        if (instanceNodeRepository.findByUuid(getUuid()) == null) {
-            // -2 for the name and desc property.
-            if (instanceOf.getSchema().getProperties().size()-2 == kv.size()) {
-                instanceNodeRepository.save(this);
-                tx.success();
-                tx.close();
-            } else {
-                tx.failure();
-                tx.close();
-                throw new RuntimeException("Can't create instanceNode, missing properties.");
-            }
+        if (getInstanceOf().getSchema().validateJson(instanceData)) {
+            instanceNodeRepository.save(this);
+            tx.success();
+            tx.close();
+        } else {
+            tx.failure();
+            tx.close();
+            throw new RuntimeException("Can't create instanceNode, missing properties.");
         }
 
         if (newNode) {
@@ -299,12 +328,92 @@ public class InstanceNode extends Node {
         return this;
     }
 
+    public Set<TypeNode> findCommonProtocols(InstanceNode subject) {
+        return typeNodeRepository.getCommonProtocols(this.getUuid(), subject.getUuid());
+    }
+
+    /**
+     * Used to create a JSON representation of a single InstanceNode that
+     * can be used to as an argument for a handler.
+     * @return JSON representation that can be used as an argument for a handler.
+     */
+    public ObjectNode toArguments() {
+        final String pathKeyName = "_hierarchyPath";
+        ObjectNode arguments = recurseForArguments(pathKeyName, getComponents(), null);
+        ObjectNode thisJson = (ObjectNode)toFlatJson();
+        if (thisJson.get(pathKeyName).isTextual()) {
+            ((ArrayNode)arguments.get(pathKeyName)).add(thisJson.get(pathKeyName));
+            thisJson.remove(pathKeyName);
+        }
+        arguments.putArray(getInstanceOf().getName()).add(thisJson);
+
+        return arguments;
+    }
+
+    private ObjectNode recurseForArguments(String pathKeyName, Set<InstanceNode> components, ArrayNode hierarchyPaths) {
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode result = mapper.createObjectNode();
+        if (hierarchyPaths == null) {
+            hierarchyPaths = result.putArray(pathKeyName);
+        }
+
+        final ArrayNode finalHierarchyPaths = hierarchyPaths;
+        components.stream()
+                .forEach(component -> {
+                    String componentTypeName = component.getInstanceOf().getName();
+                    if (!result.has(componentTypeName)) {
+                        result.putArray(componentTypeName);
+                    }
+                    JsonNode comp = component.toFlatJson();
+                    if (comp.get(pathKeyName).isTextual()) {
+                        finalHierarchyPaths.add(comp.get(pathKeyName));
+                    }
+                    ((ObjectNode) comp).remove(pathKeyName);
+                    ((ArrayNode) result.get(componentTypeName)).add(comp);
+
+                    Set<InstanceNode> childComponents = component.getComponents();
+                    if (childComponents.size() > 0) {
+                        ObjectNode childResult = recurseForArguments(pathKeyName, childComponents, finalHierarchyPaths);
+                        Iterator<String> fields = childResult.fieldNames();
+                        while (fields.hasNext()) {
+                            String fieldName = fields.next();
+                            if (!result.has(fieldName)) {
+                                result.set(fieldName, childResult.get(fieldName));
+                            } else {
+                                ArrayNode field = (ArrayNode) result.get(fieldName);
+                                Iterator<JsonNode> elements = childResult.elements();
+                                while (elements.hasNext()) {
+                                    field.add(elements.next());
+                                }
+                            }
+                        }
+                    }
+                });
+
+        return result;
+    }
+
+    public JsonNode toFlatJson() {
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode result = mapper.createObjectNode();
+
+        result.put("name", getName());
+        result.put("desc", getDesc());
+        result.put("uuid", getUuid());
+        result.put("_hierarchyPath", getInstanceOf().getHierarchyPath());
+        kv.asMap().forEach((key, val) -> {
+            result.put(key, val.toString());
+        });
+
+        return result;
+    }
+
     public ObjectNode toJson() {
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode result = mapper.createObjectNode();
         ObjectNode kvJson = result.putObject("kv");
-        kv.forEach((key, val) -> {
-            kvJson.put(key, val);
+        kv.asMap().forEach((key, val) -> {
+            kvJson.put(key, val.toString());
         });
         ArrayNode componentsJson = mapper.createArrayNode();
         components.forEach(component -> {
@@ -318,9 +427,8 @@ public class InstanceNode extends Node {
         result.put("uuid", getUuid());
         result.put("desc", getDesc());
         result.put("instanceof", instanceOf.getUuid());
-        result.put("capabilities", instanceOf.getCapabilitiesAndHandlers());
         if (componentsJson.size() > 0) {
-            result.put("components", componentsJson);
+            result.set("components", componentsJson);
         }
         if (inComponent != null) {
             result.put("incomponent", inComponent.getUuid());

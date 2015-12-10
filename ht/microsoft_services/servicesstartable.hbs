@@ -1,0 +1,22 @@
+{{!
+
+{
+  "name": "ServicesStartable",
+  "desc": "ServicesStartable",
+  "capability": "Startable",
+  "providedBy": "Services",
+  "appliesTo": [ "Server" ],
+  "subjectIsLocal": true,
+  "arguments": {
+    "non-interactive": {
+    },
+    "interactive": {
+        "required": [
+            "username", "password"
+        ]
+    }
+  }
+}
+
+}}
+sc start {{ subject.shortName }}

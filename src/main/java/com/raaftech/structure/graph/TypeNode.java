@@ -14,6 +14,7 @@ import org.neo4j.graphdb.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.annotation.Transient;
+import org.springframework.data.neo4j.annotation.Fetch;
 import org.springframework.data.neo4j.annotation.NodeEntity;
 import org.springframework.data.neo4j.annotation.RelatedTo;
 import org.springframework.data.neo4j.core.GraphDatabase;
@@ -44,8 +45,14 @@ public class TypeNode extends Node {
     @RelatedTo(type="ISA", direction = Direction.INCOMING, elementClass = TypeNode.class, enforceTargetType = true)
     private Set<TypeNode> childIsaSet;
 
-    @RelatedTo(type="HAS_CAPABILITY", direction = Direction.OUTGOING)
-    private Set<InstanceNode> capabilities = new HashSet<>();
+    @RelatedTo(type="HAS_HANDLER", direction = Direction.OUTGOING)
+    @Fetch
+    private Set<InstanceNode> handlers;
+
+    @RelatedTo(type="IMPLEMENTS", direction = Direction.OUTGOING)
+    @Fetch
+    private Set<TypeNode> implementsProtocols;
+
 
     // isaUuid exists only to temporarily save a UUID of a TypeNode's parent
     // in case the parent doesn't exist in the database yet.
@@ -56,6 +63,10 @@ public class TypeNode extends Node {
     public JsonSchemaBuilder schema = new JsonSchemaBuilder();
     @Transient
     private TypeNodeRepository typeNodeRepository = Context.INSTANCE.getTypeNodeRepository();
+
+    /****************/
+    /* Constructors */
+    /****************/
 
     public TypeNode() {}
 
@@ -69,11 +80,49 @@ public class TypeNode extends Node {
         initSchema();
     }
 
+    /***********/
+    /* Methods */
+    /***********/
+
     private void initSchema() {
         schema.setType("object");
         schema.setAdditionalProperties(false);
         schema.addProperty("name", "string", true, "The name of this node.");
         schema.addProperty("desc", "string", true, "The description of this node.");
+    }
+
+    public TypeNode addHandler(InstanceNode handler) {
+        if (handlers == null) {
+            handlers = new HashSet<>();
+        }
+
+        if (handler.getInstanceOf().getName().equals("Handler")) {
+            handlers.add(handler);
+        }
+
+        return this;
+    }
+
+    public TypeNode addImplementedProtocol(TypeNode protocol) {
+        if (protocol == null) {
+            log.error("Provided argument to addImplementedProtocol cannot be null.");
+            return this;
+        }
+        if (!protocol.isOfType("Protocol")) {
+            log.error("Can't add non-protocol type " + protocol.getName() + " as implemented protocol.");
+            return this;
+        }
+        if (!isOfType("Software")) {
+            log.error("Can't add an implemented protocol to a non-software type.");
+            return this;
+        }
+
+        if (implementsProtocols == null) {
+            implementsProtocols = new HashSet<>();
+        }
+        implementsProtocols.add(protocol);
+
+        return this;
     }
 
     public TypeNode setDescriptor(String key, String valueType, boolean required, String description, String defaultValue,
@@ -160,51 +209,17 @@ public class TypeNode extends Node {
         return childIsaSet;
     }
 
-    public TypeNode addCapability(InstanceNode capability) {
-        if (capability == null) {
-            throw new RuntimeException("Method can't be called with a null argument.");
-        }
-        if (capabilities == null) {
-            capabilities = new HashSet<>();
-        }
-
-        TypeNode rootCapability = typeNodeRepository.findByUuid("916e04a9-c773-4eaf-9c08-450016426e5a");
-        boolean isCapability = rootCapability.getChildIsaSet().stream()
-                .anyMatch(c -> c.getUuid().equals(capability.getInstanceOf().getUuid()));
-
-        if (isCapability) {
-            capabilities.add(capability);
-        } else {
-            throw new RuntimeException("Method can't be called with an argument that's not part of the Capability tree.");
-        }
-
-        return this;
-    }
-
-    public JsonNode getCapabilitiesAndHandlers() {
-        GraphDatabase graphDatabase = Context.INSTANCE.getGraphDatabase();
-        Transaction tx = graphDatabase.beginTx();
-        Context.INSTANCE.getNeo4jTemplate().fetch(capabilities);
-        tx.success();
-        tx.close();
-
-        ObjectMapper mapper = new ObjectMapper();
-        ObjectNode capabilitiesAndHandlers = mapper.createObjectNode();
-
-        capabilities.stream()
-        .filter(c -> c.getHandlers().size() > 0)
-        .forEach(c -> {
-            ObjectNode handlers = capabilitiesAndHandlers.putObject(c.getName());
-            c.getHandlers().stream()
-            .forEachOrdered(h -> {
-                handlers.put(h.getName(), h.getProperty("plugin"));
-            });
-        });
-        return capabilitiesAndHandlers;
-    }
-
     public JsonSchemaBuilder getSchema() {
         return schema;
+    }
+
+    public boolean isOfType(String type) {
+        return typeNodeRepository.isOfType(getUuid(), type) > 0;
+    }
+
+    public TypeNode save() {
+        typeNodeRepository.save(this);
+        return this;
     }
 
     public ObjectNode toJson() {
@@ -234,6 +249,11 @@ public class TypeNode extends Node {
     }
 
     public String getHierarchyPath() {
-        return typeNodeRepository.getHierarchyPath(getUuid()).toLowerCase();
+        String path = typeNodeRepository.getHierarchyPath(getUuid());
+        if (path != null) {
+            return path.toLowerCase();
+        } else {
+            return null;
+        }
     }
 }

@@ -1,0 +1,28 @@
+{{!
+
+{
+  "name": "IputilsPingCheckable",
+  "desc": "Provide a check to IP addresses using ping.",
+  "capability": "Checkable",
+  "providedBy": "Iputils",
+  "appliesTo": [ "Ipv4Address" ],
+  "subjectIsLocal": false,
+  "arguments": {
+    "non-interactive": {
+      "group": [
+        "type.configuration.ipaddress.ipv4address"
+      ],
+      "commander": [
+        "type.component.software.client.iputils"
+      ]
+    },
+    "interactive": {
+        "optional": [
+            "count", "interval", "timeout"
+        ]
+    }
+  }
+}
+
+}}
+ping {{#if count}}"-c {{count}}" {{/if}}{{#if interval}}"-i {{interval}}" {{/if}}{{#if timeout}}"-W {{timeout}}" {{/if}}{{ subject.addr }}

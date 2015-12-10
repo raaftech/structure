@@ -35,6 +35,9 @@ public enum Context {
     private Set<String> registeredPlugins = new HashSet<>();
     private static final ReentrantLock initLock = new ReentrantLock();
 
+    // The identifier used to identify this structure instance in the database.
+    public final static String selfIdentifier = "structure";
+
     private Context() {
         context = new AnnotationConfigApplicationContext(SpringConfig.class, ConverterConfig.class);
     }

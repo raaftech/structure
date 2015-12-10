@@ -1,0 +1,19 @@
+{{!
+
+{
+  "name": "RcStoppable",
+  "desc": "RcStoppable",
+  "capability": "Stoppable",
+  "providedBy": "Rc",
+  "appliesTo": [ "Server" ],
+  "subjectIsLocal": true,
+  "arguments": {
+    "non-interactive": {
+    },
+    "interactive": {
+    }
+  }
+}
+
+}}
+/etc/rc.d/{{ subject.shortName }} stop

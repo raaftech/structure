@@ -1,0 +1,22 @@
+{{!
+
+{
+  "name": "ServicesStoppable",
+  "desc": "ServicesStoppable",
+  "capability": "Stoppable",
+  "providedBy": "Services",
+  "appliesTo": [ "Server" ],
+  "subjectIsLocal": true,
+  "arguments": {
+    "non-interactive": {
+    },
+    "interactive": {
+        "required": [
+            "username", "password"
+        ]
+    }
+  }
+}
+
+}}
+sc stop {{ subject.shortName }}

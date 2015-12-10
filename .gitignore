@@ -8,4 +8,5 @@ id_rsa*
 /.metadata
 .idea
 structure.iml
+generatedscripts/
 web/js/vendor/

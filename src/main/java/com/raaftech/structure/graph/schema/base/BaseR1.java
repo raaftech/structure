@@ -1,10 +1,10 @@
 package com.raaftech.structure.graph.schema.base;
 
-import java.util.Arrays;
-
 import com.raaftech.structure.graph.SchemaNode;
 import com.raaftech.structure.graph.TypeNode;
 import com.raaftech.structure.graph.schema.SchemaUpdate;
+
+import java.util.Arrays;
 
 /**
  * Give a description of Base here.
@@ -33,6 +33,7 @@ public class BaseR1 extends SchemaUpdate {
                 new TypeNode("IpAddress", "An IP address (address only, can be assigned to a network interface).",
                         "299001a6-1091-4c0d-87be-c512af03e179")
                         .setDescriptor("addr", "string", true, "IP addresses should at least have the addr field.", null, null)
+                        .setDescriptor("reachable", "boolean", true, "Is this IP address reachable from the outside?", null, null)
                         .setIsa("3f4a43f7-b558-4bf0-ba7e-66b99cffaf16"),
                 new TypeNode("Ipv4Address", "An IPv4 address (address only, can be assigned to a network " +
                         "interface).",
@@ -126,11 +127,6 @@ public class BaseR1 extends SchemaUpdate {
                 new TypeNode("Hardware", "A hardware component.", "ea6a7487-867c-4a74-8849-fb8539b8169f")
                         .setDescriptor("rev", "string", false, "The revision of the device.", null, null)
                         .setIsa("a79ce509-a021-4177-ae61-73abd01fb479"),
-                new TypeNode("AssembledHardware", "An assembled device, containing various components.",
-                        "dbb2884f-7c31-4f7d-a92e-d6a76dd1b7fe")
-                        .setIsa("ea6a7487-867c-4a74-8849-fb8539b8169f"),
-                new TypeNode("Computer", "An assembled computer device.", "ec11db91-6973-4285-b018-b461fbb432d7")
-                        .setIsa("dbb2884f-7c31-4f7d-a92e-d6a76dd1b7fe"),
                 new TypeNode("ConsoleHardware", "A console device.", "3d0865a2-3ecf-4035-886b-0bb603c0e2c2")
                         .setDescriptor("baudRate", "number", false, "110,300,600,1200,2400,4800,9600,14400,19200,28800,38400,56000," +
                                 "57600 or 115200.", null, null)
@@ -259,9 +255,18 @@ public class BaseR1 extends SchemaUpdate {
                         .setIsa("8db2b492-9a4a-41fe-97a5-bc625da042ea"),
                 new TypeNode("OperatingSystem", "An operating system.", "f05e325e-1aee-4892-96e4-8bcd6e97c528")
                         .setIsa("8db2b492-9a4a-41fe-97a5-bc625da042ea"),
+
+                // Service managers
                 new TypeNode("ServiceManager", "An operating system initialization system.",
                         "c3008eec-b454-4ef6-bf7e-0bd92c13d3c3")
                         .setIsa("8db2b492-9a4a-41fe-97a5-bc625da042ea"),
+                new TypeNode("Systemctl", "Systemd Service Manager.", "c409c9de-e23d-429b-a59a-ac46ea296331")
+                        .setIsa("c3008eec-b454-4ef6-bf7e-0bd92c13d3c3"),
+                new TypeNode("Rc", "The rc service manager, used on most BSD's.", "67d7aa27-e0d9-458c-89fb-82734a8def95")
+                        .setIsa("c3008eec-b454-4ef6-bf7e-0bd92c13d3c3"),
+                new TypeNode("Services", "Windows Service Manager.", "21b82fbf-803c-4056-b914-502e2ff9952d")
+                        .setIsa("c3008eec-b454-4ef6-bf7e-0bd92c13d3c3"),
+
                 new TypeNode("PackageManager", "A package manager.", "e2b8b9ee-b66f-4252-8fba-4fb172f741bc")
                         .setIsa("8db2b492-9a4a-41fe-97a5-bc625da042ea"),
                 new TypeNode("Interpreter", "A command or programming language interpreter.",
@@ -271,8 +276,10 @@ public class BaseR1 extends SchemaUpdate {
                         .setIsa("8db2b492-9a4a-41fe-97a5-bc625da042ea"),
                 new TypeNode("Emulator", "A hardware platform emulator.", "59aeae81-9741-4986-b9c2-931504cfc9e3")
                         .setIsa("8db2b492-9a4a-41fe-97a5-bc625da042ea"),
-                new TypeNode("Service", "A generic local/networked/daemonized service.",
+                new TypeNode("Server", "A generic local/networked/daemonized server.",
                         "3fb4603b-281e-47c0-b338-768ea05d4660")
+                        .setIsa("8db2b492-9a4a-41fe-97a5-bc625da042ea"),
+                new TypeNode("Client", "A generic client.", "8f371b1b-52a3-4409-be70-9cd947bec8dd")
                         .setIsa("8db2b492-9a4a-41fe-97a5-bc625da042ea"),
                 new TypeNode("Grouping", "A group of references to things.", "5f1eb7c5-ec5e-4563-be6a-fc50774fc374")
                         .setIsa("b1bc963a-19cc-4518-aecb-a35d028c49e3"),
@@ -301,6 +308,8 @@ public class BaseR1 extends SchemaUpdate {
                 new TypeNode("Componental", "A group for organizing references to components.",
                         "ee92c308-80f4-40b2-af3a-77d26cd99517")
                         .setIsa("5f1eb7c5-ec5e-4563-be6a-fc50774fc374"),
+                new TypeNode("Computer", "An assembled computer device.", "ec11db91-6973-4285-b018-b461fbb432d7")
+                        .setIsa("ee92c308-80f4-40b2-af3a-77d26cd99517"),
                 new TypeNode("Actor", "Something or someone that interacts/starts/acts within the system.",
                         "3175d762-dd97-434f-a288-21e4591480cf")
                         .setIsa("b1bc963a-19cc-4518-aecb-a35d028c49e3"),
@@ -314,6 +323,8 @@ public class BaseR1 extends SchemaUpdate {
                 new TypeNode("Batch", "A batch user.", "395d3e08-842b-4640-8b57-751e1b0c9e4b")
                         .setDescriptor("emailAddress", "string", true, "The email address of the Batch user.", null, null)
                         .setIsa("3175d762-dd97-434f-a288-21e4591480cf"),
+
+                // Capabilities
                 new TypeNode("Capability", "A software component gives capabilities to its parent or to siblings.",
                         "916e04a9-c773-4eaf-9c08-450016426e5a")
                         .setIsa("b1bc963a-19cc-4518-aecb-a35d028c49e3"),
@@ -341,12 +352,26 @@ public class BaseR1 extends SchemaUpdate {
                 new TypeNode("Virtualizable", "A capability that makes it possible to virtualize something.",
                         "b0995f9f-90af-4066-9d00-6b7b33f9a19b")
                         .setIsa("916e04a9-c773-4eaf-9c08-450016426e5a"),
-                new TypeNode("Commandable", "A capability that makes it possible to run commands.",
+                new TypeNode("Executable", "A capability that makes it possible to run commands.",
                         "76fb3116-d4a8-459a-b62b-a2641bcb7e7d")
                         .setIsa("916e04a9-c773-4eaf-9c08-450016426e5a"),
                 new TypeNode("Discoverable", "A capability that makes it possible to discover something.",
                         "3c170a27-05ee-4999-97d4-e7cc9135cb96")
                         .setIsa("916e04a9-c773-4eaf-9c08-450016426e5a"),
+                new TypeNode("Identifyable", "A capability that makes it possible to identify (version, name, etc) something.",
+                        "ca49051c-d7d1-45fa-b327-0f4dca810897")
+                        .setIsa("916e04a9-c773-4eaf-9c08-450016426e5a"),
+                new TypeNode("Usable", "A capability that makes it possible to get usage results on something.",
+                        "51847ba3-40f9-45a6-9a9b-58dcf962bd4b")
+                        .setIsa("916e04a9-c773-4eaf-9c08-450016426e5a"),
+                new TypeNode("Scriptable", "A capability that makes it possible to use something non-interactively.",
+                        "64ca8ff9-8071-4933-95d0-bbacb97bd4a8")
+                        .setIsa("916e04a9-c773-4eaf-9c08-450016426e5a"),
+                new TypeNode("Accessible", "A capability that makes it possible to use access something remotely.",
+                        "8292da1f-75de-41d6-a8fb-cdcca6700ad9")
+                        .setIsa("916e04a9-c773-4eaf-9c08-450016426e5a"),
+
+                // Protocols
                 new TypeNode("Protocol", "A protocol.", "db0c3c65-52fd-4dec-907c-6c8a669e88f3")
                         .setIsa("b1bc963a-19cc-4518-aecb-a35d028c49e3"),
                 new TypeNode("HTTP", "The hypertext transfer protocol.", "9fd04885-179f-4c72-99a2-52c692e61b19")
@@ -382,199 +407,24 @@ public class BaseR1 extends SchemaUpdate {
                         .setIsa("008b9566-6317-4ddd-977c-9ddca00b79b8"),
                 new TypeNode("TELNET", "The telnet protocol.", "27fc7ed2-beb3-41c8-aa69-900ad7bb989f")
                         .setIsa("db0c3c65-52fd-4dec-907c-6c8a669e88f3"),
+
                 new TypeNode("Handler", "A representation of a software handler that gives end user function.",
                         "14dbfbfa-b50a-466f-8539-55d5d3f15e4a")
-                        .setDescriptor("plugin", "string", true, "The address on the eventbus of the plugin implementing the handler", null, null)
+                        .setDescriptor("payload", "string", false, "The address on of the payload.", null, null)
+                        .setDescriptor("weight", "number", false, "The weight of a handler, used choose between handlers.", null, null)
+                        .setDescriptor("extension", "string", false, "Possible extension in case of a scriptable handler.", null, null)
+                        .setDescriptor("non-interactive", "string", false, "The schema for a handler's non-interactively supplied arguments.", null, null)
+                        .setDescriptor("interactive", "string", false, "The schema for a handler's interactively supplied arguments.", null, null)
+                        .setDescriptor("subjectIsLocal", "boolean", true, "Is the subject for this handler local or remote?", null, null)
                         .setIsa("b1bc963a-19cc-4518-aecb-a35d028c49e3"),
-                new TypeNode("CommandHandler", "Creates a CommandOperation, executes that CommandOperation, creates " +
-                        "CommandResult.", "6ac7f3f8-4a1f-42aa-87b8-b2f5516b5d7c")
-                        .setIsa("14dbfbfa-b50a-466f-8539-55d5d3f15e4a"),
-                new TypeNode("VersionHandler", "Looks up a VersionOperation, executes command, creates " +
-                        "VersionResult.",
-                        "a57f47c3-7e27-4347-806b-204239c61e65")
-                        .setIsa("14dbfbfa-b50a-466f-8539-55d5d3f15e4a"),
-                new TypeNode("StatusHandler", "Executes generic code to get a status or executes CustomStatusOperation" +
-                        " if " +
-                        "it exists. Creates StatusResult.", "3b6555cd-abd4-4cc6-ab64-b7c031c2b008")
-                        .setIsa("14dbfbfa-b50a-466f-8539-55d5d3f15e4a"),
-                new TypeNode("ExistenceHandler", "Executes generic code to get a existence information or executes" +
-                        " " +
-                        "CustomExistenceOperation if it exists. Creates ExistenceResult.", "6a8a8dd7-f8d3-4170-8c25-3866cfc2037c")
-                        .setIsa("14dbfbfa-b50a-466f-8539-55d5d3f15e4a"),
-                new TypeNode("UsageHandler", "Executes generic code to derive usage of resources or executes " +
-                        "CustomUsageOperation if it exists. Creates UsageResult.", "dd0878eb-b560-4dc0-89da-1d7ddfcbbced")
-                        .setIsa("14dbfbfa-b50a-466f-8539-55d5d3f15e4a"),
-                new TypeNode("InstallHandler", "Executes generic code to derive install method and executes or " +
-                        "executes " +
-                        "CustomInstallOperation if it exists.", "3e33df40-8d9d-49d2-939d-6712d89ca70f")
-                        .setIsa("14dbfbfa-b50a-466f-8539-55d5d3f15e4a"),
-                new TypeNode("UninstallHandler", "Executes generic code to derive uninstall method and executes or" +
-                        " " +
-                        "executes CustomUninstallOperation if it exists.", "6b80a87e-9d24-4a06-b792-2d13c0713b6c")
-                        .setIsa("14dbfbfa-b50a-466f-8539-55d5d3f15e4a"),
-                new TypeNode("StartHandler", "Executes generic code to derive start method and executes or executes " +
-                        "CustomStartOperation if it exists.", "db00edc2-5900-46d8-99fc-b379fd8538e2")
-                        .setIsa("14dbfbfa-b50a-466f-8539-55d5d3f15e4a"),
-                new TypeNode("StopHandler", "Executes generic code to derive stop method and executes or executes " +
-                        "CustomStopOperation if it exists.", "5d97322d-9113-4d7c-ac6c-2690a8c65d0d")
-                        .setIsa("14dbfbfa-b50a-466f-8539-55d5d3f15e4a"),
-                new TypeNode("RestartHandler", "Executes generic code to derive restart method and executes or executes " +
-                        "CustomRestartOperation if it exists.", "c61c2f8c-0ba2-4e0d-99f2-66a5580a59a6")
-                        .setIsa("14dbfbfa-b50a-466f-8539-55d5d3f15e4a"),
-                new TypeNode("DiscoverHandler", "Executes a routine to discover an instance of a TypeNode, creating " +
-                        "a new InstanceNode with the right information.", "c5e838c7-5b61-47ff-9285-aa5a108f6867")
-                        .setIsa("14dbfbfa-b50a-466f-8539-55d5d3f15e4a"),
-                new TypeNode("Operation", "A command or method that can be called, with or without schedule.",
-                        "46294722-b14e-438e-9fbc-95ff137b6b18")
-                        .setDescriptor("timesInvoked", "number", true, "The number of times this operation was invoked.", null, null)
-                        .setDescriptor("data", "string", true, "A custom command, method or eventbus message that does a software " +
-                                "installation.", null, null)
-                        .setDescriptor("dateCreated", "number", true, "The date + time when the operation was created.", null, null)
-                        .setDescriptor("dateStarted", "number", true, "The date + time when the operation was started.", null, null)
-                        .setDescriptor("dateFinished", "number", true, "The date + time when the operation was finished.", null, null)
-
-                        .setIsa("b1bc963a-19cc-4518-aecb-a35d028c49e3"),
-                new TypeNode("CommandOperation", "An arbitrary command.", "de64c2f4-7fa3-4e68-ba10-6af8140dac36")
-                        .setIsa("46294722-b14e-438e-9fbc-95ff137b6b18"),
-                new TypeNode("VersionOperation", "A command that displays a version string.",
-                        "9598a74d-0293-459a-af63-e3563215162f")
-                        .setIsa("46294722-b14e-438e-9fbc-95ff137b6b18"),
-                new TypeNode("CustomStatusOperation", "Custom command for a status check operation.",
-                        "bfc01b44-075d-4d6e-82eb-474830bba06e")
-                        .setIsa("46294722-b14e-438e-9fbc-95ff137b6b18"),
-                new TypeNode("CustomExistenceOperation", "Custom command for an existence operation.",
-                        "97bf21ef-d112-4607-9392-83243e44577f")
-                        .setIsa("46294722-b14e-438e-9fbc-95ff137b6b18"),
-                new TypeNode("CustomUsageOperation", "Custom command that shows/derives/fetches the usage of a " +
-                        "resource.",
-                        "32b9f847-3579-4750-b29b-c0f3af877adb")
-                        .setIsa("46294722-b14e-438e-9fbc-95ff137b6b18"),
-                new TypeNode("CustomInstallOperation", "Custom command to install a software.",
-                        "7fb7c8c0-6967-4af2-a4f9-e5342fc3fb24")
-                        .setIsa("46294722-b14e-438e-9fbc-95ff137b6b18"),
-                new TypeNode("CustomUninstallOperation", "Custom command to uninstall a software.",
-                        "1308c542-ea7a-4525-8a1b-65cf96033a62")
-                        .setIsa("46294722-b14e-438e-9fbc-95ff137b6b18"),
-                new TypeNode("CustomStartOperation", "Custom command to start a software.",
-                        "8cb7ac74-7923-4114-abd2-17f4c5f440d7")
-                        .setIsa("46294722-b14e-438e-9fbc-95ff137b6b18"),
-                new TypeNode("CustomStopOperation", "Custom command to stop a software.",
-                        "ffefceab-afd8-42da-b793-d65beb4f71eb")
-                        .setIsa("46294722-b14e-438e-9fbc-95ff137b6b18"),
-                new TypeNode("CustomRestartOperation", "Custom command to restart a software.",
-                        "3d5300bf-7b4d-443c-b33a-159c00572eb9")
-                        .setIsa("46294722-b14e-438e-9fbc-95ff137b6b18"),
                 new TypeNode("Result", "A result from an operation.", "f3498c02-58c6-486b-87c6-9d54607fdb12")
                         .setDescriptor("task", "string", true, "The task ID.", null, null)
+                        .setDescriptor("process", "string", false, "Process that resulted in this result.", null, null)
+                        .setDescriptor("returnCode", "number", false, "The returncode of a process", null, null)
+                        .setDescriptor("stdout", "string", false, "The stdout of a program.", null, null)
+                        .setDescriptor("stderr", "string", false, "The stdout of a program.", null, null)
                         .setDescriptor("dateCreated", "number", true, "The date + time when the result was created.", null, null)
-                        .setIsa("b1bc963a-19cc-4518-aecb-a35d028c49e3"),
-                new TypeNode("CommandResult", "A generic textual result from a command operation.",
-                        "6991d878-52be-467d-893a-6b95074f04c2")
-                        .setDescriptor("data", "string", true, "The result data.", null, null)
-                        .setIsa("f3498c02-58c6-486b-87c6-9d54607fdb12"),
-                new TypeNode("VersionResult", "A textual result representing a version string.",
-                        "2f9703cb-3d68-44fa-99bf-935ed658ca5a")
-                        .setIsa("f3498c02-58c6-486b-87c6-9d54607fdb12"),
-                new TypeNode("StatusResult", "A result that represents a status.", "48839d5c-8ebc-4989-80ec-f6fb90299a56")
-                        .setDescriptor("status", "boolean", true, "true/ok, false/not-ok", null, null)
-                        .setIsa("f3498c02-58c6-486b-87c6-9d54607fdb12"),
-                new TypeNode("DerivedStatusResult", "A derived status. true/ok, false/not-ok.",
-                        "9565a2ca-29e4-4c36-8f17-97e9a0074ded")
-                        .setIsa("48839d5c-8ebc-4989-80ec-f6fb90299a56"),
-                new TypeNode("LocalDerivedStatusResult", "A derived 1/0 status from all statuses known to the software" +
-                        " " +
-                        "itself.", "9d007dd4-82df-4791-81f9-d91a65e9f3a3")
-                        .setIsa("48839d5c-8ebc-4989-80ec-f6fb90299a56"),
-                new TypeNode("AggregateDerivedStatusResult", "A derived 1/0 status from all localderivedstatuses from " +
-                        "its " +
-                        "children.", "3f9ca86e-6286-4e59-9eb1-fa352103fe5c")
-                        .setIsa("48839d5c-8ebc-4989-80ec-f6fb90299a56"),
-                new TypeNode("SoftwareInstalledStatusResult", "1/installed, 0/not-installed.",
-                        "38b435e1-046c-415b-9cce-6578efb4eef6")
-                        .setIsa("48839d5c-8ebc-4989-80ec-f6fb90299a56"),
-                new TypeNode("SoftwareRunningStatusResult", "1/running, 0/not-running.",
-                        "4fda91ea-63bb-4689-bcf4-86bb02314c21")
-                        .setIsa("48839d5c-8ebc-4989-80ec-f6fb90299a56"),
-                new TypeNode("IpAddressReachableStatusResult", "1/reachable, 0/unreachable.",
-                        "729e0e03-3a27-47e2-8075-7e4a754d68a5")
-                        .setIsa("48839d5c-8ebc-4989-80ec-f6fb90299a56"),
-                new TypeNode("ListenerAvailableStatusResult", "1/open, 0/closed.", "630e8753-7566-4c2f-9cdf" +
-                        "-99f5b64492a1")
-                        .setIsa("48839d5c-8ebc-4989-80ec-f6fb90299a56"),
-                new TypeNode("DnsNameResolvableStatusResult", "1/resolved, 0/not-resolved.",
-                        "fffdce77-417f-4044-a570-6e6153db1dd0")
-                        .setIsa("48839d5c-8ebc-4989-80ec-f6fb90299a56"),
-                new TypeNode("ExistenceResult", "A generic result from an ExistenceHandler.",
-                        "6d23a2bc-9539-4914-aaf4-45406f59d8fc")
-                        .setIsa("f3498c02-58c6-486b-87c6-9d54607fdb12"),
-                new TypeNode("DirectoryExistenceResult", "A generic directory existence result from an ExistenceHandler.",
-                        "31736b3b-82da-4864-bc59-b49c196e3327")
-                        .setIsa("6d23a2bc-9539-4914-aaf4-45406f59d8fc"),
-                new TypeNode("PrefixDirectoryExistenceResult", "A possible result from an ExistenceHandler, parsing a " +
-                        "PrefixDirectoryMap.", "93e34319-fe7b-4768-b83d-58986a4cdb73")
-                        .setIsa("31736b3b-82da-4864-bc59-b49c196e3327"),
-                new TypeNode("ConfigDirectoryExistenceResult", "A possible result from an ExistenceHandler, parsing a " +
-                        "ConfigDirectoryMap.", "0182518c-2380-4abc-be84-5fa02679fe52")
-                        .setIsa("31736b3b-82da-4864-bc59-b49c196e3327"),
-                new TypeNode("BinaryDirectoryExistenceResult", "A possible result from an ExistenceHandler, parsing a " +
-                        "BinaryDirectoryMap.", "1b607b4a-5206-4d55-8743-0487f7b6d944")
-                        .setIsa("31736b3b-82da-4864-bc59-b49c196e3327"),
-                new TypeNode("LibraryDirectoryExistenceResult", "A possible result from an ExistenceHandler, parsing a " +
-                        "LibraryDirectoryMap.", "25a2e063-b7e7-4727-9725-63859005e6ed")
-                        .setIsa("31736b3b-82da-4864-bc59-b49c196e3327"),
-                new TypeNode("DataDirectoryExistenceResult", "A possible result from an ExistenceHandler, parsing a " +
-                        "DataDirectoryMap.", "22105b60-ea6d-4c1e-b3ad-14b8ff9e37a1")
-                        .setIsa("31736b3b-82da-4864-bc59-b49c196e3327"),
-                new TypeNode("LogDirectoryExistenceResult", "A possible result from an ExistenceHandler, parsing a " +
-                        "LogDirectoryMap.", "3b64fa0c-474e-4109-9f43-c861ac5fce19")
-                        .setIsa("31736b3b-82da-4864-bc59-b49c196e3327"),
-                new TypeNode("FileExistenceResult", "A generic file existence result from an ExistenceHandler.",
-                        "b72fd981-3473-4874-9a40-bc86d6b5362f")
-                        .setIsa("6d23a2bc-9539-4914-aaf4-45406f59d8fc"),
-                new TypeNode("ConfigFileExistenceResult", "A possible result from an ExistenceHandler, parsing a " +
-                        "ConfigFileMap.", "6615da84-00f9-4858-a753-38f5905e8c4c")
-                        .setIsa("b72fd981-3473-4874-9a40-bc86d6b5362f"),
-                new TypeNode("BinaryFileExistenceResult", "A possible result from an ExistenceHandler, parsing a " +
-                        "BinaryFileMap.", "6c510a61-53b1-4f16-a5cb-8816846062be")
-                        .setIsa("b72fd981-3473-4874-9a40-bc86d6b5362f"),
-                new TypeNode("LibraryFileExistenceResult", "A possible result from an ExistenceHandler, parsing a " +
-                        "LibraryFileMap.", "e4d04fd4-0d95-49db-9637-891d5f9b6e21")
-                        .setIsa("b72fd981-3473-4874-9a40-bc86d6b5362f"),
-                new TypeNode("DataFileExistenceResult", "A possible result from an ExistenceHandler, parsing a DataFileMap" +
-                        ".", "6a1d9396-707e-4224-965c-2dd8c5c97cfb")
-                        .setIsa("b72fd981-3473-4874-9a40-bc86d6b5362f"),
-                new TypeNode("LogFileExistenceResult", "A possible result from an ExistenceHandler, parsing a LogFileMap" +
-                        ".", "fbd1b321-3c95-4eb3-ad4f-16c1f7215e39")
-                        .setIsa("b72fd981-3473-4874-9a40-bc86d6b5362f"),
-                new TypeNode("NameExistenceResult", "A possible result from an ExistenceHandler, parsing a NameMap.",
-                        "db4c51ec-7455-4bba-b965-f1c067f22e37")
-                        .setIsa("6d23a2bc-9539-4914-aaf4-45406f59d8fc"),
-                new TypeNode("PackageNameExistenceResult", "A possible result from an ExistenceHandler, parsing a " +
-                        "PackageNameMap.", "7dd30b10-04bf-4875-8f98-2add74299648")
-                        .setIsa("db4c51ec-7455-4bba-b965-f1c067f22e37"),
-                new TypeNode("ServiceNameExistenceResult", "A possible result from an ExistenceHandler, parsing a " +
-                        "ServiceNameMap.", "9edc562a-f026-4ea8-861f-0dd0cfdf3c39")
-                        .setIsa("db4c51ec-7455-4bba-b965-f1c067f22e37"),
-                new TypeNode("StringExistenceResult", "A possible result from an ExistenceHandler, parsing a StringMap.",
-                        "7bcaa3ec-9ffb-468d-a5dd-21d26661078a")
-                        .setIsa("6d23a2bc-9539-4914-aaf4-45406f59d8fc"),
-                new TypeNode("VersionStringExistenceResult", "A possible result from an ExistenceHandler, parsing a " +
-                        "VersionStringMap.", "4b86cf7f-6a98-46cc-b78a-0e568d2afe1f")
-                        .setIsa("7bcaa3ec-9ffb-468d-a5dd-21d26661078a"),
-                new TypeNode("UsageResult", "A generic usage result.", "61bc2f71-158c-450c-9346-b9100505054e")
-                        .setIsa("f3498c02-58c6-486b-87c6-9d54607fdb12"),
-                new TypeNode("ProcessorUsageResult", "The processing unit usage results from a UsageHandler.",
-                        "885e629b-3f03-4fa9-a876-67e3991711a0")
-                        .setIsa("61bc2f71-158c-450c-9346-b9100505054e"),
-                new TypeNode("MemoryUsageResult", "The memory usage results from a UsageHandler.",
-                        "c893bc3b-21de-47b8-96dd-0ba11006d35b")
-                        .setIsa("61bc2f71-158c-450c-9346-b9100505054e"),
-                new TypeNode("StorageUsageResult", "The storage usage results from a UsageHandler.",
-                        "2615131b-50ce-4699-a5ef-261fbb633fe3")
-                        .setIsa("61bc2f71-158c-450c-9346-b9100505054e"),
-                new TypeNode("NetworkUsageResult", "The network bandwidth usage results from a UsageHandler.",
-                        "ebaf3fae-351a-4d90-9b98-9970399160aa")
-                        .setIsa("61bc2f71-158c-450c-9346-b9100505054e")
+                        .setIsa("b1bc963a-19cc-4518-aecb-a35d028c49e3")
         );
     }
 }

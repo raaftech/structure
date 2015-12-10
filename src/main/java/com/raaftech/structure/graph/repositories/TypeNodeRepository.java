@@ -3,7 +3,6 @@ package com.raaftech.structure.graph.repositories;
 import java.util.Set;
 
 import org.springframework.data.neo4j.annotation.Query;
-import org.springframework.data.neo4j.repository.GraphRepository;
 import org.springframework.data.repository.query.Param;
 
 import com.raaftech.structure.graph.TypeNode;
@@ -23,6 +22,24 @@ public interface TypeNodeRepository extends GenericRepository<TypeNode> {
 	@Override
     @Query ("START node=node:name(name={name}) MATCH (node:TypeNode) return node LIMIT 1")
     TypeNode findOneByName(@Param("name") String name);
+
+    // Workaround, returning count(n) > 0 returns null when n is NULL.
+    // This returns 0 if we're not of queried type, >0 if we are.
+    @Query ("START start=node:uuid(uuid={uuid}) " +
+            "MATCH start-[:ISA*1..]->(n{name:{type}}) " +
+            "RETURN count(n)")
+    int isOfType(@Param("uuid") String uuid, @Param("type") String type);
+
+    // This query finds common protocols between two (groups of) InstanceNodes.
+    // This can be used to find ways to setup a connection between two computers.
+    @Query ("START commander=node:uuid(uuid={commanderUuid}) " +
+            "MATCH (commander)-[:HAS_COMPONENT*0..]->()-[:INSTANCE_OF]->(client)-[:ISA*0..]->()-[:IMPLEMENTS]->" +
+            "protocol" +
+            "<-[:IMPLEMENTS]-()<-[:ISA*0..]-(server)<-[:INSTANCE_OF]-()<-[:HAS_COMPONENT*0..]-(subject{uuid:{subjectUuid}})," +
+            "(client)-[:ISA*0..]->({name:\"Client\"})," +
+            "(server)-[:ISA*0..]->({name:\"Server\"})" +
+            "RETURN protocol")
+    Set<TypeNode> getCommonProtocols(@Param("commanderUuid") String commander, @Param("subjectUuid") String subject);
 
     // Get the hierarchical path of a type
     @Query ("START deepest=node:uuid(uuid={deepestNode}) " +

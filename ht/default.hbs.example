@@ -1,0 +1,23 @@
+{{!
+
+{
+  "name": "ExampleHandler",
+  "desc": "Example Handler.",
+  "capability": "Stopable",
+  "association": [ "UnixLike" ],
+  "software": [ 
+     { "name": "UnixShell" }
+  ],
+  "arguments": {
+     "required": [ "target", "confirmation" ],
+     "optional": [ "timeout", "message" ],
+     "values": {
+       "target" : [ "Ipv4Address", "Ipv6Address", "DnsName" ],
+       "confirmation": [ "Interactive" ],
+       "timeout": [ "Interactive" ],
+       "message": [ "Interactive" ]
+     }
+  }
+}
+
+}}

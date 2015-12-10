@@ -1,0 +1,32 @@
+{{!
+
+{
+  "name": "WinexeScriptable",
+  "desc": "The handler that provides the scriptable capability to the Winexe client.",
+  "capability": "Scriptable",
+  "providedBy": "Winexe",
+  "appliesTo": [ "Winexe" ],
+  "subjectIsLocal": false,
+  "weight": 90,
+  "arguments": {
+    "non-interactive": {
+      "root": [
+        "payload",
+        "username",
+        "password"
+      ],
+      "group": [
+        "type.configuration.ipaddress.ipv4address"
+      ],
+      "commander": [
+        "type.component.software.client.remoteaccessclient.smbclient.winexe"
+      ]
+    },
+    "interactive": {
+    }
+  }
+}
+
+}}
+smbclient --user={{ username }}%{{ password }} //{{ reachable group.Ipv4Address }}/C$/ -c "put {{ payload.absolute }} Windows\temp\{{ payload.filename }}"
+winexe --user={{ username }}%{{ password }} //{{reachable group.Ipv4Address }} "C:\Windows\temp\{{ payload.filename }}"

@@ -1,8 +1,12 @@
 package com.raaftech.structure.base;
 
+import java.io.File;
+import java.util.Arrays;
 import java.util.Iterator;
 
+import com.raaftech.structure.helper.HandlerLoader;
 import com.raaftech.structure.helper.SchemaManagerUpdate;
+import io.netty.channel.MessageSizeEstimator;
 import io.vertx.core.DeploymentOptions;
 import org.neo4j.graphdb.Transaction;
 import org.slf4j.Logger;
@@ -174,7 +178,7 @@ public class Application {
         while (instanceNodeIterator.hasNext()) {
             InstanceNode instanceNode = instanceNodeIterator.next();
             InstanceNodeActor instanceNodeActor = new InstanceNodeActor(instanceNode);
-            vertx.deployVerticle(instanceNodeActor);
+            vertx.deployVerticle(instanceNodeActor, new DeploymentOptions().setWorker(true));
         }
         tx.close();
 
@@ -188,6 +192,17 @@ public class Application {
             vertx.deployVerticle(templateNodeActor);
         }
         tx.close();
+
+        // Load all handlers
+        log.info("Purging handlers.");
+        instanceNodeRepository.purgeHandlers();
+        if (System.getProperty("handlers") == null) {
+            System.setProperty("handlers", new File("ht").getAbsolutePath());
+        }
+        String handlers = System.getProperty("handlers");
+        Arrays.asList(handlers.split(",")).stream()
+                .distinct()
+                .forEach(HandlerLoader::loadHandlers);
 
         // Wait a second so debug messages are done
         try {
