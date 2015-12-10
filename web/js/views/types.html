@@ -5,8 +5,8 @@
                 <img src="/img/logo_dummy.png" align="left" border="0" />
                 <h1>{{type.name}}</h1>
                 <p>{{type.desc}}</p>
-                <p>
-                    <button type="button" class="btn button-str">Edit</button>
+                <p ng-controller="modalCtrl">
+                    <button type="button" class="btn button-str" ng-click="open(type.uuid)">Edit</button>
                     <button type="button" class="btn button-transparant">...</button>
                 </p>
             </div>
@@ -25,11 +25,11 @@
         <div class="table-responsive">
             <table class="table list">
                 <thead>
-                    <tr ng-click="getSubtypes(type)">
-                        <th><span ng-class="{'open': (subtypes[type.uuid] && type.children != '[]'), 'closed': (!subtypes[type.uuid] && type.children != '[]')}"></span>{{type.name}}</th>
+                    <tr ng-mouseenter="topMenuButton = true" ng-mouseleave="topMenuButton = false">
+                        <th><span ng-class="{'open': (subtypes[type.uuid] && type.children != '[]'), 'closed': (!subtypes[type.uuid] && type.children != '[]')}" ng-click="getSubtypes(type)"></span><span ng-click="getType(type.uuid)">{{type.name}}</span></th>
                         <th>{{subtypes[type.uuid].length ? 'Description': '&nbsp;'}}</th>
                         <th>{{subtypes[type.uuid].length ? 'UUID': '&nbsp;'}}</th>
-                        <th width="35"></th>
+                        <th width="35"><list-item-hover-menu ng-show="topMenuButton" uuid="{{type.uuid}}" /></th>
                     </tr>
                 </thead>
                 <tbody>
