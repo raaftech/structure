@@ -311,6 +311,8 @@ public class InstanceNode extends Node {
         boolean newNode = getId() == null || getId() < 0;
         Transaction tx = Context.INSTANCE.getGraphDatabase().beginTx();
         if (getInstanceOf().getSchema().validateJson(instanceData)) {
+            getInstanceOf().getKv().asMap().entrySet().stream()
+                    .forEach(entry -> kv.setProperty(entry.getKey(), entry.getValue()));
             instanceNodeRepository.save(this);
             tx.success();
             tx.close();

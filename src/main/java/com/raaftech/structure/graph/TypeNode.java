@@ -27,6 +27,10 @@ import com.github.fge.jsonschema.core.exceptions.ProcessingException;
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.graph.repositories.TypeNodeRepository;
 import com.raaftech.structure.helper.JsonSchemaBuilder;
+import org.springframework.data.neo4j.fieldaccess.DynamicProperties;
+import org.springframework.data.neo4j.fieldaccess.DynamicPropertiesContainer;
+
+import javax.servlet.FilterRegistration;
 
 /**
  * Give a description of TypeNode here.
@@ -53,14 +57,14 @@ public class TypeNode extends Node {
     @Fetch
     private Set<TypeNode> implementsProtocols;
 
+    public JsonSchemaBuilder schema = new JsonSchemaBuilder();
+    public DynamicProperties kv = new DynamicPropertiesContainer();
 
     // isaUuid exists only to temporarily save a UUID of a TypeNode's parent
     // in case the parent doesn't exist in the database yet.
     @Transient
     private String isaUuid;
 
-
-    public JsonSchemaBuilder schema = new JsonSchemaBuilder();
     @Transient
     private TypeNodeRepository typeNodeRepository = Context.INSTANCE.getTypeNodeRepository();
 
@@ -103,6 +107,34 @@ public class TypeNode extends Node {
         return this;
     }
 
+    // fillDescriptor is used to set the value of a descriptor. For example: when modelling a particular CPU model
+    // you know that it'll always have 4 cores, n bytes of cache, etc. This method is used to register that for a TypeNode.
+    public TypeNode fillDescriptor(String key, JsonNode data) {
+        ObjectNode propertySchema = (ObjectNode) schema.getProperties().get(key);
+        // Check if we actually have this property.
+        if (propertySchema != null) {
+            try {
+                JsonSchemaBuilder propertySchemaBuilder = new JsonSchemaBuilder((ObjectNode) schema.getProperties().get(key));
+                // If the data we got validates against that specific part of the schema
+                // we save it as a DynamicProperty and remove that property from the schema.
+                if (propertySchemaBuilder.validateJson(data.get(key))) {
+                    kv.setProperty(key, data.get(key).asText());
+                    schema.removeProperty(key);
+                } else {
+                    throw new IllegalArgumentException("Couldn't fill descriptor of " + getName() + " with data, didn't match " +
+                            " the schema.");
+                }
+            } catch (ProcessingException e) {
+                e.printStackTrace();
+                throw new RuntimeException(e.getMessage());
+            }
+        } else {
+            throw new IllegalArgumentException("TypeNode " + getName() + " has no descriptor '" + key + "'.");
+        }
+
+        return this;
+    }
+
     public TypeNode addImplementedProtocol(TypeNode protocol) {
         if (protocol == null) {
             log.error("Provided argument to addImplementedProtocol cannot be null.");
@@ -123,6 +155,10 @@ public class TypeNode extends Node {
         implementsProtocols.add(protocol);
 
         return this;
+    }
+
+    public DynamicProperties getKv() {
+        return kv;
     }
 
     public TypeNode setDescriptor(String key, String valueType, boolean required, String description, String defaultValue,
