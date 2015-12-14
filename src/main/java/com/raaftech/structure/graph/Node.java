@@ -19,17 +19,18 @@ import com.raaftech.structure.base.NodeActor;
 @NodeEntity
 public abstract class Node {
 
-    @GraphId
-    private Long id;
-
     @Indexed(indexType = IndexType.FULLTEXT, indexName = "name")
     protected String name;
-
     @Indexed(indexType = IndexType.FULLTEXT, indexName = "description")
     protected String desc;
-
+    @GraphId
+    private Long id;
     @Indexed(indexType = IndexType.FULLTEXT, unique=true, indexName = "uuid")
     private String uuid;
+
+    /****************/
+    /* Constructors */
+    /****************/
 
     public Node() {
         this.uuid = UUID.randomUUID().toString();
@@ -49,13 +50,9 @@ public abstract class Node {
         this(name, desc, UUID.randomUUID().toString());
     }
 
-    public String getUuid() {
-        return uuid;
-    }
-
-    public String getName() {
-        return name;
-    }
+    /******************/
+    /* Public Methods */
+    /******************/
 
     public String getDesc() {
         return desc;
@@ -63,6 +60,14 @@ public abstract class Node {
 
     public Long getId() {
         return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getUuid() {
+        return uuid;
     }
 
     public abstract ObjectNode toJson();

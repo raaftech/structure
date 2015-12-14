@@ -143,122 +143,9 @@ public class InstanceNode extends Node {
         setProperties(json);
     }
 
-    /***********/
-    /* Methods */
-    /***********/
-
-    // Add a handled type.
-    // Handled types are used on Handlers only.
-    public InstanceNode addHandledType(TypeNode type) {
-        if (getInstanceOf().getName().equals("Handler")) {
-            if (handlesTypes == null) {
-                handlesTypes = new HashSet<>();
-            }
-            handlesTypes.add(type);
-            return this;
-        }
-        throw new RuntimeException("Can't call addHandledType on non-handler instance.");
-    }
-
-    // Set the capability of a Handler instance. Should only be called on
-    // a Handler.
-    public void setCapability(TypeNode capability) {
-        // Check if this is a Handler and if capability isn't null and of right type.
-        if (getInstanceOf().getName().equals("Handler") &&
-                capability != null && capability.getIsa().getName().equals("Capability")) {
-            this.capability = capability;
-        }
-    }
-
-    // Set the capability of a Handler instance. Should only be called on
-    // a Handler.
-    public void setCapability(String capabilityUuid) {
-        TypeNode capability = typeNodeRepository.findByUuid(capabilityUuid);
-        setCapability(capability);
-    }
-
-    // Run a handler on this instance
-    public String runHandler(InstanceNode handler, JsonNode interactive) {
-        HandlerRunner commandHelper = new HandlerRunner(this, handler, interactive);
-        return commandHelper.startHandler();
-    }
-
-    public void addResult(InstanceNode result) {
-        if (results == null) {
-            results = new HashSet<>();
-        }
-        // Check if parameter isn't null and is of right type.
-        if (result != null && result.getInstanceOf().getName().equals("Result")) {
-            Transaction tx = Context.INSTANCE.getGraphDatabase().beginTx();
-            results.add(result);
-            tx.success();
-            tx.close();
-        } else {
-            log.error("addResult called with non-result parameter.");
-        }
-    }
-
-    public void addResult(String resultUuid) {
-        InstanceNode result = instanceNodeRepository.findByUuid(resultUuid);
-        addResult(result);
-    }
-
-    // Get all the results belonging to this InstanceNode
-    public Set<InstanceNode> getResults() {
-        // Fetch results from database
-        GraphDatabase graphDatabase = Context.INSTANCE.getGraphDatabase();
-        Transaction tx = graphDatabase.beginTx();
-        Context.INSTANCE.getNeo4jTemplate().fetch(results);
-        tx.success();
-        tx.close();
-
-        return results;
-    }
-
-    // Get all the results belonging to this InstanceNode
-    // filtering on the task ID.
-    public Set<InstanceNode> getResults(String task) {
-        Set<InstanceNode> filteredResults = getResults().stream()
-                .filter(r -> r.getProperty("task").equals(task))
-                .collect(Collectors.toSet());
-
-        return filteredResults;
-    }
-
-    public void addComponent(InstanceNode component) {
-        if (components == null) {
-            components = new HashSet<>();
-        }
-        components.add(component);
-    }
-
-    public void addComponent(String componentUuid) {
-        InstanceNode component = null;
-
-        if (componentUuid != null) {
-            component = instanceNodeRepository.findByUuid(componentUuid);
-            if (component != null) {
-                addComponent(component);
-            }
-        }
-    }
-
-    public Set<InstanceNode> getComponents() {
-        if (components.size() < 1 || getFirstComponent().getName() == null) {
-            Transaction tx = Context.INSTANCE.getGraphDatabase().beginTx();
-            Context.INSTANCE.getNeo4jTemplate().fetch(components);
-            tx.close();
-        }
-        return components;
-    }
-
-    public TypeNode getInstanceOf() {
-        return instanceOf;
-    }
-
-    public boolean isOfType(String type) {
-        return instanceNodeRepository.isOfType(getUuid(), type) > 0;
-    }
+    /*******************/
+    /* Private Methods */
+    /*******************/
 
     private InstanceNode getFirstComponent() {
         if (components == null) {
@@ -266,90 +153,6 @@ public class InstanceNode extends Node {
         }
 
         return components.iterator().next();
-    }
-
-    public InstanceNode setProperties(ObjectNode properties) {
-        try {
-            JsonSchemaBuilder jsonSchema = instanceOf.getSchema();
-            final JsonSchemaFactory factory = JsonSchemaFactory.byDefault();
-            final JsonSchema schema = factory.getJsonSchema(jsonSchema.getAsObjectNode());
-            ProcessingReport report;
-
-            report = schema.validate(properties);
-
-            if (report.isSuccess()) {
-                // Name and desc are saved already, so we can remove those.
-                properties.remove("name");
-                properties.remove("desc");
-                Iterator<String> iter = properties.fieldNames();
-                while (iter.hasNext()) {
-                    String key = iter.next();
-                    kv.setProperty(key, properties.get(key).asText());
-                }
-            } else {
-                log.debug(report.toString());
-                throw new RuntimeException("Supplied JSON did not match TypeNode schema.");
-            }
-        } catch (ProcessingException e) {
-            log.error(e.getMessage());
-            throw new RuntimeException("Supplied JSON did not match TypeNode schema.");
-        }
-
-        return this;
-    }
-
-    public String getProperty(String key) {
-        Object property = kv.getProperty(key);
-        if (property == null) {
-            return null;
-        } else {
-            return property.toString();
-        }
-    }
-
-    public InstanceNode save() {
-        boolean newNode = getId() == null || getId() < 0;
-        Transaction tx = Context.INSTANCE.getGraphDatabase().beginTx();
-        if (getInstanceOf().getSchema().validateJson(instanceData)) {
-            getInstanceOf().getKv().asMap().entrySet().stream()
-                    .forEach(entry -> kv.setProperty(entry.getKey(), entry.getValue()));
-            instanceNodeRepository.save(this);
-            tx.success();
-            tx.close();
-        } else {
-            tx.failure();
-            tx.close();
-            throw new RuntimeException("Can't create instanceNode, missing properties.");
-        }
-
-        if (newNode) {
-            Context.INSTANCE.getVertx().deployVerticle(
-                    new InstanceNodeActor(this));
-        }
-
-        return this;
-    }
-
-    public Set<TypeNode> findCommonProtocols(InstanceNode subject) {
-        return typeNodeRepository.getCommonProtocols(this.getUuid(), subject.getUuid());
-    }
-
-    /**
-     * Used to create a JSON representation of a single InstanceNode that
-     * can be used to as an argument for a handler.
-     * @return JSON representation that can be used as an argument for a handler.
-     */
-    public ObjectNode toArguments() {
-        final String pathKeyName = "_hierarchyPath";
-        ObjectNode arguments = recurseForArguments(pathKeyName, getComponents(), null);
-        ObjectNode thisJson = (ObjectNode)toFlatJson();
-        if (thisJson.get(pathKeyName).isTextual()) {
-            ((ArrayNode)arguments.get(pathKeyName)).add(thisJson.get(pathKeyName));
-            thisJson.remove(pathKeyName);
-        }
-        arguments.putArray(getInstanceOf().getName()).add(thisJson);
-
-        return arguments;
     }
 
     private ObjectNode recurseForArguments(String pathKeyName, Set<InstanceNode> components, ArrayNode hierarchyPaths) {
@@ -395,6 +198,211 @@ public class InstanceNode extends Node {
         return result;
     }
 
+    /******************/
+    /* Public Methods */
+    /******************/
+
+    // Set the capability of a Handler instance. Should only be called on
+    // a Handler.
+    public void setCapability(TypeNode capability) {
+        // Check if this is a Handler and if capability isn't null and of right type.
+        if (getInstanceOf().getName().equals("Handler") &&
+                capability != null && capability.getIsa().getName().equals("Capability")) {
+            this.capability = capability;
+        }
+    }
+
+    // Set the capability of a Handler instance. Should only be called on
+    // a Handler.
+    public void setCapability(String capabilityUuid) {
+        TypeNode capability = typeNodeRepository.findByUuid(capabilityUuid);
+        setCapability(capability);
+    }
+
+    public Set<InstanceNode> getComponents() {
+        if (components.size() < 1 || getFirstComponent().getName() == null) {
+            Transaction tx = Context.INSTANCE.getGraphDatabase().beginTx();
+            Context.INSTANCE.getNeo4jTemplate().fetch(components);
+            tx.close();
+        }
+        return components;
+    }
+
+    public String getHierarchyPath() {
+        return null;
+    }
+
+    public TypeNode getInstanceOf() {
+        return instanceOf;
+    }
+
+    public String getProperty(String key) {
+        Object property = kv.getProperty(key);
+        if (property == null) {
+            return null;
+        } else {
+            return property.toString();
+        }
+    }
+
+    public InstanceNode setProperties(ObjectNode properties) {
+        try {
+            JsonSchemaBuilder jsonSchema = instanceOf.getSchema();
+            final JsonSchemaFactory factory = JsonSchemaFactory.byDefault();
+            final JsonSchema schema = factory.getJsonSchema(jsonSchema.getAsObjectNode());
+            ProcessingReport report;
+
+            report = schema.validate(properties);
+
+            if (report.isSuccess()) {
+                // Name and desc are saved already, so we can remove those.
+                properties.remove("name");
+                properties.remove("desc");
+                Iterator<String> iter = properties.fieldNames();
+                while (iter.hasNext()) {
+                    String key = iter.next();
+                    kv.setProperty(key, properties.get(key).asText());
+                }
+            } else {
+                log.debug(report.toString());
+                throw new RuntimeException("Supplied JSON did not match TypeNode schema.");
+            }
+        } catch (ProcessingException e) {
+            log.error(e.getMessage());
+            throw new RuntimeException("Supplied JSON did not match TypeNode schema.");
+        }
+
+        return this;
+    }
+
+    // Get all the results belonging to this InstanceNode
+    public Set<InstanceNode> getResults() {
+        // Fetch results from database
+        GraphDatabase graphDatabase = Context.INSTANCE.getGraphDatabase();
+        Transaction tx = graphDatabase.beginTx();
+        Context.INSTANCE.getNeo4jTemplate().fetch(results);
+        tx.success();
+        tx.close();
+
+        return results;
+    }
+
+    // Get all the results belonging to this InstanceNode
+    // filtering on the task ID.
+    public Set<InstanceNode> getResults(String task) {
+        Set<InstanceNode> filteredResults = getResults().stream()
+                .filter(r -> r.getProperty("task").equals(task))
+                .collect(Collectors.toSet());
+
+        return filteredResults;
+    }
+
+    public void addComponent(InstanceNode component) {
+        if (components == null) {
+            components = new HashSet<>();
+        }
+        components.add(component);
+    }
+
+    public void addComponent(String componentUuid) {
+        InstanceNode component = null;
+
+        if (componentUuid != null) {
+            component = instanceNodeRepository.findByUuid(componentUuid);
+            if (component != null) {
+                addComponent(component);
+            }
+        }
+    }
+
+    // Add a handled type.
+    // Handled types are used on Handlers only.
+    public InstanceNode addHandledType(TypeNode type) {
+        if (getInstanceOf().getName().equals("Handler")) {
+            if (handlesTypes == null) {
+                handlesTypes = new HashSet<>();
+            }
+            handlesTypes.add(type);
+            return this;
+        }
+        throw new RuntimeException("Can't call addHandledType on non-handler instance.");
+    }
+
+    public void addResult(InstanceNode result) {
+        if (results == null) {
+            results = new HashSet<>();
+        }
+        // Check if parameter isn't null and is of right type.
+        if (result != null && result.getInstanceOf().getName().equals("Result")) {
+            Transaction tx = Context.INSTANCE.getGraphDatabase().beginTx();
+            results.add(result);
+            tx.success();
+            tx.close();
+        } else {
+            log.error("addResult called with non-result parameter.");
+        }
+    }
+
+    public void addResult(String resultUuid) {
+        InstanceNode result = instanceNodeRepository.findByUuid(resultUuid);
+        addResult(result);
+    }
+
+    public Set<TypeNode> findCommonProtocols(InstanceNode subject) {
+        return typeNodeRepository.getCommonProtocols(this.getUuid(), subject.getUuid());
+    }
+
+    public boolean isOfType(String type) {
+        return instanceNodeRepository.isOfType(getUuid(), type) > 0;
+    }
+
+    // Run a handler on this instance
+    public String runHandler(InstanceNode handler, JsonNode interactive) {
+        HandlerRunner commandHelper = new HandlerRunner(this, handler, interactive);
+        return commandHelper.startHandler();
+    }
+
+    public InstanceNode save() {
+        boolean newNode = getId() == null || getId() < 0;
+        Transaction tx = Context.INSTANCE.getGraphDatabase().beginTx();
+        if (getInstanceOf().getSchema().validateJson(instanceData)) {
+            getInstanceOf().getKv().asMap().entrySet().stream()
+                    .forEach(entry -> kv.setProperty(entry.getKey(), entry.getValue()));
+            instanceNodeRepository.save(this);
+            tx.success();
+            tx.close();
+        } else {
+            tx.failure();
+            tx.close();
+            throw new RuntimeException("Can't create instanceNode, missing properties.");
+        }
+
+        if (newNode) {
+            Context.INSTANCE.getVertx().deployVerticle(
+                    new InstanceNodeActor(this));
+        }
+
+        return this;
+    }
+
+    /**
+     * Used to create a JSON representation of a single InstanceNode that
+     * can be used to as an argument for a handler.
+     * @return JSON representation that can be used as an argument for a handler.
+     */
+    public ObjectNode toArguments() {
+        final String pathKeyName = "_hierarchyPath";
+        ObjectNode arguments = recurseForArguments(pathKeyName, getComponents(), null);
+        ObjectNode thisJson = (ObjectNode)toFlatJson();
+        if (thisJson.get(pathKeyName).isTextual()) {
+            ((ArrayNode)arguments.get(pathKeyName)).add(thisJson.get(pathKeyName));
+            thisJson.remove(pathKeyName);
+        }
+        arguments.putArray(getInstanceOf().getName()).add(thisJson);
+
+        return arguments;
+    }
+
     public JsonNode toFlatJson() {
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode result = mapper.createObjectNode();
@@ -437,9 +445,5 @@ public class InstanceNode extends Node {
         }
 
         return result;
-    }
-
-    public String getHierarchyPath() {
-        return null;
     }
 }

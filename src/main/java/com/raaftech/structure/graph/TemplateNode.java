@@ -65,6 +65,10 @@ public class TemplateNode extends Node {
     @Transient
     TypeNodeRepository typeNodeRepository = Context.INSTANCE.getTypeNodeRepository();
 
+    /****************/
+    /* Constructors */
+    /****************/
+
     public TemplateNode() {}
 
     public TemplateNode(String isa) {
@@ -87,167 +91,16 @@ public class TemplateNode extends Node {
         super(name, desc, uuid);
     }
 
-    public TemplateNode setIsa(TypeNode isa) {
-        this.isa = isa;
 
-        return this;
-    }
-
-    public TemplateNode setIsa(String isa) {
-        TypeNode found = typeNodeRepository.findByUuid(isa);
-        if (found != null) {
-            setIsa(found);
-        } else {
-            throw new RuntimeException("Could not find TypeNode " + isa + " to set ISA relation.");
-        }
-
-        return this;
-    }
-
-    public TemplateNode getParentComponent() {
-        return parentComponent;
-    }
-
-    public TemplateNode setParentComponent(TemplateNode parentComponent) {
-        this.parentComponent = parentComponent;
-
-        return this;
-    }
-
-    public boolean isStartOfTemplate() {
-        return startOfTemplate;
-    }
-
-    public TemplateNode setStartOfTemplate(boolean startOfTemplate) {
-        this.startOfTemplate = startOfTemplate;
-
-        return this;
-    }
-
-    public boolean isRequired() {
-        return required;
-    }
-
-    public TemplateNode setRequired(boolean required) {
-        this.required = required;
-
-        return this;
-    }
-
-    public boolean isUnique() {
-        return unique;
-    }
-
-    public TemplateNode setUnique(boolean unique) {
-        this.unique = unique;
-
-        return this;
-    }
-
-    public TemplateNode addComponent(TemplateNode component) {
-        if (hasComponents == null) {
-            hasComponents = new HashSet<>();
-        }
-        if (required && unique) {
-            hasComponents.add(component);
-            component.setParentComponent(this);
-        } else {
-            throw new RuntimeException("Cannot add a child TemplateNode to " + getName() + " (" + getUuid()
-            + ") because " + getName() + " isn't set to required and unique.");
-        }
-
-        return this;
-    }
-
-    public boolean removeComponent(TemplateNode component) {
-        // UUID will is unique, so we can safely assume
-        // the resulting list will have only 1 element.
-        TemplateNodeRepository templateNodeRepository = Context.INSTANCE.getTemplateNodeRepository();
-        List<TemplateNode> placeholder = hasComponents.stream()
-                .filter(c -> c.getUuid() == component.getUuid())
-                .collect(Collectors.toList());
-        TemplateNode found = placeholder.get(0);
-
-        found.hasComponents.stream()
-        .forEach(TemplateNode::cascadeRemoval);
-
-        templateNodeRepository.delete(found);
-
-        return hasComponents.remove(found);
-    }
-
-    /**
-     * Removes all components from a TemplateNode.
-     * @return The number of components removed.
-     */
-    public long removeAllComponents() {
-        Set<TemplateNode> copy = hasComponents.stream().collect(Collectors.toSet());
-        long count = copy.stream()
-                .peek(component -> removeComponent(component))
-                .count();
-        hasComponents.clear();
-
-        return count;
-    }
+    /*******************/
+    /* Private Methods */
+    /*******************/
 
     private static void cascadeRemoval(TemplateNode child) {
         TemplateNodeRepository templateNodeRepository = Context.INSTANCE.getTemplateNodeRepository();
         child.hasComponents.stream()
         .forEach(TemplateNode::cascadeRemoval);
         templateNodeRepository.delete(child);
-    }
-
-    public ObjectNode toJson() {
-        ObjectMapper mapper = new ObjectMapper();
-        ObjectNode json = mapper.createObjectNode();
-
-        json.put("name", getName());
-        json.put("desc", getDesc());
-        json.put("uuid", getUuid());
-        json.put("isa", isa.getUuid());
-        json.set("form", getForm());
-        try {
-            json.put("schema", mapper.writeValueAsString(getSchema().getAsObjectNode()));
-        } catch (JsonProcessingException e) {
-            log.error(e.getMessage());
-        }
-
-        if (hasComponents != null && hasComponents.size() > 0) {
-            ArrayNode children = json.putArray("children");
-            hasComponents.stream()
-                    .sorted((a, b) -> a.getId().compareTo(b.getId()))
-                    .forEach(component -> {
-                        children.add(component.toJson());
-                    });
-        }
-
-        return json;
-    }
-
-    public JsonSchemaBuilder getSchema() {
-        // We're going to wrap our schema in another schema. This is done to allow for
-        // multiple instantiations of one TypeNode (if the template allows it).
-        // The reason we wrap all the schema's this way is so we have uniform JSON schema
-        // for all types of TypeNodes. We'll just set different min/maxItems on it.
-        JsonSchemaBuilder wrappingSchema = null;
-        try {
-            wrappingSchema = new JsonSchemaBuilder()
-                    .setType("object")
-                    .setAdditionalProperties(false);
-            JsonSchemaBuilder wrappingArray = wrappingSchema.addProperty("instances", "array", required, "Wrapping array.")
-                    .setItemToSchema(isa.getSchema().getAsObjectNode());
-
-            if (required) {
-                wrappingArray.setMinItems(1);
-            }
-            if (unique) {
-                wrappingArray.setMaxItems(1);
-            }
-        } catch (ProcessingException e) {
-            // Shouldn't be possible.
-            throw new RuntimeException("TypeNode didn't contain a valid JSON schema.");
-        }
-        return wrappingSchema;
     }
 
     private JsonSchemaBuilder getArraySchema() {
@@ -266,89 +119,6 @@ public class TemplateNode extends Node {
         }
 
         return arraySchema;
-    }
-
-    // Create a form layout for the generated form.
-    // For now this will only create a form when a TemplateNode
-    // isn't unique (else it'll just contain [ "*" ]).
-    // TODO: Add functionality to create custom form layouts
-    public ArrayNode getForm() {
-        ObjectMapper mapper = new ObjectMapper();
-        ArrayNode form = mapper.createArrayNode();
-
-        ObjectNode formItems = form.addObject();
-        ArrayNode fields = formItems.putArray("items");
-
-        formItems.put("key", "instances");
-        formItems.put("add", "New");
-        if (unique) {
-            formItems.putObject("style").put("add", "hidden");
-        } else {
-            formItems.putObject("style").put("add", "btn-success");
-        }
-
-        JsonSchemaBuilder isaSchema = isa.getSchema();
-        Iterator<String> fieldIterator = isaSchema.getProperties().fieldNames();
-
-        while (fieldIterator.hasNext()) {
-            String fieldname = fieldIterator.next();
-            fields.add("instances[]." + fieldname);
-        }
-
-        return form;
-    }
-
-    public String instantiate(JsonNode instanceData) {
-        // Initialize schema validation data
-        ObjectMapper mapper = new ObjectMapper();
-        ObjectNode schema = mapper.createObjectNode();
-        schema.put("type", "array");
-        ArrayNode schemaArrays = schema.putArray("items");
-        schemaArrays.add(getArraySchema().getAsObjectNode());
-        recurseForArraySchemas(schemaArrays, hasComponents);
-        schema.put("additionalItems", false);
-        JsonSchemaBuilder jsonSchema = null;
-
-        try {
-            jsonSchema = new JsonSchemaBuilder(schema);
-            if (!jsonSchema.validateJson(instanceData)) {
-                throw new RuntimeException("Instantiating template failed on first validation.");
-            }
-        } catch (ProcessingException e) {
-            e.printStackTrace();
-            throw new RuntimeException("Error while constructing schema, aborting.");
-        }
-        // Map stuff
-        HashMap<String, JsonNode> uuidToDataMap = new HashMap<>();
-        Iterator<JsonNode> elements = instanceData.elements();
-        while (elements.hasNext()) {
-            JsonNode element = elements.next();
-            uuidToDataMap.put(element.get("templateNodeUuid").asText(), element.get("data"));
-        }
-
-        Transaction tx = Context.INSTANCE.getGraphDatabase().beginTx();
-        String uuid = null;
-        try {
-            uuid = instantiate(this, null, uuidToDataMap, 0);
-            tx.success();
-        } catch (Exception e) {
-            tx.failure();
-            throw new RuntimeException(e.getMessage());
-        } finally {
-            tx.close();
-        }
-        return uuid;
-    }
-
-    private void recurseForArraySchemas(ArrayNode schema, Set<TemplateNode> templateNodes) {
-        templateNodes.stream()
-                .sorted((a, b) -> Long.compare(a.getId(), b.getId()))
-                .forEach(node -> {
-                    schema.add(node.getArraySchema().getAsObjectNode());
-                    if (node.hasComponents.size() > 0) {
-                        recurseForArraySchemas(schema, node.hasComponents);
-                    }
-                });
     }
 
     // This is not directly called, use instantiate(Map<String, JsonNode> dataMap) in stead
@@ -426,6 +196,36 @@ public class TemplateNode extends Node {
         }
 
         return instanceUuid;
+    }
+
+    private void recurseForArraySchemas(ArrayNode schema, Set<TemplateNode> templateNodes) {
+        templateNodes.stream()
+                .sorted((a, b) -> Long.compare(a.getId(), b.getId()))
+                .forEach(node -> {
+                    schema.add(node.getArraySchema().getAsObjectNode());
+                    if (node.hasComponents.size() > 0) {
+                        recurseForArraySchemas(schema, node.hasComponents);
+                    }
+                });
+    }
+
+    /******************/
+    /* Public Methods */
+    /******************/
+
+    public TemplateNode addComponent(TemplateNode component) {
+        if (hasComponents == null) {
+            hasComponents = new HashSet<>();
+        }
+        if (required && unique) {
+            hasComponents.add(component);
+            component.setParentComponent(this);
+        } else {
+            throw new RuntimeException("Cannot add a child TemplateNode to " + getName() + " (" + getUuid()
+            + ") because " + getName() + " isn't set to required and unique.");
+        }
+
+        return this;
     }
 
     public TemplateNode discover(JsonNode args) {
@@ -512,6 +312,175 @@ public class TemplateNode extends Node {
         return this;
     }
 
+    // Create a form layout for the generated form.
+    // For now this will only create a form when a TemplateNode
+    // isn't unique (else it'll just contain [ "*" ]).
+    // TODO: Add functionality to create custom form layouts
+    public ArrayNode getForm() {
+        ObjectMapper mapper = new ObjectMapper();
+        ArrayNode form = mapper.createArrayNode();
+
+        ObjectNode formItems = form.addObject();
+        ArrayNode fields = formItems.putArray("items");
+
+        formItems.put("key", "instances");
+        formItems.put("add", "New");
+        if (unique) {
+            formItems.putObject("style").put("add", "hidden");
+        } else {
+            formItems.putObject("style").put("add", "btn-success");
+        }
+
+        JsonSchemaBuilder isaSchema = isa.getSchema();
+        Iterator<String> fieldIterator = isaSchema.getProperties().fieldNames();
+
+        while (fieldIterator.hasNext()) {
+            String fieldname = fieldIterator.next();
+            fields.add("instances[]." + fieldname);
+        }
+
+        return form;
+    }
+
+    public TemplateNode getParentComponent() {
+        return parentComponent;
+    }
+
+    public TemplateNode setParentComponent(TemplateNode parentComponent) {
+        this.parentComponent = parentComponent;
+
+        return this;
+    }
+
+    public JsonSchemaBuilder getSchema() {
+        // We're going to wrap our schema in another schema. This is done to allow for
+        // multiple instantiations of one TypeNode (if the template allows it).
+        // The reason we wrap all the schema's this way is so we have uniform JSON schema
+        // for all types of TypeNodes. We'll just set different min/maxItems on it.
+        JsonSchemaBuilder wrappingSchema = null;
+        try {
+            wrappingSchema = new JsonSchemaBuilder()
+                    .setType("object")
+                    .setAdditionalProperties(false);
+            JsonSchemaBuilder wrappingArray = wrappingSchema.addProperty("instances", "array", required, "Wrapping array.")
+                    .setItemToSchema(isa.getSchema().getAsObjectNode());
+
+            if (required) {
+                wrappingArray.setMinItems(1);
+            }
+            if (unique) {
+                wrappingArray.setMaxItems(1);
+            }
+        } catch (ProcessingException e) {
+            // Shouldn't be possible.
+            throw new RuntimeException("TypeNode didn't contain a valid JSON schema.");
+        }
+        return wrappingSchema;
+    }
+
+    public String instantiate(JsonNode instanceData) {
+        // Initialize schema validation data
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode schema = mapper.createObjectNode();
+        schema.put("type", "array");
+        ArrayNode schemaArrays = schema.putArray("items");
+        schemaArrays.add(getArraySchema().getAsObjectNode());
+        recurseForArraySchemas(schemaArrays, hasComponents);
+        schema.put("additionalItems", false);
+        JsonSchemaBuilder jsonSchema = null;
+
+        try {
+            jsonSchema = new JsonSchemaBuilder(schema);
+            if (!jsonSchema.validateJson(instanceData)) {
+                throw new RuntimeException("Instantiating template failed on first validation.");
+            }
+        } catch (ProcessingException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Error while constructing schema, aborting.");
+        }
+        // Map stuff
+        HashMap<String, JsonNode> uuidToDataMap = new HashMap<>();
+        Iterator<JsonNode> elements = instanceData.elements();
+        while (elements.hasNext()) {
+            JsonNode element = elements.next();
+            uuidToDataMap.put(element.get("templateNodeUuid").asText(), element.get("data"));
+        }
+
+        Transaction tx = Context.INSTANCE.getGraphDatabase().beginTx();
+        String uuid = null;
+        try {
+            uuid = instantiate(this, null, uuidToDataMap, 0);
+            tx.success();
+        } catch (Exception e) {
+            tx.failure();
+            throw new RuntimeException(e.getMessage());
+        } finally {
+            tx.close();
+        }
+        return uuid;
+    }
+
+    public boolean isRequired() {
+        return required;
+    }
+
+    public TemplateNode setRequired(boolean required) {
+        this.required = required;
+
+        return this;
+    }
+
+    public boolean isStartOfTemplate() {
+        return startOfTemplate;
+    }
+
+    public TemplateNode setStartOfTemplate(boolean startOfTemplate) {
+        this.startOfTemplate = startOfTemplate;
+
+        return this;
+    }
+
+    public boolean isUnique() {
+        return unique;
+    }
+
+    public TemplateNode setUnique(boolean unique) {
+        this.unique = unique;
+
+        return this;
+    }
+
+    /**
+     * Removes all components from a TemplateNode.
+     * @return The number of components removed.
+     */
+    public long removeAllComponents() {
+        Set<TemplateNode> copy = hasComponents.stream().collect(Collectors.toSet());
+        long count = copy.stream()
+                .peek(component -> removeComponent(component))
+                .count();
+        hasComponents.clear();
+
+        return count;
+    }
+
+    public boolean removeComponent(TemplateNode component) {
+        // UUID will is unique, so we can safely assume
+        // the resulting list will have only 1 element.
+        TemplateNodeRepository templateNodeRepository = Context.INSTANCE.getTemplateNodeRepository();
+        List<TemplateNode> placeholder = hasComponents.stream()
+                .filter(c -> c.getUuid() == component.getUuid())
+                .collect(Collectors.toList());
+        TemplateNode found = placeholder.get(0);
+
+        found.hasComponents.stream()
+        .forEach(TemplateNode::cascadeRemoval);
+
+        templateNodeRepository.delete(found);
+
+        return hasComponents.remove(found);
+    }
+
     public TemplateNode save() {
         Transaction tx = Context.INSTANCE.getGraphDatabase().beginTx();
         TemplateNodeRepository templateNodeRepository = Context.INSTANCE.getTemplateNodeRepository();
@@ -537,5 +506,49 @@ public class TemplateNode extends Node {
         }
 
         return this;
+    }
+
+    public TemplateNode setIsa(TypeNode isa) {
+        this.isa = isa;
+
+        return this;
+    }
+
+    public TemplateNode setIsa(String isa) {
+        TypeNode found = typeNodeRepository.findByUuid(isa);
+        if (found != null) {
+            setIsa(found);
+        } else {
+            throw new RuntimeException("Could not find TypeNode " + isa + " to set ISA relation.");
+        }
+
+        return this;
+    }
+
+    public ObjectNode toJson() {
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode json = mapper.createObjectNode();
+
+        json.put("name", getName());
+        json.put("desc", getDesc());
+        json.put("uuid", getUuid());
+        json.put("isa", isa.getUuid());
+        json.set("form", getForm());
+        try {
+            json.put("schema", mapper.writeValueAsString(getSchema().getAsObjectNode()));
+        } catch (JsonProcessingException e) {
+            log.error(e.getMessage());
+        }
+
+        if (hasComponents != null && hasComponents.size() > 0) {
+            ArrayNode children = json.putArray("children");
+            hasComponents.stream()
+                    .sorted((a, b) -> a.getId().compareTo(b.getId()))
+                    .forEach(component -> {
+                        children.add(component.toJson());
+                    });
+        }
+
+        return json;
     }
 }

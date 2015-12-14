@@ -182,9 +182,9 @@ public class HandlerRunner {
         }
     }
 
-    /**
-     * private methods
-     */
+    /*******************/
+    /* Private Methods */
+    /*******************/
 
     /**
      * Create a string using a handlebars template and some context.
@@ -395,9 +395,9 @@ public class HandlerRunner {
         return result;
     }
 
-    /**
-     * public methods
-     */
+    /******************/
+    /* Public Methods */
+    /******************/
 
     /**
      * Start the running the handler.

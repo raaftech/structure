@@ -46,6 +46,10 @@ public class SchemaNode extends Node {
     @Transient
     private static SchemaNodeRepository schemaNodeRepository = Context.INSTANCE.getSchemaNodeRepository();
 
+    /****************/
+    /* Constructors */
+    /****************/
+
     public SchemaNode() {}
 
     /**
@@ -71,27 +75,9 @@ public class SchemaNode extends Node {
         }
     }
 
-    /**
-     * Set a functional requirement for this SchemaNode.
-     * The requirement is checked when a SchemaUpdate tied to this SchemaNode is being applied.
-     * @param requiredPackage Name of the required SchemaNode.
-     * @param requiredRevision Revision of the required SchemaNode.
-     * @return Returns itself.
-     */
-    public SchemaNode requires(String requiredPackage, Integer requiredRevision) {
-        if (requiredPackage != null && requiredRevision > 0) {
-            this.dependencies.put(requiredPackage, requiredRevision);
-            // In case the requirement hasn't ran yet, this will be set to null
-            // By the time getRequiresSchemaNode is ran in SchemaUpdate, this might have changed.
-            SchemaNode requiredNode = schemaNodeRepository.findByNameAndRevision(requiredPackage, requiredRevision);
-            if (requiredNode != null) {
-                requiresSchemaNode.add(requiredNode);
-            }
-        } else {
-            throw new RuntimeException("Package can't be null and revision has to be higher than 0.");
-        }
-        return this;
-    }
+    /******************/
+    /* Public Methods */
+    /******************/
 
     /**
      * Try to query an existing SchemaNode, construct it when the node doesn't exist yet.
@@ -110,14 +96,6 @@ public class SchemaNode extends Node {
         return schemaNode;
     }
 
-    /**
-     * Does this SchemaNode have a functional requirement?
-     * @return return true if we have a functional requirement, false if not.
-     */
-    public boolean hasRequirement() {
-        return dependencies != null && dependencies.size() > 0;
-    }
-
     public SchemaNode created(TypeNode node) {
         if (createdTypeNodes == null) {
             createdTypeNodes = new HashSet<>();
@@ -126,17 +104,12 @@ public class SchemaNode extends Node {
         return this;
     }
 
-    /**
-     * Used to keep track of which nodes are updated by this SchemaNode/SchemaUpdate pair.
-     * @param node Instance of a node updated by this SchemaNode/SchemaUpdate pair.
-     * @return Returns itself.
-     */
-    public SchemaNode updated(TypeNode node) {
-        if (updatedTypeNodes == null) {
-            updatedTypeNodes = new HashSet<>();
-        }
-        updatedTypeNodes.add(node);
-        return this;
+    public HashMap<String, Integer> getDependencies() {
+        return dependencies;
+    }
+
+    public String getHierarchyPath() {
+        return null;
     }
 
     /**
@@ -179,6 +152,14 @@ public class SchemaNode extends Node {
     }
 
     /**
+     * Does this SchemaNode have a functional requirement?
+     * @return return true if we have a functional requirement, false if not.
+     */
+    public boolean hasRequirement() {
+        return dependencies != null && dependencies.size() > 0;
+    }
+
+    /**
      * Was the SchemaUpdate that created this SchemaNode successfully applied?
      * @return True if the Schema was applied, false if not.
      */
@@ -187,18 +168,32 @@ public class SchemaNode extends Node {
     }
 
     /**
+     * Set a functional requirement for this SchemaNode.
+     * The requirement is checked when a SchemaUpdate tied to this SchemaNode is being applied.
+     * @param requiredPackage Name of the required SchemaNode.
+     * @param requiredRevision Revision of the required SchemaNode.
+     * @return Returns itself.
+     */
+    public SchemaNode requires(String requiredPackage, Integer requiredRevision) {
+        if (requiredPackage != null && requiredRevision > 0) {
+            this.dependencies.put(requiredPackage, requiredRevision);
+            // In case the requirement hasn't ran yet, this will be set to null
+            // By the time getRequiresSchemaNode is ran in SchemaUpdate, this might have changed.
+            SchemaNode requiredNode = schemaNodeRepository.findByNameAndRevision(requiredPackage, requiredRevision);
+            if (requiredNode != null) {
+                requiresSchemaNode.add(requiredNode);
+            }
+        } else {
+            throw new RuntimeException("Package can't be null and revision has to be higher than 0.");
+        }
+        return this;
+    }
+
+    /**
      * Sets the SchemaNode's state to reflect that the paired SchemaUpdate was succesfully applied.
      */
     public void setApplied() {
         applied = true;
-    }
-
-    public HashMap<String, Integer> getDependencies() {
-        return dependencies;
-    }
-
-    public String getHierarchyPath() {
-        return null;
     }
 
     public ObjectNode toJson() {
@@ -224,5 +219,18 @@ public class SchemaNode extends Node {
         }
 
         return json;
+    }
+
+    /**
+     * Used to keep track of which nodes are updated by this SchemaNode/SchemaUpdate pair.
+     * @param node Instance of a node updated by this SchemaNode/SchemaUpdate pair.
+     * @return Returns itself.
+     */
+    public SchemaNode updated(TypeNode node) {
+        if (updatedTypeNodes == null) {
+            updatedTypeNodes = new HashSet<>();
+        }
+        updatedTypeNodes.add(node);
+        return this;
     }
 }

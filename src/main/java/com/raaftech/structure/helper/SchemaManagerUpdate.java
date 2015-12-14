@@ -32,9 +32,8 @@ import com.raaftech.structure.graph.schema.SchemaUpdate;
  */
 public class SchemaManagerUpdate {
 
-    private Logger log = LoggerFactory.getLogger(SchemaManagerUpdate.class);
-
     GraphDatabase graphDatabase = Context.INSTANCE.getGraphDatabase();
+    private Logger log = LoggerFactory.getLogger(SchemaManagerUpdate.class);
 
     private List<Class> findMyTypes(String basePackage) throws IOException, ClassNotFoundException
     {
@@ -56,10 +55,6 @@ public class SchemaManagerUpdate {
         return candidates;
     }
 
-    private String resolveBasePackage(String basePackage) {
-        return ClassUtils.convertClassNameToResourcePath(SystemPropertyUtils.resolvePlaceholders(basePackage));
-    }
-
     private boolean isCandidate(MetadataReader metadataReader) throws ClassNotFoundException
     {
         try {
@@ -71,6 +66,10 @@ public class SchemaManagerUpdate {
         catch(Throwable e){
         }
         return false;
+    }
+
+    private String resolveBasePackage(String basePackage) {
+        return ClassUtils.convertClassNameToResourcePath(SystemPropertyUtils.resolvePlaceholders(basePackage));
     }
 
     public synchronized void applySchemaUpdates() throws RuntimeException {

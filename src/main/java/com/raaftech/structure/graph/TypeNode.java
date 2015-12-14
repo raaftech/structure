@@ -84,9 +84,9 @@ public class TypeNode extends Node {
         initSchema();
     }
 
-    /***********/
-    /* Methods */
-    /***********/
+    /*******************/
+    /* Private Methods */
+    /*******************/
 
     private void initSchema() {
         schema.setType("object");
@@ -95,84 +95,40 @@ public class TypeNode extends Node {
         schema.addProperty("desc", "string", true, "The description of this node.");
     }
 
-    public TypeNode addHandler(InstanceNode handler) {
-        if (handlers == null) {
-            handlers = new HashSet<>();
-        }
+    /******************/
+    /* Public Methods */
+    /******************/
 
-        if (handler.getInstanceOf().getName().equals("Handler")) {
-            handlers.add(handler);
-        }
-
-        return this;
-    }
-
-    // fillDescriptor is used to set the value of a descriptor. For example: when modelling a particular CPU model
-    // you know that it'll always have 4 cores, n bytes of cache, etc. This method is used to register that for a TypeNode.
-    public TypeNode fillDescriptor(String key, JsonNode data) {
-        ObjectNode propertySchema = (ObjectNode) schema.getProperties().get(key);
-        // Check if we actually have this property.
-        if (propertySchema != null) {
-            try {
-                JsonSchemaBuilder propertySchemaBuilder = new JsonSchemaBuilder((ObjectNode) schema.getProperties().get(key));
-                // If the data we got validates against that specific part of the schema
-                // we save it as a DynamicProperty and remove that property from the schema.
-                if (propertySchemaBuilder.validateJson(data.get(key))) {
-                    kv.setProperty(key, data.get(key).asText());
-                    schema.removeProperty(key);
-                } else {
-                    throw new IllegalArgumentException("Couldn't fill descriptor of " + getName() + " with data, didn't match " +
-                            " the schema.");
-                }
-            } catch (ProcessingException e) {
-                e.printStackTrace();
-                throw new RuntimeException(e.getMessage());
-            }
-        } else {
-            throw new IllegalArgumentException("TypeNode " + getName() + " has no descriptor '" + key + "'.");
-        }
-
-        return this;
-    }
-
-    public TypeNode addImplementedProtocol(TypeNode protocol) {
-        if (protocol == null) {
-            log.error("Provided argument to addImplementedProtocol cannot be null.");
-            return this;
-        }
-        if (!protocol.isOfType("Protocol")) {
-            log.error("Can't add non-protocol type " + protocol.getName() + " as implemented protocol.");
-            return this;
-        }
-        if (!isOfType("Software")) {
-            log.error("Can't add an implemented protocol to a non-software type.");
-            return this;
-        }
-
-        if (implementsProtocols == null) {
-            implementsProtocols = new HashSet<>();
-        }
-        implementsProtocols.add(protocol);
-
-        return this;
-    }
-
-    public DynamicProperties getKv() {
-        return kv;
+    public Set<TypeNode> getChildIsaSet() {
+        GraphDatabase graphDatabase = Context.INSTANCE.getGraphDatabase();
+        Transaction tx = graphDatabase.beginTx();
+        Context.INSTANCE.getNeo4jTemplate().fetch(childIsaSet);
+        tx.success();
+        tx.close();
+        return childIsaSet;
     }
 
     public TypeNode setDescriptor(String key, String valueType, boolean required, String description, String defaultValue,
-            String pattern) {
+                                  String pattern) {
         TypeNode parentNode = getIsa();
         if (parentNode != null && parentNode.getSchema().containsProperty(key)) {
             throw new RuntimeException("Can't override parent schema.");
         } else {
             schema.addProperty(key, valueType, required, description)
-            .setDefault(defaultValue)
-            .setPattern(pattern);
+                    .setDefault(defaultValue)
+                    .setPattern(pattern);
         }
 
         return this;
+    }
+
+    public String getHierarchyPath() {
+        String path = typeNodeRepository.getHierarchyPath(getUuid());
+        if (path != null) {
+            return path.toLowerCase();
+        } else {
+            return null;
+        }
     }
 
     public TypeNode getIsa() {
@@ -236,17 +192,74 @@ public class TypeNode extends Node {
         this.isaUuid = isaUuid;
     }
 
-    public Set<TypeNode> getChildIsaSet() {
-        GraphDatabase graphDatabase = Context.INSTANCE.getGraphDatabase();
-        Transaction tx = graphDatabase.beginTx();
-        Context.INSTANCE.getNeo4jTemplate().fetch(childIsaSet);
-        tx.success();
-        tx.close();
-        return childIsaSet;
+    public DynamicProperties getKv() {
+        return kv;
     }
 
     public JsonSchemaBuilder getSchema() {
         return schema;
+    }
+
+    public TypeNode addHandler(InstanceNode handler) {
+        if (handlers == null) {
+            handlers = new HashSet<>();
+        }
+
+        if (handler.getInstanceOf().getName().equals("Handler")) {
+            handlers.add(handler);
+        }
+
+        return this;
+    }
+
+    public TypeNode addImplementedProtocol(TypeNode protocol) {
+        if (protocol == null) {
+            log.error("Provided argument to addImplementedProtocol cannot be null.");
+            return this;
+        }
+        if (!protocol.isOfType("Protocol")) {
+            log.error("Can't add non-protocol type " + protocol.getName() + " as implemented protocol.");
+            return this;
+        }
+        if (!isOfType("Software")) {
+            log.error("Can't add an implemented protocol to a non-software type.");
+            return this;
+        }
+
+        if (implementsProtocols == null) {
+            implementsProtocols = new HashSet<>();
+        }
+        implementsProtocols.add(protocol);
+
+        return this;
+    }
+
+    // fillDescriptor is used to set the value of a descriptor. For example: when modelling a particular CPU model
+    // you know that it'll always have 4 cores, n bytes of cache, etc. This method is used to register that for a TypeNode.
+    public TypeNode fillDescriptor(String key, JsonNode data) {
+        ObjectNode propertySchema = (ObjectNode) schema.getProperties().get(key);
+        // Check if we actually have this property.
+        if (propertySchema != null) {
+            try {
+                JsonSchemaBuilder propertySchemaBuilder = new JsonSchemaBuilder((ObjectNode) schema.getProperties().get(key));
+                // If the data we got validates against that specific part of the schema
+                // we save it as a DynamicProperty and remove that property from the schema.
+                if (propertySchemaBuilder.validateJson(data.get(key))) {
+                    kv.setProperty(key, data.get(key).asText());
+                    schema.removeProperty(key);
+                } else {
+                    throw new IllegalArgumentException("Couldn't fill descriptor of " + getName() + " with data, didn't match " +
+                            " the schema.");
+                }
+            } catch (ProcessingException e) {
+                e.printStackTrace();
+                throw new RuntimeException(e.getMessage());
+            }
+        } else {
+            throw new IllegalArgumentException("TypeNode " + getName() + " has no descriptor '" + key + "'.");
+        }
+
+        return this;
     }
 
     public boolean isOfType(String type) {
@@ -282,14 +295,5 @@ public class TypeNode extends Node {
         }
 
         return json;
-    }
-
-    public String getHierarchyPath() {
-        String path = typeNodeRepository.getHierarchyPath(getUuid());
-        if (path != null) {
-            return path.toLowerCase();
-        } else {
-            return null;
-        }
     }
 }

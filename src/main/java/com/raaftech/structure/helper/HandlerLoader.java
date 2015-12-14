@@ -55,9 +55,11 @@ public class HandlerLoader {
     // Private constructor so HandlerLoader can't be created externally.
     private HandlerLoader() {}
 
-    // Methods
+    /*************************/
+    /* Public Static Methods */
+    /*************************/
 
-    /**
+    /*
      * This is the only exposed method on HandlerLoader.
      * It is used to load all the handlers in a given directory.
      * @param directory A path to a directory containing handlers.
@@ -87,23 +89,9 @@ public class HandlerLoader {
         }
     }
 
-    // This method is called for a found template. It reads its contents to an ArrayList<String>
-    // and passes that to our parse function.
-    private void readFile(Path filePath) {
-        log.debug("Reading contents of file " + filePath.toString() + ".");
-        Charset charset = Charset.forName("UTF-8");
-        try (BufferedReader reader = Files.newBufferedReader(filePath, charset)) {
-            ArrayList<String> contents = new ArrayList<>();
-            String line = null;
-            while ((line = reader.readLine()) != null) {
-                contents.add(line);
-            }
-            parsePreamble(filePath.toString(), contents);
-        } catch (IOException e) {
-            log.error("Error while reading handler template " + filePath.toString());
-            e.printStackTrace();
-        }
-    }
+    /*******************/
+    /* Private Methods */
+    /*******************/
 
     private void createHandlerNode(String handlerCapability, ObjectNode instanceData,
                                    String providedByType, ArrayNode appliesTo) {
@@ -167,7 +155,6 @@ public class HandlerLoader {
         }
     }
 
-
     // Iterate all the files in a directory, calling readFile for .mt files.
     private void iterateFiles(Path directory) throws IOException {
         log.debug("Iterating on directory \"" + directory + "\", finding .hbs files.");
@@ -178,7 +165,7 @@ public class HandlerLoader {
     }
 
     // A json file loader (looks in your classpath/resources.)
-    public JsonNode jsonFromResource(String resource) {
+    private JsonNode jsonFromResource(String resource) {
         JsonNode result = JsonNodeFactory.instance.objectNode();
         InputStream inputStream = getClass().getClassLoader().getResourceAsStream(resource);
 
@@ -283,4 +270,21 @@ public class HandlerLoader {
         }
     }
 
+    // This method is called for a found template. It reads its contents to an ArrayList<String>
+    // and passes that to our parse function.
+    private void readFile(Path filePath) {
+        log.debug("Reading contents of file " + filePath.toString() + ".");
+        Charset charset = Charset.forName("UTF-8");
+        try (BufferedReader reader = Files.newBufferedReader(filePath, charset)) {
+            ArrayList<String> contents = new ArrayList<>();
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                contents.add(line);
+            }
+            parsePreamble(filePath.toString(), contents);
+        } catch (IOException e) {
+            log.error("Error while reading handler template " + filePath.toString());
+            e.printStackTrace();
+        }
+    }
 }
