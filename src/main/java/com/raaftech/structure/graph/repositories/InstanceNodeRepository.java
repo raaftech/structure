@@ -128,4 +128,7 @@ public interface InstanceNodeRepository extends GenericRepository<InstanceNode> 
             "      (handler)-[r4:HANDLES]->(:TypeNode)" +
             "delete r1,r2,r3,r4,handler;")
     void purgeHandlers();
+
+    @Query ("MATCH (n:InstanceNode) WHERE NOT (n)-[:INSTANCE_OF]->({name:\"Handler\"}) RETURN n ORDER BY id(n) DESC LIMIT {amount}")
+    List<InstanceNode> getNLastCreated(@Param("amount") int amount);
 }

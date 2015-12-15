@@ -1,0 +1,14 @@
+{
+    "id": "https://repo.raaftech.com/schema/repository/instancenodes/nLastCreated.schema.json#",
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "description": "Schema for the InstanceNode repository's nLastCreated method.",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "amount": {
+            "type": "number",
+            "minimum": 1
+        }
+    },
+    "required": [ "amount" ]
+}

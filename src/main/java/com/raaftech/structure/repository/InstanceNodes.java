@@ -1,5 +1,6 @@
 package com.raaftech.structure.repository;
 
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,6 +21,34 @@ public class InstanceNodes extends Repository<InstanceNode> {
         this.repository = repository;
     }
 
+    /**
+     * Query the last N InstanceNodes, filtering out InstanceNodes that are handlers.
+     * @return A data array containing the last N created InstanceNodes. If we don't have N nodes, then return
+     * as many as we have.
+     */
+    @SchemaPath("schema/repository/instancenodes/nLastCreated.schema.json")
+    public MessageHandler nLastCreated() {
+        return new MessageHandler() {
+            @Override
+            public JsonNode exec(JsonNode request) {
+                ObjectNode result = mapper.createObjectNode();
+                ObjectNode args = (ObjectNode)request.get("args");
+                int n = args.get("amount").asInt();
+
+                ArrayNode data = result.putArray("data");
+                repository.getNLastCreated(n).stream()
+                        .map(instance -> instance.toFlatJson())
+                        .forEach(data::add);
+
+                return response(request, result);
+            }
+
+            @Override
+            public JsonNode help(JsonNode request) {
+                return null;
+            }
+        };
+    }
     /**
      * Persist an InstanceNode to the database.
      * @return A JSON object containing the UUID of the new InstanceNode
