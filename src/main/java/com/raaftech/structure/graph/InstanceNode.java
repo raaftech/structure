@@ -444,6 +444,8 @@ public class InstanceNode extends Node {
             result.put("incomponent", inComponent.getUuid());
         }
 
+        result.put("_nodeType", getNodeType());
+
         return result;
     }
 }

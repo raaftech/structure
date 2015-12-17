@@ -66,6 +66,10 @@ public abstract class Node {
         return name;
     }
 
+    public String getNodeType() {
+        return getClass().getSimpleName();
+    }
+
     public String getUuid() {
         return uuid;
     }

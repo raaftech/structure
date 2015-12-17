@@ -218,6 +218,8 @@ public class SchemaNode extends Node {
             json.put("revises", getRevisesSchemaNode().getUuid());
         }
 
+        json.put("_nodeType", getNodeType());
+
         return json;
     }
 

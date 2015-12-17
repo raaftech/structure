@@ -549,6 +549,8 @@ public class TemplateNode extends Node {
                     });
         }
 
+        json.put("_nodeType", getNodeType());
+
         return json;
     }
 }

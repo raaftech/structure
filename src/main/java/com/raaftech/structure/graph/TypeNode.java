@@ -294,6 +294,8 @@ public class TypeNode extends Node {
             log.error(e.getMessage());
         }
 
+        json.put("_nodeType", getNodeType());
+
         return json;
     }
 }
