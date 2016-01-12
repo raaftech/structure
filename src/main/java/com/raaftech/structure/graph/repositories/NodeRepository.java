@@ -1,7 +1,6 @@
 package com.raaftech.structure.graph.repositories;
 
 import com.raaftech.structure.graph.Node;
-import org.springframework.data.neo4j.repository.GraphRepository;
 
 /**
  * Give a description of NodeRepository here.

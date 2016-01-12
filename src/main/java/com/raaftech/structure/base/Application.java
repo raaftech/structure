@@ -1,34 +1,19 @@
 package com.raaftech.structure.base;
 
-import java.io.File;
-import java.util.Arrays;
-import java.util.Iterator;
-
-import com.raaftech.structure.helper.HandlerLoader;
-import com.raaftech.structure.helper.SchemaManagerUpdate;
-import io.netty.channel.MessageSizeEstimator;
-import io.vertx.core.DeploymentOptions;
-import org.neo4j.graphdb.Transaction;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.slf4j.bridge.SLF4JBridgeHandler;
-
+import ch.qos.logback.classic.Level;
 import com.raaftech.structure.graph.InstanceNode;
 import com.raaftech.structure.graph.TemplateNode;
 import com.raaftech.structure.graph.TypeNode;
 import com.raaftech.structure.graph.repositories.InstanceNodeRepository;
 import com.raaftech.structure.graph.repositories.TemplateNodeRepository;
 import com.raaftech.structure.graph.repositories.TypeNodeRepository;
+import com.raaftech.structure.helper.HandlerLoader;
+import com.raaftech.structure.helper.SchemaManagerUpdate;
 import com.raaftech.structure.node.InstanceNodeActor;
 import com.raaftech.structure.node.TemplateNodeActor;
 import com.raaftech.structure.node.TypeNodeActor;
-import com.raaftech.structure.repository.InstanceNodes;
-import com.raaftech.structure.repository.Nodes;
-import com.raaftech.structure.repository.SchemaNodes;
-import com.raaftech.structure.repository.TemplateNodes;
-import com.raaftech.structure.repository.TypeNodes;
-
-import ch.qos.logback.classic.Level;
+import com.raaftech.structure.repository.*;
+import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.http.HttpServer;
@@ -37,6 +22,14 @@ import io.vertx.ext.web.handler.StaticHandler;
 import io.vertx.ext.web.handler.sockjs.BridgeOptions;
 import io.vertx.ext.web.handler.sockjs.PermittedOptions;
 import io.vertx.ext.web.handler.sockjs.SockJSHandler;
+import org.neo4j.graphdb.Transaction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.bridge.SLF4JBridgeHandler;
+
+import java.io.File;
+import java.util.Arrays;
+import java.util.Iterator;
 
 /**
  * The main application entry point.

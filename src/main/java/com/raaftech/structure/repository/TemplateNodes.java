@@ -1,12 +1,5 @@
 package com.raaftech.structure.repository;
 
-import java.util.List;
-import java.util.Set;
-
-import com.raaftech.structure.node.TemplateNodeActor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -16,6 +9,11 @@ import com.raaftech.structure.graph.TemplateNode;
 import com.raaftech.structure.graph.TypeNode;
 import com.raaftech.structure.graph.repositories.TemplateNodeRepository;
 import com.raaftech.structure.graph.repositories.TypeNodeRepository;
+import com.raaftech.structure.node.TemplateNodeActor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.List;
 
 public class TemplateNodes extends Repository<TemplateNode> {
 

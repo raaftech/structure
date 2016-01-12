@@ -1,14 +1,12 @@
 package com.raaftech.structure.graph;
 
-import java.util.UUID;
-
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.data.neo4j.annotation.GraphId;
 import org.springframework.data.neo4j.annotation.Indexed;
 import org.springframework.data.neo4j.annotation.NodeEntity;
 import org.springframework.data.neo4j.support.index.IndexType;
 
-import com.raaftech.structure.base.NodeActor;
+import java.util.UUID;
 
 /**
  * Give a description of Node here.

@@ -1,14 +1,12 @@
 package com.raaftech.structure.base;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.raaftech.structure.graph.Node;
 import com.raaftech.structure.graph.repositories.NodeRepository;
-
 import io.vertx.core.eventbus.MessageConsumer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class NodeActor<T extends Node> extends GenericActor {
 

@@ -1,10 +1,9 @@
 package com.raaftech.structure.repository;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.raaftech.structure.graph.SchemaNode;
 import com.raaftech.structure.graph.repositories.SchemaNodeRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SchemaNodes extends Repository<SchemaNode> {
 

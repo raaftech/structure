@@ -4,22 +4,16 @@
 
 package com.raaftech.structure.base;
 
+import com.raaftech.structure.graph.repositories.*;
 import io.vertx.core.Vertx;
-
-import java.util.HashSet;
-import java.util.Set;
-import java.util.concurrent.locks.ReentrantLock;
-
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.data.neo4j.core.GraphDatabase;
 import org.springframework.data.neo4j.support.Neo4jTemplate;
 
-import com.raaftech.structure.graph.repositories.InstanceNodeRepository;
-import com.raaftech.structure.graph.repositories.NodeRepository;
-import com.raaftech.structure.graph.repositories.SchemaNodeRepository;
-import com.raaftech.structure.graph.repositories.TemplateNodeRepository;
-import com.raaftech.structure.graph.repositories.TypeNodeRepository;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * SpringContext singleton/wrapper.

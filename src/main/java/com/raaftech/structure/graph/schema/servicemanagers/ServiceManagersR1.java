@@ -1,10 +1,10 @@
 package com.raaftech.structure.graph.schema.servicemanagers;
 
-import java.util.Arrays;
-
 import com.raaftech.structure.graph.SchemaNode;
 import com.raaftech.structure.graph.TypeNode;
 import com.raaftech.structure.graph.schema.SchemaUpdate;
+
+import java.util.Arrays;
 
 /**
  * Give a description of ServiceManagersR1 here.

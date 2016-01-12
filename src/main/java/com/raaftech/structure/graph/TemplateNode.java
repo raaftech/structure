@@ -1,8 +1,22 @@
 package com.raaftech.structure.graph;
 
-import java.util.*;
-import java.util.stream.Collectors;
-
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.github.fge.jsonschema.core.exceptions.ProcessingException;
+import com.raaftech.structure.base.Context;
+import com.raaftech.structure.graph.repositories.TemplateNodeRepository;
+import com.raaftech.structure.graph.repositories.TypeNodeRepository;
+import com.raaftech.structure.helper.JsonSchemaBuilder;
+import com.raaftech.structure.node.TemplateNodeActor;
+import io.vertx.core.AsyncResult;
+import io.vertx.core.eventbus.EventBus;
+import io.vertx.core.eventbus.Message;
+import io.vertx.core.json.JsonObject;
+import io.vertx.rx.java.ObservableHandler;
+import io.vertx.rx.java.RxHelper;
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.Transaction;
 import org.slf4j.Logger;
@@ -11,27 +25,10 @@ import org.springframework.data.annotation.Transient;
 import org.springframework.data.neo4j.annotation.Fetch;
 import org.springframework.data.neo4j.annotation.NodeEntity;
 import org.springframework.data.neo4j.annotation.RelatedTo;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.github.fge.jsonschema.core.exceptions.ProcessingException;
-import com.raaftech.structure.base.Context;
-import com.raaftech.structure.graph.repositories.InstanceNodeRepository;
-import com.raaftech.structure.graph.repositories.TemplateNodeRepository;
-import com.raaftech.structure.graph.repositories.TypeNodeRepository;
-import com.raaftech.structure.helper.JsonSchemaBuilder;
-import com.raaftech.structure.node.TemplateNodeActor;
-
-import io.vertx.core.AsyncResult;
-import io.vertx.core.eventbus.EventBus;
-import io.vertx.core.eventbus.Message;
-import io.vertx.core.json.JsonObject;
-import io.vertx.rx.java.ObservableHandler;
-import io.vertx.rx.java.RxHelper;
 import rx.Observable;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Give a description of TemplateNode here.

@@ -1,12 +1,8 @@
 package com.raaftech.structure.helper;
 
-import java.io.IOException;
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.TreeMap;
-
+import com.raaftech.structure.base.Context;
+import com.raaftech.structure.graph.SchemaNode;
+import com.raaftech.structure.graph.schema.SchemaUpdate;
 import org.neo4j.graphdb.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,9 +16,12 @@ import org.springframework.data.neo4j.core.GraphDatabase;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.SystemPropertyUtils;
 
-import com.raaftech.structure.base.Context;
-import com.raaftech.structure.graph.SchemaNode;
-import com.raaftech.structure.graph.schema.SchemaUpdate;
+import java.io.IOException;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.TreeMap;
 
 /**
  * Give a description of SchemaManagerUpdate here.

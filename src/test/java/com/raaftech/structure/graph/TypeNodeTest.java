@@ -1,17 +1,14 @@
 package com.raaftech.structure.graph;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
+import com.raaftech.structure.base.Context;
+import com.raaftech.structure.graph.repositories.TypeNodeRepository;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import com.raaftech.structure.base.Context;
-import com.raaftech.structure.graph.repositories.TypeNodeRepository;
+import static org.junit.Assert.*;
 
 public class TypeNodeTest {
 

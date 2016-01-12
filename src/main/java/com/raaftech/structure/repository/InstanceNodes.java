@@ -1,14 +1,13 @@
 package com.raaftech.structure.repository;
 
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.raaftech.structure.annotations.SchemaPath;
 import com.raaftech.structure.graph.InstanceNode;
 import com.raaftech.structure.graph.repositories.InstanceNodeRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class InstanceNodes extends Repository<InstanceNode> {
 

@@ -1,10 +1,9 @@
 package com.raaftech.structure.repository;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.raaftech.structure.graph.TypeNode;
 import com.raaftech.structure.graph.repositories.TypeNodeRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class TypeNodes extends Repository<TypeNode> {
 

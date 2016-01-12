@@ -1,14 +1,13 @@
 package com.raaftech.structure.graph.converters;
 
-import java.io.IOException;
-import java.util.LinkedHashMap;
-
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.convert.converter.Converter;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import java.util.LinkedHashMap;
 
 /**
  * Give a description of LinkedHashMapReader here.

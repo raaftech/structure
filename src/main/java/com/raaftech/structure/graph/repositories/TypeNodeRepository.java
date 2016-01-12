@@ -1,11 +1,10 @@
 package com.raaftech.structure.graph.repositories;
 
-import java.util.Set;
-
+import com.raaftech.structure.graph.TypeNode;
 import org.springframework.data.neo4j.annotation.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.raaftech.structure.graph.TypeNode;
+import java.util.Set;
 
 /**
  * Give a description of TypeNodeRepository here.

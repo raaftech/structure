@@ -4,6 +4,10 @@
 
 package com.raaftech.structure.base;
 
+import com.raaftech.structure.graph.repositories.InstanceNodeRepository;
+import com.raaftech.structure.graph.repositories.NodeRepository;
+import com.raaftech.structure.graph.repositories.SchemaNodeRepository;
+import com.raaftech.structure.graph.repositories.TypeNodeRepository;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.factory.GraphDatabaseBuilder;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
@@ -18,11 +22,6 @@ import org.springframework.data.neo4j.config.EnableNeo4jRepositories;
 import org.springframework.data.neo4j.config.Neo4jConfiguration;
 import org.springframework.data.neo4j.core.GraphDatabase;
 import org.springframework.data.neo4j.support.Neo4jTemplate;
-
-import com.raaftech.structure.graph.repositories.InstanceNodeRepository;
-import com.raaftech.structure.graph.repositories.NodeRepository;
-import com.raaftech.structure.graph.repositories.SchemaNodeRepository;
-import com.raaftech.structure.graph.repositories.TypeNodeRepository;
 
 
 /**

@@ -1,12 +1,10 @@
 package com.raaftech.structure.graph.repositories;
 
 import com.raaftech.structure.graph.SchemaNode;
+import org.springframework.data.neo4j.annotation.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.Set;
-
-import org.springframework.data.neo4j.annotation.Query;
-import org.springframework.data.neo4j.repository.GraphRepository;
-import org.springframework.data.repository.query.Param;
 
 /**
  * Give a description of SchemaNodeRepository here.

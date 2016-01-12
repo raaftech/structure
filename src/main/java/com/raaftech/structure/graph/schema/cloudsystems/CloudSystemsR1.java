@@ -1,10 +1,10 @@
 package com.raaftech.structure.graph.schema.cloudsystems;
 
-import java.util.Arrays;
-
 import com.raaftech.structure.graph.SchemaNode;
 import com.raaftech.structure.graph.TypeNode;
 import com.raaftech.structure.graph.schema.SchemaUpdate;
+
+import java.util.Arrays;
 
 /**
  * Give a description of CloudSystemsR1 here.

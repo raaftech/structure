@@ -1,23 +1,6 @@
 package com.raaftech.structure.graph;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import com.fasterxml.jackson.databind.JsonNode;
-import com.raaftech.structure.helper.HandlerRunner;
-import org.neo4j.graphdb.Direction;
-import org.neo4j.graphdb.Transaction;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.data.annotation.Transient;
-import org.springframework.data.neo4j.annotation.Fetch;
-import org.springframework.data.neo4j.annotation.NodeEntity;
-import org.springframework.data.neo4j.annotation.RelatedTo;
-import org.springframework.data.neo4j.core.GraphDatabase;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -28,10 +11,25 @@ import com.github.fge.jsonschema.main.JsonSchemaFactory;
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.graph.repositories.InstanceNodeRepository;
 import com.raaftech.structure.graph.repositories.TypeNodeRepository;
+import com.raaftech.structure.helper.HandlerRunner;
 import com.raaftech.structure.helper.JsonSchemaBuilder;
 import com.raaftech.structure.node.InstanceNodeActor;
+import org.neo4j.graphdb.Direction;
+import org.neo4j.graphdb.Transaction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.annotation.Transient;
+import org.springframework.data.neo4j.annotation.Fetch;
+import org.springframework.data.neo4j.annotation.NodeEntity;
+import org.springframework.data.neo4j.annotation.RelatedTo;
+import org.springframework.data.neo4j.core.GraphDatabase;
 import org.springframework.data.neo4j.fieldaccess.DynamicProperties;
 import org.springframework.data.neo4j.fieldaccess.DynamicPropertiesContainer;
+
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Give a description of InstanceNode here.

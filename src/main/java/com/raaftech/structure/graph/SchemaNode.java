@@ -1,18 +1,17 @@
 package com.raaftech.structure.graph;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.raaftech.structure.base.Context;
+import com.raaftech.structure.graph.repositories.SchemaNodeRepository;
 import org.neo4j.graphdb.Direction;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.neo4j.annotation.RelatedTo;
 
-import com.raaftech.structure.base.Context;
-import com.raaftech.structure.graph.repositories.SchemaNodeRepository;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * SchemaNode is used to track information of applied SchemaUpdates to the database.

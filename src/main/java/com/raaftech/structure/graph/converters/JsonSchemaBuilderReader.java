@@ -1,16 +1,15 @@
 package com.raaftech.structure.graph.converters;
 
-import java.io.IOException;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.core.convert.converter.Converter;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.fge.jsonschema.core.exceptions.ProcessingException;
 import com.raaftech.structure.helper.JsonSchemaBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.core.convert.converter.Converter;
+
+import java.io.IOException;
 
 /**
  * ConstraintReader converts from (JSON) String to JsonSchemaBuilder

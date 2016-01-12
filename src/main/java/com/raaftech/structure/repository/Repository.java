@@ -1,8 +1,6 @@
 package com.raaftech.structure.repository;
 
 
-import java.util.Set;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -10,6 +8,8 @@ import com.raaftech.structure.annotations.SchemaPath;
 import com.raaftech.structure.base.GenericActor;
 import com.raaftech.structure.graph.Node;
 import com.raaftech.structure.graph.repositories.GenericRepository;
+
+import java.util.Set;
 
 /**
  * An abstract class for the NodeRepository interfaces

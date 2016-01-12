@@ -1,10 +1,10 @@
 package com.raaftech.structure.graph.schema.templates;
 
-import java.util.Arrays;
-
 import com.raaftech.structure.graph.SchemaNode;
 import com.raaftech.structure.graph.TemplateNode;
 import com.raaftech.structure.graph.schema.SchemaUpdate;
+
+import java.util.Arrays;
 
 public class TemplatesR1 extends SchemaUpdate {
 

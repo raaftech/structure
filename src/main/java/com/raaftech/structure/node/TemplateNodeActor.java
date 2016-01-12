@@ -1,9 +1,5 @@
 package com.raaftech.structure.node;
 
-import org.neo4j.graphdb.Transaction;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.raaftech.structure.annotations.SchemaPath;
@@ -11,6 +7,9 @@ import com.raaftech.structure.base.Context;
 import com.raaftech.structure.base.NodeActor;
 import com.raaftech.structure.graph.TemplateNode;
 import com.raaftech.structure.graph.repositories.TemplateNodeRepository;
+import org.neo4j.graphdb.Transaction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by boy on 8/14/15.

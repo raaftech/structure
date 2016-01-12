@@ -1,15 +1,14 @@
 package com.raaftech.structure.graph.repositories;
 
-import java.util.List;
-import java.util.Set;
-
+import com.raaftech.structure.graph.InstanceNode;
 import com.raaftech.structure.graph.TypeNode;
 import org.springframework.data.neo4j.annotation.Query;
 import org.springframework.data.neo4j.annotation.QueryResult;
 import org.springframework.data.neo4j.annotation.ResultColumn;
 import org.springframework.data.repository.query.Param;
 
-import com.raaftech.structure.graph.InstanceNode;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Give a description of InstanceNodeRepository here.

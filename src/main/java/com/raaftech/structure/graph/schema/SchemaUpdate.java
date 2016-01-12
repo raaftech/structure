@@ -1,9 +1,5 @@
 package com.raaftech.structure.graph.schema;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.graph.SchemaNode;
@@ -11,6 +7,10 @@ import com.raaftech.structure.graph.TypeNode;
 import com.raaftech.structure.graph.repositories.SchemaNodeRepository;
 import com.raaftech.structure.graph.repositories.TypeNodeRepository;
 import com.raaftech.structure.helper.JsonSchemaBuilder;
+
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 /**
  * SchemaUpdate is an abstract class that has to be implemented for every update to the schema.
