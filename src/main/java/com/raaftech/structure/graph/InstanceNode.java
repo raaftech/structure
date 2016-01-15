@@ -46,7 +46,6 @@ public class InstanceNode extends Node {
     private Set<InstanceNode> results = new HashSet<>();
 
     @RelatedTo(type="HAS_COMPONENT", direction = Direction.OUTGOING)
-    @Fetch
     private Set<InstanceNode> components;
 
     @RelatedTo(type="HAS_COMPONENT", direction = Direction.INCOMING)
@@ -161,7 +160,7 @@ public class InstanceNode extends Node {
         }
 
         final ArrayNode finalHierarchyPaths = hierarchyPaths;
-        components.stream()
+        getComponents().stream()
                 .forEach(component -> {
                     String componentTypeName = component.getInstanceOf().getName();
                     if (!result.has(componentTypeName)) {
@@ -355,9 +354,12 @@ public class InstanceNode extends Node {
     }
 
     // Run a handler on this instance
-    public String runHandler(InstanceNode handler, JsonNode interactive) {
-        HandlerRunner commandHelper = new HandlerRunner(this, handler, interactive);
-        return commandHelper.startHandler();
+    public void runHandler(InstanceNode handler, JsonNode interactive, String taskId) {
+        // Start the handler after waiting for 100ms. This gives us a chance to return
+        // the taskId to the caller and have the caller monitor the status channel for updates.
+        Context.INSTANCE.getVertx().setTimer(100, job -> {
+                    new HandlerRunner(this, handler, interactive, taskId).startHandler();
+                });
     }
 
     public InstanceNode save() {

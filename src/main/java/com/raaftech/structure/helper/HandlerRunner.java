@@ -15,6 +15,8 @@ import com.raaftech.structure.graph.repositories.InstanceNodeRepository;
 import com.raaftech.structure.graph.repositories.TypeNodeRepository;
 import com.raaftech.structure.helper.handlebars.MultiplePathFileTemplateLoader;
 import com.raaftech.structure.helper.handlebars.ReachableAddress;
+import io.vertx.core.eventbus.EventBus;
+import io.vertx.core.json.JsonObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,10 +39,13 @@ public class HandlerRunner {
     private final InstanceNodeRepository instanceNodeRepository = Context.INSTANCE.getInstanceNodeRepository();
     private final TypeNodeRepository typeNodeRepository = Context.INSTANCE.getTypeNodeRepository();
     private final ObjectMapper mapper = new ObjectMapper();
+    private final EventBus eventBus = Context.INSTANCE.getVertx().eventBus();
     // TODO: Check safety of this type of FileTemplateLoader
     private Handlebars handlebars;
 
     private String workingDirectory;
+    // The given taskId
+    private final String taskId;
     private InstanceNode commander;
     // Subject is the InstanceNode we called a handler on
     private InstanceNode subject;
@@ -60,12 +65,13 @@ public class HandlerRunner {
      * @param subject An InstanceNode (grouped by (subject_0)-[:HAS_COMPONENT]->(subject_n)) which is the subject for our handler.
      * @param handler An InstanceNode representing a Handler.
      */
-    public HandlerRunner(InstanceNode subject, InstanceNode handler, JsonNode interactive) {
+    public HandlerRunner(InstanceNode subject, InstanceNode handler, JsonNode interactive, String taskId) {
         log.info("Running handler " + handler.getName() + " on " + subject.getName() + ".");
         long current = System.currentTimeMillis();
         this.group = instanceNodeRepository.getStartOfComponentGroup(subject.getUuid());
         this.commander = instanceNodeRepository.findOneByName(Context.selfIdentifier);
         this.runsLocally = Boolean.parseBoolean(handler.getProperty("subjectIsLocal"));
+        this.taskId = taskId;
 
         if (group == null) {
             log.error("Couldn't finish running the handler, getStartOfComponentGroup() failed.");
@@ -280,6 +286,23 @@ public class HandlerRunner {
         return fileWriter;
     }
 
+    private void createAndQueueTask(String command) {
+        ObjectNode message = mapper.createObjectNode();
+        message.put("msgh", "queueTask");
+        ObjectNode args = message.putObject("args");
+        args.put("taskId", taskId);
+        ArrayNode jobs = args.putArray("jobs");
+        ObjectNode job = mapper.createObjectNode();
+        job.putObject("metadata")
+                .put("patient", subject.getName())
+                .put("instrument", handler.getName())
+                .put("capability", instanceNodeRepository.getHandlerCapability(handler.getUuid()).getName());
+        job.put("command", command);
+        jobs.add(job);
+
+        eventBus.send("com.raaftech.structure.manager.taskmanager", new JsonObject(message.toString()));
+    }
+
     /**
      * Create a temporary directory.
      * @param path The path of the directory.
@@ -385,8 +408,8 @@ public class HandlerRunner {
             fileWriter.write(generatedScript);
             fileWriter.close();
 
-            result = ProcessRunner.run(workingDirectory + generatedScriptLocation, 2000);
-        } catch (IOException | ProcessingException | InterruptedException e) {
+            createAndQueueTask(workingDirectory + generatedScriptLocation);
+        } catch (IOException | ProcessingException e) {
             e.printStackTrace();
         }
 
@@ -398,11 +421,10 @@ public class HandlerRunner {
     /******************/
 
     /**
-     * Start the running the handler.
+     * Start running the handler.
      * @return The UUID of the result.
      */
-    public String startHandler() {
-        String resultUuid = null;
+    public void startHandler() {
         try {
             log.debug("Getting closest interpreter scriptable handler");
             InstanceNode runOn;
@@ -429,51 +451,23 @@ public class HandlerRunner {
             fileWriter.close();
 
 
-            ProcessRunner.ProcessResult result = null;
             if (runsLocally) {
                 // We'll need to transfer the generated payload to the subject and execute it.
                 log.debug("Going to transport our generated script to the patient.");
-                result = transportAndExecutePayload(commander, workingDirectory + generatedScript);
-                log.debug(result.toString());
+                transportAndExecutePayload(commander, workingDirectory + generatedScript);
             } else {
                 // We need to run the handler on a neighboring network node.
                 // For now, we'll assume the machine running structure is this node.
                 try {
                     log.debug("Going to run generated script " + workingDirectory + generatedScript);
-                    result = ProcessRunner.run(workingDirectory + generatedScript, 5000);
-                    log.debug(result.toString());
+                    createAndQueueTask(workingDirectory + generatedScript);
                 } catch (Exception e) {
                     log.error("Ran into an issue while executing script.");
                 }
             }
-
-            if (result != null) {
-                log.debug("Persisting result to the database.");
-                // Creating the result object
-                ObjectNode resultJson = mapper.createObjectNode()
-                        .put("name", "Result")
-                        .put("desc", "Result of running a command.")
-                        .put("task", "none")
-                        .put("process", result.process)
-                        .put("dateCreated", System.currentTimeMillis())
-                        .put("returnCode", result.returnCode)
-                        .put("stdout", result.stdout)
-                        .put("stderr", result.stderr);
-
-
-                InstanceNode resultNode = new InstanceNode(resultJson, typeNodeRepository.findOneByName("Result").getUuid());
-                subject.addResult(resultNode);
-
-                resultUuid = resultNode.getUuid();
-            } else {
-                log.error("We didn't get any results back from executing the payload.");
-            }
-
         } catch (IOException | ProcessingException | RuntimeException e) {
             e.printStackTrace();
             throw new RuntimeException("Error while running handler, please see the logging.");
         }
-
-        return resultUuid;
     }
 }

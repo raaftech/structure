@@ -9,6 +9,7 @@ import com.raaftech.structure.graph.repositories.TemplateNodeRepository;
 import com.raaftech.structure.graph.repositories.TypeNodeRepository;
 import com.raaftech.structure.helper.HandlerLoader;
 import com.raaftech.structure.helper.SchemaManagerUpdate;
+import com.raaftech.structure.manager.TaskManager;
 import com.raaftech.structure.node.InstanceNodeActor;
 import com.raaftech.structure.node.TemplateNodeActor;
 import com.raaftech.structure.node.TypeNodeActor;
@@ -88,8 +89,10 @@ public class Application {
         // Enable bridging on /eventbus, and add some in- and outbound permissions.
         BridgeOptions bridgeOptions = new BridgeOptions()
                 .addInboundPermitted(new PermittedOptions().setAddress("com.raaftech.structure.manager.schemamanager"))
+                .addInboundPermitted(new PermittedOptions().setAddress("com.raaftech.structure.manager.taskmanager"))
                 .addInboundPermitted(new PermittedOptions().setAddressRegex("com\\.raaftech\\.structure\\.repository\\..*"))
-                .addInboundPermitted(new PermittedOptions().setAddressRegex("com\\.raaftech\\.structure\\.node\\..*"));
+                .addInboundPermitted(new PermittedOptions().setAddressRegex("com\\.raaftech\\.structure\\.node\\..*"))
+                .addOutboundPermitted(new PermittedOptions().setAddress("com.raaftech.structure.status"));
 
         // Enable sockJS Server on our HTTP server.
         sockJsHandler.bridge(bridgeOptions);
@@ -98,8 +101,9 @@ public class Application {
         // If we're in debug mode allow direct access to everything
         // on the eventbus and serve the debug page.
         if (serveDebug) {
-            log.debug("Setting InboundPermitted to any address (\".*\")");
+            log.debug("Setting InboundPermitted and OutboundPermitted to any address (\".*\")");
             bridgeOptions.addInboundPermitted(new PermittedOptions().setAddressRegex(".*"));
+            bridgeOptions.addOutboundPermitted(new PermittedOptions().setAddressRegex(".*"));
         }
         
         // Setup default route.
@@ -121,6 +125,15 @@ public class Application {
             }
         });
         vertx.deployVerticle("com.raaftech.structure.manager.SchemaManager", new DeploymentOptions().setWorker(true), ar -> {
+            if (ar.succeeded()) {
+                log.info("Deployed SchemaManager with id: {}", ar.result());
+            }
+        });
+        int jobpool = 50;
+        if (System.getProperty("jobpool") != null) {
+            jobpool = Integer.parseInt(System.getProperty("jobpool"));
+        }
+        vertx.deployVerticle(new TaskManager(jobpool), ar -> {
             if (ar.succeeded()) {
                 log.info("Deployed SchemaManager with id: {}", ar.result());
             }

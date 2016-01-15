@@ -182,8 +182,9 @@ public class InstanceNodeActor extends NodeActor<InstanceNode> {
                     }
 
                     try {
-                        String resultUuid = getNode().runHandler(handler, sanitized);
-                        result.put("data", resultUuid);
+                        String taskId = UUID.randomUUID().toString();
+                        getNode().runHandler(handler, sanitized, taskId);
+                        result.put("data", taskId);
                     } catch (RuntimeException e) {
                         result.put("error", e.getMessage());
                     }

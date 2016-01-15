@@ -17,31 +17,48 @@ import java.util.concurrent.TimeUnit;
  */
 public class ProcessRunner {
 
+    private final ProcessBuilder processBuilder = new ProcessBuilder();
+    private final ProcessResult processResult = new ProcessResult();
+    private final String command;
+    private Process process;
+
+    public ProcessRunner(String command) {
+        this.command = command;
+    }
+
     private static String readFile(String path) throws IOException {
         byte[] encoded = Files.readAllBytes(Paths.get(path));
         return new String(encoded, Charset.defaultCharset());
     }
 
+    public void cancel() {
+        process.destroy();
+    }
+
+    public String getCommand() {
+        return command;
+    }
+
+    public boolean isRunning() {
+        return process.isAlive();
+    }
+
     /**
      * Run a command on the system.
      * ProcessBuilder has some pitfalls, ProcessRunner takes care of those.
-     * @param command The command to run, e.g. "uname -a"
-     * @param timeout The amount of time in milliseconds to wait before destroying the process.
      * @return a ProcessResult which contains the return code, stdout and stderr.
      * @throws IOException Thrown when the system can't find the called program.
      * @throws InterruptedException Thrown when the current thread is interrupted while waiting.
      */
-    public static ProcessResult run(String command, long timeout) throws IOException, InterruptedException {
+    public void run() throws IOException, InterruptedException {
         // We use a TempFiles so we don't have to deal with
         // consuming buffers to avoid deadlocking. Most OS-es buffer new files in memory
         // first anyway, so reading these TempFiles should happen from memory.
-        final ProcessResult processResult = new ProcessResult();
         // TODO: This is probably not portable, need to test on windows
         FileAttribute<Set<PosixFilePermission>> attrs = PosixFilePermissions.asFileAttribute(
                 PosixFilePermissions.fromString("rw-------"));
         final File tempOut = Files.createTempFile("out", null, attrs).toFile();
         final File tempErr = Files.createTempFile("out", null, attrs).toFile();
-        final ProcessBuilder processBuilder = new ProcessBuilder();
 
         // Clean up our TempFiles
         tempOut.deleteOnExit();
@@ -51,19 +68,7 @@ public class ProcessRunner {
         processBuilder.command(tokenizeCommand(command))
                 .redirectOutput(tempOut)
                 .redirectError(tempErr);
-        Process process = processBuilder.start();
-
-        // Wait for process to exit for a max of timeout ms.
-        if (!process.waitFor(timeout, TimeUnit.MILLISECONDS)) {
-            process.destroy();
-        }
-        // Read output and return
-        processResult.process = command;
-        processResult.returnCode = process.waitFor();
-        processResult.stdout = readFile(tempOut.getPath());
-        processResult.stderr = readFile(tempErr.getPath());
-
-        return processResult;
+        process = processBuilder.start();
     }
 
     private static String[] tokenizeCommand(String commandLine) {

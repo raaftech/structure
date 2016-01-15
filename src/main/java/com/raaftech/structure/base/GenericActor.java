@@ -15,6 +15,7 @@ import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import io.vertx.core.AbstractVerticle;
+import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.json.JsonObject;
 import org.slf4j.Logger;
@@ -54,6 +55,10 @@ public abstract class GenericActor extends AbstractVerticle {
     Map<String, HandlerSchema> handlers = new HashMap<>();
     @Transient
     protected ObjectMapper mapper = new ObjectMapper();
+
+    // statusAddress is used to push notifications of events within Structure
+    // that the GUI may be interested about.
+    private static final String statusAddress = "com.raaftech.structure.status";
 
     class HandlerSchema {
         String schemaPath;
@@ -267,6 +272,14 @@ public abstract class GenericActor extends AbstractVerticle {
             log.error(x.getMessage());
             return false;
         }
+    }
+
+    // Publish a status on the status channel
+    protected void publishStatus(String event, JsonNode data) {
+        EventBus eventBus = getVertx().eventBus();
+        eventBus.publish(statusAddress,
+                new JsonObject("{\"source\":\"" + this.getClass().getSimpleName() + "\", "
+                        + "\"event\": \"" + event + "\", \"data\": " + new JsonObject(data.toString()) + "}"));
     }
 
     // Filter a given JsonNode body and enforce basic validity.

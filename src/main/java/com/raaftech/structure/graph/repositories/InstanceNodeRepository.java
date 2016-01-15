@@ -43,6 +43,11 @@ public interface InstanceNodeRepository extends GenericRepository<InstanceNode> 
             "RETURN n")
     Set<InstanceNode> getCapabilities(@Param("uuid") String uuid, @Param("type") String capability);
 
+    @Query ("START start=node:uuid(uuid={uuid}) " +
+            "MATCH (start)-[:GIVES_CAPABILITY]->(capability)" +
+            "RETURN capability")
+    InstanceNode getHandlerCapability(@Param("uuid") String uuid);
+
     // Find the scriptable (client) handlers of the common protocols of a commander and subject
     @Query ("START commander=node:uuid(uuid={commanderUuid}) " +
             "MATCH (commander)-[:HAS_COMPONENT*..]->()-[:INSTANCE_OF]->(client)-[:ISA*0..]->()-[:IMPLEMENTS]->" +
