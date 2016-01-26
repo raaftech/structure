@@ -69,6 +69,7 @@ public class InstanceNodeActor extends NodeActor<InstanceNode> {
      * child components of that InstanceNode of a particular type.
      * @return An array containing the found components.
      */
+    @SuppressWarnings("unused")
     public MessageHandler getComponentsByType() {
         return new MessageHandler() {
             @Override
@@ -81,8 +82,8 @@ public class InstanceNodeActor extends NodeActor<InstanceNode> {
                 if (found != null && found.size() > 0) {
                     ArrayNode foundComponents = result.putArray("data");
                     found.stream()
-                    .map(n -> n.toJson())
-                    .forEach(json -> foundComponents.add(json));
+                    .map(InstanceNode::toJson)
+                    .forEach(foundComponents::add);
                 } else {
                     result.put("error", "Couldn't find components of type \"" + type + "\".");
                 }
@@ -123,7 +124,7 @@ public class InstanceNodeActor extends NodeActor<InstanceNode> {
                     Map<String, ArrayList<String>> capabilityHandlerMap = handlerMap.get(hqr.limb.getUuid());
 
                     if (capabilityHandlerMap == null) {
-                        capabilityHandlerMap = new LinkedHashMap<String, ArrayList<String>>();
+                        capabilityHandlerMap = new LinkedHashMap<>();
                         handlerMap.put(hqr.limb.getUuid(), capabilityHandlerMap);
                     }
 
@@ -149,13 +150,14 @@ public class InstanceNodeActor extends NodeActor<InstanceNode> {
     }
 
     @SchemaPath("schema/node/instancenode/runHandler.schema.json")
+    @SuppressWarnings("unused")
     public MessageHandler runHandler() {
         return new MessageHandler() {
             @Override
             public JsonNode exec(JsonNode request) {
                 ObjectNode result = mapper.createObjectNode();
                 JsonNode args = request.get("args");
-                JsonNode interactive = null;
+                JsonNode interactive;
                 InstanceNode handler;
 
                 String handlerId = args.get("handler").asText();

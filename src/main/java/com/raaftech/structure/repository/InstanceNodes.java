@@ -26,6 +26,7 @@ public class InstanceNodes extends Repository<InstanceNode> {
      * as many as we have.
      */
     @SchemaPath("schema/repository/instancenodes/nLastCreated.schema.json")
+    @SuppressWarnings("unused")
     public MessageHandler nLastCreated() {
         return new MessageHandler() {
             @Override
@@ -36,7 +37,7 @@ public class InstanceNodes extends Repository<InstanceNode> {
 
                 ArrayNode data = result.putArray("data");
                 repository.getNLastCreated(n).stream()
-                        .map(instance -> instance.toFlatJson())
+                        .map(InstanceNode::toFlatJson)
                         .forEach(data::add);
 
                 return response(request, result);
@@ -54,6 +55,7 @@ public class InstanceNodes extends Repository<InstanceNode> {
      * or an error field if something went wrong.
      */
     @SchemaPath("schema/repository/instancenodes/putNode.schema.json")
+    @SuppressWarnings("unused")
     public MessageHandler putNode() {
         return new MessageHandler() {
             @Override

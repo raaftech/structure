@@ -68,9 +68,6 @@ public class InstanceNode extends Node {
     @Fetch
     private TypeNode instanceOf;
 
-    @RelatedTo(type="HAS_COMPONENT", direction=Direction.OUTGOING)
-    private Set<InstanceNode> hasComponents;
-
     @RelatedTo(type="GIVES_CAPABILITY", direction=Direction.OUTGOING)
     private TypeNode capability;
 
@@ -225,10 +222,6 @@ public class InstanceNode extends Node {
         return components;
     }
 
-    public String getHierarchyPath() {
-        return null;
-    }
-
     public TypeNode getInstanceOf() {
         return instanceOf;
     }
@@ -287,11 +280,9 @@ public class InstanceNode extends Node {
     // Get all the results belonging to this InstanceNode
     // filtering on the task ID.
     public Set<InstanceNode> getResults(String task) {
-        Set<InstanceNode> filteredResults = getResults().stream()
+        return getResults().stream()
                 .filter(r -> r.getProperty("task").equals(task))
                 .collect(Collectors.toSet());
-
-        return filteredResults;
     }
 
     public void addComponent(InstanceNode component) {
@@ -357,9 +348,7 @@ public class InstanceNode extends Node {
     public void runHandler(InstanceNode handler, JsonNode interactive, String taskId) {
         // Start the handler after waiting for 100ms. This gives us a chance to return
         // the taskId to the caller and have the caller monitor the status channel for updates.
-        Context.INSTANCE.getVertx().setTimer(100, job -> {
-                    new HandlerRunner(this, handler, interactive, taskId).startHandler();
-                });
+        Context.INSTANCE.getVertx().setTimer(100, job -> new HandlerRunner(this, handler, interactive, taskId).startHandler());
     }
 
     public InstanceNode save() {
@@ -411,9 +400,7 @@ public class InstanceNode extends Node {
         result.put("desc", getDesc());
         result.put("uuid", getUuid());
         result.put("_hierarchyPath", getInstanceOf().getHierarchyPath());
-        kv.asMap().forEach((key, val) -> {
-            result.put(key, val.toString());
-        });
+        kv.asMap().forEach((key, val) -> result.put(key, val.toString()));
 
         return result;
     }
@@ -422,9 +409,7 @@ public class InstanceNode extends Node {
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode result = mapper.createObjectNode();
         ObjectNode kvJson = result.putObject("kv");
-        kv.asMap().forEach((key, val) -> {
-            kvJson.put(key, val.toString());
-        });
+        kv.asMap().forEach((key, val) -> kvJson.put(key, val.toString()));
         ArrayNode componentsJson = mapper.createArrayNode();
         components.forEach(component -> {
             ObjectNode componentNameUuid = mapper.createObjectNode();

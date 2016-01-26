@@ -10,10 +10,9 @@ import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.util.ArrayList;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 /**
- * Created by boy on 9/16/15.
+ * Created by Boy van Duuren &lt;boy@raaftech.com&gt;.
  */
 public class ProcessRunner {
 
@@ -46,7 +45,6 @@ public class ProcessRunner {
     /**
      * Run a command on the system.
      * ProcessBuilder has some pitfalls, ProcessRunner takes care of those.
-     * @return a ProcessResult which contains the return code, stdout and stderr.
      * @throws IOException Thrown when the system can't find the called program.
      * @throws InterruptedException Thrown when the current thread is interrupted while waiting.
      */
@@ -73,7 +71,7 @@ public class ProcessRunner {
 
     private static String[] tokenizeCommand(String commandLine) {
         String[] tokens = commandLine.split("\\s");
-        ArrayList<String> process = new ArrayList<String>();
+        ArrayList<String> process = new ArrayList<>();
         State state = State.NORMAL;
         String currentNewToken = null;
 
@@ -117,7 +115,7 @@ public class ProcessRunner {
             }
         }
 
-        if (state == State.IN_DOUBLEQUOTES || state == state.IN_QUOTES) {
+        if (state == State.IN_DOUBLEQUOTES || state == State.IN_QUOTES) {
             throw new IllegalArgumentException("String contains uneven amount of quotes.");
         }
 

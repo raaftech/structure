@@ -17,7 +17,7 @@ public class LinkedHashMapWriter implements Converter<LinkedHashMap<String, Stri
     @Override
     public String convert(LinkedHashMap<String, String> linkedHashMap) {
         ObjectNode jsonLinkedHashMap = JsonNodeFactory.instance.objectNode();
-        linkedHashMap.forEach((key, val) -> { jsonLinkedHashMap.put(key, val); });
+        linkedHashMap.forEach(jsonLinkedHashMap::put);
         return jsonLinkedHashMap.toString();
     }
 }

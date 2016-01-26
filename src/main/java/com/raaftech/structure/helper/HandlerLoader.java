@@ -3,13 +3,11 @@ package com.raaftech.structure.helper;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.fge.jsonschema.core.exceptions.ProcessingException;
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.graph.InstanceNode;
 import com.raaftech.structure.graph.TypeNode;
-import com.raaftech.structure.graph.repositories.TemplateNodeRepository;
 import com.raaftech.structure.graph.repositories.TypeNodeRepository;
 import org.neo4j.graphdb.Transaction;
 import org.slf4j.Logger;
@@ -66,7 +64,6 @@ public class HandlerLoader {
      */
     public static void loadHandlers(String directory) {
         HandlerLoader handlerLoader = new HandlerLoader();
-        TemplateNodeRepository templateNodeRepository = Context.INSTANCE.getTemplateNodeRepository();
 
         String dht = new File(directory).getAbsolutePath();
         Path path = FileSystems.getDefault().getPath(dht);
@@ -121,7 +118,7 @@ public class HandlerLoader {
 
         List<TypeNode> applies = appliesToStream
                 .map(JsonNode::asText)
-                .map(nodeUuid -> typeNodeRepository.findOneByName(nodeUuid))
+                .map(typeNodeRepository::findOneByName)
                 .peek(associationNode -> {
                     if (associationNode == null) {
                         throw new RuntimeException("Couldn't find associated TypeNode.");
@@ -166,7 +163,7 @@ public class HandlerLoader {
 
     // A json file loader (looks in your classpath/resources.)
     private JsonNode jsonFromResource(String resource) {
-        JsonNode result = JsonNodeFactory.instance.objectNode();
+        JsonNode result;
         InputStream inputStream = getClass().getClassLoader().getResourceAsStream(resource);
 
         try {
@@ -277,7 +274,7 @@ public class HandlerLoader {
         Charset charset = Charset.forName("UTF-8");
         try (BufferedReader reader = Files.newBufferedReader(filePath, charset)) {
             ArrayList<String> contents = new ArrayList<>();
-            String line = null;
+            String line;
             while ((line = reader.readLine()) != null) {
                 contents.add(line);
             }

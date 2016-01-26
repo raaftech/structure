@@ -14,7 +14,9 @@ public abstract class NodeActor<T extends Node> extends GenericActor {
 
     // We keep a reference to the consumers in case we
     // need to reconfigure or close them later
+    @SuppressWarnings("unused")
     private MessageConsumer<Object> primaryConsumer;
+    @SuppressWarnings("unused")
     private MessageConsumer<Object> secondaryConsumer;
 
     private NodeRepository nodeRepository = Context.INSTANCE.getNodeRepository();
@@ -41,20 +43,17 @@ public abstract class NodeActor<T extends Node> extends GenericActor {
     }
 
     protected T getNode() {
-        T node = (T) nodeRepository.findByUuid(uuid);
-        return node;
+        return (T) nodeRepository.findByUuid(uuid);
     }
 
     // Used to register the handler address
     protected String getActorName(T node) {
         if (node != null) {
-            String[] fullClassName = node.getClass().getName().toString().split("\\.");
+            String[] fullClassName = node.getClass().getName().split("\\.");
             String className = fullClassName[fullClassName.length - 1];
             className = className.replace("Node", "");
-            StringBuilder address = new StringBuilder(className.toLowerCase());
-            address.append("." + uuid);
 
-            return address.toString();
+            return className.toLowerCase() + "." + uuid;
         } else {
             return null;
         }

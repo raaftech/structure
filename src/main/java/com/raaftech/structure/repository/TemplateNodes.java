@@ -30,6 +30,7 @@ public class TemplateNodes extends Repository<TemplateNode> {
      * Find all the templates.
      * @return a JSON object containing an array of all the separate templates.
      */
+    @SuppressWarnings("unused")
     public MessageHandler findAllTemplates() {
         return new MessageHandler() {
             @Override
@@ -57,6 +58,7 @@ public class TemplateNodes extends Repository<TemplateNode> {
      * or an error field if something went wrong.
      */
     @SchemaPath("schema/repository/templatenodes/putNode.schema.json")
+    @SuppressWarnings("unused")
     public MessageHandler putNode() {
         return new MessageHandler() {
             @Override
@@ -65,7 +67,7 @@ public class TemplateNodes extends Repository<TemplateNode> {
                 ObjectNode result = mapper.createObjectNode();
                 JsonNode args = request.get("args");
 
-                String parent = getArgs(args, "parent", (String)null);
+                String parent = args.get("parent").asText();
                 String name = args.get("name").asText();
                 String desc = args.get("desc").asText();
                 String isa = args.get("isa").asText();
@@ -76,11 +78,11 @@ public class TemplateNodes extends Repository<TemplateNode> {
                 boolean start = Boolean.parseBoolean(getArgs(args, "start", "false"));
 
                 try {
-                    if (parent != null && start == true) {
+                    if (parent != null && start) {
                         throw new RuntimeException("Cannot create TemplateNode that's both the start of a template and has a parent " +
                                 "TemplateNode.");
                     }
-                    if (parent == null && start == false) {
+                    if (parent == null && !start) {
                         throw new RuntimeException("Cannot create TemplateNode that has no parent and isn't the start of a template.");
                     }
 

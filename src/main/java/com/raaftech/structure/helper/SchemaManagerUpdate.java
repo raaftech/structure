@@ -63,6 +63,7 @@ public class SchemaManagerUpdate {
             }
         }
         catch(Throwable e){
+            e.printStackTrace();
         }
         return false;
     }
@@ -80,15 +81,11 @@ public class SchemaManagerUpdate {
             .forEach(schemaUpdateClass -> {
                 try {
                     schemaUpdateInstances.add((SchemaUpdate) schemaUpdateClass.newInstance());
-                } catch (InstantiationException e) {
-                    log.error(e.getMessage());
-                } catch (IllegalAccessException e) {
+                } catch (InstantiationException | IllegalAccessException e) {
                     log.error(e.getMessage());
                 }
             });
-        } catch (IOException e) {
-            log.error(e.getMessage());
-        } catch (ClassNotFoundException e) {
+        } catch (IOException | ClassNotFoundException e) {
             log.error(e.getMessage());
         }
 
@@ -133,7 +130,7 @@ public class SchemaManagerUpdate {
                         if (!done.contains(self) && updateInformation.getRevision() == revision) {
                             // If the schemaUpdate doesn't have a functional dependency, or its' functional
                             // dependency is already applied, apply this schemaUpdate
-                            if (updateInformation.hasRequirement() == false ||
+                            if (!updateInformation.hasRequirement() ||
                                     dependenciesMet) {
                                 if (schemaUpdate.apply()) {
                                     // Decrease the number of packages we have to apply for this revision by 1

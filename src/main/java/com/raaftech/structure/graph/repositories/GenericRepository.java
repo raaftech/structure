@@ -7,7 +7,7 @@ import java.util.Set;
 
 public interface GenericRepository<T extends Node> extends GraphRepository<T> {
 
-    public T findByUuid(String uuid);
-    public Set<T> findByName(String name);
-    public T findOneByName(String name);
+    T findByUuid(String uuid);
+    Set<T> findByName(String name);
+    T findOneByName(String name);
 }

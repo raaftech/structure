@@ -11,9 +11,6 @@ import com.github.fge.jsonschema.core.report.ProcessingReport;
 import com.github.fge.jsonschema.main.JsonSchema;
 import com.github.fge.jsonschema.main.JsonSchemaFactory;
 import com.raaftech.structure.annotations.SchemaPath;
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.WebResource;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.eventbus.Message;
@@ -22,7 +19,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.annotation.Transient;
 
-import javax.ws.rs.core.MediaType;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
@@ -40,9 +36,6 @@ import java.util.UUID;
 public abstract class GenericActor extends AbstractVerticle {
 
     private Logger log = LoggerFactory.getLogger(GenericActor.class);
-
-    @Transient
-    JsonNode settings;
 
     @Transient
     JsonNode schemaForRequest;
@@ -80,7 +73,7 @@ public abstract class GenericActor extends AbstractVerticle {
         for (Method method : methods) {
             if (method.getReturnType().equals(MessageHandler.class)) {
                 if (method.isAnnotationPresent(SchemaPath.class)) {
-                    SchemaPath schemaPath = method.getAnnotation(SchemaPath.class);;
+                    SchemaPath schemaPath = method.getAnnotation(SchemaPath.class);
                     messageHandlersAndSchemas.put(method, schemaPath.value());
                 } else {
                     messageHandlersAndSchemas.put(method, "schema/args.schema.json");
@@ -110,7 +103,7 @@ public abstract class GenericActor extends AbstractVerticle {
 
     // A json file loader (looks in your classpath/resources.)
     public JsonNode jsonFromResource(String resource) {
-        JsonNode result = JsonNodeFactory.instance.objectNode();
+        JsonNode result;
         InputStream inputStream = getClass().getClassLoader().getResourceAsStream(resource);
 
         try {
@@ -136,45 +129,6 @@ public abstract class GenericActor extends AbstractVerticle {
         return jsonNode;
     }
 
-    // The Neo4j cypher query helper (accepts a string query parameter).
-    public JsonNode cypherQuery(String query) {
-        return cypherQuery(query, null);
-    }
-
-    // The Neo4j cypher query helper (accepts a string query and params).
-    public JsonNode cypherQuery(String query, String params) {
-        ObjectNode request = JsonNodeFactory.instance.objectNode();
-        if (params != null) { request.put("params", params); }
-        request.put("query", query);
-        return cypherQuery(request);
-    }
-
-    // The Neo4j cypher query helper (accepts a JsonNode parameter).
-    public JsonNode cypherQuery(JsonNode request) {
-
-        final String SERVER_ROOT_URI = settings.get("neo4j.rest.uri").asText();
-        JsonNode result = JsonNodeFactory.instance.objectNode();
-
-        Client client = Client.create();
-        WebResource cypher = client.resource(SERVER_ROOT_URI + "cypher");
-
-        ClientResponse cypherResponse = cypher
-                .accept( MediaType.APPLICATION_JSON )
-                .type( MediaType.APPLICATION_JSON )
-                .entity( request.toString() )
-                .post( ClientResponse.class );
-
-        try {
-            result = mapper.readTree(cypherResponse.getEntity(String.class));
-        } catch (IOException x) {
-            log.error(x.getMessage());
-        }
-
-        cypherResponse.close();
-
-        return result;
-    }
-
     // Get the name of the actor (used with registerHandler).
     public String getActorName() {
         return this.getClass().getName().toLowerCase();
@@ -198,24 +152,6 @@ public abstract class GenericActor extends AbstractVerticle {
         }
     }
 
-    // Get an integer value from the argument object.
-    public int getArgs(JsonNode args, String key, int fallback) {
-        if (args.has(key)) {
-            return args.get(key).asInt();
-        } else {
-            return fallback;
-        }
-    }
-
-    // Get a JSON object from the argument object.
-    public JsonNode getArgs(JsonNode args, String key, JsonNode fallback) {
-        if (args.has(key)) {
-            return args.get(key);
-        } else {
-            return fallback;
-        }
-    }
-
     // Check if some string is valid JSON.
     public boolean isValidJson(String body) {
         try {
@@ -232,9 +168,10 @@ public abstract class GenericActor extends AbstractVerticle {
     }
 
     // Check if a string is a valid UUID.
+    @SuppressWarnings("unused")
     public boolean isUuid(String str) {
         try {
-            UUID.fromString(str);
+            UUID uuid = UUID.fromString(str);
             return true;
         } catch (IllegalArgumentException e) {
             return false;
@@ -283,6 +220,7 @@ public abstract class GenericActor extends AbstractVerticle {
     }
 
     // Filter a given JsonNode body and enforce basic validity.
+    @SuppressWarnings("unused")
     public JsonNode requestFilter(JsonNode body) {
 
         // Bodies; original and sanitized.
@@ -377,8 +315,8 @@ public abstract class GenericActor extends AbstractVerticle {
 
     // A public interface for MessageHandler objects.
     public interface MessageHandler {
-        public JsonNode exec(JsonNode request);
-        public JsonNode help(JsonNode request);
+        JsonNode exec(JsonNode request);
+        JsonNode help(JsonNode request);
     }
 
     // The default usage handler.
@@ -435,7 +373,7 @@ public abstract class GenericActor extends AbstractVerticle {
         // Request!
         JsonObject body = (JsonObject)message.body();
         JsonNode request = convertFromJsonObject(body);
-        JsonObject response = null;
+        JsonObject response;
         String msgh = request.get("msgh").asText();
         JsonNode args = request.get("args");
 

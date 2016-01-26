@@ -39,6 +39,7 @@ public class SpringConfig extends Neo4jConfiguration {
     }
 
     @Bean
+    @SuppressWarnings("deprecation")
     GraphDatabaseService graphDatabaseService() {
         // TODO: make path configurable
         Bootstrapper bootStrapper;

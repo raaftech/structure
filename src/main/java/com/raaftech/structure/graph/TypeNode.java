@@ -41,6 +41,7 @@ public class TypeNode extends Node {
     private TypeNode isa;
 
     @RelatedTo(type="ISA", direction = Direction.INCOMING, elementClass = TypeNode.class, enforceTargetType = true)
+    @SuppressWarnings("unused")
     private Set<TypeNode> childIsaSet;
 
     @RelatedTo(type="HAS_HANDLER", direction = Direction.OUTGOING)
@@ -270,7 +271,7 @@ public class TypeNode extends Node {
         ObjectNode json = mapper.createObjectNode();
 
         List<String> childIsaUuids = getChildIsaSet().stream()
-                .map(childIsa -> childIsa.getUuid())
+                .map(Node::getUuid)
                 .collect(Collectors.toList());
 
         json.put("name", getName());
@@ -281,7 +282,7 @@ public class TypeNode extends Node {
         json.put("desc", getDesc());
         try {
             if (getSchema() != null) {
-                json.put("schema", getSchema().getAsObjectNode());
+                json.set("schema", getSchema().getAsObjectNode());
             }
             json.put("children", mapper.writeValueAsString(childIsaUuids));
         } catch (JsonProcessingException e) {

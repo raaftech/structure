@@ -127,9 +127,8 @@ public class TemplateNode extends Node {
         JsonNode json = dataMap.get(template.getUuid());
         ArrayNode instances = (ArrayNode)json.get("instances");
 
-        Iterator<JsonNode> instanceIter = instances.iterator();
-        while (instanceIter.hasNext()) {
-            ObjectNode instanceData = (ObjectNode)instanceIter.next();
+        for (JsonNode instance : instances) {
+            ObjectNode instanceData = (ObjectNode) instance;
             String typeUuid = null;
             TypeNode typeNode = null;
             if (instanceData.has("typeUuid")) {
@@ -153,7 +152,6 @@ public class TemplateNode extends Node {
             }
         }
 
-        TypeNode typeNode = template.isa;
         String instanceUuid = null;
         JsonNode instanceDataArray = json.get("instances");
 
@@ -272,7 +270,7 @@ public class TemplateNode extends Node {
         // discovery failed.
         Observable<JsonNode> zippedHandlers = Observable.zip(
                 discoveryHandlerMap.entrySet().stream()
-                .map((entry) -> entry.getKey())
+                .map(Map.Entry::getKey)
                 .collect(Collectors.toList()),
                 results -> {
                     ArrayNode instanceJson = mapper.createArrayNode();
@@ -294,7 +292,7 @@ public class TemplateNode extends Node {
                 });
 
         // Instantiate template using data from our zippedHandlers Observable
-        zippedHandlers.subscribe(data -> instantiate(data), fail -> log.error(fail.getMessage()));
+        zippedHandlers.subscribe(this::instantiate, fail -> log.error(fail.getMessage()));
 
         // Send  messages to all the DiscoveryHandlers using an ObservableHandler for callbacks
         discoveryHandlerMap.forEach((observableHandler, uuidAddressList) -> {
@@ -354,7 +352,7 @@ public class TemplateNode extends Node {
         // multiple instantiations of one TypeNode (if the template allows it).
         // The reason we wrap all the schema's this way is so we have uniform JSON schema
         // for all types of TypeNodes. We'll just set different min/maxItems on it.
-        JsonSchemaBuilder wrappingSchema = null;
+        JsonSchemaBuilder wrappingSchema;
         try {
             wrappingSchema = new JsonSchemaBuilder()
                     .setType("object")
@@ -384,7 +382,7 @@ public class TemplateNode extends Node {
         schemaArrays.add(getArraySchema().getAsObjectNode());
         recurseForArraySchemas(schemaArrays, hasComponents);
         schema.put("additionalItems", false);
-        JsonSchemaBuilder jsonSchema = null;
+        JsonSchemaBuilder jsonSchema;
 
         try {
             jsonSchema = new JsonSchemaBuilder(schema);
@@ -454,7 +452,7 @@ public class TemplateNode extends Node {
     public long removeAllComponents() {
         Set<TemplateNode> copy = hasComponents.stream().collect(Collectors.toSet());
         long count = copy.stream()
-                .peek(component -> removeComponent(component))
+                .peek(this::removeComponent)
                 .count();
         hasComponents.clear();
 
@@ -466,7 +464,7 @@ public class TemplateNode extends Node {
         // the resulting list will have only 1 element.
         TemplateNodeRepository templateNodeRepository = Context.INSTANCE.getTemplateNodeRepository();
         List<TemplateNode> placeholder = hasComponents.stream()
-                .filter(c -> c.getUuid() == component.getUuid())
+                .filter(c -> c.getUuid().equals(component.getUuid()))
                 .collect(Collectors.toList());
         TemplateNode found = placeholder.get(0);
 
@@ -541,9 +539,7 @@ public class TemplateNode extends Node {
             ArrayNode children = json.putArray("children");
             hasComponents.stream()
                     .sorted((a, b) -> a.getId().compareTo(b.getId()))
-                    .forEach(component -> {
-                        children.add(component.toJson());
-                    });
+                    .forEach(component -> children.add(component.toJson()));
         }
 
         json.put("_nodeType", getNodeType());

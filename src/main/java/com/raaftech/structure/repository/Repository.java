@@ -34,6 +34,7 @@ public abstract class Repository<T extends Node> extends GenericActor {
      * didn't find a match.
      */
     @SchemaPath("schema/repository/findByName.schema.json")
+    @SuppressWarnings("unused")
     public MessageHandler findByName() {
         return new MessageHandler() {
 
@@ -46,9 +47,8 @@ public abstract class Repository<T extends Node> extends GenericActor {
                 ArrayNode nodes = result.putArray("data");
                 Set<T> found = repository.findByName(name);
                 found.stream()
-                .forEach(node -> {
-                    nodes.add(node.toJson());
-                });
+                        .map(Node::toJson)
+                        .forEach(nodes::add);
 
                 return response(request, result);
             }
@@ -104,6 +104,7 @@ public abstract class Repository<T extends Node> extends GenericActor {
      * but if we didn't find a typenode, the error field will be set with a message.
      */
     @SchemaPath("schema/repository/findOne.schema.json")
+    @SuppressWarnings("unused")
     public MessageHandler findOne() {
         return new MessageHandler() {
 

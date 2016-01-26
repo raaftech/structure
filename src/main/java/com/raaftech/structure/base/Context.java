@@ -27,17 +27,14 @@ public enum Context {
     private final ApplicationContext context;
     private Vertx vertx = null;
     private Set<String> registeredPlugins = new HashSet<>();
+    @SuppressWarnings("unused")
     private static final ReentrantLock initLock = new ReentrantLock();
 
     // The identifier used to identify this structure instance in the database.
     public final static String selfIdentifier = "structure";
 
-    private Context() {
+    Context() {
         context = new AnnotationConfigApplicationContext(SpringConfig.class, ConverterConfig.class);
-    }
-
-    public ApplicationContext getApplicationContext() {
-        return context;
     }
 
     public NodeRepository getNodeRepository() {
@@ -74,9 +71,5 @@ public enum Context {
 
     public void setVertx(Vertx vertx) {
         this.vertx = vertx;
-    }
-
-    public Set<String> getRegisteredPlugins() {
-        return registeredPlugins;
     }
 }

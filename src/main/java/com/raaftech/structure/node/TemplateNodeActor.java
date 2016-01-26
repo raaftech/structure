@@ -12,8 +12,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Created by boy on 8/14/15.
+ * Created by Boy van Duuren &lt;boy@raaftech.com&gt;.
  */
+
 public class TemplateNodeActor extends NodeActor<TemplateNode> {
 
     private Logger log = LoggerFactory.getLogger(TemplateNodeActor.class);
@@ -36,6 +37,7 @@ public class TemplateNodeActor extends NodeActor<TemplateNode> {
      * @return A JSON object with an error field if an error occurred.
      */
     // TODO: Undeploy TemplateNodes when they are removed from the database
+    @SuppressWarnings("unused")
     public MessageHandler removeFromTemplate() {
         return new MessageHandler() {
             @Override
@@ -97,6 +99,7 @@ public class TemplateNodeActor extends NodeActor<TemplateNode> {
      * or a JSON object with an error field when an error occurs.
      */
     @SchemaPath("schema/node/templatenode/instantiate.schema.json")
+    @SuppressWarnings("unused")
     public MessageHandler instantiate() {
         return new MessageHandler() {
             @Override
@@ -136,6 +139,7 @@ public class TemplateNodeActor extends NodeActor<TemplateNode> {
      * @return Nothing really informative... WIP
      */
     @SchemaPath("schema/node/templatenode/discover.schema.json")
+    @SuppressWarnings("unused")
     public MessageHandler discover() {
         return new MessageHandler() {
             @Override

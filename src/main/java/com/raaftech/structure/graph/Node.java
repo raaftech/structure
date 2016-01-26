@@ -22,6 +22,7 @@ public abstract class Node {
     @Indexed(indexType = IndexType.FULLTEXT, indexName = "description")
     protected String desc;
     @GraphId
+    @SuppressWarnings("unused")
     private Long id;
     @Indexed(indexType = IndexType.FULLTEXT, unique=true, indexName = "uuid")
     private String uuid;
@@ -34,8 +35,9 @@ public abstract class Node {
         this.uuid = UUID.randomUUID().toString();
     }
 
+    @SuppressWarnings("unused")
     public Node(String name, String desc, String uuid) {
-        UUID.fromString(uuid); // throws exception on invalid uuid
+        UUID check = UUID.fromString(uuid); // throws exception on invalid uuid
         if (name.length() == 0 || desc.length() == 0) {
             throw new RuntimeException("Cannot create node with an empty name or description.");
         }

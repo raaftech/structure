@@ -37,7 +37,6 @@ public class HandlerRunner {
 
     private final Logger log = LoggerFactory.getLogger(InstanceNode.class);
     private final InstanceNodeRepository instanceNodeRepository = Context.INSTANCE.getInstanceNodeRepository();
-    private final TypeNodeRepository typeNodeRepository = Context.INSTANCE.getTypeNodeRepository();
     private final ObjectMapper mapper = new ObjectMapper();
     private final EventBus eventBus = Context.INSTANCE.getVertx().eventBus();
     // TODO: Check safety of this type of FileTemplateLoader
@@ -310,11 +309,7 @@ public class HandlerRunner {
      */
     private boolean createTempDirectory(String path) {
         File dir = new File(path);
-        if (!new File(path).exists()) {
-            return dir.mkdirs();
-        } else {
-            return false;
-        }
+        return !new File(path).exists() && dir.mkdirs();
     }
 
     /**
@@ -422,7 +417,6 @@ public class HandlerRunner {
 
     /**
      * Start running the handler.
-     * @return The UUID of the result.
      */
     public void startHandler() {
         try {

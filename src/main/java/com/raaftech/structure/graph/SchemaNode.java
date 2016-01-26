@@ -23,6 +23,7 @@ import java.util.Set;
  */
 public class SchemaNode extends Node {
 
+    @SuppressWarnings("unused")
     private static final int epoch = 1;
     private int revision;
     private boolean applied;
@@ -107,10 +108,6 @@ public class SchemaNode extends Node {
         return dependencies;
     }
 
-    public String getHierarchyPath() {
-        return null;
-    }
-
     /**
      * Gets the SchemaNode's functional requirement.
      * Because a functional requirement might not have existed in the database when this SchemaNode was originally instantiated,
@@ -122,9 +119,7 @@ public class SchemaNode extends Node {
         // but might exist now. For this reason we need to set required again.
         if (hasRequirement()) {
             dependencies.entrySet().stream()
-                .forEach(dependency -> {
-                    requires(dependency.getKey(), dependency.getValue());
-                });
+                .forEach(dependency -> requires(dependency.getKey(), dependency.getValue()));
         }
         return requiresSchemaNode;
     }
@@ -214,7 +209,7 @@ public class SchemaNode extends Node {
         }
 
         if (getRevisesSchemaNode() != null) {
-            json.put("revises", getRevisesSchemaNode().getUuid());
+            json.put("revises", revises.getUuid());
         }
 
         json.put("_nodeType", getNodeType());

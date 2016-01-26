@@ -1,6 +1,5 @@
 package com.raaftech.structure.graph.converters;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.fge.jsonschema.core.exceptions.ProcessingException;
@@ -27,14 +26,9 @@ public class JsonSchemaBuilderReader implements Converter<String, JsonSchemaBuil
         JsonSchemaBuilder constraints = null;
         try {
             constraints = new JsonSchemaBuilder((ObjectNode)mapper.readTree(s));
-        } catch (JsonProcessingException e) {
-            log.error(e.getMessage());
-        } catch (ProcessingException e) {
-            log.error(e.getMessage());
-        } catch (IOException e) {
+        } catch (ProcessingException | IOException e) {
             log.error(e.getMessage());
         }
-
         return constraints;
     }
 }

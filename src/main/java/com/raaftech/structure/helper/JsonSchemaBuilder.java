@@ -31,10 +31,8 @@ public class JsonSchemaBuilder {
 
     final static Logger log = LoggerFactory.getLogger(JsonSchemaBuilder.class);
 
-    private ObjectMapper mapper;
     private ObjectNode json;
     private final JsonSchemaFactory factory = JsonSchemaFactory.byDefault();
-    private final SyntaxValidator syntaxValidator = factory.getSyntaxValidator();
 
     /**
      * Parameterless constructor for JsonSchemaBuilder.
@@ -42,7 +40,7 @@ public class JsonSchemaBuilder {
      * specified.
      */
     public JsonSchemaBuilder() {
-        mapper = new ObjectMapper();
+        ObjectMapper mapper = new ObjectMapper();
         json = mapper.createObjectNode();
 
         json.put("$schema", "http://json-schema.org/schema#");
@@ -69,6 +67,7 @@ public class JsonSchemaBuilder {
      * @throws ProcessingException When the ObjectNode does not comply to the JSON Schema specification
      */
     public JsonSchemaBuilder(ObjectNode objectNode) throws ProcessingException {
+        SyntaxValidator syntaxValidator = factory.getSyntaxValidator();
         ProcessingReport report = syntaxValidator.validateSchema(objectNode);
 
         if (report.isSuccess()) {
@@ -128,7 +127,7 @@ public class JsonSchemaBuilder {
 
         ObjectNode properties = getOrCreateProperties();
 
-        JsonSchemaBuilder property = null;
+        JsonSchemaBuilder property;
         try {
             property = new JsonSchemaBuilder(properties.putObject(name));
         } catch (ProcessingException e) {
@@ -237,7 +236,7 @@ public class JsonSchemaBuilder {
         }
 
         ObjectNode items = getOrCreateItems();
-        JsonSchemaBuilder item = null;
+        JsonSchemaBuilder item;
         ArrayNode required;
 
         try {
@@ -283,7 +282,7 @@ public class JsonSchemaBuilder {
             if (required != null) {
                 required.removeAll();
             }
-            items.putAll(objectNode);
+            items.setAll(objectNode);
         } else {
             throw new ProcessingException("Can't construct JsonSchemaBuilder with invalid JSON schema as argument.");
         }

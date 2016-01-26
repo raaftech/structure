@@ -79,7 +79,7 @@ public class Application {
 
         // Setup vertx with a maxWorkerExecuteTime of 5 minutes.
         // TODO: Make maxWorkerExecuteTime user configurable?
-        vertx = Vertx.vertx(new VertxOptions().setMaxWorkerExecuteTime(5l * 60 * 1000 * 1000000));
+        vertx = Vertx.vertx(new VertxOptions().setMaxWorkerExecuteTime(5L * 60 * 1000 * 1000000));
         router = Router.router(vertx);
         sockJsHandler = SockJSHandler.create(vertx);
         httpServer = vertx.createHttpServer();
@@ -169,9 +169,7 @@ public class Application {
         // Deploy TypeNodeActors.
         log.debug("Deploying TypeNodeActors..");
         Transaction tx = Context.INSTANCE.getGraphDatabase().beginTx();
-        Iterator<TypeNode> typeNodeIterator = typeNodeRepository.findAll().iterator();
-        while (typeNodeIterator.hasNext()) {
-            TypeNode typeNode = typeNodeIterator.next();
+        for (TypeNode typeNode : typeNodeRepository.findAll()) {
             TypeNodeActor typeNodeActor = new TypeNodeActor(typeNode);
             vertx.deployVerticle(typeNodeActor);
         }
@@ -180,9 +178,7 @@ public class Application {
         // Deploy InstanceNodeActors.
         log.debug("Deploying InstanceNodeActors..");
         tx = Context.INSTANCE.getGraphDatabase().beginTx();
-        Iterator<InstanceNode> instanceNodeIterator = instanceNodeRepository.findAll().iterator();
-        while (instanceNodeIterator.hasNext()) {
-            InstanceNode instanceNode = instanceNodeIterator.next();
+        for (InstanceNode instanceNode : instanceNodeRepository.findAll()) {
             InstanceNodeActor instanceNodeActor = new InstanceNodeActor(instanceNode);
             vertx.deployVerticle(instanceNodeActor, new DeploymentOptions().setWorker(true));
         }
@@ -191,9 +187,7 @@ public class Application {
         // Deploy TemplateNodeActors.
         log.debug("Deploying TemplateNodeActors..");
         tx = Context.INSTANCE.getGraphDatabase().beginTx();
-        Iterator<TemplateNode> templateNodeIterator = templateNodeRepository.findAll().iterator();
-        while (templateNodeIterator.hasNext()) {
-            TemplateNode templateNode = templateNodeIterator.next();
+        for (TemplateNode templateNode : templateNodeRepository.findAll()) {
             TemplateNodeActor templateNodeActor = new TemplateNodeActor(templateNode);
             vertx.deployVerticle(templateNodeActor);
         }
@@ -214,7 +208,7 @@ public class Application {
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {
-            log.error(e.getMessage());;
+            log.error(e.getMessage());
         }
 
         // A friendly message telling the user we're done.

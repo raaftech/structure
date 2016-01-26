@@ -19,7 +19,7 @@ public class BusManager extends GenericActor {
                 ArrayNode data = result.putArray("data");
 
                 vertx.deploymentIDs().stream()
-                        .forEach(id -> data.add(id));
+                        .forEach(data::add);
 
                 return response(request, result);
             }

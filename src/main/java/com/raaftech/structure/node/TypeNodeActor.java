@@ -3,10 +3,8 @@ package com.raaftech.structure.node;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.raaftech.structure.base.Context;
 import com.raaftech.structure.base.NodeActor;
 import com.raaftech.structure.graph.TypeNode;
-import com.raaftech.structure.graph.repositories.TypeNodeRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,8 +15,6 @@ import org.slf4j.LoggerFactory;
  * @since 2015-08-12
  */
 public class TypeNodeActor extends NodeActor<TypeNode> {
-
-    private TypeNodeRepository typeNodeRepository = Context.INSTANCE.getTypeNodeRepository();
 
     private String hierarchyPath;
 
@@ -71,6 +67,7 @@ public class TypeNodeActor extends NodeActor<TypeNode> {
     }
 
     // Get an array of all the types one level below
+    @SuppressWarnings("unused")
     public MessageHandler getSubtypes() {
         return new MessageHandler() {
             @Override
