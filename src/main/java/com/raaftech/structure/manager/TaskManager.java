@@ -41,7 +41,7 @@ public class TaskManager extends GenericActor {
      * in stead we'll move them to the back of the queue.
      */
     private enum TaskStatus {
-        READY,
+        SCHEDULED,
         PAUSED
     }
 
@@ -77,7 +77,7 @@ public class TaskManager extends GenericActor {
      * A private class to group jobs as a task.
      */
     private class Task {
-        public TaskStatus status = TaskStatus.READY;
+        public TaskStatus status = TaskStatus.SCHEDULED;
         public String id = UUID.randomUUID().toString();
         public ArrayList<Job> jobs = new ArrayList<>();
         private int finishedCount = 0;
@@ -140,7 +140,7 @@ public class TaskManager extends GenericActor {
                                 Task task = taskMap.get(job.taskId);
                                 int jobId = task.jobs.indexOf(job);
                                 // Check if the task is still ready to run
-                                if (task.status == TaskStatus.READY) {
+                                if (task.status == TaskStatus.SCHEDULED) {
                                     // If the job didn't get canceled while it was in the queue run it.
                                     if (job.status != JobStatus.CANCELLED) {
                                         try {
@@ -399,7 +399,7 @@ public class TaskManager extends GenericActor {
                 log.info("Queued task with id " + task.id + ".");
 
                 // Notify interested parties
-                publishStatus("taskQueued", task.toJson());
+                publishStatus("taskScheduled", task.toJson());
 
                 return response(request, result);
             }
@@ -460,10 +460,10 @@ public class TaskManager extends GenericActor {
 
                 Task task = taskMap.get(taskId);
                 if (task != null) {
-                    if (task.status == TaskStatus.READY) {
+                    if (task.status == TaskStatus.SCHEDULED) {
                         task.status = TaskStatus.PAUSED;
                     } else if (task.status == TaskStatus.PAUSED) {
-                        task.status = TaskStatus.READY;
+                        task.status = TaskStatus.SCHEDULED;
                     }
                     result.put("data", task.status.name());
                     // Notify interested parties
