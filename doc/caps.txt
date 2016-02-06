@@ -1,14 +1,18 @@
-accessible
-checkable
-configurable
-discoverable
-executable
-hostable
-identifyable
-installable
-loggable
-restartable
-scriptable
-startable
-stoppable
-uninstallable
+capability: description:
+invoke      invoke capability is essentially structure's ability to execute.
+execute     provided by software that can execute stuff (bash, python, etc).
+transport   provided by clients that can transport something (cmd/script/file).
+discover    capability that determines if something exists.
+state       provided by things that can give state to structure components.
+
+configure   capability to configure a software component.
+identify    a identification capability. Could return a string with version.
+
+install     capability to install something.
+uninstall   capability to uninstall something.
+start       capability to start something.
+stop        capability to stop something.
+restart     capability to restart something.
+
+access      capability to provide access.
+host        capability to host something (emulators and hypervisors)/

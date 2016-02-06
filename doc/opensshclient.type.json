@@ -2,38 +2,37 @@
     "labels": [ "Node", "TypeNode" ],
     "properties": {
         "name": "OpenSSHClient",
-	"desc": "The OpenSSH client software.",
+       	"desc": "The OpenSSH client software.",
         "uuid": "4faa3819-d9b7-4196-b884-77e247d0ffdc",
         "link": {
             "icon": {
-		"type": "icon"
+                "type": "icon",
                 "mime": "application/font-sfnt",
                 "href": "/img/font/structureglyph.ttf#0x00dd"
             },
-            "scriptable": {
-		"type": "capability"
+            "transport": {
+                "type": "capability",
                 "mime": "text/x-handlebars-template",
                 "href": "opensshclient-scriptable.hbs",
-		"meta": {
-		    "appliesTo": [ "OpenSshClient" ],
-		    "subjectIsLocal": false,
-		    "weight": 90,
-		    "arguments": {
-			"non-interactive": {
-			    "root": [ "payload" ],
-			    "group": [ "type.configuration.ipaddress.ipv4address" ]
-			},
-			"interactive": {
-			    "optional": [ "payload" ]
-			}
-		    }
-		}
+		        "meta": {
+		            "appliesTo": [ "OpenSshClient" ],
+		            "subjectIsLocal": false,
+		            "weight": 90,
+		            "arguments": {
+			            "non-interactive": {
+			                "root": [ "payload" ],
+			                "group": [ "type.configuration.ipaddress.ipv4address" ]
+			            },
+			        "interactive": {
+			            "optional": [ "payload" ]
+			            }
+	                }
+	            }
             }
-	}
-    }
-    "relations": {
-        "IS_A": "SSHClient"
+	    },
+        "relations": {
+            "IS_A": "SSHClient"
+        }
     }
 }
-
 
