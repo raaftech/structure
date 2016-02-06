@@ -1,0 +1,14 @@
+accessible
+checkable
+configurable
+discoverable
+executable
+hostable
+identifyable
+installable
+loggable
+restartable
+scriptable
+startable
+stoppable
+uninstallable

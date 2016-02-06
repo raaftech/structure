@@ -1,0 +1,2 @@
+scp {{ payload.absolute }} root@{{ reachable group.Ipv4Address }}:/tmp/
+ssh -lroot {{ reachable group.Ipv4Address }} "chmod +x /tmp/{{ payload.filename }} && /tmp/{{ payload.filename }}"
