@@ -9,25 +9,32 @@
                 "type": "icon",
                 "mime": "application/font-sfnt",
                 "href": "/img/font/structureglyph.ttf#0x00dd"
-            },
-            "transport": {
-                "type": "capability",
-                "mime": "text/x-handlebars-template",
-                "href": "opensshclient-scriptable.hbs",
-		        "meta": {
-		            "appliesTo": [ "OpenSshClient" ],
-		            "subjectIsLocal": false,
-		            "weight": 90,
-		            "arguments": {
-			            "non-interactive": {
-			                "root": [ "payload" ],
-			                "group": [ "type.configuration.ipaddress.ipv4address" ]
-			            },
-			        "interactive": {
-			            "optional": [ "payload" ]
-			            }
-	                }
-	            }
+            }
+	    },
+	    "instruments": {
+	    	"openssh-sendString": {
+		        "capability": "sendString",
+		        "appliesTo": [ "OpenSshClient" ],
+		        "template": "opensshclient-sendstring.hbs",
+		        "subjectIsLocal": false,
+		        "weight": 90,
+		        "arguments": {
+		        	"addr": {
+		        		"defaultValue": { "subject": "type.configuration.ipaddress.ipv4address" },
+		        		"canBeInteractive": false,
+		        		"isOptional": false
+		        	},
+		        	"user": {
+		        		"defaultValue": { "subject": "type.configuration.actor.user" },
+		        		"canBeInteractive": true,
+		        		"isOptional": false
+		        	},
+		        	"cmdString": {
+		        		"defaultValue": { "static": "echo 'no command string passed to execute'" },
+		        		"canBeInteractive": true,
+		        		"isOptional": false
+		        	}
+		        }
             }
 	    },
         "relations": {
@@ -35,4 +42,6 @@
         }
     }
 }
+
+
 

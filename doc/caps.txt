@@ -1,18 +1,32 @@
-capability: description:
-invoke      invoke capability is essentially structure's ability to execute.
-execute     provided by software that can execute stuff (bash, python, etc).
-transport   provided by clients that can transport something (cmd/script/file).
-discover    capability that determines if something exists.
-state       provided by things that can give state to structure components.
+Capabilities (system level): 
+ * inputString (the capability to supply an input string - normally supplied by Structure)
+ * inputFile (the capability to supply an input file - normally supplied by Structure)
+ * sendString (the capability to send a string - usually reserved to clients that can do so, like ssh)
+ * sendFile (the capability to send a file somewhere, like a script - usually things like scp or ftp can do that)
+ * receiveString (the capability to receive a sent string - things like sshd, telnetd, etc)
+ * receiveFile (something that can receive a file - sshd, ftpd, etc)
+ * invoke (something that can invoke a command to execute on an os - cmd.exe, bash, etc), has language
+ * execute (an operating system's ability to run something), has execution file format
 
-configure   capability to configure a software component.
-identify    a identification capability. Could return a string with version.
+Capabilities (exist *implicitly* when above system level capabilities are available):
+ * runCommand (uses inputString, sendString, receiveString, invoke, execute)
+ * runScript (uses inputFile, sendFile, receiveFile, invoke, execute), checks language/interpreter
+ * runBinary (uses inputFile, sendFile, receiveFile, invoke, execute), checks binaryformat/os
+ * uploadFile (uses inputFile, sendFile, receiveFile)
+ * downloadFile (uses inputFile, sendFile, receiveFile)
 
-install     capability to install something.
-uninstall   capability to uninstall something.
-start       capability to start something.
-stop        capability to stop something.
-restart     capability to restart something.
-
-access      capability to provide access.
-host        capability to host something (emulators and hypervisors)/
+Capabilities (user exposed, templated run* commands, all require either runCommand *or* runScript *or* runBinary):
+ * state (check the state of something)
+ * install (capability to install something)
+ * uninstall (capability to uninstall something)
+ * configure (capability to configure something)
+ * start (capability to start something)
+ * stop (capability to stop something)
+ * restart (capability to restart something)
+ * identify (a identification capability - could return a string with version, hostname, date, etc)
+ 
+ Capabilities (*unaccounted for, not implemented, would need work*):
+ * access (capability to access a textual or graphical console)
+ * host (capability to host something - like in clouds, emulators or hypervisors)
+ * createVm (capability to create a virtual machine in an emulator or hypervisor)
+ * destroyVm (capability to destroy a virtual machine in an emulator or hypervisor)
