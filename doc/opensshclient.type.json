@@ -11,7 +11,7 @@
                 "href": "/img/font/structureglyph.ttf#0x00dd"
             }
 	    },
-	    "instruments": {
+	    "caps": {
 	    	"openssh-sendString": {
 		        "capability": "sendString",
 		        "appliesTo": [ "OpenSshClient" ],
@@ -20,18 +20,33 @@
 		        "weight": 90,
 		        "arguments": {
 		        	"addr": {
-		        		"defaultValue": { "subject": "type.configuration.ipaddress.ipv4address" },
-		        		"canBeInteractive": false,
+		        		"value": {
+		        			"from": "subject" //where to find the type: static, agent or subject? 
+		        			"data": "type.configuration.ipaddress.ipv4address", //what we're looking for
+		        			"matches": { "desc": "some regexp", "addr": "some other regexp" }, //optional
+		        			"strategy": "useFirst|useLast|mustBeOne|mustBeMany", //determines result behaviour
+		        			"onError": "fail, askUser, ignore" //what to do if strategy fails
+		        		},
+		        		"canBeUserSupplied": false,
 		        		"isOptional": false
 		        	},
 		        	"user": {
-		        		"defaultValue": { "subject": "type.configuration.actor.user" },
-		        		"canBeInteractive": true,
+		        		"value": {
+		        			"from": "subject"
+		        			"data": "type.configuration.actor.user",
+		        			"matches": { "role": "Administrator" }, 
+		        			"strategy": "mustBeOne",
+		        			"onError": "askUser"
+		        		},
+		        		"canBeUserSupplied": false, //??
 		        		"isOptional": false
 		        	},
 		        	"cmdString": {
-		        		"defaultValue": { "static": "echo 'no command string passed to execute'" },
-		        		"canBeInteractive": true,
+		        		"value": {
+		        			"from": "static"
+		        			"data": "echo 'no command string passed to execute'",
+		        		},
+		        		"canBeUserSupplied": true, //instrumentsupplied?
 		        		"isOptional": false
 		        	}
 		        }
@@ -42,6 +57,3 @@
         }
     }
 }
-
-
-
