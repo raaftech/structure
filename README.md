@@ -2,14 +2,10 @@ Structure
 =========
 How to run
 ----------
-    git clone ssh://git@git.raaftech.com:8022/str/structure.git
+    git clone git@gitlab.com:raaftech/structure.git
     cd structure
     mvn package
-    cd web/debug/
+    cd web/
     bower install
     cd -
     java -jar target/structure-0.6.1-fat.jar --debug
-
-SSH
----
-The SSH plugin expects a RSA keypair in the plugin directory (resources/plugins/raaftech_sshexec).
