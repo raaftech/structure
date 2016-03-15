@@ -67,7 +67,10 @@ public class TemplateNodes extends Repository<TemplateNode> {
                 ObjectNode result = mapper.createObjectNode();
                 JsonNode args = request.get("args");
 
-                String parent = args.get("parent").asText();
+                String parent = null;
+                if (args.get("parent") != null) {
+                    parent = args.get("parent").asText();
+                }
                 String name = args.get("name").asText();
                 String desc = args.get("desc").asText();
                 String isa = args.get("isa").asText();

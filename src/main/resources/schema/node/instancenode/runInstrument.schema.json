@@ -1,14 +1,14 @@
 {
-  "id": "https://repo.raaftech.com/schema/node/instancenode/runHandler.schema.json#",
+  "id": "https://repo.raaftech.com/schema/node/instancenode/runInstrument.schema.json#",
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "description": "Schema for every InstanceNodeActor's runHandler method.",
+  "description": "Schema for every InstanceNodeActor's runInstrument method.",
   "type": "object",
   "additionalProperties": false,
   "properties": {
-    "handler": {
+    "instrument": {
       "type": "string"
     },
-    "interactive": {
+    "arguments": {
       "type": "object",
       "properties": {
         "/": {}
@@ -22,5 +22,5 @@
       "additionalProperties": false
     }
   },
-  "required": [ "handler" ]
+  "required": [ "instrument" ]
 }

@@ -1,0 +1,14 @@
+{{!
+
+{
+  "name": "SystemdStart",
+  "desc": "SystemdStart",
+  "instrumentType": "runner",
+  "capability": "Start",
+  "providedBy": "Systemctl",
+  "appliesTo": [ "Server" ],
+  "subjectIsLocal": true
+}
+
+}}
+systemctl start {{ origin.shortName }}

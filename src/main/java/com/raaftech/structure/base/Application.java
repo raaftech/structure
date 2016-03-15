@@ -7,7 +7,7 @@ import com.raaftech.structure.graph.TypeNode;
 import com.raaftech.structure.graph.repositories.InstanceNodeRepository;
 import com.raaftech.structure.graph.repositories.TemplateNodeRepository;
 import com.raaftech.structure.graph.repositories.TypeNodeRepository;
-import com.raaftech.structure.helper.HandlerLoader;
+import com.raaftech.structure.helper.InstrumentLoader;
 import com.raaftech.structure.helper.SchemaManagerUpdate;
 import com.raaftech.structure.manager.TaskManager;
 import com.raaftech.structure.node.InstanceNodeActor;
@@ -30,7 +30,6 @@ import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import java.io.File;
 import java.util.Arrays;
-import java.util.Iterator;
 
 /**
  * The main application entry point.
@@ -193,16 +192,16 @@ public class Application {
         }
         tx.close();
 
-        // Load all handlers
-        log.info("Purging handlers.");
+        // Load all instruments
+        log.info("Purging instruments.");
         instanceNodeRepository.purgeHandlers();
-        if (System.getProperty("handlers") == null) {
-            System.setProperty("handlers", new File("ht").getAbsolutePath());
+        if (System.getProperty("instruments") == null) {
+            System.setProperty("instruments", new File("ht").getAbsolutePath());
         }
-        String handlers = System.getProperty("handlers");
-        Arrays.asList(handlers.split(",")).stream()
+        String instruments = System.getProperty("instruments");
+        Arrays.asList(instruments.split(",")).stream()
                 .distinct()
-                .forEach(HandlerLoader::loadHandlers);
+                .forEach(InstrumentLoader::loadHandlers);
 
         // Wait a second so debug messages are done
         try {

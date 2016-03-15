@@ -3,15 +3,21 @@
 {
   "name": "KshScriptable",
   "desc": "KshScriptable",
-  "capability": "Scriptable",
+  "instrumentType": "runner",
+  "capability": "Invoke",
   "extension": ".sh",
   "providedBy": "Ksh",
   "appliesTo": [ "Ksh" ],
   "subjectIsLocal": true,
   "arguments": {
-    "non-interactive": {
-    },
-    "interactive": {
+    "script": {
+      "value": {
+	"from": "static",
+	"type": "string",
+	"strategy": "mustBeOne"
+      },
+      "canBeUserSupplied": false,
+      "isOptional": false
     }
   }
 }

@@ -39,44 +39,45 @@ public interface InstanceNodeRepository extends GenericRepository<InstanceNode> 
     int isOfType(@Param("uuid") String uuid, @Param("type") String type);
 
     @Query ("START start=node:uuid(uuid={uuid}) " +
-            "MATCH (start)-[:HAS_COMPONENT*0..]->()-[:ISA]->()-[:HAS_CAPABILITY]->({name:{type}})-[:HAS_HANDLER]->(n) " +
-            "RETURN n")
-    Set<InstanceNode> getCapabilities(@Param("uuid") String uuid, @Param("type") String capability);
-
-    @Query ("START start=node:uuid(uuid={uuid}) " +
             "MATCH (start)-[:GIVES_CAPABILITY]->(capability)" +
             "RETURN capability")
-    InstanceNode getHandlerCapability(@Param("uuid") String uuid);
+    InstanceNode getInstrumentCapability(@Param("uuid") String uuid);
 
-    // Find the scriptable (client) handlers of the common protocols of a commander and subject
-    @Query ("START commander=node:uuid(uuid={commanderUuid}) " +
-            "MATCH (commander)-[:HAS_COMPONENT*..]->()-[:INSTANCE_OF]->(client)-[:ISA*0..]->()-[:IMPLEMENTS]->" +
-            "protocol" +
-            "<-[:IMPLEMENTS]-()<-[:ISA*0..]-(server)<-[:INSTANCE_OF]-()<-[:HAS_COMPONENT*..]-(subject{uuid:{subjectUuid}})," +
-            "(client)-[:ISA*0..]->({name:\"Client\"})," +
-            "(client)-[:ISA*0..]->()-[:HAS_HANDLER]->(handler)-[:GIVES_CAPABILITY]->({name:\"Scriptable\"})," +
-            "(server)-[:ISA*0..]->({name:\"Server\"})" +
-            "RETURN handler")
-    Set<InstanceNode> getCompatibleScriptableHandlers(@Param("commanderUuid") String commander, @Param("subjectUuid") String subject);
-
-    // Find the accessable (server) handlers of the common protocols of a commander and subject
-    @Query ("START commander=node:uuid(uuid={commanderUuid}) " +
+    // Find the sendString (client) instruments of the common protocols of an agent and subject
+    @Query ("START commander=node:uuid(uuid={structureUuid}) " +
             "MATCH (commander)-[:HAS_COMPONENT*..]->()-[:INSTANCE_OF]->(client)-[:ISA*0..]->()-[:IMPLEMENTS]->" +
             "protocol" +
             "<-[:IMPLEMENTS]-()<-[:ISA*0..]-(server)<-[:INSTANCE_OF]-()<-[:HAS_COMPONENT*..]-(subject{uuid:{subjectUuid}})," +
             "(client)-[:ISA*0..]->({name:\"Client\"})," +
             "(server)-[:ISA*0..]->({name:\"Server\"})," +
-            "(server)-[:ISA*0..]->()-[:HAS_HANDLER]->(handler)-[:GIVES_CAPABILITY]->({name:\"Accessible\"})" +
-            "RETURN handler")
-    Set<InstanceNode> getCompatibleAccessibleHandlers(@Param("commanderUuid") String commander, @Param("subjectUuid") String subject);
+            "(client)-[:ISA*0..]->()-[:HAS_INSTRUMENT]->(instrument)-[:GIVES_CAPABILITY]->({name:\"SendString\"})" +
+            "RETURN DISTINCT instrument")
+    Set<InstanceNode> getCompatibleSendString(@Param("structureUuid") String structure, @Param("subjectUuid") String subject);
 
-    // Get a handler of an InstanceNode only if we have the "handling" TypeNode in the expected tree as well.
-    @Query ("START runOn=node:uuid(uuid={runOn}), handler=node:uuid(uuid={handlerUuid}), called=node:uuid(uuid={calledOn}) " +
-            "MATCH (called)-[:INSTANCE_OF]->()-[:ISA*0..]->()<-[:HANDLES]-(handler)," +
-            "(runOn)-[:HAS_COMPONENT*..]->()-[:INSTANCE_OF]->()-[:ISA*0..]->()-[:HAS_HANDLER]->(handler)" +
-            "RETURN handler")
-    InstanceNode getValidHandler(@Param("handlerUuid") String handlerUuid, @Param("calledOn") String calledOnUuid,
-                                 @Param("runOn") String runOnGroupUuid);
+    // Find the sendFile (client) instruments of the common protocols of an agent and subject
+    @Query ("START commander=node:uuid(uuid={structureUuid}) " +
+            "MATCH (commander)-[:HAS_COMPONENT*..]->()-[:INSTANCE_OF]->(client)-[:ISA*0..]->()-[:IMPLEMENTS]->" +
+            "protocol" +
+            "<-[:IMPLEMENTS]-()<-[:ISA*0..]-(server)<-[:INSTANCE_OF]-()<-[:HAS_COMPONENT*..]-(subject{uuid:{subjectUuid}})," +
+            "(client)-[:ISA*0..]->({name:\"Client\"})," +
+            "(server)-[:ISA*0..]->({name:\"Server\"})," +
+            "(client)-[:ISA*0..]->()-[:HAS_INSTRUMENT]->(instrument)-[:GIVES_CAPABILITY]->({name:\"SendFile\"})" +
+            "RETURN DISTINCT instrument")
+    Set<InstanceNode> getCompatibleSendFile(@Param("structureUuid") String structure, @Param("subjectUuid") String subject);
+
+    @Query ("START sendString=node:uuid(uuid={sendStringInstrument}) " +
+            "MATCH (sendString)<-[:HAS_INSTRUMENT]-(clientType),\n" +
+            "(clientType)-[:IMPLEMENTS]->(protocol)<-[:IMPLEMENTS]-(serverType),\n" +
+            "(serverType)-[:HAS_INSTRUMENT]->(receiveString)-[:GIVES_CAPABILITY]->({name:\"ReceiveString\"})\n" +
+            "RETURN DISTINCT receiveString")
+    InstanceNode getMatchingReceiveString(@Param("sendStringInstrument") String sendStringInstrumentUuid);
+
+    @Query ("START sendFile=node:uuid(uuid={sendFileInstrument}) " +
+            "MATCH (sendFile)<-[:HAS_INSTRUMENT]-(clientType),\n" +
+            "(clientType)-[:IMPLEMENTS]->(protocol)<-[:IMPLEMENTS]-(serverType),\n" +
+            "(serverType)-[:HAS_INSTRUMENT]->(receiveFile)-[:GIVES_CAPABILITY]->({name:\"ReceiveFile\"})\n" +
+            "RETURN DISTINCT receiveFile")
+    InstanceNode getMatchingReceiveFile(@Param("sendFileInstrument") String sendFileInstrumentUuid);
 
     // Get the root node of a componental group
     @Query ("START instance=node:uuid(uuid={instanceUuid}) " +
@@ -85,29 +86,29 @@ public interface InstanceNodeRepository extends GenericRepository<InstanceNode> 
             "RETURN start")
     InstanceNode getStartOfComponentGroup(@Param("instanceUuid") String instanceUuid);
 
-    // Get a scriptable interpreter handler
+    // Get an invokable interpreter instrument
     @Query ("START instance=node:uuid(uuid={instanceUuid}) " +
             "MATCH (instance)-[:HAS_COMPONENT*0..]->(component)-[:ISA|INSTANCE_OF*..]->({name:\"Interpreter\"})," +
-            "p=(component)-[:ISA|INSTANCE_OF*..]->(t)-[:HAS_HANDLER]->(handler)-[:GIVES_CAPABILITY]->({name:\"Scriptable\"})" +
-            "RETURN handler ORDER BY length(p) ASC LIMIT 1")
-    InstanceNode getScriptableInterpreterHandler(@Param("instanceUuid") String instanceUuid);
+            "p=(component)-[:ISA|INSTANCE_OF*..]->(t)-[:HAS_INSTRUMENT]->(instrument)-[:GIVES_CAPABILITY]->({name:\"Invoke\"})" +
+            "RETURN instrument ORDER BY length(p) ASC LIMIT 1")
+    InstanceNode getInvokableInterpreter(@Param("instanceUuid") String instanceUuid);
 
-    // Find all handlers that apply to a given InstanceNode
+    // Find all instruments that apply to a given InstanceNode
     @QueryResult
-    public class HandlerQueryResult {
-        @ResultColumn("limb")
-        public InstanceNode limb;
-        @ResultColumn("handler")
-        public InstanceNode handler;
+    public class InstrumentQueryResult {
+        @ResultColumn("target")
+        public InstanceNode target;
+        @ResultColumn("instrument")
+        public InstanceNode instrument;
         @ResultColumn("capability")
         public TypeNode capability;
 
-        public void setLimb(InstanceNode limb) {
-            this.limb = limb;
+        public void setTarget(InstanceNode target) {
+            this.target = target;
         }
 
-        public void setHandler(InstanceNode handler) {
-            this.handler = handler;
+        public void setInstrument(InstanceNode instrument) {
+            this.instrument = instrument;
         }
 
         public void setCapability(TypeNode capability) {
@@ -116,23 +117,39 @@ public interface InstanceNodeRepository extends GenericRepository<InstanceNode> 
     }
 
     @Query ("START patient=node:uuid(uuid={instanceUuid}), agent=node:uuid(uuid={structureUuid}) " +
-            "MATCH (patient)-[:HAS_COMPONENT*..]->(limb)-[:INSTANCE_OF|ISA*..]->()<-[:HANDLES]-(handler)<-[HAS_HANDLER]-(owner)," +
+            "MATCH (patient)-[:HAS_COMPONENT*..]->(target)-[:INSTANCE_OF|ISA*..]->()<-[:HANDLES]-(instrument)<-[HAS_HANDLER]-(owner)," +
             "(agent)," +
-            "(handler)-[:GIVES_CAPABILITY]->(capability)" +
-            "WHERE ((handler{`kv-subjectIsLocal`:\"true\"})<-[:HAS_HANDLER]-(owner)" +
+            "(instrument)-[:GIVES_CAPABILITY]->(capability)" +
+            "WHERE ((instrument{`kv-subjectIsLocal`:\"true\"})<-[:HAS_HANDLER]-(owner)" +
             "   AND (patient)-[:HAS_COMPONENT*0..]->()-[:INSTANCE_OF|ISA*..]->(owner))" +
-            "OR ((handler{`kv-subjectIsLocal`:\"false\"})<-[:HAS_HANDLER]-(owner)" +
+            "OR ((instrument{`kv-subjectIsLocal`:\"false\"})<-[:HAS_HANDLER]-(owner)" +
             "   AND (agent)-[:HAS_COMPONENT*0..]->()-[:INSTANCE_OF|ISA*..]->(owner))" +
-            "RETURN limb, handler, capability ORDER BY id(limb)")
-    List<HandlerQueryResult> getHandlers(@Param("instanceUuid") String instanceUuid, @Param("structureUuid") String structureUuid);
+            "RETURN target, instrument, capability ORDER BY id(target)")
+    List<InstrumentQueryResult> getInstruments(@Param("instanceUuid") String instanceUuid, @Param("structureUuid") String structureUuid);
 
-    // Used to purge all handlers from the database
-    @Query ("MATCH ()-[r1:HAS_HANDLER]->(handler)-[r2:GIVES_CAPABILITY]->()," +
-            "      (handler)-[r3:INSTANCE_OF]->(:TypeNode{name:\"Handler\"})," +
-            "      (handler)-[r4:HANDLES]->(:TypeNode)" +
-            "delete r1,r2,r3,r4,handler;")
+    // Used to purge all instruments from the database
+    @Query ("MATCH ()-[r1:HAS_INSTRUMENT]->(instrument)-[r2:GIVES_CAPABILITY]->()," +
+            "      (instrument)-[r3:INSTANCE_OF]->(:TypeNode{name:\"Instrument\"})," +
+            "      (instrument)-[r4:HANDLES]->(:TypeNode)" +
+            "delete r1,r2,r3,r4,instrument;")
     void purgeHandlers();
 
     @Query ("MATCH (n:InstanceNode) WHERE NOT (n)-[:INSTANCE_OF]->({name:\"Handler\"}) RETURN n ORDER BY id(n) DESC LIMIT {amount}")
     List<InstanceNode> getNLastCreated(@Param("amount") int amount);
+
+    // This query checks if we can execute something about a patient, on the structure node.
+    // A good example would be a ping check. Structure needs a particular tool (ping), that can do something (ICMP echo request)
+    // which is about something that doesn't belong to its tree (the IP address of the patient).
+    @Query ("START structure=node:uuid(uuid={structureUuid}), instrument=node:uuid(uuid={instrumentUuid}), patient=node:uuid(uuid={patientUuid}) " +
+            "MATCH (structure)-[:HAS_COMPONENT*..]->()-[:INSTANCE_OF|ISA*..]->()-[:HAS_INSTRUMENT]->(instrument)," +
+            "(instrument)-[:HANDLES]->(patientType)<-[:INSTANCE_OF|ISA*..]-(patient)" +
+            "RETURN instrument")
+    InstanceNode validateNonLocalInstrument(@Param("instrumentUuid") String instrumentUuid, @Param("structureUuid") String structureUuid,
+                                            @Param("patientUuid") String patientUuid);
+
+    // Get the TypeNode that is related to an instrument via HAS_INSTRUMENT
+    @Query ("START instrument=node:uuid(uuid={instrumentUuid}) " +
+            "MATCH (instrument)<-[:HAS_INSTRUMENT]-(instrumentOwner) " +
+            "RETURN instrumentOwner.name")
+    String findInstrumentOwner(@Param("instrumentUuid") String instrumentUuid);
 }

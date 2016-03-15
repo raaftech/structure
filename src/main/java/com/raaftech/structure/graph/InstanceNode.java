@@ -11,7 +11,7 @@ import com.github.fge.jsonschema.main.JsonSchemaFactory;
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.graph.repositories.InstanceNodeRepository;
 import com.raaftech.structure.graph.repositories.TypeNodeRepository;
-import com.raaftech.structure.helper.HandlerRunner;
+import com.raaftech.structure.helper.InstrumentRunner;
 import com.raaftech.structure.helper.JsonSchemaBuilder;
 import com.raaftech.structure.node.InstanceNodeActor;
 import org.neo4j.graphdb.Direction;
@@ -72,6 +72,7 @@ public class InstanceNode extends Node {
     private TypeNode capability;
 
     @RelatedTo(type="HANDLES", direction=Direction.OUTGOING)
+    @Fetch
     private Set<TypeNode> handlesTypes;
 
     private DynamicProperties kv = new DynamicPropertiesContainer();
@@ -149,14 +150,14 @@ public class InstanceNode extends Node {
         return components.iterator().next();
     }
 
-    private ObjectNode recurseForArguments(String pathKeyName, Set<InstanceNode> components, ArrayNode hierarchyPaths) {
+    private ObjectNode recurseForArguments(String pathKeyName, Set<InstanceNode> components, ObjectNode hierarchyPaths) {
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode result = mapper.createObjectNode();
         if (hierarchyPaths == null) {
-            hierarchyPaths = result.putArray(pathKeyName);
+            hierarchyPaths = result.putObject(pathKeyName);
         }
 
-        final ArrayNode finalHierarchyPaths = hierarchyPaths;
+        final ObjectNode finalHierarchyPaths = hierarchyPaths;
         getComponents().stream()
                 .forEach(component -> {
                     String componentTypeName = component.getInstanceOf().getName();
@@ -165,7 +166,7 @@ public class InstanceNode extends Node {
                     }
                     JsonNode comp = component.toFlatJson();
                     if (comp.get(pathKeyName).isTextual()) {
-                        finalHierarchyPaths.add(comp.get(pathKeyName));
+                        finalHierarchyPaths.put(comp.get(pathKeyName).asText(), componentTypeName);
                     }
                     ((ObjectNode) comp).remove(pathKeyName);
                     ((ArrayNode) result.get(componentTypeName)).add(comp);
@@ -200,9 +201,11 @@ public class InstanceNode extends Node {
     // a Handler.
     public void setCapability(TypeNode capability) {
         // Check if this is a Handler and if capability isn't null and of right type.
-        if (getInstanceOf().getName().equals("Handler") &&
+        if (getInstanceOf().getName().equals("Instrument") &&
                 capability != null && capability.getIsa().getName().equals("Capability")) {
             this.capability = capability;
+        } else {
+            throw new RuntimeException("setCapability can only be run on an instance of type instrument.");
         }
     }
 
@@ -220,6 +223,10 @@ public class InstanceNode extends Node {
             tx.close();
         }
         return components;
+    }
+
+    public Set<TypeNode> getHandledTypes() {
+        return handlesTypes;
     }
 
     public TypeNode getInstanceOf() {
@@ -303,17 +310,17 @@ public class InstanceNode extends Node {
         }
     }
 
-    // Add a handled type.
-    // Handled types are used on Handlers only.
+    // Add a handled type to an instrument.
+    // Handled types are used on Instruments only.
     public InstanceNode addHandledType(TypeNode type) {
-        if (getInstanceOf().getName().equals("Handler")) {
+        if (getInstanceOf().getName().equals("Instrument")) {
             if (handlesTypes == null) {
                 handlesTypes = new HashSet<>();
             }
             handlesTypes.add(type);
             return this;
         }
-        throw new RuntimeException("Can't call addHandledType on non-handler instance.");
+        throw new RuntimeException("Can't call addHandledType on non-instrument instance.");
     }
 
     public void addResult(InstanceNode result) {
@@ -344,11 +351,9 @@ public class InstanceNode extends Node {
         return instanceNodeRepository.isOfType(getUuid(), type) > 0;
     }
 
-    // Run a handler on this instance
-    public void runHandler(InstanceNode handler, JsonNode interactive, String taskId) {
-        // Start the handler after waiting for 100ms. This gives us a chance to return
-        // the taskId to the caller and have the caller monitor the status channel for updates.
-        Context.INSTANCE.getVertx().setTimer(100, job -> new HandlerRunner(this, handler, interactive, taskId).startHandler());
+    // Run a instrument on this instance
+    public void runInstrument(InstanceNode instrument, JsonNode interactive, String taskId) {
+        new InstrumentRunner(this, instrument, interactive, taskId).startInstrument();
     }
 
     public InstanceNode save() {
@@ -376,15 +381,15 @@ public class InstanceNode extends Node {
 
     /**
      * Used to create a JSON representation of a single InstanceNode that
-     * can be used to as an argument for a handler.
-     * @return JSON representation that can be used as an argument for a handler.
+     * can be used to as an argument for a instrument.
+     * @return JSON representation that can be used as an argument for a instrument.
      */
     public ObjectNode toArguments() {
         final String pathKeyName = "_hierarchyPath";
         ObjectNode arguments = recurseForArguments(pathKeyName, getComponents(), null);
         ObjectNode thisJson = (ObjectNode)toFlatJson();
         if (thisJson.get(pathKeyName).isTextual()) {
-            ((ArrayNode)arguments.get(pathKeyName)).add(thisJson.get(pathKeyName));
+            ((ObjectNode)arguments.get(pathKeyName)).put(thisJson.get(pathKeyName).asText(), thisJson.get("name").asText());
             thisJson.remove(pathKeyName);
         }
         arguments.putArray(getInstanceOf().getName()).add(thisJson);

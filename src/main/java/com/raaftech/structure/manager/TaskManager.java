@@ -79,11 +79,13 @@ public class TaskManager extends GenericActor {
     private class Task {
         public TaskStatus status = TaskStatus.SCHEDULED;
         public String id = UUID.randomUUID().toString();
+        public boolean sequential;
         public ArrayList<Job> jobs = new ArrayList<>();
         private int finishedCount = 0;
 
-        public Task(String id) {
+        public Task(String id, boolean sequential) {
             this.id = id;
+            this.sequential = sequential;
         }
 
         public void finishedOne() {
@@ -143,19 +145,24 @@ public class TaskManager extends GenericActor {
                                 if (task.status == TaskStatus.SCHEDULED) {
                                     // If the job didn't get canceled while it was in the queue run it.
                                     if (job.status != JobStatus.CANCELLED) {
-                                        try {
-                                            runJob(job);
-                                        } catch (InterruptedException | IOException e) {
-                                            log.error("Ran into error while executing job " + task.id + "." + jobId
-                                                    + ", printing stack trace.");
-                                            e.printStackTrace();
-                                            job.status = JobStatus.ERROR;
-                                            runningJobs.remove(job);
-                                            task.finishedOne();
-                                            // Notify interested parties
-                                            publishStatus("jobError", mapper.createObjectNode()
-                                                    .put("taskId", task.id)
-                                                    .put("jobId", task.jobs.indexOf(job)));
+                                        if (task.sequential && (jobId == 0 || (jobId > 0 && task.jobs.get(jobId-1).status == JobStatus.FINISHED))
+                                                || !task.sequential) {
+                                            try {
+                                                runJob(job);
+                                            } catch (InterruptedException | IOException e) {
+                                                log.error("Ran into error while executing job " + task.id + "." + jobId
+                                                        + ", printing stack trace.");
+                                                e.printStackTrace();
+                                                job.status = JobStatus.ERROR;
+                                                runningJobs.remove(job);
+                                                task.finishedOne();
+                                                // Notify interested parties
+                                                publishStatus("jobError", mapper.createObjectNode()
+                                                        .put("taskId", task.id)
+                                                        .put("jobId", task.jobs.indexOf(job)));
+                                            }
+                                        } else {
+                                            jobQueue.offer(job);
                                         }
                                     } else {
                                         log.debug("Got cancelled job " + task.id + "." + task.jobs.indexOf(job)
@@ -380,7 +387,8 @@ public class TaskManager extends GenericActor {
 
                 // Construct a new task
                 String taskId = args.get("taskId").asText();
-                Task task = new Task(taskId);
+                boolean sequential = args.has("sequential") ? args.get("sequential").asBoolean() : false;
+                Task task = new Task(taskId, sequential);
                 result.put("data", taskId);
 
                 // Add the given jobs to the task

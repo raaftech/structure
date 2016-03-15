@@ -3,26 +3,55 @@
 {
   "name": "IputilsPingCheckable",
   "desc": "Provide a check to IP addresses using ping.",
-  "capability": "Checkable",
+  "instrumentType": "runner",
+  "capability": "State",
   "providedBy": "Iputils",
   "appliesTo": [ "Ipv4Address" ],
   "subjectIsLocal": false,
   "arguments": {
-    "non-interactive": {
-      "group": [
-        "type.configuration.ipaddress.ipv4address"
-      ],
-      "commander": [
-        "type.component.software.client.iputils"
-      ]
+    "ipv4address": {
+      "value": {
+        "from": "origin",
+        "type": "type.configuration.ipaddress.ipv4address",
+        "strategy": "useFirst",
+        "onError": "fail"
+      },
+      "canBeUserSupplied": false,
+      "isOptional": false
     },
-    "interactive": {
-        "optional": [
-            "count", "interval", "timeout"
-        ]
+    "interval": {
+      "value": {
+        "from": "static",
+        "type": "string",
+        "matches": "[0-9]+",
+        "strategy": "mustBeOne"
+      },
+      "canBeUserSupplied": true,
+      "isOptional": true
+    },
+    "count": {
+      "value": {
+        "from": "static",
+        "type": "string",
+        "matches": "[0-9]+",
+        "data": "4",
+        "strategy": "mustBeOne"
+      },
+      "canBeUserSupplied": true,
+      "isOptional": true
+    },
+    "timeout": {
+      "value": {
+        "from": "static",
+        "type": "string",
+        "matches": "[0-9]+",
+        "strategy": "mustBeOne"
+      },
+      "canBeUserSupplied": true,
+      "isOptional": true
     }
   }
 }
 
 }}
-ping {{#if count}}"-c {{count}}" {{/if}}{{#if interval}}"-i {{interval}}" {{/if}}{{#if timeout}}"-W {{timeout}}" {{/if}}{{ subject.addr }}
+ping {{#if count}}"-c {{count}}" {{/if}}{{#if interval}}"-i {{interval}}" {{/if}}{{#if timeout}}"-W {{timeout}}" {{/if}}{{ origin.addr }}

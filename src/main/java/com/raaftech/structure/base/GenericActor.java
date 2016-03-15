@@ -11,6 +11,7 @@ import com.github.fge.jsonschema.core.report.ProcessingReport;
 import com.github.fge.jsonschema.main.JsonSchema;
 import com.github.fge.jsonschema.main.JsonSchemaFactory;
 import com.raaftech.structure.annotations.SchemaPath;
+import com.raaftech.structure.helper.JsonHelper;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.eventbus.Message;
@@ -103,17 +104,7 @@ public abstract class GenericActor extends AbstractVerticle {
 
     // A json file loader (looks in your classpath/resources.)
     public JsonNode jsonFromResource(String resource) {
-        JsonNode result;
-        InputStream inputStream = getClass().getClassLoader().getResourceAsStream(resource);
-
-        try {
-            result = mapper.readTree(inputStream);
-        } catch (IOException x) {
-            log.error(x.getMessage());
-            return null;
-        }
-
-        return result;
+        return JsonHelper.jsonFromResource(resource);
     }
 
     // Convert a Vert.x JsonObject to a Jackson JsonNode

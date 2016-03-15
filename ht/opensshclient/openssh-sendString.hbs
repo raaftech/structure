@@ -1,0 +1,55 @@
+{{!
+
+{
+  "name": "OpenSSHClientSendString",
+  "desc": "The handler that provides the SendString capability to the OpenSSH client.",
+  "instrumentType": "runner",
+  "capability": "SendString",
+  "providedBy": "OpenSshClient",
+  "appliesTo": [ "OpenSshClient" ],
+  "subjectIsLocal": false,
+  "weight": 90,
+  "arguments": {
+    "ipv4address": {
+      "value": {
+        "from": "subject",
+        "type": "type.configuration.ipaddress.ipv4address",
+        "strategy": "useFirst",
+        "onError": "fail"
+      },
+      "canBeUserSupplied": false,
+      "isOptional": false
+    },
+    "payloadDirectory": {
+      "value": {
+        "from": "static",
+        "type": "string",
+        "strategy": "mustBeOne"
+      },
+      "canBeUserSupplied": false,
+      "isOptional": false
+    },
+    "payloadFileName": {
+      "value": {
+        "from": "static",
+        "type": "string",
+        "strategy": "mustBeOne"
+      },
+      "canBeUserSupplied": false,
+      "isOptional": false
+    },
+    "username": {
+      "value": {
+        "from": "static",
+        "type": "string",
+        "data": "root",
+        "strategy": "mustBeOne"
+      },
+      "canBeUserSupplied": true,
+      "isOptional": true
+    }
+  }
+}
+
+}}
+ssh -l{{username}} {{ reachable subject.Ipv4Address }} "true && /tmp/{{ payloadFileName }}"

@@ -21,7 +21,7 @@ public class InstanceNodes extends Repository<InstanceNode> {
     }
 
     /**
-     * Query the last N InstanceNodes, filtering out InstanceNodes that are handlers.
+     * Query the last N InstanceNodes, filtering out InstanceNodes that are instruments.
      * @return A data array containing the last N created InstanceNodes. If we don't have N nodes, then return
      * as many as we have.
      */

@@ -29,15 +29,15 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 /**
- * HandlerLoader is responsible for traversing a directory containing handlers (mustache templates containing a
+ * InstrumentLoader is responsible for traversing a directory containing instruments (mustache templates containing a
  * certain preamble).
  * The preamble is contained in  a mustache comment {{! }}.
- * This preamble tells us what capability the handlers provides to which TypeNodes. These handlers
+ * This preamble tells us what capability the instruments provides to which TypeNodes. These instruments
  * are then created in the database.
  */
-public class HandlerLoader {
+public class InstrumentLoader {
 
-    private final static Logger log = LoggerFactory.getLogger(HandlerLoader.class);
+    private final static Logger log = LoggerFactory.getLogger(InstrumentLoader.class);
     private final ObjectMapper mapper = new ObjectMapper();
     private final TypeNodeRepository typeNodeRepository = Context.INSTANCE.getTypeNodeRepository();
 
@@ -46,42 +46,42 @@ public class HandlerLoader {
     private final String preambleStart = "{{!";
     private final String preambleStop = "}}";
     // Our schema to validate the provided JSON of a template.
-    private final String handlerSchemaPath = "schema/handler.schema.json";
-    // Extension of our handler/template files.
+    private final String instrumentSchemaPath = "schema/instrument.schema.json";
+    // Extension of our instrument/template files.
     private final String expectedExtension = ".hbs";
 
-    // Private constructor so HandlerLoader can't be created externally.
-    private HandlerLoader() {}
+    // Private constructor so InstrumentLoader can't be created externally.
+    private InstrumentLoader() {}
 
     /*************************/
     /* Public Static Methods */
     /*************************/
 
     /*
-     * This is the only exposed method on HandlerLoader.
-     * It is used to load all the handlers in a given directory.
-     * @param directory A path to a directory containing handlers.
+     * This is the only exposed method on InstrumentLoader.
+     * It is used to load all the instruments in a given directory.
+     * @param directory A path to a directory containing instruments.
      */
     public static void loadHandlers(String directory) {
-        HandlerLoader handlerLoader = new HandlerLoader();
+        InstrumentLoader instrumentLoader = new InstrumentLoader();
 
         String dht = new File(directory).getAbsolutePath();
         Path path = FileSystems.getDefault().getPath(dht);
 
-        log.info("Started HandlerLoader for directory " + path.toString() + ".");
+        log.info("Started InstrumentLoader for directory " + path.toString() + ".");
         try {
             Files.list(path)
                     .filter(Files::isDirectory)
                     .forEach(dir -> {
                         try {
-                            handlerLoader.iterateFiles(dir);
+                            instrumentLoader.iterateFiles(dir);
                         } catch (IOException e) {
-                            log.error("Error while iterating path " + dir + " for handlers...");
+                            log.error("Error while iterating path " + dir + " for instruments...");
                             e.printStackTrace();
                         }
                     });
         } catch (IOException e) {
-            log.error("Error while loading handlers from path " + path + "...");
+            log.error("Error while loading instruments from path " + path + "...");
             e.printStackTrace();
         }
     }
@@ -90,24 +90,24 @@ public class HandlerLoader {
     /* Private Methods */
     /*******************/
 
-    private void createHandlerNode(String handlerCapability, ObjectNode instanceData,
+    private void createHandlerNode(String instrumentCapability, ObjectNode instanceData,
                                    String providedByType, ArrayNode appliesTo) {
 
         Stream<JsonNode> appliesToStream = StreamSupport.stream(appliesTo.spliterator(), false);
 
-        String handlerName = instanceData.get("name").asText();
+        String instrumentName = instanceData.get("name").asText();
 
-        TypeNode capability = typeNodeRepository.findOneByName(handlerCapability);
-        TypeNode handlerType = typeNodeRepository.findOneByName("Handler");
+        TypeNode capability = typeNodeRepository.findOneByName(instrumentCapability);
+        TypeNode instrumentType = typeNodeRepository.findOneByName("Instrument");
         TypeNode providedBy = typeNodeRepository.findOneByName(providedByType);
 
         if (capability == null) {
-            log.error("Couldn't find capability for handler " + handlerName + ".");
+            log.error("Couldn't find capability for instrument " + instrumentName + ".");
             return;
         }
 
-        if (handlerType == null) {
-            log.error("Couldn't find handler type, is the database initialized?");
+        if (instrumentType == null) {
+            log.error("Couldn't find instrument type, is the database initialized?");
             return;
         }
 
@@ -126,25 +126,25 @@ public class HandlerLoader {
                 })
                 .collect(Collectors.toList());
 
-        log.debug("Found capability and handler type for " + handlerName + ", creating instance.");
-        InstanceNode handler = new InstanceNode(instanceData, handlerType.getUuid());
-        handler.setCapability(capability);
+        log.debug("Found capability and instrument type for " + instrumentName + ", creating instance.");
+        InstanceNode instrument = new InstanceNode(instanceData, instrumentType.getUuid());
+        instrument.setCapability(capability);
 
-        log.debug("Starting transaction to save the handler.");
+        log.debug("Starting transaction to save the instrument.");
         Transaction tx = Context.INSTANCE.getGraphDatabase().beginTx();
         try {
             applies.stream()
                     .forEach(t -> {
-                        handler.addHandledType(t);
+                        instrument.addHandledType(t);
                         t.save();
                     });
-            providedBy.addHandler(handler);
+            providedBy.addInstrument(instrument);
             providedBy.save();
-            handler.save();
+            instrument.save();
             tx.success();
-            log.info("Successfully created the " + handlerName + " handler.");
+            log.info("Successfully created the " + instrumentName + " instrument.");
         } catch (Exception e) {
-            log.error("Error while saving " + handlerName + ", rolling back transaction.");
+            log.error("Error while saving " + instrumentName + ", rolling back transaction.");
             e.printStackTrace();
             tx.failure();
         } finally {
@@ -176,7 +176,7 @@ public class HandlerLoader {
         return result;
     }
 
-    // parsePreamble is passed the content of a handler/template and extracts the first
+    // parsePreamble is passed the content of a instrument/template and extracts the first
     // multi-line comment's contents. The comment is expected to start on the first line as preambleStart and
     // ends on the first found preambleStop.
     private void parsePreamble(String filePath, ArrayList<String> template) {
@@ -215,26 +215,37 @@ public class HandlerLoader {
                     s = s.replace(preambleStop, "");
                     stringBuilder.append(s);
                 });
+        String preamble = stringBuilder.toString();
+
+        stringBuilder.delete(0, stringBuilder.length());
+        IntStream.range(indexClosingMustache+1, template.size())
+                .mapToObj(template::get)
+                .map(l-> l.concat(System.getProperty("line.separator")))
+                .forEach(stringBuilder::append);
+
+        String handlebarsTemplate = stringBuilder.toString().trim();
 
         // Is the preamble valid?
         log.debug("Validating found preamble against our schema.");
         try {
-            JsonNode preambleJson = mapper.readTree(stringBuilder.toString());
+            JsonNode preambleJson = mapper.readTree(preamble);
             JsonSchemaBuilder jsonSchemaBuilder =
-                    new JsonSchemaBuilder((ObjectNode)jsonFromResource(handlerSchemaPath));
+                    new JsonSchemaBuilder((ObjectNode)jsonFromResource(instrumentSchemaPath));
             if (jsonSchemaBuilder.validateJson(preambleJson)) {
-                log.debug("Preamble valid. Continuing creation of the handlers.");
+                log.debug("Preamble valid. Continuing creation of the instruments.");
 
-                // Create the JSON needed to create the handler.
+                // Create the JSON needed to create the instrument.
                 ObjectNode instanceData = mapper.createObjectNode();
-                // What kind of capability does this handler provide?
+                // What kind of capability does this instrument provide?
                 String capability = preambleJson.get("capability").asText();
 
                 // Required fields
-                instanceData.put("payload", filePath);
+                instanceData.put("fileLocation", filePath);
                 instanceData.put("name", preambleJson.get("name").asText());
                 instanceData.put("desc", preambleJson.get("desc").asText());
+                instanceData.put("type", preambleJson.get("instrumentType").asText());
                 instanceData.put("subjectIsLocal", preambleJson.get("subjectIsLocal").asBoolean());
+                instanceData.put("template", handlebarsTemplate);
 
                 // Optional fields
                 if (preambleJson.has("weight")) {
@@ -243,24 +254,22 @@ public class HandlerLoader {
                 if (preambleJson.has("extension")) {
                     instanceData.put("extension", preambleJson.get("extension").asText());
                 }
+                if (preambleJson.has("resultParser")) {
+                    instanceData.put("resultParser", preambleJson.get("resultParser").asText());
+                }
                 if (preambleJson.has("arguments")) {
-                    JsonNode arguments = preambleJson.get("arguments");
-                    if (arguments.has("non-interactive") && arguments.get("non-interactive").size() > 0) {
-                        instanceData.put("non-interactive", arguments.get("non-interactive").toString());
-                    }
-                    if (arguments.has("interactive") && arguments.get("interactive").size() > 0) {
-                        instanceData.put("interactive", arguments.get("interactive").toString());
-                    }
+                    instanceData.put("arguments", mapper.writerWithDefaultPrettyPrinter()
+                            .writeValueAsString(preambleJson.get("arguments")));
                 }
 
-                // What TypeNode is providing this handler?
+                // What TypeNode is providing this instrument?
                 String providedByType = preambleJson.get("providedBy").asText();
-                // What does this handler apply to?
+                // What does this instrument apply to?
                 ArrayNode appliesToTypes = (ArrayNode)preambleJson.get("appliesTo");
-                // Create the handler
+                // Create the instrument
                 createHandlerNode(capability, instanceData, providedByType, appliesToTypes);
             } else {
-                log.error("Preamble of " + filePath + " didn't validate against handler.schema.json.");
+                log.error("Preamble of " + filePath + " didn't validate against instrument.schema.json.");
             }
         } catch (ProcessingException | IOException e) {
             e.printStackTrace();
@@ -280,7 +289,7 @@ public class HandlerLoader {
             }
             parsePreamble(filePath.toString(), contents);
         } catch (IOException e) {
-            log.error("Error while reading handler template " + filePath.toString());
+            log.error("Error while reading instrument template " + filePath.toString());
             e.printStackTrace();
         }
     }

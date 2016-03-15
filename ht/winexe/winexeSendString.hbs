@@ -1,0 +1,64 @@
+{{!
+
+{
+  "name": "WinexeSendString",
+  "desc": "The handler that provides the SendString capability to winese.",
+  "instrumentType": "runner",
+  "capability": "SendString",
+  "providedBy": "Winexe",
+  "appliesTo": [ "Winexe" ],
+  "subjectIsLocal": false,
+  "weight": 90,
+  "arguments": {
+    "ipv4address": {
+      "value": {
+        "from": "subject",
+        "type": "type.configuration.ipaddress.ipv4address",
+        "strategy": "useFirst",
+        "onError": "fail"
+      },
+      "canBeUserSupplied": false,
+      "isOptional": false
+    },
+    "payloadDirectory": {
+      "value": {
+        "from": "static",
+        "type": "string",
+        "strategy": "mustBeOne"
+      },
+      "canBeUserSupplied": false,
+      "isOptional": false
+    },
+    "payloadFileName": {
+      "value": {
+        "from": "static",
+        "type": "string",
+        "strategy": "mustBeOne"
+      },
+      "canBeUserSupplied": false,
+      "isOptional": false
+    },
+    "username": {
+      "value": {
+        "from": "static",
+        "type": "string",
+        "data": "Administrator",
+        "strategy": "mustBeOne"
+      },
+      "canBeUserSupplied": true,
+      "isOptional": true
+    },
+    "password": {
+      "value": {
+        "from": "static",
+        "type": "string",
+        "strategy": "mustBeOne"
+      },
+      "canBeUserSupplied": true,
+      "isOptional": false
+    }
+  }
+}
+
+}}
+winexe --user={{ username }}%{{ password }} //{{reachable subject.Ipv4Address }} "C:\Windows\temp\{{ payloadFileName }}"

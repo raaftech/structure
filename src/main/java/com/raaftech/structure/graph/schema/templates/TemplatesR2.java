@@ -4,8 +4,6 @@ import com.raaftech.structure.graph.SchemaNode;
 import com.raaftech.structure.graph.TemplateNode;
 import com.raaftech.structure.graph.schema.SchemaUpdate;
 
-import java.util.Arrays;
-
 public class TemplatesR2 extends SchemaUpdate {
 
     @Override
@@ -18,8 +16,6 @@ public class TemplatesR2 extends SchemaUpdate {
 
     @Override
     protected void initNodes() {
-        typeNodeList = Arrays.asList();
-
         // Linux
 
         TemplateNode operatingSystem = new TemplateNode("a5613527-2f64-4481-83f2-80b0cb427e28")
@@ -36,6 +32,7 @@ public class TemplatesR2 extends SchemaUpdate {
         TemplateNode sshClient = new TemplateNode("9e977808-78fd-4eb6-95e0-ff7c7011caa5");
         TemplateNode winExe = new TemplateNode("2f207919-c852-4177-9b8f-e4a368026ca6");
         TemplateNode iputils = new TemplateNode("6619adef-3bcb-4e32-bfec-d235a7bf3e29");
+        TemplateNode samba = new TemplateNode("f513ddfc-e50b-49b4-9bd8-64afc61ff7a5");
         // TODO: Change to server when STR-35 is merged
 //        TemplateNode service = new TemplateNode("3fb4603b-281e-47c0-b338-768ea05d4660");
         // TODO: Add client when STR-35 is merged
@@ -49,7 +46,8 @@ public class TemplatesR2 extends SchemaUpdate {
                 .addComponent(server)
                 .addComponent(sshClient)
                 .addComponent(winExe)
-                .addComponent(iputils);
+                .addComponent(iputils)
+                .addComponent(samba);
 
         operatingSystem.save();
 

@@ -1,0 +1,14 @@
+{{!
+
+{
+  "name": "ServicesStop",
+  "desc": "ServicesStop",
+  "instrumentType": "runner",
+  "capability": "Stop",
+  "providedBy": "Services",
+  "appliesTo": [ "Server" ],
+  "subjectIsLocal": true
+}
+
+}}
+sc stop {{ origin.shortName }}

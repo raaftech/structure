@@ -1,0 +1,14 @@
+{{!
+
+{
+  "name": "SystemdStop",
+  "desc": "SystemdStop",
+  "instrumentType": "runner",
+  "capability": "Stop",
+  "providedBy": "Systemctl",
+  "appliesTo": [ "Server" ],
+  "subjectIsLocal": true
+}
+
+}}
+systemctl stop {{ origin.shortName }}

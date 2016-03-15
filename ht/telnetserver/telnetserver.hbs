@@ -3,16 +3,11 @@
 {
   "name": "TelnetServerAccessible",
   "desc": "A marker handler that marks TelnetServer as accessable.",
-  "capability": "Accessible",
+  "instrumentType": "marker",
+  "capability": "ReceiveString",
   "providedBy": "TelnetServer",
   "appliesTo": [ "TelnetServer" ],
-  "subjectIsLocal": true,
-  "arguments": {
-    "non-interactive": {
-    },
-    "interactive": {
-    }
-  }
+  "subjectIsLocal": true
 }
 
 }}

@@ -44,9 +44,9 @@ public class TypeNode extends Node {
     @SuppressWarnings("unused")
     private Set<TypeNode> childIsaSet;
 
-    @RelatedTo(type="HAS_HANDLER", direction = Direction.OUTGOING)
+    @RelatedTo(type="HAS_INSTRUMENT", direction = Direction.OUTGOING)
     @Fetch
-    private Set<InstanceNode> handlers;
+    private Set<InstanceNode> instruments;
 
     @RelatedTo(type="IMPLEMENTS", direction = Direction.OUTGOING)
     @Fetch
@@ -92,6 +92,21 @@ public class TypeNode extends Node {
 
     /******************/
     /* Public Methods */
+
+    @Override
+    public int hashCode() {
+        if (getId() != null) {
+            return getId().hashCode();
+        } else {
+            return super.hashCode();
+        }
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return hashCode() == obj.hashCode();
+    }
+
     /******************/
 
     public Set<TypeNode> getChildIsaSet() {
@@ -195,13 +210,13 @@ public class TypeNode extends Node {
         return schema;
     }
 
-    public TypeNode addHandler(InstanceNode handler) {
-        if (handlers == null) {
-            handlers = new HashSet<>();
+    public TypeNode addInstrument(InstanceNode instrument) {
+        if (instruments == null) {
+            instruments = new HashSet<>();
         }
 
-        if (handler.getInstanceOf().getName().equals("Handler")) {
-            handlers.add(handler);
+        if (instrument.getInstanceOf().getName().equals("Instrument")) {
+            instruments.add(instrument);
         }
 
         return this;

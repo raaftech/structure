@@ -1,17 +1,23 @@
 {{!
 
 {
-  "name": "BashScriptable",
-  "desc": "BashScriptable",
-  "capability": "Scriptable",
+  "name": "BashInvoke",
+  "desc": "BashInvoke",
+  "instrumentType": "runner",
+  "capability": "Invoke",
   "extension": ".sh",
   "providedBy": "Bash",
   "appliesTo": [ "Bash" ],
   "subjectIsLocal": true,
   "arguments": {
-    "non-interactive": {
-    },
-    "interactive": {
+    "script": {
+      "value": {
+	"from": "static",
+	"type": "string",
+	"strategy": "mustBeOne"
+      },
+      "canBeUserSupplied": false,
+      "isOptional": false
     }
   }
 }

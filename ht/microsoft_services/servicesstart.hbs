@@ -1,0 +1,14 @@
+{{!
+
+{
+  "name": "ServicesStart",
+  "desc": "ServicesStart",
+  "instrumentType": "runner",
+  "capability": "Start",
+  "providedBy": "Services",
+  "appliesTo": [ "Server" ],
+  "subjectIsLocal": true
+}
+
+}}
+sc start {{ origin.shortName }}

@@ -4,8 +4,6 @@ import com.raaftech.structure.graph.SchemaNode;
 import com.raaftech.structure.graph.TypeNode;
 import com.raaftech.structure.graph.schema.SchemaUpdate;
 
-import java.util.Arrays;
-
 /**
  * SoftwareAndProtocols couples specific pieces of software
  * to the protocols they implement.
@@ -28,8 +26,6 @@ public class SoftwareAndProtocolsR1 extends SchemaUpdate {
 
     @Override
     protected void initNodes() {
-        typeNodeList = Arrays.asList();
-
         // Couple OpenSSH client and generic SSH server to SSH 1.0 and 2.0 protocols.
         TypeNode openSshClient = typeNodeRepository.findOneByName("OpenSshClient");
         TypeNode sshServer = typeNodeRepository.findOneByName("SshServer");
@@ -58,6 +54,7 @@ public class SoftwareAndProtocolsR1 extends SchemaUpdate {
         // Couple Smb clients and servers
         TypeNode smbServer = typeNodeRepository.findOneByName("SmbServer");
         TypeNode winExe = typeNodeRepository.findOneByName("Winexe");
+        TypeNode samba = typeNodeRepository.findOneByName("Samba");
         TypeNode smb = typeNodeRepository.findOneByName("SMB");
 
         smbServer.addImplementedProtocol(smb);
@@ -65,6 +62,9 @@ public class SoftwareAndProtocolsR1 extends SchemaUpdate {
 
         winExe.addImplementedProtocol(smb);
         winExe.save();
+
+        samba.addImplementedProtocol(smb);
+        samba.save();
     }
 
 }

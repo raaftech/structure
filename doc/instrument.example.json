@@ -1,0 +1,46 @@
+{
+	"instrumentType": "runner|marker|parser",
+	"capability": "sendString",
+	"providedBy": "OpenSshClient",
+	"appliesTo": [ "OpenSshClient" ],
+	"template": "opensshclient-sendstring.hbs",
+	"resultParser": "someResultParser",
+	"subjectIsLocal": false,
+	"weight": 90,
+	"arguments": {
+		"addr": {
+			"value": {
+				"from": "subject" // where to find the type: agent, origin or subject?
+					"type": "type.configuration.ipaddress.ipv4address", // what we're looking for
+					"matches": { "desc": "some regexp", "addr": "some other regexp" }, // optional
+					"strategy": "useFirst|useLast|mustBeOne|mustBeMany", // determines result behaviour
+					"onError": "fail, askUser, ignore" // what to do if strategy fails
+			},
+			"canBeUserSupplied": false,
+			"isOptional": false
+		},
+		"user": {
+			"value": {
+				"from": "subject",
+					"type": "type.configuration.actor.user",
+					"matches": { "role": "Administrator" }, 
+					"strategy": "mustBeOne",
+					"onError": "askUser"
+			},
+			"canBeUserSupplied": false, // ??
+			"isOptional": false
+		},
+		"count": {
+			"value": {
+				"from": "static",
+				"type": "string",
+				"data": "4", // optional, default: empty
+				"matches": {}, // optional, default: match everything
+				"strategy": "mustBeOne", // optional, default: mustBeOne
+				"onError": "fail", //optional, default: fail
+			},
+			"canBeUserSupplied":  true, // optional, default: false
+			"isOptional": true // optional, default: false
+		}
+	}
+}

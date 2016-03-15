@@ -4,8 +4,6 @@ import com.raaftech.structure.graph.SchemaNode;
 import com.raaftech.structure.graph.TemplateNode;
 import com.raaftech.structure.graph.schema.SchemaUpdate;
 
-import java.util.Arrays;
-
 public class TemplatesR1 extends SchemaUpdate {
 
     @Override
@@ -25,8 +23,6 @@ public class TemplatesR1 extends SchemaUpdate {
 
     @Override
     protected void initNodes() {
-        typeNodeList = Arrays.asList();
-
         // The computer template
 
         // Hardware

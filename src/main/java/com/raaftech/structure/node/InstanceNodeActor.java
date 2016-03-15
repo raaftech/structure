@@ -98,11 +98,11 @@ public class InstanceNodeActor extends NodeActor<InstanceNode> {
     }
 
     /**
-     * Get all the handlers of the InstanceNode this is called on and its components.
-     * @return An array containing the UUID's of components that have handlers, with the
-     * handlers categorized by capability type.
+     * Get all the instruments of the InstanceNode this is called on and its components.
+     * @return An array containing the UUID's of components that have instruments, with the
+     * instruments categorized by capability type.
      */
-    public MessageHandler getHandlers() {
+    public MessageHandler getInstruments() {
         return new MessageHandler() {
             @Override
             public JsonNode exec(JsonNode request) {
@@ -114,30 +114,30 @@ public class InstanceNodeActor extends NodeActor<InstanceNode> {
                     return response(request, result);
                 }
 
-                // handlerMap will contain the results and will eventually be marshalled to a JSON object.
-                Map<String, Map<String, ArrayList<String>>> handlerMap = new LinkedHashMap<>();
-                // Query all the applicable handlers in the subtree.
-                List<InstanceNodeRepository.HandlerQueryResult> handlerList = instanceNodeRepository.getHandlers(uuid, structure.getUuid());
+                // instrumentMap will contain the results and will eventually be marshalled to a JSON object.
+                Map<String, Map<String, ArrayList<String>>> instrumentMap = new LinkedHashMap<>();
+                // Query all the applicable instruments in the subtree.
+                List<InstanceNodeRepository.InstrumentQueryResult> instrumentList = instanceNodeRepository.getInstruments(uuid, structure.getUuid());
 
-                // Construct our handlerMap with the results
-                handlerList.forEach(hqr -> {
-                    Map<String, ArrayList<String>> capabilityHandlerMap = handlerMap.get(hqr.limb.getUuid());
+                // Construct our instrumentMap with the results
+                instrumentList.forEach(hqr -> {
+                    Map<String, ArrayList<String>> capabilityInstrumentMap = instrumentMap.get(hqr.target.getUuid());
 
-                    if (capabilityHandlerMap == null) {
-                        capabilityHandlerMap = new LinkedHashMap<>();
-                        handlerMap.put(hqr.limb.getUuid(), capabilityHandlerMap);
+                    if (capabilityInstrumentMap == null) {
+                        capabilityInstrumentMap = new LinkedHashMap<>();
+                        instrumentMap.put(hqr.target.getUuid(), capabilityInstrumentMap);
                     }
 
-                    ArrayList<String> handlers = capabilityHandlerMap.get(hqr.capability.getName());
-                    if (handlers == null) {
-                        handlers = new ArrayList<>();
-                        capabilityHandlerMap.put(hqr.capability.getName(), handlers);
+                    ArrayList<String> instruments = capabilityInstrumentMap.get(hqr.capability.getName());
+                    if (instruments == null) {
+                        instruments = new ArrayList<>();
+                        capabilityInstrumentMap.put(hqr.capability.getName(), instruments);
                     }
 
-                    handlers.add(hqr.handler.getName());
+                    instruments.add(hqr.instrument.getName());
 
                 });
-                result.set("data", mapper.valueToTree(handlerMap));
+                result.set("data", mapper.valueToTree(instrumentMap));
 
                 return response(request, result);
             }
@@ -149,31 +149,31 @@ public class InstanceNodeActor extends NodeActor<InstanceNode> {
         };
     }
 
-    @SchemaPath("schema/node/instancenode/runHandler.schema.json")
+    @SchemaPath("schema/node/instancenode/runInstrument.schema.json")
     @SuppressWarnings("unused")
-    public MessageHandler runHandler() {
+    public MessageHandler runInstrument() {
         return new MessageHandler() {
             @Override
             public JsonNode exec(JsonNode request) {
                 ObjectNode result = mapper.createObjectNode();
                 JsonNode args = request.get("args");
-                JsonNode interactive;
-                InstanceNode handler;
+                JsonNode instrumentArgs;
+                InstanceNode instrument;
 
-                String handlerId = args.get("handler").asText();
-                if (isUuid(handlerId)) {
-                    handler = instanceNodeRepository.findByUuid(handlerId);
+                String instrumentId = args.get("instrument").asText();
+                if (isUuid(instrumentId)) {
+                    instrument = instanceNodeRepository.findByUuid(instrumentId);
                 } else {
-                    handler = instanceNodeRepository.findOneByName(handlerId);
+                    instrument = instanceNodeRepository.findOneByName(instrumentId);
                 }
-                if (handler != null) {
+                if (instrument != null) {
 
                     // Sanitize our input
                     ObjectNode sanitized = null;
-                    if (args.has("interactive")) {
-                        interactive = args.get("interactive");
+                    if (args.has("arguments")) {
+                        instrumentArgs = args.get("arguments");
                         sanitized = mapper.createObjectNode();
-                        Iterator<Map.Entry<String, JsonNode>> iter = interactive.fields();
+                        Iterator<Map.Entry<String, JsonNode>> iter = instrumentArgs.fields();
                         while (iter.hasNext()) {
                             Map.Entry<String, JsonNode> entry = iter.next();
                             String value = entry.getValue().asText();
@@ -185,13 +185,13 @@ public class InstanceNodeActor extends NodeActor<InstanceNode> {
 
                     try {
                         String taskId = UUID.randomUUID().toString();
-                        getNode().runHandler(handler, sanitized, taskId);
+                        getNode().runInstrument(instrument, sanitized, taskId);
                         result.put("data", taskId);
                     } catch (RuntimeException e) {
                         result.put("error", e.getMessage());
                     }
                 } else {
-                    result.put("error", "Couldn't find handler.");
+                    result.put("error", "Couldn't find instrument.");
                 }
 
                 return response(request, result);

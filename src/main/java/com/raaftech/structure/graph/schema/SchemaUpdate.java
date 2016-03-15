@@ -8,9 +8,7 @@ import com.raaftech.structure.graph.repositories.SchemaNodeRepository;
 import com.raaftech.structure.graph.repositories.TypeNodeRepository;
 import com.raaftech.structure.helper.JsonSchemaBuilder;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * SchemaUpdate is an abstract class that has to be implemented for every update to the schema.
@@ -41,7 +39,7 @@ public abstract class SchemaUpdate {
 
     protected SchemaNodeRepository schemaNodeRepository = Context.INSTANCE.getSchemaNodeRepository();
     protected TypeNodeRepository typeNodeRepository = Context.INSTANCE.getTypeNodeRepository();
-    protected List<TypeNode> typeNodeList;
+    private Map<String, TypeNode> typeNodeMap = new LinkedHashMap<>();
 
     /**
      * Create a new node.
@@ -77,20 +75,39 @@ public abstract class SchemaUpdate {
     }
 
     private boolean createAllNodes() {
-        if (typeNodeList != null) {
+        if (typeNodeMap != null) {
             boolean succeeded = true;
-            Iterator<TypeNode> typeNodeIterator = typeNodeList.iterator();
+            Collection<TypeNode> typeNodes = typeNodeMap.values();
+            Iterator<TypeNode> typeNodeIterator = typeNodes.iterator();
 
             while (typeNodeIterator.hasNext() && succeeded) {
                 succeeded &= createNode(typeNodeIterator.next());
             }
-
             return succeeded;
         } else {
             throw new RuntimeException("Could not apply SchemaUpdate: " +
                     updateInformation.getName() + "R" + updateInformation.getRevision() +
-                    " (typeNodeList wasn't initialized)\n" +  "Transaction failed.");
+                    " (typeNodeMap wasn't initialized)\n" +  "Transaction failed.");
         }
+    }
+
+    /**
+     * Get a TypeNode that was previously created using addToMap
+     * @param uuid The UUID of the TypeNode.
+     * @return The TypeNode.
+     */
+    protected TypeNode getFromMap(String uuid) {
+        return typeNodeMap.get(uuid);
+    }
+
+    /**
+     * Add a new TypeNode to the TypeNode Map so we can refer to it later.
+     * @param type The newly created type.
+     * @return The TypeNode map.
+     */
+    protected Map<String, TypeNode> addToMap(TypeNode type) {
+        typeNodeMap.put(type.getUuid(), type);
+        return typeNodeMap;
     }
 
     /**
