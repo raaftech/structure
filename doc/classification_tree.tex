@@ -1,0 +1,51 @@
+\documentclass{article}
+\usepackage{tikz}
+\usepackage{tikz-qtree}
+\usetikzlibrary{arrows}
+\usepackage[active,pdftex,tightpage]{preview}
+\PreviewEnvironment[{[]}]{tikzpicture}
+
+\begin{document}
+	\begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=3cm,
+	semithick,main_node/.style={circle,draw,minimum size=4em},
+	term/.style={rectangle,minimum width=8em,minimum height=2em}]
+
+	\node[main_node] (root) [] {root};
+
+	\node[main_node] (subject) [below left of=root] {subject};
+	\node[main_node] (t_ip4) [below left of=subject] {t:IPv4};
+	\node[main_node] (t_cpu) [below right of=subject] {t:CPU};
+	\node[main_node] (m_172) [below of=t_ip4] {\verb|^172\..*|};
+	\node[main_node] (s_01) [below of=m_172] {strategy01};
+	\node[main_node] (s_02) [below of=t_cpu] {strategy02};
+
+	\node[main_node] (origin) [below right of=root] {origin};
+	\node[main_node] (t_string) [below of=origin] {t:String};
+	\node[main_node] (m_al) [below of=t_string] {\verb|^[a-z]+|};
+	\node[main_node] (s_03) [below of=m_al] {strategy03};
+
+	\node[term,draw=red,below of=s_01] (ignore) {ignore};
+	\node[term,draw=green,right of=ignore] (select) {select};
+	\node[term,draw=red,right of=select] (fail) {fail};
+
+
+	\path
+	(root)			edge node {} (subject)
+					edge node {} (origin)
+	(subject)		edge node {} (t_ip4)
+					edge node {} (t_cpu)
+	(t_ip4)			edge node {} (m_172)
+	(m_172)			edge node {} (s_01)
+	(t_cpu)			edge node {} (s_02)
+	(origin)		edge node {} (t_string)
+	(t_string)		edge node {} (m_al)
+	(m_al)			edge node {} (s_03)
+	(s_01)			edge[red] node {} (fail)
+					edge[green] node {} (select)
+	(s_02)			edge[red] node {} (ignore)
+					edge[green] node {} (select)
+	(s_03)			edge[red] node {} (fail)
+					edge[green] node {} (select)
+	;
+	\end{tikzpicture}
+\end{document}
