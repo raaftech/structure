@@ -3,10 +3,12 @@ package com.raaftech.structure.helper.classification.tree;
 import java.util.Set;
 
 /**
- * Created by Boy van Duuren &lt;boy@raaftech.com&gt;.
+ * The base class for classification trees.
+ * Nodes pass data between each other using consumeInput, which takes an object of type T as argument.
+ * @param <T> Type of objects we want to handle.
  */
 public abstract class Node<T> {
 
-    public abstract void passInput(Set<T> input);
+    public abstract void consumeInput(Set<T> input);
 
 }
