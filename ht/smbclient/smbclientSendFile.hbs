@@ -14,6 +14,7 @@
       "value": {
         "from": "subject",
         "type": "type.configuration.ipaddress.ipv4address",
+	"matches": { "reachable": "true" },
         "strategy": "useFirst",
         "onError": "fail"
       },
@@ -61,4 +62,4 @@
 }
 
 }}
-smbclient --user={{ username }}%{{ password }} //{{ reachable subject.Ipv4Address }}/C$/ -c "put {{ payloadDirectory }}/{{ payloadFileName }} Windows\temp\{{ payloadFileName }}"
+smbclient --user={{ username }}%{{ password }} //{{ ipv4address.addr }}/C$/ -c "put {{ payloadDirectory }}/{{ payloadFileName }} Windows\temp\{{ payloadFileName }}"

@@ -14,6 +14,7 @@
       "value": {
         "from": "subject",
         "type": "type.configuration.ipaddress.ipv4address",
+	"matches": { "reachable": "true" },
         "strategy": "useFirst",
         "onError": "fail"
       },
@@ -61,4 +62,4 @@
 }
 
 }}
-winexe --user={{ username }}%{{ password }} //{{reachable subject.Ipv4Address }} "C:\Windows\temp\{{ payloadFileName }}"
+winexe --user={{ username }}%{{ password }} //{{ ipv4address.addr }} "C:\Windows\temp\{{ payloadFileName }}"
