@@ -2,11 +2,6 @@ package com.raaftech.structure.helper;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.fge.jsonschema.core.exceptions.ProcessingException;
-import com.github.fge.jsonschema.core.report.ProcessingReport;
-import com.github.fge.jsonschema.main.JsonSchema;
-import com.github.fge.jsonschema.main.JsonSchemaFactory;
-import com.github.fge.jsonschema.processors.syntax.SyntaxValidator;
 import com.raaftech.structure.base.GenericActor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,25 +29,5 @@ public class JsonHelper {
         }
 
         return result;
-    }
-
-    public static boolean validateToSchema(JsonNode schema, JsonNode object) {
-        final JsonSchemaFactory factory = JsonSchemaFactory.byDefault();
-        final SyntaxValidator syntaxValidator = factory.getSyntaxValidator();
-        ProcessingReport report = syntaxValidator.validateSchema(schema);
-        boolean valid = false;
-
-        if (!report.isSuccess()) {
-            throw new IllegalArgumentException("Provided schema is not a valid JSON schema.");
-        }
-
-        try {
-            final JsonSchema jsonSchema = factory.getJsonSchema(schema);
-            valid = jsonSchema.validate(object).isSuccess();
-        } catch (ProcessingException e) {
-            e.printStackTrace();
-        }
-
-        return valid;
     }
 }
