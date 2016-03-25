@@ -188,6 +188,7 @@ public class InstanceNodeActor extends NodeActor<InstanceNode> {
                         getNode().runInstrument(instrument, sanitized, taskId);
                         result.put("data", taskId);
                     } catch (RuntimeException e) {
+                        log.error(e.getMessage());
                         result.put("error", e.getMessage());
                     }
                 } else {

@@ -10,6 +10,8 @@ import com.github.jknack.handlebars.Template;
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.graph.InstanceNode;
 import com.raaftech.structure.graph.repositories.InstanceNodeRepository;
+import com.raaftech.structure.helper.classification.ArgumentsToClassificationTreeParser;
+import com.raaftech.structure.helper.classification.tree.RootNode;
 import com.raaftech.structure.helper.handlebars.ReachableAddress;
 import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.json.JsonObject;
@@ -21,6 +23,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 /**
@@ -34,8 +37,13 @@ public class InstrumentRunner {
     private final String taskId;
     private final InstanceNode origin;
     private final InstanceNode instrument;
+    private final InstanceNode subject;
+    private final InstanceNode agent;
+    private final ObjectNode arguments;
+
     private final String templateProperty = "template";
     private final String workingDirectory = getCurrentWorkingDirectory() + "/generatedscripts/";
+
     // jobs will contain the system commands eventually sent to the agent with the TaskManager.
     private final ArrayList<String> jobList = new ArrayList<>();
     private final String taskManagerAddress = "com.raaftech.structure.manager.taskmanager";
@@ -50,14 +58,15 @@ public class InstrumentRunner {
      * @param arguments  Given arguments, can be null.
      * @param taskId     The ID used to track progress of this action.
      */
-    public InstrumentRunner(InstanceNode origin, InstanceNode instrument, JsonNode arguments, String taskId) {
+    public InstrumentRunner(InstanceNode origin, InstanceNode instrument, ObjectNode arguments, String taskId) {
         this.taskId = taskId;
         this.origin = origin;
         this.instrument = instrument;
+        this.arguments = arguments == null ? mapper.createObjectNode() : arguments;
 
         // TODO: Need a different way of finding the structure node.
-        InstanceNode structure = instanceNodeRepository.findOneByName("structure");
-        InstanceNode subject = instanceNodeRepository.getStartOfComponentGroup(origin.getUuid());
+        this.agent = instanceNodeRepository.findOneByName("structure");
+        this.subject = instanceNodeRepository.getStartOfComponentGroup(origin.getUuid());
         // Is the instrument argument of the expected type?
         if (!instrument.isOfType("Instrument")) {
             throw new IllegalArgumentException("Instrument should be of type instrument.");
@@ -70,13 +79,6 @@ public class InstrumentRunner {
             // todo: log as result
         }
 
-        ObjectNode context = mapper.createObjectNode();
-        if (arguments != null) {
-            context = arguments.deepCopy();
-        }
-        context.set("subject", subject.toArguments());
-        context.set("origin", origin.toFlatJson());
-
         boolean subjectIsLocal = Boolean.parseBoolean(instrument.getProperty("subjectIsLocal"));
         if (subjectIsLocal) {
             // run subject as local routine
@@ -88,7 +90,7 @@ public class InstrumentRunner {
             // Get a (set of) sendString instruments that are capable of sending strings from the agent to the subject
             // using a particular protocol (SSH, telnet, ...). This query only returns instruments that have a ReceiveString
             // counterpart in the subject speaking common protocol.
-            Set<InstanceNode> sendStringInstruments = instanceNodeRepository.getCompatibleSendString(structure.getUuid(), subject.getUuid());
+            Set<InstanceNode> sendStringInstruments = instanceNodeRepository.getCompatibleSendString(agent.getUuid(), subject.getUuid());
             if (sendStringInstruments.size() <= 0) {
                 // todo: log
                 throw new RuntimeException("No matching sendString protocol between structure and " + subject.getName());
@@ -115,7 +117,7 @@ public class InstrumentRunner {
                         + heaviestSendString.getName() + ":" + matchingReceiveString.getName());
             }
 
-            Set<InstanceNode> sendFileInstruments = instanceNodeRepository.getCompatibleSendFile(structure.getUuid(), subject.getUuid());
+            Set<InstanceNode> sendFileInstruments = instanceNodeRepository.getCompatibleSendFile(agent.getUuid(), subject.getUuid());
             if (sendFileInstruments.size() <= 0) {
                 throw new RuntimeException("No matching sendFile protocol between structure and " + subject.getName());
             }
@@ -154,27 +156,31 @@ public class InstrumentRunner {
             // We now have everything we need: an instrument with an origin to run from, the subject, and ways
             // to send files (the script) and strings (the command to run the script)
             try {
-                // create script file, return context with file path
-                context = createScript(instrument, invokableInterpreter, context);
+                // create script file, this will put the file metadata in our static arguments
+                createScript(instrument, invokableInterpreter);
                 // send file to subject (assumes sendFile + receiveFile)
-                jobList.add(sendFile(heaviestSendFile, context));
+                jobList.add(sendFile(heaviestSendFile));
                 // send execution to subject (assumes sendString + receiveString)
-                jobList.add(sendString(heaviestSendString, context));
+                jobList.add(sendString(heaviestSendString));
 
             } catch (IOException e) {
-                e.printStackTrace();
+                log.error(e.getMessage());
+                throw new RuntimeException("Error while creating script to transfer for instrument " + this.instrument.getName()
+                        + ". See logging for more details.");
             }
         } else {
             // Check if the instrument is connected to structure via HAS_INSTRUMENT
-            if (instanceNodeRepository.validateNonLocalInstrument(instrument.getUuid(), structure.getUuid(), origin.getUuid()) == null) {
-                log.error("We can't run instrument \"" + instrument.getName() + "\", because \"" + structure.getName() + "\" [" + structure.getUuid() + "] " +
+            if (instanceNodeRepository.validateNonLocalInstrument(instrument.getUuid(), agent.getUuid(), origin.getUuid()) == null) {
+                log.error("We can't run instrument \"" + instrument.getName() + "\", because \"" + agent.getName() + "\" [" + agent.getUuid() + "] " +
                         "doesn't have \"" + instanceNodeRepository.findInstrumentOwner(instrument.getUuid()) + "\".");
                 // todo: log as result
             } else {
                 log.debug("Valid, non-local path");
                 try {
-                    if (checkArguments(instrument, context)) {
-                        jobList.add(applyTemplate(instrument.getProperty(templateProperty), context));
+                    // TODO: create method
+                    ObjectNode args = validateAndSelectArguments(instrument);
+                    if (arguments != null) {
+                        jobList.add(applyTemplate(instrument.getProperty(templateProperty), args));
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -187,158 +193,129 @@ public class InstrumentRunner {
      * Create a send file execution string using the given SendFile instrument and context.
      *
      * @param sendFileInstrument An instrument that implements the SendFile capability.
-     * @param context            The context for the handlebars template.
      * @return An execution string.
      * @throws IOException              HandleBars might throw an IOException while parsing the template.
      * @throws IllegalArgumentException Context doesn't pass argument validation.
      */
-    private String sendFile(InstanceNode sendFileInstrument, ObjectNode context) throws IOException, IllegalArgumentException {
-        if (checkArguments(sendFileInstrument, context)) {
-            return applyTemplate(sendFileInstrument.getProperty(templateProperty), context);
+    private String sendFile(InstanceNode sendFileInstrument) throws IOException, IllegalArgumentException {
+        ObjectNode arguments = validateAndSelectArguments(sendFileInstrument);
+        if (arguments != null) {
+            return applyTemplate(sendFileInstrument.getProperty(templateProperty), arguments);
         } else {
             throw new IllegalArgumentException("Error while checking arguments.");
         }
     }
 
-    private boolean checkArguments(InstanceNode instrument, JsonNode context) {
-        // Get defaults from the instrument schema. This is not very pretty.
-        JsonNode argumentsKeySchema = JsonHelper.jsonFromResource("schema/instrument.schema.json")
-                .get("properties")
-                .get("arguments")
-                .get("patternProperties")
-                .get("^[a-zA-Z0-9]+$")
-                .get("properties");
-        JsonNode valueKeySchema = argumentsKeySchema.get("value").get("properties");
+    /**
+     * Given an instrument and the context (which consists of the origin, subject, agent and arguments)
+     * return a filtered context usable in handlebars templates.
+     * @param instrument The instrument we want to use the context in.
+     * @return A properly formatted context, or null in case the instrument doesn't have an arguments object.
+     */
+    private ObjectNode validateAndSelectArguments(InstanceNode instrument) {
+        // Result will contain the filtered result set of our context
+        ObjectNode result;
 
-        final boolean optionalDefault = argumentsKeySchema.get("isOptional").get("default").asBoolean();
-        final boolean userSuppliedDefault = argumentsKeySchema.get("canBeUserSupplied").get("default").asBoolean();
-        final String strategyDefault = valueKeySchema.get("strategy").get("default").asText();
-        final String onErrorDefault = valueKeySchema.get("onError").get("default").asText();
+        //
+        // Create the context we're working with.
+        //
+        Set<JsonNode> context = new HashSet<>();
+        // Add a _from field, before we collect items in our result object,
+        // so we know where data came from. This is used for filtering.
+        BiConsumer<JsonNode, String> collect = (arg, from) -> {
+            ((ObjectNode)arg).put("_from", from);
+            context.add(arg);
+        };
+        // convert (copies of) the origin, subject and agent trees and add them to the context
+        subject.toArguments().forEach(arg -> collect.accept(arg, "subject"));
+        agent.toArguments().forEach(arg -> collect.accept(arg, "agent"));
+        ObjectNode originCopy = ((ObjectNode)origin.toFlatJson().deepCopy()).put("_from", "origin");
+        context.add(originCopy);
+        ObjectNode argumentsCopy = arguments.deepCopy();
+        // create a copy of the given statically provided arguments
+        // and add them to our context in a way we can filter
+        argumentsCopy.fields().forEachRemaining(entry -> {
+            ObjectNode node = mapper.createObjectNode()
+                    .put("name", entry.getKey())
+                    .put("data", entry.getValue().asText());
+            collect.accept(node, "static");
+        });
 
-        // Begin validation
-        boolean valid = true;
+        //
+        // Transform the instrument's arguments object into a classification tree.
+        // After that, we start filtering using the class. tree, and check for missing
+        // data in our filtered context.
+        //
         JsonNode arguments;
         String tmpArguments = instrument.getProperty("arguments");
+        // If we don't even have arguments, return right away.
         if (tmpArguments == null) {
-            return true;
+            return null;
         }
 
         try {
+            // Prepare objects
             arguments = mapper.readTree(tmpArguments);
-            Iterator<Map.Entry<String, JsonNode>> entries = arguments.fields();
-            while (entries.hasNext()) {
-                Map.Entry<String, JsonNode> entry = entries.next();
-                String key = entry.getKey();
-                JsonNode arg = entry.getValue();
-                JsonNode value = arg.get("value");
-
-                boolean optional = optionalDefault;
-                if (arg.has("isOptional")) {
-                    optional = arg.get("isOptional").asBoolean();
-                }
-
-                String from = value.get("from").asText();
-                String type = value.get("type").asText();
-
-                // Check if we have this argument, and set a boolean (and object)
-                // accordingly.
-                JsonNode contextArgument = null;
-                boolean found = false;
-                // If the argument comes from the static environment, we can just get it from the
-                // root of the context.
-                if (from.equals("static")) {
-                    found = context.has(key);
-                    if (found) {
-                        contextArgument = context.get(key);
-                    }
-                } else {
-                    // Else, get use the "from" key to get the proper subcontext (in case of e.g. subject, origin, or agent)
-                    JsonNode hierarchyPath = context.get(from).get("_hierarchyPath");
-                    // hierarchyPath may be textual, in case of origin, or an object in the other cases.
-                    if (hierarchyPath.isTextual()) {
-                        found = hierarchyPath.asText().equals(type);
-                    } else if (hierarchyPath.isObject()) {
-                        found = hierarchyPath.has(type);
-                    }
-                    if (found) {
-                        // In case we need to check the origin, we can just grab the whole object at context.origin.
-                        // Else we need to grab the proper object from the context.$from object by looking up the name
-                        // in the hierarchyPath.
-                        if (from.equals("origin") && hierarchyPath.isTextual()) {
-                            contextArgument = context.get(from);
-                        } else if ((from.equals("subject") || from.equals("agent")) && hierarchyPath.isObject()) {
-                            contextArgument = context.get(from).get(hierarchyPath.get(type).asText());
-                        }
-                    }
-                }
-
-                if (found) {
-                    // validate the argument
-                    if (value.has("matches")) {
-                        // matches can either be an object or a string
-                        if (value.get("matches").isTextual()) {
-                            // we have a string, so treat it as regex
-                            String pattern = value.get("matches").asText();
-                            // ignore IDE warning, found being true means contextArgument != null
-                            if (!contextArgument.asText().matches(pattern)) {
-                                log.error("Argument " + key + " doesn't match regex \"" + pattern + "\" in instrument "
-                                        + instrument.getName() + "for task " + taskId + ".");
-                                valid = false;
-                            }
-                        } else if (value.get("matches").isObject()) {
-                            // matches is an object, containing keys and strings, the strings are regex
-                            ObjectNode matches = (ObjectNode) value.get("matches");
-                            Iterator<Map.Entry<String, JsonNode>> matchIter = matches.fields();
-                            while (matchIter.hasNext()) {
-                                Map.Entry<String, JsonNode> match = matchIter.next();
-                                String propertyKey = match.getKey();
-                                String propertyRegex = match.getValue().asText();
-                                // ignore IDE warning, found being true means contextArgument != null
-                                if (!contextArgument.has(propertyKey) || !contextArgument.get(propertyKey).asText().matches(propertyRegex)) {
-                                    log.error("Argument " + key + "." + propertyKey + " doesn't match regex \"" + propertyRegex + "\" "
-                                            + "in instrument " + instrument.getName() + " for task " + taskId + ".");
-                                    valid = false;
-                                    break;
-                                }
+            ArgumentsToClassificationTreeParser.ClassificationTreeObjects classTreeObjects =
+                    ArgumentsToClassificationTreeParser.asTree((ObjectNode)arguments);
+            RootNode<JsonNode> startOfClassificationTree = classTreeObjects.root;
+            // Start classifying
+            startOfClassificationTree.consumeInput(context);
+            result = classTreeObjects.result;
+            // Were there any failures?
+            if (classTreeObjects.failed.size() > 0) {
+                throw new RuntimeException("Validation of arguments " + classTreeObjects.failed.toString()
+                        + " failed while running instrument " + this.instrument.getName() + " for task [ " + taskId + "].");
+            } else if (classTreeObjects.askUser == null || classTreeObjects.askUser.size() > 0) {
+                // todo: implement this. when we finish calling instruments from UI we'll have a better grasp at what & how
+            } else {
+                // Check for missing arguments, taking default values if provided
+                final String optionalKey = "isOptional";
+                final String defaultValueKey = "data";
+                Set<String> missingKeys = new HashSet<>();
+                Iterator<Map.Entry<String, JsonNode>> argIter = arguments.fields();
+                while (argIter.hasNext()) {
+                    Map.Entry<String, JsonNode> arg = argIter.next();
+                    String key = arg.getKey();
+                    JsonNode value = arg.getValue();
+                    boolean missing = result.get(key) == null;
+                    if (missing) {
+                        JsonNode data = value.get("value").get(defaultValueKey);
+                        if (data != null) {
+                            result.set(key, data);
+                        } else {
+                            if (value.get(optionalKey) == null || !value.get(optionalKey).asBoolean()) {
+                                missingKeys.add(key);
                             }
                         }
                     }
-                } else if (optional) {
-                    // the argument is optional, but in the case it's from field is "static" and it has been given a
-                    // data field, we inject that value in our context.
-                    if (from.equals("static") && value.has("data")) {
-                        ((ObjectNode) context).put(key, value.get("data").asText());
-                    }
-                } else {
-                    // we didn't find the argument, and it's not optional either, so we're in an invalid state
-                    log.error("Missing argument " + key + ", needed in instrument " + instrument.getName() + " for task " + taskId + ".");
-                    valid = false;
                 }
-                // break early if we found arguments invalid
-                if (!valid) {
-                    break;
+                if (missingKeys.size() > 0) {
+                    throw new RuntimeException("Missing or invalid parameter(s) " + missingKeys.toString() + " while running instrument "
+                            + this.instrument.getName() + "->" + instrument.getName()
+                            + " for task [" + taskId + "].");
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
-            valid = false;
+            log.error(e.getMessage());
+            throw new RuntimeException("Ran into an unknown exception while parsing instrument " + this.instrument.getName()
+                    +"'s arguments object. See logging for more details.");
         }
-
-        return valid;
+        return result;
     }
 
     /**
      * Create a send string execution string using the given SendFile instrument and context.
      *
      * @param sendStringInstrument An instrument that implements the SendFile capability.
-     * @param context              The context for the handlebars template.
      * @return An execution string.
      * @throws IOException              HandleBars might throw an IOException while parsing the template.
      * @throws IllegalArgumentException Context doesn't pass argument validation.
      */
-    private String sendString(InstanceNode sendStringInstrument, ObjectNode context) throws IOException {
-        if (checkArguments(sendStringInstrument, context)) {
-            return applyTemplate(sendStringInstrument.getProperty(templateProperty), context);
+    private String sendString(InstanceNode sendStringInstrument) throws IOException {
+        ObjectNode arguments = validateAndSelectArguments(sendStringInstrument);
+        if (arguments != null) {
+            return applyTemplate(sendStringInstrument.getProperty(templateProperty), arguments);
         } else {
             throw new IllegalArgumentException("Error while checking arguments.");
         }
@@ -349,29 +326,24 @@ public class InstrumentRunner {
      *
      * @param instrument           The instrument to run.
      * @param invokableInterpreter The interpreter to wrap the command in.
-     * @param context              Context for the parsing of the instrument and invokableInterpreter templates.
      * @return The context with added values from both the instrument and invokableInterpreter.
      * @throws IOException Is thrown when we run into trouble parsing the handlebars template.
      */
-    private ObjectNode createScript(InstanceNode instrument, InstanceNode invokableInterpreter, ObjectNode context) throws IOException {
-        if (checkArguments(instrument, context)) {
-            String script = applyTemplate(instrument.getProperty(templateProperty), context);
-            context.put("script", script);
-            script = applyTemplate(invokableInterpreter.getProperty(templateProperty), context);
+    private void createScript(InstanceNode instrument, InstanceNode invokableInterpreter) throws IOException {
+        ObjectNode context = validateAndSelectArguments(instrument);
+        String script = applyTemplate(instrument.getProperty(templateProperty), context);
+        arguments.put("script", script);
+        context = validateAndSelectArguments(invokableInterpreter);
+        script = applyTemplate(invokableInterpreter.getProperty(templateProperty), context);
 
-            String scriptFilename = origin.getName() + "-" + instrument.getName() + "_" + System.currentTimeMillis()
-                    + invokableInterpreter.getProperty("extension");
-            FileWriter scriptWriter = createFileWriter(scriptFilename);
-            scriptWriter.write(script);
-            scriptWriter.close();
+        String scriptFilename = origin.getName() + "-" + instrument.getName() + "_" + System.currentTimeMillis()
+                + invokableInterpreter.getProperty("extension");
+        FileWriter scriptWriter = createFileWriter(scriptFilename);
+        scriptWriter.write(script);
+        scriptWriter.close();
 
-            context.put("payloadDirectory", workingDirectory);
-            context.put("payloadFileName", scriptFilename);
-
-            return context;
-        } else {
-            throw new IllegalArgumentException("Error while checking arguments.");
-        }
+        arguments.put("payloadDirectory", workingDirectory);
+        arguments.put("payloadFileName", scriptFilename);
     }
 
     /**

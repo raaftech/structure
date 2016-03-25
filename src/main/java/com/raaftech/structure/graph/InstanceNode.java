@@ -29,6 +29,8 @@ import org.springframework.data.neo4j.fieldaccess.DynamicPropertiesContainer;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
@@ -352,8 +354,8 @@ public class InstanceNode extends Node {
     }
 
     // Run a instrument on this instance
-    public void runInstrument(InstanceNode instrument, JsonNode interactive, String taskId) {
-        new InstrumentRunner(this, instrument, interactive, taskId).startInstrument();
+    public void runInstrument(InstanceNode instrument, ObjectNode arguments, String taskId) {
+        new InstrumentRunner(this, instrument, arguments, taskId).startInstrument();
     }
 
     public InstanceNode save() {
@@ -384,15 +386,25 @@ public class InstanceNode extends Node {
      * can be used to as an argument for a instrument.
      * @return JSON representation that can be used as an argument for a instrument.
      */
-    public ObjectNode toArguments() {
-        final String pathKeyName = "_hierarchyPath";
-        ObjectNode arguments = recurseForArguments(pathKeyName, getComponents(), null);
-        ObjectNode thisJson = (ObjectNode)toFlatJson();
-        if (thisJson.get(pathKeyName).isTextual()) {
-            ((ObjectNode)arguments.get(pathKeyName)).put(thisJson.get(pathKeyName).asText(), thisJson.get("name").asText());
-            thisJson.remove(pathKeyName);
-        }
-        arguments.putArray(getInstanceOf().getName()).add(thisJson);
+    public Set<JsonNode> toArguments() {
+        Set<JsonNode> arguments = new HashSet<>();
+
+        arguments.add(toFlatJson());
+        BiConsumer<BiConsumer, InstanceNode> consumeArgsHelper = (f, node) -> {
+            Set<InstanceNode> components = node.getComponents();
+            if (components.size() > 0) {
+                components.parallelStream().forEach(n -> f.accept(f, n));
+            }
+            arguments.add(node.toFlatJson());
+        };
+
+        // Lambda's can't refer to themselves using their variable name. That means consumeArgsHelper defined
+        // above cannot refer to itself by name. This sucks, because it's a recursive function.
+        // However, it can refer to itself if it's passed a reference to itself as an argument, so that's what's
+        // happening in consumeArgs. After calling consumeArgsHelper below, consumeArgsHelper is bound to 'f' in the lambda.
+        Consumer<InstanceNode> consumeArgs = node -> consumeArgsHelper.accept(consumeArgsHelper, node);
+
+        getComponents().stream().forEach(consumeArgs);
 
         return arguments;
     }
