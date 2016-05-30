@@ -23,31 +23,31 @@ public class OperatingSystemsR1 extends SchemaUpdate {
         protected void initNodes() {
                 // raaftech.com.model.operatingsystems-0.0.1
                 TypeNode operatingSystem = typeNodeRepository.findByUuid("f05e325e-1aee-4892-96e4-8bcd6e97c528");
-                addToMap(new TypeNode("DosLike", "A DOS-like operating system.", "e181e9e8-7f30-42a3-b87f-b8e183ddfd6f")
+                addToMap(new TypeNode("DosLike", "A DOS-like operating system.", "e181e9e8-7f30-42a3-b87f-b8e183ddfd6f", 0x004C)
                         .setIsa(operatingSystem));
                 addToMap(new TypeNode("WindowsLike", "A Windows-like operating system.", "4edbaf6a-da58-4644-abac-ae80328ddb49")
                         .setIsa(operatingSystem));
                 addToMap(new TypeNode("Windows", "The Microsoft Windows Operating System.", "060a519d-08d0-4d12-82ac-1e3f14277009")
                         .setIsa(getFromMap("4edbaf6a-da58-4644-abac-ae80328ddb49")));
-                addToMap(new TypeNode("UnixLike", "A UNIX-like operating system.", "6a1eea8b-1462-4439-8c60-12edbee6c397")
+                addToMap(new TypeNode("UnixLike", "A UNIX-like operating system.", "6a1eea8b-1462-4439-8c60-12edbee6c397", 0x00ED)
                         .setIsa(operatingSystem));
-                addToMap(new TypeNode("Unix", "The UNIX Operating System.", "a3b228b6-f737-460c-a3bc-bc653167b36c")
+                addToMap(new TypeNode("Unix", "The UNIX Operating System.", "a3b228b6-f737-460c-a3bc-bc653167b36c", 0x00EC)
                         .setIsa(getFromMap("6a1eea8b-1462-4439-8c60-12edbee6c397")));
-                addToMap(new TypeNode("Illumos", "The Illumos Operating System.", "f0bcc651-3ca6-4d4c-ac9d-5a60b2b08520")
+                addToMap(new TypeNode("Illumos", "The Illumos Operating System.", "f0bcc651-3ca6-4d4c-ac9d-5a60b2b08520", 0x006A)
                         .setIsa(getFromMap("a3b228b6-f737-460c-a3bc-bc653167b36c")));
-                addToMap(new TypeNode("MacOsX", "The Apple Mac OS X Operating System.", "0f81d6dc-d221-464a-ab85-1e3e5d98c3f0")
+                addToMap(new TypeNode("MacOsX", "The Apple Mac OS X Operating System.", "0f81d6dc-d221-464a-ab85-1e3e5d98c3f0", 0x007B)
                         .setIsa(getFromMap("a3b228b6-f737-460c-a3bc-bc653167b36c")));
                 addToMap(new TypeNode("Bsd", "The Berkeley Software Distribution Operating System.",
-                        "6004436f-7c88-4c2e-a29d-e8077bad10e9")
+                        "6004436f-7c88-4c2e-a29d-e8077bad10e9", 0x0031)
                         .setIsa(getFromMap("6a1eea8b-1462-4439-8c60-12edbee6c397")));
-                addToMap(new TypeNode("Linux", "The Linux Operating System.", "a5613527-2f64-4481-83f2-80b0cb427e28")
+                addToMap(new TypeNode("Linux", "The Linux Operating System.", "a5613527-2f64-4481-83f2-80b0cb427e28", 0x0078)
                         .setIsa(getFromMap("6a1eea8b-1462-4439-8c60-12edbee6c397")));
 
-                addToMap(new TypeNode("FreeDos", "A free DOS-like operating system.", "0481d915-9d3c-4dbc-a55d-a688652934ef")
+                addToMap(new TypeNode("FreeDos", "A free DOS-like operating system.", "0481d915-9d3c-4dbc-a55d-a688652934ef", 0x0059)
                         .setIsa(getFromMap("e181e9e8-7f30-42a3-b87f-b8e183ddfd6f")));
                 addToMap(new TypeNode("FreeDos1", "A free DOS-like operating system, version 1.x.", "fd4984a4-e593-491d-ad1a-986fc203ff0e")
                         .setIsa(getFromMap("0481d915-9d3c-4dbc-a55d-a688652934ef")));
-                addToMap(new TypeNode("MsDos", "The Microsoft Disk Operating System.", "dfbe4ce9-75be-4431-9629-3ab7d4a311e5")
+                addToMap(new TypeNode("MsDos", "The Microsoft Disk Operating System.", "dfbe4ce9-75be-4431-9629-3ab7d4a311e5", 0x00A6)
                         .setIsa(getFromMap("e181e9e8-7f30-42a3-b87f-b8e183ddfd6f")));
                 addToMap(new TypeNode("MsDos5", "The Microsoft Disk Operating System, version 5.x.", "50dcae6d-48b0-432f-8f26-1cbf302bf504")
                         .setIsa(getFromMap("dfbe4ce9-75be-4431-9629-3ab7d4a311e5")));
@@ -55,7 +55,7 @@ public class OperatingSystemsR1 extends SchemaUpdate {
                         .setIsa(getFromMap("dfbe4ce9-75be-4431-9629-3ab7d4a311e5")));
                 addToMap(new TypeNode("Windows9x", "The Microsoft Windows 95/98/ME based operating systems.", "f936f4df-d1a6-4596-808a-6e2891a0688e")
                         .setIsa(getFromMap("060a519d-08d0-4d12-82ac-1e3f14277009")));
-                addToMap(new TypeNode("Windows95", "The Microsoft Windows 95 operating system.", "37730c0d-e581-4089-8fc0-c848094223a7")
+                addToMap(new TypeNode("Windows95", "The Microsoft Windows 95 operating system.", "37730c0d-e581-4089-8fc0-c848094223a7", 0x00FD)
                         .setIsa(getFromMap("f936f4df-d1a6-4596-808a-6e2891a0688e")));
                 addToMap(new TypeNode("Windows98", "The Microsoft Windows 98 operating system.", "7d7616b2-2fae-4f47-83cf-0e7add8950c5")
                         .setIsa(getFromMap("f936f4df-d1a6-4596-808a-6e2891a0688e")));
@@ -71,23 +71,23 @@ public class OperatingSystemsR1 extends SchemaUpdate {
                         .setIsa(getFromMap("3d97107a-fb41-4a45-bd98-e93190ea4e83")));
                 addToMap(new TypeNode("Windows2003", "The Microsoft Windows Server 2003 operating system.", "8eb5e304-7d31-4645-89e2-8c39fefc7278")
                         .setIsa(getFromMap("3d97107a-fb41-4a45-bd98-e93190ea4e83")));
-                addToMap(new TypeNode("WindowsVista", "The Microsoft Windows Vista operating system.", "ec9e7f41-cda5-48df-9c22-8f320fff398b")
+                addToMap(new TypeNode("WindowsVista", "The Microsoft Windows Vista operating system.", "ec9e7f41-cda5-48df-9c22-8f320fff398b", 0x00FE)
                         .setIsa(getFromMap("3d97107a-fb41-4a45-bd98-e93190ea4e83")));
                 addToMap(new TypeNode("Windows7", "The Microsoft Windows 7 operating system.", "a3b0f390-7257-43cb-9b9d-1cef8a4092bf")
                         .setIsa(getFromMap("3d97107a-fb41-4a45-bd98-e93190ea4e83")));
                 addToMap(new TypeNode("Windows2008", "The Microsoft Windows Server 2008 operating system.", "0cb2b9f2-3dfe-4183-8c0d-519a2b16e68a")
                         .setIsa(getFromMap("3d97107a-fb41-4a45-bd98-e93190ea4e83")));
-                addToMap(new TypeNode("Windows8", "The Microsoft Windows 8 operating system.", "16934de7-609f-4068-a18e-7eb7452b5f01")
+                addToMap(new TypeNode("Windows8", "The Microsoft Windows 8 operating system.", "16934de7-609f-4068-a18e-7eb7452b5f01", 0x00FC)
                         .setIsa(getFromMap("3d97107a-fb41-4a45-bd98-e93190ea4e83")));
                 addToMap(new TypeNode("Windows2012", "The Microsoft Windows Server 2012 operating system.", "46758eba-4463-4779-91d9-9095f9d87097")
                         .setIsa(getFromMap("3d97107a-fb41-4a45-bd98-e93190ea4e83")));
-                addToMap(new TypeNode("ReactOs", "The ReactOS Operating System.", "3a80082c-173f-44fc-b42a-1fb381d2e3bc")
+                addToMap(new TypeNode("ReactOs", "The ReactOS Operating System.", "3a80082c-173f-44fc-b42a-1fb381d2e3bc", 0x00C7)
                         .setIsa(getFromMap("4edbaf6a-da58-4644-abac-ae80328ddb49")));
                 addToMap(new TypeNode("ReactOs03", "The ReactOS 0.3.x Operating System.", "0a6a1bd2-1a6b-461b-aa28-cca977b8faf1")
                         .setIsa(getFromMap("3a80082c-173f-44fc-b42a-1fb381d2e3bc")));
                 addToMap(new TypeNode("ReactOs04", "The ReactOS 0.4.x Operating System.", "94708506-de30-4827-b9ef-84f6694c4e3f")
                         .setIsa(getFromMap("3a80082c-173f-44fc-b42a-1fb381d2e3bc")));
-                addToMap(new TypeNode("Aix", "The IBM AIX Operating System.", "9cf01e40-6be5-48bc-88c5-e9c3c8caaa4b")
+                addToMap(new TypeNode("Aix", "The IBM AIX Operating System.", "9cf01e40-6be5-48bc-88c5-e9c3c8caaa4b", 0x0023)
                         .setIsa(getFromMap("a3b228b6-f737-460c-a3bc-bc653167b36c")));
                 addToMap(new TypeNode("Aix5", "The IBM AIX 5.x Operating System.", "154fd2d1-db50-4318-bfdf-49a62f11bdb6")
                         .setIsa(getFromMap("9cf01e40-6be5-48bc-88c5-e9c3c8caaa4b")));
@@ -95,7 +95,7 @@ public class OperatingSystemsR1 extends SchemaUpdate {
                         .setIsa(getFromMap("9cf01e40-6be5-48bc-88c5-e9c3c8caaa4b")));
                 addToMap(new TypeNode("Aix7", "The IBM AIX 7.x Operating System.", "a3f1be8b-f222-4c9d-ad77-d2a5365f418d")
                         .setIsa(getFromMap("9cf01e40-6be5-48bc-88c5-e9c3c8caaa4b")));
-                addToMap(new TypeNode("HpUx", "The HP/UX Operating System.", "465b42e6-a7c5-4cf8-96c5-54257f054274")
+                addToMap(new TypeNode("HpUx", "The HP/UX Operating System.", "465b42e6-a7c5-4cf8-96c5-54257f054274", 0x0063)
                         .setIsa(getFromMap("a3b228b6-f737-460c-a3bc-bc653167b36c")));
                 addToMap(new TypeNode("HpUx10", "The HP/UX 10.x Operating System.", "416e6138-b048-4ee5-9554-6481ea996edf")
                         .setIsa(getFromMap("465b42e6-a7c5-4cf8-96c5-54257f054274")));
@@ -107,7 +107,7 @@ public class OperatingSystemsR1 extends SchemaUpdate {
                         .setIsa(getFromMap("1d34dabf-b096-4e43-80c4-7318c81bc1fe")));
                 addToMap(new TypeNode("HpUx1131", "The HP/UX 11.31 Operating System.", "591557b5-f13a-4070-a043-782830560664")
                         .setIsa(getFromMap("1d34dabf-b096-4e43-80c4-7318c81bc1fe")));
-                addToMap(new TypeNode("Solaris", "The Solaris Operating System.", "4190b02e-a832-4316-87c6-d9e9b694e284")
+                addToMap(new TypeNode("Solaris", "The Solaris Operating System.", "4190b02e-a832-4316-87c6-d9e9b694e284", 0x00D8)
                         .setIsa(getFromMap("a3b228b6-f737-460c-a3bc-bc653167b36c")));
                 addToMap(new TypeNode("Solaris8", "The Solaris 8 Operating System.", "8e4b0333-3d59-455f-8de9-1bdd8af5ba96")
                         .setIsa(getFromMap("4190b02e-a832-4316-87c6-d9e9b694e284")));
@@ -117,27 +117,27 @@ public class OperatingSystemsR1 extends SchemaUpdate {
                         .setIsa(getFromMap("4190b02e-a832-4316-87c6-d9e9b694e284")));
                 addToMap(new TypeNode("Solaris11", "The Solaris 11 Operating System.", "3a81f815-a426-4269-bdd9-a7ea7527325c")
                         .setIsa(getFromMap("4190b02e-a832-4316-87c6-d9e9b694e284")));
-                addToMap(new TypeNode("OpenIndiana", "The OpenIndiana Operating System.", "f4c41e3a-c59a-42f6-b6c8-b7c9b0df3f0e")
+                addToMap(new TypeNode("OpenIndiana", "The OpenIndiana Operating System.", "f4c41e3a-c59a-42f6-b6c8-b7c9b0df3f0e", 0x00B0)
                         .setIsa(getFromMap("f0bcc651-3ca6-4d4c-ac9d-5a60b2b08520")));
                 addToMap(new TypeNode("OpenIndiana151a8", "The OpenIndiana 151a8 Operating System.", "c98dc9c8-bcf3-4a88-a24f-ea4b6a6a0951")
                         .setIsa(getFromMap("f4c41e3a-c59a-42f6-b6c8-b7c9b0df3f0e")));
-                addToMap(new TypeNode("NexentaStor", "The NexentaStor Operating System.", "0d73cb36-0f99-417b-a150-cc193ba044b8")
+                addToMap(new TypeNode("NexentaStor", "The NexentaStor Operating System.", "0d73cb36-0f99-417b-a150-cc193ba044b8", 0x00AA)
                         .setIsa(getFromMap("f0bcc651-3ca6-4d4c-ac9d-5a60b2b08520")));
                 addToMap(new TypeNode("NexentaStor3", "The NexentaStor 3 Operating System.", "6d90bb5c-bcb7-4c21-b7b9-8ba4aeb753b8")
                         .setIsa(getFromMap("0d73cb36-0f99-417b-a150-cc193ba044b8")));
                 addToMap(new TypeNode("NexentaStor4", "The NexentaStor 4 Operating System.", "ef584c3a-b8ec-41da-9435-a9d1f8474dab")
                         .setIsa(getFromMap("0d73cb36-0f99-417b-a150-cc193ba044b8")));
-                addToMap(new TypeNode("SmartOs", "The SmartOS Operating System.", "a7fba50f-5ab5-46d2-acf7-08fbe7c41b44")
+                addToMap(new TypeNode("SmartOs", "The SmartOS Operating System.", "a7fba50f-5ab5-46d2-acf7-08fbe7c41b44", 0x00D2)
                         .setIsa(getFromMap("f0bcc651-3ca6-4d4c-ac9d-5a60b2b08520")));
-                addToMap(new TypeNode("Dyson", "The Dyson Operating System.", "70e37ec8-e807-4a82-b968-f596dac97d62")
+                addToMap(new TypeNode("Dyson", "The Dyson Operating System.", "70e37ec8-e807-4a82-b968-f596dac97d62", 0x0050)
                         .setIsa(getFromMap("f0bcc651-3ca6-4d4c-ac9d-5a60b2b08520")));
-                addToMap(new TypeNode("OmniOs", "The OmniOS Operating System.", "e3e34862-6d23-4922-81cd-fb0df4624cb5")
+                addToMap(new TypeNode("OmniOs", "The OmniOS Operating System.", "e3e34862-6d23-4922-81cd-fb0df4624cb5", 0x00AC)
                         .setIsa(getFromMap("f0bcc651-3ca6-4d4c-ac9d-5a60b2b08520")));
                 addToMap(new TypeNode("OmniOsR151006", "The OmniOS r151006 Operating System.", "8e008afd-d1eb-48bd-8f71-684270750927")
                         .setIsa(getFromMap("e3e34862-6d23-4922-81cd-fb0df4624cb5")));
                 addToMap(new TypeNode("OmniOsR151010", "The OmniOS r151010 Operating System.", "e164b0ef-707f-48da-a5b7-b185746c4fd0")
                         .setIsa(getFromMap("e3e34862-6d23-4922-81cd-fb0df4624cb5")));
-                addToMap(new TypeNode("OpenSxce", "The OpenSXCE Operating System.", "2bd660a2-1783-4433-81a0-23d82dea1cce")
+                addToMap(new TypeNode("OpenSxce", "The OpenSXCE Operating System.", "2bd660a2-1783-4433-81a0-23d82dea1cce", 0x00B7)
                         .setIsa(getFromMap("f0bcc651-3ca6-4d4c-ac9d-5a60b2b08520")));
                 addToMap(new TypeNode("OpenSxce2013", "The OpenSXCE 2013 Operating System.", "1724894c-bb76-494f-b999-b467b0f4ccb6")
                         .setIsa(getFromMap("2bd660a2-1783-4433-81a0-23d82dea1cce")));
@@ -159,7 +159,7 @@ public class OperatingSystemsR1 extends SchemaUpdate {
                         .setIsa(getFromMap("0f81d6dc-d221-464a-ab85-1e3e5d98c3f0")));
                 addToMap(new TypeNode("MacOsX10", "The Apple Mac OS X 10.10 Operating System.", "66ef29ff-374d-492f-99fe-e6573fcbacdf")
                         .setIsa(getFromMap("0f81d6dc-d221-464a-ab85-1e3e5d98c3f0")));
-                addToMap(new TypeNode("FreeBsd", "The FreeBSD Operating System.", "6bccb300-554a-43ce-981b-fd07b22c83f0")
+                addToMap(new TypeNode("FreeBsd", "The FreeBSD Operating System.", "6bccb300-554a-43ce-981b-fd07b22c83f0", 0x0058)
                         .setIsa(getFromMap("6004436f-7c88-4c2e-a29d-e8077bad10e9")));
                 addToMap(new TypeNode("FreeBsd4", "The FreeBSD 4.x Operating System.", "d636ce7f-0da9-434c-b200-e7e409465076")
                         .setIsa(getFromMap("6bccb300-554a-43ce-981b-fd07b22c83f0")));
@@ -175,7 +175,7 @@ public class OperatingSystemsR1 extends SchemaUpdate {
                         .setIsa(getFromMap("6bccb300-554a-43ce-981b-fd07b22c83f0")));
                 addToMap(new TypeNode("FreeBsd10", "The FreeBSD 10.x Operating System.", "e144cfb5-664a-4542-9125-74da72cc0a8a")
                         .setIsa(getFromMap("6bccb300-554a-43ce-981b-fd07b22c83f0")));
-                addToMap(new TypeNode("NetBsd", "The NetBSD Operating System.", "33b00a7e-0ddc-4d9e-87d2-876653655d72")
+                addToMap(new TypeNode("NetBsd", "The NetBSD Operating System.", "33b00a7e-0ddc-4d9e-87d2-876653655d72", 0x00A7)
                         .setIsa(getFromMap("6004436f-7c88-4c2e-a29d-e8077bad10e9")));
                 addToMap(new TypeNode("NetBsd4", "The NetBSD 4.x Operating System.", "e0dfa561-5500-49dd-a532-f5416385d66a")
                         .setIsa(getFromMap("33b00a7e-0ddc-4d9e-87d2-876653655d72")));
@@ -183,13 +183,13 @@ public class OperatingSystemsR1 extends SchemaUpdate {
                         .setIsa(getFromMap("33b00a7e-0ddc-4d9e-87d2-876653655d72")));
                 addToMap(new TypeNode("NetBsd6", "The NetBSD 6.x Operating System.", "8ac7f26d-588d-44de-8792-26d6d429f9ff")
                         .setIsa(getFromMap("33b00a7e-0ddc-4d9e-87d2-876653655d72")));
-                addToMap(new TypeNode("OpenBsd", "The OpenBSD Operating System.", "5609a5b8-b1fb-4ec3-a297-155c680a7e65")
+                addToMap(new TypeNode("OpenBsd", "The OpenBSD Operating System.", "5609a5b8-b1fb-4ec3-a297-155c680a7e65", 0x00AF)
                         .setIsa(getFromMap("6004436f-7c88-4c2e-a29d-e8077bad10e9")));
                 addToMap(new TypeNode("OpenBsd4", "The OpenBSD 4.x Operating System.", "03b4f697-c07a-473f-aae6-92d30e63c2f3")
                         .setIsa(getFromMap("5609a5b8-b1fb-4ec3-a297-155c680a7e65")));
                 addToMap(new TypeNode("OpenBsd5", "The OpenBSD 5.x Operating System.", "6330dd4e-92bc-4cab-b218-1c18d37e9742")
                         .setIsa(getFromMap("5609a5b8-b1fb-4ec3-a297-155c680a7e65")));
-                addToMap(new TypeNode("DragonFlyBsd", "The DragonFlyBSD Operating System.", "41d52588-c248-4018-ac34-a8dfc1204729")
+                addToMap(new TypeNode("DragonFlyBsd", "The DragonFlyBSD Operating System.", "41d52588-c248-4018-ac34-a8dfc1204729", 0x004E)
                         .setIsa(getFromMap("6004436f-7c88-4c2e-a29d-e8077bad10e9")));
                 addToMap(new TypeNode("DragonFlyBsd1", "The DragonFlyBSD 1.x Operating System.", "85d606c8-1d4b-4657-a67c-19ad78c51117")
                         .setIsa(getFromMap("41d52588-c248-4018-ac34-a8dfc1204729")));
@@ -197,9 +197,9 @@ public class OperatingSystemsR1 extends SchemaUpdate {
                         .setIsa(getFromMap("41d52588-c248-4018-ac34-a8dfc1204729")));
                 addToMap(new TypeNode("DragonFlyBsd3", "The DragonFlyBSD 3.x Operating System.", "11666f58-6150-4a65-abea-b8c5fbddfde4")
                         .setIsa(getFromMap("41d52588-c248-4018-ac34-a8dfc1204729")));
-                addToMap(new TypeNode("ArchLinux", "The Arch Linux Operating System.", "42a991a2-2f25-479a-a21d-7a7e07f691cf")
+                addToMap(new TypeNode("ArchLinux", "The Arch Linux Operating System.", "42a991a2-2f25-479a-a21d-7a7e07f691cf", 0x0027)
                         .setIsa(getFromMap("a5613527-2f64-4481-83f2-80b0cb427e28")));
-                addToMap(new TypeNode("Debian", "The Debian Linux Operating System.", "021488da-3011-4861-97a4-420a7d647e5d")
+                addToMap(new TypeNode("Debian", "The Debian Linux Operating System.", "021488da-3011-4861-97a4-420a7d647e5d", 0x0046)
                         .setIsa(getFromMap("a5613527-2f64-4481-83f2-80b0cb427e28")));
                 addToMap(new TypeNode("Debian4", "The Debian 4.x Linux Operating System.", "3de571df-b7cf-4673-8a31-e40e5dde624e")
                         .setIsa(getFromMap("021488da-3011-4861-97a4-420a7d647e5d")));
@@ -211,7 +211,7 @@ public class OperatingSystemsR1 extends SchemaUpdate {
                         .setIsa(getFromMap("021488da-3011-4861-97a4-420a7d647e5d")));
                 addToMap(new TypeNode("Debian8", "The Debian 8.x Linux Operating System.", "e7cfb97e-b1b0-4696-92bf-a70499d3fb40")
                         .setIsa(getFromMap("021488da-3011-4861-97a4-420a7d647e5d")));
-                addToMap(new TypeNode("Ubuntu", "The Ubuntu Linux Operating System.", "1e13acac-4efb-4e62-894d-812492f6c266")
+                addToMap(new TypeNode("Ubuntu", "The Ubuntu Linux Operating System.", "1e13acac-4efb-4e62-894d-812492f6c266", 0x00EA)
                         .setIsa(getFromMap("a5613527-2f64-4481-83f2-80b0cb427e28")));
                 addToMap(new TypeNode("Ubuntu8", "The Ubuntu 8.x Linux Operating System.", "b41dabe4-e012-4c83-b073-4ca202950c44")
                         .setIsa(getFromMap("1e13acac-4efb-4e62-894d-812492f6c266")));
@@ -227,7 +227,7 @@ public class OperatingSystemsR1 extends SchemaUpdate {
                         .setIsa(getFromMap("1e13acac-4efb-4e62-894d-812492f6c266")));
                 addToMap(new TypeNode("Ubuntu14", "The Ubuntu 14.x Linux Operating System.", "61a034bb-19e3-4d8f-bda9-35c90e874dc8")
                         .setIsa(getFromMap("1e13acac-4efb-4e62-894d-812492f6c266")));
-                addToMap(new TypeNode("Mint", "The Linux Mint Operating System.", "7d5b895a-a076-491d-b6ca-58eed0d0c960")
+                addToMap(new TypeNode("Mint", "The Linux Mint Operating System.", "7d5b895a-a076-491d-b6ca-58eed0d0c960", 0x00A2)
                         .setIsa(getFromMap("a5613527-2f64-4481-83f2-80b0cb427e28")));
                 addToMap(new TypeNode("Mint10", "The Linux Mint 10.x Operating System.", "ab5e364d-51c3-4f77-b1d7-a12128e62f9f")
                         .setIsa(getFromMap("7d5b895a-a076-491d-b6ca-58eed0d0c960")));
@@ -245,7 +245,7 @@ public class OperatingSystemsR1 extends SchemaUpdate {
                         .setIsa(getFromMap("7d5b895a-a076-491d-b6ca-58eed0d0c960")));
                 addToMap(new TypeNode("Mint17", "The Linux Mint 17.x Operating System.", "b495af93-5b98-4746-ba29-2ec74f530cc6")
                         .setIsa(getFromMap("7d5b895a-a076-491d-b6ca-58eed0d0c960")));
-                addToMap(new TypeNode("Rhel", "The Red Hat Enterprise Linux Operating System.", "98741859-5dd5-4c8d-a64a-69598f5ccb2f")
+                addToMap(new TypeNode("Rhel", "The Red Hat Enterprise Linux Operating System.", "98741859-5dd5-4c8d-a64a-69598f5ccb2f", 0x00CA)
                         .setIsa(getFromMap("a5613527-2f64-4481-83f2-80b0cb427e28")));
                 addToMap(new TypeNode("Rhel3", "The Red Hat Enterprise Linux 3.x Operating System.", "200eed01-43fe-4e9f-a740-a1bf50933751")
                         .setIsa(getFromMap("98741859-5dd5-4c8d-a64a-69598f5ccb2f")));
@@ -257,7 +257,7 @@ public class OperatingSystemsR1 extends SchemaUpdate {
                         .setIsa(getFromMap("98741859-5dd5-4c8d-a64a-69598f5ccb2f")));
                 addToMap(new TypeNode("Rhel7", "The Red Hat Enterprise Linux 7.x Operating System.", "d4fd6992-f34c-473b-9e05-929d7179ff73")
                         .setIsa(getFromMap("98741859-5dd5-4c8d-a64a-69598f5ccb2f")));
-                addToMap(new TypeNode("Centos", "The Community Enterprise Operating System.", "c8b320a0-c5fd-43c0-b52e-305f2daccfec")
+                addToMap(new TypeNode("Centos", "The Community Enterprise Operating System.", "c8b320a0-c5fd-43c0-b52e-305f2daccfec", 0x0038)
                         .setIsa(getFromMap("a5613527-2f64-4481-83f2-80b0cb427e28")));
                 addToMap(new TypeNode("Centos3", "The Community Enterprise Operating System, version 3.x", "4a43eead-c3a1-4e10-b8c1-b23e0b5b26ef")
                         .setIsa(getFromMap("c8b320a0-c5fd-43c0-b52e-305f2daccfec")));
@@ -269,7 +269,7 @@ public class OperatingSystemsR1 extends SchemaUpdate {
                         .setIsa(getFromMap("c8b320a0-c5fd-43c0-b52e-305f2daccfec")));
                 addToMap(new TypeNode("Centos7", "The Community Enterprise Operating System, version 7.x", "9c13f597-4cd8-4311-a884-6efe24f10c81")
                         .setIsa(getFromMap("c8b320a0-c5fd-43c0-b52e-305f2daccfec")));
-                addToMap(new TypeNode("Fedora", "The Fedora Linux Operating System.", "3f90173a-ae4d-4fd5-8c80-5659262d3aef")
+                addToMap(new TypeNode("Fedora", "The Fedora Linux Operating System.", "3f90173a-ae4d-4fd5-8c80-5659262d3aef", 0x0055)
                         .setIsa(getFromMap("a5613527-2f64-4481-83f2-80b0cb427e28")));
                 addToMap(new TypeNode("Fedora12", "The Fedora 12 Linux Operating System.", "342aecd0-163c-48fa-b0da-8e25b2c27a06")
                         .setIsa(getFromMap("3f90173a-ae4d-4fd5-8c80-5659262d3aef")));
@@ -291,13 +291,13 @@ public class OperatingSystemsR1 extends SchemaUpdate {
                         .setIsa(getFromMap("3f90173a-ae4d-4fd5-8c80-5659262d3aef")));
                 addToMap(new TypeNode("Fedora21", "The Fedora 21 Linux Operating System.", "45284c82-2da0-48ae-a698-5f4f707fab94")
                         .setIsa(getFromMap("3f90173a-ae4d-4fd5-8c80-5659262d3aef")));
-                addToMap(new TypeNode("Mageia", "The Mageia Linux Operating System.", "26b0d6c8-4d6b-4ec2-8d15-6e71758cc06c")
+                addToMap(new TypeNode("Mageia", "The Mageia Linux Operating System.", "26b0d6c8-4d6b-4ec2-8d15-6e71758cc06c", 0x007C)
                         .setIsa(getFromMap("a5613527-2f64-4481-83f2-80b0cb427e28")));
                 addToMap(new TypeNode("Mageia3", "The Mageia 3.x Linux Operating System.", "43a6757b-5fc1-4781-9521-b028af50defc")
                         .setIsa(getFromMap("26b0d6c8-4d6b-4ec2-8d15-6e71758cc06c")));
                 addToMap(new TypeNode("Mageia4", "The Mageia 4.x Linux Operating System.", "5a516ba5-2d9d-40bb-ba45-c79f630f1953")
                         .setIsa(getFromMap("26b0d6c8-4d6b-4ec2-8d15-6e71758cc06c")));
-                addToMap(new TypeNode("OpenSuse", "The openSUSE Linux Operating System.", "cdabdf0d-5994-43ce-803b-c4686ed16f48")
+                addToMap(new TypeNode("OpenSuse", "The openSUSE Linux Operating System.", "cdabdf0d-5994-43ce-803b-c4686ed16f48", 0x00B6)
                         .setIsa(getFromMap("a5613527-2f64-4481-83f2-80b0cb427e28")));
                 addToMap(new TypeNode("OpenSuse10", "The openSUSE 10.x Linux Operating System.", "aa0c5261-b3cd-49b8-adf1-243087416064")
                         .setIsa(getFromMap("cdabdf0d-5994-43ce-803b-c4686ed16f48")));
@@ -307,7 +307,7 @@ public class OperatingSystemsR1 extends SchemaUpdate {
                         .setIsa(getFromMap("cdabdf0d-5994-43ce-803b-c4686ed16f48")));
                 addToMap(new TypeNode("OpenSuse13", "The openSUSE 13.x Linux Operating System.", "09ad6070-a602-4e00-ba9c-25a181f7f0df")
                         .setIsa(getFromMap("cdabdf0d-5994-43ce-803b-c4686ed16f48")));
-                addToMap(new TypeNode("Sles", "The SUSE Linux Enterprise Server Operating System.", "6cbfc14e-6835-43bc-a29d-aafc8589de4b")
+                addToMap(new TypeNode("Sles", "The SUSE Linux Enterprise Server Operating System.", "6cbfc14e-6835-43bc-a29d-aafc8589de4b", 0x00D1)
                         .setIsa(getFromMap("a5613527-2f64-4481-83f2-80b0cb427e28")));
                 addToMap(new TypeNode("Sles9", "The SUSE Linux Enterprise Server 9.x Operating System.", "019b3997-f28e-4b81-8e5c-b1077fdf86cb")
                         .setIsa(getFromMap("6cbfc14e-6835-43bc-a29d-aafc8589de4b")));

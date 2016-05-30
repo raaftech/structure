@@ -44,6 +44,8 @@ public class TypeNode extends Node {
     @SuppressWarnings("unused")
     private Set<TypeNode> childIsaSet;
 
+    private int glyphId;
+
     @RelatedTo(type="HAS_INSTRUMENT", direction = Direction.OUTGOING)
     @Fetch
     private Set<InstanceNode> instruments;
@@ -76,6 +78,12 @@ public class TypeNode extends Node {
 
     public TypeNode(String name, String desc, String uuid) {
         super(name, desc, uuid);
+        initSchema();
+    }
+
+    public TypeNode(String name, String desc, String uuid, int glyphId) {
+        super(name, desc, uuid);
+        this.glyphId = glyphId;
         initSchema();
     }
 
@@ -132,6 +140,10 @@ public class TypeNode extends Node {
         return this;
     }
 
+    public int getGlyphId() {
+        return glyphId;
+    }
+
     public String getHierarchyPath() {
         String path = typeNodeRepository.getHierarchyPath(getUuid());
         if (path != null) {
@@ -154,6 +166,9 @@ public class TypeNode extends Node {
         if (isa != null) {
             this.isa = isa;
             JsonSchemaBuilder parentConstraints = isa.getSchema();
+            if (glyphId == 0) {
+                glyphId = isa.glyphId;
+            }
             if (parentConstraints != null) {
                 try {
                     if (schema == null) {
@@ -291,6 +306,7 @@ public class TypeNode extends Node {
 
         json.put("name", getName());
         json.put("uuid", getUuid());
+        json.put("glyphId", Integer.toHexString(glyphId));
         if (getIsa() != null) {
             json.put("isa", getIsa().getUuid());
         }

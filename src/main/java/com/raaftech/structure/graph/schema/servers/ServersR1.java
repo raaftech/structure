@@ -23,13 +23,13 @@ public class ServersR1 extends SchemaUpdate {
     protected void initNodes() {
         // raaftech.com.model.servers-0.0.1
         TypeNode server = typeNodeRepository.findByUuid("3fb4603b-281e-47c0-b338-768ea05d4660");
-        addToMap(new TypeNode("HttpServer", "A generic HTTP Server.", "b46cb520-caaf-4d26-b59d-58edca723b8d")
+        addToMap(new TypeNode("HttpServer", "A generic HTTP Server.", "b46cb520-caaf-4d26-b59d-58edca723b8d", 0x0066)
                 .setIsa(server));
-        addToMap(new TypeNode("SmbServer", "A generic SMB/CIFS Server.", "65af133b-1a2c-4faa-8d2a-a288eaa4f412")
+        addToMap(new TypeNode("SmbServer", "A generic SMB/CIFS Server.", "65af133b-1a2c-4faa-8d2a-a288eaa4f412", 0x00D4)
                 .setIsa(server));
-        addToMap(new TypeNode("SshServer", "A generic SSH Server.", "7db4a3ef-2d3c-4071-929b-e81505fbd5e2")
+        addToMap(new TypeNode("SshServer", "A generic SSH Server.", "7db4a3ef-2d3c-4071-929b-e81505fbd5e2", 0x00DE)
                 .setIsa(server));
-        addToMap(new TypeNode("TelnetServer", "A generic TELNET Server.", "4a09bcce-59c6-4e94-9fc4-ba020733a27c")
+        addToMap(new TypeNode("TelnetServer", "A generic TELNET Server.", "4a09bcce-59c6-4e94-9fc4-ba020733a27c", 0x00E8)
                 .setIsa(server));
     }
 }

@@ -439,6 +439,7 @@ public class InstanceNode extends Node {
         result.put("uuid", getUuid());
         result.put("desc", getDesc());
         result.put("instanceof", instanceOf.getUuid());
+        result.put("glyphId", Integer.toHexString(instanceOf.getGlyphId()));
         if (componentsJson.size() > 0) {
             result.set("components", componentsJson);
         }

@@ -23,11 +23,11 @@ public class EmulatorsR1 extends SchemaUpdate {
     protected void initNodes() {
         // raaftech.com.model.emulators-0.0.1
         TypeNode emulator = typeNodeRepository.findByUuid("59aeae81-9741-4986-b9c2-931504cfc9e3");
-        addToMap(new TypeNode("Bochs", "The Bochs Emulator.", "cd8f940e-219b-488e-8b75-d9fece8b3b35")
+        addToMap(new TypeNode("Bochs", "The Bochs Emulator.", "cd8f940e-219b-488e-8b75-d9fece8b3b35", 0x0030)
                 .setIsa(emulator));
-        addToMap(new TypeNode("DosBox", "The DOSBox Emulator.", "7e0135dc-b720-440a-9f4e-76747f7a7fe5")
+        addToMap(new TypeNode("DosBox", "The DOSBox Emulator.", "7e0135dc-b720-440a-9f4e-76747f7a7fe5", 0x004B)
                 .setIsa(emulator));
-        addToMap(new TypeNode("Qemu", "The QEMU Emulator.", "c80fddb7-bdbf-44b9-ac54-f7dd7ce4dbd0")
+        addToMap(new TypeNode("Qemu", "The QEMU Emulator.", "c80fddb7-bdbf-44b9-ac54-f7dd7ce4dbd0", 0x00C5)
                 .setIsa(emulator));
     }
 }
