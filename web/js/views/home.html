@@ -23,101 +23,28 @@
             </div>
           </div>
           
-          <div ng-show="foundInstanceNode.data.name" class="row detailed-info">
-            <div class="basic">
-              <div class="body">
-                <img src="/img/logo_dummy.png" align="left" border="0" />
-                <h1>{{ foundInstanceNode.data.name }}</h1>
-                <p>{{ foundInstanceNode.data.desc }}</p>
-                <p>
-                  <button type="button" class="btn button-str">Edit</button>
-                  <button type="button" class="btn button-transparant">...</button>
-                </p>
+          <h2 class="sub-header">Instances</h2>
+          <div ng-controller="instanceCtrl" ng-init="getNInstances(10)">
+            <div>
+              <div class="table-responsive">
+                <table class="table list">
+                  <thead>
+                    <tr>
+                      <th><span ng-class="open"></span>Title</th>
+                      <th>Description</th>
+                      <th>UUID</th>
+                      <th width="35"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr ng-repeat="instance in instances" ng-mouseenter="menuButton = true" ng-mouseleave="menuButton = false">
+                      <td>{{instance.name}}</td>
+                      <td>{{instance.desc}}</td>
+                      <td>{{instance.uuid}}</td>
+                      <td><list-item-hover-menu ng-show="menuButton" uuid="{{instance.uuid}}" nodetype="{{instance._nodeType}}" /></td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             </div>
-            <div class="detail">
-              <ul>
-                <h2>Details</h2>
-                <li><label>UUID</label>{{ foundInstanceNode.data.uuid }}</li>
-                <li ng-repeat="(key, value) in foundInstanceNode.data.kv"><label>{{ key }}</label>{{ value }}</li>
-              </ul>
-            </div>
-          </div>
-
-          <h2 class="sub-header">Section title</h2>
-          <div class="table-responsive">
-            <table class="table list">
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>Header</th>
-                  <th>Header</th>
-                  <th>Header</th>
-                  <th>Header</th>
-                </tr>
-              </thead>
-              <tfoot>
-                <tr>
-                  <td colspan="5">footer</td>
-                </tr>
-              </tfoot>
-              <tbody>
-                <tr data-uuid="196e3acc-8560-479c-9308-3d4fed7486a5" show-menu-on-hover>
-                  <td>1,001</td>
-                  <td>Lorem</td>
-                  <td>ipsum</td>
-                  <td>dolor</td>
-                  <td>sit</td>
-                </tr>
-                <tr show-menu-on-hover>
-                  <td>1,002</td>
-                  <td>amet</td>
-                  <td>consectetur</td>
-                  <td>adipiscing</td>
-                  <td>elit</td>
-                </tr>
-                <tr show-menu-on-hover>
-                  <td>1,003</td>
-                  <td>Integer</td>
-                  <td>nec</td>
-                  <td>odio</td>
-                  <td>Praesent</td>
-                </tr>
-                <tr show-menu-on-hover>
-                  <td>1,003</td>
-                  <td>libero</td>
-                  <td>Sed</td>
-                  <td>cursus</td>
-                  <td>ante</td>
-                </tr>
-                <tr show-menu-on-hover>
-                  <td>1,004</td>
-                  <td>dapibus</td>
-                  <td>diam</td>
-                  <td>Sed</td>
-                  <td>nisi</td>
-                </tr>
-                <tr show-menu-on-hover>
-                  <td>1,005</td>
-                  <td>Nulla</td>
-                  <td>quis</td>
-                  <td>sem</td>
-                  <td>at</td>
-                </tr>
-                <tr show-menu-on-hover>
-                  <td>1,006</td>
-                  <td>nibh</td>
-                  <td>elementum</td>
-                  <td>imperdiet</td>
-                  <td>Duis</td>
-                </tr>
-                <tr show-menu-on-hover>
-                  <td>1,007</td>
-                  <td>sagittis</td>
-                  <td>ipsum</td>
-                  <td>Praesent</td>
-                  <td>mauris</td>
-                </tr>
-              </tbody>
-            </table>
           </div>

@@ -3,6 +3,6 @@ angular.module("structureApp")
         return {
             restrict: "E",
             scope: {},
-            templateUrl: "js/directives/searchField.html"
+            templateUrl: "js/views/directives/searchField.html"
         };
     });

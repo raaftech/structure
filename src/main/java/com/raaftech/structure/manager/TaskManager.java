@@ -354,12 +354,14 @@ public class TaskManager extends GenericActor {
             @Override
             public JsonNode exec(JsonNode request) {
                 ObjectNode result = mapper.createObjectNode();
-                ArrayNode data = result.putArray("data");
+                ObjectNode data = result.putObject("data");
 
                 taskMap.entrySet().stream()
-                        .map(Map.Entry::getValue)
-                        .map(Task::toJson)
-                        .forEach(data::add);
+                        .forEach(entry -> {
+                            String taskId = entry.getKey();
+                            Task task = entry.getValue();
+                            data.set(taskId, task.toJson());
+                        });
 
                 return response(request, result);
             }

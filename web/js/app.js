@@ -1,5 +1,3 @@
-var eventBus = new vertx.EventBus("http://localhost:8080/eventbus");
-
 angular.module("structureApp", ["knalli.angular-vertxbus", "schemaForm", "ngRoute", "ui.bootstrap"])
     .config(function(vertxEventBusProvider, $routeProvider) {
 
@@ -17,11 +15,17 @@ angular.module("structureApp", ["knalli.angular-vertxbus", "schemaForm", "ngRout
             .when("/templates", {
                 templateUrl: "js/views/templates.html"
             })
+            .when("/templates-old", {
+                templateUrl: "js/views/templatesOld.html"
+            })
             .when("/types", {
                 templateUrl: "js/views/types.html"
             })
             .when("/debug", {
                 templateUrl: "js/views/debug.html"
+            })
+            .when("/task-manager", {
+                templateUrl: "js/views/taskManager.html"
             })
             .otherwise({
                 templateUrl: "js/views/home.html"

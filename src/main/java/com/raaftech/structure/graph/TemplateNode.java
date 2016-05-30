@@ -88,7 +88,6 @@ public class TemplateNode extends Node {
         super(name, desc, uuid);
     }
 
-
     /*******************/
     /* Private Methods */
     /*******************/
@@ -337,6 +336,10 @@ public class TemplateNode extends Node {
         return form;
     }
 
+    public Set<TemplateNode> getHasComponents() {
+        return hasComponents;
+    }
+
     public TemplateNode getParentComponent() {
         return parentComponent;
     }
@@ -527,6 +530,9 @@ public class TemplateNode extends Node {
         json.put("name", getName());
         json.put("desc", getDesc());
         json.put("uuid", getUuid());
+        json.put("startOfTemplate", startOfTemplate);
+        json.put("required", required);
+        json.put("unique", unique);
         json.put("isa", isa.getUuid());
         json.set("form", getForm());
         try {

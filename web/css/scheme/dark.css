@@ -2,7 +2,7 @@
  * Colors
  */
 body,
-.button-transparant,
+.button-transparent,
 .modal-content,
 .navbar-inverse {
     background-color: #121314;
@@ -38,7 +38,7 @@ fieldset,
 
 span.closed:before,
 span.open:before,
-.button-transparant:hover,
+.button-transparent:hover,
 .detail label,
 .list > tbody > tr > td,
 .navbar-inverse .navbar-brand,
@@ -68,7 +68,7 @@ span.open:before,
     background-color: #424347;
 }
 
-.button-transparant,
+.button-transparent,
 .detail h2,
 .list > tbody > tr > td,
 .list > thead > tr > th,

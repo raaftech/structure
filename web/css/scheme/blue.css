@@ -1,0 +1,108 @@
+/*
+ * Colors
+ */
+body,
+.button-transparent,
+.modal-content {
+    background-color: #15222a;
+}
+
+.navbar-inverse,
+.navbar-inverse .navbar-nav > .active > a,
+.navbar-inverse .navbar-nav > .active > a:hover {
+    background-color: #26343f;
+}
+
+.list > tbody > tr:hover,
+.progress {
+    background-color: #3b4b54;
+}
+
+.navbar-inverse .navbar-nav > li > a {
+    color: #658689;
+}
+
+.progress-bar {
+    background-color: #06849e;
+}
+
+.button-str,
+.nav-sidebar > .active > a,
+.progress-bar-success {
+    background-color: #00b299;
+}
+
+.tools > li > a:hover {
+    color: #00aed1;
+}
+
+fieldset,
+.list-group-item,
+.nav-sidebar > .active > a:hover,
+.nav-sidebar > .active > a:focus,
+.nav-sidebar > li > a:hover,
+.nav-sidebar > li > a:focus,
+.sidebar,
+.tools > li > a {
+    background-color: #22333f;
+}
+
+body,
+span.closed:before,
+span.open:before,
+.button-str,
+.button-transparent:hover,
+.list > tbody > tr > td,
+.navbar-inverse .navbar-brand,
+.nav-sidebar > .active > a,
+.nav-sidebar > .active > a:hover,
+.nav-sidebar > .active > a:focus,
+.nav-sidebar > li > a,
+.nav-sidebar > li > a:hover,
+.nav-sidebar > li > a:focus,
+.tools > li > a {
+    color: #fff;
+}
+
+.detail label,
+.list > thead > tr > th {
+    color: #94a3ab;
+}
+
+.basic h1 {
+    color: #00b299;
+}
+
+.modal-backdrop.in {
+    /*background-color: #424347;*/
+    background-color: #94a3ab;
+}
+
+.button-transparent,
+.detail h2,
+.modal-header,
+.modal-footer {
+    border-color: #00b299 !important;
+}
+
+.list > tbody > tr > td,
+.list > thead > tr > th {
+    border-color: #22333f !important;
+}
+
+fieldset,
+.list-group-item,
+.navbar {
+    border-color: #3e4d57 !important;
+}
+
+.navbar-nav > li > a:hover,
+.nav-sidebar > li > a:hover,
+.nav-sidebar > li > a:focus,
+.sub-header {
+    border-color: #a1a6a9 !important;
+}
+
+.nav-sidebar > .active > a {
+    border-color: #00b299 !important;
+}

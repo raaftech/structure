@@ -1,5 +1,5 @@
 angular.module("structureApp")
-    .controller("modalInstanceCtrl", function($scope, $modalInstance, uuid, vertxEventBus, vertxEventBusService) {
+    .controller("modalInstanceCtrl", function($scope, $uibModalInstance, uuid, vertxEventBus, vertxEventBusService) {
 
         $scope.uuid = uuid;
 
@@ -25,11 +25,11 @@ angular.module("structureApp")
         };
 
         $scope.ok = function() {
-            $modalInstance.close();
+            $uibModalInstance.close();
         };
 
         $scope.cancel = function() {
-            $modalInstance.dismiss('cancel');
+            $uibModalInstance.dismiss('cancel');
         };
 
         $scope.showFormValues = function() {

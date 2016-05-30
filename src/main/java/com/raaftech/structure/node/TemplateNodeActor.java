@@ -1,6 +1,7 @@
 package com.raaftech.structure.node;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.raaftech.structure.annotations.SchemaPath;
 import com.raaftech.structure.base.Context;
@@ -155,6 +156,30 @@ public class TemplateNodeActor extends NodeActor<TemplateNode> {
                     log.error(e.getMessage());
                     result.put("error", e.getMessage());
                 }
+
+                return response(request, result);
+            }
+
+            @Override
+            public JsonNode help(JsonNode request) {
+                return null;
+            }
+        };
+    }
+
+    /**
+     * Get child templates of a template.
+     * @return array of child templates.
+     */
+    public MessageHandler getSubTemplates() {
+        return new MessageHandler() {
+            @Override
+            public JsonNode exec(JsonNode request) {
+                ObjectNode result = mapper.createObjectNode();
+                ArrayNode data = result.putArray("data");
+
+                getNode().getHasComponents().stream()
+                        .forEach(child -> data.add(child.toJson()));
 
                 return response(request, result);
             }

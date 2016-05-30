@@ -7,7 +7,7 @@
                 <p>{{type.desc}}</p>
                 <p ng-controller="modalCtrl">
                     <button type="button" class="btn button-str" ng-click="open(type.uuid)">Edit</button>
-                    <button type="button" class="btn button-transparant">...</button>
+                    <button type="button" class="btn button-transparent">...</button>
                 </p>
             </div>
         </div>
@@ -29,7 +29,7 @@
                         <th><span ng-class="{'open': (subtypes[type.uuid] && type.children != '[]'), 'closed': (!subtypes[type.uuid] && type.children != '[]')}" ng-click="getSubtypes(type)"></span><span ng-click="getType(type.uuid)">{{type.name}}</span></th>
                         <th>{{subtypes[type.uuid].length ? 'Description': '&nbsp;'}}</th>
                         <th>{{subtypes[type.uuid].length ? 'UUID': '&nbsp;'}}</th>
-                        <th width="35"><list-item-hover-menu ng-show="topMenuButton" uuid="{{type.uuid}}" /></th>
+                        <th width="35"><list-item-hover-menu ng-show="topMenuButton" uuid="{{type.uuid}}" node-type="{{type._nodeType}}" /></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -37,7 +37,7 @@
                         <td ng-click="getType(subtype.uuid)">{{subtype.name}}</td>
                         <td ng-click="getType(subtype.uuid)">{{subtype.desc}}</td>
                         <td ng-click="getType(subtype.uuid)">{{subtype.uuid}}</td>
-                        <td><list-item-hover-menu ng-show="menuButton" uuid="{{subtype.uuid}}" /></td>
+                        <td><list-item-hover-menu ng-show="menuButton" uuid="{{subtype.uuid}}" node-type="{{subtype._nodeType}}" /></td>
                     </tr>
                 </tbody>
             </table>
