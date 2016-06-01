@@ -52,7 +52,7 @@ public interface TypeNodeRepository extends GenericRepository<TypeNode> {
 
     // Workaround, returning count(n) > 0 returns null when n is NULL.
     @Query ("START start=node:uuid(uuid={typeUuid}) " +
-            "MATCH start<-[:ISA*1..]-(n{name:{subtypeUuid}}) " +
+            "MATCH start<-[:ISA*1..]-(n{uuid:{subtypeUuid}}) " +
             "RETURN count(n)")
     int isSubtype(@Param("typeUuid") String typeUuid, @Param("subtypeUuid") String subtypeUuid);
 }
