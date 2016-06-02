@@ -96,7 +96,7 @@ public class InstanceNodes extends Repository<InstanceNode> {
                 ObjectNode result = mapper.createObjectNode();
                 ArrayNode data = result.putArray("data");
                 repository.getRaafMachines().stream()
-                        .map(InstanceNode::toJson)
+                        .map(instance -> instance.deepToJson(2))
                         .forEach(data::add);
 
                 return response(request, result);
