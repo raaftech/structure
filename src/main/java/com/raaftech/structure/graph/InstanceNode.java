@@ -428,7 +428,7 @@ public class InstanceNode extends Node {
         ObjectNode kvJson = result.putObject("kv");
         kv.asMap().forEach((key, val) -> kvJson.put(key, val.toString()));
         ArrayNode componentsJson = mapper.createArrayNode();
-        components.forEach(component -> {
+        getComponents().forEach(component -> {
             ObjectNode componentNameUuid = mapper.createObjectNode();
             componentNameUuid.put("name", component.getName());
             componentNameUuid.put("uuid", component.getUuid());
