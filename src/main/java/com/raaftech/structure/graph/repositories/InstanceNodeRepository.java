@@ -152,11 +152,4 @@ public interface InstanceNodeRepository extends GenericRepository<InstanceNode> 
             "MATCH (instrument)<-[:HAS_INSTRUMENT]-(instrumentOwner) " +
             "RETURN instrumentOwner.name")
     String findInstrumentOwner(@Param("instrumentUuid") String instrumentUuid);
-
-
-    // Get all the InstanceNodes we need for our demo
-    @Query ("MATCH (n:InstanceNode)-[:INSTANCE_OF]->()-[:ISA*..]->(:TypeNode{name:\"OperatingSystem\"}) " +
-            "RETURN n")
-    List<InstanceNode> getRaafMachines();
-
 }
