@@ -65,7 +65,7 @@ public class InstrumentRunner {
         this.arguments = arguments == null ? mapper.createObjectNode() : arguments;
 
         // TODO: Need a different way of finding the structure node.
-        this.agent = instanceNodeRepository.findOneByName("structure");
+        this.agent = instanceNodeRepository.findOneByName(Context.selfIdentifier);
         this.subject = instanceNodeRepository.getStartOfComponentGroup(origin.getUuid());
         // Is the instrument argument of the expected type?
         if (!instrument.isOfType("Instrument")) {
@@ -163,7 +163,7 @@ public class InstrumentRunner {
                 // send execution to subject (assumes sendString + receiveString)
                 jobList.add(sendString(heaviestSendString));
 
-            } catch (IOException e) {
+            } catch (Exception e) {
                 log.error(e.getMessage());
                 throw new RuntimeException("Error while creating script to transfer for instrument " + this.instrument.getName()
                         + ". See logging for more details.");
@@ -179,9 +179,7 @@ public class InstrumentRunner {
                 try {
                     // TODO: create method
                     ObjectNode args = validateAndSelectArguments(instrument);
-                    if (arguments != null) {
-                        jobList.add(applyTemplate(instrument.getProperty(templateProperty), args));
-                    }
+                    jobList.add(applyTemplate(instrument.getProperty(templateProperty), args));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
