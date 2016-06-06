@@ -85,4 +85,28 @@ public class InstanceNodes extends Repository<InstanceNode> {
         };
     }
 
+    /**
+     * Demo query! Get all the machines in the RAAF infra.
+     */
+    @SuppressWarnings("unused")
+    public MessageHandler getRaafMachines() {
+        return new MessageHandler() {
+            @Override
+            public JsonNode exec(JsonNode request) {
+                ObjectNode result = mapper.createObjectNode();
+                ArrayNode data = result.putArray("data");
+                repository.getRaafMachines().stream()
+                        .map(instance -> instance.deepToJson(2))
+                        .forEach(data::add);
+
+                return response(request, result);
+            }
+
+            @Override
+            public JsonNode help(JsonNode request) {
+                return null;
+            }
+        };
+    }
+
 }
