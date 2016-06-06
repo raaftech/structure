@@ -52,4 +52,4 @@
 }
 
 }}
-scp {{{ payloadDirectory }}}{{{ payloadFileName }}} {{{username}}}@{{{ ipv4address.addr }}}:/tmp/
+scp {{ payloadDirectory }}{{ payloadFileName }} {{username}}@{{ reachable subject.Ipv4Address }}:/tmp/

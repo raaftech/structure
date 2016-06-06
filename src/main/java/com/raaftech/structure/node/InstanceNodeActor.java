@@ -107,27 +107,37 @@ public class InstanceNodeActor extends NodeActor<InstanceNode> {
             @Override
             public JsonNode exec(JsonNode request) {
                 ObjectNode result = mapper.createObjectNode();
-
                 InstanceNode structure = instanceNodeRepository.findOneByName(Context.selfIdentifier);
-                String originUuid = getNode().getUuid();
-                InstanceNode startOfComponentGroup = instanceNodeRepository.getStartOfComponentGroup(originUuid);
 
                 if (structure == null) {
                     result.put("error", "Couldn't find structure node.");
                     return response(request, result);
                 }
 
-                Set<InstanceNode> locallyRun = instanceNodeRepository.findLocalInstruments(originUuid,
-                        startOfComponentGroup.getUuid());
-                Set<InstanceNode> remotelyRun = instanceNodeRepository.findRemoteInstruments(originUuid,
-                        structure.getUuid());
+                // instrumentMap will contain the results and will eventually be marshalled to a JSON object.
+                Map<String, Map<String, ArrayList<String>>> instrumentMap = new LinkedHashMap<>();
+                // Query all the applicable instruments in the subtree.
+                List<InstanceNodeRepository.InstrumentQueryResult> instrumentList = instanceNodeRepository.getInstruments(uuid, structure.getUuid());
 
-                ObjectNode data = result.putObject("data");
+                // Construct our instrumentMap with the results
+                instrumentList.forEach(hqr -> {
+                    Map<String, ArrayList<String>> capabilityInstrumentMap = instrumentMap.get(hqr.target.getUuid());
 
-                locallyRun.stream()
-                        .forEach(instrument -> data.put(instrument.getName(), instrument.getUuid()));
-                remotelyRun.stream()
-                        .forEach(instrument -> data.put(instrument.getName(), instrument.getUuid()));
+                    if (capabilityInstrumentMap == null) {
+                        capabilityInstrumentMap = new LinkedHashMap<>();
+                        instrumentMap.put(hqr.target.getUuid(), capabilityInstrumentMap);
+                    }
+
+                    ArrayList<String> instruments = capabilityInstrumentMap.get(hqr.capability.getName());
+                    if (instruments == null) {
+                        instruments = new ArrayList<>();
+                        capabilityInstrumentMap.put(hqr.capability.getName(), instruments);
+                    }
+
+                    instruments.add(hqr.instrument.getName());
+
+                });
+                result.set("data", mapper.valueToTree(instrumentMap));
 
                 return response(request, result);
             }
@@ -148,28 +158,13 @@ public class InstanceNodeActor extends NodeActor<InstanceNode> {
                 ObjectNode result = mapper.createObjectNode();
                 JsonNode args = request.get("args");
                 JsonNode instrumentArgs;
-                InstanceNode instrument = null;
+                InstanceNode instrument;
 
                 String instrumentId = args.get("instrument").asText();
                 if (isUuid(instrumentId)) {
                     instrument = instanceNodeRepository.findByUuid(instrumentId);
                 } else {
-                    // There is possibly more than one instrument that applies
-                    // in that case we'll assume we're interested in the instrument
-                    // that runs locally, since that'll be the most specific one.
-                    Set<InstanceNode> foundInstruments = instanceNodeRepository.findByName(instrumentId);
-                    if (foundInstruments.size() == 1) {
-                        instrument = foundInstruments.iterator().next();
-                    } else {
-                        // get the one that applies to this componental group
-                        String originUuid = getNode().getUuid();
-                        InstanceNode startOfComponentGroup = instanceNodeRepository
-                                .getStartOfComponentGroup(originUuid);
-                        if (startOfComponentGroup != null) {
-                            instrument = instanceNodeRepository.findMatchingLocalInstrument(originUuid,
-                                    startOfComponentGroup.getUuid(), instrumentId);
-                        }
-                    }
+                    instrument = instanceNodeRepository.findOneByName(instrumentId);
                 }
                 if (instrument != null) {
 

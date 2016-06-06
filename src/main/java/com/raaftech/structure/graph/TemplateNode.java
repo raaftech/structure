@@ -30,8 +30,6 @@ import rx.Observable;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static io.vertx.core.json.Json.mapper;
-
 /**
  * Give a description of TemplateNode here.
  *
@@ -131,12 +129,11 @@ public class TemplateNode extends Node {
         for (JsonNode instance : instances) {
             ObjectNode instanceData = (ObjectNode) instance;
             String typeUuid = null;
-            final String typeOverrideKey = "_typeUuid";
             TypeNode typeNode = null;
-            if (instanceData.has(typeOverrideKey)) {
-                typeUuid = instanceData.get(typeOverrideKey).asText();
-                instanceData.remove(typeOverrideKey);
-                if (typeNodeRepository.isSubtype(template.isa.getUuid(), typeUuid) >= 1) {
+            if (instanceData.has("typeUuid")) {
+                typeUuid = instanceData.get("typeUuid").asText();
+                instanceData.remove("typeUuid");
+                if (typeNodeRepository.isSubtype(template.isa.getUuid(), typeUuid) > 1) {
                     typeNode = typeNodeRepository.findByUuid(typeUuid);
                 } else {
                     throw new IllegalArgumentException("Type with UUID " + typeUuid + " is not a subtype of " + template.isa.getName() + ".");
@@ -384,7 +381,7 @@ public class TemplateNode extends Node {
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode schema = mapper.createObjectNode();
         schema.put("type", "array");
-        ArrayNode schemaArrays = schema.putObject("items").putArray("oneOf");
+        ArrayNode schemaArrays = schema.putArray("items");
         schemaArrays.add(getArraySchema().getAsObjectNode());
         recurseForArraySchemas(schemaArrays, hasComponents);
         schema.put("additionalItems", false);

@@ -1,0 +1,14 @@
+{{!
+
+{
+  "name": "RcStop",
+  "desc": "RcStop",
+  "instrumentType": "runner",
+  "capability": "Stop",
+  "providedBy": "Rc",
+  "appliesTo": [ "Server" ],
+  "subjectIsLocal": true
+}
+
+}}
+/etc/rc.d/{{ origin.shortName }} stop

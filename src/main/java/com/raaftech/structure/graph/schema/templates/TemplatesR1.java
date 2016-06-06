@@ -25,52 +25,64 @@ public class TemplatesR1 extends SchemaUpdate {
     protected void initNodes() {
         // The computer template
 
-        // Generic Template
-        TemplateNode operatingSystem = new TemplateNode("OperatingSystem", "Generic operating system.",
-                    "1b8e0d72-c23d-4091-a4e6-74d07f1ee6fa")
-                .setIsa("f05e325e-1aee-4892-96e4-8bcd6e97c528")
+        // Hardware
+        TemplateNode componentalGroup = new TemplateNode("ee92c308-80f4-40b2-af3a-77d26cd99517")
                 .setUnique(true)
                 .setRequired(true)
                 .setStartOfTemplate(true);
 
-        TemplateNode client = new TemplateNode("Client", "Generic client software.",
-                    "e8e3c643-a520-4d63-9088-dd27086a1879")
-                .setIsa("8f371b1b-52a3-4409-be70-9cd947bec8dd");
-
-        TemplateNode server = new TemplateNode("Server", "Generic server software.",
-                    "54126ca8-3a5e-43b9-a501-98c8d158049d")
-                .setIsa("3fb4603b-281e-47c0-b338-768ea05d4660");
-
-        TemplateNode interpreter = new TemplateNode("Interpreter", "Generic interpreter.",
-                    "2741cc5a-eb45-4532-9a64-c715c07f93bc")
-                .setIsa("d047f415-734c-4bd3-92b9-d68d5521ce69")
+        TemplateNode computer = new TemplateNode("ec11db91-6973-4285-b018-b461fbb432d7")
+                .setUnique(true)
                 .setRequired(true);
 
-        TemplateNode ipv4Address = new TemplateNode("Ipv4Address", "An IPv4 address.",
-                    "0e843d97-c975-42ca-813c-c91f42a7d3cc")
-                .setIsa("f7fbe917-9d49-4df5-95f6-6e132067a424")
+        TemplateNode processingUnit = new TemplateNode("b7b2a2ff-3af7-469b-afbf-e52f1b80be91");
+        TemplateNode volatileMemory = new TemplateNode("44131d46-c1b0-4030-ae5a-9a3108627749");
+        TemplateNode nonVolatileMemory = new TemplateNode("7f129e53-ff07-4ed8-9062-daf5f733a3a6");
+        TemplateNode consoleHardware = new TemplateNode("3d0865a2-3ecf-4035-886b-0bb603c0e2c2");
+        TemplateNode graphicsHardware = new TemplateNode("a642b995-c073-4c27-a611-c5bf3854958f");
+        TemplateNode networkHardware = new TemplateNode("86786ed6-d62a-4011-9ae8-0082000e48fa");
+
+        componentalGroup
+                .addComponent(computer);
+        computer
+                .addComponent(processingUnit)
+                .addComponent(volatileMemory)
+                .addComponent(nonVolatileMemory)
+                .addComponent(consoleHardware)
+                .addComponent(graphicsHardware)
+                .addComponent(networkHardware);
+
+        // Software
+
+        TemplateNode operatingSystem = new TemplateNode("f05e325e-1aee-4892-96e4-8bcd6e97c528")
+                .setUnique(true)
                 .setRequired(true);
 
-        TemplateNode dnsName = new TemplateNode("DnsName", "The short or fully qualified domain name.",
-                    "94d10031-5246-4233-b25d-b5f8ef9d0b41")
-                .setIsa("99c0da37-3599-418d-8ecc-de36d37ae9f4")
-                .setRequired(true)
-                .setUnique(true);
+        TemplateNode serviceManager = new TemplateNode("c3008eec-b454-4ef6-bf7e-0bd92c13d3c3");
+        TemplateNode packageManager = new TemplateNode("e2b8b9ee-b66f-4252-8fba-4fb172f741bc");
+        TemplateNode interpreter = new TemplateNode("d047f415-734c-4bd3-92b9-d68d5521ce69");
+        TemplateNode hypervisor = new TemplateNode("c5c7fcb5-8ac3-40cc-b195-b2b6af368e81");
+        TemplateNode emulator = new TemplateNode("59aeae81-9741-4986-b9c2-931504cfc9e3");
+        // TODO: Change to server when STR-35 is merged
+        TemplateNode service = new TemplateNode("3fb4603b-281e-47c0-b338-768ea05d4660");
+        // TODO: Add client when STR-35 is merged
 
-        TemplateNode serviceManager = new TemplateNode("ServiceManager", "Generic service manager.",
-                    "34bfe99f-1d62-48cb-a8a3-e913b69ef225")
-                .setIsa("c3008eec-b454-4ef6-bf7e-0bd92c13d3c3")
-                .setRequired(true)
-                .setUnique(true);
+        componentalGroup.addComponent(operatingSystem);
 
         operatingSystem
-                .addComponent(client)
-                .addComponent(server)
+                .addComponent(serviceManager)
+                .addComponent(packageManager)
                 .addComponent(interpreter)
-                .addComponent(ipv4Address)
-                .addComponent(dnsName)
-                .addComponent(serviceManager);
+                .addComponent(hypervisor)
+                .addComponent(emulator)
+                .addComponent(service);
 
-        operatingSystem.save();
+        // Configuration
+        // TODO: what configures what?
+        TemplateNode configuration = new TemplateNode("3f4a43f7-b558-4bf0-ba7e-66b99cffaf16");
+
+        componentalGroup.addComponent(configuration);
+
+        componentalGroup.save();
     }
 }

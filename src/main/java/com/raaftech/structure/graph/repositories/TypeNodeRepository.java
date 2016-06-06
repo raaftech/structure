@@ -50,11 +50,9 @@ public interface TypeNodeRepository extends GenericRepository<TypeNode> {
             "RETURN path + deepest.name AS path")
     String getHierarchyPath(@Param("deepestNode") String uuid);
 
-    // Check whether a type is a subtype of another one. Every type
-    // is a subtype of itself.
     // Workaround, returning count(n) > 0 returns null when n is NULL.
     @Query ("START start=node:uuid(uuid={typeUuid}) " +
-            "MATCH start<-[:ISA*0..]-(n{uuid:{subtypeUuid}}) " +
+            "MATCH start<-[:ISA*1..]-(n{name:{subtypeUuid}}) " +
             "RETURN count(n)")
     int isSubtype(@Param("typeUuid") String typeUuid, @Param("subtypeUuid") String subtypeUuid);
 }

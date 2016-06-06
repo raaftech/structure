@@ -222,7 +222,6 @@ public class TaskManager extends GenericActor {
                 publishStatus("jobFinished", mapper.createObjectNode()
                         .put("taskId", task.id)
                         .put("jobId", task.jobs.indexOf(job)));
-                log.info(job.process.finish().toString());
                 // Decrease task's to-do
                 task.finishedOne();
                 // Cancel this timer.

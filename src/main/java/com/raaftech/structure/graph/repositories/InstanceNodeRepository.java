@@ -81,7 +81,7 @@ public interface InstanceNodeRepository extends GenericRepository<InstanceNode> 
 
     // Get the root node of a componental group
     @Query ("START instance=node:uuid(uuid={instanceUuid}) " +
-            "MATCH (instance)<-[:HAS_COMPONENT*0..]-(start) " +
+            "MATCH (instance)<-[:HAS_COMPONENT*..]-(start) " +
             "WHERE NOT (start)<-[:HAS_COMPONENT]-() " +
             "RETURN start")
     InstanceNode getStartOfComponentGroup(@Param("instanceUuid") String instanceUuid);
@@ -92,6 +92,40 @@ public interface InstanceNodeRepository extends GenericRepository<InstanceNode> 
             "p=(component)-[:ISA|INSTANCE_OF*..]->(t)-[:HAS_INSTRUMENT]->(instrument)-[:GIVES_CAPABILITY]->({name:\"Invoke\"})" +
             "RETURN instrument ORDER BY length(p) ASC LIMIT 1")
     InstanceNode getInvokableInterpreter(@Param("instanceUuid") String instanceUuid);
+
+    // Find all instruments that apply to a given InstanceNode
+    @QueryResult
+    public class InstrumentQueryResult {
+        @ResultColumn("target")
+        public InstanceNode target;
+        @ResultColumn("instrument")
+        public InstanceNode instrument;
+        @ResultColumn("capability")
+        public TypeNode capability;
+
+        public void setTarget(InstanceNode target) {
+            this.target = target;
+        }
+
+        public void setInstrument(InstanceNode instrument) {
+            this.instrument = instrument;
+        }
+
+        public void setCapability(TypeNode capability) {
+            this.capability = capability;
+        }
+    }
+
+    @Query ("START patient=node:uuid(uuid={instanceUuid}), agent=node:uuid(uuid={structureUuid}) " +
+            "MATCH (patient)-[:HAS_COMPONENT*..]->(target)-[:INSTANCE_OF|ISA*..]->()<-[:HANDLES]-(instrument)<-[HAS_HANDLER]-(owner)," +
+            "(agent)," +
+            "(instrument)-[:GIVES_CAPABILITY]->(capability)" +
+            "WHERE ((instrument{`kv-subjectIsLocal`:\"true\"})<-[:HAS_HANDLER]-(owner)" +
+            "   AND (patient)-[:HAS_COMPONENT*0..]->()-[:INSTANCE_OF|ISA*..]->(owner))" +
+            "OR ((instrument{`kv-subjectIsLocal`:\"false\"})<-[:HAS_HANDLER]-(owner)" +
+            "   AND (agent)-[:HAS_COMPONENT*0..]->()-[:INSTANCE_OF|ISA*..]->(owner))" +
+            "RETURN target, instrument, capability ORDER BY id(target)")
+    List<InstrumentQueryResult> getInstruments(@Param("instanceUuid") String instanceUuid, @Param("structureUuid") String structureUuid);
 
     // Used to purge all instruments from the database
     @Query ("MATCH ()-[r1:HAS_INSTRUMENT]->(instrument)-[r2:GIVES_CAPABILITY]->()," +
@@ -118,39 +152,4 @@ public interface InstanceNodeRepository extends GenericRepository<InstanceNode> 
             "MATCH (instrument)<-[:HAS_INSTRUMENT]-(instrumentOwner) " +
             "RETURN instrumentOwner.name")
     String findInstrumentOwner(@Param("instrumentUuid") String instrumentUuid);
-
-    // When there are multiple hits for an instrument name, we want to retrieve
-    // the one that matches the origin.
-    @Query ("START origin=node:uuid(uuid={originUuid}), "+
-            "      startOfGroup=node:uuid(uuid={startOfGroupUuid}) " +
-            "MATCH (origin)-[:INSTANCE_OF|ISA*1..]->(handled)<-[:HANDLES]-(instrument{name:{instrumentName}})<-[:HAS_INSTRUMENT]-(provider), " +
-            "       (startOfGroup)-[:HAS_COMPONENT*..]->()-[:INSTANCE_OF|ISA*1..]->(provider) " +
-            "RETURN instrument")
-    InstanceNode findMatchingLocalInstrument(@Param("originUuid") String originUuid,
-                                        @Param("startOfGroupUuid") String startOfGroupUuid,
-                                        @Param("instrumentName") String instrumentName);
-
-    // Find all the locally run instruments that apply to a given origin
-    @Query ("START origin=node:uuid(uuid={originUuid}), "+
-            "      startOfGroup=node:uuid(uuid={startOfGroupUuid}) " +
-            "MATCH (origin)-[:INSTANCE_OF|ISA*1..]->(handled)<-[:HANDLES]-(instrument)<-[:HAS_INSTRUMENT]-(provider), " +
-            "       (startOfGroup)-[:HAS_COMPONENT*..]->()-[:INSTANCE_OF|ISA*1..]->(provider) " +
-            "RETURN instrument")
-    Set<InstanceNode> findLocalInstruments(@Param("originUuid") String originUuid,
-                                             @Param("startOfGroupUuid") String startOfGroupUuid);
-
-    // Find all the remotely run instruments that apply to a given origin
-    @Query ("START origin=node:uuid(uuid={originUuid}), "+
-            "      structure=node:uuid(uuid={structureUuid}) " +
-            "MATCH (origin)-[:INSTANCE_OF|ISA*1..]->(handled)<-[:HANDLES]-(instrument)<-[:HAS_INSTRUMENT]-(provider), " +
-            "       (structure)-[:HAS_COMPONENT*..]->()-[:INSTANCE_OF|ISA*1..]->(provider) " +
-            "RETURN instrument")
-    Set<InstanceNode> findRemoteInstruments(@Param("originUuid") String originUuid,
-                                      @Param("structureUuid") String startOfGroupUuid);
-
-    // Get all the InstanceNodes we need for our demo
-    @Query ("MATCH (n:InstanceNode)-[:INSTANCE_OF]->()-[:ISA*..]->(:TypeNode{name:\"OperatingSystem\"}) " +
-            "RETURN n")
-    List<InstanceNode> getRaafMachines();
-
 }
