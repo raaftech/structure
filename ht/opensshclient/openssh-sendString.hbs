@@ -52,4 +52,4 @@
 }
 
 }}
-ssh -l{{username}} {{ reachable subject.Ipv4Address }} "true && /tmp/{{ payloadFileName }}"
+ssh -l{{{username}}} {{{ ipv4address.addr }}} "true && /tmp/{{{ payloadFileName }}}"

@@ -145,7 +145,9 @@ public class ArgumentsToClassificationTreeParser {
 
             // Get the "type" key
             if (!fromString.equals("static")) {
-                head = new BranchNodeJson(head, typeKey, value.get("type").asText());
+                // use a regex, because type could be lower in the type tree than
+                // specified in the instrument
+                head = new BranchNodeJson(head, typeKey, value.get("type").asText() + ".*");
             } else {
                 head = new BranchNodeJson(head, "name", keyName);
             }

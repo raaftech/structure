@@ -1,0 +1,26 @@
+{{!
+
+{
+  "name": "stop",
+  "desc": "BsdrcInitStop",
+  "instrumentType": "runner",
+  "capability": "Stop",
+  "providedBy": "BsdrcInit",
+  "appliesTo": [ "Server" ],
+  "subjectIsLocal": true,
+  "arguments": {
+    "origin": {
+      "value": {
+        "from": "origin",
+        "type": "type.component.software.server",
+        "strategy": "mustBeOne",
+        "onError": "fail"
+      },
+      "canBeUserSupplied": false,
+      "isOptional": false
+    }
+  }
+}
+
+}}
+/etc/rc.d/{{ origin.shortName }} stop

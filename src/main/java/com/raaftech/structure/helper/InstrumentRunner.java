@@ -74,7 +74,9 @@ public class InstrumentRunner {
         }
 
         // Does the instrument even work on the given origin?
-        if (!instrument.getHandledTypes().contains(origin.getInstanceOf())) {
+        if (instrument.getHandledTypes().stream()
+                .filter(type -> origin.isOfType(type.getName()))
+                .count() < 1) {
             throw new IllegalArgumentException("Instrument is incompatible with the given origin.");
             // todo: log as result
         }

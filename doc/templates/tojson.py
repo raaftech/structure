@@ -70,7 +70,11 @@ templ = Template("""
                             "addr": "${ipv4_addr}",
                             "desc": "Reachable IPv4 address",
                             "name": "Ipv4Address",
+<<<<<<< HEAD
+                            "reachable": ${ipv4_reachable}
+=======
                             "reachable": true
+>>>>>>> demo
                         }
                     ]
                 },
@@ -93,11 +97,19 @@ templ = Template("""
                     "instances": [
                         {
                             "_typeUuid": "${servicemanager_uuid}",
+<<<<<<< HEAD
+                            "name": "${servicemanager_name}",
+                            "longName": "${servicemanager_name}",
+                            "shortName": "${servicemanager_shortname}",
+                            "desc": "${servicemanager_desc}",
+                            "ver": "1.0"
+=======
                             "name": "ServiceManager",
                             "longName": "ServiceManager",
                             "shortName": "ServiceManager",
                             "desc": "ServiceManager",
                             "ver": "unknown"
+>>>>>>> demo
                         }
                     ]
                 },
@@ -127,8 +139,12 @@ with open('vm_list.csv') as csvfile:
                 interpreter_shortname=row['interpreter_shortname'],
                 interpreter_ver=row['interpreter_ver'],
                 ipv4_addr=row['ipv4_addr'],
+                ipv4_reachable=row['ipv4_reachable'].lower(),
                 hostname=row['hostname'],
-                servicemanager_uuid=row['servicemanager_uuid']
+                servicemanager_uuid=row['servicemanager_uuid'],
+                servicemanager_name=row['servicemanager_name'],
+                servicemanager_shortname=row['servicemanager_shortname'],
+                servicemanager_desc=row['servicemanager_desc']
         )
         objs.append(templ.substitute(data))
 
