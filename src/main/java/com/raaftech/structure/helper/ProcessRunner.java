@@ -1,5 +1,7 @@
 package com.raaftech.structure.helper;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -10,6 +12,8 @@ import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.util.ArrayList;
 import java.util.Set;
+
+import static io.vertx.core.json.Json.mapper;
 
 /**
  * Created by Boy van Duuren &lt;boy@raaftech.com&gt;.
@@ -155,6 +159,13 @@ public class ProcessRunner {
             return "return code: " + returnCode + "\n" +
                     "stdout: " + stdout + "\n" +
                     "stderr: " + stderr;
+        }
+
+        public ObjectNode toJson() {
+            return mapper.createObjectNode()
+                    .put("returnCode", returnCode)
+                    .put("stdout", stdout)
+                    .put("stderr", stderr);
         }
     }
 }

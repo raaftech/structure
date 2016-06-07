@@ -454,7 +454,8 @@ public class InstrumentRunner {
                 .forEachOrdered(command -> {
                     ObjectNode job = mapper.createObjectNode();
                     job.putObject("metadata")
-                            .put("origin", origin.getName())
+                            .put("originName", origin.getName())
+                            .put("originUuid", origin.getUuid())
                             .put("instrument", instrument.getName())
                             .put("capability", instanceNodeRepository.getInstrumentCapability(instrument.getUuid()).getName());
                     job.put("command", command);
