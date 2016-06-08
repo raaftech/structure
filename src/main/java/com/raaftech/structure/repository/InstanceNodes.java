@@ -114,7 +114,7 @@ public class InstanceNodes extends Repository<InstanceNode> {
      * We might want to use deepToJson for normal InstanceNode findOne(ByName) as well
      */
     @SuppressWarnings("unused")
-    @SchemaPath("schema/repository/instancenodes/findByUuid.schema.json")
+    @SchemaPath("schema/repository/findByUuid.schema.json")
     public MessageHandler getRaafMachine() {
         return new MessageHandler() {
             @Override
