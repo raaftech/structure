@@ -128,7 +128,7 @@ public class Application {
                 log.info("Deployed SchemaManager with id: {}", ar.result());
             }
         });
-        vertx.deployVerticle("com.raaftech.structure.manager.ServiceStatusManager", new DeploymentOptions().setWorker(false), ar -> {
+        vertx.deployVerticle("com.raaftech.structure.manager.ServiceStatusManager", new DeploymentOptions().setWorker(true), ar -> {
             if (ar.succeeded()) {
                 log.info("Deployed ServiceStatusManager with id: {}", ar.result());
             }

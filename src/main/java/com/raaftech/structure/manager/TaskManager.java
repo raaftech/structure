@@ -258,12 +258,22 @@ public class TaskManager extends GenericActor {
                 publishStatus("taskFinished", mapper.createObjectNode()
                         .put("taskId", task.id)
                         .set("taskObj", task.toJson()));
-                // TODO: save results
-                try {
-                    log.info(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(task.toJson()));
-                } catch (JsonProcessingException e) {
-                    e.printStackTrace();
+
+                if (task.jobs.size() == 2) {
+                    Job sendScriptJob = task.jobs.get(1);
+                    if (sendScriptJob.metadata.get("instrument").asText().equals("check")) {
+                        ObjectNode status = mapper.createObjectNode()
+                                .put("uuid", sendScriptJob.metadata.get("originUuid").asText())
+                                .put("status", sendScriptJob.process.finish().stdout);
+                        try {
+                            log.debug(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(status));
+                        } catch (JsonProcessingException e) {
+                            e.printStackTrace();
+                        }
+                        publishStatus("serviceStatus", status);
+                    }
                 }
+                // TODO: save results
             }
 
             // Check if the queue and the running process list are empty, meaning we've finished all the work.

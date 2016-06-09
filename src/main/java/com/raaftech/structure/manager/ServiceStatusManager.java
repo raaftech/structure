@@ -12,6 +12,7 @@ import io.vertx.core.json.JsonObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -33,7 +34,8 @@ public class ServiceStatusManager extends GenericActor {
     // The prefix used to send messages to instancenodes on the eventbus
     private static final String eventBusInstanceNodePrefix = "com.raaftech.structure.node.instance.";
 
-    InstanceNodeRepository instanceNodeRepository = Context.INSTANCE.getInstanceNodeRepository();
+    private static final InstanceNodeRepository instanceNodeRepository =
+            Context.INSTANCE.getInstanceNodeRepository();
 
     // Publish a status on the status channel
     protected void publishStatus(String event, JsonNode data) {
@@ -44,26 +46,26 @@ public class ServiceStatusManager extends GenericActor {
     }
 
 
-    public MessageHandler checkService() {
+    @SuppressWarnings("unused")
+    public MessageHandler startChecking() {
         return new MessageHandler() {
             @Override
             public JsonNode exec(JsonNode request) {
                 Vertx vertx = getVertx();
                 EventBus eventBus = vertx.eventBus();
+                Set<InstanceNode> httpServers = instanceNodeRepository.getHttpServers();
 
-                JsonNode args = request.get("args");
-
-                String uuid = args.get("uuid").asText();
-
-                if (!checkedServices.contains(uuid)) {
-                    InstanceNode origin = instanceNodeRepository.findByUuid(uuid);
-                    InstanceNode startOfGroup = instanceNodeRepository.getStartOfComponentGroup(uuid);
-                    InstanceNode instrument = instanceNodeRepository.findMatchingLocalInstrument(uuid, startOfGroup.getUuid(), "stop");
-                    InstrumentRunner instrumentRunner = new InstrumentRunner(origin, instrument, mapper.createObjectNode(), UUID.randomUUID().toString());
-                    vertx.setPeriodic(5000, handler -> {
-                        instrumentRunner.startInstrument();
-                    });
-                }
+                httpServers.stream()
+                        .forEach(httpd -> {
+                            String uuid = httpd.getUuid();
+                            if (!checkedServices.contains(uuid)) {
+                                InstanceNode origin = instanceNodeRepository.findByUuid(uuid);
+                                InstanceNode startOfGroup = instanceNodeRepository.getStartOfComponentGroup(uuid);
+                                InstanceNode instrument = instanceNodeRepository.findMatchingLocalInstrument(uuid, startOfGroup.getUuid(), "check");
+                                InstrumentRunner instrumentRunner = new InstrumentRunner(origin, instrument, mapper.createObjectNode(), UUID.randomUUID().toString());
+                                vertx.setPeriodic(5000, handler -> instrumentRunner.startInstrument());
+                            }
+                        });
 
                 return response(request, mapper.createObjectNode());
             }

@@ -1,0 +1,26 @@
+{{!
+
+{
+  "name": "check",
+  "desc": "SystemdCheck",
+  "instrumentType": "runner",
+  "capability": "State",
+  "providedBy": "Systemd",
+  "appliesTo": [ "Server" ],
+  "subjectIsLocal": true,
+  "arguments": {
+    "origin": {
+      "value": {
+        "from": "origin",
+        "type": "type.component.software.server",
+        "strategy": "mustBeOne",
+        "onError": "fail"
+      },
+      "canBeUserSupplied": false,
+      "isOptional": false
+    }
+  }
+}
+
+}}
+systemctl status {{ origin.shortName }} &>/dev/null && echo -n on || echo -n off

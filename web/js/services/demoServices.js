@@ -2365,9 +2365,9 @@ angular.module("structureApp")
                                             {
                                                 "_typeUuid": "b46cb520-caaf-4d26-b59d-58edca723b8d",
                                                 "desc": "The Apache HTTP Server is a powerful, efficient, and extensible web server.",
-                                                "longName": "Apache HTTP Server",
+                                                "longName": "/System/Library/LaunchDaemons/org.apache.httpd.plist",
                                                 "name": "ApacheHTTP",
-                                                "shortName": "/System/Library/LaunchDaemons/org.apache.httpd.plist",
+                                                "shortName": "org.apache.httpd",
                                                 "ver": "unknown"
                                             }
                                         ]

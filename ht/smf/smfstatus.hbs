@@ -1,0 +1,31 @@
+{{!
+
+{
+  "name": "check",
+  "desc": "SmfCheck",
+  "instrumentType": "runner",
+  "capability": "State",
+  "providedBy": "Smf",
+  "appliesTo": [ "Server" ],
+  "subjectIsLocal": true,
+  "arguments": {
+    "origin": {
+      "value": {
+        "from": "origin",
+        "type": "type.component.software.server",
+        "strategy": "mustBeOne",
+        "onError": "fail"
+      },
+      "canBeUserSupplied": false,
+      "isOptional": false
+    }
+  }
+}
+
+}}
+SERVICE_STATE=`svcs -H -o state {{ origin.shortName }}`
+if [[ $SERVICE_STATE = "online" ]]; then
+  printf on
+else
+  printf off
+fi

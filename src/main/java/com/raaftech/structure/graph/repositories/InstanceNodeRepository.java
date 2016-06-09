@@ -153,4 +153,9 @@ public interface InstanceNodeRepository extends GenericRepository<InstanceNode> 
             "RETURN n")
     List<InstanceNode> getRaafMachines();
 
+    // Get all the http daemons for the demo
+    @Query ("MATCH (:TypeNode{name:\"HttpServer\"})<-[:INSTANCE_OF]-(httpd) " +
+            "RETURN httpd")
+    Set<InstanceNode> getHttpServers();
+
 }

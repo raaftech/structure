@@ -336,7 +336,7 @@ public class InstrumentRunner {
         context = validateAndSelectArguments(invokableInterpreter);
         script = applyTemplate(invokableInterpreter.getProperty(templateProperty), context);
 
-        String scriptFilename = origin.getName() + "-" + instrument.getName() + "_" + System.currentTimeMillis()
+        String scriptFilename = origin.getName() + "-" + instrument.getName() + "-" + origin.getUuid()
                 + invokableInterpreter.getProperty("extension");
         FileWriter scriptWriter = createFileWriter(scriptFilename);
         scriptWriter.write(script);
