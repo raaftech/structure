@@ -50,6 +50,21 @@ angular.module("structureApp")
                     .then(function(response) {
                         return response.result.data;
                     });
+            },
+
+            liveStatus: function(scope) {
+                vertxEventBusService.on('com.raaftech.structure.status', function(result) {
+                    scope.logStatus(result);
+                });
+            },
+
+            startChecking: function() {
+                vertxEventBusService.send('com.raaftech.structure.manager.servicestatusmanager',
+                    {
+                        'msgh': 'startChecking',
+                        'args': {}
+                    }
+                );
             }
         }
     });

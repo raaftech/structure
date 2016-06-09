@@ -2651,12 +2651,15 @@ angular.module("structureApp")
                     }];
 
                 for (var i = 0; i < objs.length; i++) {
-                    vertxEventBusService.send("com.raaftech.structure.node.template.1b8e0d72-c23d-4091-a4e6-74d07f1ee6fa", objs[i], 5000)
+                    vertxEventBusService.send("com.raaftech.structure.node.template.1b8e0d72-c23d-4091-a4e6-74d07f1ee6fa", objs[i], 25000)
                         .then(function(reply) {
                             //console.log(reply);
                             scope.returnInstance(reply.result.data);
+                        })
+                        .catch(function(err) {
+                            //console.log(err);
                         });
-                };
+                }
             }
         };
     });

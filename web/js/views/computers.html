@@ -39,7 +39,7 @@
                 </thead>
                 <tbody>
                     <tr ng-show="showComponents[instance.uuid]" ng-repeat="(type, component) in instance.components" ng-mouseenter="menuButton = true" ng-mouseleave="menuButton = false">
-                        <td><show-icon glyphid="{{component.glyphId}}" size="sg-xs"></show-icon> {{type}}</td>
+                        <td><show-icon glyphid="{{component.glyphId}}" size="sg-xs" ng-class="checkColor(component.uuid)"></show-icon> {{type}}</td>
                         <td>{{component.kv.addr}}{{component.kv.dnsname}}{{component.kv.ver}}</td>
                         <td><list-item-hover-menu-instruments ng-show="menuButton" uuid="{{component.uuid}}"></list-item-hover-menu-instruments>{{component.uuid}}</td>
                     </tr>

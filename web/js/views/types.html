@@ -28,7 +28,7 @@
             <table class="table list">
                 <thead>
                     <tr ng-mouseenter="topMenuButton = true" ng-mouseleave="topMenuButton = false">
-                        <th class="col-xs-4"><span ng-class="{'open': (subtypes[type.uuid] && type.children != '[]'), 'closed': (!subtypes[type.uuid] && type.children != '[]')}" ng-click="getSubtypes(type)"></span><span ng-click="getType(type.uuid)">{{type.name}}</span></th>
+                        <th class="col-xs-4"><span ng-class="{'open': (subtypes[type.uuid] && type.children != '[]'), 'closed': (!subtypes[type.uuid] && type.children != '[]')}" ng-click="getSubtypes(type)"></span><span ng-click="getType(type.uuid)"><show-icon glyphid="{{type.glyphId}}" size="sg-xs"></show-icon> {{type.name}}</span></th>
                         <th class="col-xs-4">{{subtypes[type.uuid].length ? 'Description': '&nbsp;'}}</th>
                         <th class="col-xs-4"><list-item-hover-menu ng-show="topMenuButton" uuid="{{type.uuid}}" node-type="{{type._nodeType}}"></list-item-hover-menu>{{subtypes[type.uuid].length ? 'UUID': '&nbsp;'}}</th>
                     </tr>

@@ -65,6 +65,14 @@ span.open:before,
     color: #fff;
 }
 
+show-icon.on {
+    color: green;
+}
+
+show-icon.off {
+    color: red;
+}
+
 .detail label,
 .list > thead > tr > th {
     color: #94a3ab;

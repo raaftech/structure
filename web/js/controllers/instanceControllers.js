@@ -17,11 +17,13 @@ angular.module("structureApp")
          */
 
         $scope.showComponents = [];
+        $scope.color = [];
 
         $scope.getRaafMachines = function() {
             instanceSrvs.getRaafMachines().then(function(response) {
                 $scope.instances = response.data;
-                //console.log(response.data);
+                instanceSrvs.liveStatus($scope);
+                instanceSrvs.startChecking();
             });
         };
 
@@ -42,5 +44,23 @@ angular.module("structureApp")
             instanceSrvs.getRaafMachine({'uuid': uuid}).then(function(response) {
                 $scope.instances.push(response);
             });
+            instanceSrvs.startChecking();
+        };
+
+        $scope.logStatus = function(response) {
+            if(response.event == 'serviceStatus') {
+                if(!response.data.uuid in $scope.color) {
+                    var obj = {};
+                    obj[response.data.uuid] = response.data.status;
+                    $scope.color.push(obj);
+                }
+                else {
+                    $scope.color[response.data.uuid] = response.data.status;
+                }
+            }
+        };
+
+        $scope.checkColor = function(uuid) {
+            return $scope.color[uuid];
         };
     });

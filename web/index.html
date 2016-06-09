@@ -75,13 +75,13 @@
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
-            <li ng-class="navClass('dashboard')"><a href="#dashboard">Dashboard</a></li>
-            <li ng-class="navClass('types')"><a href="#types">Types</a></li>
-            <li ng-class="navClass('templates')"><a href="#templates">Templates</a></li>
-            <li ng-class="navClass('task-manager')"><a href="#task-manager">Tasks</a></li>
-            <li ng-class="navClass('settings')"><a href="#settings">Settings</a></li>
-            <li ng-class="navClass('profile')"><a href="#profile">Profile</a></li>
-            <li ng-class="navClass('help')"><a href="#help">Help</a></li>
+            <li ng-class="navClass('dashboard')"><a href="#dashboard" ng-click="routeReload()">Dashboard</a></li>
+            <li ng-class="navClass('types')"><a href="#types" ng-click="routeReload()">Types</a></li>
+            <li ng-class="navClass('templates')"><a href="#templates" ng-click="routeReload()">Templates</a></li>
+            <li ng-class="navClass('task-manager')"><a href="#task-manager" ng-click="routeReload()">Tasks</a></li>
+            <li ng-class="navClass('settings')"><a href="#settings" ng-click="routeReload()">Settings</a></li>
+            <li ng-class="navClass('profile')"><a href="#profile" ng-click="routeReload()">Profile</a></li>
+            <li ng-class="navClass('help')"><a href="#help" ng-click="routeReload()">Help</a></li>
           </ul>
         </div>
       </div>
@@ -94,7 +94,7 @@
           <div ng-controller="navigationCtrl">
             <ul class="nav nav-sidebar">
               <li><a href="#">Overview <span class="sr-only">(current)</span></a></li>
-              <li ng-class="navClass('computers')"><a href="#computers">Computers</a></li>
+              <li ng-class="navClass('computers')"><a href="#computers" ng-click="routeReload()">Computers</a></li>
               <li><a href="">Analytics</a></li>
               <li><a href="">Export</a></li>
             </ul>
