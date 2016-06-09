@@ -1,0 +1,50 @@
+<h1 class="page-header">Computers</h1>
+<div ng-controller="instanceCtrl" ng-init="getRaafMachines()">
+    <div ng-show="instances.length == 0">
+        <button type="button" ng-click="createObjs()" class="btn btn-primary">Discover landscape</button>
+    </div>
+    <div ng-show="inst.name" class="row detailed-info">
+        <div class="basic">
+            <div class="body">
+                <show-icon glyphid="{{inst.glyphId}}" size="sg-xl"></show-icon>
+                <div class="text-block">
+                    <h1>{{inst.name}}</h1>
+                    <p>{{inst.desc}}</p>
+                    <p ng-controller="modalCtrl">
+                        <button type="button" class="btn button-str" ng-click="open(inst.uuid)">Edit</button>
+                        <button type="button" class="btn button-transparent">...</button>
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="detail">
+            <ul>
+                <h2>Details</h2>
+                <li><label>Name</label>{{type.name}}</li>
+                <li><label>Description</label>{{type.desc}}</li>
+                <li><label>UUID</label>{{type.uuid}}</li>
+                <li><label>ISA</label>{{isa.name}}</li>
+            </ul>
+        </div>
+    </div>
+    <div ng-repeat="instance in instances | orderBy: 'components.DnsName.kv.dnsname'">
+        <div class="table-responsive">
+            <table class="table list">
+                <thead>
+                    <tr ng-mouseenter="topMenuButton = true" ng-mouseleave="topMenuButton = false">
+                        <th class="col-xs-4"><span ng-class="{'open': (showComponents[instance.uuid] && instance.components != '[]'), 'closed': (!showComponents[instance.uuid] && instance.components != '[]')}" ng-click="setShowComponents(instance)"></span><span ng-click="getInstance(instance.uuid)">{{instance.components.DnsName.kv.dnsname}}</span></th>
+                        <th class="col-xs-4"><show-icon glyphid="{{instance.glyphId}}" size="sg-xs"></show-icon> {{instance.name}} {{instance.kv.ver}}</th>
+                        <th class="col-xs-4"><list-item-hover-menu ng-show="topMenuButton" uuid="{{instance.uuid}}" node-type="{{type._nodeType}}"></list-item-hover-menu>{{instance.uuid}}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-show="showComponents[instance.uuid]" ng-repeat="(type, component) in instance.components" ng-mouseenter="menuButton = true" ng-mouseleave="menuButton = false">
+                        <td><show-icon glyphid="{{component.glyphId}}" size="sg-xs"></show-icon> {{type}}</td>
+                        <td>{{component.kv.addr}}{{component.kv.dnsname}}{{component.kv.ver}}</td>
+                        <td><list-item-hover-menu-instruments ng-show="menuButton" uuid="{{component.uuid}}"></list-item-hover-menu-instruments>{{component.uuid}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

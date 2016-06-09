@@ -14,6 +14,12 @@ body {
     padding-top: 51px;
 }
 
+a,
+a:active,
+a:focus {
+    outline: none;
+}
+
 
 /*
  * Global add-ons
@@ -274,6 +280,10 @@ fieldset,
 
 .list > tbody > tr > td {
     border-bottom: 1px solid;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 0;
 }
 
 .table-responsive {
@@ -323,7 +333,6 @@ span.closed:before {
     display: inline;
     list-style-type: none;
     position: absolute;
-    margin-top: -20px;
     right: 0;
     z-index: 1000;
     padding-right: 40px;
@@ -412,4 +421,14 @@ span.closed:before {
     bottom: -45.9619px;
     border-bottom: solid 7.0711px #22333f;
     border-left: solid 7.0711px #22333f;
+}
+
+/**
+ * Names and Glyphs preview
+ */
+.names-and-glyphs {
+    -webkit-column-count: 3;
+       -moz-column-count: 3;
+            column-count: 3;
+    list-style-type: none;
 }
