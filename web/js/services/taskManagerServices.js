@@ -12,27 +12,23 @@ angular.module("structureApp")
                             'msgh': 'queueTask',
                             'args': {
                                 'taskId': uuidSrvs.generateUuid(),
-                                'sequential': true,
                                 'jobs': [{
                                     'metadata': {
-                                        'originName': 'apache2',
-                                        'originUuid': '57d418dc-4193-4b73-ac5f-bce11f569f4b',
+                                        'patient': 'apache2',
                                         'instrument': 'SystemdStoppable',
                                         'capability': 'Stoppable'
                                     },
                                     'command': 'sleep ' + i
                                 },{
                                     'metadata': {
-                                        'originName': 'sshd',
-                                        'originUuid': 'b251f78f-0e03-4882-81f7-db4068e86d5a',
+                                        'patient': 'sshd',
                                         'instrument': 'SystemdStoppable',
                                         'capability': 'Stoppable'
                                     },
                                     'command': 'sleep ' + (i + 1)
                                 },{
                                     'metadata': {
-                                        'originName': 'dropbox',
-                                        'originUuid': '474585de-0aaf-479d-b1d9-995bf75fc866',
+                                        'patient': 'dropbox',
                                         'instrument': 'SystemdStoppable',
                                         'capability': 'Stoppable'
                                     },
@@ -80,7 +76,7 @@ angular.module("structureApp")
             pauseTask: function(taskId) {
                 vertxEventBusService.send('com.raaftech.structure.manager.taskmanager',
                     {
-                        'msgh': 'toggleTaskPause',
+                        'msgh': 'pauseTask',
                         'args': {
                             'taskId': taskId
                         }

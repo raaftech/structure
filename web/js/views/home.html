@@ -2,22 +2,22 @@
 
           <div class="row placeholders">
             <div class="col-xs-6 col-sm-3 placeholder">
-              <span data-glyphid="é" class="strglyph strglyph-byid sg-lg"></span>
+              <span class="strglyph strglyph-type sg-4"></span>
               <h4>Types</h4>
               <span class="text-muted">All types</span>
             </div>
             <div class="col-xs-6 col-sm-3 placeholder">
-              <span data-glyphid="_" class="strglyph strglyph-byid sg-lg"></span>
+              <span class="strglyph strglyph-grouping sg-4"></span>
               <h4>Groups</h4>
               <span class="text-muted">All groups</span>
             </div>
             <div class="col-xs-6 col-sm-3 placeholder">
-              <span data-glyphid="æ" class="strglyph strglyph-byid sg-lg"></span>
+              <span class="strglyph strglyph-team sg-4"></span>
               <h4>Teams</h4>
               <span class="text-muted">All teams</span>
             </div>
             <div class="col-xs-6 col-sm-3 placeholder">
-              <span data-glyphid="B" class="strglyph strglyph-byid sg-lg"></span>
+              <span class="strglyph strglyph-configuration sg-4"></span>
               <h4>Config</h4>
               <span class="text-muted">All settings</span>
             </div>
@@ -30,16 +30,18 @@
                 <table class="table list">
                   <thead>
                     <tr>
-                      <th class="col-xs-4"><span ng-class="open"></span>Title</th>
-                      <th class="col-xs-4">Description</th>
-                      <th class="col-xs-4">UUID</th>
+                      <th><span ng-class="open"></span>Title</th>
+                      <th>Description</th>
+                      <th>UUID</th>
+                      <th width="35"></th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr ng-repeat="instance in instances" ng-mouseenter="menuButton = true" ng-mouseleave="menuButton = false">
                       <td>{{instance.name}}</td>
                       <td>{{instance.desc}}</td>
-                      <td><list-item-hover-menu ng-show="menuButton" uuid="{{instance.uuid}}" nodetype="{{instance._nodeType}}"></list-item-hover-menu>{{instance.uuid}}</td>
+                      <td>{{instance.uuid}}</td>
+                      <td><list-item-hover-menu ng-show="menuButton" uuid="{{instance.uuid}}" nodetype="{{instance._nodeType}}" /></td>
                     </tr>
                   </tbody>
                 </table>

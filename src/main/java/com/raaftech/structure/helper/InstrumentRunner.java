@@ -65,7 +65,7 @@ public class InstrumentRunner {
         this.arguments = arguments == null ? mapper.createObjectNode() : arguments;
 
         // TODO: Need a different way of finding the structure node.
-        this.agent = instanceNodeRepository.findOneByName(Context.selfIdentifier);
+        this.agent = instanceNodeRepository.findOneByName("structure");
         this.subject = instanceNodeRepository.getStartOfComponentGroup(origin.getUuid());
         // Is the instrument argument of the expected type?
         if (!instrument.isOfType("Instrument")) {
@@ -74,9 +74,7 @@ public class InstrumentRunner {
         }
 
         // Does the instrument even work on the given origin?
-        if (instrument.getHandledTypes().stream()
-                .filter(type -> origin.isOfType(type.getName()))
-                .count() < 1) {
+        if (!instrument.getHandledTypes().contains(origin.getInstanceOf())) {
             throw new IllegalArgumentException("Instrument is incompatible with the given origin.");
             // todo: log as result
         }
@@ -165,7 +163,7 @@ public class InstrumentRunner {
                 // send execution to subject (assumes sendString + receiveString)
                 jobList.add(sendString(heaviestSendString));
 
-            } catch (Exception e) {
+            } catch (IOException e) {
                 log.error(e.getMessage());
                 throw new RuntimeException("Error while creating script to transfer for instrument " + this.instrument.getName()
                         + ". See logging for more details.");
@@ -181,7 +179,9 @@ public class InstrumentRunner {
                 try {
                     // TODO: create method
                     ObjectNode args = validateAndSelectArguments(instrument);
-                    jobList.add(applyTemplate(instrument.getProperty(templateProperty), args));
+                    if (arguments != null) {
+                        jobList.add(applyTemplate(instrument.getProperty(templateProperty), args));
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -336,7 +336,7 @@ public class InstrumentRunner {
         context = validateAndSelectArguments(invokableInterpreter);
         script = applyTemplate(invokableInterpreter.getProperty(templateProperty), context);
 
-        String scriptFilename = origin.getName() + "-" + instrument.getName() + "-" + origin.getUuid()
+        String scriptFilename = origin.getName() + "-" + instrument.getName() + "_" + System.currentTimeMillis()
                 + invokableInterpreter.getProperty("extension");
         FileWriter scriptWriter = createFileWriter(scriptFilename);
         scriptWriter.write(script);
@@ -454,8 +454,7 @@ public class InstrumentRunner {
                 .forEachOrdered(command -> {
                     ObjectNode job = mapper.createObjectNode();
                     job.putObject("metadata")
-                            .put("originName", origin.getName())
-                            .put("originUuid", origin.getUuid())
+                            .put("origin", origin.getName())
                             .put("instrument", instrument.getName())
                             .put("capability", instanceNodeRepository.getInstrumentCapability(instrument.getUuid()).getName());
                     job.put("command", command);

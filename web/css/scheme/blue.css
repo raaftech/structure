@@ -9,8 +9,7 @@ body,
 
 .navbar-inverse,
 .navbar-inverse .navbar-nav > .active > a,
-.navbar-inverse .navbar-nav > .active > a:hover,
-.navbar-inverse .navbar-nav > .active > a:focus {
+.navbar-inverse .navbar-nav > .active > a:hover {
     background-color: #26343f;
 }
 
@@ -29,8 +28,6 @@ body,
 
 .button-str,
 .nav-sidebar > .active > a,
-.nav-sidebar > .active > a:hover,
-.nav-sidebar > .active > a:focus,
 .progress-bar-success {
     background-color: #00b299;
 }
@@ -41,6 +38,8 @@ body,
 
 fieldset,
 .list-group-item,
+.nav-sidebar > .active > a:hover,
+.nav-sidebar > .active > a:focus,
 .nav-sidebar > li > a:hover,
 .nav-sidebar > li > a:focus,
 .sidebar,
@@ -99,11 +98,11 @@ fieldset,
 
 .navbar-nav > li > a:hover,
 .nav-sidebar > li > a:hover,
+.nav-sidebar > li > a:focus,
 .sub-header {
     border-color: #a1a6a9 !important;
 }
 
-.nav-sidebar > .active > a,
-.nav-sidebar > li > a:focus {
+.nav-sidebar > .active > a {
     border-color: #00b299 !important;
 }

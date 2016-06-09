@@ -31,7 +31,7 @@ public enum Context {
     private static final ReentrantLock initLock = new ReentrantLock();
 
     // The identifier used to identify this structure instance in the database.
-    public final static String selfIdentifier = "Generic Linux";
+    public final static String selfIdentifier = "structure";
 
     Context() {
         context = new AnnotationConfigApplicationContext(SpringConfig.class, ConverterConfig.class);

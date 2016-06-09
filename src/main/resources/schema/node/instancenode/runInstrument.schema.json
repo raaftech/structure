@@ -15,7 +15,8 @@
       },
       "patternProperties": {
         "^\\w*$": {
-          "type": "string"
+          "type": "string",
+          "pattern": "^[\\w \\-:.\\/\\.]*$"
         }
       },
       "additionalProperties": false

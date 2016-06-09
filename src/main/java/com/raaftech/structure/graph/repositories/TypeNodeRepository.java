@@ -1,13 +1,9 @@
 package com.raaftech.structure.graph.repositories;
 
-import com.raaftech.structure.graph.InstanceNode;
 import com.raaftech.structure.graph.TypeNode;
 import org.springframework.data.neo4j.annotation.Query;
-import org.springframework.data.neo4j.annotation.QueryResult;
-import org.springframework.data.neo4j.annotation.ResultColumn;
 import org.springframework.data.repository.query.Param;
 
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -54,41 +50,9 @@ public interface TypeNodeRepository extends GenericRepository<TypeNode> {
             "RETURN path + deepest.name AS path")
     String getHierarchyPath(@Param("deepestNode") String uuid);
 
-    // Check whether a type is a subtype of another one. Every type
-    // is a subtype of itself.
     // Workaround, returning count(n) > 0 returns null when n is NULL.
     @Query ("START start=node:uuid(uuid={typeUuid}) " +
-            "MATCH start<-[:ISA*0..]-(n{uuid:{subtypeUuid}}) " +
+            "MATCH start<-[:ISA*1..]-(n{name:{subtypeUuid}}) " +
             "RETURN count(n)")
     int isSubtype(@Param("typeUuid") String typeUuid, @Param("subtypeUuid") String subtypeUuid);
-
-    // Development query: query all the typenodes and return their name + glyph
-    // Find all instruments that apply to a given InstanceNode
-    @QueryResult
-    public class TypeQueryResult {
-        @ResultColumn("name")
-        public String name;
-        @ResultColumn("glyphId")
-        public String glyphId;
-
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
-
-        public String getGlyphId() {
-            return glyphId;
-        }
-
-        public void setGlyphId(String glyphId) {
-            this.glyphId = Integer.toHexString(Integer.parseInt(glyphId));
-        }
-    }
-    @Query ("MATCH (n:TypeNode)" +
-            "RETURN n.name as name, n.glyphId as glyphId")
-    List<TypeQueryResult> getNamesAndGlyphs();
-
 }

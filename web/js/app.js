@@ -27,12 +27,6 @@ angular.module("structureApp", ["knalli.angular-vertxbus", "schemaForm", "ngRout
             .when("/task-manager", {
                 templateUrl: "js/views/taskManager.html"
             })
-            .when("/names-and-glyphs", {
-                templateUrl: "js/views/namesAndGlyphs.html"
-            })
-            .when("/computers", {
-                templateUrl: "js/views/computers.html"
-            })
             .otherwise({
                 templateUrl: "js/views/home.html"
             });
