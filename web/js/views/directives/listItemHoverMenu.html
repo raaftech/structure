@@ -1,4 +1,4 @@
-<div ng-click="menuClicked = true"><span class="glyphicon glyphicon-menu-hamburger" aria-hidden="true"></span></div>
+<div ng-click="$event.stopPropagation(); menuClicked = true" style="float: right;"><span class="glyphicon glyphicon-menu-hamburger" aria-hidden="true"></span></div>
 <ul class="tools" ng-show="menuClicked && nodeType=='TemplateNode'" ng-mouseleave="menuClicked = false">
     <li><a href="#{{uuid}}">Remove</a></li>
     <li><a href="#{{uuid}}">Rename</a></li>

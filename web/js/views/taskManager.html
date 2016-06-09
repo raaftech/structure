@@ -2,7 +2,7 @@
     <div class="row detailed-info">
         <div class="basic">
             <div class="body">
-                <span class="strglyph strglyph-result sg-5 visual"></span>
+                <show-icon glyphid="c9" size="sg-xl"></show-icon>
                 <!--<div class="hexagon"><span class="strglyph strglyph-result sg-3 visual"></span></div>-->
                 <div class="text-block">
                     <h1>Taskmanager</h1>
@@ -29,14 +29,14 @@
                     <tr ng-mouseenter="topMenuButton = true" ng-mouseleave="topMenuButton = false">
                         <th><span ng-class="{'open': (expand), 'closed': (!expand)}" ng-click="expand = (expand) ? false: true"></span><span>{{task.id}}</span></th>
                         <th width="200"><task-progress-bar done-jobs="{{task.doneJobs}}" max-jobs="{{task.maxJobs}}" progress-class="{{task.doneJobs < task.maxJobs ? 'progress-striped active': ''}}" progress-type="{{task.doneJobs < task.maxJobs ? '': 'success'}}"></task-progress-bar></th>
-                        <th width="35"><list-item-hover-menu-tasks ng-show="topMenuButton" task-id="{{task.id}}" /></th>
+                        <th width="35"><list-item-hover-menu-tasks ng-show="topMenuButton" task-id="{{task.id}}"></list-item-hover-menu-tasks></th>
                     </tr>
                 </thead>
                 <tbody ng-show="expand">
                     <tr ng-repeat="job in task.jobs track by $index" ng-mouseenter="menuButton = true" ng-mouseleave="menuButton = false">
-                        <td>{{job.patient}}</td>
+                        <td>{{job.originName}}</td>
                         <td>{{job.status}}</td>
-                        <td width="35"><list-item-hover-menu-jobs ng-show="menuButton" task-id="{{task.id}}" job-id="{{$index}}" /></td>
+                        <td width="35"><list-item-hover-menu-jobs ng-show="menuButton" task-id="{{task.id}}" job-id="{{$index}}"></list-item-hover-menu-jobs></td>
                     </tr>
                 </tbody>
             </table>
