@@ -85,4 +85,59 @@ public class InstanceNodes extends Repository<InstanceNode> {
         };
     }
 
+    /**
+     * Demo query! Get all the machines in the RAAF infra.
+     */
+    @SuppressWarnings("unused")
+    public MessageHandler getRaafMachines() {
+        return new MessageHandler() {
+            @Override
+            public JsonNode exec(JsonNode request) {
+                ObjectNode result = mapper.createObjectNode();
+                ArrayNode data = result.putArray("data");
+                repository.getRaafMachines().stream()
+                        .map(instance -> instance.deepToJson(2))
+                        .forEach(data::add);
+
+                return response(request, result);
+            }
+
+            @Override
+            public JsonNode help(JsonNode request) {
+                return null;
+            }
+        };
+    }
+
+    /**
+     * Demo query! Query an instancenode and get all it's information
+     * We might want to use deepToJson for normal InstanceNode findOne(ByName) as well
+     */
+    @SuppressWarnings("unused")
+    @SchemaPath("schema/repository/findByUuid.schema.json")
+    public MessageHandler getRaafMachine() {
+        return new MessageHandler() {
+            @Override
+            public JsonNode exec(JsonNode request) {
+                ObjectNode result = mapper.createObjectNode();
+                ObjectNode args = (ObjectNode)request.get("args");
+                String uuid = args.get("uuid").asText();
+
+                InstanceNode found = repository.findByUuid(uuid);
+                if (found != null) {
+                    result.set("data", found.deepToJson(2));
+                } else {
+                    result.put("error", "Couldn't find InstanceNode with UUID " + uuid + ".");
+                }
+
+                return response(request, result);
+            }
+
+            @Override
+            public JsonNode help(JsonNode request) {
+                return null;
+            }
+        };
+    }
+
 }

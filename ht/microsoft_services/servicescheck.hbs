@@ -1,0 +1,30 @@
+{{!
+
+{
+  "name": "check",
+  "desc": "ServicesCheck",
+  "instrumentType": "runner",
+  "capability": "State",
+  "providedBy": "Services",
+  "appliesTo": [ "Server" ],
+  "subjectIsLocal": true,
+  "arguments": {
+    "origin": {
+      "value": {
+	"from": "origin",
+	"type": "type.component.software.server"
+      },
+      "isOptional": false,
+      "canBeUserSupplied": false
+    }
+  }
+}
+
+}}
+for /F "tokens=3 delims=: " %%H in ('sc query "{{ origin.shortName }}" ^| findstr "STATE"') do (
+  if /I "%%H" NEQ "RUNNING" (
+   echo|set /p=off
+  ) else (
+   echo|set /p=on
+  )
+)

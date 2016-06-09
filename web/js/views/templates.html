@@ -29,18 +29,16 @@
             <table class="table list">
                 <thead>
                     <tr ng-mouseenter="topMenuButton = true" ng-mouseleave="topMenuButton = false">
-                        <th><span ng-class="{'open': (subTemplates[template.uuid] && template.children), 'closed': (!subTemplates[template.uuid] && template.children)}" ng-click="getSubTemplates(template.uuid)"></span><span ng-click="getAllTemplates(template.uuid)">{{template.name}}</span></th>
-                        <th>{{subTemplates[template.uuid].length ? 'Description': '&nbsp;'}}</th>
-                        <th>{{subTemplates[template.uuid].length ? 'UUID': '&nbsp;'}}</th>
-                        <th width="35"><list-item-hover-menu ng-show="topMenuButton" uuid="{{template.uuid}}" node-type="{{template._nodeType}}" /></th>
+                        <th class="col-xs-4"><span ng-class="{'open': (subTemplates[template.uuid] && template.children), 'closed': (!subTemplates[template.uuid] && template.children)}" ng-click="getSubTemplates(template.uuid)"></span><span ng-click="getAllTemplates(template.uuid)">{{template.name}}</span></th>
+                        <th class="col-xs-4">{{subTemplates[template.uuid].length ? 'Description': '&nbsp;'}}</th>
+                        <th class="col-xs-4"><list-item-hover-menu ng-show="topMenuButton" uuid="{{template.uuid}}" node-type="{{template._nodeType}}"></list-item-hover-menu>{{subTemplates[template.uuid].length ? 'UUID': '&nbsp;'}}</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr ng-repeat="subTemplate in subTemplates[template.uuid] | orderBy: 'name'" ng-mouseenter="menuButton = true" ng-mouseleave="menuButton = false">
                         <td ng-click="getAllTemplates(subTemplate.uuid)">{{subTemplate.name}}</td>
                         <td ng-click="getAllTemplates(subTemplate.uuid)">{{subTemplate.desc}}</td>
-                        <td ng-click="getAllTemplates(subTemplate.uuid)">{{subTemplate.uuid}}</td>
-                        <td><list-item-hover-menu ng-show="menuButton" uuid="{{subTemplate.uuid}}" node-type="{{subTemplate._nodeType}}" /></td>
+                        <td ng-click="getAllTemplates(subTemplate.uuid)"><list-item-hover-menu ng-show="menuButton" uuid="{{subTemplate.uuid}}" node-type="{{subTemplate._nodeType}}"></list-item-hover-menu>{{subTemplate.uuid}}</td>
                     </tr>
                 </tbody>
             </table>

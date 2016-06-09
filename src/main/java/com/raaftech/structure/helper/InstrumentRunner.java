@@ -74,7 +74,9 @@ public class InstrumentRunner {
         }
 
         // Does the instrument even work on the given origin?
-        if (!instrument.getHandledTypes().contains(origin.getInstanceOf())) {
+        if (instrument.getHandledTypes().stream()
+                .filter(type -> origin.isOfType(type.getName()))
+                .count() < 1) {
             throw new IllegalArgumentException("Instrument is incompatible with the given origin.");
             // todo: log as result
         }
@@ -334,7 +336,7 @@ public class InstrumentRunner {
         context = validateAndSelectArguments(invokableInterpreter);
         script = applyTemplate(invokableInterpreter.getProperty(templateProperty), context);
 
-        String scriptFilename = origin.getName() + "-" + instrument.getName() + "_" + System.currentTimeMillis()
+        String scriptFilename = origin.getName() + "-" + instrument.getName() + "-" + origin.getUuid()
                 + invokableInterpreter.getProperty("extension");
         FileWriter scriptWriter = createFileWriter(scriptFilename);
         scriptWriter.write(script);
@@ -452,7 +454,8 @@ public class InstrumentRunner {
                 .forEachOrdered(command -> {
                     ObjectNode job = mapper.createObjectNode();
                     job.putObject("metadata")
-                            .put("origin", origin.getName())
+                            .put("originName", origin.getName())
+                            .put("originUuid", origin.getUuid())
                             .put("instrument", instrument.getName())
                             .put("capability", instanceNodeRepository.getInstrumentCapability(instrument.getUuid()).getName());
                     job.put("command", command);

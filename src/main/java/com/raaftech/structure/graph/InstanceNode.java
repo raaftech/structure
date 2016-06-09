@@ -422,6 +422,39 @@ public class InstanceNode extends Node {
         return result;
     }
 
+    public ObjectNode deepToJson(int dimension) {
+        if (dimension <= 0) {
+            return null;
+        }
+
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode result = mapper.createObjectNode();
+        ObjectNode kvJson = result.putObject("kv");
+        kv.asMap().forEach((key, val) -> kvJson.put(key, val.toString()));
+        ObjectNode componentsJson = mapper.createObjectNode();
+        if (dimension > 1) {
+            getComponents().forEach(component -> {
+                componentsJson.set(component.getName(), component.deepToJson(dimension - 1));
+            });
+        }
+
+        result.put("name", getName());
+        result.put("uuid", getUuid());
+        result.put("desc", getDesc());
+        result.put("instanceof", instanceOf.getUuid());
+        result.put("glyphId", Integer.toHexString(instanceOf.getGlyphId()));
+        if (componentsJson.size() > 0) {
+            result.set("components", componentsJson);
+        }
+        if (inComponent != null) {
+            result.put("incomponent", inComponent.getUuid());
+        }
+
+        result.put("_nodeType", getNodeType());
+
+        return result;
+    }
+
     public ObjectNode toJson() {
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode result = mapper.createObjectNode();

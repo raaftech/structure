@@ -33,4 +33,15 @@ angular.module("structureApp")
             },
             templateUrl: "js/views/directives/listItemHoverMenuJobs.html"
         }
+    })
+
+    .directive("listItemHoverMenuInstruments", function() {
+        return {
+            restrict: "E",
+            controller: "instrumentCtrl",
+            scope: {
+                uuid: '@'
+            },
+            templateUrl: "js/views/directives/listItemHoverMenuInstruments.html"
+        }
     });

@@ -1,5 +1,7 @@
 package com.raaftech.structure.helper;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -11,6 +13,8 @@ import java.nio.file.attribute.PosixFilePermissions;
 import java.util.ArrayList;
 import java.util.Set;
 
+import static io.vertx.core.json.Json.mapper;
+
 /**
  * Created by Boy van Duuren &lt;boy@raaftech.com&gt;.
  */
@@ -20,6 +24,9 @@ public class ProcessRunner {
     private final ProcessResult processResult = new ProcessResult();
     private final String command;
     private Process process;
+
+    File tempErr;
+    File tempOut;
 
     public ProcessRunner(String command) {
         this.command = command;
@@ -34,8 +41,23 @@ public class ProcessRunner {
         process.destroy();
     }
 
+    public ProcessResult finish() {
+        try {
+            processResult.stderr = readFile(tempErr.getPath());
+            processResult.stdout = readFile(tempOut.getPath());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return processResult;
+    }
+
     public String getCommand() {
         return command;
+    }
+
+    public Process getProcess() {
+        return process;
     }
 
     public boolean isRunning() {
@@ -55,8 +77,8 @@ public class ProcessRunner {
         // TODO: This is probably not portable, need to test on windows
         FileAttribute<Set<PosixFilePermission>> attrs = PosixFilePermissions.asFileAttribute(
                 PosixFilePermissions.fromString("rw-------"));
-        final File tempOut = Files.createTempFile("out", null, attrs).toFile();
-        final File tempErr = Files.createTempFile("out", null, attrs).toFile();
+        tempOut = Files.createTempFile("out", null, attrs).toFile();
+        tempErr = Files.createTempFile("out", null, attrs).toFile();
 
         // Clean up our TempFiles
         tempOut.deleteOnExit();
@@ -137,6 +159,13 @@ public class ProcessRunner {
             return "return code: " + returnCode + "\n" +
                     "stdout: " + stdout + "\n" +
                     "stderr: " + stderr;
+        }
+
+        public ObjectNode toJson() {
+            return mapper.createObjectNode()
+                    .put("returnCode", returnCode)
+                    .put("stdout", stdout)
+                    .put("stderr", stderr);
         }
     }
 }
