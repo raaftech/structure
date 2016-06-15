@@ -432,3 +432,7 @@ span.closed:before {
             column-count: 3;
     list-style-type: none;
 }
+
+show-icon {
+    text-transform: none;
+}
