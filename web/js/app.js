@@ -1,9 +1,10 @@
 angular.module("structureApp", ["knalli.angular-vertxbus", "schemaForm", "ngRoute", "ui.bootstrap"])
     .config(function(vertxEventBusProvider, $routeProvider) {
 
+        var locationArr = window.location.href.split("/")
         vertxEventBusProvider
             .enable()
-            .useUrlServer("http://localhost:8080");
+            .useUrlServer(locationArr[0] + "//" + locationArr[2]);
 
         $routeProvider
             .when("/", {
