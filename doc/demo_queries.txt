@@ -1,0 +1,35 @@
+# ESXi nodes
+match	(type_os:TypeNode{name:"OperatingSystem"}),
+		(type_os)<-[:ISA*..]-(type_os_children),
+		(type_os_children)<-[:INSTANCE_OF]-(inst_os),
+		(inst_os)-[:HAS_COMPONENT]->(inst_os_children)
+return inst_os, inst_os_children;
+
+
+# Query as above, but with their types
+match	(type_os:TypeNode{name:"OperatingSystem"}),
+		(type_os)<-[:ISA*..]-(type_os_children),
+		(type_os_children)<-[:INSTANCE_OF]-(inst_os),
+		(inst_os)-[:HAS_COMPONENT]->(inst_os_children),
+		(inst_os_children)-[:INSTANCE_OF]->(type_children)
+return inst_os, inst_os_children, type_children;
+
+
+# Query just OpenBSD with children + types
+match	(inst_os:InstanceNode{name:"OpenBSD"})-[:HAS_COMPONENT]->(inst_os_children),
+		(inst_os_children)-[:INSTANCE_OF]->(type_children)
+return inst_os, inst_os_children, type_children;
+
+
+# Show that software can implement protocols
+match	(type_sw:TypeNode{name:"Software"})<-[:ISA*..]-(type_sw_children),
+		(type_sw_children)-[:IMPLEMENTS]->(protocol)
+return type_sw_children, protocol;
+
+
+# Show path from structure to OpenBSD
+match	(struct:InstanceNode{name:"Generic Linux"})-[:HAS_COMPONENT*..]->(struct_inst_sw)-[:INSTANCE_OF]->(struct_type_sw)-[:ISA*..]->(:TypeNode{name:"Software"}),
+		(openbsd:InstanceNode{name:"OpenBSD"})-[:HAS_COMPONENT*..]->(openbsd_inst_sw)-[:INSTANCE_OF]->(openbsd_type_sw)-[:ISA*..]->(:TypeNode{name:"Software"}),
+		(struct_type_sw)-[:IMPLEMENTS]->(protocol)<-[:IMPLEMENTS]-(openbsd_struct_sw)
+return	struct, struct_type_sw, struct_inst_sw, protocol, openbsd_type_sw, openbsd_inst_sw, openbsd
+
