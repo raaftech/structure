@@ -10,10 +10,7 @@ import io.vertx.core.Vertx;
 import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.json.JsonObject;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Give a description of ServiceStatusManager here.
@@ -25,7 +22,7 @@ import java.util.UUID;
 public class ServiceStatusManager extends GenericActor {
 
     // Used to keep track of services that are already being checked
-    final static List<String> checkedServices = new ArrayList<>();
+    final static Map<String, Long> checkedServices = new HashMap<>();
 
     // statusAddress is used to push notifications of events within Structure
     // that the GUI may be interested about.
@@ -51,21 +48,48 @@ public class ServiceStatusManager extends GenericActor {
         return new MessageHandler() {
             @Override
             public JsonNode exec(JsonNode request) {
-                Vertx vertx = getVertx();
-                EventBus eventBus = vertx.eventBus();
-                Set<InstanceNode> httpServers = instanceNodeRepository.getHttpServers();
+                if (Context.INSTANCE.getInstrumentsLoaded()) {
+                    Vertx vertx = getVertx();
+                    EventBus eventBus = vertx.eventBus();
+                    Set<InstanceNode> httpServers = instanceNodeRepository.getHttpServers();
 
-                httpServers.stream()
-                        .forEach(httpd -> {
-                            String uuid = httpd.getUuid();
-                            if (!checkedServices.contains(uuid)) {
-                                InstanceNode origin = instanceNodeRepository.findByUuid(uuid);
-                                InstanceNode startOfGroup = instanceNodeRepository.getStartOfComponentGroup(uuid);
-                                InstanceNode instrument = instanceNodeRepository.findMatchingLocalInstrument(uuid, startOfGroup.getUuid(), "check");
-                                InstrumentRunner instrumentRunner = new InstrumentRunner(origin, instrument, mapper.createObjectNode(), UUID.randomUUID().toString());
-                                vertx.setPeriodic(5000, handler -> instrumentRunner.startInstrument());
-                            }
+                    httpServers.stream()
+                            .forEach(httpd -> {
+                                String uuid = httpd.getUuid();
+                                if (checkedServices.get(uuid) == null) {
+                                    InstanceNode origin = instanceNodeRepository.findByUuid(uuid);
+                                    InstanceNode startOfGroup = instanceNodeRepository.getStartOfComponentGroup(uuid);
+                                    InstanceNode instrument = instanceNodeRepository.findMatchingLocalInstrument(uuid, startOfGroup.getUuid(), "check");
+                                    InstrumentRunner instrumentRunner = new InstrumentRunner(origin, instrument, mapper.createObjectNode(), UUID.randomUUID().toString());
+                                    Long id = vertx.setPeriodic(5000, handler -> instrumentRunner.startInstrument());
+                                    checkedServices.put(uuid, id);
+                                }
+                            });
+                }
+
+                return response(request, mapper.createObjectNode());
+            }
+
+            @Override
+            public JsonNode help(JsonNode request) {
+                return null;
+            }
+        };
+    }
+
+    @SuppressWarnings("unused")
+    public MessageHandler stopChecking() {
+        return new MessageHandler() {
+            @Override
+            public JsonNode exec(JsonNode request) {
+                checkedServices.entrySet().stream()
+                        .map(entry -> entry.getValue())
+                        .forEach(id -> {
+                            vertx.cancelTimer(id);
+
                         });
+
+                checkedServices.clear();
 
                 return response(request, mapper.createObjectNode());
             }

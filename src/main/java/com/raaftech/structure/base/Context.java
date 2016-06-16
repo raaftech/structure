@@ -13,6 +13,7 @@ import org.springframework.data.neo4j.support.Neo4jTemplate;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
@@ -29,6 +30,7 @@ public enum Context {
     private Set<String> registeredPlugins = new HashSet<>();
     @SuppressWarnings("unused")
     private static final ReentrantLock initLock = new ReentrantLock();
+    private AtomicBoolean instrumentsLoaded = new AtomicBoolean();
 
     // The identifier used to identify this structure instance in the database.
     public final static String selfIdentifier = "Generic Linux";
@@ -71,5 +73,13 @@ public enum Context {
 
     public void setVertx(Vertx vertx) {
         this.vertx = vertx;
+    }
+
+    public void setInstrumentsLoaded(boolean state) {
+        instrumentsLoaded.set(state);
+    }
+
+    public boolean getInstrumentsLoaded() {
+        return instrumentsLoaded.get();
     }
 }
