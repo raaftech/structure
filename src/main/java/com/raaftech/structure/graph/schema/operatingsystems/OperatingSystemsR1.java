@@ -31,6 +31,10 @@ public class OperatingSystemsR1 extends SchemaUpdate {
                         .setIsa(getFromMap("4edbaf6a-da58-4644-abac-ae80328ddb49")));
                 addToMap(new TypeNode("UnixLike", "A UNIX-like operating system.", "6a1eea8b-1462-4439-8c60-12edbee6c397", 0x00ED)
                         .setIsa(operatingSystem));
+                addToMap(new TypeNode("EmbeddedLike", "An embedded operating system.", "c465fb15-5593-43dd-8b95-2b951ddc670c")
+                        .setIsa(operatingSystem));
+                addToMap(new TypeNode("ESXi", "VMWare ESXi.", "325f3701-ca9f-4546-984d-c8327ee862f1", 246)
+                        .setIsa(getFromMap("c465fb15-5593-43dd-8b95-2b951ddc670c")));
                 addToMap(new TypeNode("Unix", "The UNIX Operating System.", "a3b228b6-f737-460c-a3bc-bc653167b36c", 0x00EC)
                         .setIsa(getFromMap("6a1eea8b-1462-4439-8c60-12edbee6c397")));
                 addToMap(new TypeNode("Illumos", "The Illumos Operating System.", "f0bcc651-3ca6-4d4c-ac9d-5a60b2b08520", 0x006A)

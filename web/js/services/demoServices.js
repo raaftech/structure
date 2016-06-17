@@ -26,6 +26,14 @@ angular.module("structureApp")
                                 {
                                     "data": {
                                         "instances": [
+
+                                        ]
+                                    },
+                                    "templateNodeUuid": "39e12352-8305-4b5d-af60-f1725ec458b8"
+                                },
+                                {
+                                    "data": {
+                                        "instances": [
                                             {
                                                 "_typeUuid": "6d467b28-449f-498c-9ca5-8660f522897f",
                                                 "desc": "The Bourne Again Shell.",
@@ -105,6 +113,114 @@ angular.module("structureApp")
                                     "data": {
                                         "instances": [
                                             {
+                                                "_typeUuid": "c465fb15-5593-43dd-8b95-2b951ddc670c",
+                                                "desc": "VMWare ESXi",
+                                                "longName": "VMWare ESXi 6.0",
+                                                "name": "VmwareEsxi",
+                                                "shortName": "esxi",
+                                                "ver": "6.0"
+                                            }
+                                        ]
+                                    },
+                                    "templateNodeUuid": "1b8e0d72-c23d-4091-a4e6-74d07f1ee6fa"
+                                },
+                                {
+                                    "data": {
+                                        "instances": [
+                                            {
+                                                "_typeUuid": "b9739ee8-34a6-4308-b7e2-ba775c0e59cf",
+                                                "desc": "VMWare ESXi",
+                                                "longName": "VMWare ESXi 6.0",
+                                                "name": "VmwareEsxi",
+                                                "shortName": "esxi",
+                                                "ver": "6.0"
+                                            }
+                                        ]
+                                    },
+                                    "templateNodeUuid": "39e12352-8305-4b5d-af60-f1725ec458b8"
+                                },
+                                {
+                                    "data": {
+                                        "instances": [
+                                            {
+                                                "_typeUuid": "6d467b28-449f-498c-9ca5-8660f522897f",
+                                                "desc": "The Almquist Shell",
+                                                "longName": "Almquist Shell",
+                                                "name": "Ash",
+                                                "shortName": "ash",
+                                                "ver": "unknown"
+                                            }
+                                        ]
+                                    },
+                                    "templateNodeUuid": "2741cc5a-eb45-4532-9a64-c715c07f93bc"
+                                },
+                                {
+                                    "data": {
+                                        "instances": [
+
+                                        ]
+                                    },
+                                    "templateNodeUuid": "54126ca8-3a5e-43b9-a501-98c8d158049d"
+                                },
+                                {
+                                    "data": {
+                                        "instances": [
+
+                                        ]
+                                    },
+                                    "templateNodeUuid": "e8e3c643-a520-4d63-9088-dd27086a1879"
+                                },
+                                {
+                                    "data": {
+                                        "instances": [
+                                            {
+                                                "addr": "172.17.1.40",
+                                                "desc": "Reachable IPv4 address",
+                                                "name": "Ipv4Address",
+                                                "reachable": true
+                                            }
+                                        ]
+                                    },
+                                    "templateNodeUuid": "0e843d97-c975-42ca-813c-c91f42a7d3cc"
+                                },
+                                {
+                                    "data": {
+                                        "instances": [
+                                            {
+                                                "name": "DnsName",
+                                                "desc": "The hostname of the machine.",
+                                                "dnsname": "zildjian"
+                                            }
+                                        ]
+                                    },
+                                    "templateNodeUuid": "94d10031-5246-4233-b25d-b5f8ef9d0b41"
+                                },
+                                {
+                                    "data": {
+                                        "instances": [
+                                            {
+                                                "_typeUuid": "608bfaf1-9edc-4609-b5cd-56d8aeff8174",
+                                                "name": "SysvInit",
+                                                "longName": "SysvInit",
+                                                "shortName": "sysvinit",
+                                                "desc": "The System V init manager",
+                                                "ver": "1.0"
+                                            }
+                                        ]
+                                    },
+                                    "templateNodeUuid": "34bfe99f-1d62-48cb-a8a3-e913b69ef225"
+                                }
+                            ]
+                        },
+                        "msgh": "instantiate"
+                    },
+                    {
+                        "args": {
+                            "instancedata": [
+                                {
+                                    "data": {
+                                        "instances": [
+                                            {
                                                 "_typeUuid": "db95db3d-fe10-448a-9f30-2a05bf06e699",
                                                 "desc": "SuSE Linux Enterprise Server",
                                                 "longName": "SuSE Linux Enterprise Server",
@@ -115,6 +231,14 @@ angular.module("structureApp")
                                         ]
                                     },
                                     "templateNodeUuid": "1b8e0d72-c23d-4091-a4e6-74d07f1ee6fa"
+                                },
+                                {
+                                    "data": {
+                                        "instances": [
+
+                                        ]
+                                    },
+                                    "templateNodeUuid": "39e12352-8305-4b5d-af60-f1725ec458b8"
                                 },
                                 {
                                     "data": {
@@ -208,6 +332,14 @@ angular.module("structureApp")
                                         ]
                                     },
                                     "templateNodeUuid": "1b8e0d72-c23d-4091-a4e6-74d07f1ee6fa"
+                                },
+                                {
+                                    "data": {
+                                        "instances": [
+
+                                        ]
+                                    },
+                                    "templateNodeUuid": "39e12352-8305-4b5d-af60-f1725ec458b8"
                                 },
                                 {
                                     "data": {
@@ -326,6 +458,14 @@ angular.module("structureApp")
                                 {
                                     "data": {
                                         "instances": [
+
+                                        ]
+                                    },
+                                    "templateNodeUuid": "39e12352-8305-4b5d-af60-f1725ec458b8"
+                                },
+                                {
+                                    "data": {
+                                        "instances": [
                                             {
                                                 "_typeUuid": "6d467b28-449f-498c-9ca5-8660f522897f",
                                                 "desc": "The Bourne Again Shell.",
@@ -415,6 +555,14 @@ angular.module("structureApp")
                                         ]
                                     },
                                     "templateNodeUuid": "1b8e0d72-c23d-4091-a4e6-74d07f1ee6fa"
+                                },
+                                {
+                                    "data": {
+                                        "instances": [
+
+                                        ]
+                                    },
+                                    "templateNodeUuid": "39e12352-8305-4b5d-af60-f1725ec458b8"
                                 },
                                 {
                                     "data": {
@@ -512,6 +660,14 @@ angular.module("structureApp")
                                 {
                                     "data": {
                                         "instances": [
+
+                                        ]
+                                    },
+                                    "templateNodeUuid": "39e12352-8305-4b5d-af60-f1725ec458b8"
+                                },
+                                {
+                                    "data": {
+                                        "instances": [
                                             {
                                                 "_typeUuid": "bc101145-dde2-4363-a7ed-7091d2ff2621",
                                                 "desc": "A generic DOS shell.",
@@ -601,6 +757,14 @@ angular.module("structureApp")
                                         ]
                                     },
                                     "templateNodeUuid": "1b8e0d72-c23d-4091-a4e6-74d07f1ee6fa"
+                                },
+                                {
+                                    "data": {
+                                        "instances": [
+
+                                        ]
+                                    },
+                                    "templateNodeUuid": "39e12352-8305-4b5d-af60-f1725ec458b8"
                                 },
                                 {
                                     "data": {
@@ -698,6 +862,14 @@ angular.module("structureApp")
                                 {
                                     "data": {
                                         "instances": [
+
+                                        ]
+                                    },
+                                    "templateNodeUuid": "39e12352-8305-4b5d-af60-f1725ec458b8"
+                                },
+                                {
+                                    "data": {
+                                        "instances": [
                                             {
                                                 "_typeUuid": "bc101145-dde2-4363-a7ed-7091d2ff2621",
                                                 "desc": "A generic DOS shell.",
@@ -787,6 +959,14 @@ angular.module("structureApp")
                                         ]
                                     },
                                     "templateNodeUuid": "1b8e0d72-c23d-4091-a4e6-74d07f1ee6fa"
+                                },
+                                {
+                                    "data": {
+                                        "instances": [
+
+                                        ]
+                                    },
+                                    "templateNodeUuid": "39e12352-8305-4b5d-af60-f1725ec458b8"
                                 },
                                 {
                                     "data": {
@@ -884,6 +1064,14 @@ angular.module("structureApp")
                                 {
                                     "data": {
                                         "instances": [
+
+                                        ]
+                                    },
+                                    "templateNodeUuid": "39e12352-8305-4b5d-af60-f1725ec458b8"
+                                },
+                                {
+                                    "data": {
+                                        "instances": [
                                             {
                                                 "_typeUuid": "bc101145-dde2-4363-a7ed-7091d2ff2621",
                                                 "desc": "A generic DOS shell.",
@@ -973,6 +1161,14 @@ angular.module("structureApp")
                                         ]
                                     },
                                     "templateNodeUuid": "1b8e0d72-c23d-4091-a4e6-74d07f1ee6fa"
+                                },
+                                {
+                                    "data": {
+                                        "instances": [
+
+                                        ]
+                                    },
+                                    "templateNodeUuid": "39e12352-8305-4b5d-af60-f1725ec458b8"
                                 },
                                 {
                                     "data": {
@@ -1070,6 +1266,14 @@ angular.module("structureApp")
                                 {
                                     "data": {
                                         "instances": [
+
+                                        ]
+                                    },
+                                    "templateNodeUuid": "39e12352-8305-4b5d-af60-f1725ec458b8"
+                                },
+                                {
+                                    "data": {
+                                        "instances": [
                                             {
                                                 "_typeUuid": "6d467b28-449f-498c-9ca5-8660f522897f",
                                                 "desc": "The Bourne Again Shell.",
@@ -1159,6 +1363,14 @@ angular.module("structureApp")
                                         ]
                                     },
                                     "templateNodeUuid": "1b8e0d72-c23d-4091-a4e6-74d07f1ee6fa"
+                                },
+                                {
+                                    "data": {
+                                        "instances": [
+
+                                        ]
+                                    },
+                                    "templateNodeUuid": "39e12352-8305-4b5d-af60-f1725ec458b8"
                                 },
                                 {
                                     "data": {
@@ -1256,6 +1468,14 @@ angular.module("structureApp")
                                 {
                                     "data": {
                                         "instances": [
+
+                                        ]
+                                    },
+                                    "templateNodeUuid": "39e12352-8305-4b5d-af60-f1725ec458b8"
+                                },
+                                {
+                                    "data": {
+                                        "instances": [
                                             {
                                                 "_typeUuid": "6d467b28-449f-498c-9ca5-8660f522897f",
                                                 "desc": "The Bourne Again Shell.",
@@ -1345,6 +1565,14 @@ angular.module("structureApp")
                                         ]
                                     },
                                     "templateNodeUuid": "1b8e0d72-c23d-4091-a4e6-74d07f1ee6fa"
+                                },
+                                {
+                                    "data": {
+                                        "instances": [
+
+                                        ]
+                                    },
+                                    "templateNodeUuid": "39e12352-8305-4b5d-af60-f1725ec458b8"
                                 },
                                 {
                                     "data": {
@@ -1457,6 +1685,14 @@ angular.module("structureApp")
                                 {
                                     "data": {
                                         "instances": [
+
+                                        ]
+                                    },
+                                    "templateNodeUuid": "39e12352-8305-4b5d-af60-f1725ec458b8"
+                                },
+                                {
+                                    "data": {
+                                        "instances": [
                                             {
                                                 "_typeUuid": "608c9a23-a194-49b0-a986-c34bd52bf691",
                                                 "desc": "The C Shell.",
@@ -1550,6 +1786,14 @@ angular.module("structureApp")
                                 {
                                     "data": {
                                         "instances": [
+
+                                        ]
+                                    },
+                                    "templateNodeUuid": "39e12352-8305-4b5d-af60-f1725ec458b8"
+                                },
+                                {
+                                    "data": {
+                                        "instances": [
                                             {
                                                 "_typeUuid": "7c1c3278-6eb4-4be5-8b8d-94204bfd2223",
                                                 "desc": "The Bourne Shell.",
@@ -1639,6 +1883,14 @@ angular.module("structureApp")
                                         ]
                                     },
                                     "templateNodeUuid": "1b8e0d72-c23d-4091-a4e6-74d07f1ee6fa"
+                                },
+                                {
+                                    "data": {
+                                        "instances": [
+
+                                        ]
+                                    },
+                                    "templateNodeUuid": "39e12352-8305-4b5d-af60-f1725ec458b8"
                                 },
                                 {
                                     "data": {
@@ -1740,6 +1992,14 @@ angular.module("structureApp")
                                         ]
                                     },
                                     "templateNodeUuid": "1b8e0d72-c23d-4091-a4e6-74d07f1ee6fa"
+                                },
+                                {
+                                    "data": {
+                                        "instances": [
+
+                                        ]
+                                    },
+                                    "templateNodeUuid": "39e12352-8305-4b5d-af60-f1725ec458b8"
                                 },
                                 {
                                     "data": {
@@ -1852,6 +2112,14 @@ angular.module("structureApp")
                                 {
                                     "data": {
                                         "instances": [
+
+                                        ]
+                                    },
+                                    "templateNodeUuid": "39e12352-8305-4b5d-af60-f1725ec458b8"
+                                },
+                                {
+                                    "data": {
+                                        "instances": [
                                             {
                                                 "_typeUuid": "7c1c3278-6eb4-4be5-8b8d-94204bfd2223",
                                                 "desc": "The Bourne Shell.",
@@ -1941,6 +2209,14 @@ angular.module("structureApp")
                                         ]
                                     },
                                     "templateNodeUuid": "1b8e0d72-c23d-4091-a4e6-74d07f1ee6fa"
+                                },
+                                {
+                                    "data": {
+                                        "instances": [
+
+                                        ]
+                                    },
+                                    "templateNodeUuid": "39e12352-8305-4b5d-af60-f1725ec458b8"
                                 },
                                 {
                                     "data": {
@@ -2038,6 +2314,14 @@ angular.module("structureApp")
                                 {
                                     "data": {
                                         "instances": [
+
+                                        ]
+                                    },
+                                    "templateNodeUuid": "39e12352-8305-4b5d-af60-f1725ec458b8"
+                                },
+                                {
+                                    "data": {
+                                        "instances": [
                                             {
                                                 "_typeUuid": "6d467b28-449f-498c-9ca5-8660f522897f",
                                                 "desc": "The Bourne Again Shell.",
@@ -2127,6 +2411,14 @@ angular.module("structureApp")
                                         ]
                                     },
                                     "templateNodeUuid": "1b8e0d72-c23d-4091-a4e6-74d07f1ee6fa"
+                                },
+                                {
+                                    "data": {
+                                        "instances": [
+
+                                        ]
+                                    },
+                                    "templateNodeUuid": "39e12352-8305-4b5d-af60-f1725ec458b8"
                                 },
                                 {
                                     "data": {
@@ -2239,6 +2531,14 @@ angular.module("structureApp")
                                 {
                                     "data": {
                                         "instances": [
+
+                                        ]
+                                    },
+                                    "templateNodeUuid": "39e12352-8305-4b5d-af60-f1725ec458b8"
+                                },
+                                {
+                                    "data": {
+                                        "instances": [
                                             {
                                                 "_typeUuid": "7c1c3278-6eb4-4be5-8b8d-94204bfd2223",
                                                 "desc": "The Bourne Shell.",
@@ -2328,6 +2628,14 @@ angular.module("structureApp")
                                         ]
                                     },
                                     "templateNodeUuid": "1b8e0d72-c23d-4091-a4e6-74d07f1ee6fa"
+                                },
+                                {
+                                    "data": {
+                                        "instances": [
+
+                                        ]
+                                    },
+                                    "templateNodeUuid": "39e12352-8305-4b5d-af60-f1725ec458b8"
                                 },
                                 {
                                     "data": {
@@ -2446,6 +2754,14 @@ angular.module("structureApp")
                                 {
                                     "data": {
                                         "instances": [
+
+                                        ]
+                                    },
+                                    "templateNodeUuid": "39e12352-8305-4b5d-af60-f1725ec458b8"
+                                },
+                                {
+                                    "data": {
+                                        "instances": [
                                             {
                                                 "_typeUuid": "6d467b28-449f-498c-9ca5-8660f522897f",
                                                 "desc": "The Bourne Again Shell.",
@@ -2535,6 +2851,14 @@ angular.module("structureApp")
                                         ]
                                     },
                                     "templateNodeUuid": "1b8e0d72-c23d-4091-a4e6-74d07f1ee6fa"
+                                },
+                                {
+                                    "data": {
+                                        "instances": [
+
+                                        ]
+                                    },
+                                    "templateNodeUuid": "39e12352-8305-4b5d-af60-f1725ec458b8"
                                 },
                                 {
                                     "data": {

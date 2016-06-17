@@ -63,13 +63,20 @@ public class TemplatesR1 extends SchemaUpdate {
                 .setRequired(false)
                 .setUnique(true);
 
+        TemplateNode hypervisor = new TemplateNode("Hypervisor", "A generic hypervisor.",
+                "39e12352-8305-4b5d-af60-f1725ec458b8")
+                .setIsa("c5c7fcb5-8ac3-40cc-b195-b2b6af368e81")
+                .setRequired(false)
+                .setUnique(true);
+
         operatingSystem
                 .addComponent(client)
                 .addComponent(server)
                 .addComponent(interpreter)
                 .addComponent(ipv4Address)
                 .addComponent(dnsName)
-                .addComponent(serviceManager);
+                .addComponent(serviceManager)
+                .addComponent(hypervisor);
 
         operatingSystem.save();
     }
