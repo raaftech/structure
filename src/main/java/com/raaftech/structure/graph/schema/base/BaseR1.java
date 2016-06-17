@@ -64,7 +64,7 @@ public class BaseR1 extends SchemaUpdate {
                         .setDescriptor("dnsname", "string", true, "somename", null, null)
                         .setIsa(getFromMap("3f4a43f7-b558-4bf0-ba7e-66b99cffaf16")));
                 addToMap(new TypeNode("Map", "A configuration object that maps keys to multi-valued attributes in the JSON format" +
-                        ".", "c970f6d3-4898-4596-bfac-9d6d1f6b2541")
+                        ".", "c970f6d3-4898-4596-bfac-9d6d1f6b2541", 0x007D)
                         .setDescriptor("map", "string", true, "JSON string containing the Map.", null, null)
                         .setIsa(getFromMap("3f4a43f7-b558-4bf0-ba7e-66b99cffaf16")));
                 addToMap(new TypeNode("DirectoryMap", "A generic map of possible directories this software has. Key: os-shortname, " +
@@ -273,7 +273,7 @@ public class BaseR1 extends SchemaUpdate {
                         .setIsa(getFromMap("c3008eec-b454-4ef6-bf7e-0bd92c13d3c3")));
                 addToMap(new TypeNode("Rc", "The rc service manager, used on most BSD's.", "67d7aa27-e0d9-458c-89fb-82734a8def95")
                         .setIsa(getFromMap("c3008eec-b454-4ef6-bf7e-0bd92c13d3c3")));
-                addToMap(new TypeNode("Services", "Windows Service Manager.", "21b82fbf-803c-4056-b914-502e2ff9952d")
+                addToMap(new TypeNode("Services", "Windows Service Manager.", "21b82fbf-803c-4056-b914-502e2ff9952d", 0x00CE)
                         .setIsa(getFromMap("c3008eec-b454-4ef6-bf7e-0bd92c13d3c3")));
 
                 addToMap(new TypeNode("PackageManager", "A package manager.", "e2b8b9ee-b66f-4252-8fba-4fb172f741bc", 0x00BE)
@@ -409,7 +409,7 @@ public class BaseR1 extends SchemaUpdate {
                         .setIsa(getFromMap("916e04a9-c773-4eaf-9c08-450016426e5a"))
                         .fillDescriptor("system", systemTrue));
                 addToMap(new TypeNode("Access", "A capability that makes it possible to access a textual or graphical console.",
-                        "20d9b0db-92b2-42a7-93d9-f86e00312fef")
+                        "20d9b0db-92b2-42a7-93d9-f86e00312fef", 0x0021)
                         .setIsa(getFromMap("916e04a9-c773-4eaf-9c08-450016426e5a"))
                         .fillDescriptor("system", systemFalse));
 

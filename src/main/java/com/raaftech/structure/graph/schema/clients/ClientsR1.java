@@ -21,23 +21,23 @@ public class ClientsR1 extends SchemaUpdate {
     @Override
     protected void initNodes() {
         TypeNode client = typeNodeRepository.findByUuid("8f371b1b-52a3-4409-be70-9cd947bec8dd");
-        addToMap(new TypeNode("HttpClient", "A generic HTTP Client.", "fec4ca89-8e2d-4562-a25c-0638eef3a525")
+        addToMap(new TypeNode("HttpClient", "A generic HTTP Client.", "fec4ca89-8e2d-4562-a25c-0638eef3a525", 0x0065)
                 .setIsa(client));
 
         // Remote Access Clients
         addToMap(new TypeNode("RemoteAccessClient", "A generic remote access client.", "bf1826d4-cff3-4b76-8cc9-cc752560a4bb")
                 .setIsa(client));
-        addToMap(new TypeNode("SmbClient", "A generic SMB/CIFS Client.", "7d1c7242-2403-4578-b6c4-789573ea3c45")
+        addToMap(new TypeNode("SmbClient", "A generic SMB/CIFS Client.", "7d1c7242-2403-4578-b6c4-789573ea3c45", 0x00D3)
                 .setIsa(getFromMap("bf1826d4-cff3-4b76-8cc9-cc752560a4bb")));
 
         // Telnet clients
-        addToMap(new TypeNode("TelnetClient", "A generic TELNET Client.", "442f0c59-c264-4227-9b50-2ef2b90af968")
+        addToMap(new TypeNode("TelnetClient", "A generic TELNET Client.", "442f0c59-c264-4227-9b50-2ef2b90af968", 0x00E7)
                 .setIsa(getFromMap("bf1826d4-cff3-4b76-8cc9-cc752560a4bb")));
         addToMap(new TypeNode("GnuTelnetClient", "GNU telnet client from GNU inetutils.", "662490c0-778a-46e5-bc9a-c0c6cec17422")
                 .setIsa(getFromMap("bf1826d4-cff3-4b76-8cc9-cc752560a4bb")));
 
         // SSH clients
-        addToMap(new TypeNode("SshClient", "A generic SSH Client.", "dce98afb-1a42-48af-8b4b-ab9d08b3b5dc")
+        addToMap(new TypeNode("SshClient", "A generic SSH Client.", "dce98afb-1a42-48af-8b4b-ab9d08b3b5dc", 0x00DD)
                 .setIsa(getFromMap("bf1826d4-cff3-4b76-8cc9-cc752560a4bb")));
         addToMap(new TypeNode("OpenSshClient", "The OpenSSH client.", "9e977808-78fd-4eb6-95e0-ff7c7011caa5")
                 .setIsa(getFromMap("dce98afb-1a42-48af-8b4b-ab9d08b3b5dc")));

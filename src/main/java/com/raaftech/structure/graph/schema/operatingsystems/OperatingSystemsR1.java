@@ -27,7 +27,7 @@ public class OperatingSystemsR1 extends SchemaUpdate {
                         .setIsa(operatingSystem));
                 addToMap(new TypeNode("WindowsLike", "A Windows-like operating system.", "4edbaf6a-da58-4644-abac-ae80328ddb49")
                         .setIsa(operatingSystem));
-                addToMap(new TypeNode("Windows", "The Microsoft Windows Operating System.", "060a519d-08d0-4d12-82ac-1e3f14277009")
+                addToMap(new TypeNode("Windows", "The Microsoft Windows Operating System.", "060a519d-08d0-4d12-82ac-1e3f14277009", 0x00FE)
                         .setIsa(getFromMap("4edbaf6a-da58-4644-abac-ae80328ddb49")));
                 addToMap(new TypeNode("UnixLike", "A UNIX-like operating system.", "6a1eea8b-1462-4439-8c60-12edbee6c397", 0x00ED)
                         .setIsa(operatingSystem));
