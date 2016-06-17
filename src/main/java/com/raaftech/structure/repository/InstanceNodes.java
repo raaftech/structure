@@ -4,10 +4,15 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.raaftech.structure.annotations.SchemaPath;
+import com.raaftech.structure.base.Context;
 import com.raaftech.structure.graph.InstanceNode;
+import com.raaftech.structure.graph.TypeNode;
 import com.raaftech.structure.graph.repositories.InstanceNodeRepository;
+import org.neo4j.graphdb.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
 
 public class InstanceNodes extends Repository<InstanceNode> {
 
@@ -131,6 +136,42 @@ public class InstanceNodes extends Repository<InstanceNode> {
                 }
 
                 return response(request, result);
+            }
+
+            @Override
+            public JsonNode help(JsonNode request) {
+                return null;
+            }
+        };
+    }
+
+    public MessageHandler demoDiscoverInitManager() {
+        return new MessageHandler() {
+            @Override
+            public JsonNode exec(JsonNode request) {
+                InstanceNode openBsd = repository.findOneByName("OpenBSD");
+                TypeNode bsdRcInit = Context.INSTANCE.getTypeNodeRepository().findOneByName("BsdrcInit");
+
+                ObjectNode json = null;
+
+                try {
+                    json = (ObjectNode) mapper.readTree("{\n" +
+                            "\"name\": \"BsdrcInit\",\n" +
+                            "\"longName\": \"BsdrcInit\",\n" +
+                            "\"shortName\": \"bsdrcinit\",\n" +
+                            "\"desc\": \"The Berkeley init manager\",\n" +
+                            "\"ver\": \"1.0\"\n" +
+                            "}");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                Transaction tx = Context.INSTANCE.getGraphDatabase().beginTx();
+                openBsd.addComponent(new InstanceNode(json, bsdRcInit.getUuid()));
+                tx.success();
+                tx.close();
+
+                return response(request, mapper.createObjectNode());
             }
 
             @Override

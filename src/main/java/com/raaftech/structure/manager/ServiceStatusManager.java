@@ -60,9 +60,12 @@ public class ServiceStatusManager extends GenericActor {
                                     InstanceNode origin = instanceNodeRepository.findByUuid(uuid);
                                     InstanceNode startOfGroup = instanceNodeRepository.getStartOfComponentGroup(uuid);
                                     InstanceNode instrument = instanceNodeRepository.findMatchingLocalInstrument(uuid, startOfGroup.getUuid(), "check");
-                                    InstrumentRunner instrumentRunner = new InstrumentRunner(origin, instrument, mapper.createObjectNode(), UUID.randomUUID().toString());
-                                    Long id = vertx.setPeriodic(5000, handler -> instrumentRunner.startInstrument());
-                                    checkedServices.put(uuid, id);
+                                    InstanceNode structure = instanceNodeRepository.findOneByName(Context.selfIdentifier);
+                                    if (instrument != null && structure != null) {
+                                        InstrumentRunner instrumentRunner = new InstrumentRunner(origin, instrument, mapper.createObjectNode(), UUID.randomUUID().toString());
+                                        Long id = vertx.setPeriodic(5000, handler -> instrumentRunner.startInstrument());
+                                        checkedServices.put(uuid, id);
+                                    }
                                 }
                             });
                 }

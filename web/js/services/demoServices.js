@@ -1714,14 +1714,7 @@ angular.module("structureApp")
                                 {
                                     "data": {
                                         "instances": [
-                                            {
-                                                "_typeUuid": "b4c067de-e3cf-4b5b-90ca-588725d1b6c4",
-                                                "name": "BsdrcInit",
-                                                "longName": "BsdrcInit",
-                                                "shortName": "bsdrcinit",
-                                                "desc": "The Berkeley init manager",
-                                                "ver": "1.0"
-                                            }
+
                                         ]
                                     },
                                     "templateNodeUuid": "34bfe99f-1d62-48cb-a8a3-e913b69ef225"

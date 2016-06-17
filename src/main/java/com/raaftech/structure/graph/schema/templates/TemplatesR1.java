@@ -60,7 +60,7 @@ public class TemplatesR1 extends SchemaUpdate {
         TemplateNode serviceManager = new TemplateNode("ServiceManager", "Generic service manager.",
                     "34bfe99f-1d62-48cb-a8a3-e913b69ef225")
                 .setIsa("c3008eec-b454-4ef6-bf7e-0bd92c13d3c3")
-                .setRequired(true)
+                .setRequired(false)
                 .setUnique(true);
 
         operatingSystem
