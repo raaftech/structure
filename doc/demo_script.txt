@@ -1,0 +1,62 @@
+Voorbereiding:
+1: vSphere client open
+2: twee ssh richting thirty
+3: chrome raampjes open, 1x dashboard, 1x debug
+
+Demo:
+1: Laat ESXi zien, zildjian, de machines waarmee we gaan testen
+2: cd ~/structure; rm -rf structure.db; java -jar target/structure-0.7.0-fat.jar --debug
+3: ga naar http://neogeo:7474, laat type tree zien, operating systems
+
+    # All TypeNodes
+    match   (type:TypeNode) return type;
+
+    # OperatingSystems from root-type
+    match   (type_os:TypeNode{name:"OperatingSystem"})<-[:ISA*..]-(type_os_children),
+        (type_os)-[:ISA*..]->(type_os_parents)
+    return  type_os, type_os_children, type_os_parents;
+
+
+
+4: ga naar http://thirty:8080, Dashboard, work in progress, verhaaltje
+5: ga naar http://thirty:8080, Types, laat operating systems zien, overeenkomst neo4j
+6: ga naar http://thirty:8080, Tasks, laat zien dat hier meerdere test taken afgevuurd worden
+7: ga naar ssh console, doe ps ax | grep sleep, laat zien dat die taken overeenkomen
+8: ga naar http://thirty:8080, Computers, doe discover. vertel over de overeenkomt met ESXi
+9: ga naar ssh console, doe structure state demo, structure detail zildjian, overeenkomsten
+
+10: ga naar http://thirty:8080, Computers, laat lucas zien, laat zien dat de iis groen/rood
+11: ga naar http://lucas , laat zien dat daar idd een webserver draait
+12: voer start/stop uit, laat zien dat state update.
+
+13: ga naar http://thirty:8080, Computers, laat orient zien, hey geen init? start/stop?
+14: ga naar http://thirty:8080/#/debug
+
+    com.raaftech.structure.repository.instancenodes
+    {"msgh":"demoDiscoverInitManager"}
+
+
+15: ga naar http://thirty:8080, Computers, laat orient zien, hey wel init! start/stop!
+
+16:  ga naar ssh console, haal bijv. launchd  weg op filesystem, reload:
+
+    com.raaftech.structure.manager.instrumentmanager
+    {"msgh":"reloadInstruments"}
+
+17: laat zien dat hierdoor start/stop/check op launchd systemen (mirai, nichimen) verdwijnt
+
+18: git checkout launchd, reload instruments, ziedaar, start/stop/check!
+
+19: laat execution path reasoning zien, structure naar unixlike:
+
+    match   (struct:InstanceNode{name:"Generic Linux"})-[:HAS_COMPONENT*..]->(struct_inst_sw)-[:INSTANCE_OF]->(struct_type_sw)-[:ISA*..]->(:TypeNode{name:"Software"}),
+            (openbsd:InstanceNode{name:"OpenBSD"})-[:HAS_COMPONENT*..]->(openbsd_inst_sw)-[:INSTANCE_OF]->(openbsd_type_sw)-[:ISA*..]->(:TypeNode{name:"Software"}),
+            (struct_type_sw)-[:IMPLEMENTS]->(protocol)<-[:IMPLEMENTS]-(openbsd_struct_sw)
+    return  struct, struct_type_sw, struct_inst_sw, protocol, openbsd_type_sw, openbsd_inst_sw, openbsd
+
+20: laat execution path reasoning zien, structure naar windowslike:
+
+    match   (struct:InstanceNode{name:"Generic Linux"})-[:HAS_COMPONENT*..]->(struct_inst_sw)-[:INSTANCE_OF]->(struct_type_sw)-[:ISA*..]->(:TypeNode{name:"Software"}),
+            (win2012:InstanceNode{name:"Windows Server", `kv-ver`:"2012"})-[:HAS_COMPONENT*..]->(win2012_inst_sw)-[:INSTANCE_OF]->(win2012_type_sw)-[:ISA*..]->(:TypeNode{name:"Software"}),
+            (struct_type_sw)-[:IMPLEMENTS]->(protocol)<-[:IMPLEMENTS]-(win2012_struct_sw)
+    return  struct, struct_type_sw, struct_inst_sw, protocol, win2012_type_sw, win2012_inst_sw, win2012

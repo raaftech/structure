@@ -1,9 +1,7 @@
 # All TypeNodes
-
 match	(type:TypeNode) return type;
 
 # OperatingSystems from root-type
-
 match	(type_os:TypeNode{name:"OperatingSystem"})<-[:ISA*..]-(type_os_children),
 	(type_os)-[:ISA*..]->(type_os_parents)
 return	type_os, type_os_children, type_os_parents;
@@ -45,7 +43,7 @@ match	(struct:InstanceNode{name:"Generic Linux"})-[:HAS_COMPONENT*..]->(struct_i
 		(struct_type_sw)-[:IMPLEMENTS]->(protocol)<-[:IMPLEMENTS]-(openbsd_struct_sw)
 return	struct, struct_type_sw, struct_inst_sw, protocol, openbsd_type_sw, openbsd_inst_sw, openbsd
 
-# Show path from structure to Windows 2012	
+# Show path from structure to Windows 2012
 match	(struct:InstanceNode{name:"Generic Linux"})-[:HAS_COMPONENT*..]->(struct_inst_sw)-[:INSTANCE_OF]->(struct_type_sw)-[:ISA*..]->(:TypeNode{name:"Software"}),
 		(win2012:InstanceNode{name:"Windows Server", `kv-ver`:"2012"})-[:HAS_COMPONENT*..]->(win2012_inst_sw)-[:INSTANCE_OF]->(win2012_type_sw)-[:ISA*..]->(:TypeNode{name:"Software"}),
 		(struct_type_sw)-[:IMPLEMENTS]->(protocol)<-[:IMPLEMENTS]-(win2012_struct_sw)
