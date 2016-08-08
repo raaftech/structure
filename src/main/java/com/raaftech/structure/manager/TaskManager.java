@@ -53,11 +53,19 @@ public class TaskManager extends GenericActor {
         public String taskId;
         public ProcessRunner process;
         public ObjectNode metadata;
+        public Long timeStarted;
+        public int timeAllocated;
 
         public Job(ProcessRunner process, String taskId, ObjectNode metadata) {
             this.process = process;
             this.taskId = taskId;
             this.metadata = metadata;
+            this.timeAllocated = TaskManager.defaultJobTime;
+        }
+
+        public Job(ProcessRunner process, String taskId, ObjectNode metadata, int timeAllocated) {
+            this(process, taskId, metadata);
+            this.timeAllocated = timeAllocated;
         }
 
         public ObjectNode toJson() {
@@ -114,13 +122,13 @@ public class TaskManager extends GenericActor {
 
     // The queue of jobs
     private static Queue<Job> jobQueue = new ConcurrentLinkedQueue<>();
-
     // A hashmap holding Tasks and their UUID's. Used to retrieve tasks
     // This is being polled by the periodic event defined after this.
     private static Map<String, Task> taskMap = new HashMap<>();
-
     // The currently running jobs.
     private static List<Job> runningJobs = new ArrayList<>();
+    // The default timeout for a job.
+    private final static int defaultJobTime = 3000;
 
     /**
      * The constructor creates a periodic task that polls the queue.
@@ -145,8 +153,13 @@ public class TaskManager extends GenericActor {
                                 if (task.status == TaskStatus.SCHEDULED) {
                                     // If the job didn't get canceled while it was in the queue run it.
                                     if (job.status != JobStatus.CANCELLED) {
-                                        if (task.sequential && (jobId == 0 || (jobId > 0 && task.jobs.get(jobId-1).status == JobStatus.FINISHED))
-                                                || !task.sequential) {
+                                        if ((task.sequential
+                                                && (jobId == 0
+                                                || (jobId > 0
+                                                        && ((task.jobs.get(jobId-1).status == JobStatus.FINISHED)
+                                                        // For now we won't cancel a whole task because a job failed
+                                                        || (task.jobs.get(jobId-1).status == JobStatus.CANCELLED)))))
+                                            || !task.sequential) {
                                             try {
                                                 runJob(job);
                                             } catch (InterruptedException | IOException e) {
@@ -196,6 +209,7 @@ public class TaskManager extends GenericActor {
         runningJobs.add(job);
 
         // Execute the process
+        job.timeStarted = System.currentTimeMillis();
         job.process.run();
         job.status = JobStatus.RUNNING;
 
@@ -226,6 +240,13 @@ public class TaskManager extends GenericActor {
                 task.finishedOne();
                 // Cancel this timer.
                 vertx.cancelTimer(id);
+            }
+
+            // Did we run out of time?
+            if (job.process.isRunning() && System.currentTimeMillis() - job.timeStarted > job.timeAllocated) {
+                job.status = JobStatus.CANCELLED;
+                log.debug("Cancelling running job " + task.id + "." + task.jobs.indexOf(job) + " because it"
+                        + " been exceeded the allocated time of " + job.timeAllocated + "ms.");
             }
 
             // Did the job get cancelled while it's running?
@@ -400,7 +421,12 @@ public class TaskManager extends GenericActor {
                     String command = jobData.get("command").asText();
                     ObjectNode metadata = (ObjectNode) jobData.get("metadata");
                     ProcessRunner processRunner = new ProcessRunner(command);
-                    Job job = new Job(processRunner, task.id, metadata);
+                    Job job;
+                    if (jobData.has("timeAllocated")) {
+                        job = new Job(processRunner, task.id, metadata, jobData.get("timeAllocated").asInt());
+                    } else {
+                        job = new Job(processRunner, task.id, metadata);
+                    }
                     task.jobs.add(job);
                 }
                 task.jobs.stream().forEach(job -> queueJob(job));

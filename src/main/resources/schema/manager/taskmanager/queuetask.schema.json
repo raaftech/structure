@@ -18,19 +18,23 @@
       "minItems": 1,
       "items": {
         "type": "object",
+        "additionalProperties": false,
         "properties": {
           "command": { "type": "string" },
+          "timeAllocated": { "type": "integer" },
           "metadata": {
             "type": "object",
             "additionalProperties": false,
             "properties": {
               "instrument": { "type": "string" },
-              "origin": { "type": "string" },
+              "originName": { "type": "string" },
+              "originUuid": { "type": "string" },
               "capability": { "type": "string" }
             },
-            "required": [ "instrument", "origin", "capability" ]
+            "required": [ "instrument", "originName", "originUuid", "capability" ]
           }
-        }
+        },
+        "required": [ "command" ]
       }
     }
   },
