@@ -6,7 +6,7 @@
 	<groupId>com.raaftech</groupId>
 	<artifactId>structure</artifactId>
 	<packaging>jar</packaging>
-	<version>0.7.0</version>
+	<version>0.8.0</version>
 	<name>Structure</name>
 
 	<description>
