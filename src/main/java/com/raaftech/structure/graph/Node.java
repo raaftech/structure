@@ -24,7 +24,7 @@ public abstract class Node {
     @GraphId
     @SuppressWarnings("unused")
     private Long id;
-    @Indexed(indexType = IndexType.FULLTEXT, unique=true, indexName = "uuid")
+    @Indexed(indexType = IndexType.FULLTEXT, indexName = "uuid")
     private String uuid;
 
     /****************/

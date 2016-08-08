@@ -27,6 +27,7 @@ import org.neo4j.graphdb.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
+import org.springframework.data.neo4j.support.query.CypherQueryExecutor;
 
 import java.io.File;
 import java.util.Arrays;
@@ -112,6 +113,13 @@ public class Application {
         log.info("Checking for Structure's type hierarchy.");
         if (typeNodeRepository.findByUuid("b1bc963a-19cc-4518-aecb-a35d028c49e3") == null) {
             log.info("Didn't find the type hierarchy, creating it.");
+
+            // Setup indexes and constraints
+            log.info("Creating indices.");
+            CypherQueryExecutor queryExecutor = Context.INSTANCE.getNeo4jTemplate().getInfrastructure().getCypherQueryExecutor();
+            queryExecutor.query("CREATE CONSTRAINT ON (n:TypeNode) ASSERT n.name IS UNIQUE", null, null);
+            queryExecutor.query("CREATE CONSTRAINT ON (n:Node) ASSERT n.uuid IS UNIQUE", null, null);
+
             new SchemaManagerUpdate().applySchemaUpdates();
         } else {
             log.info("Type hierarchy found.");
