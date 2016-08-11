@@ -3,6 +3,24 @@ Voorbereiding:
 2: twee ssh richting thirty
 3: chrome raampjes open, 1x dashboard, 1x debug
 
+
+
+Programma:
+0: Check moment volume, beeldkwaliteit
+1: Test omgeving introductie, Structure aanzetten, Backend Graph
+2: Kort overzicht  web interface, work-in-progress, dash, types, tasks
+3: Computers view, discovery, command line interactie
+4: Service interactie: diverse http services op diverse os'en start/stop
+5: Wat als een server geen init manager heeft? Orient laten zien
+6: Hoe worden instrumenten gemaakt + ontsloten?
+7: Execution path reasoning: Structure -> willekeurige UNIX/Linux/BSD
+8: Execution path reasoning: Structure -> willekeurige Windows
+9: Finish
+
+
+
+
+
 Demo:
 1: Laat ESXi zien, zildjian, de machines waarmee we gaan testen
 2: cd ~/structure; rm -rf structure.db; java -jar target/structure-0.7.0-fat.jar --debug
