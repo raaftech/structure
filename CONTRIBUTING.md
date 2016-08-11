@@ -10,6 +10,10 @@ These rules are not cast in stone. Any changes or improvements can be discussed
 either in person, or by creating an issue in
 [Gitlab](https://gitlab.com/raaftech/structure/issues).
 
+We have a few scripts that should be installed in your local Structure
+repository. See
+[hooks](https://gitlab.com/raaftech/scripts/tree/master/python/hooks).
+
 Issues
 ------
 
