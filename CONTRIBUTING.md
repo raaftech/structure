@@ -97,14 +97,22 @@ rule, which is changed to:
 
 ### release branches
 
-Release branches will be named `release/major.minor.patch`, following
-[semantic versioning](http://semver.org)
-is `master`. Issue branches may never be directly merged to release branches. In
-a later stadium we might introduce `hotfix` branches, but not yet.
+For versioning we follow [semantic versioning](http://semver.org), which will
+be reflected in our release branches.
+Accordingly, release branches will be named `release/major.minor`. Within a
+release branch we will use tags to distinguish patch levels. This is done so we
+can release hot-fixes for versions older than the latest `major.minor`.
+So for instance, the branch `0.8` may contain several commits, with tags
+pointing to them named `0.8.0`, `0.8.1`, ... `0.8.n-1`, `0.8.n`, with `n` being
+the latest patch released for `0.8`.
 
-Release branches should be tagged with a signed tag, which we'll call "signing
-off" going forward. Not everyone is allowed to sign off. This enables us to
-decide on who may or may not release new versions to the public.
+Tags in release branches
+[should always be signed](https://git-scm.com/book/tr/v2/Git-Tools-Signing-Your-Work).
+This has several benefits, one of them being we can trigger builds only when
+a release is tagged by someone authorized.
+
+Issue branches should never be directly merged to release branches. In a later
+stadium we might introduce `hotfix` branches, but not yet.
 
 ### merging from an issue branch to master
 
