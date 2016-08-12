@@ -64,7 +64,7 @@
                 "matches": {
                   "type": [ "object", "string" ]
                 },
-                "data": {
+                "defaultValue": {
                   "type": "string"
                 },
                 "strategy": {

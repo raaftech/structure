@@ -34,7 +34,7 @@
 			"value": {
 				"from": "static",
 				"type": "string",
-				"data": "4", // optional, default: empty
+				"defaultValue": "4", // optional, default: empty
 				"matches": {}, // optional, default: match everything
 				"strategy": "mustBeOne", // optional, default: mustBeOne
 				"onError": "fail", //optional, default: fail

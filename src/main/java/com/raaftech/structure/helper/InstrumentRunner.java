@@ -278,7 +278,7 @@ public class InstrumentRunner {
             } else {
                 // Check for missing arguments, taking default values if provided
                 final String optionalKey = "isOptional";
-                final String defaultValueKey = "data";
+                final String defaultValueKey = "defaultValue";
                 Set<String> missingKeys = new HashSet<>();
                 Iterator<Map.Entry<String, JsonNode>> argIter = arguments.fields();
                 while (argIter.hasNext()) {
