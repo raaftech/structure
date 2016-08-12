@@ -14,6 +14,18 @@ angular.module("structureApp")
                     .then(function(reply) {
                         scope.instances = reply.result.data;
                     });
+            },
+
+            getInstance: function(uuid) {
+                return vertxEventBusService.send('com.raaftech.structure.repository.instancenodes', {
+                    'msgh': 'findOne',
+                    'args': {
+                        'node': uuid
+                    }
+                })
+                .then(function(response) {
+                    return response.result.data;
+                });
             }
         }
     });

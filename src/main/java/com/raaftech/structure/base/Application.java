@@ -136,6 +136,11 @@ public class Application {
                 log.info("Deployed SchemaManager with id: {}", ar.result());
             }
         });
+        vertx.deployVerticle("com.raaftech.structure.manager.InstrumentManager", new DeploymentOptions().setWorker(false), ar -> {
+            if (ar.succeeded()) {
+                log.info("Deployed InstrumentManager with id: {}", ar.result());
+            }
+        });
         int jobpool = 50;
         if (System.getProperty("jobpool") != null) {
             jobpool = Integer.parseInt(System.getProperty("jobpool"));
@@ -203,6 +208,7 @@ public class Application {
         // Load all instruments
         log.info("Purging instruments.");
         instanceNodeRepository.purgeHandlers();
+        Context.INSTANCE.setInstrumentsLoaded(false);
         if (System.getProperty("instruments") == null) {
             System.setProperty("instruments", new File("ht").getAbsolutePath());
         }
@@ -210,6 +216,7 @@ public class Application {
         Arrays.asList(instruments.split(",")).stream()
                 .distinct()
                 .forEach(InstrumentLoader::loadHandlers);
+        Context.INSTANCE.setInstrumentsLoaded(true);
 
         // Wait a second so debug messages are done
         try {

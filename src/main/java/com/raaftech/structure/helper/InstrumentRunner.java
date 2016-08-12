@@ -65,8 +65,15 @@ public class InstrumentRunner {
         this.arguments = arguments == null ? mapper.createObjectNode() : arguments;
 
         // TODO: Need a different way of finding the structure node.
-        this.agent = instanceNodeRepository.findOneByName("structure");
+        this.agent = instanceNodeRepository.findOneByName(Context.selfIdentifier);
         this.subject = instanceNodeRepository.getStartOfComponentGroup(origin.getUuid());
+
+        // Did we find the agent?
+        if (agent == null) {
+            throw new IllegalArgumentException("Couldn't find node running Structure by name \""
+                    + Context.selfIdentifier + "\".");
+        }
+
         // Is the instrument argument of the expected type?
         if (!instrument.isOfType("Instrument")) {
             throw new IllegalArgumentException("Instrument should be of type instrument.");
@@ -74,7 +81,9 @@ public class InstrumentRunner {
         }
 
         // Does the instrument even work on the given origin?
-        if (!instrument.getHandledTypes().contains(origin.getInstanceOf())) {
+        if (instrument.getHandledTypes().stream()
+                .filter(type -> origin.isOfType(type.getName()))
+                .count() < 1) {
             throw new IllegalArgumentException("Instrument is incompatible with the given origin.");
             // todo: log as result
         }
@@ -163,7 +172,7 @@ public class InstrumentRunner {
                 // send execution to subject (assumes sendString + receiveString)
                 jobList.add(sendString(heaviestSendString));
 
-            } catch (IOException e) {
+            } catch (Exception e) {
                 log.error(e.getMessage());
                 throw new RuntimeException("Error while creating script to transfer for instrument " + this.instrument.getName()
                         + ". See logging for more details.");
@@ -179,9 +188,7 @@ public class InstrumentRunner {
                 try {
                     // TODO: create method
                     ObjectNode args = validateAndSelectArguments(instrument);
-                    if (arguments != null) {
-                        jobList.add(applyTemplate(instrument.getProperty(templateProperty), args));
-                    }
+                    jobList.add(applyTemplate(instrument.getProperty(templateProperty), args));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -454,7 +461,8 @@ public class InstrumentRunner {
                 .forEachOrdered(command -> {
                     ObjectNode job = mapper.createObjectNode();
                     job.putObject("metadata")
-                            .put("origin", origin.getName())
+                            .put("originName", origin.getName())
+                            .put("originUuid", origin.getUuid())
                             .put("instrument", instrument.getName())
                             .put("capability", instanceNodeRepository.getInstrumentCapability(instrument.getUuid()).getName());
                     job.put("command", command);

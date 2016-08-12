@@ -16,7 +16,7 @@
         "angular-bootstrap": "latest",
         "angular-route": "latest",
         "angular-schema-form": "latest",
-        "angular-vertxbus": "latest",
+        "angular-vertxbus": "3.0.0",
         "bootstrap": "latest"
     }
 }

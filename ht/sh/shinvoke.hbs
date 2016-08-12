@@ -1,0 +1,28 @@
+{{!
+
+{
+  "name": "ShInvoke",
+  "desc": "ShInvoke",
+  "instrumentType": "runner",
+  "capability": "Invoke",
+  "extension": ".sh",
+  "providedBy": "Sh",
+  "appliesTo": [ "Sh" ],
+  "subjectIsLocal": true,
+  "arguments": {
+    "script": {
+      "value": {
+	"from": "static",
+	"type": "string",
+	"strategy": "mustBeOne"
+      },
+      "canBeUserSupplied": false,
+      "isOptional": false
+    }
+  }
+}
+
+}}
+#!/bin/sh
+
+{{{ script }}}

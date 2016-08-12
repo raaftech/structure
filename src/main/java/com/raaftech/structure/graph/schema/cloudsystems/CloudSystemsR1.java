@@ -24,7 +24,7 @@ public class CloudSystemsR1 extends SchemaUpdate {
         // raaftech.com.model.cloudsystems-0.0.1
         TypeNode cloudSystem = typeNodeRepository.findByUuid("86c0439a-4219-46e6-82a3-6fb2ee774aa4");
         addToMap(new TypeNode("ApacheCloudStack", "The Apache CloudStack platform.",
-                "c1d0eada-0d22-4026-aa2d-d865c1583482", 0x0024)
+                "c1d0eada-0d22-4026-aa2d-d865c1583482", 0x0025)
                 .setIsa(cloudSystem));
         addToMap(new TypeNode("VmwareCloudFoundry", "The VMware CloudFoundry platform.",
                 "6d080eef-d9c6-4be7-b81b-b9c57f0fe515", 0x00F5)

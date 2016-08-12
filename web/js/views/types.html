@@ -2,13 +2,15 @@
     <div ng-show="type.name" class="row detailed-info">
         <div class="basic">
             <div class="body">
-                <img src="/img/logo_dummy.png" align="left" border="0" />
-                <h1>{{type.name}}</h1>
-                <p>{{type.desc}}</p>
-                <p ng-controller="modalCtrl">
-                    <button type="button" class="btn button-str" ng-click="open(type.uuid)">Edit</button>
-                    <button type="button" class="btn button-transparent">...</button>
-                </p>
+                <show-icon glyphid="{{type.glyphId}}" size="sg-xl"></show-icon>
+                <div class="text-block">
+                    <h1>{{type.name}}</h1>
+                    <p>{{type.desc}}</p>
+                    <p ng-controller="modalCtrl">
+                        <button type="button" class="btn button-str" ng-click="open(type.uuid)">Edit</button>
+                        <button type="button" class="btn button-transparent">...</button>
+                    </p>
+                </div>
             </div>
         </div>
         <div class="detail">
@@ -26,18 +28,16 @@
             <table class="table list">
                 <thead>
                     <tr ng-mouseenter="topMenuButton = true" ng-mouseleave="topMenuButton = false">
-                        <th><span ng-class="{'open': (subtypes[type.uuid] && type.children != '[]'), 'closed': (!subtypes[type.uuid] && type.children != '[]')}" ng-click="getSubtypes(type)"></span><span ng-click="getType(type.uuid)">{{type.name}}</span></th>
-                        <th>{{subtypes[type.uuid].length ? 'Description': '&nbsp;'}}</th>
-                        <th>{{subtypes[type.uuid].length ? 'UUID': '&nbsp;'}}</th>
-                        <th width="35"><list-item-hover-menu ng-show="topMenuButton" uuid="{{type.uuid}}" node-type="{{type._nodeType}}" /></th>
+                        <th class="col-xs-4"><span ng-class="{'open': (subtypes[type.uuid] && type.children != '[]'), 'closed': (!subtypes[type.uuid] && type.children != '[]')}" ng-click="getSubtypes(type)"></span><span ng-click="getType(type.uuid)"><show-icon glyphid="{{type.glyphId}}" size="sg-xs"></show-icon> {{type.name}}</span></th>
+                        <th class="col-xs-4">{{subtypes[type.uuid].length ? 'Description': '&nbsp;'}}</th>
+                        <th class="col-xs-4"><list-item-hover-menu ng-show="topMenuButton" uuid="{{type.uuid}}" node-type="{{type._nodeType}}"></list-item-hover-menu>{{subtypes[type.uuid].length ? 'UUID': '&nbsp;'}}</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr ng-repeat="subtype in subtypes[type.uuid] | orderBy: 'name'" ng-mouseenter="menuButton = true" ng-mouseleave="menuButton = false">
-                        <td ng-click="getType(subtype.uuid)">{{subtype.name}}</td>
+                        <td ng-click="getType(subtype.uuid)"><show-icon glyphid="{{subtype.glyphId}}" size="sg-xs"></show-icon> {{subtype.name}}</td>
                         <td ng-click="getType(subtype.uuid)">{{subtype.desc}}</td>
-                        <td ng-click="getType(subtype.uuid)">{{subtype.uuid}}</td>
-                        <td><list-item-hover-menu ng-show="menuButton" uuid="{{subtype.uuid}}" node-type="{{subtype._nodeType}}" /></td>
+                        <td ng-click="getType(subtype.uuid)"><list-item-hover-menu ng-show="menuButton" uuid="{{subtype.uuid}}" node-type="{{subtype._nodeType}}"></list-item-hover-menu>{{subtype.uuid}}</td>
                     </tr>
                 </tbody>
             </table>

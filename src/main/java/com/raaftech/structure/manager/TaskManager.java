@@ -1,5 +1,6 @@
 package com.raaftech.structure.manager;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -42,7 +43,8 @@ public class TaskManager extends GenericActor {
      */
     private enum TaskStatus {
         SCHEDULED,
-        PAUSED
+        PAUSED,
+        FINISHED
     }
 
     /**
@@ -75,6 +77,12 @@ public class TaskManager extends GenericActor {
             while (elements.hasNext()) {
                 Map.Entry<String, JsonNode> el = elements.next();
                 json.set(el.getKey(), el.getValue());
+            }
+
+            if (process.getProcess() != null && !process.isRunning()) {
+                ProcessRunner.ProcessResult processResult = process.finish();
+                JsonNode result = json.set("result", processResult.toJson());
+                ((ObjectNode)result).put("process", process.getCommand());
             }
 
             return json;
@@ -263,12 +271,20 @@ public class TaskManager extends GenericActor {
             }
 
             if (task.isFinished()) {
+                task.status = TaskStatus.FINISHED;
                 log.info("Task " + job.taskId + " is finished.");
                 // Remove task from taskMap.
                 taskMap.remove(task.id);
                 // Notify interested parties
-                publishStatus("taskFinished", mapper.createObjectNode().put("taskId", task.id));
+                publishStatus("taskFinished", mapper.createObjectNode()
+                        .put("taskId", task.id)
+                        .set("taskObj", task.toJson()));
                 // TODO: save results
+                try {
+                    log.info(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(task.toJson()));
+                } catch (JsonProcessingException e) {
+                    e.printStackTrace();
+                }
             }
 
             // Check if the queue and the running process list are empty, meaning we've finished all the work.
