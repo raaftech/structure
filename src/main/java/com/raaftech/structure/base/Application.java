@@ -22,6 +22,7 @@ import io.vertx.ext.web.handler.StaticHandler;
 import io.vertx.ext.web.handler.sockjs.BridgeOptions;
 import io.vertx.ext.web.handler.sockjs.PermittedOptions;
 import io.vertx.ext.web.handler.sockjs.SockJSHandler;
+import org.apache.commons.cli.*;
 import org.neo4j.graphdb.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,16 +42,62 @@ import java.util.Arrays;
  */
 public class Application {
 
-    final static Logger log = LoggerFactory.getLogger(Application.class);
+    private static final Logger log = LoggerFactory.getLogger(Application.class);
 
-    public static void main(String[] args) {
-        final boolean serveDebug;
-        if (args.length > 0 && args[0].equals("--debug")) {
-            serveDebug = true;
-            System.setProperty("debugMode", "true");
-        } else {
-            serveDebug = false;
+    // Make Application uninstantiable by hiding the public constructor
+    private Application() {}
+
+    /**
+     * This is Structure's start of execution point.
+     */
+    public static void main(String[] args) throws InterruptedException {
+
+        final Options options;
+        options = new Options()
+                .addOption("b", "background", false, "Enable background mode (daemonized)")
+                .addOption("d", "debug", false, "Enable debug logging")
+                .addOption("f", "foreground", false, "Enable foreground mode (no-detach)")
+                .addOption("h", "help", false, "Display help message")
+                .addOption("t", "trace", false, "Enable (back)traces")
+                .addOption("u", "unsafe", false, "Enable unsafe mode");
+
+        CommandLineParser parser = new DefaultParser();
+
+        try {
+            CommandLine line = parser.parse(options, args);
+            HelpFormatter formatter = new HelpFormatter();
+
+            // HELP
+            if(line.hasOption("help")){
+                formatter.printHelp("Structure", options);
+                return;
+            }
+
+            // DETACH || NODETACH
+            if(line.hasOption("background")){
+                log.info("Background mode not implemented");
+            }
+
+            // LOGGING options
+            if(line.hasOption("debug")) {
+                log.info("DEBUG mode enabled");
+                System.setProperty("debugMode", "true");
+            } else if(line.hasOption("trace")) {
+                log.info("TRACE mode enabled");
+                System.setProperty("traceMode", "true");
+            }
+
+            // MODE
+            if(line.hasOption("unsafe")){
+                log.info("UNSAFE mode enabled");
+                System.setProperty("unsafeMode", "true");
+            }
+
+
+        } catch (ParseException e) {
+            log.error("Can't parse commandline options: " + e.getMessage());
         }
+
         Vertx vertx;
         HttpServer httpServer;
         Router router;
@@ -65,22 +112,29 @@ public class Application {
         SLF4JBridgeHandler.removeHandlersForRootLogger();
         SLF4JBridgeHandler.install();
 
-        if (serveDebug) {
-            ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
-            log.debug("Setting log level to DEBUG..");
+        ch.qos.logback.classic.Logger root =
+                (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+        
+        if (Boolean.parseBoolean(System.getProperty("debugMode"))) {
             root.setLevel(Level.DEBUG);
+            log.debug("Setting log level to DEBUG..");
+        } else if(Boolean.parseBoolean(System.getProperty("traceMode"))) {
+            root.setLevel(Level.TRACE);
+            log.trace("Setting log level to TRACE..");
         } else {
-            ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
-            log.info("Setting log level to INFO..");
             root.setLevel(Level.INFO);
+            log.info("Setting log level to INFO..");
         }
 
         // Tell the user we're starting up.
         log.info("Structure is starting up..");
 
         // Setup vertx with a maxWorkerExecuteTime of 5 minutes.
-        // TODO: Make maxWorkerExecuteTime user configurable?
-        vertx = Vertx.vertx(new VertxOptions().setMaxWorkerExecuteTime(5L * 60 * 1000 * 1000000));
+        final String workerTimeoutConfiguration = getConfiguration("workertimeout");
+        Long workerTimeout = workerTimeoutConfiguration == null ?
+                5L*60*1000*1000000 :
+                Long.parseLong(workerTimeoutConfiguration);
+        vertx = Vertx.vertx(new VertxOptions().setMaxWorkerExecuteTime(workerTimeout));
         router = Router.router(vertx);
         sockJsHandler = SockJSHandler.create(vertx);
         httpServer = vertx.createHttpServer();
@@ -99,14 +153,14 @@ public class Application {
         sockJsHandler.bridge(bridgeOptions);
         router.route("/eventbus/*").handler(sockJsHandler);
         
-        // If we're in debug mode allow direct access to everything
+        // If we're in unsafe mode allow direct access to everything
         // on the eventbus and serve the debug page.
-        if (serveDebug) {
+        if (Boolean.parseBoolean(System.getProperty("unsafeMode"))) {
             log.debug("Setting InboundPermitted and OutboundPermitted to any address (\".*\")");
             bridgeOptions.addInboundPermitted(new PermittedOptions().setAddressRegex(".*"));
             bridgeOptions.addOutboundPermitted(new PermittedOptions().setAddressRegex(".*"));
         }
-        
+
         // Setup default route.
         router.route("/*").handler(StaticHandler.create().setWebRoot("web/"));
 
@@ -144,7 +198,10 @@ public class Application {
                         new BundleLoader(bundle).load();
                     } catch (IOException e) {
                         log.error(e.getMessage());
-                        e.printStackTrace();
+
+                        if(log.isTraceEnabled()) {
+                            e.printStackTrace();
+                        }
                     }
                 });
         Context.INSTANCE.setInstrumentsLoaded(true);
@@ -160,13 +217,13 @@ public class Application {
                 log.info("Deployed InstrumentManager with id: {}", ar.result());
             }
         });
-        int jobpool = 50;
-        if (System.getProperty("jobpool") != null) {
-            jobpool = Integer.parseInt(System.getProperty("jobpool"));
-        }
+        String jobpoolConfiguration = getConfiguration("jobpool");
+        int jobpool = jobpoolConfiguration == null ?
+                50 :
+                Integer.parseInt(jobpoolConfiguration);
         vertx.deployVerticle(new TaskManager(jobpool), ar -> {
             if (ar.succeeded()) {
-                log.info("Deployed SchemaManager with id: {}", ar.result());
+                log.info("Deployed TaskManager with id: {}", ar.result());
             }
         });
 
@@ -229,10 +286,26 @@ public class Application {
             Thread.sleep(1000);
         } catch (InterruptedException e) {
             log.error(e.getMessage());
+            throw e;
         }
 
         // A friendly message telling the user we're done.
         httpServer.requestHandler(router::accept).listen(port);
         log.info("Structure is running at http://localhost:" + port);
+    }
+
+    /**
+     * Get a configuration property, giving priority to environment variables, then properties.
+     * @param configurationKey The name of the configuration key
+     * @return The value of the configuration key, or null if there was no configuration
+     */
+    private static String getConfiguration(String configurationKey) {
+        if (System.getenv(configurationKey.toUpperCase()) != null) {
+            return System.getenv(configurationKey.toUpperCase());
+        } else if (System.getProperty(configurationKey) != null){
+            return System.getProperty(configurationKey);
+        } else {
+            return null;
+        }
     }
 }

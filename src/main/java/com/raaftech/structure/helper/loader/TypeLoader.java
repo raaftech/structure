@@ -53,7 +53,14 @@ class TypeLoader implements PackageLoader {
             log.info("Loading defined types from " + filePath + ".");
             load(new FileReader(filePath.toFile()));
         } catch (IOException e) {
-            throw new PackageIOException(e.getMessage());
+            
+        	log.error(e.getMessage());
+
+			if (log.isTraceEnabled()) {
+				e.printStackTrace();
+			}
+			
+        	throw new PackageIOException(e.getMessage());
         }
     }
 
@@ -92,7 +99,13 @@ class TypeLoader implements PackageLoader {
             try {
                 type.save();
             } catch (DataIntegrityViolationException e) {
-                throw new NodeConstraintViolated(e.getMessage());
+            	log.error(e.getMessage());
+
+    			if (log.isTraceEnabled()) {
+    				e.printStackTrace();
+    			}
+            	
+            	throw new NodeConstraintViolated(e.getMessage());
             }
         }
 

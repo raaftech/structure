@@ -10,6 +10,7 @@ import org.neo4j.graphdb.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -44,8 +45,7 @@ public class BundleLoader {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode bundleJson = JsonHelper.jsonFromResourceOrFile(bundlePath.toString());
         if (bundleJson == null) {
-            throw new JsonLoadException("Error while loading JSON in " + bundlePath.toString() + ", possible because of"
-                    + " syntax errors.");
+            throw new JsonLoadException("Error while loading JSON in " + bundlePath.toString() + ", possibly because of syntax errors.");
         }
         Bundle bundle = mapper.readValue(bundleJson.toString(), Bundle.class);
         log.info("Successfully deserialized bundle \"" + bundle.getName() + "\" from JSON.");
@@ -64,7 +64,7 @@ public class BundleLoader {
         } catch (Exception e) {
             log.error("Loading of bundle \"" + bundle.getName() + "\" cancelled. Transaction rolled back.\n"
                     + "Exception message is \"" + e.getMessage() + "\".");
-            if (log.isDebugEnabled()) {
+            if (log.isTraceEnabled()) {
                 e.printStackTrace();
             }
             tx.failure();
@@ -86,18 +86,29 @@ public class BundleLoader {
         // Load every one of them
         foundFiles.stream()
                 .forEachOrdered(packageLoader::load);
+        
+        if (foundFiles.isEmpty()) {
+        	log.debug("loadPackage: No files found to load");
+        }
     }
 
     private List<Path> globFiles(String pattern) {
-        final List<Path> matchingFiles = new ArrayList<>();
-        final String workingDirectory = bundlePath.getParent().toString();
-        final PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:" + workingDirectory + "/" + pattern);
+    	final List<Path> matchingFiles = new ArrayList<>();
+        final String workingDirectory = bundlePath.getParent().toString().replace('\\', '/');
+        final String syntaxAndPattern = "glob:" + workingDirectory + "/" + pattern.replace('\\', '/');
+        final PathMatcher matcher = FileSystems.getDefault().getPathMatcher(syntaxAndPattern);
+        
+        log.debug("globFiles: got pattern: " + pattern);
+        log.debug("globFiles: got workingDirectory: " + workingDirectory);
+        log.debug("globFiles: got syntaxAndPattern: " + syntaxAndPattern);
+        
         try {
             Files.walkFileTree(Paths.get(workingDirectory), new SimpleFileVisitor<Path>() {
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
                     if (matcher.matches(file)) {
-                        matchingFiles.add(file);
+                    	log.debug("globFiles: matched file: " + file);
+                    	matchingFiles.add(file);
                     }
                     return FileVisitResult.CONTINUE;
                 }
@@ -108,7 +119,11 @@ public class BundleLoader {
                 }
             });
         } catch (IOException e) {
-            // in this case we didn't find anything of interest, so just return null
+        	log.debug(e.getMessage());
+        	
+        	if (log.isTraceEnabled()) {
+        		e.printStackTrace();
+        	}
         }
 
         return matchingFiles;

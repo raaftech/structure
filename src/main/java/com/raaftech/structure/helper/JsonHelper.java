@@ -22,50 +22,44 @@ public class JsonHelper {
     private final static Logger log = LoggerFactory.getLogger(JsonHelper.class);
 
     // A json file loader (looks in your classpath/resources.)
-    public static JsonNode jsonFromResource(String resource, boolean showError) {
+    public static JsonNode jsonFromResource(String resource) {
         JsonNode result = null;
         InputStream inputStream = JsonHelper.class.getClassLoader().getResourceAsStream(resource);
 
         try {
             result = mapper.readTree(inputStream);
-        } catch (IOException x) {
-            if (showError) {
-                log.error("Error while opening " + resource + " as JSON: \n" + x.getMessage());
-            }
+        } catch (Exception e) {
+			if (log.isTraceEnabled()) {
+	            log.error("Couldn't open as resource " + resource + ": " + e.getMessage());
+				e.printStackTrace();
+			}
         }
 
         return result;
-    }
-
-    public static JsonNode jsonFromResource(String resource) {
-        return jsonFromResource(resource, true);
     }
 
     // A json file loader (looks in filesystems)
-    public static JsonNode jsonFromFile(String file, boolean showError) {
+    public static JsonNode jsonFromFile(String file) {
         JsonNode result = null;
         try {
             result = mapper.readTree(new File(file));
-        } catch (IOException e) {
-            if (showError) {
-                log.error("Error while opening " + file + " as JSON: \n" + e.getMessage());
-            }
+        } catch (IOException e) {            
+			if (log.isTraceEnabled()) {
+	            log.error("Couldn't open as file  " + file + ": " + e.getMessage());
+				e.printStackTrace();
+			}
         }
         return result;
-    }
-
-    public static JsonNode jsonFromFile(String resource) {
-        return jsonFromFile(resource, true);
     }
 
     // Load a json file, look in classpath/resources first, then on FS
     public static JsonNode jsonFromResourceOrFile(String file) {
-        JsonNode result = jsonFromResource(file, false);
+    	JsonNode result = jsonFromResource(file);
         if (result == null) {
-            result = jsonFromFile(file, false);
+            result = jsonFromFile(file);
         }
         if (result == null) {
-            log.error("Couldn't open file " + file + " in classpath, or on filesystem.");
+            log.error("Couldn't open " + file + " in classpath, or on filesystem.");
         }
         return result;
     }
@@ -84,7 +78,9 @@ public class JsonHelper {
             final JsonSchema jsonSchema = factory.getJsonSchema(schema);
             valid = jsonSchema.validate(object).isSuccess();
         } catch (ProcessingException e) {
-            e.printStackTrace();
+            if (log.isTraceEnabled()) {
+                e.printStackTrace();
+            }
         }
 
         return valid;

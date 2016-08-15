@@ -171,9 +171,10 @@ public class TaskManager extends GenericActor {
                                             try {
                                                 runJob(job);
                                             } catch (InterruptedException | IOException e) {
-                                                log.error("Ran into error while executing job " + task.id + "." + jobId
-                                                        + ", printing stack trace.");
-                                                e.printStackTrace();
+                                                log.error("Ran into error while executing job " + task.id + "." + jobId);
+                                                if (log.isTraceEnabled()) {
+                                                    e.printStackTrace();
+                                                }
                                                 job.status = JobStatus.ERROR;
                                                 runningJobs.remove(job);
                                                 task.finishedOne();
@@ -283,7 +284,9 @@ public class TaskManager extends GenericActor {
                 try {
                     log.info(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(task.toJson()));
                 } catch (JsonProcessingException e) {
-                    e.printStackTrace();
+                    if (log.isTraceEnabled()) {
+                        e.printStackTrace();
+                    }
                 }
             }
 

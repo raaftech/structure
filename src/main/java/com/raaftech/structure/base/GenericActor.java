@@ -91,8 +91,12 @@ public abstract class GenericActor extends AbstractVerticle {
             try {
                 HandlerSchema handlerAndSchema = new HandlerSchema(schema, (MessageHandler) mh.invoke(this));
                 handlers.put(s, handlerAndSchema);
-            } catch (IllegalAccessException | InvocationTargetException x) {
-                log.error("Failed to access or invoke method " + s + ": " + x.getMessage());
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                log.error("Failed to access or invoke method " + s + ": " + e.getMessage());
+                
+                if(log.isTraceEnabled()) {
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -113,8 +117,12 @@ public abstract class GenericActor extends AbstractVerticle {
 
         try {
             jsonNode = mapper.readTree(jsonObject.toString());
-        } catch (IOException x) {
-            log.error(x.getMessage());
+        } catch (IOException e) {
+            log.error(e.getMessage());
+            
+            if(log.isTraceEnabled()) {
+                e.printStackTrace();
+            }
         }
 
         return jsonNode;
@@ -147,8 +155,14 @@ public abstract class GenericActor extends AbstractVerticle {
     public boolean isValidJson(String body) {
         try {
             mapper.readTree(body);
-        } catch (Exception x) {
-            return false;
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            
+            if(log.isTraceEnabled()) {
+                e.printStackTrace();
+            }
+            
+        	return false;
         }
         return true;
     }
@@ -165,7 +179,13 @@ public abstract class GenericActor extends AbstractVerticle {
             UUID uuid = UUID.fromString(str);
             return true;
         } catch (IllegalArgumentException e) {
-            return false;
+            log.error(e.getMessage());
+            
+            if(log.isTraceEnabled()) {
+                e.printStackTrace();
+            }
+            
+        	return false;
         }
     }
 
@@ -178,8 +198,12 @@ public abstract class GenericActor extends AbstractVerticle {
             if (!report.isSuccess()) {
                 log.error(report.toString());
             }
-        } catch (ProcessingException x) {
-            log.error(x.getMessage());
+        } catch (ProcessingException e) {
+            log.error(e.getMessage());
+            
+            if(log.isTraceEnabled()) {
+                e.printStackTrace();
+            }
         }
 
         return jsonDoc;
@@ -196,8 +220,13 @@ public abstract class GenericActor extends AbstractVerticle {
                 log.error(report.toString());
             }
             return report.isSuccess();
-        } catch (ProcessingException x) {
-            log.error(x.getMessage());
+        } catch (ProcessingException e) {
+            log.error(e.getMessage());
+            
+            if(log.isTraceEnabled()) {
+                e.printStackTrace();
+            }
+            
             return false;
         }
     }
@@ -296,9 +325,12 @@ public abstract class GenericActor extends AbstractVerticle {
                 bodyFiltered.set("error", errorDefault);
             }
 
-        } catch (Exception x) {
-            log.error(x.getMessage());
-
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            
+            if(log.isTraceEnabled()) {
+                e.printStackTrace();
+            }
         }
 
         return bodyFiltered;
@@ -321,8 +353,12 @@ public abstract class GenericActor extends AbstractVerticle {
                     try {
                         HandlerSchema handlerAndSchema = handlers.get(msgh);
                         result.set(msgh, handlerAndSchema.handler.help(request));
-                    } catch (NullPointerException x) {
-                        log.error(x.getMessage());
+                    } catch (NullPointerException e) {
+                        log.error(e.getMessage());
+                        
+                        if(log.isTraceEnabled()) {
+                            e.printStackTrace();
+                        }
                     }
                 }
 

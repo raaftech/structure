@@ -115,8 +115,13 @@ public class TemplateNodes extends Repository<TemplateNode> {
                         throw new RuntimeException("Could not find TypeNode by which to group the Template.");
                     }
                 } catch (RuntimeException e) {
-                    log.error(e.getMessage());
-                    result.put("error", e.getMessage());
+                	log.error(e.getMessage());
+
+        			if (log.isTraceEnabled()) {
+        				e.printStackTrace();
+        			}
+        			
+        			result.put("error", e.getMessage());
                 }
 
                 return response(request, result);

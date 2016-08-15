@@ -267,8 +267,13 @@ public class InstanceNode extends Node {
                 throw new RuntimeException("Supplied JSON did not match TypeNode schema.");
             }
         } catch (ProcessingException e) {
-            log.error(e.getMessage());
-            throw new RuntimeException("Supplied JSON did not match TypeNode schema.");
+			log.error(e.getMessage());
+
+			if (log.isTraceEnabled()) {
+				e.printStackTrace();
+			}
+			
+			throw new RuntimeException("Supplied JSON did not match TypeNode schema.");
         }
 
         return this;

@@ -18,17 +18,21 @@ import java.io.IOException;
  */
 public class JsonSchemaBuilderReader implements Converter<String, JsonSchemaBuilder> {
 
-    private Logger log = LoggerFactory.getLogger(JsonSchemaBuilderReader.class);
+	private Logger log = LoggerFactory.getLogger(JsonSchemaBuilderReader.class);
 
-    @Override
-    public JsonSchemaBuilder convert(String s) {
-        ObjectMapper mapper = new ObjectMapper();
-        JsonSchemaBuilder constraints = null;
-        try {
-            constraints = new JsonSchemaBuilder((ObjectNode)mapper.readTree(s));
-        } catch (ProcessingException | IOException e) {
-            log.error(e.getMessage());
-        }
-        return constraints;
-    }
+	@Override
+	public JsonSchemaBuilder convert(String s) {
+		ObjectMapper mapper = new ObjectMapper();
+		JsonSchemaBuilder constraints = null;
+		try {
+			constraints = new JsonSchemaBuilder((ObjectNode) mapper.readTree(s));
+		} catch (ProcessingException | IOException e) {
+			log.error(e.getMessage());
+
+			if (log.isTraceEnabled()) {
+				e.printStackTrace();
+			}
+		}
+		return constraints;
+	}
 }

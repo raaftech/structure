@@ -71,8 +71,13 @@ public class InstanceNodes extends Repository<InstanceNode> {
                     newInstanceNode.save();
                     result.put("data", newInstanceNode.getUuid());
                 } catch (RuntimeException e) {
-                    log.error(e.getMessage());
-                    result.put("error", e.getMessage());
+                	log.error(e.getMessage());
+
+        			if (log.isTraceEnabled()) {
+        				e.printStackTrace();
+        			}
+        			
+        			result.put("error", e.getMessage());
                 }
 
                 return response(request, result);

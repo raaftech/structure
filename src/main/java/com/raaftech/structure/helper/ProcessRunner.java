@@ -13,12 +13,17 @@ import java.nio.file.attribute.PosixFilePermissions;
 import java.util.ArrayList;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import static io.vertx.core.json.Json.mapper;
 
 /**
  * Created by Boy van Duuren &lt;boy@raaftech.com&gt;.
  */
 public class ProcessRunner {
+
+    private final static Logger log = LoggerFactory.getLogger(ProcessRunner.class);
 
     private final ProcessBuilder processBuilder = new ProcessBuilder();
     private final ProcessResult processResult = new ProcessResult();
@@ -46,7 +51,9 @@ public class ProcessRunner {
             processResult.stderr = readFile(tempErr.getPath());
             processResult.stdout = readFile(tempOut.getPath());
         } catch (IOException e) {
-            e.printStackTrace();
+            if (log.isTraceEnabled()) {
+                e.printStackTrace();
+            }
         }
 
         return processResult;

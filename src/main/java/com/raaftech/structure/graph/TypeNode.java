@@ -191,8 +191,12 @@ public class TypeNode extends Node {
                         }
                     }
                 } catch (ProcessingException e) {
-                    log.error(e.getMessage());
-                }
+                	log.error(e.getMessage());
+
+        			if (log.isTraceEnabled()) {
+        				e.printStackTrace();
+        			}
+        		}
             }
         }
         return this;
@@ -283,12 +287,16 @@ public class TypeNode extends Node {
                     kv.setProperty(key, data.get(key).asText());
                     schema.removeProperty(key);
                 } else {
-                    throw new IllegalArgumentException("Couldn't fill descriptor of " + getName() + " with data, didn't match " +
-                            " the schema.");
+                    throw new IllegalArgumentException("Couldn't fill descriptor of " + getName() + " with data, didn't match the schema.");
                 }
             } catch (ProcessingException e) {
-                e.printStackTrace();
-                throw new RuntimeException(e.getMessage());
+            	log.error(e.getMessage());
+
+    			if (log.isTraceEnabled()) {
+    				e.printStackTrace();
+    			}
+    			
+                throw new RuntimeException("Couldn't create JsonSchemaBuilder");
             }
         } else {
             throw new IllegalArgumentException("TypeNode " + getName() + " has no descriptor '" + key + "'.");
@@ -332,8 +340,12 @@ public class TypeNode extends Node {
                 json.put("children", mapper.writeValueAsString(childIsaUuids));
             }
         } catch (JsonProcessingException e) {
-            log.error(e.getMessage());
-        }
+        	log.error(e.getMessage());
+
+			if (log.isTraceEnabled()) {
+				e.printStackTrace();
+			}
+		}
 
         json.put("_nodeType", getNodeType());
 

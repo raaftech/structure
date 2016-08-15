@@ -128,7 +128,9 @@ public class InstrumentLoader implements PackageLoader {
             log.info("Successfully created the " + instrumentName + " instrument.");
         } catch (Exception e) {
             log.error("Error while saving " + instrumentName + ", rolling back transaction.");
-            e.printStackTrace();
+            if (log.isTraceEnabled()) {
+                e.printStackTrace();
+            }
             tx.failure();
         } finally {
             tx.close();
@@ -185,12 +187,12 @@ public class InstrumentLoader implements PackageLoader {
         String handlebarsTemplate = stringBuilder.toString().trim();
 
         // Is the preamble valid?
-        log.debug("Validating found preamble against our schema.");
         try {
             JsonNode preambleJson = mapper.readTree(preamble);
             ObjectNode instrumentSchema = (ObjectNode) JsonHelper.jsonFromResource(instrumentSchemaPath);
+            log.debug("Validating preamble using schema: " + instrumentSchemaPath);
             if (JsonHelper.validateToSchema(instrumentSchema, preambleJson)) {
-                log.debug("Preamble valid. Continuing creation of the instruments.");
+                log.debug("Preamble valid. Continuing creation of instruments..");
 
                 // Create the JSON needed to create the instrument.
                 ObjectNode instanceData = mapper.createObjectNode();
@@ -232,7 +234,9 @@ public class InstrumentLoader implements PackageLoader {
                         + "instrument schema");
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            if (log.isTraceEnabled()) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -250,7 +254,9 @@ public class InstrumentLoader implements PackageLoader {
             parsePreamble(filePath.toString(), contents);
         } catch (IOException e) {
             log.error("Error while reading instrument template " + filePath.toString());
-            e.printStackTrace();
+            if (log.isTraceEnabled()) {
+                e.printStackTrace();
+            }
         }
     }
 }

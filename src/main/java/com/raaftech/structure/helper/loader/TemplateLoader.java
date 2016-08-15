@@ -39,7 +39,13 @@ class TemplateLoader implements PackageLoader {
             log.info("Loading defined template from " + filePath + ".");
             load(new FileReader(filePath.toFile()));
         } catch (IOException e) {
-            throw new PackageIOException(e.getMessage());
+        	log.error(e.getMessage());
+
+			if (log.isTraceEnabled()) {
+				e.printStackTrace();
+			}
+			
+        	throw new PackageIOException(e.getMessage());
         }
     }
 

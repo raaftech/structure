@@ -131,7 +131,12 @@ public class JsonSchemaBuilder {
         try {
             property = new JsonSchemaBuilder(properties.putObject(name));
         } catch (ProcessingException e) {
-            log.error(e.getMessage());
+        	log.error(e.getMessage());
+
+			if (log.isTraceEnabled()) {
+				e.printStackTrace();
+			}
+			
             // TODO: Explicit return null?
             return null;
         }
@@ -140,6 +145,13 @@ public class JsonSchemaBuilder {
             property.setDescription(description);
         } catch (Exception e) {
             properties.remove(name);
+            
+            log.error(e.getMessage());
+
+			if (log.isTraceEnabled()) {
+				e.printStackTrace();
+			}
+            
             throw e;
         }
         if (req) {
@@ -242,14 +254,26 @@ public class JsonSchemaBuilder {
         try {
             item = new JsonSchemaBuilder(items.putObject(name));
         } catch (ProcessingException e) {
-            log.error(e.getMessage());
-            // TODO: Explicit return null?
+        	log.error(e.getMessage());
+
+			if (log.isTraceEnabled()) {
+				e.printStackTrace();
+			}
+			
+			// TODO: Explicit return null?
             return null;
         }
         try {
             item.setType(type);
         } catch (Exception e) {
             items.remove(name);
+            
+            log.error(e.getMessage());
+
+			if (log.isTraceEnabled()) {
+				e.printStackTrace();
+			}
+			
             throw e;
         }
         if (req) {
@@ -515,8 +539,13 @@ public class JsonSchemaBuilder {
             }
             return report.isSuccess();
         } catch (ProcessingException e) {
-            log.error(e.getMessage());
-            return false;
+        	log.error(e.getMessage());
+
+			if (log.isTraceEnabled()) {
+				e.printStackTrace();
+			}
+			
+			return false;
         }
     }
 

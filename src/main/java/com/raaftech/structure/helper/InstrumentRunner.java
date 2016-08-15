@@ -173,7 +173,12 @@ public class InstrumentRunner {
                 jobList.add(sendString(heaviestSendString));
 
             } catch (Exception e) {
-                log.error(e.getMessage());
+            	log.error(e.getMessage());
+
+    			if (log.isTraceEnabled()) {
+    				e.printStackTrace();
+    			}
+    			
                 throw new RuntimeException("Error while creating script to transfer for instrument " + this.instrument.getName()
                         + ". See logging for more details.");
             }
@@ -190,7 +195,9 @@ public class InstrumentRunner {
                     ObjectNode args = validateAndSelectArguments(instrument);
                     jobList.add(applyTemplate(instrument.getProperty(templateProperty), args));
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    if (log.isTraceEnabled()) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }
@@ -304,8 +311,13 @@ public class InstrumentRunner {
                 }
             }
         } catch (IOException e) {
-            log.error(e.getMessage());
-            throw new RuntimeException("Ran into an unknown exception while parsing instrument " + this.instrument.getName()
+        	log.error(e.getMessage());
+
+			if (log.isTraceEnabled()) {
+				e.printStackTrace();
+			}
+			
+			throw new RuntimeException("Ran into an unknown exception while parsing instrument " + this.instrument.getName()
                     +"'s arguments object. See logging for more details.");
         }
         return result;
@@ -378,8 +390,11 @@ public class InstrumentRunner {
                 log.error("Couldn't set file " + file.toString() + " executable, this result in problems.");
             }
         } catch (IOException e) {
-            log.error("Couldn't create FileWriter to write generated script to.");
-            e.printStackTrace();
+            log.error("Couldn't create FileWriter to write generated script to: " + e.getMessage());
+            
+            if (log.isTraceEnabled()) {
+                e.printStackTrace();
+            }
         }
 
         return fileWriter;

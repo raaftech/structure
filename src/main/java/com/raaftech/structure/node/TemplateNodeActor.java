@@ -78,8 +78,14 @@ public class TemplateNodeActor extends NodeActor<TemplateNode> {
                     tx.success();
                 } catch (Exception e) {
                     tx.failure();
+                    
                     log.error(e.getMessage());
-                    result.put("error", e.getMessage());
+
+        			if (log.isTraceEnabled()) {
+        				e.printStackTrace();
+        			}
+        			
+        			result.put("error", e.getMessage());
                 } finally {
                     tx.close();
                 }
@@ -121,8 +127,13 @@ public class TemplateNodeActor extends NodeActor<TemplateNode> {
                             result.put("error", "Error while instantiating template.");
                         }
                     } catch (RuntimeException e) {
-                        log.error(e.getMessage());
-                        result.put("error", e.getMessage());
+                    	log.error(e.getMessage());
+
+            			if (log.isTraceEnabled()) {
+            				e.printStackTrace();
+            			}
+            			
+            			result.put("error", e.getMessage());
                     }
                 }
                 return response(request, result);
@@ -153,8 +164,13 @@ public class TemplateNodeActor extends NodeActor<TemplateNode> {
                     startOfTemplate.discover(args.get("data"));
                     result.put("information", "Started discovery routine(s) for template.");
                 } catch (Exception e) {
-                    log.error(e.getMessage());
-                    result.put("error", e.getMessage());
+                	log.error(e.getMessage());
+
+        			if (log.isTraceEnabled()) {
+        				e.printStackTrace();
+        			}
+        			
+        			result.put("error", e.getMessage());
                 }
 
                 return response(request, result);

@@ -17,17 +17,21 @@ import java.util.LinkedHashMap;
  */
 public class LinkedHashMapReader implements Converter<String, LinkedHashMap<String, String>> {
 
-    private Logger log = LoggerFactory.getLogger(LinkedHashMapReader.class);
+	private Logger log = LoggerFactory.getLogger(LinkedHashMapReader.class);
 
-    @Override
-    public LinkedHashMap<String, String> convert(String s) {
-        ObjectMapper mapper = new ObjectMapper();
-        TypeReference ref = new TypeReference<LinkedHashMap<String, String>>() {};
-        try {
-            return mapper.readValue(s, ref);
-        } catch (IOException e) {
-            log.error(e.getMessage());
-        }
-        return null;
-    }
+	@Override
+	public LinkedHashMap<String, String> convert(String s) {
+		ObjectMapper mapper = new ObjectMapper();
+		TypeReference ref = new TypeReference<LinkedHashMap<String, String>>() {};
+		try {
+			return mapper.readValue(s, ref);
+		} catch (IOException e) {
+			log.error(e.getMessage());
+
+			if (log.isTraceEnabled()) {
+				e.printStackTrace();
+			}
+		}
+		return null;
+	}
 }

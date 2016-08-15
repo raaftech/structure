@@ -253,8 +253,13 @@ public class TemplateNode extends Node {
                     try {
                         collect.put("address", mapper.readTree(e.getValue()).get("plugin").asText());
                     } catch (Exception e1) {
-                        log.error(e1.getMessage());
-                        throw new RuntimeException("Error while building address map.");
+            			log.error(e1.getMessage());
+
+            			if (log.isTraceEnabled()) {
+            				e1.printStackTrace();
+            			}
+            			
+            			throw new RuntimeException("Error while building address map.");
                     }
                     // Else we're dealing with the uuid field which is already a string
                 } else {
@@ -282,8 +287,14 @@ public class TemplateNode extends Node {
                         if (result.succeeded()) {
                             try {
                                 instanceJson.add(mapper.readTree(result.result().body().toString()));
-                            } catch (Exception e) {
-                                throw new RuntimeException(e.getMessage());
+                            } catch (Exception e) {     
+                    			log.error(e.getMessage());
+
+                    			if (log.isTraceEnabled()) {
+                    				e.printStackTrace();
+                    			}
+                    			
+                            	throw new RuntimeException("Error while doing ArrayNode.add: " + e.getMessage());
                             }
                         } else {
                             throw new RuntimeException("Error while calling one of the discovery handlers.");
@@ -374,7 +385,13 @@ public class TemplateNode extends Node {
             }
         } catch (ProcessingException e) {
             // Shouldn't be possible.
-            throw new RuntimeException("TypeNode didn't contain a valid JSON schema.");
+        	log.error(e.getMessage());
+
+			if (log.isTraceEnabled()) {
+				e.printStackTrace();
+			}
+			
+        	throw new RuntimeException("TypeNode didn't contain a valid JSON schema.");
         }
         return wrappingSchema;
     }
@@ -396,7 +413,12 @@ public class TemplateNode extends Node {
                 throw new RuntimeException("Instantiating template failed on first validation.");
             }
         } catch (ProcessingException e) {
-            e.printStackTrace();
+            log.error("Error constructing schema: " + e.getMessage());
+            
+            if (log.isTraceEnabled()) {
+                e.printStackTrace();
+            }
+            
             throw new RuntimeException("Error while constructing schema, aborting.");
         }
         // Map stuff
@@ -414,7 +436,14 @@ public class TemplateNode extends Node {
             tx.success();
         } catch (Exception e) {
             tx.failure();
-            throw new RuntimeException(e.getMessage());
+            
+            log.error(e.getMessage());
+
+			if (log.isTraceEnabled()) {
+				e.printStackTrace();
+			}
+			
+            throw new RuntimeException("Transaction failed.");
         } finally {
             tx.close();
         }
@@ -496,7 +525,14 @@ public class TemplateNode extends Node {
             tx.success();
         } catch (Exception e) {
             tx.failure();
-            throw e;
+            
+            log.error(e.getMessage());
+
+			if (log.isTraceEnabled()) {
+				e.printStackTrace();
+			}
+			
+            throw new RuntimeException("Transaction failed.");
         } finally {
             tx.close();
         }
@@ -542,6 +578,10 @@ public class TemplateNode extends Node {
             json.put("schema", mapper.writeValueAsString(getSchema().getAsObjectNode()));
         } catch (JsonProcessingException e) {
             log.error(e.getMessage());
+
+			if (log.isTraceEnabled()) {
+				e.printStackTrace();
+			}	
         }
 
         if (hasComponents != null && hasComponents.size() > 0) {
