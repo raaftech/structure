@@ -122,7 +122,11 @@ each other, and it'll just lead to a big mess.
 Introducing "merge commits". When you are done with your issue branch you can
 merge it with master using a merge commit.
 
-``` git checkout master git merge --squash issue/20 git commit ```
+``` 
+git checkout master 
+git merge --squash issue/20 
+git commit 
+```
 
 Please don't use `git commit -m` after a merge squash. If you use `git commit`
 all the commit messages from your issue branch will be included in the new
