@@ -1,5 +1,6 @@
 package com.raaftech.structure.helper;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonschema.core.exceptions.ProcessingException;
@@ -11,6 +12,7 @@ import com.raaftech.structure.base.GenericActor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -33,6 +35,17 @@ public class JsonHelper {
             return null;
         }
 
+        return result;
+    }
+
+    // A json file loader (looks in filesystems)
+    public static JsonNode jsonFromFile(String file) {
+        JsonNode result = null;
+        try {
+            result = mapper.readTree(new File(file));
+        } catch (IOException e) {
+            log.error(e.getMessage());
+        }
         return result;
     }
 

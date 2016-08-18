@@ -4,14 +4,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.base.GenericActor;
-import com.raaftech.structure.graph.InstanceNode;
 import com.raaftech.structure.graph.repositories.InstanceNodeRepository;
-import com.raaftech.structure.helper.InstrumentLoader;
-import com.raaftech.structure.helper.InstrumentRunner;
-import io.vertx.core.Vertx;
-import io.vertx.core.eventbus.EventBus;
-import io.vertx.core.eventbus.Message;
-import io.vertx.core.json.JsonObject;
+import com.raaftech.structure.helper.loader.InstrumentLoader;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 
@@ -35,10 +29,11 @@ public class InstrumentManager extends GenericActor {
         if (System.getProperty("instruments") == null) {
             System.setProperty("instruments", new File("ht").getAbsolutePath());
         }
+        InstrumentLoader instrumentLoader = new InstrumentLoader();
         String instruments = System.getProperty("instruments");
         Arrays.asList(instruments.split(",")).stream()
                 .distinct()
-                .forEach(InstrumentLoader::loadHandlers);
+                .forEach(instrumentLoader::load);
         Context.INSTANCE.setInstrumentsLoaded(true);
     }
 

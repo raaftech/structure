@@ -1,0 +1,8 @@
+{
+	"organizationId": "com.raaftech",
+	"name": "structure-base",
+	"version": 1,
+	"packages": {
+		"instrument": "instruments/**/*.json"
+	}
+}

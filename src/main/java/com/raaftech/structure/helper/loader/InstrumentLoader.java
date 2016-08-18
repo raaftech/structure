@@ -1,4 +1,4 @@
-package com.raaftech.structure.helper;
+package com.raaftech.structure.helper.loader;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -9,6 +9,8 @@ import com.raaftech.structure.base.Context;
 import com.raaftech.structure.graph.InstanceNode;
 import com.raaftech.structure.graph.TypeNode;
 import com.raaftech.structure.graph.repositories.TypeNodeRepository;
+import com.raaftech.structure.helper.JsonSchemaBuilder;
+import org.apache.commons.io.FileUtils;
 import org.neo4j.graphdb.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +37,7 @@ import java.util.stream.StreamSupport;
  * This preamble tells us what capability the instruments provides to which TypeNodes. These instruments
  * are then created in the database.
  */
-public class InstrumentLoader {
+public class InstrumentLoader implements PackageLoader {
 
     private final static Logger log = LoggerFactory.getLogger(InstrumentLoader.class);
     private final ObjectMapper mapper = new ObjectMapper();
@@ -50,11 +52,8 @@ public class InstrumentLoader {
     // Extension of our instrument/template files.
     private final String expectedExtension = ".hbs";
 
-    // Private constructor so InstrumentLoader can't be created externally.
-    private InstrumentLoader() {}
-
     /*************************/
-    /* Public Static Methods */
+    /* Public Methods */
     /*************************/
 
     /*
@@ -62,7 +61,7 @@ public class InstrumentLoader {
      * It is used to load all the instruments in a given directory.
      * @param directory A path to a directory containing instruments.
      */
-    public static void loadHandlers(String directory) {
+    public void load(String directory) {
         InstrumentLoader instrumentLoader = new InstrumentLoader();
 
         String dht = new File(directory).getAbsolutePath();

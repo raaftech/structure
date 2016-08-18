@@ -7,8 +7,8 @@ import com.raaftech.structure.graph.TypeNode;
 import com.raaftech.structure.graph.repositories.InstanceNodeRepository;
 import com.raaftech.structure.graph.repositories.TemplateNodeRepository;
 import com.raaftech.structure.graph.repositories.TypeNodeRepository;
-import com.raaftech.structure.helper.InstrumentLoader;
 import com.raaftech.structure.helper.SchemaManagerUpdate;
+import com.raaftech.structure.helper.loader.InstrumentLoader;
 import com.raaftech.structure.manager.TaskManager;
 import com.raaftech.structure.node.InstanceNodeActor;
 import com.raaftech.structure.node.TemplateNodeActor;
@@ -213,9 +213,10 @@ public class Application {
             System.setProperty("instruments", new File("ht").getAbsolutePath());
         }
         String instruments = System.getProperty("instruments");
+        InstrumentLoader instrumentLoader = new InstrumentLoader();
         Arrays.asList(instruments.split(",")).stream()
                 .distinct()
-                .forEach(InstrumentLoader::loadHandlers);
+                .forEach(instrumentLoader::load);
         Context.INSTANCE.setInstrumentsLoaded(true);
 
         // Wait a second so debug messages are done
