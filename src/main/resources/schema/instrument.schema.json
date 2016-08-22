@@ -4,6 +4,7 @@
   "description": "Schema for Structure instrument metadata.",
   "type": "object",
   "required": [ "name", "desc", "capability", "instrumentType", "appliesTo", "providedBy", "subjectIsLocal" ],
+  "additionalProperties": false,
   "properties": {
     "name": {
       "type": "string"

@@ -53,15 +53,13 @@ public class BundleLoader {
             loadPackage(bundle.getArtworkPackage(), new ArtworkLoader());
             loadPackage(bundle.getDocumentationPackage(), new DocumentationLoader());
             tx.success();
+            log.info("Loaded bundle \"" + bundle.getName() + "\".");
         } catch (Exception e) {
-            log.error(e.getMessage());
             log.error("Loading of bundle \"" + bundle.getName() + "\" cancelled. Transaction rolled back.");
             tx.failure();
         } finally {
             tx.close();
         }
-
-        log.info("Loaded bundle \"" + bundle.getName() + "\".");
     }
 
     private void loadPackage(List<String> packageElements, PackageLoader packageLoader) {
