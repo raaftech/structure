@@ -8,7 +8,7 @@ import com.raaftech.structure.graph.repositories.InstanceNodeRepository;
 import com.raaftech.structure.graph.repositories.TemplateNodeRepository;
 import com.raaftech.structure.graph.repositories.TypeNodeRepository;
 import com.raaftech.structure.helper.SchemaManagerUpdate;
-import com.raaftech.structure.helper.loader.InstrumentLoader;
+import com.raaftech.structure.helper.loader.BundleLoader;
 import com.raaftech.structure.manager.TaskManager;
 import com.raaftech.structure.node.InstanceNodeActor;
 import com.raaftech.structure.node.TemplateNodeActor;
@@ -30,6 +30,8 @@ import org.slf4j.bridge.SLF4JBridgeHandler;
 import org.springframework.data.neo4j.support.query.CypherQueryExecutor;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.Arrays;
 
 /**
@@ -209,14 +211,32 @@ public class Application {
         log.info("Purging instruments.");
         instanceNodeRepository.purgeHandlers();
         Context.INSTANCE.setInstrumentsLoaded(false);
-        if (System.getProperty("instruments") == null) {
-            System.setProperty("instruments", new File("ht").getAbsolutePath());
+
+        // Prepend the default bundle to the configured bundles
+        final String instrumentsProperty = "instruments";
+        final String raafBundle = new File("bundles/raaf/bundle.json").getAbsolutePath();
+        if (System.getProperty(instrumentsProperty) == null) {
+            System.setProperty(instrumentsProperty, raafBundle);
+        } else {
+            StringBuilder sb = new StringBuilder(",")
+                    .append(raafBundle)
+                    .append(System.getProperty(instrumentsProperty));
+            System.setProperty(instrumentsProperty, sb.toString());
         }
-        String instruments = System.getProperty("instruments");
-        InstrumentLoader instrumentLoader = new InstrumentLoader();
-        Arrays.asList(instruments.split(",")).stream()
+        String bundles = System.getProperty(instrumentsProperty);
+
+        // Iterate over the bundles and load them
+        Arrays.asList(bundles.split(",")).stream()
+                .map(Paths::get)
                 .distinct()
-                .forEach(instrumentLoader::load);
+                .forEach(bundle -> {
+                    try {
+                        new BundleLoader(bundle).load();
+                    } catch (IOException e) {
+                        log.error(e.getMessage());
+                        e.printStackTrace();
+                    }
+                });
         Context.INSTANCE.setInstrumentsLoaded(true);
 
         // Wait a second so debug messages are done

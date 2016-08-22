@@ -1,8 +1,16 @@
 package com.raaftech.structure.helper.loader;
 
+import java.nio.file.Path;
+
 /**
- * Created by boy on 8/16/16.
+ * A S(ingle) A(bstract) M(ethod) aka Functional interface for package loaders.
  */
+
+@FunctionalInterface
 public interface PackageLoader {
-    public void load(String directory);
+    /**
+     * Load a package defined in a bundle.
+     * @param filePath The location of the package on filesystem.
+     */
+    public void load(Path filePath);
 }

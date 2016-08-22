@@ -3,6 +3,6 @@
 	"name": "structure-base",
 	"version": 1,
 	"packages": {
-		"instrument": "instruments/**/*.json"
+		"instrument": "instruments/**/*.hbs"
 	}
 }

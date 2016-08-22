@@ -10,6 +10,7 @@ import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.*;
 
 /**
@@ -32,6 +33,7 @@ public class InstrumentManager extends GenericActor {
         InstrumentLoader instrumentLoader = new InstrumentLoader();
         String instruments = System.getProperty("instruments");
         Arrays.asList(instruments.split(",")).stream()
+                .map(Paths::get)
                 .distinct()
                 .forEach(instrumentLoader::load);
         Context.INSTANCE.setInstrumentsLoaded(true);

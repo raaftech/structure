@@ -4,23 +4,20 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.github.fge.jsonschema.core.exceptions.ProcessingException;
 import com.raaftech.structure.base.Context;
+import com.raaftech.structure.exceptions.InstrumentNotFoundException;
+import com.raaftech.structure.exceptions.JsonValidationException;
 import com.raaftech.structure.graph.InstanceNode;
 import com.raaftech.structure.graph.TypeNode;
 import com.raaftech.structure.graph.repositories.TypeNodeRepository;
-import com.raaftech.structure.helper.JsonSchemaBuilder;
-import org.apache.commons.io.FileUtils;
+import com.raaftech.structure.helper.JsonHelper;
 import org.neo4j.graphdb.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.charset.Charset;
-import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -49,8 +46,6 @@ public class InstrumentLoader implements PackageLoader {
     private final String preambleStop = "}}";
     // Our schema to validate the provided JSON of a template.
     private final String instrumentSchemaPath = "schema/instrument.schema.json";
-    // Extension of our instrument/template files.
-    private final String expectedExtension = ".hbs";
 
     /*************************/
     /* Public Methods */
@@ -58,31 +53,19 @@ public class InstrumentLoader implements PackageLoader {
 
     /*
      * This is the only exposed method on InstrumentLoader.
-     * It is used to load all the instruments in a given directory.
-     * @param directory A path to a directory containing instruments.
+     * It is used to load an instrument defined in a file.
+     * @param fileLocation A path to the instrument.
      */
-    public void load(String directory) {
-        InstrumentLoader instrumentLoader = new InstrumentLoader();
-
-        String dht = new File(directory).getAbsolutePath();
-        Path path = FileSystems.getDefault().getPath(dht);
-
-        log.info("Started InstrumentLoader for directory " + path.toString() + ".");
-        try {
-            Files.list(path)
-                    .filter(Files::isDirectory)
-                    .forEach(dir -> {
-                        try {
-                            instrumentLoader.iterateFiles(dir);
-                        } catch (IOException e) {
-                            log.error("Error while iterating path " + dir + " for instruments...");
-                            e.printStackTrace();
-                        }
-                    });
-        } catch (IOException e) {
-            log.error("Error while loading instruments from path " + path + "...");
-            e.printStackTrace();
+    public void load(Path filePath) {
+        // Check for null
+        if (filePath == null) {
+            return;
         }
+        if (!Files.isRegularFile(filePath)) {
+            throw new InstrumentNotFoundException("File \"" + filePath + "\" is not a regular file.");
+        }
+
+        readFile(filePath);
     }
 
     /*******************/
@@ -151,30 +134,6 @@ public class InstrumentLoader implements PackageLoader {
         }
     }
 
-    // Iterate all the files in a directory, calling readFile for .mt files.
-    private void iterateFiles(Path directory) throws IOException {
-        log.debug("Iterating on directory \"" + directory + "\", finding .hbs files.");
-        Files.list(directory)
-                .filter(Files::isRegularFile)
-                .filter(p -> p.toString().endsWith(expectedExtension))
-                .forEach(this::readFile);
-    }
-
-    // A json file loader (looks in your classpath/resources.)
-    private JsonNode jsonFromResource(String resource) {
-        JsonNode result;
-        InputStream inputStream = getClass().getClassLoader().getResourceAsStream(resource);
-
-        try {
-            result = mapper.readTree(inputStream);
-        } catch (IOException x) {
-            log.error(x.getMessage());
-            return null;
-        }
-
-        return result;
-    }
-
     // parsePreamble is passed the content of a instrument/template and extracts the first
     // multi-line comment's contents. The comment is expected to start on the first line as preambleStart and
     // ends on the first found preambleStop.
@@ -228,9 +187,8 @@ public class InstrumentLoader implements PackageLoader {
         log.debug("Validating found preamble against our schema.");
         try {
             JsonNode preambleJson = mapper.readTree(preamble);
-            JsonSchemaBuilder jsonSchemaBuilder =
-                    new JsonSchemaBuilder((ObjectNode)jsonFromResource(instrumentSchemaPath));
-            if (jsonSchemaBuilder.validateJson(preambleJson)) {
+            ObjectNode instrumentSchema = (ObjectNode) JsonHelper.jsonFromResource(instrumentSchemaPath);
+            if (JsonHelper.validateToSchema(instrumentSchema, preambleJson)) {
                 log.debug("Preamble valid. Continuing creation of the instruments.");
 
                 // Create the JSON needed to create the instrument.
@@ -268,9 +226,11 @@ public class InstrumentLoader implements PackageLoader {
                 // Create the instrument
                 createHandlerNode(capability, instanceData, providedByType, appliesToTypes);
             } else {
-                log.error("Preamble of " + filePath + " didn't validate against instrument.schema.json.");
+                log.error("Preamble of \"" + filePath + "\" didn't validate against instrument schema.");
+                throw new JsonValidationException("Preamble of \"" + filePath + "\" didn't validate against "
+                        + "instrument schema");
             }
-        } catch (ProcessingException | IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }

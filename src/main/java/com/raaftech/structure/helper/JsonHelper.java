@@ -49,6 +49,15 @@ public class JsonHelper {
         return result;
     }
 
+    // Load a json file, look in classpath/resources first, then on FS
+    public static JsonNode jsonFromResourceOrFile(String file) {
+        JsonNode result = jsonFromResource(file);
+        if (result == null) {
+            result = jsonFromFile(file);
+        }
+        return result;
+    }
+
     public static boolean validateToSchema(JsonNode schema, JsonNode object) {
         final JsonSchemaFactory factory = JsonSchemaFactory.byDefault();
         final SyntaxValidator syntaxValidator = factory.getSyntaxValidator();

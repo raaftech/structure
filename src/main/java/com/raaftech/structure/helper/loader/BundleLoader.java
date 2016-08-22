@@ -1,10 +1,21 @@
 package com.raaftech.structure.helper.loader;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.raaftech.structure.base.Context;
+import com.raaftech.structure.exceptions.PackageNotFoundException;
+import com.raaftech.structure.helper.JsonHelper;
+import org.neo4j.graphdb.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * BundleLoader is responsible for taking a loader and making sure all the definitions in that bundle are
@@ -12,16 +23,80 @@ import java.io.IOException;
  */
 public class BundleLoader {
 
-    static final Logger log = LoggerFactory.getLogger(BundleLoader.class);
+    private static final Logger log = LoggerFactory.getLogger(BundleLoader.class);
+
+    private final Path bundlePath;
+
+    public BundleLoader(Path bundlePath) {
+        this.bundlePath = bundlePath;
+    }
 
     /**
      * Load all the packages defined in a bundle definition.
-     * @param bundleJson The bundle definition to load.
      */
-    public void load(String bundleJson) throws IOException {
+    public void load() throws IOException {
         // Start by validating the provided bundle against our schema
         ObjectMapper mapper = new ObjectMapper();
-        Bundle bundle = mapper.readValue(bundleJson, Bundle.class);
+        JsonNode bundleJson = JsonHelper.jsonFromResourceOrFile(bundlePath.toString());
+        Bundle bundle = mapper.readValue(bundleJson.toString(), Bundle.class);
         log.debug("Successfully deserialized bundle \"" + bundle.getName() + "\" from JSON.");
+
+        // For now we'll just load the instruments, we don't have loaders for anything else yet
+        log.debug("Loading defined instruments.");
+        Transaction tx = Context.INSTANCE.getGraphDatabase().beginTx();
+        try {
+            loadPackage(bundle.getInstrumentPackage(), new InstrumentLoader());
+            tx.success();
+        } catch (PackageNotFoundException e) {
+            log.error(e.getMessage());
+            log.error("Loading of bundle \"" + bundle.getName() + "\" cancelled. Transaction rolled back.");
+            tx.failure();
+        } finally {
+            tx.close();
+        }
+
+        log.info("Loaded bundle \"" + bundle.getName() + "\".");
+    }
+
+    private void loadPackage(List<String> packageElements, PackageLoader packageLoader) {
+        if (packageElements == null)
+            return;
+
+        // Find all the files defined in the package
+        List<Path> foundFiles = packageElements.stream()
+                .map(this::globFiles)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
+
+        // Load every one of them
+        foundFiles.stream()
+                .forEachOrdered(packageLoader::load);
+    }
+
+    private List<Path> globFiles(String pattern) {
+        final List<Path> matchingFiles = new ArrayList<>();
+        final String workingDirectory = bundlePath.getParent().toString();
+        final PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:" + workingDirectory + "/" + pattern);
+        try {
+            Files.walkFileTree(Paths.get(workingDirectory), new SimpleFileVisitor<Path>() {
+                @Override
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                    if (matcher.matches(file)) {
+                        matchingFiles.add(file);
+                    }
+                    return FileVisitResult.CONTINUE;
+                }
+
+                @Override
+                public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
+                    return FileVisitResult.CONTINUE;
+                }
+            });
+        } catch (IOException e) {
+            // in this case we didn't find anything of interest, so just return null
+            return null;
+        }
+
+        return matchingFiles;
     }
 }
