@@ -45,9 +45,15 @@ public class BundleLoader {
         log.debug("Loading defined instruments.");
         Transaction tx = Context.INSTANCE.getGraphDatabase().beginTx();
         try {
+            loadPackage(bundle.getTypePackage(), new TypeLoader());
             loadPackage(bundle.getInstrumentPackage(), new InstrumentLoader());
+            loadPackage(bundle.getTemplatePackage(), new TemplateLoader());
+            loadPackage(bundle.getMetadataPackage(), new MetadataLoader());
+            loadPackage(bundle.getMapPackage(), new MapLoader());
+            loadPackage(bundle.getArtworkPackage(), new ArtworkLoader());
+            loadPackage(bundle.getDocumentationPackage(), new DocumentationLoader());
             tx.success();
-        } catch (PackageNotFoundException e) {
+        } catch (Exception e) {
             log.error(e.getMessage());
             log.error("Loading of bundle \"" + bundle.getName() + "\" cancelled. Transaction rolled back.");
             tx.failure();
