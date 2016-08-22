@@ -1,6 +1,5 @@
 package com.raaftech.structure.helper;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonschema.core.exceptions.ProcessingException;
@@ -8,7 +7,6 @@ import com.github.fge.jsonschema.core.report.ProcessingReport;
 import com.github.fge.jsonschema.main.JsonSchema;
 import com.github.fge.jsonschema.main.JsonSchemaFactory;
 import com.github.fge.jsonschema.processors.syntax.SyntaxValidator;
-import com.raaftech.structure.base.GenericActor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,36 +22,50 @@ public class JsonHelper {
     private final static Logger log = LoggerFactory.getLogger(JsonHelper.class);
 
     // A json file loader (looks in your classpath/resources.)
-    public static JsonNode jsonFromResource(String resource) {
-        JsonNode result;
+    public static JsonNode jsonFromResource(String resource, boolean showError) {
+        JsonNode result = null;
         InputStream inputStream = JsonHelper.class.getClassLoader().getResourceAsStream(resource);
 
         try {
             result = mapper.readTree(inputStream);
         } catch (IOException x) {
-            log.error(x.getMessage());
-            return null;
+            if (showError) {
+                log.error("Error while opening " + resource + " as JSON: \n" + x.getMessage());
+            }
         }
 
         return result;
     }
 
+    public static JsonNode jsonFromResource(String resource) {
+        return jsonFromResource(resource, true);
+    }
+
     // A json file loader (looks in filesystems)
-    public static JsonNode jsonFromFile(String file) {
+    public static JsonNode jsonFromFile(String file, boolean showError) {
         JsonNode result = null;
         try {
             result = mapper.readTree(new File(file));
         } catch (IOException e) {
-            log.error(e.getMessage());
+            if (showError) {
+                log.error("Error while opening " + file + " as JSON: \n" + e.getMessage());
+            }
         }
         return result;
     }
 
+    public static JsonNode jsonFromFile(String resource) {
+        return jsonFromFile(resource, true);
+    }
+
     // Load a json file, look in classpath/resources first, then on FS
     public static JsonNode jsonFromResourceOrFile(String file) {
-        JsonNode result = jsonFromResource(file);
+        JsonNode result = jsonFromResource(file, false);
         if (result == null) {
-            result = jsonFromFile(file);
+            result = jsonFromFile(file, false);
+        }
+        if (result == null) {
+            log.error("Couldn't open file " + file + " in classpath, or on filesystem.");
         }
         return result;
     }
