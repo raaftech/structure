@@ -300,9 +300,12 @@ public class TypeNode extends Node {
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode json = mapper.createObjectNode();
 
-        List<String> childIsaUuids = getChildIsaSet().stream()
-                .map(Node::getUuid)
-                .collect(Collectors.toList());
+        List<String> childIsaUuids = null;
+        if (getChildIsaSet() != null) {
+            getChildIsaSet().stream()
+                    .map(Node::getUuid)
+                    .collect(Collectors.toList());
+        }
 
         json.put("name", getName());
         json.put("uuid", getUuid());
@@ -315,7 +318,9 @@ public class TypeNode extends Node {
             if (getSchema() != null) {
                 json.set("schema", getSchema().getAsObjectNode());
             }
-            json.put("children", mapper.writeValueAsString(childIsaUuids));
+            if (childIsaUuids != null) {
+                json.put("children", mapper.writeValueAsString(childIsaUuids));
+            }
         } catch (JsonProcessingException e) {
             log.error(e.getMessage());
         }
