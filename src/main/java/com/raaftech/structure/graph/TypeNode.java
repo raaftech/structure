@@ -71,9 +71,8 @@ public class TypeNode extends Node {
 
     public TypeNode() {}
 
-    public TypeNode(String name, String desc, int glyphId) {
+    public TypeNode(String name, String desc) {
         super(name, desc);
-        this.glyphId = glyphId;
         initSchema();
     }
 
@@ -155,16 +154,11 @@ public class TypeNode extends Node {
     }
 
     public TypeNode getIsa() {
-        // Sometimes the parent isn't properly loaded from the database
-        // I don't know why exactly, and don't have time to find out. This is a workaround.
-        // TODO: find out what's going on here
-        if (isa == null || isa.getName() == null) {
-            GraphDatabase graphDatabase = Context.INSTANCE.getGraphDatabase();
-            Transaction tx = graphDatabase.beginTx();
-            Context.INSTANCE.getNeo4jTemplate().fetch(isa);
-            tx.success();
-            tx.close();
-        }
+        GraphDatabase graphDatabase = Context.INSTANCE.getGraphDatabase();
+        Transaction tx = graphDatabase.beginTx();
+        Context.INSTANCE.getNeo4jTemplate().fetch(isa);
+        tx.success();
+        tx.close();
         return isa;
     }
 
