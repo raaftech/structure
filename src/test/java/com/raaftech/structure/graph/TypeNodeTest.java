@@ -29,10 +29,10 @@ public class TypeNodeTest {
     @Test
     public void testTypeNodeSetDescriptor() {
         // WARNING! THIS IS RUN ON THE DEVELOPMENT DATABASE!
-        TypeNode type01 = new TypeNode("TypeNode 01", "First TypeNode");
-        TypeNode type02 = new TypeNode("TypeNode 02", "Second TypeNode");
-        TypeNode type03 = new TypeNode("TypeNode 03", "Third TypeNode");
-        TypeNode type04 = new TypeNode("TypeNode 04", "Fourth TypeNode");
+        TypeNode type01 = new TypeNode("TypeNode 01", "First TypeNode", 0);
+        TypeNode type02 = new TypeNode("TypeNode 02", "Second TypeNode", 0);
+        TypeNode type03 = new TypeNode("TypeNode 03", "Third TypeNode", 0);
+        TypeNode type04 = new TypeNode("TypeNode 04", "Fourth TypeNode", 0);
 
         type01.setDescriptor("foo", "boolean", true, "All typenodes should inherit this", null, null);
         type02.setDescriptor("bar", "string", true, "Only type02..04 should have this.", null, null);

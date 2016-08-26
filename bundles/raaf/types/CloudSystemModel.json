@@ -1,0 +1,97 @@
+[ {
+  "name" : "ApacheCloudStack",
+  "desc" : "The Apache CloudStack platform.",
+  "uuid" : "c1d0eada-0d22-4026-aa2d-d865c1583482",
+  "glyphId" : 37,
+  "isa" : "86c0439a-4219-46e6-82a3-6fb2ee774aa4"
+}, {
+  "name" : "VmwareCloudFoundry",
+  "desc" : "The VMware CloudFoundry platform.",
+  "uuid" : "6d080eef-d9c6-4be7-b81b-b9c57f0fe515",
+  "glyphId" : 245,
+  "isa" : "86c0439a-4219-46e6-82a3-6fb2ee774aa4"
+}, {
+  "name" : "Eucalyptus",
+  "desc" : "The Eucalyptus Cloud platform.",
+  "uuid" : "87c66de2-e24b-4586-8170-5fcf6cc28424",
+  "glyphId" : 83,
+  "isa" : "86c0439a-4219-46e6-82a3-6fb2ee774aa4"
+}, {
+  "name" : "OpenNebula",
+  "desc" : "The OpenNebula Cloud platform.",
+  "uuid" : "0e5b0e12-5975-43f5-9e92-5298a75a5f7a",
+  "glyphId" : 176,
+  "isa" : "86c0439a-4219-46e6-82a3-6fb2ee774aa4"
+}, {
+  "name" : "OpenShift",
+  "desc" : "The OpenShift Cloud platform.",
+  "uuid" : "e57b8fbb-05a0-4c64-830a-8da17801e757",
+  "glyphId" : 180,
+  "isa" : "86c0439a-4219-46e6-82a3-6fb2ee774aa4"
+}, {
+  "name" : "OpenStack",
+  "desc" : "The OpenStack Cloud platform.",
+  "uuid" : "55e9f170-9a98-42e3-ba58-f35c592eaeb0",
+  "glyphId" : 181,
+  "isa" : "86c0439a-4219-46e6-82a3-6fb2ee774aa4"
+}, {
+  "name" : "AmazonWebServices",
+  "desc" : "The Amazon Web Services Cloud platform.",
+  "uuid" : "4cd84c58-3cb3-41c1-89d8-6c2fa70ddb54",
+  "glyphId" : 42,
+  "isa" : "86c0439a-4219-46e6-82a3-6fb2ee774aa4"
+}, {
+  "name" : "IbmBlueMix",
+  "desc" : "The IBM BlueMix Cloud platform.",
+  "uuid" : "7e60d3b9-5837-41c3-bd68-12c850171441",
+  "glyphId" : 104,
+  "isa" : "86c0439a-4219-46e6-82a3-6fb2ee774aa4"
+}, {
+  "name" : "CitrixCloudCom",
+  "desc" : "The Citrix Cloud.com platform.",
+  "uuid" : "a5fafd65-2ffc-4509-8289-5760cd15a293",
+  "glyphId" : 58,
+  "isa" : "86c0439a-4219-46e6-82a3-6fb2ee774aa4"
+}, {
+  "name" : "GoogleCloud",
+  "desc" : "The Google Cloud platform.",
+  "uuid" : "0f48c798-6621-4659-9f13-a37e54ef4568",
+  "glyphId" : 93,
+  "isa" : "86c0439a-4219-46e6-82a3-6fb2ee774aa4"
+}, {
+  "name" : "HerokuCloud",
+  "desc" : "The Heroku Cloud platform.",
+  "uuid" : "26a6929f-ef61-4714-baa0-e72bdbf5960a",
+  "glyphId" : 97,
+  "isa" : "86c0439a-4219-46e6-82a3-6fb2ee774aa4"
+}, {
+  "name" : "HpCloud",
+  "desc" : "The HP Cloud platform.",
+  "uuid" : "e7806e74-9002-4f49-9e87-9adf25490efb",
+  "glyphId" : 98,
+  "isa" : "86c0439a-4219-46e6-82a3-6fb2ee774aa4"
+}, {
+  "name" : "JoyentCloud",
+  "desc" : "The Joyent Cloud platform.",
+  "uuid" : "c60297ae-9fc8-4567-a272-7e2b439b4c57",
+  "glyphId" : 117,
+  "isa" : "86c0439a-4219-46e6-82a3-6fb2ee774aa4"
+}, {
+  "name" : "MicrosoftAzure",
+  "desc" : "The Microsoft Azure Cloud platform.",
+  "uuid" : "171c2c6a-9101-437b-b464-e99d276ded47",
+  "glyphId" : 161,
+  "isa" : "86c0439a-4219-46e6-82a3-6fb2ee774aa4"
+}, {
+  "name" : "OnAppCloud",
+  "desc" : "The OnApp Cloud platform.",
+  "uuid" : "3f368aba-b0f2-4e14-9d7b-715312a7e385",
+  "glyphId" : 174,
+  "isa" : "86c0439a-4219-46e6-82a3-6fb2ee774aa4"
+}, {
+  "name" : "OracleCloud",
+  "desc" : "The Oracle Cloud platform.",
+  "uuid" : "fc070f26-87a0-45e8-8ae0-e894fcdb83ea",
+  "glyphId" : 187,
+  "isa" : "86c0439a-4219-46e6-82a3-6fb2ee774aa4"
+} ]

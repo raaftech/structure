@@ -111,21 +111,44 @@ public class Application {
         // Setup default route.
         router.route("/*").handler(StaticHandler.create().setWebRoot("web/"));
 
-        // Apply schema if it isn't applied yet.
-        log.info("Checking for Structure's type hierarchy.");
-        if (typeNodeRepository.findByUuid("b1bc963a-19cc-4518-aecb-a35d028c49e3") == null) {
-            log.info("Didn't find the type hierarchy, creating it.");
+        // Setup indexes and constraints
+        log.info("Creating indices.");
+        CypherQueryExecutor queryExecutor = Context.INSTANCE.getNeo4jTemplate().getInfrastructure().getCypherQueryExecutor();
+        queryExecutor.query("CREATE CONSTRAINT ON (n:TypeNode) ASSERT n.name IS UNIQUE", null, null);
+        queryExecutor.query("CREATE CONSTRAINT ON (n:Node) ASSERT n.uuid IS UNIQUE", null, null);
 
-            // Setup indexes and constraints
-            log.info("Creating indices.");
-            CypherQueryExecutor queryExecutor = Context.INSTANCE.getNeo4jTemplate().getInfrastructure().getCypherQueryExecutor();
-            queryExecutor.query("CREATE CONSTRAINT ON (n:TypeNode) ASSERT n.name IS UNIQUE", null, null);
-            queryExecutor.query("CREATE CONSTRAINT ON (n:Node) ASSERT n.uuid IS UNIQUE", null, null);
+        // Purge all instruments
+        log.info("Purging instruments.");
+        instanceNodeRepository.purgeHandlers();
+        Context.INSTANCE.setInstrumentsLoaded(false);
 
-            new SchemaManagerUpdate().applySchemaUpdates();
+        // Prepend the default bundle to the configured bundles
+        final String instrumentsProperty = "instruments";
+        final String raafBundle = new File("bundles/raaf/bundle.json").getAbsolutePath();
+        if (System.getProperty(instrumentsProperty) == null) {
+            System.setProperty(instrumentsProperty, raafBundle);
         } else {
-            log.info("Type hierarchy found.");
+            StringBuilder sb = new StringBuilder(",")
+                    .append(raafBundle)
+                    .append(System.getProperty(instrumentsProperty));
+            System.setProperty(instrumentsProperty, sb.toString());
         }
+        String bundles = System.getProperty(instrumentsProperty);
+
+        // Iterate over the bundles and load them
+        Arrays.asList(bundles.split(",")).stream()
+                .map(Paths::get)
+                .distinct()
+                .forEach(bundle -> {
+                    try {
+                        new BundleLoader(bundle).load();
+                    } catch (IOException e) {
+                        log.error(e.getMessage());
+                        e.printStackTrace();
+                    }
+                });
+        Context.INSTANCE.setInstrumentsLoaded(true);
+
 
         // Deploy our main actors.
         vertx.deployVerticle("com.raaftech.structure.manager.BusManager", ar -> {
@@ -206,38 +229,6 @@ public class Application {
             vertx.deployVerticle(templateNodeActor);
         }
         tx.close();
-
-        // Load all instruments
-        log.info("Purging instruments.");
-        instanceNodeRepository.purgeHandlers();
-        Context.INSTANCE.setInstrumentsLoaded(false);
-
-        // Prepend the default bundle to the configured bundles
-        final String instrumentsProperty = "instruments";
-        final String raafBundle = new File("bundles/raaf/bundle.json").getAbsolutePath();
-        if (System.getProperty(instrumentsProperty) == null) {
-            System.setProperty(instrumentsProperty, raafBundle);
-        } else {
-            StringBuilder sb = new StringBuilder(",")
-                    .append(raafBundle)
-                    .append(System.getProperty(instrumentsProperty));
-            System.setProperty(instrumentsProperty, sb.toString());
-        }
-        String bundles = System.getProperty(instrumentsProperty);
-
-        // Iterate over the bundles and load them
-        Arrays.asList(bundles.split(",")).stream()
-                .map(Paths::get)
-                .distinct()
-                .forEach(bundle -> {
-                    try {
-                        new BundleLoader(bundle).load();
-                    } catch (IOException e) {
-                        log.error(e.getMessage());
-                        e.printStackTrace();
-                    }
-                });
-        Context.INSTANCE.setInstrumentsLoaded(true);
 
         // Wait a second so debug messages are done
         try {
