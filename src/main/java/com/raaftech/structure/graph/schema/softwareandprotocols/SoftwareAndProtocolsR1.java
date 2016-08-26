@@ -13,15 +13,7 @@ public class SoftwareAndProtocolsR1 extends SchemaUpdate {
     @Override
     protected void setUpdateInformation() {
         updateInformation = SchemaNode.getOrCreateSchemaNode("SoftwareProtocolModel", "Couples software to protocols.",
-                "55c64850-87b6-4c43-b434-1129de958ef0", 1)
-                .requires("ServerModel", 1)
-                .requires("ClientModel", 1)
-                .requires("CloudSystemModel", 1)
-                .requires("EmulatorModel", 1)
-                .requires("HypervisorModel", 1)
-                .requires("OperatingSystemModel", 1)
-                .requires("PackageManagerModel", 1)
-                .requires("ServiceManagerModel", 1);
+                "55c64850-87b6-4c43-b434-1129de958ef0", 1);
     }
 
     @Override

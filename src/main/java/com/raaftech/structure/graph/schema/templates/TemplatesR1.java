@@ -9,15 +9,7 @@ public class TemplatesR1 extends SchemaUpdate {
     @Override
     protected void setUpdateInformation() {
         updateInformation = SchemaNode.getOrCreateSchemaNode("TemplateModel", "Templates provided by Structure.",
-                "e2099a13-9d81-4d78-8b35-2858f822a730", 1)
-                .requires("ServerModel", 1)
-                .requires("ClientModel", 1)
-                .requires("CloudSystemModel", 1)
-                .requires("EmulatorModel", 1)
-                .requires("HypervisorModel", 1)
-                .requires("OperatingSystemModel", 1)
-                .requires("PackageManagerModel", 1)
-                .requires("ServiceManagerModel", 1);
+                "e2099a13-9d81-4d78-8b35-2858f822a730", 1);
 
     }
 

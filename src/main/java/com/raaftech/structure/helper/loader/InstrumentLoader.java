@@ -65,6 +65,7 @@ public class InstrumentLoader implements PackageLoader {
             throw new InstrumentNotFoundException("File \"" + filePath + "\" is not a regular file.");
         }
 
+        log.info("Loading defined instruments.");
         readFile(filePath);
     }
 

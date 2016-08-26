@@ -3,6 +3,7 @@ package com.raaftech.structure.helper.loader;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.raaftech.structure.base.Context;
+import com.raaftech.structure.exceptions.JsonLoadException;
 import com.raaftech.structure.exceptions.PackageNotFoundException;
 import com.raaftech.structure.helper.JsonHelper;
 import org.neo4j.graphdb.Transaction;
@@ -27,6 +28,10 @@ public class BundleLoader {
 
     private final Path bundlePath;
 
+    /**
+     * Load a bundle, providing structure with data.
+     * @param bundlePath The file path to the bundle definition.
+     */
     public BundleLoader(Path bundlePath) {
         this.bundlePath = bundlePath;
     }
@@ -38,11 +43,13 @@ public class BundleLoader {
         // Start by validating the provided bundle against our schema
         ObjectMapper mapper = new ObjectMapper();
         JsonNode bundleJson = JsonHelper.jsonFromResourceOrFile(bundlePath.toString());
+        if (bundleJson == null) {
+            throw new JsonLoadException("Error while loading JSON in " + bundlePath.toString() + ", possible because of"
+                    + " syntax errors.");
+        }
         Bundle bundle = mapper.readValue(bundleJson.toString(), Bundle.class);
-        log.debug("Successfully deserialized bundle \"" + bundle.getName() + "\" from JSON.");
+        log.info("Successfully deserialized bundle \"" + bundle.getName() + "\" from JSON.");
 
-        // For now we'll just load the instruments, we don't have loaders for anything else yet
-        log.debug("Loading defined instruments.");
         Transaction tx = Context.INSTANCE.getGraphDatabase().beginTx();
         try {
             loadPackage(bundle.getTypePackage(), new TypeLoader());
@@ -55,7 +62,8 @@ public class BundleLoader {
             tx.success();
             log.info("Loaded bundle \"" + bundle.getName() + "\".");
         } catch (Exception e) {
-            log.error("Loading of bundle \"" + bundle.getName() + "\" cancelled. Transaction rolled back.");
+            log.error("Loading of bundle \"" + bundle.getName() + "\" cancelled. Transaction rolled back.\n"
+                    + "Exception message is \"" + e.getMessage() + "\".");
             tx.failure();
         } finally {
             tx.close();
@@ -98,7 +106,6 @@ public class BundleLoader {
             });
         } catch (IOException e) {
             // in this case we didn't find anything of interest, so just return null
-            return null;
         }
 
         return matchingFiles;
