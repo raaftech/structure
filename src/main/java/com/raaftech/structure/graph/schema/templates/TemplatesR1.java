@@ -10,7 +10,6 @@ public class TemplatesR1 extends SchemaUpdate {
     protected void setUpdateInformation() {
         updateInformation = SchemaNode.getOrCreateSchemaNode("TemplateModel", "Templates provided by Structure.",
                 "e2099a13-9d81-4d78-8b35-2858f822a730", 1);
-
     }
 
     @Override
@@ -52,7 +51,13 @@ public class TemplatesR1 extends SchemaUpdate {
         TemplateNode serviceManager = new TemplateNode("ServiceManager", "Generic service manager.",
                     "34bfe99f-1d62-48cb-a8a3-e913b69ef225")
                 .setIsa("c3008eec-b454-4ef6-bf7e-0bd92c13d3c3")
-                .setRequired(true)
+                .setRequired(false)
+                .setUnique(true);
+
+        TemplateNode hypervisor = new TemplateNode("Hypervisor", "A generic hypervisor.",
+                "39e12352-8305-4b5d-af60-f1725ec458b8")
+                .setIsa("c5c7fcb5-8ac3-40cc-b195-b2b6af368e81")
+                .setRequired(false)
                 .setUnique(true);
 
         operatingSystem
@@ -61,7 +66,8 @@ public class TemplatesR1 extends SchemaUpdate {
                 .addComponent(interpreter)
                 .addComponent(ipv4Address)
                 .addComponent(dnsName)
-                .addComponent(serviceManager);
+                .addComponent(serviceManager)
+                .addComponent(hypervisor);
 
         operatingSystem.save();
     }
