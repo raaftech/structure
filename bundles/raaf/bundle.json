@@ -15,6 +15,7 @@
 			"types/ServerModel.json",
 			"types/ServiceManagerModel.json"
 		],
-		"instrument": "instruments/**/*.hbs"
+		"instrument": "instruments/**/*.hbs",
+		"template": "templates/*.json"
 	}
 }
