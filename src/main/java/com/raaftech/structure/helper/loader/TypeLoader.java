@@ -18,10 +18,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -34,6 +31,7 @@ class TypeLoader implements PackageLoader {
     private static final String UUID = "uuid";
     private static final String ISA = "isa";
     private static final String GLYPHID = "glyphId";
+    private static final String IMPLEMENTS = "implements";
     private static final String DESCRIPTORS = "descriptors";
     private static final String TYPE = "type";
     private static final String DESC = "desc";
@@ -42,11 +40,12 @@ class TypeLoader implements PackageLoader {
     private static final String DEFAULT = "defaultValue";
 
     private static final Logger log = LoggerFactory.getLogger(PackageLoader.class);
+    private static final TypeNodeRepository typeNodeRepository = Context.INSTANCE.getTypeNodeRepository();
+    private static final Map<String, TypeNode> registeredTypes = new HashMap<>();
 
     private final JsonNode typeSchema = JsonHelper.jsonFromResource("schema/helper/loader/type.schema.json");
-    private final TypeNodeRepository typeNodeRepository = Context.INSTANCE.getTypeNodeRepository();
 
-    private static final Map<String, TypeNode> registeredTypes = new HashMap<>();
+    private final Map<TypeNode, JsonNode> typeWithImplementation = new HashMap<>();
 
     @Override
     public void load(Path filePath) {
@@ -68,17 +67,27 @@ class TypeLoader implements PackageLoader {
         JsonNode json = mapper.readTree(reader);
         Stream<JsonNode> typeStream = StreamSupport.stream(json.spliterator(), false);
 
-        List<TypeNode> deserializedTypes = typeStream.map(this::deserializeType).collect(Collectors.toList());
-        // Check if we have any deserialized types at all
-        if (deserializedTypes.size() < 1) {
-            log.info("Skipped type package because it didn't contain any definitions.");
-            return;
-        }
         // Assume that when the first node in this package exists, the whole package has been applied
-        if (typeNodeRepository.findByUuid(deserializedTypes.get(0).getUuid()) != null) {
-            log.info("Skipped type package because it has already been loaded.");
-            return;
+        if (json.isArray()) {
+            // Check if we have any deserialized types at all
+            if (json.size() < 1) {
+                log.info("Skipped type package because it didn't contain any definitions.");
+                return;
+            }
+            JsonNode firstType = json.get(0);
+            if (JsonHelper.validateToSchema(typeSchema, firstType)) {
+                if (typeNodeRepository.findByUuid(firstType.get(UUID).asText()) != null) {
+                    log.info("Skipped type package because it has already been loaded.");
+                    return;
+                }
+            } else {
+                throw new JsonValidationException("First type definition didn't validate against schema.");
+            }
+        } else {
+            throw new JsonValidationException("Types should be defined as an array.");
         }
+
+        List<TypeNode> deserializedTypes = typeStream.map(this::deserializeType).collect(Collectors.toList());
         for (TypeNode type: deserializedTypes) {
             try {
                 type.save();
@@ -86,6 +95,12 @@ class TypeLoader implements PackageLoader {
                 throw new NodeConstraintViolated(e.getMessage());
             }
         }
+
+        // if this type implements certain protocols, load and add them
+        // this has to be done after saving all the new types, so we can use queries in the database
+        typeWithImplementation.entrySet().stream()
+                .forEach(entry -> addImplementations(entry.getKey(), entry.getValue()));
+
         log.info("Created " + deserializedTypes.size() + " new types.");
     }
 
@@ -118,29 +133,66 @@ class TypeLoader implements PackageLoader {
             }
         }
 
+        if (data.has(IMPLEMENTS)) {
+            typeWithImplementation.put(deserializedTypeNode, data);
+        }
+
         setDescriptors(deserializedTypeNode, data);
         registeredTypes.put(uuid, deserializedTypeNode);
+        registeredTypes.put(name, deserializedTypeNode);
 
         return deserializedTypeNode;
     }
 
+    private void addImplementations(TypeNode deserializedTypeNode, JsonNode data) {
+        final List<TypeNode> implementedProtocols;
+        final String name = deserializedTypeNode.getName();
+        if (data.has(IMPLEMENTS)) {
+            if (data.get(IMPLEMENTS).isArray()) {
+                implementedProtocols = StreamSupport.stream(data.get(IMPLEMENTS).spliterator(), false)
+                        .map(JsonNode::asText)
+                        .map(TypeLoader::getRegisteredType)
+                        .peek(t -> {
+                            if (t == null) {
+                                throw new TypeUnknownException("Unknown implemented type specified for type \"" + name + "\".");
+                            }
+                        })
+                        .collect(Collectors.toList());
+            } else {
+                implementedProtocols = Arrays.asList(TypeLoader.getRegisteredType(data.get(IMPLEMENTS).asText()));
+                if (implementedProtocols.get(0) == null) {
+                    throw new TypeUnknownException("Unknown implemented type specified for type \"" + name + "\".");
+                }
+            }
+
+            implementedProtocols.stream()
+                    .forEach(deserializedTypeNode::addImplementedProtocol);
+
+            deserializedTypeNode.save();
+        }
+    }
+
     /**
      * Get a registered type from the registeredTypes map, or the database.
-     * @param uuid The UUID of the type.
+     * @param id The UUID or name of the type.
      * @return The TypeNode.
      * @throws TypeUnknownException Thrown when we can't find a type with the given UUID.
      */
-    private TypeNode getRegisteredType(String uuid) {
+    public static TypeNode getRegisteredType(String id) {
         TypeNode foundType;
 
-        if (registeredTypes.containsKey(uuid)) {
-            foundType = registeredTypes.get(uuid);
+        if (registeredTypes.containsKey(id)) {
+            foundType = registeredTypes.get(id);
         } else {
-            foundType = typeNodeRepository.findByUuid(uuid);
+            foundType = typeNodeRepository.findByUuid(id);
             if (foundType == null) {
-                throw new TypeUnknownException("Type with UUID \"" + uuid + "\" unknown.");
+                foundType = typeNodeRepository.findOneByName(id);
+            }
+            if (foundType == null) {
+                throw new TypeUnknownException("Type with UUID \"" + id + "\" unknown.");
             } else {
-                registeredTypes.put(uuid, foundType);
+                registeredTypes.put(foundType.getUuid(), foundType);
+                registeredTypes.put(foundType.getName(), foundType);
             }
         }
         return foundType;

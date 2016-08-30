@@ -7,7 +7,6 @@ import com.raaftech.structure.graph.TypeNode;
 import com.raaftech.structure.graph.repositories.InstanceNodeRepository;
 import com.raaftech.structure.graph.repositories.TemplateNodeRepository;
 import com.raaftech.structure.graph.repositories.TypeNodeRepository;
-import com.raaftech.structure.helper.SchemaManagerUpdate;
 import com.raaftech.structure.helper.loader.BundleLoader;
 import com.raaftech.structure.manager.TaskManager;
 import com.raaftech.structure.node.InstanceNodeActor;
@@ -148,10 +147,6 @@ public class Application {
                     }
                 });
         Context.INSTANCE.setInstrumentsLoaded(true);
-
-        if (templateNodeRepository.findByUuid("1b8e0d72-c23d-4091-a4e6-74d07f1ee6fa") == null) {
-            new SchemaManagerUpdate().applySchemaUpdates();
-        }
 
         // Deploy our main actors.
         vertx.deployVerticle("com.raaftech.structure.manager.BusManager", ar -> {

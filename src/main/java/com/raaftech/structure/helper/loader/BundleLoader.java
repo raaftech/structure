@@ -64,6 +64,9 @@ public class BundleLoader {
         } catch (Exception e) {
             log.error("Loading of bundle \"" + bundle.getName() + "\" cancelled. Transaction rolled back.\n"
                     + "Exception message is \"" + e.getMessage() + "\".");
+            if (log.isDebugEnabled()) {
+                e.printStackTrace();
+            }
             tx.failure();
         } finally {
             tx.close();

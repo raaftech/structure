@@ -27,6 +27,10 @@
       "glyphId": {
         "type": "integer"
       },
+      "implements": {
+        "type": ["string", "array" ],
+        "items": { "type": "string" }
+      },
       "descriptors": {
         "type": "object",
         "patternProperties": {

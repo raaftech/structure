@@ -265,6 +265,10 @@ public class TypeNode extends Node {
         return this;
     }
 
+    public boolean implementsProtocol(TypeNode protocol) {
+        return implementsProtocols == null ? false : implementsProtocols.contains(protocol);
+    }
+
     // fillDescriptor is used to set the value of a descriptor. For example: when modelling a particular CPU model
     // you know that it'll always have 4 cores, n bytes of cache, etc. This method is used to register that for a TypeNode.
     public TypeNode fillDescriptor(String key, JsonNode data) {

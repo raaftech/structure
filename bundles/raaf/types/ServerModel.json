@@ -9,17 +9,20 @@
   "desc" : "A generic SMB/CIFS Server.",
   "uuid" : "65af133b-1a2c-4faa-8d2a-a288eaa4f412",
   "glyphId" : 212,
-  "isa" : "3fb4603b-281e-47c0-b338-768ea05d4660"
+  "isa" : "3fb4603b-281e-47c0-b338-768ea05d4660",
+  "implements": "SMB"
 }, {
   "name" : "SshServer",
   "desc" : "A generic SSH Server.",
   "uuid" : "7db4a3ef-2d3c-4071-929b-e81505fbd5e2",
   "glyphId" : 222,
-  "isa" : "3fb4603b-281e-47c0-b338-768ea05d4660"
+  "isa" : "3fb4603b-281e-47c0-b338-768ea05d4660",
+  "implements": [ "SSH10", "SSH20" ]
 }, {
   "name" : "TelnetServer",
   "desc" : "A generic TELNET Server.",
   "uuid" : "4a09bcce-59c6-4e94-9fc4-ba020733a27c",
   "glyphId" : 232,
-  "isa" : "3fb4603b-281e-47c0-b338-768ea05d4660"
+  "isa" : "3fb4603b-281e-47c0-b338-768ea05d4660",
+  "implements": "TELNET"
 } ]
