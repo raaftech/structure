@@ -22,25 +22,32 @@
       "additionalProperties": false,
       "properties": {
         "type": {
-          "type": ["array", "string"]
+          "type": ["array", "string"],
+          "items": { "type": "string" }
         },
         "instrument": {
-          "type": ["array", "string"]
+          "type": ["array", "string"],
+          "items": { "type": "string" }
         },
         "template": {
-          "type": ["array", "string"]
+          "type": ["array", "string"],
+          "items": { "type": "string" }
         },
         "metadata": {
-          "type": ["array", "string"]
+          "type": ["array", "string"],
+          "items": { "type": "string" }
         },
         "map": {
-          "type": ["array", "string"]
+          "type": ["array", "string"],
+          "items": { "type": "string" }
         },
         "artwork": {
-          "type": ["array", "string"]
+          "type": ["array", "string"],
+          "items": { "type": "string" }
         },
         "documentation": {
-          "type": ["array", "string"]
+          "type": ["array", "string"],
+          "items": { "type": "string" }
         }
       }
     }
