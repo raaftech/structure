@@ -122,17 +122,18 @@ public class Application {
         Context.INSTANCE.setInstrumentsLoaded(false);
 
         // Prepend the default bundle to the configured bundles
-        final String instrumentsProperty = "instruments";
+        final String bundlesProperty = "bundles";
         final String raafBundle = new File("bundles/raaf/bundle.json").getAbsolutePath();
-        if (System.getProperty(instrumentsProperty) == null) {
-            System.setProperty(instrumentsProperty, raafBundle);
+        if (System.getProperty(bundlesProperty) == null) {
+            System.setProperty(bundlesProperty, raafBundle);
         } else {
-            StringBuilder sb = new StringBuilder(",")
+            StringBuilder sb = new StringBuilder()
                     .append(raafBundle)
-                    .append(System.getProperty(instrumentsProperty));
-            System.setProperty(instrumentsProperty, sb.toString());
+                    .append(",")
+                    .append(System.getProperty(bundlesProperty));
+            System.setProperty(bundlesProperty, sb.toString());
         }
-        String bundles = System.getProperty(instrumentsProperty);
+        String bundles = System.getProperty(bundlesProperty);
 
         // Iterate over the bundles and load them
         Arrays.asList(bundles.split(",")).stream()
