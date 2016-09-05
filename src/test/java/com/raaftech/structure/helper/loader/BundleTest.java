@@ -117,7 +117,9 @@ public class BundleTest {
     // the bundle schema.
     private void testSerializedJson(String expected, Bundle bundle) throws JsonProcessingException, ProcessingException {
         JsonNode serializedBundle = mapper.valueToTree(bundle);
-        assertEquals(expected, mapper.writerWithDefaultPrettyPrinter().writeValueAsString(serializedBundle));
+        // Replace windows line endings with
+        assertEquals(expected, mapper.writerWithDefaultPrettyPrinter().writeValueAsString(serializedBundle)
+                .replaceAll("\\\r\\\n", "\\\n"));
         assertEquals(true, JsonHelper.validateToSchema(bundleSchema, serializedBundle));
     }
 
