@@ -155,11 +155,6 @@ public class Application {
                 log.info("Deployed BusManager with id: {}", ar.result());
             }
         });
-        vertx.deployVerticle("com.raaftech.structure.manager.SchemaManager", new DeploymentOptions().setWorker(true), ar -> {
-            if (ar.succeeded()) {
-                log.info("Deployed SchemaManager with id: {}", ar.result());
-            }
-        });
         vertx.deployVerticle("com.raaftech.structure.manager.InstrumentManager", new DeploymentOptions().setWorker(false), ar -> {
             if (ar.succeeded()) {
                 log.info("Deployed InstrumentManager with id: {}", ar.result());
