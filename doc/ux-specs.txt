@@ -1,0 +1,225 @@
+* Global overview:
+
+  - Structure has accounts, knows about roles.
+  - Accounts have instances, users, groups, subscriptions
+  - An account owner needs to be able to manage his instances, users, groups
+    and subscriptions
+  - A super admin needs to be able to manage any accounts and all instances
+
+  We will need an interface for super admins that allows them to manage the
+  accounts and the instances, users, groups and subscriptions within those
+  accounts. For RAAF, this would be the cloud management interface; for an
+  on-premise installation, this would be disabled: On premise there is only one
+  account - that of the customer. After that, the customer account can of
+  course have multiple users/groups and instances.
+  
+  Below I will describe three levels of access: 0 (god-mode), 1 (account-admin)
+  and 2 (instance-level).
+
+
+
+* Level 0: Structure god mode
+
+  Structure god mode is the highest level of privileges attainable. It actually
+  only has meaning in cloud deployment: god mode users are able to manage
+  accounts. Customers of Structure's cloud deployment will have an account, with
+  associated instances, subscription plan, users and groups and settings. god
+  mode users can administer those accounts to assist with support and incident
+  response.
+
+
+  - Account Manager
+
+    The account manager view allows the god-mode user to administer accounts.
+    Accounts are owned by customers and have associated subscription data,
+    instances, users and groups. The account manager is intended to administer
+    our Structure application as a cloud service and gives us to posibility
+    to provide support and respond to incidents.
+  
+    A god-mode user should be able to administer the account and related
+    configuration, security and instance settings (see below).
+
+
+
+* Level 1: Account Administrator level
+
+  - Account Settings
+
+    The account settings page controls the main essentials like email address,
+    avatar, password, etc.
+
+
+  - Subscription and Licensing Settings
+
+    An account has an associated subscription and/or license. Here you are able
+    to edit those settings, payment details, etc.
+    
+
+  - Security Manager
+
+    The security manager is a possible interface to credentials in credential
+    stores like Vault and CyberArk. Here you would have a list of credential
+    stores associated with the account which can in turn be associated with
+    instances.
+    
+
+  - Instance Manager
+
+    Every (customer) account has one or more instances. Instances consist of a
+    Filesystem Area, a Structure Application Instance and a Neo4j Backend.
+    Additionally there is an associated security backend (see above).
+
+
+
+* Level 2: Structure instance level
+
+  The items described below are about the instance view: You've logged into the
+  Structure GUI, selected the instance you want to work with and then what? 
+
+  - Dashboard / Home Screen
+
+    The dashboard is the landing-screen of Structure. We can display some
+    characteristics here, like statistics about this Structure environment (how
+    many computers/components/results, memory/cpu/storage usage, version info),
+    favorite groups with their states and visualizations of results (uptime
+    percentage of everything, or groups, or systems, graphs of this and that).
+    
+
+  - Component Manager
+
+    The component manager manages our component types. It contains the Hardware
+    and Software type trees that we know about. The component manager would
+    allow you to search components, see their relationships to things in the
+    environment, edit them, create new ones and relate them to other components
+    (You never create a component without relating it to another component, at
+    the least Component type itself, more probably at a deeper level, like
+    Component -> Software -> OperatingSystem-> Etc).
+
+    Components are the categories of stuff we know about. They don't "exist"
+    but rather describe and categorize stuff you have (ie. things in the
+    Environment Manager).
+
+
+  - Template Manager
+
+    The template manager allows you to search/view/create/edit/delete/modify
+    templates. Templates are collections of Components composed in a
+    hierarchy that you can use as blueprints for things within your
+    environment. For example, you could create a template for a Thinkpad
+    P50 with a harddisk, some ram, some cpus, an operating system, a few
+    users and some services. You can then use discovery to create that group of
+    components: Freek's P50, Rubin's P50, etc.
+    
+    You create templates as generic or specific as you need. Templates are
+    able to reference other templates also: for example: you can create a
+    template for a standard Windows operating system that contains the
+    cmd.exe and powershell.exe interpreters, the windows-service-manager,
+    a few default services for execution and the default administrator user.
+
+    That standard windows template can then be used within another template
+    as a part of that component, allowing you to express complex component
+    hierarchies in a generic way.
+    
+
+  - Environment Manager
+
+    The environement manager allows you to manage instances within your
+    environment: search/view/create/edit/delete/modify.
+
+    A Component describes a possible instance. A template combines them
+    in possible hierarchical relations. an instance is litterally the
+    instantiated type:
+
+    Component: Fedora 23
+    Instance:  Rubin's Fedora 23
+
+    The environment manager is the view that shows what you really HAVE
+    in your datacenter (in comparison: the component manager shows what
+    you *can* have, or know about)
+
+
+  - Task Manager
+
+    The task manager is the central place for everything that runs within
+    Structure. If you check the state of something, that's a task. A task
+    is a collection of jobs which need to complete. A task can create
+    instances (discovery for example) or create results (state, execute).
+
+    Tasks have initiators (who started it), time and date, related jobs and
+    related artifacts (a fancy word for what the task created: results or
+    instances).
+
+    Tasks can be ephemeral (they only exist when created automatically and
+    disappear cq. can be safely removed after completion) or persisted.
+    Persisted tasks can be set to run manually (ie. invoked explicitly)
+    or scheduled to run at certain intervals or dates (ie. tomorrow, or
+    every monday, or every hour, etc).
+    
+
+  - Result Manager
+
+    Structure creates an enormous amount of result objects. Everything that
+    structure does in relation to tasks executed, creates a RawResult; a
+    simple command executed on a few systems results in a few RawResults with
+    the output of the command, the command executed, and some metadata like
+    date, time, elapsed, user used, etc.
+
+    Next to RawResults we have RefinedResults. RefinedResults are results
+    that can be created from RawResult objects. This is used for state and
+    statistic jobs: For example: You can have a state job that eventually
+    executes ping. Ping creates a RawResult with the raw ping output. A
+    result handler can pick up that RawResult, interpret it and create a
+    RefinedResult "reachable" that actually has meaning to Structure's state
+    system. Another example: You initiate a statisticscollection job which does
+    cat /proc/loadavg on all Linux systems. The associated result handler would
+    change that into parsable/graphable numbers which shows load of a set
+    systems.
+
+    Results are never "important". You can throw away all results and Structure
+    will happily run along. It is important that we are able to view our results
+    and clean up results easily, for example by selecting all results and delete
+    or by making a time-based selection. We would also create recurring tasks
+    to do that automatically.
+    
+    It is important to be able to find or filter relevant results quickly. For
+    example: Suppose you would run "uname -a" on all UnixLike systems in your
+    environment: This creates 1000 RawResults associated with a certain task id.
+    You should be able to quickly and live filter those results: type a domain
+    name part and the result set shrinks to the match; type a hostname and you
+    see one result, etc, or immediately delete all results associated with the
+    task, etc.
+
+
+  - Bundle Manager
+
+    All types, templates, instruments, associated maps, result handlers, artwork
+    and documentation are collected in bundles. Bundles are directories that
+    contain these things in a format that our bundle-loader can read and humans
+    too. When structure starts up or when a bundle-reload is performed, it
+    creates the type-tree, instruments, templates that those bundles define.
+    Bundles can be very abstract (the upcoming "structure" bundle is a large
+    collection of types and instruments that are very high level) or super
+    specific.
+
+    To give you an idea: A bundle can be: "fedora". it will contain the entire
+    Fedora OperatingSystem Component subtree and associated instruments for
+    poweroff/reboot, artwork, docs, and files/directory/names/recognition-points
+    related to Fedora Linux. When Structure loads that bundle, it "knows"
+    everything it needs to know about Fedora and can find it when you run
+    discovery.
+
+    The bundle manager lists the bundles available and their loaded state. You
+    would be able to open those bundles and see what they consist of, edit them,
+    Persist/save them.
+    
+
+* Types that have no dedicated view:
+
+  - Actor -> utility type for associating users with (groups of) systems
+  - Grouping -> utility type for locations, components, organizational
+  - Capability -> utility type for structure capabilities
+  - Configuration -> utility type for associating configuration with things
+  - Protocol -> utility type for associating protocols with instruments
+ 
+
+

@@ -1,0 +1,81 @@
+* Introduction
+
+  In the sections below I'll describe user stories for four types of user: a
+  infrastructure administrator, an account administrator, a software developer
+  and a regular user. Possibly we'll have many more user archetypes in the
+  future, but for now we'll keep it simple with these four.
+
+  A user story will be a single paragraph with a unique identifying code. In
+  some cases, I will add some domain-knowledge as a note to the user story
+  to clarify expectations.
+
+
+* As an Infrastructure Administrator I would like to:
+
+  EPIC: Administer any account
+        - Find and list accounts by name, date created
+        - Do anything an account administrator can
+
+
+* As an Account Administrator, I would like to:
+
+  EPIC: Administer my account
+        - View and edit account properties
+        - View payment history and license details
+        - View usage history
+        - View and edit instance details
+        - Create instances (structure, neo4j, vault)
+        - Destroy instances
+        - Do anything a user can
+
+
+* As a Software Developer, I would like to:
+
+  EPIC: Development aides
+        - Enable debug mode to see more logging details
+        - View logging of any type in the web interface
+        - Access and execute Cypher on neo4j backend
+
+  EPIC: Manage Bundles
+        - List available bundles, their status
+        - Edit bundle properties
+        - Update (git pull) via gui
+        - Reload bundles
+
+
+* As a User, I would like to:
+
+  EPIC: Customize my Dashboard
+        - Todo        
+
+  EPIC: Manage Components
+        - List and search component types
+        - Show and navigate the hierarchy of types
+        - Edit and create types (notice: needs to associate and/or create a bundle)
+        - Show or navigate to (a list of) instances of a given type
+        - Show or navigate to (a list of) templates associated of a type
+
+  EPIC: Manage Templates
+        - List and search templates
+        - Show and navigate the hierarchy of templates
+        - Edit and create templates (notice: needs to associate and/or create a bundle)
+
+  EPIC: Manage my Environment
+        - List and search instances within the environment
+        - See the state of instances in lists and detail views
+        - Show and navigate the hierarchy of instances
+        - Show related result objects (if any, raw only)
+        - Edit and create instances 
+
+  EPIC: Manage Tasks
+        - List and search tasks: currently running, scheduled, ran
+        - Show details of a task, created results and/or instances
+        - List by name, date, status
+        - Create a new task based on a capability
+        - start/pause/cancel a task or individual job
+        
+  EPIC: Manage Results
+        - List and search results
+        - Show details of results
+        - Delete results individually or by selection
+        - Make result selection realtime
