@@ -1,0 +1,19 @@
+  - Dashboard / Home Screen
+
+    The dashboard is the landing-screen of Structure. We can display some
+    characteristics here, like statistics about this Structure environment (how
+    many computers/components/results, memory/cpu/storage usage, version info),
+    favorite groups with their states and visualizations of results (uptime
+    percentage of everything, or groups, or systems, graphs of this and that).
+
+    For now we show a list of latest instances.
+
+  - Dashboard inspiration
+
+    On the following page you'll see example graphs for a landing-screen:
+    http://www.noupe.com/essentials/freebies-tools-templates/20-free-dashboard-ui-mockups-graphs-diagrams-charts-and-functional-widgets-83036.html
+
+    Designing user interfaces for business web applications
+    https://www.smashingmagazine.com/2010/02/designing-user-interfaces-for-business-web-applications/
+
+
