@@ -63,7 +63,7 @@ public class TypeNode extends Node {
     private String isaUuid;
 
     @Transient
-    private TypeNodeRepository typeNodeRepository = Context.INSTANCE.getTypeNodeRepository();
+    private TypeNodeRepository typeNodeRepository = Context.getTypeNodeRepository();
 
     /****************/
     /* Constructors */
@@ -119,9 +119,9 @@ public class TypeNode extends Node {
     /******************/
 
     public Set<TypeNode> getChildIsaSet() {
-        GraphDatabase graphDatabase = Context.INSTANCE.getGraphDatabase();
+        GraphDatabase graphDatabase = Context.getGraphDatabase();
         Transaction tx = graphDatabase.beginTx();
-        Context.INSTANCE.getNeo4jTemplate().fetch(childIsaSet);
+        Context.getNeo4jTemplate().fetch(childIsaSet);
         tx.success();
         tx.close();
         return childIsaSet;
@@ -159,9 +159,9 @@ public class TypeNode extends Node {
         // I don't know why exactly, and don't have time to find out. This is a workaround.
         // TODO: find out what's going on here
         if (isa == null || isa.getName() == null) {
-            GraphDatabase graphDatabase = Context.INSTANCE.getGraphDatabase();
+            GraphDatabase graphDatabase = Context.getGraphDatabase();
             Transaction tx = graphDatabase.beginTx();
-            Context.INSTANCE.getNeo4jTemplate().fetch(isa);
+            Context.getNeo4jTemplate().fetch(isa);
             tx.success();
             tx.close();
         }

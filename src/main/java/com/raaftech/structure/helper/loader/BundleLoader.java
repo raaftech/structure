@@ -50,7 +50,7 @@ public class BundleLoader {
         Bundle bundle = mapper.readValue(bundleJson.toString(), Bundle.class);
         log.info("Successfully deserialized bundle \"" + bundle.getName() + "\" from JSON.");
 
-        Transaction tx = Context.INSTANCE.getGraphDatabase().beginTx();
+        Transaction tx = Context.getGraphDatabase().beginTx();
         try {
             loadPackage(bundle.getTypePackage(), new TypeLoader());
             loadPackage(bundle.getInstrumentPackage(), new InstrumentLoader());

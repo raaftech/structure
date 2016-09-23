@@ -80,10 +80,10 @@ public class InstanceNode extends Node {
     private DynamicProperties kv = new DynamicPropertiesContainer();
 
     @Transient
-    InstanceNodeRepository instanceNodeRepository = Context.INSTANCE.getInstanceNodeRepository();
+    InstanceNodeRepository instanceNodeRepository = Context.getInstanceNodeRepository();
 
     @Transient
-    private TypeNodeRepository typeNodeRepository = Context.INSTANCE.getTypeNodeRepository();
+    private TypeNodeRepository typeNodeRepository = Context.getTypeNodeRepository();
 
     @Transient
     JsonNode instanceData;
@@ -220,8 +220,8 @@ public class InstanceNode extends Node {
 
     public Set<InstanceNode> getComponents() {
         if (components.size() < 1 || getFirstComponent().getName() == null) {
-            Transaction tx = Context.INSTANCE.getGraphDatabase().beginTx();
-            Context.INSTANCE.getNeo4jTemplate().fetch(components);
+            Transaction tx = Context.getGraphDatabase().beginTx();
+            Context.getNeo4jTemplate().fetch(components);
             tx.close();
         }
         return components;
@@ -282,9 +282,9 @@ public class InstanceNode extends Node {
     // Get all the results belonging to this InstanceNode
     public Set<InstanceNode> getResults() {
         // Fetch results from database
-        GraphDatabase graphDatabase = Context.INSTANCE.getGraphDatabase();
+        GraphDatabase graphDatabase = Context.getGraphDatabase();
         Transaction tx = graphDatabase.beginTx();
-        Context.INSTANCE.getNeo4jTemplate().fetch(results);
+        Context.getNeo4jTemplate().fetch(results);
         tx.success();
         tx.close();
 
@@ -336,7 +336,7 @@ public class InstanceNode extends Node {
         }
         // Check if parameter isn't null and is of right type.
         if (result != null && result.getInstanceOf().getName().equals("Result")) {
-            Transaction tx = Context.INSTANCE.getGraphDatabase().beginTx();
+            Transaction tx = Context.getGraphDatabase().beginTx();
             results.add(result);
             tx.success();
             tx.close();
@@ -365,7 +365,7 @@ public class InstanceNode extends Node {
 
     public InstanceNode save() {
         boolean newNode = getId() == null || getId() < 0;
-        Transaction tx = Context.INSTANCE.getGraphDatabase().beginTx();
+        Transaction tx = Context.getGraphDatabase().beginTx();
         if (getInstanceOf().getSchema().validateJson(instanceData)) {
             getInstanceOf().getKv().asMap().entrySet().stream()
                     .forEach(entry -> kv.setProperty(entry.getKey(), entry.getValue()));
@@ -379,7 +379,7 @@ public class InstanceNode extends Node {
         }
 
         if (newNode) {
-            Context.INSTANCE.getVertx().deployVerticle(
+            Context.getVertx().deployVerticle(
                     new InstanceNodeActor(this));
         }
 

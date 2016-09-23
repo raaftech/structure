@@ -15,7 +15,7 @@ import java.util.*;
 
 public class InstanceNodeActor extends NodeActor<InstanceNode> {
 
-    private InstanceNodeRepository instanceNodeRepository = Context.INSTANCE.getInstanceNodeRepository();
+    private InstanceNodeRepository instanceNodeRepository = Context.getInstanceNodeRepository();
 
     private Logger log = LoggerFactory.getLogger(InstanceNodeActor.class);
 

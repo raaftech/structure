@@ -82,7 +82,7 @@
         <jersey.version>1.9</jersey.version>
         <commons-net.version>3.3</commons-net.version>
         <json-schema-validator.version>2.2.6</json-schema-validator.version>
-        <spring-data-neo4j.version>3.2.1.RELEASE</spring-data-neo4j.version>
+        <spring.version>3.2.1.RELEASE</spring.version>
         <jsch.version>0.1.53</jsch.version>
         <junit.version>4.11</junit.version>
         <validation-api.version>1.1.0.Final</validation-api.version>
@@ -151,13 +151,13 @@
         <dependency>
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-neo4j</artifactId>
-            <version>${spring-data-neo4j.version}</version>
+            <version>${spring.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-neo4j-rest</artifactId>
-            <version>${spring-data-neo4j.version}</version>
+            <version>${spring.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -249,6 +249,12 @@
         </dependency>
 
         <!--Test dependencies -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <version>${spring.version}</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>

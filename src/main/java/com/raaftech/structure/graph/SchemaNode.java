@@ -44,7 +44,7 @@ public class SchemaNode extends Node {
     private Set<TypeNode> updatedTypeNodes;
 
     @Transient
-    private static SchemaNodeRepository schemaNodeRepository = Context.INSTANCE.getSchemaNodeRepository();
+    private static SchemaNodeRepository schemaNodeRepository = Context.getSchemaNodeRepository();
 
     /****************/
     /* Constructors */

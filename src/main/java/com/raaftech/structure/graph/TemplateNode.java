@@ -60,9 +60,9 @@ public class TemplateNode extends Node {
     boolean unique;
 
     @Transient
-    TemplateNodeRepository templateNodeRepository = Context.INSTANCE.getTemplateNodeRepository();
+    TemplateNodeRepository templateNodeRepository = Context.getTemplateNodeRepository();
     @Transient
-    TypeNodeRepository typeNodeRepository = Context.INSTANCE.getTypeNodeRepository();
+    TypeNodeRepository typeNodeRepository = Context.getTypeNodeRepository();
 
     /****************/
     /* Constructors */
@@ -95,7 +95,7 @@ public class TemplateNode extends Node {
     /*******************/
 
     private static void cascadeRemoval(TemplateNode child) {
-        TemplateNodeRepository templateNodeRepository = Context.INSTANCE.getTemplateNodeRepository();
+        TemplateNodeRepository templateNodeRepository = Context.getTemplateNodeRepository();
         child.hasComponents.stream()
         .forEach(TemplateNode::cascadeRemoval);
         templateNodeRepository.delete(child);
@@ -230,13 +230,13 @@ public class TemplateNode extends Node {
             throw new RuntimeException("Discovery can only be started on the start of a template");
         }
 
-        EventBus eventBus = Context.INSTANCE.getVertx().eventBus();
+        EventBus eventBus = Context.getVertx().eventBus();
         ObjectMapper mapper = new ObjectMapper();
 
         // OK, so this probably won't be readable for anyone (not even me five minutes from now)
         // Goal of the following routine is to create a Map that consists of an ObservableHandler,
         // an address of a Discovery Handler and the UUID of the TemplateNode connected to the DiscoHandler
-        Transaction tx = Context.INSTANCE.getGraphDatabase().beginTx();
+        Transaction tx = Context.getGraphDatabase().beginTx();
         Iterator<Map<String, String>> discoveryData = templateNodeRepository.getDiscoveryData(this.getUuid()).iterator();
         // Fairly certain there's a better type for this map.
         Map<ObservableHandler<AsyncResult<Message<JsonObject>>>, List<String>>
@@ -429,7 +429,7 @@ public class TemplateNode extends Node {
             uuidToDataMap.put(element.get("templateNodeUuid").asText(), element.get("data"));
         }
 
-        Transaction tx = Context.INSTANCE.getGraphDatabase().beginTx();
+        Transaction tx = Context.getGraphDatabase().beginTx();
         String uuid = null;
         try {
             uuid = instantiate(this, null, uuidToDataMap, 0);
@@ -497,7 +497,7 @@ public class TemplateNode extends Node {
     public boolean removeComponent(TemplateNode component) {
         // UUID will is unique, so we can safely assume
         // the resulting list will have only 1 element.
-        TemplateNodeRepository templateNodeRepository = Context.INSTANCE.getTemplateNodeRepository();
+        TemplateNodeRepository templateNodeRepository = Context.getTemplateNodeRepository();
         List<TemplateNode> placeholder = hasComponents.stream()
                 .filter(c -> c.getUuid().equals(component.getUuid()))
                 .collect(Collectors.toList());
@@ -512,8 +512,8 @@ public class TemplateNode extends Node {
     }
 
     public TemplateNode save() {
-        Transaction tx = Context.INSTANCE.getGraphDatabase().beginTx();
-        TemplateNodeRepository templateNodeRepository = Context.INSTANCE.getTemplateNodeRepository();
+        Transaction tx = Context.getGraphDatabase().beginTx();
+        TemplateNodeRepository templateNodeRepository = Context.getTemplateNodeRepository();
         boolean newNode = getId() == null || getId() < 0;
 
         try {
@@ -538,7 +538,7 @@ public class TemplateNode extends Node {
         }
 
         if (newNode) {
-            Context.INSTANCE.getVertx().deployVerticle(
+            Context.getVertx().deployVerticle(
                     new TemplateNodeActor(this));
         }
 

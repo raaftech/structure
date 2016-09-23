@@ -145,7 +145,7 @@ public class TaskManager extends GenericActor {
     public TaskManager(int maxConcurrentProcesses) {
         log.info("Constructing TaskManager with a job pool of size " + maxConcurrentProcesses + ".");
         // The timer that takes jobs from the queue and runs them.
-        Context.INSTANCE.getVertx().setPeriodic(100L, id -> {
+        Context.getVertx().setPeriodic(100L, id -> {
             // Do we have room to run some jobs?
             if (runningJobs.size() < maxConcurrentProcesses) {
                 // For every free spot in the running jobs list...

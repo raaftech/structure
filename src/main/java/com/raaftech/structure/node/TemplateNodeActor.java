@@ -46,11 +46,11 @@ public class TemplateNodeActor extends NodeActor<TemplateNode> {
                 ObjectNode result = mapper.createObjectNode();
                 JsonNode args = request.get("args");
 
-                TemplateNodeRepository templateNodeRepository = Context.INSTANCE.getTemplateNodeRepository();
+                TemplateNodeRepository templateNodeRepository = Context.getTemplateNodeRepository();
                 TemplateNode node = getNode();
                 TemplateNode parent = node.getParentComponent();
 
-                Transaction tx = Context.INSTANCE.getGraphDatabase().beginTx();
+                Transaction tx = Context.getGraphDatabase().beginTx();
                 try {
                     if (parent != null) {
                         String templateUuid = parent.getUuid();
@@ -111,7 +111,7 @@ public class TemplateNodeActor extends NodeActor<TemplateNode> {
         return new MessageHandler() {
             @Override
             public JsonNode exec(JsonNode request) {
-                TemplateNodeRepository templateNodeRepository = Context.INSTANCE.getTemplateNodeRepository();
+                TemplateNodeRepository templateNodeRepository = Context.getTemplateNodeRepository();
                 ObjectNode result = mapper.createObjectNode();
                 JsonNode args = request.get("args");
 

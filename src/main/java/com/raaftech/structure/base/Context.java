@@ -6,10 +6,13 @@ package com.raaftech.structure.base;
 
 import com.raaftech.structure.graph.repositories.*;
 import io.vertx.core.Vertx;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.data.neo4j.core.GraphDatabase;
 import org.springframework.data.neo4j.support.Neo4jTemplate;
+import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -22,64 +25,66 @@ import java.util.concurrent.locks.ReentrantLock;
  * @author Rubin Simons <rubin.simons@raaftech.com>
  * @since 2014-11-12
  */
-public enum Context {
-    INSTANCE;
+@Component
+public class Context implements ApplicationContextAware {
 
-    private final ApplicationContext context;
-    private Vertx vertx = null;
-    private Set<String> registeredPlugins = new HashSet<>();
-    @SuppressWarnings("unused")
-    private static final ReentrantLock initLock = new ReentrantLock();
-    private AtomicBoolean instrumentsLoaded = new AtomicBoolean();
+    @Autowired
+    private static ApplicationContext context;
+    private static Vertx vertx = null;
+    private static Set<String> registeredPlugins = new HashSet<>();
+    private static AtomicBoolean instrumentsLoaded = new AtomicBoolean();
+
+
 
     // The identifier used to identify this structure instance in the database.
     public final static String selfIdentifier = "structure";
 
-    Context() {
-        context = new AnnotationConfigApplicationContext(SpringConfig.class, ConverterConfig.class);
-    }
-
-    public NodeRepository getNodeRepository() {
+    public static NodeRepository getNodeRepository() {
         return (NodeRepository)context.getBean("nodeRepository");
     }
 
-    public TypeNodeRepository getTypeNodeRepository() {
+    public static TypeNodeRepository getTypeNodeRepository() {
         return (TypeNodeRepository)context.getBean("typeNodeRepository");
     }
 
-    public SchemaNodeRepository getSchemaNodeRepository() {
+    public static SchemaNodeRepository getSchemaNodeRepository() {
         return (SchemaNodeRepository)context.getBean("schemaNodeRepository");
     }
 
-    public InstanceNodeRepository getInstanceNodeRepository() {
+    public static InstanceNodeRepository getInstanceNodeRepository() {
         return (InstanceNodeRepository)context.getBean("instanceNodeRepository");
     }
 
-    public TemplateNodeRepository getTemplateNodeRepository() {
+    public static TemplateNodeRepository getTemplateNodeRepository() {
         return (TemplateNodeRepository)context.getBean("templateNodeRepository");
     }
 
-    public GraphDatabase getGraphDatabase() {
+    public static GraphDatabase getGraphDatabase() {
         return (GraphDatabase)context.getBean("graphDatabase");
     }
 
-    public Neo4jTemplate getNeo4jTemplate() {
+    public static Neo4jTemplate getNeo4jTemplate() {
         return (Neo4jTemplate)context.getBean("neo4jTemplate");
     }
 
-    public Vertx getVertx() {
+    public static Vertx getVertx() {
         return vertx;
     }
 
-    public void setVertx(Vertx vertx) {
-        this.vertx = vertx;
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        context = applicationContext;
     }
 
-    public void setInstrumentsLoaded(boolean state) {
+    public static void setVertx(Vertx vertxRef) {
+        vertx = vertxRef;
+    }
+
+    public static void setInstrumentsLoaded(boolean state) {
         instrumentsLoaded.set(state);
     }
 
-    public boolean getInstrumentsLoaded() {
+    public static boolean getInstrumentsLoaded() {
         return instrumentsLoaded.get();
     }
 }

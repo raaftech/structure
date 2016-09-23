@@ -1,23 +1,33 @@
 package com.raaftech.structure.helper.loader;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.raaftech.structure.base.SpringTestConfig;
 import com.raaftech.structure.graph.TypeNode;
+import com.raaftech.structure.graph.repositories.TypeNodeRepository;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.AnnotationConfigContextLoader;
+import org.springframework.transaction.annotation.Transactional;
+
+import static junit.framework.TestCase.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.StringReader;
-import java.util.List;
 
-import static io.vertx.core.json.Json.mapper;
-import static org.junit.Assert.*;
-
-/**
- * Created by boy on 8/23/16.
- */
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(loader = AnnotationConfigContextLoader.class, classes = SpringTestConfig.class)
 public class TypeLoaderTest {
+
+    @Autowired
+    TypeNodeRepository typeNodeRepository;
+
     @Test
+    @Transactional
+    @Rollback
     public void load() throws Exception {
         String json = "[{\n" +
                 "\"name\": \"testType1\",\n" +
@@ -44,6 +54,15 @@ public class TypeLoaderTest {
                 "}]";
         new TypeLoader().load(new StringReader(json));
         new TypeLoader().load(new StringReader(json2));
+
+        TypeNode testType1 = typeNodeRepository.findOneByName("testType1");
+        assertNotNull(testType1);
+        assertEquals(2, testType1.getChildIsaSet().size());
+        testType1.getChildIsaSet().stream()
+                .forEach(type -> {
+                    assertTrue("testType2".equals(type.getName()) || "testType3".equals(type.getName()));
+                });
+
     }
 
 }

@@ -38,7 +38,7 @@ public class InstrumentLoader implements PackageLoader {
 
     private final static Logger log = LoggerFactory.getLogger(InstrumentLoader.class);
     private final ObjectMapper mapper = new ObjectMapper();
-    private final TypeNodeRepository typeNodeRepository = Context.INSTANCE.getTypeNodeRepository();
+    private final TypeNodeRepository typeNodeRepository = Context.getTypeNodeRepository();
 
     // Preamble stop and start match mustache multiline comments.
     // We need these to extract the JSON contained in this comment.
@@ -114,7 +114,7 @@ public class InstrumentLoader implements PackageLoader {
         instrument.setCapability(capability);
 
         log.debug("Starting transaction to save the instrument.");
-        Transaction tx = Context.INSTANCE.getGraphDatabase().beginTx();
+        Transaction tx = Context.getGraphDatabase().beginTx();
         try {
             applies.stream()
                     .forEach(t -> {

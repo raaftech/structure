@@ -19,7 +19,7 @@ public abstract class NodeActor<T extends Node> extends GenericActor {
     @SuppressWarnings("unused")
     private MessageConsumer<Object> secondaryConsumer;
 
-    private NodeRepository nodeRepository = Context.INSTANCE.getNodeRepository();
+    private NodeRepository nodeRepository = Context.getNodeRepository();
 
     protected String uuid;
     protected String primaryConsumerAddress;

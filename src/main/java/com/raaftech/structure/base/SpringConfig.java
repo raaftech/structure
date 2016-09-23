@@ -19,7 +19,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.data.neo4j.config.EnableNeo4jRepositories;
 import org.springframework.data.neo4j.config.Neo4jConfiguration;
 import org.springframework.data.neo4j.core.GraphDatabase;
@@ -33,6 +35,8 @@ import org.springframework.data.neo4j.support.Neo4jTemplate;
  * @since 2014-11-04
  */
 @Configuration
+@ComponentScan(basePackages = "com.raaftech.structure",
+        excludeFilters = {@ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = SpringTestConfig.class)})
 @EnableNeo4jRepositories("com.raaftech.structure.graph.repositories")
 public class SpringConfig extends Neo4jConfiguration {
 

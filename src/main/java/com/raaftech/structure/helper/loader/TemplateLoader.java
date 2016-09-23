@@ -30,7 +30,7 @@ class TemplateLoader implements PackageLoader {
     private static final String REQUIRED = "required";
 
     private static final Logger log = LoggerFactory.getLogger(TemplateLoader.class);
-    private static final TemplateNodeRepository templateNodeRepository = Context.INSTANCE.getTemplateNodeRepository();
+    private static final TemplateNodeRepository templateNodeRepository = Context.getTemplateNodeRepository();
     private static final String SCHEMA = "schema/helper/loader/template.schema.json";
 
     @Override

@@ -27,6 +27,7 @@ import org.neo4j.graphdb.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.data.neo4j.support.query.CypherQueryExecutor;
 
 import java.io.File;
@@ -104,10 +105,6 @@ public class Application {
         SockJSHandler sockJsHandler;
         final int port = 8080;
 
-        final TypeNodeRepository typeNodeRepository = Context.INSTANCE.getTypeNodeRepository();
-        final InstanceNodeRepository instanceNodeRepository = Context.INSTANCE.getInstanceNodeRepository();
-        final TemplateNodeRepository templateNodeRepository = Context.INSTANCE.getTemplateNodeRepository();
-
         // Black magic.
         SLF4JBridgeHandler.removeHandlersForRootLogger();
         SLF4JBridgeHandler.install();
@@ -129,6 +126,15 @@ public class Application {
         // Tell the user we're starting up.
         log.info("Structure is starting up..");
 
+        // Load Spring
+        log.debug("Setting up Spring's annotation aware application context..");
+        new AnnotationConfigApplicationContext(SpringConfig.class, ConverterConfig.class);
+
+        // Now that Spring's context is available, the repositories are autowired in Context
+        final TypeNodeRepository typeNodeRepository = Context.getTypeNodeRepository();
+        final InstanceNodeRepository instanceNodeRepository = Context.getInstanceNodeRepository();
+        final TemplateNodeRepository templateNodeRepository = Context.getTemplateNodeRepository();
+
         // Setup vertx with a maxWorkerExecuteTime of 5 minutes.
         final String workerTimeoutConfiguration = getConfiguration("workertimeout");
         Long workerTimeout = workerTimeoutConfiguration == null ?
@@ -139,7 +145,7 @@ public class Application {
         sockJsHandler = SockJSHandler.create(vertx);
         httpServer = vertx.createHttpServer();
 
-        Context.INSTANCE.setVertx(vertx);
+        Context.setVertx(vertx);
 
         // Enable bridging on /eventbus, and add some in- and outbound permissions.
         BridgeOptions bridgeOptions = new BridgeOptions()
@@ -166,14 +172,14 @@ public class Application {
 
         // Setup indexes and constraints
         log.info("Creating indices.");
-        CypherQueryExecutor queryExecutor = Context.INSTANCE.getNeo4jTemplate().getInfrastructure().getCypherQueryExecutor();
+        CypherQueryExecutor queryExecutor = Context.getNeo4jTemplate().getInfrastructure().getCypherQueryExecutor();
         queryExecutor.query("CREATE CONSTRAINT ON (n:TypeNode) ASSERT n.name IS UNIQUE", null, null);
         queryExecutor.query("CREATE CONSTRAINT ON (n:Node) ASSERT n.uuid IS UNIQUE", null, null);
 
         // Purge all instruments
         log.info("Purging instruments.");
         instanceNodeRepository.purgeHandlers();
-        Context.INSTANCE.setInstrumentsLoaded(false);
+        Context.setInstrumentsLoaded(false);
 
         // Prepend the default bundle to the configured bundles
         final String bundlesProperty = "bundles";
@@ -204,7 +210,7 @@ public class Application {
                         }
                     }
                 });
-        Context.INSTANCE.setInstrumentsLoaded(true);
+        Context.setInstrumentsLoaded(true);
 
         // Deploy our main actors.
         vertx.deployVerticle("com.raaftech.structure.manager.BusManager", ar -> {
@@ -228,27 +234,27 @@ public class Application {
         });
 
         // Deploy interfaces to the NodeRepositories.
-        vertx.deployVerticle(new Nodes(Context.INSTANCE.getNodeRepository()), ar -> {
+        vertx.deployVerticle(new Nodes(Context.getNodeRepository()), ar -> {
             if (ar.succeeded()) {
                 log.info("Deployed NodeRepository with id: {}", ar.result());
             }
         });
-        vertx.deployVerticle(new InstanceNodes(Context.INSTANCE.getInstanceNodeRepository()), ar -> {
+        vertx.deployVerticle(new InstanceNodes(Context.getInstanceNodeRepository()), ar -> {
             if (ar.succeeded()) {
                 log.info("Deployed InstanceNodeRepository with id: {}", ar.result());
             }
         });
-        vertx.deployVerticle(new SchemaNodes(Context.INSTANCE.getSchemaNodeRepository()), ar -> {
+        vertx.deployVerticle(new SchemaNodes(Context.getSchemaNodeRepository()), ar -> {
             if (ar.succeeded()) {
                 log.info("Deployed SchemaNodeRepository with id: {}", ar.result());
             }
         });
-        vertx.deployVerticle(new TemplateNodes(Context.INSTANCE.getTemplateNodeRepository()), ar -> {
+        vertx.deployVerticle(new TemplateNodes(Context.getTemplateNodeRepository()), ar -> {
             if (ar.succeeded()) {
                 log.info("Deployed TemplateNodeRepository with id: {}", ar.result());
             }
         });
-        vertx.deployVerticle(new TypeNodes(Context.INSTANCE.getTypeNodeRepository()), ar -> {
+        vertx.deployVerticle(new TypeNodes(Context.getTypeNodeRepository()), ar -> {
             if (ar.succeeded()) {
                 log.info("Deployed TypeNodeRepository with id: {}", ar.result());
             }
@@ -256,7 +262,7 @@ public class Application {
 
         // Deploy TypeNodeActors.
         log.debug("Deploying TypeNodeActors..");
-        Transaction tx = Context.INSTANCE.getGraphDatabase().beginTx();
+        Transaction tx = Context.getGraphDatabase().beginTx();
         for (TypeNode typeNode : typeNodeRepository.findAll()) {
             TypeNodeActor typeNodeActor = new TypeNodeActor(typeNode);
             vertx.deployVerticle(typeNodeActor);
@@ -265,7 +271,7 @@ public class Application {
 
         // Deploy InstanceNodeActors.
         log.debug("Deploying InstanceNodeActors..");
-        tx = Context.INSTANCE.getGraphDatabase().beginTx();
+        tx = Context.getGraphDatabase().beginTx();
         for (InstanceNode instanceNode : instanceNodeRepository.findAll()) {
             InstanceNodeActor instanceNodeActor = new InstanceNodeActor(instanceNode);
             vertx.deployVerticle(instanceNodeActor, new DeploymentOptions().setWorker(true));
@@ -274,7 +280,7 @@ public class Application {
 
         // Deploy TemplateNodeActors.
         log.debug("Deploying TemplateNodeActors..");
-        tx = Context.INSTANCE.getGraphDatabase().beginTx();
+        tx = Context.getGraphDatabase().beginTx();
         for (TemplateNode templateNode : templateNodeRepository.findAll()) {
             TemplateNodeActor templateNodeActor = new TemplateNodeActor(templateNode);
             vertx.deployVerticle(templateNodeActor);

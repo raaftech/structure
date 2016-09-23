@@ -23,7 +23,7 @@ import java.util.*;
 public class InstrumentManager extends GenericActor {
 
     private final static Logger log = LoggerFactory.getLogger(TaskManager.class);
-    private final InstanceNodeRepository instanceNodeRepository = Context.INSTANCE.getInstanceNodeRepository();
+    private final InstanceNodeRepository instanceNodeRepository = Context.getInstanceNodeRepository();
 
     private void loadInstruments() {
         // Load all instruments
@@ -36,13 +36,13 @@ public class InstrumentManager extends GenericActor {
                 .map(Paths::get)
                 .distinct()
                 .forEach(instrumentLoader::load);
-        Context.INSTANCE.setInstrumentsLoaded(true);
+        Context.setInstrumentsLoaded(true);
     }
 
     private void purgeInstruments() {
         log.info("Purging instruments.");
         instanceNodeRepository.purgeHandlers();
-        Context.INSTANCE.setInstrumentsLoaded(false);
+        Context.setInstrumentsLoaded(false);
     }
 
     @SuppressWarnings("unused")

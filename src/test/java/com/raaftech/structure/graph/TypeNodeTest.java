@@ -1,34 +1,35 @@
 package com.raaftech.structure.graph;
 
-import com.raaftech.structure.base.Context;
+import com.raaftech.structure.base.SpringTestConfig;
 import com.raaftech.structure.graph.repositories.TypeNodeRepository;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.AnnotationConfigContextLoader;
+import org.springframework.transaction.annotation.Transactional;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(loader = AnnotationConfigContextLoader.class, classes = SpringTestConfig.class)
 public class TypeNodeTest {
 
-    private TypeNodeRepository typeNodeRepository = Context.INSTANCE.getTypeNodeRepository();
+    @Autowired
+    private TypeNodeRepository typeNodeRepository;
 
     @Rule
     public ExpectedException exception = ExpectedException.none();
 
-    @BeforeClass
-    public static void setUp() throws Exception {
-        Context.INSTANCE.getClass();
-    }
-
-    @AfterClass
-    public static void tearDown() throws Exception {
-    }
-
     @Test
+    @Transactional
+    @Rollback
     public void testTypeNodeSetDescriptor() {
-        // WARNING! THIS IS RUN ON THE DEVELOPMENT DATABASE!
         TypeNode type01 = new TypeNode("TypeNode 01", "First TypeNode", 0);
         TypeNode type02 = new TypeNode("TypeNode 02", "Second TypeNode", 0);
         TypeNode type03 = new TypeNode("TypeNode 03", "Third TypeNode", 0);
@@ -56,18 +57,8 @@ public class TypeNodeTest {
         assertNotNull(type04.getSchema().getProperties().get("baz"));
 
         // Can't use except.expect() here because we still need to cleanup.
-        String exc = "";
-        try {
-            type02.setDescriptor("foo", "string", false, "Should be disallowed.", null, null);
-        } catch (RuntimeException e) {
-            exc = e.getMessage();
-        }
-        assertTrue(exc.equals("Can't override parent schema."));
-
-        typeNodeRepository.delete(type01);
-        typeNodeRepository.delete(type02);
-        typeNodeRepository.delete(type03);
-        typeNodeRepository.delete(type04);
+        exception.expectMessage("Can't override parent schema.");
+        type02.setDescriptor("foo", "string", false, "Should be disallowed.", null, null);
     }
 
 }

@@ -63,7 +63,7 @@ public class TemplateNodes extends Repository<TemplateNode> {
         return new MessageHandler() {
             @Override
             public JsonNode exec(JsonNode request) {
-                TypeNodeRepository typeNodeRepository = Context.INSTANCE.getTypeNodeRepository();
+                TypeNodeRepository typeNodeRepository = Context.getTypeNodeRepository();
                 ObjectNode result = mapper.createObjectNode();
                 JsonNode args = request.get("args");
 
@@ -102,7 +102,7 @@ public class TemplateNodes extends Repository<TemplateNode> {
                             if (parentTemplateNode != null) {
                                 parentTemplateNode.addComponent(newTemplateNode);
                                 parentTemplateNode.save();
-                                Context.INSTANCE.getVertx().deployVerticle(
+                                Context.getVertx().deployVerticle(
                                         new TemplateNodeActor(newTemplateNode));
                             } else {
                                 throw new RuntimeException("Cannot create TemplateNode, given parent was not found in the database.");

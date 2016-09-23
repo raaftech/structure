@@ -40,7 +40,7 @@ class TypeLoader implements PackageLoader {
     private static final String DEFAULT = "defaultValue";
 
     private static final Logger log = LoggerFactory.getLogger(PackageLoader.class);
-    private static final TypeNodeRepository typeNodeRepository = Context.INSTANCE.getTypeNodeRepository();
+    private static final TypeNodeRepository typeNodeRepository = Context.getTypeNodeRepository();
     private static final Map<String, TypeNode> registeredTypes = new HashMap<>();
 
     private final JsonNode typeSchema = JsonHelper.jsonFromResource("schema/helper/loader/type.schema.json");

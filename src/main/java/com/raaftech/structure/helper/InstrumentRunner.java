@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
  */
 public class InstrumentRunner {
 
-    private final InstanceNodeRepository instanceNodeRepository = Context.INSTANCE.getInstanceNodeRepository();
+    private final InstanceNodeRepository instanceNodeRepository = Context.getInstanceNodeRepository();
     private final ObjectMapper mapper = new ObjectMapper();
 
     private final String taskId;
@@ -465,7 +465,7 @@ public class InstrumentRunner {
     // Schedule the actual execution of the instrument.
     // This will always be done sequentially, until we implement automatic hierarchical execution of instruments.
     public void startInstrument() {
-        final EventBus eventBus = Context.INSTANCE.getVertx().eventBus();
+        final EventBus eventBus = Context.getVertx().eventBus();
         ObjectNode message = mapper.createObjectNode();
         message.put("msgh", "queueTask");
         ObjectNode args = message.putObject("args");
