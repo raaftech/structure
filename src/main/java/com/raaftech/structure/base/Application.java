@@ -56,9 +56,9 @@ public class Application {
         final Options options;
         options = new Options()
                 .addOption("b", "background", false, "Enable background mode (daemonized)")
-                .addOption("d", "debug", false, "Enable debug logging")
                 .addOption("f", "foreground", false, "Enable foreground mode (no-detach)")
                 .addOption("h", "help", false, "Display help message")
+                .addOption("l", "loglevel", true, "Set loglevel (INFO | DEBUG | TRACE)")
                 .addOption("t", "trace", false, "Enable (back)traces")
                 .addOption("u", "unsafe", false, "Enable unsafe mode");
 
@@ -86,23 +86,33 @@ public class Application {
                 log.info("Background mode not implemented");
             }
 
-            // LOGGING options
+            // LOGGING level
+            if(line.hasOption("loglevel")){
+                String loglevel = line.getOptionValue("loglevel");
+                switch(loglevel){
+                    case "TRACE":
+                        log.info("Setting loglevel to TRACE...");
+                        root.setLevel(Level.TRACE);
+                        break;
+                    case "DEBUG":
+                        log.info("Setting loglevel to DEBUG...");
+                        root.setLevel(Level.DEBUG);
+                        break;
+                    case "INFO":
+                        log.info("Setting loglevel to INFO...");
+                        root.setLevel(Level.INFO);
+                        break;
+                    default:
+                        log.info("Unknown loglevel {} defaulting to INFO...", loglevel);
+                        root.setLevel(Level.INFO);
+                        break;
+                }
+            }
+
+            // TRACING mode
             if(line.hasOption("trace")) {
                 System.setProperty("traceMode", "true");
                 log.info("TRACE mode enabled");
-
-                root.setLevel(Level.TRACE);
-                log.trace("Setting log level to TRACE..");
-            } else if(line.hasOption("debug")) {
-                System.setProperty("debugMode", "true");
-                log.info("DEBUG mode enabled");
-
-                root.setLevel(Level.DEBUG);
-                log.debug("Setting log level to DEBUG..");
-            }
-            else {
-                root.setLevel(Level.INFO);
-                log.info("Setting log level to INFO..");
             }
 
             // MODE
