@@ -64,6 +64,13 @@ public class Application {
 
         CommandLineParser parser = new DefaultParser();
 
+        // Black magic.
+        SLF4JBridgeHandler.removeHandlersForRootLogger();
+        SLF4JBridgeHandler.install();
+
+        ch.qos.logback.classic.Logger root =
+                (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+
         try {
             CommandLine line = parser.parse(options, args);
             HelpFormatter formatter = new HelpFormatter();
@@ -80,12 +87,22 @@ public class Application {
             }
 
             // LOGGING options
-            if(line.hasOption("debug")) {
-                log.info("DEBUG mode enabled");
-                System.setProperty("debugMode", "true");
-            } else if(line.hasOption("trace")) {
-                log.info("TRACE mode enabled");
+            if(line.hasOption("trace")) {
                 System.setProperty("traceMode", "true");
+                log.info("TRACE mode enabled");
+
+                root.setLevel(Level.TRACE);
+                log.trace("Setting log level to TRACE..");
+            } else if(line.hasOption("debug")) {
+                System.setProperty("debugMode", "true");
+                log.info("DEBUG mode enabled");
+
+                root.setLevel(Level.DEBUG);
+                log.debug("Setting log level to DEBUG..");
+            }
+            else {
+                root.setLevel(Level.INFO);
+                log.info("Setting log level to INFO..");
             }
 
             // MODE
@@ -93,8 +110,6 @@ public class Application {
                 log.info("UNSAFE mode enabled");
                 System.setProperty("unsafeMode", "true");
             }
-
-
         } catch (ParseException e) {
             log.error("Can't parse commandline options: " + e.getMessage());
         }
@@ -104,24 +119,6 @@ public class Application {
         Router router;
         SockJSHandler sockJsHandler;
         final int port = 8080;
-
-        // Black magic.
-        SLF4JBridgeHandler.removeHandlersForRootLogger();
-        SLF4JBridgeHandler.install();
-
-        ch.qos.logback.classic.Logger root =
-                (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
-        
-        if (Boolean.parseBoolean(System.getProperty("debugMode"))) {
-            root.setLevel(Level.DEBUG);
-            log.debug("Setting log level to DEBUG..");
-        } else if(Boolean.parseBoolean(System.getProperty("traceMode"))) {
-            root.setLevel(Level.TRACE);
-            log.trace("Setting log level to TRACE..");
-        } else {
-            root.setLevel(Level.INFO);
-            log.info("Setting log level to INFO..");
-        }
 
         // Tell the user we're starting up.
         log.info("Structure is starting up..");
