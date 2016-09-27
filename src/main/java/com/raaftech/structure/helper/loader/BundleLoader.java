@@ -64,7 +64,7 @@ public class BundleLoader {
         } catch (Exception e) {
             log.error("Loading of bundle \"" + bundle.getName() + "\" cancelled. Transaction rolled back.\n"
                     + "Exception message is \"" + e.getMessage() + "\".");
-            if (log.isTraceEnabled()) {
+            if (Boolean.parseBoolean(System.getProperty("traceMode"))) {
                 e.printStackTrace();
             }
             tx.failure();
@@ -121,7 +121,7 @@ public class BundleLoader {
         } catch (IOException e) {
         	log.debug(e.getMessage());
         	
-        	if (log.isTraceEnabled()) {
+        	if (Boolean.parseBoolean(System.getProperty("traceMode"))) {
         		e.printStackTrace();
         	}
         }

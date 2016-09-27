@@ -269,7 +269,7 @@ public class InstanceNode extends Node {
         } catch (ProcessingException e) {
 			log.error(e.getMessage());
 
-			if (log.isTraceEnabled()) {
+			if (Boolean.parseBoolean(System.getProperty("traceMode"))) {
 				e.printStackTrace();
 			}
 			

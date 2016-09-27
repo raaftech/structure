@@ -128,7 +128,7 @@ public class InstrumentLoader implements PackageLoader {
             log.info("Successfully created the " + instrumentName + " instrument.");
         } catch (Exception e) {
             log.error("Error while saving " + instrumentName + ", rolling back transaction.");
-            if (log.isTraceEnabled()) {
+            if (Boolean.parseBoolean(System.getProperty("traceMode"))) {
                 e.printStackTrace();
             }
             tx.failure();
@@ -234,7 +234,7 @@ public class InstrumentLoader implements PackageLoader {
                         + "instrument schema");
             }
         } catch (IOException e) {
-            if (log.isTraceEnabled()) {
+            if (Boolean.parseBoolean(System.getProperty("traceMode"))) {
                 e.printStackTrace();
             }
         }
@@ -254,7 +254,7 @@ public class InstrumentLoader implements PackageLoader {
             parsePreamble(filePath.toString(), contents);
         } catch (IOException e) {
             log.error("Error while reading instrument template " + filePath.toString());
-            if (log.isTraceEnabled()) {
+            if (Boolean.parseBoolean(System.getProperty("traceMode"))) {
                 e.printStackTrace();
             }
         }

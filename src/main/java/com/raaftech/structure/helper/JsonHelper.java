@@ -29,7 +29,7 @@ public class JsonHelper {
         try {
             result = mapper.readTree(inputStream);
         } catch (Exception e) {
-			if (log.isTraceEnabled()) {
+			if (Boolean.parseBoolean(System.getProperty("traceMode"))) {
 	            log.error("Couldn't open as resource " + resource + ": " + e.getMessage());
 				e.printStackTrace();
 			}
@@ -44,7 +44,7 @@ public class JsonHelper {
         try {
             result = mapper.readTree(new File(file));
         } catch (IOException e) {            
-			if (log.isTraceEnabled()) {
+			if (Boolean.parseBoolean(System.getProperty("traceMode"))) {
 	            log.error("Couldn't open as file  " + file + ": " + e.getMessage());
 				e.printStackTrace();
 			}
@@ -78,7 +78,7 @@ public class JsonHelper {
             final JsonSchema jsonSchema = factory.getJsonSchema(schema);
             valid = jsonSchema.validate(object).isSuccess();
         } catch (ProcessingException e) {
-            if (log.isTraceEnabled()) {
+            if (Boolean.parseBoolean(System.getProperty("traceMode"))) {
                 e.printStackTrace();
             }
         }

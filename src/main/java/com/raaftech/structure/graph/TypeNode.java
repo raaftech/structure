@@ -193,7 +193,7 @@ public class TypeNode extends Node {
                 } catch (ProcessingException e) {
                 	log.error(e.getMessage());
 
-        			if (log.isTraceEnabled()) {
+        			if (Boolean.parseBoolean(System.getProperty("traceMode"))) {
         				e.printStackTrace();
         			}
         		}
@@ -292,7 +292,7 @@ public class TypeNode extends Node {
             } catch (ProcessingException e) {
             	log.error(e.getMessage());
 
-    			if (log.isTraceEnabled()) {
+    			if (Boolean.parseBoolean(System.getProperty("traceMode"))) {
     				e.printStackTrace();
     			}
     			
@@ -342,7 +342,7 @@ public class TypeNode extends Node {
         } catch (JsonProcessingException e) {
         	log.error(e.getMessage());
 
-			if (log.isTraceEnabled()) {
+			if (Boolean.parseBoolean(System.getProperty("traceMode"))) {
 				e.printStackTrace();
 			}
 		}

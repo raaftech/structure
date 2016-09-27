@@ -255,7 +255,7 @@ public class TemplateNode extends Node {
                     } catch (Exception e1) {
             			log.error(e1.getMessage());
 
-            			if (log.isTraceEnabled()) {
+            			if (Boolean.parseBoolean(System.getProperty("traceMode"))) {
             				e1.printStackTrace();
             			}
             			
@@ -290,7 +290,7 @@ public class TemplateNode extends Node {
                             } catch (Exception e) {     
                     			log.error(e.getMessage());
 
-                    			if (log.isTraceEnabled()) {
+                    			if (Boolean.parseBoolean(System.getProperty("traceMode"))) {
                     				e.printStackTrace();
                     			}
                     			
@@ -387,7 +387,7 @@ public class TemplateNode extends Node {
             // Shouldn't be possible.
         	log.error(e.getMessage());
 
-			if (log.isTraceEnabled()) {
+			if (Boolean.parseBoolean(System.getProperty("traceMode"))) {
 				e.printStackTrace();
 			}
 			
@@ -415,7 +415,7 @@ public class TemplateNode extends Node {
         } catch (ProcessingException e) {
             log.error("Error constructing schema: " + e.getMessage());
             
-            if (log.isTraceEnabled()) {
+            if (Boolean.parseBoolean(System.getProperty("traceMode"))) {
                 e.printStackTrace();
             }
             
@@ -439,7 +439,7 @@ public class TemplateNode extends Node {
             
             log.error(e.getMessage());
 
-			if (log.isTraceEnabled()) {
+			if (Boolean.parseBoolean(System.getProperty("traceMode"))) {
 				e.printStackTrace();
 			}
 			
@@ -528,7 +528,7 @@ public class TemplateNode extends Node {
             
             log.error(e.getMessage());
 
-			if (log.isTraceEnabled()) {
+			if (Boolean.parseBoolean(System.getProperty("traceMode"))) {
 				e.printStackTrace();
 			}
 			
@@ -579,7 +579,7 @@ public class TemplateNode extends Node {
         } catch (JsonProcessingException e) {
             log.error(e.getMessage());
 
-			if (log.isTraceEnabled()) {
+			if (Boolean.parseBoolean(System.getProperty("traceMode"))) {
 				e.printStackTrace();
 			}	
         }

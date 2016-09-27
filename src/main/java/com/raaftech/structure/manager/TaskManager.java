@@ -172,7 +172,7 @@ public class TaskManager extends GenericActor {
                                                 runJob(job);
                                             } catch (InterruptedException | IOException e) {
                                                 log.error("Ran into error while executing job " + task.id + "." + jobId);
-                                                if (log.isTraceEnabled()) {
+                                                if (Boolean.parseBoolean(System.getProperty("traceMode"))) {
                                                     e.printStackTrace();
                                                 }
                                                 job.status = JobStatus.ERROR;
@@ -284,7 +284,7 @@ public class TaskManager extends GenericActor {
                 try {
                     log.info(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(task.toJson()));
                 } catch (JsonProcessingException e) {
-                    if (log.isTraceEnabled()) {
+                    if (Boolean.parseBoolean(System.getProperty("traceMode"))) {
                         e.printStackTrace();
                     }
                 }

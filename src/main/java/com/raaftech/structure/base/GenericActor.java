@@ -94,7 +94,7 @@ public abstract class GenericActor extends AbstractVerticle {
             } catch (IllegalAccessException | InvocationTargetException e) {
                 log.error("Failed to access or invoke method " + s + ": " + e.getMessage());
                 
-                if(log.isTraceEnabled()) {
+                if (Boolean.parseBoolean(System.getProperty("traceMode"))) {
                     e.printStackTrace();
                 }
             }
@@ -120,7 +120,7 @@ public abstract class GenericActor extends AbstractVerticle {
         } catch (IOException e) {
             log.error(e.getMessage());
             
-            if(log.isTraceEnabled()) {
+            if (Boolean.parseBoolean(System.getProperty("traceMode"))) {
                 e.printStackTrace();
             }
         }
@@ -158,7 +158,7 @@ public abstract class GenericActor extends AbstractVerticle {
         } catch (Exception e) {
             log.error(e.getMessage());
             
-            if(log.isTraceEnabled()) {
+            if (Boolean.parseBoolean(System.getProperty("traceMode"))) {
                 e.printStackTrace();
             }
             
@@ -181,7 +181,7 @@ public abstract class GenericActor extends AbstractVerticle {
         } catch (IllegalArgumentException e) {
             log.error(e.getMessage());
             
-            if(log.isTraceEnabled()) {
+            if (Boolean.parseBoolean(System.getProperty("traceMode"))) {
                 e.printStackTrace();
             }
             
@@ -201,7 +201,7 @@ public abstract class GenericActor extends AbstractVerticle {
         } catch (ProcessingException e) {
             log.error(e.getMessage());
             
-            if(log.isTraceEnabled()) {
+            if (Boolean.parseBoolean(System.getProperty("traceMode"))) {
                 e.printStackTrace();
             }
         }
@@ -223,7 +223,7 @@ public abstract class GenericActor extends AbstractVerticle {
         } catch (ProcessingException e) {
             log.error(e.getMessage());
             
-            if(log.isTraceEnabled()) {
+            if (Boolean.parseBoolean(System.getProperty("traceMode"))) {
                 e.printStackTrace();
             }
             
@@ -328,7 +328,7 @@ public abstract class GenericActor extends AbstractVerticle {
         } catch (Exception e) {
             log.error(e.getMessage());
             
-            if(log.isTraceEnabled()) {
+            if (Boolean.parseBoolean(System.getProperty("traceMode"))) {
                 e.printStackTrace();
             }
         }
@@ -356,7 +356,7 @@ public abstract class GenericActor extends AbstractVerticle {
                     } catch (NullPointerException e) {
                         log.error(e.getMessage());
                         
-                        if(log.isTraceEnabled()) {
+                        if (Boolean.parseBoolean(System.getProperty("traceMode"))) {
                             e.printStackTrace();
                         }
                     }

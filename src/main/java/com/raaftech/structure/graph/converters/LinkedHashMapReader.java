@@ -28,7 +28,7 @@ public class LinkedHashMapReader implements Converter<String, LinkedHashMap<Stri
 		} catch (IOException e) {
 			log.error(e.getMessage());
 
-			if (log.isTraceEnabled()) {
+			if (Boolean.parseBoolean(System.getProperty("traceMode"))) {
 				e.printStackTrace();
 			}
 		}

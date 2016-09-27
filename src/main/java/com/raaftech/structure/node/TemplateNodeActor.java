@@ -81,7 +81,7 @@ public class TemplateNodeActor extends NodeActor<TemplateNode> {
                     
                     log.error(e.getMessage());
 
-        			if (log.isTraceEnabled()) {
+        			if (Boolean.parseBoolean(System.getProperty("traceMode"))) {
         				e.printStackTrace();
         			}
         			
@@ -129,7 +129,7 @@ public class TemplateNodeActor extends NodeActor<TemplateNode> {
                     } catch (RuntimeException e) {
                     	log.error(e.getMessage());
 
-            			if (log.isTraceEnabled()) {
+            			if (Boolean.parseBoolean(System.getProperty("traceMode"))) {
             				e.printStackTrace();
             			}
             			
@@ -166,7 +166,7 @@ public class TemplateNodeActor extends NodeActor<TemplateNode> {
                 } catch (Exception e) {
                 	log.error(e.getMessage());
 
-        			if (log.isTraceEnabled()) {
+        			if (Boolean.parseBoolean(System.getProperty("traceMode"))) {
         				e.printStackTrace();
         			}
         			

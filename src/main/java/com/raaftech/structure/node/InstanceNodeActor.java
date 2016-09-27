@@ -195,7 +195,7 @@ public class InstanceNodeActor extends NodeActor<InstanceNode> {
                     } catch (RuntimeException e) {
                     	log.error(e.getMessage());
 
-            			if (log.isTraceEnabled()) {
+            			if (Boolean.parseBoolean(System.getProperty("traceMode"))) {
             				e.printStackTrace();
             			}
             			

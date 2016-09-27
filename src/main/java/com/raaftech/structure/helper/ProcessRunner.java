@@ -51,7 +51,7 @@ public class ProcessRunner {
             processResult.stderr = readFile(tempErr.getPath());
             processResult.stdout = readFile(tempOut.getPath());
         } catch (IOException e) {
-            if (log.isTraceEnabled()) {
+            if (Boolean.parseBoolean(System.getProperty("traceMode"))) {
                 e.printStackTrace();
             }
         }

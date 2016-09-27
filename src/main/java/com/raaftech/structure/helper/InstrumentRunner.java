@@ -175,7 +175,7 @@ public class InstrumentRunner {
             } catch (Exception e) {
             	log.error(e.getMessage());
 
-    			if (log.isTraceEnabled()) {
+    			if (Boolean.parseBoolean(System.getProperty("traceMode"))) {
     				e.printStackTrace();
     			}
     			
@@ -195,7 +195,7 @@ public class InstrumentRunner {
                     ObjectNode args = validateAndSelectArguments(instrument);
                     jobList.add(applyTemplate(instrument.getProperty(templateProperty), args));
                 } catch (IOException e) {
-                    if (log.isTraceEnabled()) {
+                    if (Boolean.parseBoolean(System.getProperty("traceMode"))) {
                         e.printStackTrace();
                     }
                 }
@@ -313,7 +313,7 @@ public class InstrumentRunner {
         } catch (IOException e) {
         	log.error(e.getMessage());
 
-			if (log.isTraceEnabled()) {
+			if (Boolean.parseBoolean(System.getProperty("traceMode"))) {
 				e.printStackTrace();
 			}
 			
@@ -392,7 +392,7 @@ public class InstrumentRunner {
         } catch (IOException e) {
             log.error("Couldn't create FileWriter to write generated script to: " + e.getMessage());
             
-            if (log.isTraceEnabled()) {
+            if (Boolean.parseBoolean(System.getProperty("traceMode"))) {
                 e.printStackTrace();
             }
         }
