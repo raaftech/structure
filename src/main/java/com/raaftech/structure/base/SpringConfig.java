@@ -4,10 +4,7 @@
 
 package com.raaftech.structure.base;
 
-import com.raaftech.structure.graph.repositories.InstanceNodeRepository;
-import com.raaftech.structure.graph.repositories.NodeRepository;
-import com.raaftech.structure.graph.repositories.SchemaNodeRepository;
-import com.raaftech.structure.graph.repositories.TypeNodeRepository;
+import com.raaftech.structure.graph.repositories.*;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.factory.GraphDatabaseBuilder;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
@@ -80,13 +77,19 @@ public class SpringConfig extends Neo4jConfiguration {
     Neo4jTemplate neo4jTemplate;
 
     @Autowired
-    TypeNodeRepository typeNodeRepository;
+    TypeRepository typeRepository;
 
     @Autowired
     SchemaNodeRepository schemaNodeRepository;
 
     @Autowired
-    InstanceNodeRepository instanceNodeRepository;
+    InstanceRepository instanceRepository;
+
+    @Autowired
+    InstrumentRepository instrumentRepository;
+
+    @Autowired
+    ComponentRepository componentRepository;
 
     @Autowired
     GraphDatabase graphDatabase;

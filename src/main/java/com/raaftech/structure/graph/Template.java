@@ -7,10 +7,10 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.fge.jsonschema.core.exceptions.ProcessingException;
 import com.raaftech.structure.base.Context;
-import com.raaftech.structure.graph.repositories.TemplateNodeRepository;
-import com.raaftech.structure.graph.repositories.TypeNodeRepository;
+import com.raaftech.structure.graph.repositories.TemplateRepository;
+import com.raaftech.structure.graph.repositories.TypeRepository;
 import com.raaftech.structure.helper.JsonSchemaBuilder;
-import com.raaftech.structure.node.TemplateNodeActor;
+import com.raaftech.structure.node.TemplateActor;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.eventbus.Message;
@@ -30,63 +30,61 @@ import rx.Observable;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static io.vertx.core.json.Json.mapper;
-
 /**
- * Give a description of TemplateNode here.
+ * Give a description of Template here.
  *
  * @author Boy van Duuren <boy.van.duuren@raaftech.com>
  * @since 2015-03-09
  */
 @NodeEntity
-public class TemplateNode extends Node {
+public class Template extends Node {
 
-    final static Logger log = LoggerFactory.getLogger(TemplateNode.class);
+    final static Logger log = LoggerFactory.getLogger(Template.class);
 
     @RelatedTo(type = "TEMPLATE_FOR", direction = Direction.OUTGOING)
     @Fetch
-    TypeNode isa;
+    Type isa;
 
     @RelatedTo(type = "HAS_COMPONENT", direction = Direction.OUTGOING)
     @Fetch
-    Set<TemplateNode> hasComponents;
+    Set<Template> hasComponents;
 
     @RelatedTo(type = "HAS_COMPONENT", direction = Direction.INCOMING)
     @Fetch
-    TemplateNode parentComponent;
+    Template parentComponent;
 
     boolean startOfTemplate;
     boolean required;
     boolean unique;
 
     @Transient
-    TemplateNodeRepository templateNodeRepository = Context.getTemplateNodeRepository();
+    TemplateRepository templateRepository = Context.getTemplateRepository();
     @Transient
-    TypeNodeRepository typeNodeRepository = Context.getTypeNodeRepository();
+    TypeRepository typeRepository = Context.getTypeRepository();
 
     /****************/
     /* Constructors */
     /****************/
 
-    public TemplateNode() {}
+    public Template() {}
 
-    public TemplateNode(String isa) {
+    public Template(String isa) {
         super();
-        TypeNode typeNode = typeNodeRepository.findByUuid(isa);
-        if (typeNode != null) {
-            this.name = typeNode.getName();
-            this.desc = typeNode.getDesc();
-            setIsa(typeNode);
+        Type type = typeRepository.findByUuid(isa);
+        if (type != null) {
+            this.name = type.getName();
+            this.desc = type.getDesc();
+            setIsa(type);
         } else {
             throw new RuntimeException("Couldn't find ISA used to create new Template Node.");
         }
     }
 
-    public TemplateNode(String name, String desc) {
+    public Template(String name, String desc) {
         super(name, desc);
     }
 
-    public TemplateNode(String name, String desc, String uuid) {
+    public Template(String name, String desc, String uuid) {
         super(name, desc, uuid);
     }
 
@@ -94,18 +92,20 @@ public class TemplateNode extends Node {
     /* Private Methods */
     /*******************/
 
-    private static void cascadeRemoval(TemplateNode child) {
-        TemplateNodeRepository templateNodeRepository = Context.getTemplateNodeRepository();
-        child.hasComponents.stream()
-        .forEach(TemplateNode::cascadeRemoval);
-        templateNodeRepository.delete(child);
+    private static void cascadeRemoval(Template child) {
+        TemplateRepository templateRepository = Context.getTemplateRepository();
+        if (child.hasComponents != null) {
+            child.hasComponents.stream()
+                    .forEach(Template::cascadeRemoval);
+        }
+        templateRepository.delete(child);
     }
 
     private JsonSchemaBuilder getArraySchema() {
         JsonSchemaBuilder arraySchema = new JsonSchemaBuilder()
                 .setType("object")
                 .setAdditionalProperties(false);
-        arraySchema.addProperty("templateNodeUuid", "string", true, "UUID of the TemplateNode.").setPattern(getUuid());
+        arraySchema.addProperty("templateUuid", "string", true, "UUID of the Template.").setPattern(getUuid());
         JsonSchemaBuilder data = arraySchema.addProperty("data", "object", true, "Data object containing the wrapping array.");
         JsonSchemaBuilder wrappingArray = data.addProperty("instances", "array", required, "Wrapping array.");
 
@@ -120,30 +120,38 @@ public class TemplateNode extends Node {
     }
 
     // This is not directly called, use instantiate(Map<String, JsonNode> dataMap) in stead
-    private String instantiate(TemplateNode template, InstanceNode parent, Map<String, JsonNode> dataMap, int depth) {
+    private String instantiate(Template template, Component parent, Map<String, JsonNode> dataMap, int depth) {
         if (!startOfTemplate && parent == null) {
-            throw new IllegalArgumentException("Cannot instantiate a TemplateNode that is not the start of a template without a parent.");
+            throw new IllegalArgumentException("Cannot instantiate a Template that is not the start of a template without a parent.");
         }
 
         JsonNode json = dataMap.get(template.getUuid());
+        if (json == null) {
+            if (!template.isRequired()) {
+                return null;
+            } else {
+                throw new RuntimeException("Missing instancedata for non-optional Template "
+                        + template.getName() + ".");
+            }
+        }
         ArrayNode instances = (ArrayNode)json.get("instances");
 
         for (JsonNode instance : instances) {
             ObjectNode instanceData = (ObjectNode) instance;
             String typeUuid = null;
             final String typeOverrideKey = "_typeUuid";
-            TypeNode typeNode = null;
+            Type type = null;
             if (instanceData.has(typeOverrideKey)) {
                 typeUuid = instanceData.get(typeOverrideKey).asText();
                 instanceData.remove(typeOverrideKey);
-                if (typeNodeRepository.isSubtype(template.isa.getUuid(), typeUuid) >= 1) {
-                    typeNode = typeNodeRepository.findByUuid(typeUuid);
+                if (typeRepository.isSubtype(template.isa.getUuid(), typeUuid) >= 1) {
+                    type = typeRepository.findByUuid(typeUuid);
                 } else {
                     throw new IllegalArgumentException("Type with UUID " + typeUuid + " is not a subtype of " + template.isa.getName() + ".");
                 }
             }
             // Get the appropriate schema and validate
-            JsonSchemaBuilder schema = typeNode != null ? typeNode.getSchema() : template.isa.getSchema();
+            JsonSchemaBuilder schema = type != null ? type.getSchema() : template.isa.getSchema();
             if (!schema.validateJson(instanceData)) {
                 throw new IllegalArgumentException("Tried instantiating a template with invalid instantation data.");
             }
@@ -162,19 +170,21 @@ public class TemplateNode extends Node {
                 ObjectNode instanceData = (ObjectNode)instanceDataArray.get(0);
                 String typeUuid = instanceData.has("typeUuid") ? instanceData.get("typeUuid").asText() : isa.getUuid();
                 instanceData.remove("typeUuid");
-                final InstanceNode instanceNode = new InstanceNode((ObjectNode)instanceDataArray.get(0), typeUuid);
-                instanceUuid = instanceNode.getUuid();
+                final Component component = new Component((ObjectNode)instanceDataArray.get(0), typeUuid);
+                instanceUuid = component.getUuid();
 
-                template.hasComponents.stream()
-                .forEach(t -> t.instantiate(t, instanceNode, dataMap, depth+1));
-                instanceNode.save();
+                if (template.hasComponents != null) {
+                    template.hasComponents.stream()
+                            .forEach(t -> t.instantiate(t, component, dataMap, depth + 1));
+                }
+                component.save();
             }
-            // If this TemplateNode has components (implies required and unique)
-            else if (hasComponents.size() > 0) {
+            // If this Template has components (implies required and unique)
+            else if (hasComponents != null && hasComponents.size() > 0) {
                 ObjectNode instanceData = (ObjectNode)instanceDataArray.get(0);
                 String typeUuid = instanceData.has("typeUuid") ? instanceData.get("typeUuid").asText() : isa.getUuid();
                 instanceData.remove("typeUuid");
-                final InstanceNode instanceNode = new InstanceNode((ObjectNode)instanceDataArray.get(0), typeUuid);
+                final Component instanceNode = new Component((ObjectNode)instanceDataArray.get(0), typeUuid);
                 instanceUuid = instanceNode.getUuid();
                 if (parent != null) parent.addComponent(instanceNode);
 
@@ -185,9 +195,9 @@ public class TemplateNode extends Node {
                 instanceDataArray.forEach(data -> {
                     String typeUuid = data.has("typeUuid") ? data.get("typeUuid").asText() : isa.getUuid();
                     ((ObjectNode)data).remove("typeUuid");
-                    InstanceNode instanceNode = new InstanceNode((ObjectNode)data, typeUuid);
-                    if (parent != null) parent.addComponent(instanceNode);
-                    instanceNode.save();
+                    Component component = new Component((ObjectNode)data, typeUuid);
+                    if (parent != null) parent.addComponent(component);
+                    component.save();
                 });
             }
         }
@@ -195,12 +205,12 @@ public class TemplateNode extends Node {
         return instanceUuid;
     }
 
-    private void recurseForArraySchemas(ArrayNode schema, Set<TemplateNode> templateNodes) {
-        templateNodes.stream()
+    private void recurseForArraySchemas(ArrayNode schema, Set<Template> templates) {
+        templates.stream()
                 .sorted((a, b) -> Long.compare(a.getId(), b.getId()))
                 .forEach(node -> {
                     schema.add(node.getArraySchema().getAsObjectNode());
-                    if (node.hasComponents.size() > 0) {
+                    if (node.hasComponents != null && node.hasComponents.size() > 0) {
                         recurseForArraySchemas(schema, node.hasComponents);
                     }
                 });
@@ -210,22 +220,22 @@ public class TemplateNode extends Node {
     /* Public Methods */
     /******************/
 
-    public TemplateNode addComponent(TemplateNode component) {
+    public Template addComponent(Template component) {
         if (hasComponents == null) {
             hasComponents = new HashSet<>();
         }
         if (required && unique) {
             hasComponents.add(component);
-            component.setParentComponent(this);
+            component.parentComponent = this;
         } else {
-            throw new RuntimeException("Cannot add a child TemplateNode to " + getName() + " (" + getUuid()
+            throw new RuntimeException("Cannot add a child Template to " + getName() + " (" + getUuid()
             + ") because " + getName() + " isn't set to required and unique.");
         }
 
         return this;
     }
 
-    public TemplateNode discover(JsonNode args) {
+    public Template discover(JsonNode args) {
         if (!isStartOfTemplate()) {
             throw new RuntimeException("Discovery can only be started on the start of a template");
         }
@@ -235,9 +245,9 @@ public class TemplateNode extends Node {
 
         // OK, so this probably won't be readable for anyone (not even me five minutes from now)
         // Goal of the following routine is to create a Map that consists of an ObservableHandler,
-        // an address of a Discovery Handler and the UUID of the TemplateNode connected to the DiscoHandler
+        // an address of a Discovery Handler and the UUID of the Template connected to the DiscoHandler
         Transaction tx = Context.getGraphDatabase().beginTx();
-        Iterator<Map<String, String>> discoveryData = templateNodeRepository.getDiscoveryData(this.getUuid()).iterator();
+        Iterator<Map<String, String>> discoveryData = templateRepository.getDiscoveryData(this.getUuid()).iterator();
         // Fairly certain there's a better type for this map.
         Map<ObservableHandler<AsyncResult<Message<JsonObject>>>, List<String>>
         discoveryHandlerMap = new HashMap<>();
@@ -321,7 +331,7 @@ public class TemplateNode extends Node {
     }
 
     // Create a form layout for the generated form.
-    // For now this will only create a form when a TemplateNode
+    // For now this will only create a form when a Template
     // isn't unique (else it'll just contain [ "*" ]).
     // TODO: Add functionality to create custom form layouts
     public ArrayNode getForm() {
@@ -350,25 +360,19 @@ public class TemplateNode extends Node {
         return form;
     }
 
-    public Set<TemplateNode> getHasComponents() {
+    public Set<Template> getHasComponents() {
         return hasComponents;
     }
 
-    public TemplateNode getParentComponent() {
+    public Template getParentComponent() {
         return parentComponent;
-    }
-
-    public TemplateNode setParentComponent(TemplateNode parentComponent) {
-        this.parentComponent = parentComponent;
-
-        return this;
     }
 
     public JsonSchemaBuilder getSchema() {
         // We're going to wrap our schema in another schema. This is done to allow for
-        // multiple instantiations of one TypeNode (if the template allows it).
+        // multiple instantiations of one Type (if the template allows it).
         // The reason we wrap all the schema's this way is so we have uniform JSON schema
-        // for all types of TypeNodes. We'll just set different min/maxItems on it.
+        // for all types of Types. We'll just set different min/maxItems on it.
         JsonSchemaBuilder wrappingSchema;
         try {
             wrappingSchema = new JsonSchemaBuilder()
@@ -391,7 +395,7 @@ public class TemplateNode extends Node {
 				e.printStackTrace();
 			}
 			
-        	throw new RuntimeException("TypeNode didn't contain a valid JSON schema.");
+        	throw new RuntimeException("Type didn't contain a valid JSON schema.");
         }
         return wrappingSchema;
     }
@@ -426,7 +430,7 @@ public class TemplateNode extends Node {
         Iterator<JsonNode> elements = instanceData.elements();
         while (elements.hasNext()) {
             JsonNode element = elements.next();
-            uuidToDataMap.put(element.get("templateNodeUuid").asText(), element.get("data"));
+            uuidToDataMap.put(element.get("templateUuid").asText(), element.get("data"));
         }
 
         Transaction tx = Context.getGraphDatabase().beginTx();
@@ -437,13 +441,13 @@ public class TemplateNode extends Node {
         } catch (Exception e) {
             tx.failure();
             
-            log.error(e.getMessage());
+            log.error("Transaction failed: " + e.getMessage());
 
 			if (Boolean.parseBoolean(System.getProperty("traceMode"))) {
 				e.printStackTrace();
 			}
 			
-            throw new RuntimeException("Transaction failed.");
+            throw e;
         } finally {
             tx.close();
         }
@@ -454,7 +458,7 @@ public class TemplateNode extends Node {
         return required;
     }
 
-    public TemplateNode setRequired(boolean required) {
+    public Template setRequired(boolean required) {
         this.required = required;
 
         return this;
@@ -464,7 +468,7 @@ public class TemplateNode extends Node {
         return startOfTemplate;
     }
 
-    public TemplateNode setStartOfTemplate(boolean startOfTemplate) {
+    public Template setStartOfTemplate(boolean startOfTemplate) {
         this.startOfTemplate = startOfTemplate;
 
         return this;
@@ -474,18 +478,18 @@ public class TemplateNode extends Node {
         return unique;
     }
 
-    public TemplateNode setUnique(boolean unique) {
+    public Template setUnique(boolean unique) {
         this.unique = unique;
 
         return this;
     }
 
     /**
-     * Removes all components from a TemplateNode.
+     * Removes all components from a Template.
      * @return The number of components removed.
      */
     public long removeAllComponents() {
-        Set<TemplateNode> copy = hasComponents.stream().collect(Collectors.toSet());
+        Set<Template> copy = hasComponents.stream().collect(Collectors.toSet());
         long count = copy.stream()
                 .peek(this::removeComponent)
                 .count();
@@ -494,34 +498,36 @@ public class TemplateNode extends Node {
         return count;
     }
 
-    public boolean removeComponent(TemplateNode component) {
+    public boolean removeComponent(Template component) {
         // UUID will is unique, so we can safely assume
         // the resulting list will have only 1 element.
-        TemplateNodeRepository templateNodeRepository = Context.getTemplateNodeRepository();
-        List<TemplateNode> placeholder = hasComponents.stream()
+        TemplateRepository templateRepository = Context.getTemplateRepository();
+        List<Template> placeholder = hasComponents.stream()
                 .filter(c -> c.getUuid().equals(component.getUuid()))
                 .collect(Collectors.toList());
-        TemplateNode found = placeholder.get(0);
+        Template found = placeholder.get(0);
 
-        found.hasComponents.stream()
-        .forEach(TemplateNode::cascadeRemoval);
+        if (found.hasComponents != null) {
+            found.hasComponents.stream()
+                    .forEach(Template::cascadeRemoval);
+        }
 
-        templateNodeRepository.delete(found);
+        templateRepository.delete(found);
 
         return hasComponents.remove(found);
     }
 
-    public TemplateNode save() {
+    public Template save() {
         Transaction tx = Context.getGraphDatabase().beginTx();
-        TemplateNodeRepository templateNodeRepository = Context.getTemplateNodeRepository();
+        TemplateRepository templateRepository = Context.getTemplateRepository();
         boolean newNode = getId() == null || getId() < 0;
 
         try {
             if (startOfTemplate && !(required && unique)) {
-                throw new RuntimeException("Can't save TemplateNode " + getName() + " as the start of a template "
+                throw new RuntimeException("Can't save Template " + getName() + " as the start of a template "
                         + "because the start of a template should also be unique and required.");
             }
-            templateNodeRepository.save(this);
+            templateRepository.save(this);
             tx.success();
         } catch (Exception e) {
             tx.failure();
@@ -538,25 +544,27 @@ public class TemplateNode extends Node {
         }
 
         if (newNode) {
-            Context.getVertx().deployVerticle(
-                    new TemplateNodeActor(this));
+            if (Context.getVertx() != null) {
+                Context.getVertx().deployVerticle(
+                        new TemplateActor(this));
+            }
         }
 
         return this;
     }
 
-    public TemplateNode setIsa(TypeNode isa) {
+    public Template setIsa(Type isa) {
         this.isa = isa;
 
         return this;
     }
 
-    public TemplateNode setIsa(String isa) {
-        TypeNode found = typeNodeRepository.findByUuid(isa);
+    public Template setIsa(String isa) {
+        Type found = typeRepository.findByUuid(isa);
         if (found != null) {
             setIsa(found);
         } else {
-            throw new RuntimeException("Could not find TypeNode " + isa + " to set ISA relation.");
+            throw new RuntimeException("Could not find Type " + isa + " to set ISA relation.");
         }
 
         return this;

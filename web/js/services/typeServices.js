@@ -4,7 +4,7 @@ angular.module("structureApp")
         return {
 
             getType: function(scope, uuid) {
-                vertxEventBusService.send('com.raaftech.structure.repository.typenodes',
+                vertxEventBusService.send('com.raaftech.structure.repository.types',
                     {
                         'msgh': 'findOne',
                         'args': {
@@ -14,7 +14,7 @@ angular.module("structureApp")
                     .then(function(reply) {
                         scope.type = reply.result.data;
                         // get the isa values
-                        vertxEventBusService.send('com.raaftech.structure.repository.typenodes',
+                        vertxEventBusService.send('com.raaftech.structure.repository.types',
                             {
                                 'msgh': 'findOne',
                                 'args': {

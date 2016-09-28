@@ -5,23 +5,23 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.raaftech.structure.annotations.SchemaPath;
 import com.raaftech.structure.base.Context;
-import com.raaftech.structure.graph.TemplateNode;
-import com.raaftech.structure.graph.TypeNode;
-import com.raaftech.structure.graph.repositories.TemplateNodeRepository;
-import com.raaftech.structure.graph.repositories.TypeNodeRepository;
-import com.raaftech.structure.node.TemplateNodeActor;
+import com.raaftech.structure.graph.Template;
+import com.raaftech.structure.graph.Type;
+import com.raaftech.structure.graph.repositories.TemplateRepository;
+import com.raaftech.structure.graph.repositories.TypeRepository;
+import com.raaftech.structure.node.TemplateActor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
-public class TemplateNodes extends Repository<TemplateNode> {
+public class Templates extends Repository<Template> {
 
-    private TemplateNodeRepository repository;
+    private TemplateRepository repository;
 
-    private Logger log = LoggerFactory.getLogger(TemplateNodes.class);
+    private Logger log = LoggerFactory.getLogger(Templates.class);
 
-    public TemplateNodes(TemplateNodeRepository repository) {
+    public Templates(TemplateRepository repository) {
         super(repository);
         this.repository = repository;
     }
@@ -36,11 +36,11 @@ public class TemplateNodes extends Repository<TemplateNode> {
             @Override
             public JsonNode exec(JsonNode request) {
                 ObjectNode result = mapper.createObjectNode();
-                List<TemplateNode> allTemplates = repository.findAllTemplates();
+                List<Template> allTemplates = repository.findAllTemplates();
                 ArrayNode templates = result.putArray("data");
 
                 allTemplates.stream()
-                        .forEach(templateNode -> templates.add(templateNode.toJson()));
+                        .forEach(template -> templates.add(template.toJson()));
 
                 return response(request, result);
             }
@@ -53,17 +53,17 @@ public class TemplateNodes extends Repository<TemplateNode> {
     }
 
     /**
-     * Persist a TemplateNode to the database.
-     * @return A JSON object containing the UUID of the new TemplateNode
+     * Persist a Template to the database.
+     * @return A JSON object containing the UUID of the new Template
      * or an error field if something went wrong.
      */
-    @SchemaPath("schema/repository/templatenodes/putNode.schema.json")
+    @SchemaPath("schema/repository/templates/putNode.schema.json")
     @SuppressWarnings("unused")
     public MessageHandler putNode() {
         return new MessageHandler() {
             @Override
             public JsonNode exec(JsonNode request) {
-                TypeNodeRepository typeNodeRepository = Context.getTypeNodeRepository();
+                TypeRepository typeRepository = Context.getTypeRepository();
                 ObjectNode result = mapper.createObjectNode();
                 JsonNode args = request.get("args");
 
@@ -82,37 +82,37 @@ public class TemplateNodes extends Repository<TemplateNode> {
 
                 try {
                     if (parent != null && start) {
-                        throw new RuntimeException("Cannot create TemplateNode that's both the start of a template and has a parent " +
-                                "TemplateNode.");
+                        throw new RuntimeException("Cannot create Template that's both the start of a template and has a parent " +
+                                "Template.");
                     }
                     if (parent == null && !start) {
-                        throw new RuntimeException("Cannot create TemplateNode that has no parent and isn't the start of a template.");
+                        throw new RuntimeException("Cannot create Template that has no parent and isn't the start of a template.");
                     }
 
-                    TypeNode isaTypeNode = typeNodeRepository.findByUuid(isa);
-                    if (isaTypeNode != null) {
-                        TemplateNode newTemplateNode = new TemplateNode(name, desc);
-                        newTemplateNode.setIsa(isaTypeNode)
+                    Type isaType = typeRepository.findByUuid(isa);
+                    if (isaType != null) {
+                        Template newTemplate = new Template(name, desc);
+                        newTemplate.setIsa(isaType)
                         .setStartOfTemplate(start)
                         .setRequired(required)
                         .setUnique(unique);
 
                         if (parent != null) {
-                            TemplateNode parentTemplateNode = repository.findByUuid(parent);
-                            if (parentTemplateNode != null) {
-                                parentTemplateNode.addComponent(newTemplateNode);
-                                parentTemplateNode.save();
+                            Template parentTemplate = repository.findByUuid(parent);
+                            if (parentTemplate != null) {
+                                parentTemplate.addComponent(newTemplate);
+                                parentTemplate.save();
                                 Context.getVertx().deployVerticle(
-                                        new TemplateNodeActor(newTemplateNode));
+                                        new TemplateActor(newTemplate));
                             } else {
-                                throw new RuntimeException("Cannot create TemplateNode, given parent was not found in the database.");
+                                throw new RuntimeException("Cannot create Template, given parent was not found in the database.");
                             }
                         }
-                        newTemplateNode.save();
+                        newTemplate.save();
 
-                        result.put("data", newTemplateNode.getUuid());
+                        result.put("data", newTemplate.getUuid());
                     } else {
-                        throw new RuntimeException("Could not find TypeNode by which to group the Template.");
+                        throw new RuntimeException("Could not find Type by which to group the Template.");
                     }
                 } catch (RuntimeException e) {
                 	log.error(e.getMessage());

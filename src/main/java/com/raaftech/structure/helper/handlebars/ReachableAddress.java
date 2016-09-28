@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.util.Iterator;
 
 /**
- * ReachableAddress can be used to resolve a "reachable" address from an array containing IpAdress InstanceNodes.
+ * ReachableAddress can be used to resolve a "reachable" address from an array containing IpAdress Instances.
  */
 public class ReachableAddress implements Helper<ArrayNode> {
 

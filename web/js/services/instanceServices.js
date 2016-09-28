@@ -4,7 +4,7 @@ angular.module("structureApp")
         return {
 
             getNInstances: function(scope, n) {
-                vertxEventBusService.send('com.raaftech.structure.repository.instancenodes',
+                vertxEventBusService.send('com.raaftech.structure.repository.instances',
                     {
                         'msgh': 'nLastCreated',
                         'args': {
@@ -17,7 +17,7 @@ angular.module("structureApp")
             },
 
             getInstance: function(uuid) {
-                return vertxEventBusService.send('com.raaftech.structure.repository.instancenodes', {
+                return vertxEventBusService.send('com.raaftech.structure.repository.instances', {
                     'msgh': 'findOne',
                     'args': {
                         'node': uuid

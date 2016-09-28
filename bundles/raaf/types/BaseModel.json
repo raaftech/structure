@@ -1102,56 +1102,6 @@
   "glyphId" : 231,
   "isa" : "db0c3c65-52fd-4dec-907c-6c8a669e88f3"
 }, {
-  "name" : "Instrument",
-  "desc" : "A representation of a software instrument that gives end user function.",
-  "uuid" : "14dbfbfa-b50a-466f-8539-55d5d3f15e4a",
-  "glyphId" : 96,
-  "isa" : "b1bc963a-19cc-4518-aecb-a35d028c49e3",
-  "descriptors" : {
-    "fileLocation" : {
-      "desc" : "The filesystem location of the instrument.",
-      "type" : "string",
-      "required" : true
-    },
-    "type" : {
-      "desc" : "The type of instrument, this can be \"runner|marker|parser\".",
-      "type" : "string",
-      "required" : true,
-      "pattern" : "^runner|marker|parser$"
-    },
-    "weight" : {
-      "desc" : "The weight of a instrument, used choose between instruments.",
-      "type" : "number",
-      "required" : false
-    },
-    "extension" : {
-      "desc" : "Possible extension in case of a scriptable instrument.",
-      "type" : "string",
-      "required" : false,
-      "pattern" : "^\\.[a-zA-Z0-9]+$"
-    },
-    "arguments" : {
-      "desc" : "A string representation of the arguments object.",
-      "type" : "string",
-      "required" : false
-    },
-    "subjectIsLocal" : {
-      "desc" : "Is the subject for this instrument local or remote?",
-      "type" : "boolean",
-      "required" : true
-    },
-    "template" : {
-      "desc" : "The handlebars template resulting in a command.",
-      "type" : "string",
-      "required" : true
-    },
-    "resultParser" : {
-      "desc" : "The parser able to convert the raw results of this instrument.",
-      "type" : "string",
-      "required" : false
-    }
-  }
-}, {
   "name" : "Result",
   "desc" : "A result from an operation.",
   "uuid" : "f3498c02-58c6-486b-87c6-9d54607fdb12",

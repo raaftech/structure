@@ -8,8 +8,12 @@ import com.github.jknack.handlebars.Handlebars;
 import com.github.jknack.handlebars.JsonNodeValueResolver;
 import com.github.jknack.handlebars.Template;
 import com.raaftech.structure.base.Context;
-import com.raaftech.structure.graph.InstanceNode;
-import com.raaftech.structure.graph.repositories.InstanceNodeRepository;
+import com.raaftech.structure.graph.Component;
+import com.raaftech.structure.graph.Controller;
+import com.raaftech.structure.graph.Instance;
+import com.raaftech.structure.graph.Marker;
+import com.raaftech.structure.graph.repositories.InstanceRepository;
+import com.raaftech.structure.graph.repositories.InstrumentRepository;
 import com.raaftech.structure.helper.classification.ArgumentsToClassificationTreeParser;
 import com.raaftech.structure.helper.classification.tree.RootNode;
 import com.raaftech.structure.helper.handlebars.ReachableAddress;
@@ -31,14 +35,15 @@ import java.util.stream.Collectors;
  */
 public class InstrumentRunner {
 
-    private final InstanceNodeRepository instanceNodeRepository = Context.getInstanceNodeRepository();
+    private final InstanceRepository instanceRepository = Context.getInstanceRepository();
+    private final InstrumentRepository instrumentRepository = Context.getInstrumentRepository();
     private final ObjectMapper mapper = new ObjectMapper();
 
     private final String taskId;
-    private final InstanceNode origin;
-    private final InstanceNode instrument;
-    private final InstanceNode subject;
-    private final InstanceNode agent;
+    private final Component origin;
+    private final Controller controller;
+    private final Component subject;
+    private final Component agent;
     private final ObjectNode arguments;
 
     private final String templateProperty = "template";
@@ -53,20 +58,20 @@ public class InstrumentRunner {
     /**
      * Construct the InstrumentRunner, do some checks, etc.
      *
-     * @param instrument The instrument to use on the origin.
+     * @param controller The controller to use on the origin.
      * @param origin     The object undergoing the action.
      * @param arguments  Given arguments, can be null.
      * @param taskId     The ID used to track progress of this action.
      */
-    public InstrumentRunner(InstanceNode origin, InstanceNode instrument, ObjectNode arguments, String taskId) {
+    public InstrumentRunner(Component origin, Controller controller, ObjectNode arguments, String taskId) {
         this.taskId = taskId;
         this.origin = origin;
-        this.instrument = instrument;
+        this.controller = controller;
         this.arguments = arguments == null ? mapper.createObjectNode() : arguments;
 
         // TODO: Need a different way of finding the structure node.
-        this.agent = instanceNodeRepository.findOneByName(Context.selfIdentifier);
-        this.subject = instanceNodeRepository.getStartOfComponentGroup(origin.getUuid());
+        this.agent = (Component) instanceRepository.findOneByName(Context.selfIdentifier);
+        this.subject = (Component) instanceRepository.getStartOfComponentGroup(origin.getUuid());
 
         // Did we find the agent?
         if (agent == null) {
@@ -74,22 +79,15 @@ public class InstrumentRunner {
                     + Context.selfIdentifier + "\".");
         }
 
-        // Is the instrument argument of the expected type?
-        if (!instrument.isOfType("Instrument")) {
-            throw new IllegalArgumentException("Instrument should be of type instrument.");
-            // todo: log as result
-        }
-
-        // Does the instrument even work on the given origin?
-        if (instrument.getHandledTypes().stream()
+        // Does the controller even work on the given origin?
+        if (controller.getHandledTypes().stream()
                 .filter(type -> origin.isOfType(type.getName()))
                 .count() < 1) {
             throw new IllegalArgumentException("Instrument is incompatible with the given origin.");
             // todo: log as result
         }
 
-        boolean subjectIsLocal = Boolean.parseBoolean(instrument.getProperty("subjectIsLocal"));
-        if (subjectIsLocal) {
+        if (controller.isSubjectIsLocal()) {
             // run subject as local routine
             // we need to do all the checks needed for a local routine, which are:
             // do we have a protocol to send a file?
@@ -99,19 +97,19 @@ public class InstrumentRunner {
             // Get a (set of) sendString instruments that are capable of sending strings from the agent to the subject
             // using a particular protocol (SSH, telnet, ...). This query only returns instruments that have a ReceiveString
             // counterpart in the subject speaking common protocol.
-            Set<InstanceNode> sendStringInstruments = instanceNodeRepository.getCompatibleSendString(agent.getUuid(), subject.getUuid());
-            if (sendStringInstruments.size() <= 0) {
+            Set<Controller> sendStringControllers = instrumentRepository.getCompatibleSendString(agent.getUuid(), subject.getUuid());
+            if (sendStringControllers.size() <= 0) {
                 // todo: log
                 throw new RuntimeException("No matching sendString protocol between structure and " + subject.getName());
             }
 
             // Because we may have multiple protocols giving us SendString capabilities, we want the "heaviest" one. For
             // instance, SSH is preferred over telnet on all occasions, so that has a heavier weight.
-            InstanceNode heaviestSendString = findHeaviest(sendStringInstruments);
-            // Get the matching ReceiveString instrument on the subject.
-            InstanceNode matchingReceiveString = null;
+            Controller heaviestSendString = findHeaviest(sendStringControllers);
+            // Get the matching ReceiveString controller on the subject.
+            Marker matchingReceiveString = null;
             if (heaviestSendString != null) {
-                matchingReceiveString = instanceNodeRepository.getMatchingReceiveString(heaviestSendString.getUuid());
+                matchingReceiveString = instrumentRepository.getMatchingReceiveString(heaviestSendString.getUuid());
             }
 
             // This shouldn't happen because if we don't have a heaviest SendString capability this routine has thrown
@@ -126,18 +124,18 @@ public class InstrumentRunner {
                         + heaviestSendString.getName() + ":" + matchingReceiveString.getName());
             }
 
-            Set<InstanceNode> sendFileInstruments = instanceNodeRepository.getCompatibleSendFile(agent.getUuid(), subject.getUuid());
-            if (sendFileInstruments.size() <= 0) {
+            Set<Controller> sendFileControllers = instrumentRepository.getCompatibleSendFile(agent.getUuid(), subject.getUuid());
+            if (sendFileControllers.size() <= 0) {
                 throw new RuntimeException("No matching sendFile protocol between structure and " + subject.getName());
             }
 
             // Because we may have multiple protocols giving us SendFile capabilities, we want the "heaviest" one. For
             // instance, SSH is preferred over ftp on all occasions, so that has a heavier weight.
-            InstanceNode heaviestSendFile = findHeaviest(sendFileInstruments);
-            // Get the matching ReceiveFile instrument on the subject.
-            InstanceNode matchingReceiveFile = null;
+            Controller heaviestSendFile = findHeaviest(sendFileControllers);
+            // Get the matching ReceiveFile controller on the subject.
+            Marker matchingReceiveFile = null;
             if (heaviestSendFile != null) {
-                matchingReceiveFile = instanceNodeRepository.getMatchingReceiveFile(heaviestSendFile.getUuid());
+                matchingReceiveFile = instrumentRepository.getMatchingReceiveFile(heaviestSendFile.getUuid());
             }
 
             // This shouldn't happen because if we don't have a heaviest SendFile capability this routine has thrown
@@ -152,21 +150,21 @@ public class InstrumentRunner {
                         + heaviestSendFile.getName() + ":" + matchingReceiveFile.getName());
             }
 
-            InstanceNode invokableInterpreter = instanceNodeRepository.getInvokableInterpreter(subject.getUuid());
+            Controller invokableInterpreter = instrumentRepository.getInvokableInterpreter(subject.getUuid());
             if (invokableInterpreter == null) {
                 throw new RuntimeException("Couldn't find an invokable interpreter on subject [" + subject.getUuid() + "]"
                         + " for task [" + taskId + "].");
             } else {
-                log.debug("Using the following Invokable instrument for task [" + taskId + "]: "
+                log.debug("Using the following Invokable controller for task [" + taskId + "]: "
                         + invokableInterpreter.getName() + ".");
             }
 
 
-            // We now have everything we need: an instrument with an origin to run from, the subject, and ways
+            // We now have everything we need: an controller with an origin to run from, the subject, and ways
             // to send files (the script) and strings (the command to run the script)
             try {
                 // create script file, this will put the file metadata in our static arguments
-                createScript(instrument, invokableInterpreter);
+                createScript(controller, invokableInterpreter);
                 // send file to subject (assumes sendFile + receiveFile)
                 jobList.add(sendFile(heaviestSendFile));
                 // send execution to subject (assumes sendString + receiveString)
@@ -179,21 +177,21 @@ public class InstrumentRunner {
     				e.printStackTrace();
     			}
     			
-                throw new RuntimeException("Error while creating script to transfer for instrument " + this.instrument.getName()
+                throw new RuntimeException("Error while creating script to transfer for controller " + this.controller.getName()
                         + ". See logging for more details.");
             }
         } else {
-            // Check if the instrument is connected to structure via HAS_INSTRUMENT
-            if (instanceNodeRepository.validateNonLocalInstrument(instrument.getUuid(), agent.getUuid(), origin.getUuid()) == null) {
-                log.error("We can't run instrument \"" + instrument.getName() + "\", because \"" + agent.getName() + "\" [" + agent.getUuid() + "] " +
-                        "doesn't have \"" + instanceNodeRepository.findInstrumentOwner(instrument.getUuid()) + "\".");
+            // Check if the controller is connected to structure via HAS_INSTRUMENT
+            if (instrumentRepository.validateNonLocalInstrument(controller.getUuid(), agent.getUuid(), origin.getUuid()) == null) {
+                log.error("We can't run controller \"" + controller.getName() + "\", because \"" + agent.getName() + "\" [" + agent.getUuid() + "] " +
+                        "doesn't have \"" + instrumentRepository.findInstrumentOwner(controller.getUuid()) + "\".");
                 // todo: log as result
             } else {
                 log.debug("Valid, non-local path");
                 try {
                     // TODO: create method
-                    ObjectNode args = validateAndSelectArguments(instrument);
-                    jobList.add(applyTemplate(instrument.getProperty(templateProperty), args));
+                    ObjectNode args = validateAndSelectArguments(controller);
+                    jobList.add(applyTemplate(controller.getTemplate(), args));
                 } catch (IOException e) {
                     if (Boolean.parseBoolean(System.getProperty("traceMode"))) {
                         e.printStackTrace();
@@ -204,29 +202,29 @@ public class InstrumentRunner {
     }
 
     /**
-     * Create a send file execution string using the given SendFile instrument and context.
+     * Create a send file execution string using the given SendFile controller and context.
      *
-     * @param sendFileInstrument An instrument that implements the SendFile capability.
+     * @param sendFileController An controller that implements the SendFile capability.
      * @return An execution string.
      * @throws IOException              HandleBars might throw an IOException while parsing the template.
      * @throws IllegalArgumentException Context doesn't pass argument validation.
      */
-    private String sendFile(InstanceNode sendFileInstrument) throws IOException, IllegalArgumentException {
-        ObjectNode arguments = validateAndSelectArguments(sendFileInstrument);
+    private String sendFile(Controller sendFileController) throws IOException, IllegalArgumentException {
+        ObjectNode arguments = validateAndSelectArguments(sendFileController);
         if (arguments != null) {
-            return applyTemplate(sendFileInstrument.getProperty(templateProperty), arguments);
+            return applyTemplate(sendFileController.getTemplate(), arguments);
         } else {
             throw new IllegalArgumentException("Error while checking arguments.");
         }
     }
 
     /**
-     * Given an instrument and the context (which consists of the origin, subject, agent and arguments)
+     * Given an controller and the context (which consists of the origin, subject, agent and arguments)
      * return a filtered context usable in handlebars templates.
-     * @param instrument The instrument we want to use the context in.
-     * @return A properly formatted context, or null in case the instrument doesn't have an arguments object.
+     * @param controller The controller we want to use the context in.
+     * @return A properly formatted context, or null in case the controller doesn't have an arguments object.
      */
-    private ObjectNode validateAndSelectArguments(InstanceNode instrument) {
+    private ObjectNode validateAndSelectArguments(Controller controller) {
         // Result will contain the filtered result set of our context
         ObjectNode result;
 
@@ -243,7 +241,7 @@ public class InstrumentRunner {
         // convert (copies of) the origin, subject and agent trees and add them to the context
         subject.toArguments().forEach(arg -> collect.accept(arg, "subject"));
         agent.toArguments().forEach(arg -> collect.accept(arg, "agent"));
-        ObjectNode originCopy = ((ObjectNode)origin.toFlatJson().deepCopy()).put("_from", "origin");
+        ObjectNode originCopy = (((Instance)origin).toJson().deepCopy()).put("_from", "origin");
         context.add(originCopy);
         ObjectNode argumentsCopy = arguments.deepCopy();
         // create a copy of the given statically provided arguments
@@ -256,12 +254,12 @@ public class InstrumentRunner {
         });
 
         //
-        // Transform the instrument's arguments object into a classification tree.
+        // Transform the controller's arguments object into a classification tree.
         // After that, we start filtering using the class. tree, and check for missing
         // data in our filtered context.
         //
         JsonNode arguments;
-        String tmpArguments = instrument.getProperty("arguments");
+        String tmpArguments = controller.getArguments();
         // If we don't even have arguments, return right away.
         if (tmpArguments == null) {
             return null;
@@ -279,7 +277,7 @@ public class InstrumentRunner {
             // Were there any failures?
             if (classTreeObjects.failed.size() > 0) {
                 throw new RuntimeException("Validation of arguments " + classTreeObjects.failed.toString()
-                        + " failed while running instrument " + this.instrument.getName() + " for task [ " + taskId + "].");
+                        + " failed while running controller " + this.controller.getName() + " for task [ " + taskId + "].");
             } else if (classTreeObjects.askUser == null || classTreeObjects.askUser.size() > 0) {
                 // todo: implement this. when we finish calling instruments from UI we'll have a better grasp at what & how
             } else {
@@ -305,8 +303,8 @@ public class InstrumentRunner {
                     }
                 }
                 if (missingKeys.size() > 0) {
-                    throw new RuntimeException("Missing or invalid parameter(s) " + missingKeys.toString() + " while running instrument "
-                            + this.instrument.getName() + "->" + instrument.getName()
+                    throw new RuntimeException("Missing or invalid parameter(s) " + missingKeys.toString() + " while running controller "
+                            + this.controller.getName() + "->" + controller.getName()
                             + " for task [" + taskId + "].");
                 }
             }
@@ -317,24 +315,24 @@ public class InstrumentRunner {
 				e.printStackTrace();
 			}
 			
-			throw new RuntimeException("Ran into an unknown exception while parsing instrument " + this.instrument.getName()
+			throw new RuntimeException("Ran into an unknown exception while parsing controller " + this.controller.getName()
                     +"'s arguments object. See logging for more details.");
         }
         return result;
     }
 
     /**
-     * Create a send string execution string using the given SendFile instrument and context.
+     * Create a send string execution string using the given SendFile controller and context.
      *
-     * @param sendStringInstrument An instrument that implements the SendFile capability.
+     * @param sendStringInstrument An controller that implements the SendFile capability.
      * @return An execution string.
      * @throws IOException              HandleBars might throw an IOException while parsing the template.
      * @throws IllegalArgumentException Context doesn't pass argument validation.
      */
-    private String sendString(InstanceNode sendStringInstrument) throws IOException {
+    private String sendString(Controller sendStringInstrument) throws IOException {
         ObjectNode arguments = validateAndSelectArguments(sendStringInstrument);
         if (arguments != null) {
-            return applyTemplate(sendStringInstrument.getProperty(templateProperty), arguments);
+            return applyTemplate(sendStringInstrument.getTemplate(), arguments);
         } else {
             throw new IllegalArgumentException("Error while checking arguments.");
         }
@@ -343,20 +341,20 @@ public class InstrumentRunner {
     /**
      * Create a script to be run on a remote host.
      *
-     * @param instrument           The instrument to run.
+     * @param controller           The controller to run.
      * @param invokableInterpreter The interpreter to wrap the command in.
-     * @return The context with added values from both the instrument and invokableInterpreter.
+     * @return The context with added values from both the controller and invokableInterpreter.
      * @throws IOException Is thrown when we run into trouble parsing the handlebars template.
      */
-    private void createScript(InstanceNode instrument, InstanceNode invokableInterpreter) throws IOException {
-        ObjectNode context = validateAndSelectArguments(instrument);
-        String script = applyTemplate(instrument.getProperty(templateProperty), context);
+    private void createScript(Controller controller, Controller invokableInterpreter) throws IOException {
+        ObjectNode context = validateAndSelectArguments(controller);
+        String script = applyTemplate(controller.getTemplate(), context);
         arguments.put("script", script);
         context = validateAndSelectArguments(invokableInterpreter);
-        script = applyTemplate(invokableInterpreter.getProperty(templateProperty), context);
+        script = applyTemplate(invokableInterpreter.getTemplate(), context);
 
-        String scriptFilename = origin.getName() + "-" + instrument.getName() + "_" + System.currentTimeMillis()
-                + invokableInterpreter.getProperty("extension");
+        String scriptFilename = origin.getName() + "-" + controller.getName() + "_" + System.currentTimeMillis()
+                + invokableInterpreter.getExtension();
         FileWriter scriptWriter = createFileWriter(scriptFilename);
         scriptWriter.write(script);
         scriptWriter.close();
@@ -413,28 +411,26 @@ public class InstrumentRunner {
 
     /**
      * Pass findHeaviest a set of Instruments and it'll find the heaviest by weight.
-     * If we have multiple instruments with the same weight the one emitted from the stream first will
+     * If we have multiple controllers with the same weight the one emitted from the stream first will
      * be used.
      *
-     * @param instruments A set of InstanceNodes that are of the instrument type. Other types are filtered.
-     * @return The heaviest instrument.
+     * @param controllers A set of Instances that are of the controller type. Other types are filtered.
+     * @return The heaviest controller.
      */
-    private InstanceNode findHeaviest(Set<InstanceNode> instruments) {
-        // Collect instruments by weight filtering out duplicate weights
-        Map<Integer, InstanceNode> instrumentsByWeight = instruments.stream()
-                .filter(instrument -> instrument.isOfType("Instrument"))
-                .filter(instrument -> instrument.getProperty("weight") != null)
+    private Controller findHeaviest(Set<Controller> controllers) {
+        // Collect controllers by weight filtering out duplicate weights
+        Map<Integer, Controller> controllersByWeight = controllers.stream()
                 .collect(Collectors.toMap(
-                        instrument -> Integer.parseInt(instrument.getProperty("weight")),
+                        controller -> controller.getWeight(),
                         instrument -> instrument,
                         (instrument1, instrument2) -> instrument1));
 
         // Find the maximum weight
-        Optional<Integer> heaviestInstrument = instrumentsByWeight.keySet().stream()
+        Optional<Integer> heaviestController = controllersByWeight.keySet().stream()
                 .max(Integer::compare);
 
-        if (heaviestInstrument.isPresent()) {
-            return instrumentsByWeight.get(heaviestInstrument.get());
+        if (heaviestController.isPresent()) {
+            return controllersByWeight.get(heaviestController.get());
         } else {
             return null;
         }
@@ -462,7 +458,7 @@ public class InstrumentRunner {
         return compiledTemplate.apply(ctx).trim();
     }
 
-    // Schedule the actual execution of the instrument.
+    // Schedule the actual execution of the controller.
     // This will always be done sequentially, until we implement automatic hierarchical execution of instruments.
     public void startInstrument() {
         final EventBus eventBus = Context.getVertx().eventBus();
@@ -478,8 +474,8 @@ public class InstrumentRunner {
                     job.putObject("metadata")
                             .put("originName", origin.getName())
                             .put("originUuid", origin.getUuid())
-                            .put("instrument", instrument.getName())
-                            .put("capability", instanceNodeRepository.getInstrumentCapability(instrument.getUuid()).getName());
+                            .put("controller", controller.getName())
+                            .put("capability", instrumentRepository.getInstrumentCapability(controller.getUuid()).getName());
                     job.put("command", command);
                     jobs.add(job);
                 });

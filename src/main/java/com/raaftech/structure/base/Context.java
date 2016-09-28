@@ -17,7 +17,6 @@ import org.springframework.stereotype.Component;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * SpringContext singleton/wrapper.
@@ -43,20 +42,28 @@ public class Context implements ApplicationContextAware {
         return (NodeRepository)context.getBean("nodeRepository");
     }
 
-    public static TypeNodeRepository getTypeNodeRepository() {
-        return (TypeNodeRepository)context.getBean("typeNodeRepository");
+    public static ComponentRepository getComponentRepository() {
+        return (ComponentRepository)context.getBean("componentRepository");
+    }
+
+    public static TypeRepository getTypeRepository() {
+        return (TypeRepository)context.getBean("typeRepository");
     }
 
     public static SchemaNodeRepository getSchemaNodeRepository() {
         return (SchemaNodeRepository)context.getBean("schemaNodeRepository");
     }
 
-    public static InstanceNodeRepository getInstanceNodeRepository() {
-        return (InstanceNodeRepository)context.getBean("instanceNodeRepository");
+    public static InstanceRepository getInstanceRepository() {
+        return (InstanceRepository)context.getBean("instanceRepository");
     }
 
-    public static TemplateNodeRepository getTemplateNodeRepository() {
-        return (TemplateNodeRepository)context.getBean("templateNodeRepository");
+    public static InstrumentRepository getInstrumentRepository() {
+        return (InstrumentRepository)context.getBean("instrumentRepository");
+    }
+
+    public static TemplateRepository getTemplateRepository() {
+        return (TemplateRepository)context.getBean("templateRepository");
     }
 
     public static GraphDatabase getGraphDatabase() {

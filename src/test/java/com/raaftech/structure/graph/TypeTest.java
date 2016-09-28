@@ -1,7 +1,7 @@
 package com.raaftech.structure.graph;
 
 import com.raaftech.structure.base.SpringTestConfig;
-import com.raaftech.structure.graph.repositories.TypeNodeRepository;
+import com.raaftech.structure.graph.repositories.TypeRepository;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -18,10 +18,10 @@ import static org.junit.Assert.assertNull;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(loader = AnnotationConfigContextLoader.class, classes = SpringTestConfig.class)
-public class TypeNodeTest {
+public class TypeTest {
 
     @Autowired
-    private TypeNodeRepository typeNodeRepository;
+    private TypeRepository typeRepository;
 
     @Rule
     public ExpectedException exception = ExpectedException.none();
@@ -30,10 +30,10 @@ public class TypeNodeTest {
     @Transactional
     @Rollback
     public void testTypeNodeSetDescriptor() {
-        TypeNode type01 = new TypeNode("TypeNode 01", "First TypeNode", 0);
-        TypeNode type02 = new TypeNode("TypeNode 02", "Second TypeNode", 0);
-        TypeNode type03 = new TypeNode("TypeNode 03", "Third TypeNode", 0);
-        TypeNode type04 = new TypeNode("TypeNode 04", "Fourth TypeNode", 0);
+        Type type01 = new Type("Type 01", "First Type", 0);
+        Type type02 = new Type("Type 02", "Second Type", 0);
+        Type type03 = new Type("Type 03", "Third Type", 0);
+        Type type04 = new Type("Type 04", "Fourth Type", 0);
 
         type01.setDescriptor("foo", "boolean", true, "All typenodes should inherit this", null, null);
         type02.setDescriptor("bar", "string", true, "Only type02..04 should have this.", null, null);
@@ -43,7 +43,7 @@ public class TypeNodeTest {
         type04.setIsa(type03);
 
         // Save all nodes to the database.
-        typeNodeRepository.save(type04);
+        typeRepository.save(type04);
 
         assertNotNull(type01.getSchema().getProperties().get("foo"));
         assertNull(type01.getSchema().getProperties().get("bar"));

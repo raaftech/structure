@@ -4,23 +4,23 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.raaftech.structure.base.NodeActor;
-import com.raaftech.structure.graph.TypeNode;
+import com.raaftech.structure.graph.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Give a description of TypeNodeActor here.
+ * Give a description of TypeActor here.
  *
  * @author Boy van Duuren <boy.van.duuren@raaftech.com>
  * @since 2015-08-12
  */
-public class TypeNodeActor extends NodeActor<TypeNode> {
+public class TypeActor extends NodeActor<Type> {
 
     private String hierarchyPath;
 
-    private Logger log = LoggerFactory.getLogger(TypeNodeActor.class);
+    private Logger log = LoggerFactory.getLogger(TypeActor.class);
 
-    public TypeNodeActor(TypeNode node) {
+    public TypeActor(Type node) {
         super(node);
         this.hierarchyPath = node.getHierarchyPath();
     }
@@ -32,7 +32,7 @@ public class TypeNodeActor extends NodeActor<TypeNode> {
 
     // Next methods are exposed on the eventbus
 
-    // Get the hierarchical path of the TypeNode
+    // Get the hierarchical path of the Type
     public MessageHandler getPath() {
         return new MessageHandler() {
             @Override
@@ -49,7 +49,7 @@ public class TypeNodeActor extends NodeActor<TypeNode> {
         };
     }
 
-    // Get the TypeNode's schema
+    // Get the Type's schema
     public MessageHandler getSchema() {
         return new MessageHandler() {
             @Override

@@ -1,7 +1,7 @@
 package com.raaftech.structure.exceptions;
 
 /**
- * This exception is thrown when referencing an unknown TypeNode.
+ * This exception is thrown when referencing an unknown Type.
  */
 public class TypeUnknownException extends RuntimeException {
 

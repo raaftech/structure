@@ -1,7 +1,7 @@
 angular.module("structureApp")
     .controller("debugCtrl", function($scope, $timeout, vertxEventBus, vertxEventBusService) {
 
-        // newTemplate is used to create the new TemplateNode via the eventbus
+        // newTemplate is used to create the new Template via the eventbus
         $scope.message = { };
 
         $scope.sendMessage = function() {

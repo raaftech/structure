@@ -5,7 +5,7 @@
     <!-- navigation -->
     <ul class="nav nav-pills">
         <li role="presentation" ng-class="{ active:isSelected(1) }">
-            <a href="#templates-old" ng-click="changeTab(1)">Create/edit TemplateNode</a>
+            <a href="#templates-old" ng-click="changeTab(1)">Create/edit Template</a>
         </li>
         <li role="presentation" ng-class="{ active:isSelected(2) }">
             <a href="#templates-old" ng-click="changeTab(2)">View Templates</a>
@@ -52,11 +52,11 @@
                 </div>
 
                 <div class="form-group">
-                    <label>UUID TypeNode</label>
+                    <label>UUID Type</label>
                     <div class="input-group">
-                        <input ng-model="newTemplate.isa" class="form-control" type="text" placeholder="The UUID of the TypeNode." required>
+                        <input ng-model="newTemplate.isa" class="form-control" type="text" placeholder="The UUID of the Type." required>
                         <span class="input-group-btn">
-                            <button ng-click="findTypeNode()" type="button" class="btn btn-default">
+                            <button ng-click="findType()" type="button" class="btn btn-default">
                                 <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
                             </button>
                         </span>
@@ -168,15 +168,15 @@
     <div class="appContainer" id="instanceView" ng-show="isSelected(3)">
         <div ng-controller="handleCtrl">
 
-            <h4>Start a handler on an InstanceNode</h4>
+            <h4>Start a handler on an Instance</h4>
             <form>
                 <fieldset>
                     <div class="form-group">
                         <label>UUID</label>
                         <div class="input-group">
-                            <input ng-model="findInstanceNodeUuid" class="form-control" type="text" placeholder="The UUID of the InstanceNode to be retrieved." required>
+                            <input ng-model="findInstanceUuid" class="form-control" type="text" placeholder="The UUID of the Instance to be retrieved." required>
                         <span class="input-group-btn">
-                            <button ng-click="findInstanceNode()" type="button" class="btn btn-default">
+                            <button ng-click="findInstance()" type="button" class="btn btn-default">
                                 <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
                             </button>
                         </span>
@@ -185,7 +185,7 @@
                 </fieldset>
             </form>
 
-            <div ng-repeat="(capability, handlers) in foundInstanceNode.capabilities">
+            <div ng-repeat="(capability, handlers) in foundInstance.capabilities">
                 <h5>{{ capability }}</h5>
                 <div ng-repeat="(name, address) in handlers">
                     <button ng-click="sendMessage(address)" type="button" class="btn btn-default btn-xs">{{ name }}</button>

@@ -4,7 +4,7 @@ angular.module("structureApp")
         return {
 
             getTemplate: function(scope, uuid) {
-                vertxEventBusService.send('com.raaftech.structure.repository.templatenodes',
+                vertxEventBusService.send('com.raaftech.structure.repository.templates',
                     {
                         'msgh': 'findOne',
                         'args': {
@@ -14,7 +14,7 @@ angular.module("structureApp")
                     .then(function(reply) {
                         scope.template = reply.result.data;
                         // get the isa values
-                        vertxEventBusService.send('com.raaftech.structure.repository.templatenodes',
+                        vertxEventBusService.send('com.raaftech.structure.repository.templates',
                             {
                                 'msgh': 'findOne',
                                 'args': {
@@ -28,7 +28,7 @@ angular.module("structureApp")
             },
 
             getAllTemplates: function(scope) {
-                vertxEventBusService.send('com.raaftech.structure.repository.templatenodes',
+                vertxEventBusService.send('com.raaftech.structure.repository.templates',
                     {
                         'msgh': 'findAllTemplates',
                         'args': {}

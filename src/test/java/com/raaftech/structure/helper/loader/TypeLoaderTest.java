@@ -1,8 +1,8 @@
 package com.raaftech.structure.helper.loader;
 
 import com.raaftech.structure.base.SpringTestConfig;
-import com.raaftech.structure.graph.TypeNode;
-import com.raaftech.structure.graph.repositories.TypeNodeRepository;
+import com.raaftech.structure.graph.Type;
+import com.raaftech.structure.graph.repositories.TypeRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +23,7 @@ import java.io.StringReader;
 public class TypeLoaderTest {
 
     @Autowired
-    TypeNodeRepository typeNodeRepository;
+    TypeRepository typeRepository;
 
     @Test
     @Transactional
@@ -55,7 +55,7 @@ public class TypeLoaderTest {
         new TypeLoader().load(new StringReader(json));
         new TypeLoader().load(new StringReader(json2));
 
-        TypeNode testType1 = typeNodeRepository.findOneByName("testType1");
+        Type testType1 = typeRepository.findOneByName("testType1");
         assertNotNull(testType1);
         assertEquals(2, testType1.getChildIsaSet().size());
         testType1.getChildIsaSet().stream()

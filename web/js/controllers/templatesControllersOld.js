@@ -8,7 +8,7 @@ angular.module("structureApp")
 
     .controller("templateCtrlOld", function($scope, $timeout, vertxEventBus, vertxEventBusService) {
 
-        // newTemplate is used to create the new TemplateNode via the eventbus
+        // newTemplate is used to create the new Template via the eventbus
         $scope.newTemplate = { required: false, unique: false, start: false };
         // Used to delete from templates
         $scope.deleteTemplateUuid = "";
@@ -24,7 +24,7 @@ angular.module("structureApp")
             // Did we check already? Is the eventbus ready?
             if ($scope.ui.databaseInitError.checked == false) {
                 // Query the database for the root-node
-                vertxEventBusService.send('com.raaftech.structure.repository.typenodes',
+                vertxEventBusService.send('com.raaftech.structure.repository.types',
                     {'msgh':'findOne', 'args':{'node':'b1bc963a-19cc-4518-aecb-a35d028c49e3'}})
                     .then(function(reply) {
                         // if we got an error we didn't find the root-node
@@ -67,10 +67,10 @@ angular.module("structureApp")
         };
 
 
-        // Create a new TemplateNode
+        // Create a new Template
         $scope.createNewTemplate = function() {
                 // Send our newTemplate object over the eventbus
-                vertxEventBusService.send('com.raaftech.structure.repository.templatenodes',
+                vertxEventBusService.send('com.raaftech.structure.repository.templates',
                     {'msgh':'putNode', 'args':$scope.newTemplate})
                     .then(function(reply) {
                         // If everything went alright clear the form and show an informational message
@@ -99,7 +99,7 @@ angular.module("structureApp")
                     });
         };
 
-        // Delete a TemplateNode, removing it form it's parent (if it has one)
+        // Delete a Template, removing it form it's parent (if it has one)
         // and removing all its children.
         $scope.deleteTemplate = function() {
                 vertxEventBusService.send('com.raaftech.structure.node.template.'
@@ -114,7 +114,7 @@ angular.module("structureApp")
 
         // Build object for the dropdown for parent selection
         $scope.getTemplates = function() {
-                vertxEventBusService.send('com.raaftech.structure.repository.templatenodes',
+                vertxEventBusService.send('com.raaftech.structure.repository.templates',
                     {'msgh':'findAllTemplates', 'args':{}})
                     .then(function(reply) {
                         $scope.ui.parentMenu = [];
@@ -148,9 +148,9 @@ angular.module("structureApp")
                     });
         };
 
-        // Find a TypeNode either by name or by UUID
-        $scope.findTypeNode = function() {
-                vertxEventBusService.send('com.raaftech.structure.repository.typenodes',
+        // Find a Type either by name or by UUID
+        $scope.findType = function() {
+                vertxEventBusService.send('com.raaftech.structure.repository.types',
                     {'msgh':'findOne', 'args':{'node': $scope.newTemplate.isa}})
                     .then(function(reply) {
                         console.log(reply);
@@ -196,7 +196,7 @@ angular.module("structureApp")
 
         // Get all templates from the database.
         $scope.getTemplates = function() {
-                vertxEventBusService.send('com.raaftech.structure.repository.templatenodes',
+                vertxEventBusService.send('com.raaftech.structure.repository.templates',
                     {'msgh':'findAllTemplates', 'args':{}})
                     .then(function(reply) {
                         $scope.ui.templates = reply.result.data;
@@ -208,7 +208,7 @@ angular.module("structureApp")
             function recurse(template) {
                 $scope.schemas.push({ name: template.name, uuid: template.uuid, form: template.form, schema: JSON.parse(template.schema)});
                 console.log(template.form);
-                $scope.model.push({templateNodeUuid: template.uuid, data: {}});
+                $scope.model.push({templateUuid: template.uuid, data: {}});
                 if (template.children != null) {
                     var childrenLength = template.children.length;
                     if (childrenLength > 0) {
@@ -245,21 +245,21 @@ angular.module("structureApp")
     })
 
     .controller("handleCtrl", function($scope, $timeout, vertxEventBus, vertxEventBusService) {
-        $scope.findInstanceNodeUuid = "";
+        $scope.findInstanceUuid = "";
         $scope.taskId = "";
-        $scope.foundInstanceNode = {};
+        $scope.foundInstance = {};
         $scope.lastResult = {};
 
-        // Find an InstanceNode by UUID or name
-        $scope.findInstanceNode = function() {
-                vertxEventBusService.send('com.raaftech.structure.repository.instancenodes',
-                    {'msgh':'findOne', 'args':{'node': $scope.findInstanceNodeUuid}})
+        // Find an Instance by UUID or name
+        $scope.findInstance = function() {
+                vertxEventBusService.send('com.raaftech.structure.repository.instances',
+                    {'msgh':'findOne', 'args':{'node': $scope.findInstanceUuid}})
                     .then(function(reply) {
                         if (reply.result.error == null) {
-                            $scope.foundInstanceNode = reply.result.data;
+                            $scope.foundInstance = reply.result.data;
                             console.log(reply.result.data);
                         } else {
-                            $scope.foundInstanceNode = {};
+                            $scope.foundInstance = {};
                             console.warn(reply.result);
                         }
                     }).catch(function() {
@@ -270,7 +270,7 @@ angular.module("structureApp")
         // Call a plugin
         $scope.sendMessage = function(address) {
                 vertxEventBusService.send("com.raaftech.structure.manager.pluginmanager",
-                    {"msgh":"callplugin", "args":{'node': $scope.foundInstanceNode.uuid, 'address': address}})
+                    {"msgh":"callplugin", "args":{'node': $scope.foundInstance.uuid, 'address': address}})
                     .then(function(reply) {
                         if (reply.result.error == null) {
                             $scope.taskId = reply.result.task;
@@ -282,10 +282,10 @@ angular.module("structureApp")
                     });
         }
 
-        // Get results of an InstanceNode
+        // Get results of an Instance
         $scope.getResults = function(task) {
                 vertxEventBusService.send('com.raaftech.structure.node.instance.'
-                    + $scope.foundInstanceNode.uuid,
+                    + $scope.foundInstance.uuid,
                     {'msgh': 'getResults', 'args':{'task': task}})
                     .then(function(reply) {
                         if (reply.result.error == null) {

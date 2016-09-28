@@ -1,17 +1,16 @@
 package com.raaftech.structure.base;
 
 import ch.qos.logback.classic.Level;
-import com.raaftech.structure.graph.InstanceNode;
-import com.raaftech.structure.graph.TemplateNode;
-import com.raaftech.structure.graph.TypeNode;
-import com.raaftech.structure.graph.repositories.InstanceNodeRepository;
-import com.raaftech.structure.graph.repositories.TemplateNodeRepository;
-import com.raaftech.structure.graph.repositories.TypeNodeRepository;
+import com.raaftech.structure.graph.Template;
+import com.raaftech.structure.graph.Type;
+import com.raaftech.structure.graph.repositories.InstanceRepository;
+import com.raaftech.structure.graph.repositories.InstrumentRepository;
+import com.raaftech.structure.graph.repositories.TemplateRepository;
+import com.raaftech.structure.graph.repositories.TypeRepository;
 import com.raaftech.structure.helper.loader.BundleLoader;
 import com.raaftech.structure.manager.TaskManager;
-import com.raaftech.structure.node.InstanceNodeActor;
-import com.raaftech.structure.node.TemplateNodeActor;
-import com.raaftech.structure.node.TypeNodeActor;
+import com.raaftech.structure.node.TemplateActor;
+import com.raaftech.structure.node.TypeActor;
 import com.raaftech.structure.repository.*;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
@@ -143,9 +142,10 @@ public class Application {
         new AnnotationConfigApplicationContext(SpringConfig.class, ConverterConfig.class);
 
         // Now that Spring's context is available, the repositories are autowired in Context
-        final TypeNodeRepository typeNodeRepository = Context.getTypeNodeRepository();
-        final InstanceNodeRepository instanceNodeRepository = Context.getInstanceNodeRepository();
-        final TemplateNodeRepository templateNodeRepository = Context.getTemplateNodeRepository();
+        final TypeRepository typeRepository = Context.getTypeRepository();
+        final InstanceRepository instanceRepository = Context.getInstanceRepository();
+        final InstrumentRepository instrumentRepository = Context.getInstrumentRepository();
+        final TemplateRepository templateRepository = Context.getTemplateRepository();
 
         // Setup vertx with a maxWorkerExecuteTime of 5 minutes.
         final String workerTimeoutConfiguration = getConfiguration("workertimeout");
@@ -185,12 +185,12 @@ public class Application {
         // Setup indexes and constraints
         log.info("Creating indices.");
         CypherQueryExecutor queryExecutor = Context.getNeo4jTemplate().getInfrastructure().getCypherQueryExecutor();
-        queryExecutor.query("CREATE CONSTRAINT ON (n:TypeNode) ASSERT n.name IS UNIQUE", null, null);
+        queryExecutor.query("CREATE CONSTRAINT ON (n:Type) ASSERT n.name IS UNIQUE", null, null);
         queryExecutor.query("CREATE CONSTRAINT ON (n:Node) ASSERT n.uuid IS UNIQUE", null, null);
 
         // Purge all instruments
         log.info("Purging instruments.");
-        instanceNodeRepository.purgeHandlers();
+        instrumentRepository.purgeControllers();
         Context.setInstrumentsLoaded(false);
 
         final String propertyFile = "config.properties";
@@ -304,9 +304,9 @@ public class Application {
                 log.info("Deployed NodeRepository with id: {}", ar.result());
             }
         });
-        vertx.deployVerticle(new InstanceNodes(Context.getInstanceNodeRepository()), ar -> {
+        vertx.deployVerticle(new Instances(Context.getInstanceRepository()), ar -> {
             if (ar.succeeded()) {
-                log.info("Deployed InstanceNodeRepository with id: {}", ar.result());
+                log.info("Deployed InstanceRepository with id: {}", ar.result());
             }
         });
         vertx.deployVerticle(new SchemaNodes(Context.getSchemaNodeRepository()), ar -> {
@@ -314,41 +314,44 @@ public class Application {
                 log.info("Deployed SchemaNodeRepository with id: {}", ar.result());
             }
         });
-        vertx.deployVerticle(new TemplateNodes(Context.getTemplateNodeRepository()), ar -> {
+        vertx.deployVerticle(new Templates(Context.getTemplateRepository()), ar -> {
             if (ar.succeeded()) {
-                log.info("Deployed TemplateNodeRepository with id: {}", ar.result());
+                log.info("Deployed TemplateRepository with id: {}", ar.result());
             }
         });
-        vertx.deployVerticle(new TypeNodes(Context.getTypeNodeRepository()), ar -> {
+        vertx.deployVerticle(new Types(Context.getTypeRepository()), ar -> {
             if (ar.succeeded()) {
-                log.info("Deployed TypeNodeRepository with id: {}", ar.result());
+                log.info("Deployed TypeRepository with id: {}", ar.result());
             }
         });
 
-        // Deploy TypeNodeActors.
-        log.debug("Deploying TypeNodeActors..");
+        // Deploy TypeActors.
+        log.debug("Deploying TypeActors..");
         Transaction tx = Context.getGraphDatabase().beginTx();
-        for (TypeNode typeNode : typeNodeRepository.findAll()) {
-            TypeNodeActor typeNodeActor = new TypeNodeActor(typeNode);
-            vertx.deployVerticle(typeNodeActor);
+        for (Type type : typeRepository.findAll()) {
+            TypeActor typeActor = new TypeActor(type);
+            vertx.deployVerticle(typeActor);
         }
         tx.close();
 
-        // Deploy InstanceNodeActors.
-        log.debug("Deploying InstanceNodeActors..");
+        // TODO: adapt to new split instancenodes
+        /*
+        // Deploy InstanceActors.
+        log.debug("Deploying InstanceActors..");
         tx = Context.getGraphDatabase().beginTx();
-        for (InstanceNode instanceNode : instanceNodeRepository.findAll()) {
-            InstanceNodeActor instanceNodeActor = new InstanceNodeActor(instanceNode);
+        for (Instance instanceNode : instanceNodeRepository.findAll()) {
+            InstanceActor instanceNodeActor = new InstanceActor(instanceNode);
             vertx.deployVerticle(instanceNodeActor, new DeploymentOptions().setWorker(true));
         }
         tx.close();
+        */
 
-        // Deploy TemplateNodeActors.
-        log.debug("Deploying TemplateNodeActors..");
+        // Deploy TemplateActors.
+        log.debug("Deploying TemplateActors..");
         tx = Context.getGraphDatabase().beginTx();
-        for (TemplateNode templateNode : templateNodeRepository.findAll()) {
-            TemplateNodeActor templateNodeActor = new TemplateNodeActor(templateNode);
-            vertx.deployVerticle(templateNodeActor);
+        for (Template template : templateRepository.findAll()) {
+            TemplateActor templateActor = new TemplateActor(template);
+            vertx.deployVerticle(templateActor);
         }
         tx.close();
 

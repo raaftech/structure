@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.base.GenericActor;
-import com.raaftech.structure.graph.repositories.InstanceNodeRepository;
+import com.raaftech.structure.graph.repositories.InstrumentRepository;
 import com.raaftech.structure.helper.loader.InstrumentLoader;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
@@ -23,7 +23,7 @@ import java.util.*;
 public class InstrumentManager extends GenericActor {
 
     private final static Logger log = LoggerFactory.getLogger(TaskManager.class);
-    private final InstanceNodeRepository instanceNodeRepository = Context.getInstanceNodeRepository();
+    private final InstrumentRepository instrumentRepository = Context.getInstrumentRepository();
 
     private void loadInstruments() {
         // Load all instruments
@@ -41,7 +41,7 @@ public class InstrumentManager extends GenericActor {
 
     private void purgeInstruments() {
         log.info("Purging instruments.");
-        instanceNodeRepository.purgeHandlers();
+        instrumentRepository.purgeControllers();
         Context.setInstrumentsLoaded(false);
     }
 

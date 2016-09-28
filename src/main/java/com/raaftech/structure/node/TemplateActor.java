@@ -6,8 +6,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.raaftech.structure.annotations.SchemaPath;
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.base.NodeActor;
-import com.raaftech.structure.graph.TemplateNode;
-import com.raaftech.structure.graph.repositories.TemplateNodeRepository;
+import com.raaftech.structure.graph.Template;
+import com.raaftech.structure.graph.repositories.TemplateRepository;
 import org.neo4j.graphdb.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,11 +16,11 @@ import org.slf4j.LoggerFactory;
  * Created by Boy van Duuren &lt;boy@raaftech.com&gt;.
  */
 
-public class TemplateNodeActor extends NodeActor<TemplateNode> {
+public class TemplateActor extends NodeActor<Template> {
 
-    private Logger log = LoggerFactory.getLogger(TemplateNodeActor.class);
+    private Logger log = LoggerFactory.getLogger(TemplateActor.class);
 
-    public TemplateNodeActor(TemplateNode node) {
+    public TemplateActor(Template node) {
         super(node);
     }
 
@@ -32,12 +32,12 @@ public class TemplateNodeActor extends NodeActor<TemplateNode> {
     // Next methods are exposed on the eventbus
 
     /**
-     * Remove a TemplateNode from a Template, or
-     * when the TemplateNode this is called on is the start of
+     * Remove a Template from a Template, or
+     * when the Template this is called on is the start of
      * a Template, remove the whole template.
      * @return A JSON object with an error field if an error occurred.
      */
-    // TODO: Undeploy TemplateNodes when they are removed from the database
+    // TODO: Undeploy Templates when they are removed from the database
     @SuppressWarnings("unused")
     public MessageHandler removeFromTemplate() {
         return new MessageHandler() {
@@ -46,9 +46,9 @@ public class TemplateNodeActor extends NodeActor<TemplateNode> {
                 ObjectNode result = mapper.createObjectNode();
                 JsonNode args = request.get("args");
 
-                TemplateNodeRepository templateNodeRepository = Context.getTemplateNodeRepository();
-                TemplateNode node = getNode();
-                TemplateNode parent = node.getParentComponent();
+                TemplateRepository templateRepository = Context.getTemplateRepository();
+                Template node = getNode();
+                Template parent = node.getParentComponent();
 
                 Transaction tx = Context.getGraphDatabase().beginTx();
                 try {
@@ -56,16 +56,16 @@ public class TemplateNodeActor extends NodeActor<TemplateNode> {
                         String templateUuid = parent.getUuid();
                         if (parent.removeComponent(node)) {
                             parent.save();
-                            result.put("data", "Removed node " + uuid + " from TemplateNode " + templateUuid);
+                            result.put("data", "Removed node " + uuid + " from Template " + templateUuid);
                         } else {
-                            result.put("error", "Didn't remove node " + uuid + " from TemplateNode " + templateUuid + ", " +
+                            result.put("error", "Didn't remove node " + uuid + " from Template " + templateUuid + ", " +
                                     "rolled back transaction.");
                             tx.failure();
                         }
                     } else {
                         long components = node.removeAllComponents() + 1;
-                        templateNodeRepository.delete(node);
-                        result.put("data", "Removed TemplateNode " + uuid + " and its children.");
+                        templateRepository.delete(node);
+                        result.put("data", "Removed Template " + uuid + " and its children.");
                     }
                     vertx.undeploy(deploymentID(), res -> {
                         if (res.succeeded()) {
@@ -101,26 +101,26 @@ public class TemplateNodeActor extends NodeActor<TemplateNode> {
     }
 
     /**
-     * Instantiate a template resulting in a new InstanceNode group.
-     * @return A JSON object containing the first InstanceNode in the group's uuid,
+     * Instantiate a template resulting in a new Instance group.
+     * @return A JSON object containing the first Instance in the group's uuid,
      * or a JSON object with an error field when an error occurs.
      */
-    @SchemaPath("schema/node/templatenode/instantiate.schema.json")
+    @SchemaPath("schema/node/template/instantiate.schema.json")
     @SuppressWarnings("unused")
     public MessageHandler instantiate() {
         return new MessageHandler() {
             @Override
             public JsonNode exec(JsonNode request) {
-                TemplateNodeRepository templateNodeRepository = Context.getTemplateNodeRepository();
+                TemplateRepository templateRepository = Context.getTemplateRepository();
                 ObjectNode result = mapper.createObjectNode();
                 JsonNode args = request.get("args");
 
                 JsonNode instancedata = args.get("instancedata");
-                TemplateNode templateNode = getNode();
+                Template template = getNode();
 
-                if (templateNode != null && instancedata != null) {
+                if (template != null && instancedata != null) {
                     try {
-                        String uuid = templateNode.instantiate(instancedata);
+                        String uuid = template.instantiate(instancedata);
                         if (uuid != null) {
                             result.put("data", uuid);
                         } else {
@@ -150,7 +150,7 @@ public class TemplateNodeActor extends NodeActor<TemplateNode> {
      * Run a discovery routine on a template.
      * @return Nothing really informative... WIP
      */
-    @SchemaPath("schema/node/templatenode/discover.schema.json")
+    @SchemaPath("schema/node/template/discover.schema.json")
     @SuppressWarnings("unused")
     public MessageHandler discover() {
         return new MessageHandler() {
@@ -159,7 +159,7 @@ public class TemplateNodeActor extends NodeActor<TemplateNode> {
                 ObjectNode result = mapper.createObjectNode();
                 JsonNode args = request.get("args");
 
-                TemplateNode startOfTemplate = getNode();
+                Template startOfTemplate = getNode();
                 try {
                     startOfTemplate.discover(args.get("data"));
                     result.put("information", "Started discovery routine(s) for template.");

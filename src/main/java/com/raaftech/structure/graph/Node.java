@@ -8,6 +8,8 @@ import org.springframework.data.neo4j.support.index.IndexType;
 
 import java.util.UUID;
 
+import static io.vertx.core.json.Json.mapper;
+
 /**
  * Give a description of Node here.
  *
@@ -74,5 +76,13 @@ public abstract class Node {
         return uuid;
     }
 
-    public abstract ObjectNode toJson();
+    public ObjectNode toJson() {
+        ObjectNode json = mapper.createObjectNode();
+        json
+                .put("name", name)
+                .put("desc", desc)
+                .put("uuid", uuid);
+
+        return json;
+    }
 }

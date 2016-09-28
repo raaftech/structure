@@ -4,8 +4,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.exceptions.JsonValidationException;
 import com.raaftech.structure.exceptions.PackageIOException;
-import com.raaftech.structure.graph.TemplateNode;
-import com.raaftech.structure.graph.repositories.TemplateNodeRepository;
+import com.raaftech.structure.graph.Template;
+import com.raaftech.structure.graph.repositories.TemplateRepository;
 import com.raaftech.structure.helper.JsonHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +30,7 @@ class TemplateLoader implements PackageLoader {
     private static final String REQUIRED = "required";
 
     private static final Logger log = LoggerFactory.getLogger(TemplateLoader.class);
-    private static final TemplateNodeRepository templateNodeRepository = Context.getTemplateNodeRepository();
+    private static final TemplateRepository TEMPLATE_REPOSITORY = Context.getTemplateRepository();
     private static final String SCHEMA = "schema/helper/loader/template.schema.json";
 
     @Override
@@ -61,11 +61,11 @@ class TemplateLoader implements PackageLoader {
             throw new JsonValidationException("Template definition didn't match template schema.");
         }
 
-        if (templateNodeRepository.findByUuid(json.get(UUID).asText()) != null) {
+        if (TEMPLATE_REPOSITORY.findByUuid(json.get(UUID).asText()) != null) {
             return;
         }
 
-        TemplateNode start = deserialize(json)
+        Template start = deserialize(json)
                 .setRequired(true)
                 .setUnique(true)
                 .setStartOfTemplate(true);
@@ -75,37 +75,37 @@ class TemplateLoader implements PackageLoader {
         start.save();
     }
 
-    private TemplateNode deserialize(JsonNode json) {
+    private Template deserialize(JsonNode json) {
         final String startName = json.get(NAME).asText();
         final String startDesc = json.get(DESC).asText();
         final String startTemplateOf = json.get(TEMPLATEOF).asText();
         final String startUuid = json.get(UUID).asText();
 
-        TemplateNode templateNode = new TemplateNode(startName, startDesc, startUuid)
+        Template template = new Template(startName, startDesc, startUuid)
                 .setIsa(startTemplateOf);
 
         if (json.has(UNIQUE)) {
-            templateNode.setUnique(json.get(UNIQUE).asBoolean());
+            template.setUnique(json.get(UNIQUE).asBoolean());
         } else {
-            templateNode.setUnique(false);
+            template.setUnique(false);
         }
         if (json.has(REQUIRED)) {
-            templateNode.setRequired(json.get(REQUIRED).asBoolean());
+            template.setRequired(json.get(REQUIRED).asBoolean());
         } else {
-            templateNode.setRequired(false);
+            template.setRequired(false);
         }
 
-        return templateNode;
+        return template;
     }
 
-    private void addComponents(TemplateNode current, JsonNode json) {
+    private void addComponents(Template current, JsonNode json) {
         if (!json.has(COMPONENTS)) {
             return;
         }
 
         Stream<JsonNode> componentStream = StreamSupport.stream(json.get(COMPONENTS).spliterator(), false);
         componentStream.forEach(componentJson -> {
-            TemplateNode componentTemplate = deserialize(componentJson);
+            Template componentTemplate = deserialize(componentJson);
             current.addComponent(componentTemplate);
             addComponents(componentTemplate, componentJson);
         });

@@ -7,9 +7,11 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.exceptions.InstrumentNotFoundException;
 import com.raaftech.structure.exceptions.JsonValidationException;
-import com.raaftech.structure.graph.InstanceNode;
-import com.raaftech.structure.graph.TypeNode;
-import com.raaftech.structure.graph.repositories.TypeNodeRepository;
+import com.raaftech.structure.graph.Controller;
+import com.raaftech.structure.graph.Instrument;
+import com.raaftech.structure.graph.Marker;
+import com.raaftech.structure.graph.Type;
+import com.raaftech.structure.graph.repositories.TypeRepository;
 import com.raaftech.structure.helper.JsonHelper;
 import org.neo4j.graphdb.Transaction;
 import org.slf4j.Logger;
@@ -21,7 +23,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -31,14 +33,14 @@ import java.util.stream.StreamSupport;
  * InstrumentLoader is responsible for traversing a directory containing instruments (mustache templates containing a
  * certain preamble).
  * The preamble is contained in  a mustache comment {{! }}.
- * This preamble tells us what capability the instruments provides to which TypeNodes. These instruments
+ * This preamble tells us what capability the instruments provides to which Types. These instruments
  * are then created in the database.
  */
 public class InstrumentLoader implements PackageLoader {
 
     private final static Logger log = LoggerFactory.getLogger(InstrumentLoader.class);
     private final ObjectMapper mapper = new ObjectMapper();
-    private final TypeNodeRepository typeNodeRepository = Context.getTypeNodeRepository();
+    private final TypeRepository typeRepository = Context.getTypeRepository();
 
     // Preamble stop and start match mustache multiline comments.
     // We need these to extract the JSON contained in this comment.
@@ -73,61 +75,15 @@ public class InstrumentLoader implements PackageLoader {
     /* Private Methods */
     /*******************/
 
-    private void createHandlerNode(String instrumentCapability, ObjectNode instanceData,
-                                   String providedByType, ArrayNode appliesTo) {
-
-        Stream<JsonNode> appliesToStream = StreamSupport.stream(appliesTo.spliterator(), false);
-
-        String instrumentName = instanceData.get("name").asText();
-
-        TypeNode capability = typeNodeRepository.findOneByName(instrumentCapability);
-        TypeNode instrumentType = typeNodeRepository.findOneByName("Instrument");
-        TypeNode providedBy = typeNodeRepository.findOneByName(providedByType);
-
-        if (capability == null) {
-            log.error("Couldn't find capability for instrument " + instrumentName + ".");
-            return;
-        }
-
-        if (instrumentType == null) {
-            log.error("Couldn't find instrument type, is the database initialized?");
-            return;
-        }
-
-        if (providedBy == null) {
-            log.error("Couldn't find the provider type.");
-            return;
-        }
-
-        List<TypeNode> applies = appliesToStream
-                .map(JsonNode::asText)
-                .map(typeNodeRepository::findOneByName)
-                .peek(associationNode -> {
-                    if (associationNode == null) {
-                        throw new RuntimeException("Couldn't find associated TypeNode.");
-                    }
-                })
-                .collect(Collectors.toList());
-
-        log.debug("Found capability and instrument type for " + instrumentName + ", creating instance.");
-        InstanceNode instrument = new InstanceNode(instanceData, instrumentType.getUuid());
-        instrument.setCapability(capability);
-
+    private void createInstrumentNode(Instrument instrument) {
         log.debug("Starting transaction to save the instrument.");
         Transaction tx = Context.getGraphDatabase().beginTx();
         try {
-            applies.stream()
-                    .forEach(t -> {
-                        instrument.addHandledType(t);
-                        t.save();
-                    });
-            providedBy.addInstrument(instrument);
-            providedBy.save();
             instrument.save();
             tx.success();
-            log.info("Successfully created the " + instrumentName + " instrument.");
+            log.info("Successfully created the " + instrument.getName() + " instrument.");
         } catch (Exception e) {
-            log.error("Error while saving " + instrumentName + ", rolling back transaction.");
+            log.error("Error while saving " + instrument.getName() + ", rolling back transaction.");
             if (Boolean.parseBoolean(System.getProperty("traceMode"))) {
                 e.printStackTrace();
             }
@@ -194,40 +150,82 @@ public class InstrumentLoader implements PackageLoader {
             if (JsonHelper.validateToSchema(instrumentSchema, preambleJson)) {
                 log.debug("Preamble valid. Continuing creation of instruments..");
 
-                // Create the JSON needed to create the instrument.
-                ObjectNode instanceData = mapper.createObjectNode();
-                // What kind of capability does this instrument provide?
+                Instrument resultingInstrument;
+                String type = preambleJson.get("instrumentType").asText();
                 String capability = preambleJson.get("capability").asText();
+                String name = preambleJson.get("name").asText();
+                String desc = preambleJson.get("desc").asText();
+                if ("runner".equals(type)) {
+                    // Required fields
+                    // What kind of capability does this instrument provide?
+                    Boolean subjectIsLocal = preambleJson.get("subjectIsLocal").asBoolean();
+                    // What Type is providing this instrument?
+                    String providedByType = preambleJson.get("providedBy").asText();
 
-                // Required fields
-                instanceData.put("fileLocation", filePath);
-                instanceData.put("name", preambleJson.get("name").asText());
-                instanceData.put("desc", preambleJson.get("desc").asText());
-                instanceData.put("type", preambleJson.get("instrumentType").asText());
-                instanceData.put("subjectIsLocal", preambleJson.get("subjectIsLocal").asBoolean());
-                instanceData.put("template", handlebarsTemplate);
+                    Controller.Builder builder = new Controller.Builder()
+                            .name(name)
+                            .desc(desc)
+                            .filePath(filePath)
+                            .capability(capability)
+                            .providedBy(providedByType)
+                            .subjectIsLocal(subjectIsLocal)
+                            .template(handlebarsTemplate);
 
-                // Optional fields
-                if (preambleJson.has("weight")) {
-                    instanceData.put("weight", preambleJson.get("weight").asInt());
-                }
-                if (preambleJson.has("extension")) {
-                    instanceData.put("extension", preambleJson.get("extension").asText());
-                }
-                if (preambleJson.has("resultParser")) {
-                    instanceData.put("resultParser", preambleJson.get("resultParser").asText());
-                }
-                if (preambleJson.has("arguments")) {
-                    instanceData.put("arguments", mapper.writerWithDefaultPrettyPrinter()
-                            .writeValueAsString(preambleJson.get("arguments")));
-                }
+                    // What does this instrument apply to?
+                    ArrayNode appliesJson = (ArrayNode) preambleJson.get("appliesTo");
+                    Stream<JsonNode> appliesStream = StreamSupport.stream(appliesJson.spliterator(), false);
+                    Set<Type> appliesTypes = appliesStream
+                            .map(JsonNode::asText)
+                            .peek(t -> log.trace("Looking for type \"" + t + "\"."))
+                            .map(typeRepository::findOneByName)
+                            .peek(associationNode -> {
+                                if (associationNode == null) {
+                                    throw new RuntimeException("Couldn't find associated Type.");
+                                }
+                            })
+                            .collect(Collectors.toSet());
+                    builder.handles(appliesTypes);
 
-                // What TypeNode is providing this instrument?
-                String providedByType = preambleJson.get("providedBy").asText();
-                // What does this instrument apply to?
-                ArrayNode appliesToTypes = (ArrayNode)preambleJson.get("appliesTo");
+                    // Optional fields
+                    if (preambleJson.has("weight")) {
+                        builder.weight(preambleJson.get("weight").asInt());
+                    }
+                    if (preambleJson.has("extension")) {
+                        builder.extension(preambleJson.get("extension").asText());
+                    }
+                    if (preambleJson.has("resultParser")) {
+                        //TODO: implement
+                    }
+                    if (preambleJson.has("arguments")) {
+                        builder.arguments(mapper.writerWithDefaultPrettyPrinter()
+                                .writeValueAsString(preambleJson.get("arguments")));
+                    }
+
+                    resultingInstrument = builder.build();
+                } else if ("marker".equals(type)) {
+                    // What does this instrument apply to?
+                    ArrayNode appliesJson = (ArrayNode) preambleJson.get("appliesTo");
+                    Stream<JsonNode> appliesStream = StreamSupport.stream(appliesJson.spliterator(), false);
+                    Set<Type> appliesTypes = appliesStream
+                            .map(JsonNode::asText)
+                            .peek(t -> log.trace("Looking for type \"" + t + "\"."))
+                            .map(typeRepository::findOneByName)
+                            .peek(associationNode -> {
+                                if (associationNode == null) {
+                                    throw new RuntimeException("Couldn't find associated Type.");
+                                }
+                            })
+                            .collect(Collectors.toSet());
+                    // What Type is providing this instrument?
+                    String providedByType = preambleJson.get("providedBy").asText();
+
+                    resultingInstrument = new Marker(name, desc, filePath, capability, appliesTypes, providedByType);
+                } else { // if ("parser".equals(type)) <-- only other possibility because schema
+                    // TODO: implement
+                    resultingInstrument = null;
+                }
                 // Create the instrument
-                createHandlerNode(capability, instanceData, providedByType, appliesToTypes);
+                createInstrumentNode(resultingInstrument);
             } else {
                 log.error("Preamble of \"" + filePath + "\" didn't validate against instrument schema.");
                 throw new JsonValidationException("Preamble of \"" + filePath + "\" didn't validate against "

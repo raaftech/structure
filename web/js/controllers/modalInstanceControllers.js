@@ -4,7 +4,7 @@ angular.module("structureApp")
         $scope.uuid = uuid;
 
         $scope.getType = function(uuid) {
-            vertxEventBusService.send('com.raaftech.structure.repository.typenodes',
+            vertxEventBusService.send('com.raaftech.structure.repository.types',
                 {
                     'msgh': 'findOne',
                     'args': {
@@ -40,7 +40,7 @@ angular.module("structureApp")
                 }
             }
 
-            vertxEventBusService.send('com.raaftech.structure.repository.instancenodes',
+            vertxEventBusService.send('com.raaftech.structure.repository.instances',
                 {
                     'msgh': 'putNode',
                     'args': formArgs

@@ -1,7 +1,7 @@
 {
   "id": "https://repo.raaftech.com/schema/node/instancenode/runInstrument.schema.json#",
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "description": "Schema for every InstanceNodeActor's runInstrument method.",
+  "description": "Schema for every InstanceActor's runInstrument method.",
   "type": "object",
   "additionalProperties": false,
   "properties": {

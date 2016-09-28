@@ -38,10 +38,10 @@ public class SchemaNode extends Node {
     private SchemaNode revisesSchemaNode;
 
     @RelatedTo(type="CREATED", direction = Direction.OUTGOING)
-    private Set<TypeNode> createdTypeNodes;
+    private Set<Type> createdTypes;
 
     @RelatedTo(type="UPDATED", direction = Direction.OUTGOING)
-    private Set<TypeNode> updatedTypeNodes;
+    private Set<Type> updatedTypes;
 
     @Transient
     private static SchemaNodeRepository schemaNodeRepository = Context.getSchemaNodeRepository();
@@ -96,11 +96,11 @@ public class SchemaNode extends Node {
         return schemaNode;
     }
 
-    public SchemaNode created(TypeNode node) {
-        if (createdTypeNodes == null) {
-            createdTypeNodes = new HashSet<>();
+    public SchemaNode created(Type node) {
+        if (createdTypes == null) {
+            createdTypes = new HashSet<>();
         }
-        createdTypeNodes.add(node);
+        createdTypes.add(node);
         return this;
     }
 
@@ -222,11 +222,11 @@ public class SchemaNode extends Node {
      * @param node Instance of a node updated by this SchemaNode/SchemaUpdate pair.
      * @return Returns itself.
      */
-    public SchemaNode updated(TypeNode node) {
-        if (updatedTypeNodes == null) {
-            updatedTypeNodes = new HashSet<>();
+    public SchemaNode updated(Type node) {
+        if (updatedTypes == null) {
+            updatedTypes = new HashSet<>();
         }
-        updatedTypeNodes.add(node);
+        updatedTypes.add(node);
         return this;
     }
 }

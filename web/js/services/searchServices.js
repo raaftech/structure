@@ -11,7 +11,7 @@ angular.module("structureApp")
                 if(query != '') {
                     this.data.query = query;
                     var data = this.data;
-                    vertxEventBusService.send('com.raaftech.structure.repository.instancenodes',
+                    vertxEventBusService.send('com.raaftech.structure.repository.instances',
                         {
                             'msgh': 'findByName',
                             'args': {

@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.fge.jsonschema.core.exceptions.ProcessingException;
 import com.raaftech.structure.base.Context;
-import com.raaftech.structure.graph.repositories.TypeNodeRepository;
+import com.raaftech.structure.graph.repositories.TypeRepository;
 import com.raaftech.structure.helper.JsonSchemaBuilder;
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.Transaction;
@@ -27,62 +27,62 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Give a description of TypeNode here.
+ * Give a description of Type here.
  *
  * @author Rubin Simons <rubin.simons@raaftech.com>
  * @since 2014-11-27
  */
 @NodeEntity
-public class TypeNode extends Node {
+public class Type extends Node {
 
-    final static Logger log = LoggerFactory.getLogger(TypeNode.class);
+    final static Logger log = LoggerFactory.getLogger(Type.class);
 
-    @RelatedTo(type="ISA", direction = Direction.OUTGOING, elementClass = TypeNode.class, enforceTargetType = true)
-    private TypeNode isa;
+    @RelatedTo(type="ISA", direction = Direction.OUTGOING, elementClass = Type.class, enforceTargetType = true)
+    private Type isa;
 
-    @RelatedTo(type="ISA", direction = Direction.INCOMING, elementClass = TypeNode.class, enforceTargetType = true)
+    @RelatedTo(type="ISA", direction = Direction.INCOMING, elementClass = Type.class, enforceTargetType = true)
     @SuppressWarnings("unused")
-    private Set<TypeNode> childIsaSet;
+    private Set<Type> childIsaSet;
 
     private int glyphId;
 
     @RelatedTo(type="HAS_INSTRUMENT", direction = Direction.OUTGOING)
     @Fetch
-    private Set<InstanceNode> instruments;
+    private Set<Instrument> instruments;
 
     @RelatedTo(type="IMPLEMENTS", direction = Direction.OUTGOING)
     @Fetch
-    private Set<TypeNode> implementsProtocols;
+    private Set<Type> implementsProtocols;
 
     public JsonSchemaBuilder schema = new JsonSchemaBuilder();
     public DynamicProperties kv = new DynamicPropertiesContainer();
 
-    // isaUuid exists only to temporarily save a UUID of a TypeNode's parent
+    // isaUuid exists only to temporarily save a UUID of a Type's parent
     // in case the parent doesn't exist in the database yet.
     @Transient
     private String isaUuid;
 
     @Transient
-    private TypeNodeRepository typeNodeRepository = Context.getTypeNodeRepository();
+    private TypeRepository typeRepository = Context.getTypeRepository();
 
     /****************/
     /* Constructors */
     /****************/
 
-    public TypeNode() {}
+    public Type() {}
 
-    public TypeNode(String name, String desc, int glyphId) {
+    public Type(String name, String desc, int glyphId) {
         super(name, desc);
         this.glyphId = glyphId;
         initSchema();
     }
 
-    public TypeNode(String name, String desc, String uuid) {
+    public Type(String name, String desc, String uuid) {
         super(name, desc, uuid);
         initSchema();
     }
 
-    public TypeNode(String name, String desc, String uuid, int glyphId) {
+    public Type(String name, String desc, String uuid, int glyphId) {
         super(name, desc, uuid);
         this.glyphId = glyphId;
         initSchema();
@@ -118,7 +118,7 @@ public class TypeNode extends Node {
 
     /******************/
 
-    public Set<TypeNode> getChildIsaSet() {
+    public Set<Type> getChildIsaSet() {
         GraphDatabase graphDatabase = Context.getGraphDatabase();
         Transaction tx = graphDatabase.beginTx();
         Context.getNeo4jTemplate().fetch(childIsaSet);
@@ -127,9 +127,9 @@ public class TypeNode extends Node {
         return childIsaSet;
     }
 
-    public TypeNode setDescriptor(String key, String valueType, boolean required, String description, String defaultValue,
-                                  String pattern) {
-        TypeNode parentNode = getIsa();
+    public Type setDescriptor(String key, String valueType, boolean required, String description, String defaultValue,
+                              String pattern) {
+        Type parentNode = getIsa();
         if (parentNode != null && parentNode.getSchema().containsProperty(key)) {
             throw new RuntimeException("Can't override parent schema.");
         } else {
@@ -141,12 +141,16 @@ public class TypeNode extends Node {
         return this;
     }
 
+    public Set<Type> findCommonProtocols(Instance subject) {
+        return typeRepository.getCommonProtocols(this.getUuid(), subject.getUuid());
+    }
+
     public int getGlyphId() {
         return glyphId;
     }
 
     public String getHierarchyPath() {
-        String path = typeNodeRepository.getHierarchyPath(getUuid());
+        String path = typeRepository.getHierarchyPath(getUuid());
         if (path != null) {
             return path.toLowerCase();
         } else {
@@ -154,7 +158,7 @@ public class TypeNode extends Node {
         }
     }
 
-    public TypeNode getIsa() {
+    public Type getIsa() {
         // Sometimes the parent isn't properly loaded from the database
         // I don't know why exactly, and don't have time to find out. This is a workaround.
         // TODO: find out what's going on here
@@ -168,7 +172,7 @@ public class TypeNode extends Node {
         return isa;
     }
 
-    public TypeNode setIsa(TypeNode isa) {
+    public Type setIsa(Type isa) {
         if (isa != null) {
             this.isa = isa;
             JsonSchemaBuilder parentConstraints = isa.getSchema();
@@ -202,13 +206,13 @@ public class TypeNode extends Node {
         return this;
     }
 
-    public TypeNode setIsa(String isa) {
+    public Type setIsa(String isa) {
         // We can't assume our parentNode has been persisted to the database yet at this point.
         // If the parentNode doesn't exist in the database yet, we just save it's UUID to a
         // transient field for later use (at createNode time).
-        // If it does exist, we create the relations and inherit constraints in setIsa(TypeNode isa).
+        // If it does exist, we create the relations and inherit constraints in setIsa(Type isa).
 
-        TypeNode parentNode = typeNodeRepository.findByUuid(isa);
+        Type parentNode = typeRepository.findByUuid(isa);
         if (parentNode != null) {
             setIsa(parentNode);
         } else {
@@ -235,19 +239,20 @@ public class TypeNode extends Node {
         return schema;
     }
 
-    public TypeNode addInstrument(InstanceNode instrument) {
+    public Type addInstrument(Instrument instrument) {
         if (instruments == null) {
             instruments = new HashSet<>();
         }
-
-        if (instrument.getInstanceOf().getName().equals("Instrument")) {
-            instruments.add(instrument);
-        }
+        instruments.add(instrument);
 
         return this;
     }
 
-    public TypeNode addImplementedProtocol(TypeNode protocol) {
+    public Set<Instrument> getInstruments() {
+        return instruments;
+    }
+
+    public Type addImplementedProtocol(Type protocol) {
         if (protocol == null) {
             log.error("Provided argument to addImplementedProtocol cannot be null.");
             return this;
@@ -269,13 +274,13 @@ public class TypeNode extends Node {
         return this;
     }
 
-    public boolean implementsProtocol(TypeNode protocol) {
+    public boolean implementsProtocol(Type protocol) {
         return implementsProtocols == null ? false : implementsProtocols.contains(protocol);
     }
 
     // fillDescriptor is used to set the value of a descriptor. For example: when modelling a particular CPU model
-    // you know that it'll always have 4 cores, n bytes of cache, etc. This method is used to register that for a TypeNode.
-    public TypeNode fillDescriptor(String key, JsonNode data) {
+    // you know that it'll always have 4 cores, n bytes of cache, etc. This method is used to register that for a Type.
+    public Type fillDescriptor(String key, JsonNode data) {
         ObjectNode propertySchema = (ObjectNode) schema.getProperties().get(key);
         // Check if we actually have this property.
         if (propertySchema != null) {
@@ -299,18 +304,18 @@ public class TypeNode extends Node {
                 throw new RuntimeException("Couldn't create JsonSchemaBuilder");
             }
         } else {
-            throw new IllegalArgumentException("TypeNode " + getName() + " has no descriptor '" + key + "'.");
+            throw new IllegalArgumentException("Type " + getName() + " has no descriptor '" + key + "'.");
         }
 
         return this;
     }
 
     public boolean isOfType(String type) {
-        return typeNodeRepository.isOfType(getUuid(), type) > 0;
+        return typeRepository.isOfType(getUuid(), type) > 0;
     }
 
-    public TypeNode save() {
-        typeNodeRepository.save(this);
+    public Type save() {
+        typeRepository.save(this);
         return this;
     }
 

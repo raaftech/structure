@@ -6,20 +6,28 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.raaftech.structure.annotations.SchemaPath;
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.base.NodeActor;
-import com.raaftech.structure.graph.InstanceNode;
-import com.raaftech.structure.graph.repositories.InstanceNodeRepository;
+import com.raaftech.structure.graph.Component;
+import com.raaftech.structure.graph.Controller;
+import com.raaftech.structure.graph.Instance;
+import com.raaftech.structure.graph.Instrument;
+import com.raaftech.structure.graph.repositories.ComponentRepository;
+import com.raaftech.structure.graph.repositories.InstanceRepository;
+import com.raaftech.structure.graph.repositories.InstrumentRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
-public class InstanceNodeActor extends NodeActor<InstanceNode> {
+public class InstanceActor extends NodeActor<Instance> {
 
-    private InstanceNodeRepository instanceNodeRepository = Context.getInstanceNodeRepository();
+    private static final InstanceRepository INSTANCE_REPOSITORY = Context.getInstanceRepository();
+    private static final ComponentRepository componentRepository = Context.getComponentRepository();
+    private static final InstrumentRepository instrumentRepository = Context.getInstrumentRepository();
 
-    private Logger log = LoggerFactory.getLogger(InstanceNodeActor.class);
 
-    public InstanceNodeActor(InstanceNode node) {
+    private Logger log = LoggerFactory.getLogger(InstanceActor.class);
+
+    public InstanceActor(Instance node) {
         super(node);
     }
 
@@ -34,22 +42,22 @@ public class InstanceNodeActor extends NodeActor<InstanceNode> {
      * filter on a particular task.
      * @return An array containing the queried results.
      */
-    @SchemaPath("schema/node/instancenode/getresults.schema.json")
+    @SchemaPath("schema/node/instance/getresults.schema.json")
     public MessageHandler getResults() {
         return new MessageHandler() {
             @Override
             public JsonNode exec(JsonNode request) {
                 ObjectNode result = mapper.createObjectNode();
                 JsonNode args = request.get("args");
-                InstanceNode instanceNode = getNode();
+                Component component = (Component)getNode();
 
                 ArrayNode allResults = result.putArray("data");
-                if (instanceNode != null) {
+                if (component != null) {
                     if (args.get("task") == null) {
-                        instanceNode.getResults().stream()
+                        component.getResults().stream()
                         .forEachOrdered(r -> allResults.add(r.toJson()));
                     } else {
-                        instanceNode.getResults(args.get("task").asText()).stream()
+                        component.getResults(args.get("task").asText()).stream()
                         .forEachOrdered(r -> allResults.add(r.toJson()));
                     }
                 }
@@ -65,8 +73,8 @@ public class InstanceNodeActor extends NodeActor<InstanceNode> {
     }
 
     /**
-     * This method takes an InstanceNode as argument and finds
-     * child components of that InstanceNode of a particular type.
+     * This method takes an Instance as argument and finds
+     * child components of that Instance of a particular type.
      * @return An array containing the found components.
      */
     @SuppressWarnings("unused")
@@ -78,11 +86,11 @@ public class InstanceNodeActor extends NodeActor<InstanceNode> {
                 JsonNode args = request.get("args");
                 String type = args.get("type").asText();
 
-                Set<InstanceNode> found = instanceNodeRepository.findComponentsByType(uuid, type);
+                Set<Component> found = componentRepository.findChildrenByType(uuid, type);
                 if (found != null && found.size() > 0) {
                     ArrayNode foundComponents = result.putArray("data");
                     found.stream()
-                    .map(InstanceNode::toJson)
+                    .map(Instance::toJson)
                     .forEach(foundComponents::add);
                 } else {
                     result.put("error", "Couldn't find components of type \"" + type + "\".");
@@ -98,7 +106,7 @@ public class InstanceNodeActor extends NodeActor<InstanceNode> {
     }
 
     /**
-     * Get all the instruments of the InstanceNode this is called on and its components.
+     * Get all the instruments of the Instance this is called on and its components.
      * @return An array containing the UUID's of components that have instruments, with the
      * instruments categorized by capability type.
      */
@@ -108,18 +116,18 @@ public class InstanceNodeActor extends NodeActor<InstanceNode> {
             public JsonNode exec(JsonNode request) {
                 ObjectNode result = mapper.createObjectNode();
 
-                InstanceNode structure = instanceNodeRepository.findOneByName(Context.selfIdentifier);
+                Instance structure = INSTANCE_REPOSITORY.findOneByName(Context.selfIdentifier);
                 String originUuid = getNode().getUuid();
-                InstanceNode startOfComponentGroup = instanceNodeRepository.getStartOfComponentGroup(originUuid);
+                Instance startOfComponentGroup = INSTANCE_REPOSITORY.getStartOfComponentGroup(originUuid);
 
                 if (structure == null) {
                     result.put("error", "Couldn't find structure node.");
                     return response(request, result);
                 }
 
-                Set<InstanceNode> locallyRun = instanceNodeRepository.findLocalInstruments(originUuid,
+                Set<Controller> locallyRun = instrumentRepository.findLocalControllers(originUuid,
                         startOfComponentGroup.getUuid());
-                Set<InstanceNode> remotelyRun = instanceNodeRepository.findRemoteInstruments(originUuid,
+                Set<Controller> remotelyRun = instrumentRepository.findRemoteControllers(originUuid,
                         structure.getUuid());
 
                 ObjectNode data = result.putObject("data");
@@ -139,7 +147,7 @@ public class InstanceNodeActor extends NodeActor<InstanceNode> {
         };
     }
 
-    @SchemaPath("schema/node/instancenode/runInstrument.schema.json")
+    @SchemaPath("schema/node/instance/runInstrument.schema.json")
     @SuppressWarnings("unused")
     public MessageHandler runInstrument() {
         return new MessageHandler() {
@@ -148,25 +156,25 @@ public class InstanceNodeActor extends NodeActor<InstanceNode> {
                 ObjectNode result = mapper.createObjectNode();
                 JsonNode args = request.get("args");
                 JsonNode instrumentArgs;
-                InstanceNode instrument = null;
+                Controller instrument = null;
 
                 String instrumentId = args.get("instrument").asText();
                 if (isUuid(instrumentId)) {
-                    instrument = instanceNodeRepository.findByUuid(instrumentId);
+                    instrument = (Controller)instrumentRepository.findByUuid(instrumentId);
                 } else {
                     // There is possibly more than one instrument that applies
                     // in that case we'll assume we're interested in the instrument
                     // that runs locally, since that'll be the most specific one.
-                    Set<InstanceNode> foundInstruments = instanceNodeRepository.findByName(instrumentId);
+                    Set<Instrument> foundInstruments = instrumentRepository.findByName(instrumentId);
                     if (foundInstruments.size() == 1) {
-                        instrument = foundInstruments.iterator().next();
+                        instrument = (Controller)foundInstruments.iterator().next();
                     } else {
                         // get the one that applies to this componental group
                         String originUuid = getNode().getUuid();
-                        InstanceNode startOfComponentGroup = instanceNodeRepository
+                        Instance startOfComponentGroup = INSTANCE_REPOSITORY
                                 .getStartOfComponentGroup(originUuid);
                         if (startOfComponentGroup != null) {
-                            instrument = instanceNodeRepository.findMatchingLocalInstrument(originUuid,
+                            instrument = instrumentRepository.findMatchingLocalController(originUuid,
                                     startOfComponentGroup.getUuid(), instrumentId);
                         }
                     }
@@ -190,7 +198,7 @@ public class InstanceNodeActor extends NodeActor<InstanceNode> {
 
                     try {
                         String taskId = UUID.randomUUID().toString();
-                        getNode().runInstrument(instrument, sanitized, taskId);
+                        ((Component)getNode()).runController(instrument, sanitized, taskId);
                         result.put("data", taskId);
                     } catch (RuntimeException e) {
                     	log.error(e.getMessage());

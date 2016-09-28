@@ -4,28 +4,34 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.raaftech.structure.annotations.SchemaPath;
-import com.raaftech.structure.graph.InstanceNode;
-import com.raaftech.structure.graph.repositories.InstanceNodeRepository;
+import com.raaftech.structure.base.Context;
+import com.raaftech.structure.graph.Component;
+import com.raaftech.structure.graph.Instance;
+import com.raaftech.structure.graph.Type;
+import com.raaftech.structure.graph.repositories.InstanceRepository;
+import com.raaftech.structure.graph.repositories.TypeRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class InstanceNodes extends Repository<InstanceNode> {
+public class Instances extends Repository<Instance> {
 
-    private InstanceNodeRepository repository;
+    private InstanceRepository repository;
+    private final static TypeRepository TYPE_REPOSITORY = Context.getTypeRepository();
 
-    private Logger log = LoggerFactory.getLogger(InstanceNodes.class);
+    private Logger log = LoggerFactory.getLogger(Instances.class);
 
-    public InstanceNodes(InstanceNodeRepository repository) {
+    public Instances(InstanceRepository repository) {
         super(repository);
         this.repository = repository;
     }
 
+
     /**
-     * Query the last N InstanceNodes, filtering out InstanceNodes that are instruments.
-     * @return A data array containing the last N created InstanceNodes. If we don't have N nodes, then return
+     * Query the last N Instances, filtering out Instances that are instruments.
+     * @return A data array containing the last N created Instances. If we don't have N nodes, then return
      * as many as we have.
      */
-    @SchemaPath("schema/repository/instancenodes/nLastCreated.schema.json")
+    @SchemaPath("schema/repository/instances/nLastCreated.schema.json")
     @SuppressWarnings("unused")
     public MessageHandler nLastCreated() {
         return new MessageHandler() {
@@ -37,7 +43,7 @@ public class InstanceNodes extends Repository<InstanceNode> {
 
                 ArrayNode data = result.putArray("data");
                 repository.getNLastCreated(n).stream()
-                        .map(InstanceNode::toFlatJson)
+                        .map(Instance::toJson)
                         .forEach(data::add);
 
                 return response(request, result);
@@ -50,11 +56,11 @@ public class InstanceNodes extends Repository<InstanceNode> {
         };
     }
     /**
-     * Persist an InstanceNode to the database.
-     * @return A JSON object containing the UUID of the new InstanceNode
+     * Persist an Instance to the database.
+     * @return A JSON object containing the UUID of the new Instance
      * or an error field if something went wrong.
      */
-    @SchemaPath("schema/repository/instancenodes/putNode.schema.json")
+    @SchemaPath("schema/repository/instances/putNode.schema.json")
     @SuppressWarnings("unused")
     public MessageHandler putNode() {
         return new MessageHandler() {
@@ -63,13 +69,18 @@ public class InstanceNodes extends Repository<InstanceNode> {
                 ObjectNode result = mapper.createObjectNode();
                 ObjectNode args = (ObjectNode)request.get("args");
                 String isa = args.get("node").asText();
-                // Remove the node field so it won't interfere with the TypeNode schema.
+                Type type = TYPE_REPOSITORY.findByUuid(isa);
+                // Remove the node field so it won't interfere with the Type schema.
                 args.remove("node");
 
                 try {
-                    InstanceNode newInstanceNode = new InstanceNode(args, isa);
-                    newInstanceNode.save();
-                    result.put("data", newInstanceNode.getUuid());
+                    if (type.isOfType("Component")) {
+                        Instance newInstance = new Component(args, type);
+                        newInstance.save();
+                        result.put("data", newInstance.getUuid());
+                    } else {
+                        // TODO: add support for other Instances
+                    }
                 } catch (RuntimeException e) {
                 	log.error(e.getMessage());
 

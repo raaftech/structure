@@ -1,0 +1,283 @@
+package com.raaftech.structure.graph;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.raaftech.structure.base.Context;
+import com.raaftech.structure.exceptions.JsonValidationException;
+import com.raaftech.structure.graph.repositories.InstanceRepository;
+import com.raaftech.structure.helper.InstrumentRunner;
+import org.neo4j.graphdb.Direction;
+import org.neo4j.graphdb.Transaction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.annotation.Transient;
+import org.springframework.data.neo4j.annotation.Fetch;
+import org.springframework.data.neo4j.annotation.RelatedTo;
+import org.springframework.data.neo4j.core.GraphDatabase;
+
+import java.util.HashSet;
+import java.util.Set;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
+
+public class Component extends Instance {
+
+    @RelatedTo(type="HAS_RESULT", direction = Direction.OUTGOING)
+    @Fetch
+    private Set<Result> results = new HashSet<>();
+
+    @RelatedTo(type="HAS_COMPONENT", direction = Direction.OUTGOING)
+    private Set<Component> components;
+
+    @RelatedTo(type="HAS_COMPONENT", direction = Direction.INCOMING)
+    @Fetch
+    private Component inComponent;
+
+    @RelatedTo(type="HAS_CONFIGURATION", direction = Direction.OUTGOING)
+    @Fetch
+    Set<Configuration> configurations;
+
+    @RelatedTo(type="BELONGS_TO", direction = Direction.OUTGOING)
+    private Grouping componentalGroup;
+
+    @RelatedTo(type="HAS_ACTOR", direction = Direction.OUTGOING)
+    private Set<Instance> actors = new HashSet<>();
+
+    @Transient
+    private InstanceRepository instanceRepository = Context.getInstanceRepository();
+
+    @Transient
+    private Logger log = LoggerFactory.getLogger(Component.class);
+
+    /**
+     * No-arg constructor for Spring
+     */
+    public Component() {}
+
+    /**
+     * Construct a component based on a type and the data that represents it.
+     * @param instanceData The data needed to instantiate the type.
+     * @param type The type to instantiate.
+     */
+    public Component(ObjectNode instanceData, Type type) {
+        ObjectNode instanceDataCopy = instanceData.deepCopy();
+        if (type == null) {
+            throw new IllegalArgumentException("Component constructor called with null as type.");
+        }
+        if (!type.getSchema().validateJson(instanceDataCopy)) {
+            throw new JsonValidationException("Cannot create component of type \"" + type.getName()
+                    + "\", JSON doesn't validate against it.");
+        }
+        final String name = instanceDataCopy.get("name").asText();
+        final String desc = instanceDataCopy.get("desc").asText();
+
+        this.name = name;
+        this.desc = desc;
+        this.instanceOf = type;
+        this.instanceData = instanceData.deepCopy();
+        setProperties(instanceDataCopy);
+    }
+
+    /**
+     * See Component(ObjectNode instanceData, Type type).
+     * @param instanceData The data needed to instantiate the type.
+     * @param typeUuid The UUID of the type to instantiate.
+     */
+    public Component(ObjectNode instanceData, String typeUuid) {
+        this(instanceData, TYPE_REPOSITORY.findByUuid(typeUuid));
+    }
+
+    private Instance getFirstComponent() {
+        if (components == null) {
+            throw new IllegalArgumentException("Components set is empty.");
+        }
+
+        return components.iterator().next();
+    }
+
+    public Set<Component> getComponents() {
+        if (components.isEmpty() || getFirstComponent().getName() == null) {
+            Transaction tx = Context.getGraphDatabase().beginTx();
+            Context.getNeo4jTemplate().fetch(components);
+            tx.close();
+        }
+        return components;
+    }
+
+    // Get all the results belonging to this Instance
+    public Set<Result> getResults() {
+        // Fetch results from database
+        GraphDatabase graphDatabase = Context.getGraphDatabase();
+        Transaction tx = graphDatabase.beginTx();
+        Context.getNeo4jTemplate().fetch(results);
+        tx.success();
+        tx.close();
+
+        return results;
+    }
+
+    /**
+     * Get all the results belonging to this Instance while filtering on the task ID.
+     * @param task The ID of the task.
+     * @return All the results belonging to a specific task.
+     */
+    public Set<Instance> getResults(String task) {
+        return getResults().stream()
+                .filter(r -> r.getProperty("task").equals(task))
+                .collect(Collectors.toSet());
+    }
+
+    /**
+     * Add another component as child of this component.
+     * @param component The component to add as a child component.
+     * @return this
+     */
+    public Component addComponent(Component component) {
+        if (components == null) {
+            components = new HashSet<>();
+        }
+        components.add(component);
+
+        return this;
+    }
+
+    /**
+     * Add another component as child of this component.
+     * @param componentUuid The UUID of the component to add as a child component.
+     * @return this
+     */
+    public void addComponent(String componentUuid) {
+        Instance component;
+
+        if (componentUuid != null) {
+            component = instanceRepository.findByUuid(componentUuid);
+            if (component != null) {
+                addComponent((Component)component);
+            }
+        }
+    }
+
+    public Component addResult(Result result) {
+        if (results == null) {
+            results = new HashSet<>();
+        }
+        // Check if parameter isn't null and is of right type.
+        if (result.isOfType("Result")) {
+            Transaction tx = Context.getGraphDatabase().beginTx();
+            results.add(result);
+            tx.success();
+            tx.close();
+        } else {
+            log.error("addResult called with non-result parameter.");
+            throw new IllegalArgumentException("Wrong argument to addResult().");
+        }
+        return this;
+    }
+
+    public Component addResult(String resultUuid) {
+        Instance result = instanceRepository.findByUuid(resultUuid);
+        addResult((Result)result);
+        return this;
+    }
+
+    // Run a controller on this instance
+    public Component runController(Controller controller, ObjectNode arguments, String taskId) {
+        new InstrumentRunner(this, controller, arguments, taskId).startInstrument();
+        return this;
+    }
+
+    /**
+     * Used to create a JSON representation of a single Instance that
+     * can be used to as an argument for an instrument.
+     * @return JSON representation that can be used as an argument for a instrument.
+     */
+    public Set<JsonNode> toArguments() {
+        Set<JsonNode> arguments = new HashSet<>();
+
+        arguments.add(super.toJson());
+        BiConsumer<BiConsumer, Component> consumeArgsHelper = (f, node) -> {
+            Set<Component> components = node.getComponents();
+            if (components.size() > 0) {
+                components.parallelStream().forEach(n -> f.accept(f, n));
+            }
+            arguments.add(super.toJson());
+        };
+
+        // Lambda's can't refer to themselves using their variable name. That means consumeArgsHelper defined
+        // above cannot refer to itself by name. This sucks, because it's a recursive function.
+        // However, it can refer to itself if it's passed a reference to itself as an argument, so that's what's
+        // happening in consumeArgs. After calling consumeArgsHelper below, consumeArgsHelper is bound to 'f' in the lambda.
+        Consumer<Component> consumeArgs = node -> consumeArgsHelper.accept(consumeArgsHelper, node);
+
+        getComponents().stream().forEach(consumeArgs);
+
+        return arguments;
+    }
+
+    public ObjectNode deepToJson(int dimension) {
+        if (dimension <= 0) {
+            return null;
+        }
+
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode result = mapper.createObjectNode();
+        ObjectNode kvJson = result.putObject("kv");
+        kv.asMap().forEach((key, val) -> kvJson.put(key, val.toString()));
+        ObjectNode componentsJson = mapper.createObjectNode();
+        if (dimension > 1) {
+            getComponents().forEach(component -> {
+                componentsJson.set(component.getName(), component.deepToJson(dimension - 1));
+            });
+        }
+
+        result.put("name", getName());
+        result.put("uuid", getUuid());
+        result.put("desc", getDesc());
+        result.put("instanceof", instanceOf.getUuid());
+        result.put("glyphId", Integer.toHexString(instanceOf.getGlyphId()));
+        if (componentsJson.size() > 0) {
+            result.set("components", componentsJson);
+        }
+        if (inComponent != null) {
+            result.put("incomponent", inComponent.getUuid());
+        }
+
+        result.put("_nodeType", getNodeType());
+
+        return result;
+    }
+
+    public ObjectNode toJson() {
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode result = mapper.createObjectNode();
+        ObjectNode kvJson = result.putObject("kv");
+        kv.asMap().forEach((key, val) -> kvJson.put(key, val.toString()));
+        ArrayNode componentsJson = mapper.createArrayNode();
+        components.forEach(component -> {
+            ObjectNode componentNameUuid = mapper.createObjectNode();
+            componentNameUuid.put("name", component.getName());
+            componentNameUuid.put("uuid", component.getUuid());
+            componentsJson.add(componentNameUuid);
+        });
+
+        result.put("name", getName());
+        result.put("uuid", getUuid());
+        result.put("desc", getDesc());
+        result.put("instanceof", instanceOf.getUuid());
+        result.put("glyphId", Integer.toHexString(instanceOf.getGlyphId()));
+        if (componentsJson.size() > 0) {
+            result.set("components", componentsJson);
+        }
+        if (inComponent != null) {
+            result.put("incomponent", inComponent.getUuid());
+        }
+
+        result.put("_nodeType", getNodeType());
+
+        return result;
+    }
+
+}
