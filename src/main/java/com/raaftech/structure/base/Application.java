@@ -32,8 +32,13 @@ import org.springframework.data.neo4j.support.query.CypherQueryExecutor;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Paths;
+import java.io.InputStream;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Properties;
 
 /**
  * The main application entry point.
@@ -121,7 +126,7 @@ public class Application {
                 System.setProperty("unsafeMode", "true");
             }
         } catch (ParseException e) {
-            log.error("Can't parse commandline options: " + e.getMessage());
+            log.error("Can't parse commandline options: {}", e.getMessage());
         }
 
         Vertx vertx;
@@ -188,35 +193,88 @@ public class Application {
         instanceNodeRepository.purgeHandlers();
         Context.setInstrumentsLoaded(false);
 
-        // Prepend the default bundle to the configured bundles
-        final String bundlesProperty = "bundles";
-        final String raafBundle = new File("bundles/raaf/bundle.json").getAbsolutePath();
-        if (System.getProperty(bundlesProperty) == null) {
-            System.setProperty(bundlesProperty, raafBundle);
-        } else {
-            StringBuilder sb = new StringBuilder()
-                    .append(raafBundle)
-                    .append(",")
-                    .append(System.getProperty(bundlesProperty));
-            System.setProperty(bundlesProperty, sb.toString());
+        final String propertyFile = "config.properties";
+        final String bundlePathProperty = "bundlePath";
+
+        // TODO: implement environment configuration
+        // Open propertyFile from resources and read bundlePathProperty or default it to 'bundles'
+        try {
+            Properties p = new Properties();
+            Thread currentThread = Thread.currentThread();
+            ClassLoader classLoader = currentThread.getContextClassLoader();
+            InputStream inputStream = classLoader.getResourceAsStream(propertyFile);
+
+            if(inputStream.available() > 0) {
+                p.load(inputStream);
+
+                if(p.containsKey(bundlePathProperty)){
+                    log.info("Setting {} from {}", bundlePathProperty, propertyFile);
+                    System.setProperty(bundlePathProperty, p.getProperty(bundlePathProperty));
+                }
+            }
+            else {
+                log.info("inputStream not available..");
+            }
+        } catch (Exception e){
+            log.error(e.getMessage());
+
+            if(log.isTraceEnabled()){
+                e.printStackTrace();
+            }
+        } finally {
+            log.error("bundlePathProperty is empty, defaulting to 'bundles'");
+            System.setProperty(bundlePathProperty, "bundles");
         }
-        String bundles = System.getProperty(bundlesProperty);
 
-        // Iterate over the bundles and load them
-        Arrays.asList(bundles.split(",")).stream()
-                .map(Paths::get)
-                .distinct()
-                .forEach(bundle -> {
-                    try {
-                        new BundleLoader(bundle).load();
-                    } catch (IOException e) {
-                        log.error(e.getMessage());
+        // loop over directories in bundlePath and search for *.json
+        final List<Path> matchingFiles = new ArrayList<>();
+        for (String location : Arrays.asList(System.getProperty(bundlePathProperty).split(File.pathSeparator))) {
 
-                        if (Boolean.parseBoolean(System.getProperty("traceMode"))) {
-                            e.printStackTrace();
-                        }
-                    }
+            Path path = Paths.get(new File(location).getAbsolutePath());
+            String workingDirectory = path.getParent().toString().replace('\\', '/');
+            String syntaxAndPattern = "glob:" + workingDirectory + "/" + "**/bundle.json".replace('\\', '/');
+            PathMatcher matcher = FileSystems.getDefault().getPathMatcher(syntaxAndPattern);
+
+            try {
+                Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
+
+	                @Override
+	                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+	                    if (matcher.matches(file)) {
+                            log.debug("visitFile: matched file: {}", file);
+                            matchingFiles.add(file);
+	                    }
+	                    return FileVisitResult.CONTINUE;
+	                }
+	
+	                @Override
+	                public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
+	                    log.debug("visitFileFailed: failed to visit file: (file) {}", file);
+	                    return FileVisitResult.CONTINUE;
+	                }
+
                 });
+            } catch (IOException e){
+                log.error(e.getMessage());
+
+                if(log.isTraceEnabled()){
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        // TODO: add sorting (see issue/70)
+        matchingFiles.stream().forEach(bundle -> {
+            try {
+                new BundleLoader(bundle).load();
+            } catch (IOException e) {
+                log.error(e.getMessage());
+
+                if(log.isTraceEnabled()){
+                    e.printStackTrace();
+                }
+            }
+        });
         Context.setInstrumentsLoaded(true);
 
         // Deploy our main actors.
@@ -304,7 +362,7 @@ public class Application {
 
         // A friendly message telling the user we're done.
         httpServer.requestHandler(router::accept).listen(port);
-        log.info("Structure is running at http://localhost:" + port);
+        log.info("Structure is running at http://localhost:{}", port);
     }
 
     /**
