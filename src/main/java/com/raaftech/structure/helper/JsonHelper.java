@@ -21,42 +21,72 @@ public class JsonHelper {
     private final static ObjectMapper mapper =  new ObjectMapper();
     private final static Logger log = LoggerFactory.getLogger(JsonHelper.class);
 
-    // A json file loader (looks in your classpath/resources.)
-    public static JsonNode jsonFromResource(String resource) {
+    /**
+     * Load a JSON file from the classpath.
+     * @param resource The name of the JSON file.
+     * @param via Is this method called directly, or via a wrapper? This controls
+     *            the log level of the statement that gets printed when we can't find the resource.
+     * @return A JsonNode representing the resource, or null if we can't find anything.
+     */
+    public static JsonNode jsonFromResource(String resource, boolean via) {
         JsonNode result = null;
         InputStream inputStream = JsonHelper.class.getClassLoader().getResourceAsStream(resource);
 
         try {
             result = mapper.readTree(inputStream);
         } catch (Exception e) {
-			if (Boolean.parseBoolean(System.getProperty("traceMode"))) {
-	            log.error("Couldn't open as resource " + resource + ": " + e.getMessage());
-				e.printStackTrace();
-			}
+            if (Boolean.parseBoolean(System.getProperty("traceMode"))) {
+                final String logStatement = "Couldn't open as resource " + resource + ": " + e.getMessage();
+                if (via) {
+                    log.warn(logStatement);
+                } else {
+                    log.error(logStatement);
+                }
+                e.printStackTrace();
+            }
         }
 
         return result;
     }
 
-    // A json file loader (looks in filesystems)
-    public static JsonNode jsonFromFile(String file) {
+    public static JsonNode jsonFromResource(String resource) {
+        return jsonFromResource(resource, false);
+    }
+
+    /**
+     * Load a JSON file from a filesystem.
+     * @param file The name of the JSON file.
+     * @param via Is this method called directly, or via a wrapper? This controls
+     *            the log level of the statement that gets printed when we can't find the resource.
+     * @return A JsonNode representing the resource, or null if we can't find anything.
+     */
+    public static JsonNode jsonFromFile(String file, boolean via) {
         JsonNode result = null;
         try {
             result = mapper.readTree(new File(file));
-        } catch (IOException e) {            
-			if (Boolean.parseBoolean(System.getProperty("traceMode"))) {
-	            log.error("Couldn't open as file  " + file + ": " + e.getMessage());
-				e.printStackTrace();
-			}
+        } catch (IOException e) {
+            if (Boolean.parseBoolean(System.getProperty("traceMode"))) {
+                final String logStatement = "Couldn't open as file  " + file + ": " + e.getMessage();
+                if (via) {
+                    log.warn(logStatement);
+                } else {
+                    log.error(logStatement);
+                }
+                e.printStackTrace();
+            }
         }
         return result;
+    }
+
+    public static JsonNode jsonFromFile(String file) {
+        return jsonFromFile(file, false);
     }
 
     // Load a json file, look in classpath/resources first, then on FS
     public static JsonNode jsonFromResourceOrFile(String file) {
-    	JsonNode result = jsonFromResource(file);
+        JsonNode result = jsonFromResource(file, true);
         if (result == null) {
-            result = jsonFromFile(file);
+            result = jsonFromFile(file, true);
         }
         if (result == null) {
             log.error("Couldn't open " + file + " in classpath, or on filesystem.");
