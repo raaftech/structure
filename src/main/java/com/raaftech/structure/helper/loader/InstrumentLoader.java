@@ -107,7 +107,7 @@ public class InstrumentLoader implements PackageLoader {
         // Check if the first line contains our preamble's starting sequence.
         String line = template.get(0);
         if (!line.startsWith(preambleStart)) {
-            log.error("Template missing preamble, can't generate Handler.");
+            log.error("Template missing preamble, can't instantiate Instrument.");
             return;
         }
 
