@@ -970,10 +970,15 @@
   "glyphId" : 84,
   "isa" : "916e04a9-c773-4eaf-9c08-450016426e5a"
 }, {
-  "name" : "Discover",
-  "desc" : "A capability that makes it possible to discover something.",
+  "name" : "Detect",
+  "desc" : "A capability that makes it possible for a component to detect itself.",
   "uuid" : "3c170a27-05ee-4999-97d4-e7cc9135cb96",
   "glyphId" : 73,
+  "isa" : "916e04a9-c773-4eaf-9c08-450016426e5a"
+}, {
+  "name" : "Query",
+  "desc" : "A capability that makes it possible to query components that are managed by the querying component.",
+  "uuid" : "61cde9d0-3aa2-4951-aaa8-79e5656dac41",
   "isa" : "916e04a9-c773-4eaf-9c08-450016426e5a"
 }, {
   "name" : "Identify",
