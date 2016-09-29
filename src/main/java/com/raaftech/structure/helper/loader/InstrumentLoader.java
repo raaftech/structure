@@ -47,7 +47,7 @@ public class InstrumentLoader implements PackageLoader {
     private final String preambleStart = "{{!";
     private final String preambleStop = "}}";
     // Our schema to validate the provided JSON of a template.
-    private final String instrumentSchemaPath = "schema/instrument.schema.json";
+    private final String instrumentSchemaPath = "schema/helper/loader/instrument.schema.json";
 
     /*************************/
     /* Public Methods */
