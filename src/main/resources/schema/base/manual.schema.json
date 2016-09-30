@@ -1,0 +1,40 @@
+{
+    "id": "https://repo.raaftech.com/schema/manual.schema.json#",
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "description": "Schema for Structure manual and/or documentation format.",
+    "type": "object",
+    "required": [ "name", "synopsis", "description" ],
+    "properties": {
+        "name": {
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9]$"
+        },
+        "synopsis": {
+            "type": "object"
+        },
+        "description": {
+            "type": "string"
+        },
+        "options": {
+            "type": "array"
+        },
+        "files": {
+            "type": "array"
+        },
+        "environment": {
+            "type": "array"
+        },
+        "diagnostics": {
+            "type": "array"
+        },
+        "examples": {
+            "type": "array"
+        },
+        "authors": {
+            "type": "array"
+        },
+        "see also": {
+            "type": "array"
+        }
+    }
+}

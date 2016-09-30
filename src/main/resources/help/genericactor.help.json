@@ -1,0 +1,8 @@
+{
+    "name": "help",
+    "synopsis": {
+        "msgh": "help",
+        "args": {}
+    },
+    "description": "The help handler gathers the help messages from all other MessageHandler type objects and returns them as a JSON type object."
+}

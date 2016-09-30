@@ -29,7 +29,7 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * Give a description of BaseActor here.
+ * GenericActor is our default Abstract class for actors on the bus..
  *
  * @author Rubin Simons <rubin.simons@raaftech.com>
  * @since 2014-09-15
@@ -77,7 +77,7 @@ public abstract class GenericActor extends AbstractVerticle {
                     SchemaPath schemaPath = method.getAnnotation(SchemaPath.class);
                     messageHandlersAndSchemas.put(method, schemaPath.value());
                 } else {
-                    messageHandlersAndSchemas.put(method, "schema/args.schema.json");
+                    messageHandlersAndSchemas.put(method, "schema/base/args.schema.json");
                 }
             }
         }
@@ -101,9 +101,9 @@ public abstract class GenericActor extends AbstractVerticle {
         });
 
         // Read settings and initialize schema documents.
-        schemaForRequest = jsonFromResource("schema/request.schema.json");
-        schemaForResponse = jsonFromResource("schema/response.schema.json");
-        schemaForManual = jsonFromResource("schema/manual.schema.json");
+        schemaForRequest = jsonFromResource("schema/base/request.schema.json");
+        schemaForResponse = jsonFromResource("schema/base/response.schema.json");
+        schemaForManual = jsonFromResource("schema/base/manual.schema.json");
     }
 
     // A json file loader (looks in your classpath/resources.)
@@ -367,7 +367,7 @@ public abstract class GenericActor extends AbstractVerticle {
 
             @Override
             public JsonNode help(JsonNode request) {
-                return jsonFromResource("help/baseactor.help.json");
+                return jsonFromResource("help/genericactor.help.json");
             }
         };
     }
@@ -383,7 +383,7 @@ public abstract class GenericActor extends AbstractVerticle {
 
             @Override
             public JsonNode help(JsonNode request) {
-                return jsonFromResource("help/baseactor.version.json");
+                return jsonFromResource("help/genericactor.version.json");
             }
         };
     }
@@ -414,7 +414,7 @@ public abstract class GenericActor extends AbstractVerticle {
             JsonNode schema = jsonFromResource(handlerAndSchema.schemaPath);
             if (schema == null) {
                 log.warn("Couldn't load " + handlerAndSchema.schemaPath + " using empty schema as default. Validation will always pass.");
-                schema = jsonFromResource("schema/args.schema.json");
+                schema = jsonFromResource("schema/base/args.schema.json");
             }
             if (isValidJson(schema, args)) {
                 // Response! Convert "Jackson JsonNode" to "Vert.x JsonObject".

@@ -1,0 +1,25 @@
+{
+    "id": "https://repo.raaftech.com/schema/response.schema.json#",
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "description": "Schema for Structure responses to requests.",
+    "type": "object",
+    "required": [ "request", "result"],
+    "properties": {
+        "request": {
+            "type": "object"
+        },
+        "result": {
+            "type": "object"
+        },
+        "stats": {
+            "type": "object"
+        },
+        "error": {
+            "type": "object"
+        },
+        "exit": {
+            "type": "integer",
+            "pattern": "^[0-255]$"
+        }
+    }
+}

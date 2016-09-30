@@ -1,8 +1,0 @@
-{
-    "name": "version",
-    "synopsis": {
-        "msgh": "version",
-        "args": {}
-    },
-    "description": "The version handler from BaseActor returns the release object of Universal in JSON format. If the actor has no version method of its own, this version handler of BaseActor will be used. An actor can override the version handler and return an actor-specific version object of its own."
-}

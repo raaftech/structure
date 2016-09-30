@@ -1,8 +1,0 @@
-{
-    "name": "status",
-    "synopsis": {
-        "msgh": "status",
-        "args": {}
-    },
-    "description": "The status handler returns the current operational status of the SchemaManager actor. If other long-running commands have previously been executed by SchemaManager, the status command output will show you so."
-}
