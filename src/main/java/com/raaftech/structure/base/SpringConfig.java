@@ -89,8 +89,5 @@ public class SpringConfig extends Neo4jConfiguration {
     ComponentRepository componentRepository;
 
     @Autowired
-    ResultRepository resultRepository;
-
-    @Autowired
     GraphDatabase graphDatabase;
 }

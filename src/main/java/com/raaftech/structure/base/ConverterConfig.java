@@ -1,6 +1,9 @@
 package com.raaftech.structure.base;
 
-import com.raaftech.structure.graph.converters.*;
+import com.raaftech.structure.graph.converters.JsonSchemaBuilderReader;
+import com.raaftech.structure.graph.converters.JsonSchemaBuilderWriter;
+import com.raaftech.structure.graph.converters.LinkedHashMapReader;
+import com.raaftech.structure.graph.converters.LinkedHashMapWriter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ConversionServiceFactoryBean;
@@ -26,8 +29,6 @@ public class ConverterConfig {
         converters.add(new LinkedHashMapReader());
         converters.add(new JsonSchemaBuilderWriter());
         converters.add(new JsonSchemaBuilderReader());
-        converters.add(new LocalDateTimeWriter());
-        converters.add(new LocalDateTimeReader());
 
         ConversionServiceFactoryBean bean = new ConversionServiceFactoryBean();
         bean.setConverters(converters);

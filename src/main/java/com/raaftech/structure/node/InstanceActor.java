@@ -54,7 +54,7 @@ public class InstanceActor extends NodeActor<Instance> {
                 ArrayNode allResults = result.putArray("data");
                 if (component != null) {
                     if (args.get("task") == null) {
-                        component.getStartOfResultChain().getThisAndNewer().stream()
+                        component.getResults().stream()
                         .forEachOrdered(r -> allResults.add(r.toJson()));
                     } else {
                         component.getResults(args.get("task").asText()).stream()
