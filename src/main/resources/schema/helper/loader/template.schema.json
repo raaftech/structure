@@ -31,7 +31,7 @@
       }
     }
   },
-  "required": [ "name", "desc", "templateOf", "uuid", "components" ],
+  "required": [ "name", "desc", "templateOf", "components" ],
   "patterns": {
     "uuid": { "pattern": "^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89aAbB][a-f0-9]{3}-[a-f0-9]{12}$" }
   },

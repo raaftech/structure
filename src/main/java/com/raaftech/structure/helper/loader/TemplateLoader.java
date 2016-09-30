@@ -75,14 +75,20 @@ class TemplateLoader implements PackageLoader {
         start.save();
     }
 
-    private Template deserialize(JsonNode json) {
+    public static Template deserialize(JsonNode json) {
         final String startName = json.get(NAME).asText();
         final String startDesc = json.get(DESC).asText();
         final String startTemplateOf = json.get(TEMPLATEOF).asText();
-        final String startUuid = json.get(UUID).asText();
+        final String startUuid = (json.has(UUID)) ? json.get(UUID).asText() : null;
 
-        Template template = new Template(startName, startDesc, startUuid)
-                .setIsa(startTemplateOf);
+        Template template;
+        if (startUuid != null) {
+            template = new Template(startName, startDesc, startUuid)
+                    .setIsa(startTemplateOf);
+        } else {
+            template = new Template(startName, startDesc)
+                    .setIsa(startTemplateOf);
+        }
 
         if (json.has(UNIQUE)) {
             template.setUnique(json.get(UNIQUE).asBoolean());

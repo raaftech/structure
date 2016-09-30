@@ -10,6 +10,11 @@ public abstract class Instrument extends Node {
 
     public Instrument() {}
 
+    public Instrument(String name, String desc, String uuid, String filePath) {
+        super(name, desc, uuid);
+        this.filePath = filePath;
+    }
+
     public Instrument(String name, String desc, String filePath) {
         super(name, desc);
         this.filePath = filePath;

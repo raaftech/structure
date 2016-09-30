@@ -83,7 +83,7 @@ class TypeLoader implements PackageLoader {
             }
             JsonNode firstType = json.get(0);
             if (JsonHelper.validateToSchema(typeSchema, firstType)) {
-                if (TYPE_REPOSITORY.findByUuid(firstType.get(UUID).asText()) != null) {
+                if (firstType.has(UUID) && TYPE_REPOSITORY.findByUuid(firstType.get(UUID).asText()) != null) {
                     log.info("Skipped type package because it has already been loaded.");
                     return;
                 }

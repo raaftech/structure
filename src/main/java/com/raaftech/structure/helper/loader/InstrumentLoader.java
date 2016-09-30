@@ -153,6 +153,7 @@ public class InstrumentLoader implements PackageLoader {
                 Instrument resultingInstrument;
                 String type = preambleJson.get("instrumentType").asText();
                 String capability = preambleJson.get("capability").asText();
+                String uuid = preambleJson.has("uuid") ? preambleJson.get("uuid").asText() : null;
                 String name = preambleJson.get("name").asText();
                 String desc = preambleJson.get("desc").asText();
                 if ("runner".equals(type)) {
@@ -170,6 +171,10 @@ public class InstrumentLoader implements PackageLoader {
                             .providedBy(providedByType)
                             .subjectIsLocal(subjectIsLocal)
                             .template(handlebarsTemplate);
+
+                    if (uuid != null) {
+                        builder.uuid(uuid);
+                    }
 
                     // What does this instrument apply to?
                     ArrayNode appliesJson = (ArrayNode) preambleJson.get("appliesTo");
@@ -219,7 +224,11 @@ public class InstrumentLoader implements PackageLoader {
                     // What Type is providing this instrument?
                     String providedByType = preambleJson.get("providedBy").asText();
 
-                    resultingInstrument = new Marker(name, desc, filePath, capability, appliesTypes, providedByType);
+                    if (uuid == null) {
+                        resultingInstrument = new Marker(name, desc, filePath, capability, appliesTypes, providedByType);
+                    } else {
+                        resultingInstrument = new Marker(name, desc, uuid, filePath, capability, appliesTypes, providedByType);
+                    }
                 } else { // if ("parser".equals(type)) <-- only other possibility because schema
                     // TODO: implement
                     resultingInstrument = null;

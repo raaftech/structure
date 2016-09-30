@@ -16,7 +16,9 @@ import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.io.IOException;
 import java.io.StringReader;
+import java.util.UUID;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(loader = AnnotationConfigContextLoader.class, classes = SpringTestConfig.class)
@@ -58,11 +60,30 @@ public class TypeLoaderTest {
         Type testType1 = typeRepository.findOneByName("testType1");
         assertNotNull(testType1);
         assertEquals(2, testType1.getChildIsaSet().size());
+        assertEquals("34f26d03-c97a-439c-ade4-5b42fbda60df", testType1.getUuid());
         testType1.getChildIsaSet().stream()
                 .forEach(type -> {
                     assertTrue("testType2".equals(type.getName()) || "testType3".equals(type.getName()));
                 });
-
     }
+
+    @Test
+    @Transactional
+    @Rollback
+    public void testPersistWithoutUuid() throws IOException {
+        String json = "[{\n" +
+                "\"name\": \"testType1\",\n" +
+                "\"desc\": \"used for testing\",\n" +
+                "\"descriptors\": {\n" +
+                "\"foo\": { \"type\": \"boolean\", \"desc\": \"foo\" }\n" +
+                "}\n" +
+                "}\n" +
+                "]";
+        new TypeLoader().load(new StringReader(json));
+        Type type = typeRepository.findOneByName("testType1");
+        assertNotNull(type);
+        UUID.fromString(type.getUuid());
+    }
+
 
 }

@@ -4,7 +4,6 @@
   "description": "Schema for Structure types.",
   "type": "object",
     "required": [
-      "uuid",
       "name",
       "desc"
     ],

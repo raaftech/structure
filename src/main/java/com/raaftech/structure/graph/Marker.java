@@ -29,9 +29,25 @@ public class Marker extends Instrument {
         this.providedBy = providedBy;
     }
 
+    public Marker(String name, String desc, String uuid, String filePath,
+                  Type capability, Set<Type> appliesTo, Type providedBy) {
+        super(name, desc, uuid, filePath);
+        this.capability = capability;
+        this.appliesTo = appliesTo;
+        this.providedBy = providedBy;
+    }
+
     public Marker(String name, String desc, String filePath,
                   String capabilityName, Set<Type> appliesTo, String providedBy) {
         super(name, desc, filePath);
+        this.capability = Context.getTypeRepository().findOneByName(capabilityName);
+        this.appliesTo = appliesTo;
+        this.providedBy = Context.getTypeRepository().findOneByName(providedBy);
+    }
+
+    public Marker(String name, String desc, String uuid, String filePath,
+                  String capabilityName, Set<Type> appliesTo, String providedBy) {
+        super(name, desc, uuid, filePath);
         this.capability = Context.getTypeRepository().findOneByName(capabilityName);
         this.appliesTo = appliesTo;
         this.providedBy = Context.getTypeRepository().findOneByName(providedBy);

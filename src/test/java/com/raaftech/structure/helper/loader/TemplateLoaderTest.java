@@ -1,15 +1,37 @@
 package com.raaftech.structure.helper.loader;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.raaftech.structure.base.SpringTestConfig;
+import com.raaftech.structure.graph.Template;
+import com.raaftech.structure.graph.Type;
+import com.raaftech.structure.graph.repositories.TemplateRepository;
+import com.raaftech.structure.graph.repositories.TypeRepository;
 import com.raaftech.structure.helper.JsonHelper;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.AnnotationConfigContextLoader;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.UUID;
 
 import static io.vertx.core.json.Json.mapper;
 import static org.junit.Assert.*;
 
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(loader = AnnotationConfigContextLoader.class, classes = SpringTestConfig.class)
 public class TemplateLoaderTest {
+
+    @Autowired
+    TemplateRepository templateRepository;
+    @Autowired
+    TypeRepository typeRepository;
 
     @Test
     public void testSchema() throws Exception {
@@ -37,6 +59,20 @@ public class TemplateLoaderTest {
                 "\"uuid\":\"1b72c6b2-4e7e-46ff-8e71-fa6ba3d5728c\"," +
                 "\"templateOf\":\"5ca1a5b1-ff73-4184-a4e3-a6690953346a\"}]\n" +
                 "}");
+        assertTrue(JsonHelper.validateToSchema(
+                JsonHelper.jsonFromResource("schema/helper/loader/template.schema.json"), json));
+
+        // valid json without UUID
+        json = mapper.readTree(
+                "{\n" +
+                        "\"name\":\"abc\",\n" +
+                        "\"desc\":\"def\",\n" +
+                        "\"templateOf\":\"541e0632-984f-448f-994c-3ca0ccd1ed4c\",\n" +
+                        "\"components\":[{\"name\":\"def\"," +
+                        "\"desc\":\"xyz\"," +
+                        "\"uuid\":\"1b72c6b2-4e7e-46ff-8e71-fa6ba3d5728c\"," +
+                        "\"templateOf\":\"5ca1a5b1-ff73-4184-a4e3-a6690953346a\"}]\n" +
+                        "}");
         assertTrue(JsonHelper.validateToSchema(
                 JsonHelper.jsonFromResource("schema/helper/loader/template.schema.json"), json));
 
@@ -109,6 +145,63 @@ public class TemplateLoaderTest {
                 "}");
         assertTrue(JsonHelper.validateToSchema(
                 JsonHelper.jsonFromResource("schema/helper/loader/template.schema.json"), json));
+    }
+
+    @Test
+    @Transactional
+    @Rollback
+    public void testPersist() throws IOException {
+        Type parentType = new Type("parentType", "A simple test type", "541e0632-984f-448f-994c-3ca0ccd1ed4c");
+        Type childType = new Type("childType", "A simple test type", "5ca1a5b1-ff73-4184-a4e3-a6690953346a");
+        typeRepository.save(parentType);
+        typeRepository.save(childType);
+
+        // valid json
+        JsonNode json;
+        json = mapper.readTree(
+                "{\n" +
+                        "\"name\":\"abc\",\n" +
+                        "\"desc\":\"def\",\n" +
+                        "\"templateOf\":\"541e0632-984f-448f-994c-3ca0ccd1ed4c\",\n" +
+                        "\"uuid\":\"541e0632-984f-448f-994c-3ca0ccd1ed4c\",\n" +
+                        "\"components\":[{\"name\":\"def\"," +
+                        "\"desc\":\"xyz\"," +
+                        "\"uuid\":\"1b72c6b2-4e7e-46ff-8e71-fa6ba3d5728c\"," +
+                        "\"templateOf\":\"5ca1a5b1-ff73-4184-a4e3-a6690953346a\"}]\n" +
+                        "}");
+        Template deserialized = TemplateLoader.deserialize(json);
+        assertNotNull(deserialized);
+        assertEquals("541e0632-984f-448f-994c-3ca0ccd1ed4c", deserialized.getUuid());
+    }
+
+    @Test
+    @Transactional
+    @Rollback
+    public void testPersistWithoutUuid() throws IOException {
+        Type parentType = new Type("parentType", "A simple test type", "541e0632-984f-448f-994c-3ca0ccd1ed4c");
+        Type childType = new Type("childType", "A simple test type", "5ca1a5b1-ff73-4184-a4e3-a6690953346a");
+        typeRepository.save(parentType);
+        typeRepository.save(childType);
+
+        // valid json without UUID
+        JsonNode json = mapper.readTree(
+                "{\n" +
+                        "\"name\":\"abc\",\n" +
+                        "\"desc\":\"def\",\n" +
+                        "\"templateOf\":\"541e0632-984f-448f-994c-3ca0ccd1ed4c\",\n" +
+                        "\"components\":[{\"name\":\"def\"," +
+                        "\"desc\":\"xyz\"," +
+                        "\"templateOf\":\"5ca1a5b1-ff73-4184-a4e3-a6690953346a\"}]\n" +
+                        "}");
+        Template deserialized = TemplateLoader.deserialize(json);
+        templateRepository.save(deserialized);
+        Template startOfTemplate = templateRepository.findOneByName("abc");
+        assertNotNull(startOfTemplate);
+        UUID.fromString(startOfTemplate.getUuid());
+        startOfTemplate.getHasComponents().forEach(child -> {
+            assertNotNull(child);
+            UUID.fromString(child.getUuid());
+        });
     }
 
 }

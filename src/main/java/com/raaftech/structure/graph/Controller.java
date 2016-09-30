@@ -46,6 +46,7 @@ public class Controller extends Instrument {
 
     public static class Builder {
         // required fields
+        private String uuid;
         private String name;
         private String desc;
         private Type capability;
@@ -104,6 +105,10 @@ public class Controller extends Instrument {
             return this;
         }
         // optional setters
+        public Builder uuid(String uuid) {
+            this.uuid = uuid;
+            return this;
+        }
         public Builder arguments(String arguments) {
             this.arguments = arguments;
             return this;
@@ -153,6 +158,9 @@ public class Controller extends Instrument {
         // empty constructor for Spring Data Neo4j
     }
 
+    private Controller(String name, String desc, String uuid, String filePath) {
+        super(name, desc, uuid, filePath);
+    }
     private Controller(String name, String desc, String filePath) {
         super(name, desc, filePath);
     }
