@@ -50,10 +50,6 @@ public class Context implements ApplicationContextAware {
         return (TypeRepository)context.getBean("typeRepository");
     }
 
-    public static SchemaNodeRepository getSchemaNodeRepository() {
-        return (SchemaNodeRepository)context.getBean("schemaNodeRepository");
-    }
-
     public static InstanceRepository getInstanceRepository() {
         return (InstanceRepository)context.getBean("instanceRepository");
     }

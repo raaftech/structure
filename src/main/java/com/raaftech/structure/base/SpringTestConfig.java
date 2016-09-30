@@ -57,9 +57,6 @@ public class SpringTestConfig extends Neo4jConfiguration {
     TypeRepository typeRepository;
 
     @Autowired
-    SchemaNodeRepository schemaNodeRepository;
-
-    @Autowired
     InstanceRepository instanceRepository;
 
     @Autowired

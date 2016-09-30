@@ -309,11 +309,6 @@ public class Application {
                 log.info("Deployed InstanceRepository with id: {}", ar.result());
             }
         });
-        vertx.deployVerticle(new SchemaNodes(Context.getSchemaNodeRepository()), ar -> {
-            if (ar.succeeded()) {
-                log.info("Deployed SchemaNodeRepository with id: {}", ar.result());
-            }
-        });
         vertx.deployVerticle(new Templates(Context.getTemplateRepository()), ar -> {
             if (ar.succeeded()) {
                 log.info("Deployed TemplateRepository with id: {}", ar.result());
