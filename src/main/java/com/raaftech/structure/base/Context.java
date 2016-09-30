@@ -62,6 +62,10 @@ public class Context implements ApplicationContextAware {
         return (TemplateRepository)context.getBean("templateRepository");
     }
 
+    public static ResultRepository getResultRepository() {
+        return (ResultRepository)context.getBean("resultRepository");
+    }
+
     public static GraphDatabase getGraphDatabase() {
         return (GraphDatabase)context.getBean("graphDatabase");
     }

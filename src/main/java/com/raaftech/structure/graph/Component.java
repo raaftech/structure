@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.exceptions.JsonValidationException;
 import com.raaftech.structure.graph.repositories.InstanceRepository;
+import com.raaftech.structure.graph.repositories.ResultRepository;
 import com.raaftech.structure.helper.InstrumentRunner;
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.Transaction;
@@ -25,9 +26,9 @@ import java.util.stream.Collectors;
 
 public class Component extends Instance {
 
-    @RelatedTo(type="HAS_RESULT", direction = Direction.OUTGOING)
+    @RelatedTo(type="RESULTS", direction = Direction.OUTGOING)
     @Fetch
-    private Set<Result> results = new HashSet<>();
+    private Result startOfResultChain;
 
     @RelatedTo(type="HAS_COMPONENT", direction = Direction.OUTGOING)
     private Set<Component> components;
@@ -47,7 +48,10 @@ public class Component extends Instance {
     private Set<Instance> actors = new HashSet<>();
 
     @Transient
-    private InstanceRepository instanceRepository = Context.getInstanceRepository();
+    private static final InstanceRepository instanceRepository = Context.getInstanceRepository();
+
+    @Transient
+    private static final ResultRepository resultRepository = Context.getResultRepository();
 
     @Transient
     private Logger log = LoggerFactory.getLogger(Component.class);
@@ -107,26 +111,20 @@ public class Component extends Instance {
         return components;
     }
 
-    // Get all the results belonging to this Instance
-    public Set<Result> getResults() {
-        // Fetch results from database
-        GraphDatabase graphDatabase = Context.getGraphDatabase();
-        Transaction tx = graphDatabase.beginTx();
-        Context.getNeo4jTemplate().fetch(results);
-        tx.success();
-        tx.close();
-
-        return results;
+    // Get all the startOfResultChain belonging to this Instance
+    public Result getStartOfResultChain() {
+        return startOfResultChain;
     }
 
     /**
-     * Get all the results belonging to this Instance while filtering on the task ID.
+     * Get all the startOfResultChain belonging to this Instance while filtering on the task ID.
      * @param task The ID of the task.
-     * @return All the results belonging to a specific task.
+     * @return All the startOfResultChain belonging to a specific task.
      */
-    public Set<Instance> getResults(String task) {
-        return getResults().stream()
-                .filter(r -> r.getProperty("task").equals(task))
+    public Set<Result> getResults(String task) {
+
+        return getStartOfResultChain().getThisAndNewer().stream()
+                .filter(r -> r.getTaskId().equals(task))
                 .collect(Collectors.toSet());
     }
 
@@ -161,25 +159,16 @@ public class Component extends Instance {
     }
 
     public Component addResult(Result result) {
-        if (results == null) {
-            results = new HashSet<>();
-        }
-        // Check if parameter isn't null and is of right type.
-        if (result.isOfType("Result")) {
-            Transaction tx = Context.getGraphDatabase().beginTx();
-            results.add(result);
-            tx.success();
-            tx.close();
-        } else {
-            log.error("addResult called with non-result parameter.");
-            throw new IllegalArgumentException("Wrong argument to addResult().");
-        }
+        Result oldHead = startOfResultChain;
+        oldHead.setNext(result);
+        startOfResultChain = result;
+
         return this;
     }
 
     public Component addResult(String resultUuid) {
-        Instance result = instanceRepository.findByUuid(resultUuid);
-        addResult((Result)result);
+        Result result = resultRepository.findByUuid(resultUuid);
+        addResult(result);
         return this;
     }
 
