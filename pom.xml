@@ -85,14 +85,14 @@
         <!-- Generic settings -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <main.class>com.raaftech.structure.base.Application</main.class>
-        
+
         <!-- Core component versions -->
         <vertx.version>3.0.0</vertx.version>
         <spring-data-neo4j.version>3.2.1.RELEASE</spring-data-neo4j.version>
         <neo4j.version>2.1.8</neo4j.version>
         <jersey.version>1.9</jersey.version>
         <handlebars.version>2.2.3</handlebars.version>
-        
+
         <!-- Helper component versions -->
         <validation-api.version>1.1.0.Final</validation-api.version>
         <json-schema-validator.version>2.2.6</json-schema-validator.version>
@@ -102,7 +102,7 @@
         <javassist.version>3.19.0-GA</javassist.version>
         <logback.version>1.1.3</logback.version>
         <slf4j.version>1.7.12</slf4j.version>
-        
+
         <!-- Test component versions -->
         <junit.version>4.11</junit.version>
         <spring-test.version>3.2.17.RELEASE</spring-test.version>
@@ -301,6 +301,17 @@
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>release.json</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+                <excludes>
+                    <exclude>release.json</exclude>
+                </excludes>
             </resource>
             <resource>
                 <directory>web</directory>
@@ -357,7 +368,7 @@
                     </arguments>
                 </configuration>
             </plugin>
-            
+
             <!-- Create fat executable jar -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
