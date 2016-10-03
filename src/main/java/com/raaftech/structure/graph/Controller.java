@@ -1,5 +1,6 @@
 package com.raaftech.structure.graph;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.exceptions.ComponentBuilderException;
@@ -14,7 +15,20 @@ import org.springframework.data.neo4j.annotation.RelatedTo;
 import java.util.HashSet;
 import java.util.Set;
 
+import static io.vertx.core.json.Json.mapper;
+
 public class Controller extends Instrument {
+
+    private static final String NAME = "name";
+    private static final String DESC = "desc";
+    private static final String UUID = "uuid";
+    private static final String FILELOCATION = "filePath";
+    private static final String SUBJECTLOCAL = "subjectIsLocal";
+    private static final String TEMPLATE = "template";
+    private static final String ARGUMENTS = "arguments";
+    private static final String EXTENSION = "extension";
+    private static final String RESULTPARSER = "resultParser";
+    private static final String WEIGHT = "weight";
 
     @RelatedTo(type="GIVES_CAPABILITY", direction=Direction.OUTGOING)
     private Type capability;
@@ -34,42 +48,28 @@ public class Controller extends Instrument {
     @Fetch
     private Type providedBy;
 
-    private String extension;
-    private String arguments;
-    private boolean subjectIsLocal;
-    private String template;
-
     @Transient
     private static TypeRepository typeRepository = Context.getTypeRepository();
 
-    private Logger log = LoggerFactory.getLogger(Controller.class);
+    private static final Logger log = LoggerFactory.getLogger(Controller.class);
 
     public static class Builder {
         // required fields
-        private String uuid;
-        private String name;
-        private String desc;
         private Type capability;
-        private String filePath;
         private Set<Type> appliesTo;
         private Type providedBy;
-        private Boolean subjectIsLocal;
-        private String template;
-        // optional fields
-        private String arguments = null;
-        private String extension = null;
-        private Parser parser = null;
-        private int weight = -1;
+
+        ObjectNode json = mapper.createObjectNode();
 
         public Builder() {}
 
         // required setters
         public Builder name(String name) {
-            this.name = name;
+            json.put(NAME, name);
             return this;
         }
         public Builder desc(String desc) {
-            this.desc = desc;
+            json.put(DESC, desc);
             return this;
         }
         public Builder capability(Type capability) {
@@ -81,7 +81,7 @@ public class Controller extends Instrument {
             return this;
         }
         public Builder filePath(String filePath) {
-            this.filePath = filePath;
+            json.put(FILELOCATION, filePath);
             return this;
         }
         public Builder handles(Set<Type> handles) {
@@ -97,58 +97,45 @@ public class Controller extends Instrument {
             return this;
         }
         public Builder subjectIsLocal(boolean subjectIsLocal) {
-            this.subjectIsLocal = subjectIsLocal;
+            json.put(SUBJECTLOCAL, subjectIsLocal);
             return this;
         }
         public Builder template(String template) {
-            this.template = template;
+            json.put(TEMPLATE, template);
             return this;
         }
         // optional setters
         public Builder uuid(String uuid) {
-            this.uuid = uuid;
+            json.put(UUID, uuid);
             return this;
         }
         public Builder arguments(String arguments) {
-            this.arguments = arguments;
+            json.put(ARGUMENTS, arguments);
             return this;
         }
         public Builder extension(String extension) {
-            this.extension = extension;
+            json.put(EXTENSION, extension);
             return this;
         }
         public Builder parser(Parser parser) {
-            this.parser = parser;
+            json.put(RESULTPARSER, parser.getUuid());
             return this;
         }
         public Builder weight(int weight) {
-            this.weight = weight;
+            json.put(WEIGHT, weight);
             return this;
         }
 
         public Controller build() {
-            if (name == null || desc == null || capability == null || filePath == null
-                    || appliesTo == null || providedBy == null || subjectIsLocal == null || template == null) {
+            if (!json.has(NAME) || !json.has(DESC) || capability == null || !json.has(FILELOCATION)
+                    || appliesTo == null || providedBy == null || !json.has(SUBJECTLOCAL) || !json.has(TEMPLATE)) {
+                log.error("Error while building Controller instrument.");
                 throw new ComponentBuilderException("Not all required parameters were set.");
             }
-            Controller controller =  new Controller(name, desc, filePath);
+            Controller controller =  new Controller(json);
             controller.capability = capability;
             controller.appliesTo = appliesTo;
             controller.providedBy = providedBy;
-            controller.subjectIsLocal = subjectIsLocal;
-            controller.template = template;
-            if (arguments != null) {
-                controller.arguments = arguments;
-            }
-            if (extension != null) {
-                controller.extension = extension;
-            }
-            if (parser != null) {
-                controller.parser = parser;
-            }
-            if (weight >= 0) {
-                controller.weight = weight;
-            }
             return controller;
         }
 
@@ -158,11 +145,8 @@ public class Controller extends Instrument {
         // empty constructor for Spring Data Neo4j
     }
 
-    private Controller(String name, String desc, String uuid, String filePath) {
-        super(name, desc, uuid, filePath);
-    }
-    private Controller(String name, String desc, String filePath) {
-        super(name, desc, filePath);
+    private Controller(ObjectNode json) {
+        super(json, typeRepository.findOneByName("Controller"));
     }
 
     // Set the capability of a Controller instance
@@ -197,15 +181,15 @@ public class Controller extends Instrument {
     }
 
     public String getArguments() {
-        return arguments;
+        return (String) kv.getProperty(ARGUMENTS);
     }
 
     public String getExtension() {
-        return extension;
+        return (String) kv.getProperty(EXTENSION);
     }
 
     public boolean isSubjectIsLocal() {
-        return subjectIsLocal;
+        return (boolean) kv.getProperty(SUBJECTLOCAL);
     }
 
     public Type getProvidedBy() {
@@ -213,21 +197,21 @@ public class Controller extends Instrument {
     }
 
     public String getTemplate() {
-        return template;
+        return (String) kv.getProperty(TEMPLATE);
     }
 
 
     public ObjectNode toJson() {
         ObjectNode json = super.toJson();
         json
-                .put("subjectIsLocal", subjectIsLocal)
-                .put("template", template);
+                .put(SUBJECTLOCAL, isSubjectIsLocal())
+                .put(TEMPLATE, getTemplate());
 
-        if (extension != null) {
-            json.put("extension", extension);
+        if (getExtension() != null) {
+            json.put(EXTENSION, getExtension());
         }
-        if (arguments != null) {
-            json.put("arguments", arguments);
+        if (getArguments() != null) {
+            json.put(ARGUMENTS, getArguments());
         }
 
         return json;

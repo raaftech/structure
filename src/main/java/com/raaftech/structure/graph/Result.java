@@ -1,18 +1,31 @@
 package com.raaftech.structure.graph;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.raaftech.structure.base.Context;
+import com.raaftech.structure.exceptions.ResultBuilderException;
 import com.raaftech.structure.graph.repositories.ResultRepository;
+import com.raaftech.structure.graph.repositories.TypeRepository;
+import com.sun.org.apache.regexp.internal.RE;
 import org.neo4j.graphdb.Direction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.neo4j.annotation.GraphProperty;
 import org.springframework.data.neo4j.annotation.RelatedTo;
 
-import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
 
-public class Result extends Node {
+import static io.vertx.core.json.Json.mapper;
+
+public class Result extends Instance {
+
+    private static final String NAME = "name";
+    private static final String DESC = "desc";
+    private static final String PROCESS = "process";
+    private static final String TASKID = "task";
+    private static final String STDOUT = "stdout";
+    private static final String STDERR = "stderr";
+    private static final String RETURNCODE = "returnCode";
+    private static final String DATECREATED = "dateCreated";
 
     public static final ResultRepository resultRepository = Context.getResultRepository();
 
@@ -23,34 +36,61 @@ public class Result extends Node {
     @RelatedTo(type="NEXT_RESULT", direction = Direction.INCOMING)
     Result previous;
 
-    @GraphProperty(propertyType = Long.class)
-    private LocalDateTime date;
-    private String process;
-    private String taskId;
-    private String stdout;
-    private String stderr;
-    private int retcode;
+    private static final TypeRepository typeRepository = Context.getTypeRepository();
+
+    public static class Builder {
+        private String process;
+        private String taskId;
+        private String stdout;
+        private String stderr;
+        private Integer returnCode;
+
+        public Builder() {}
+        public Builder process(String process) {
+            this.process = process;
+            return this;
+        }
+        public Builder taskId(String taskId) {
+            this.taskId = taskId;
+            return this;
+        }
+        public Builder stdout(String stdout) {
+            this.stdout = stdout;
+            return this;
+        }
+        public Builder stderr(String stderr) {
+            this.stderr = stderr;
+            return this;
+        }
+        public Builder returnCode(int returnCode) {
+            this.returnCode = returnCode;
+            return this;
+        }
+        public Result build() {
+            if (process == null || taskId == null || stdout == null || stderr == null || returnCode == null) {
+                log.error("Error while building Result");
+                throw new ResultBuilderException("Not all required parameters were set.");
+            }
+            Type resultType = typeRepository.findOneByName("Result");
+            ObjectNode json = mapper.createObjectNode()
+                    .put(NAME, "Result")
+                    .put(DESC, "A result.")
+                    .put(PROCESS, process)
+                    .put(TASKID, taskId)
+                    .put(STDOUT, stdout)
+                    .put(STDERR, stderr)
+                    .put(RETURNCODE, returnCode)
+                    .put(DATECREATED, System.currentTimeMillis());
+
+            return new Result(json, resultType);
+        }
+    }
 
     // Empty constructor for Spring
     public Result() {}
 
-    /**
-     * Results are used to store output of controllers.
-     * They can be used as input for parsers.
-     * @param process The process that generated the result.
-     * @param taskId The task that the execution of the controller belongs to.
-     * @param stdout The output on stdout of the process.
-     * @param stderr The output on stderr of the process.
-     * @param retcode The return code of the process.
-     */
-    public Result(String process, String taskId, String stdout, String stderr, int retcode) {
-        super("Result", "A result");
-        date = LocalDateTime.now();
-        this.process = process;
-        this.taskId = taskId;
-        this.stdout = stdout;
-        this.stderr = stderr;
-        this.retcode = retcode;
+    private Result(ObjectNode json, Type type) {
+        super(json, type);
     }
 
     /**
@@ -63,27 +103,27 @@ public class Result extends Node {
     }
 
     public String getProcess() {
-        return process;
+        return (String) kv.getProperty(PROCESS);
     }
 
     public String getStdout() {
-        return stdout;
+        return (String) kv.getProperty(STDOUT);
     }
 
     public String getStderr() {
-        return stderr;
+        return (String) kv.getProperty(STDERR);
     }
 
-    public LocalDateTime getDate() {
-        return date;
+    public long getDate() {
+        return Long.parseLong((String)kv.getProperty(DATECREATED));
     }
 
-    public int getRetcode() {
-        return retcode;
+    public int getReturnCode() {
+        return Integer.parseInt((String)kv.getProperty(RETURNCODE));
     }
 
     public String getTaskId() {
-        return taskId;
+        return (String) kv.getProperty(TASKID);
     }
 
     public Result getNext() {

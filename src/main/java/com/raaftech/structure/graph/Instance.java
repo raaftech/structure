@@ -58,28 +58,6 @@ public abstract class Instance extends Node {
 
     // TODO: Move to builder pattern, just too many constructors
 
-    public static class Builder {
-        // Required parameters
-        private final String name;
-        private final String desc;
-        private final Type instanceOf;
-
-        public Builder(String name, String desc, Type instanceOf) {
-            this.name = name;
-            this.desc = desc;
-            this.instanceOf = instanceOf;
-        }
-
-        public Builder(String name, String desc, String instanceOfUuid) {
-            Type instanceOf = TYPE_REPOSITORY.findByUuid(instanceOfUuid);
-            if (instanceOf == null) {
-                throw new TypeUnknownException("Can't create instance of type \"" + instanceOfUuid + "\".");
-            }
-            this.name = name;
-            this.desc = desc;
-            this.instanceOf = instanceOf;
-        }
-    }
     public Instance() {}
 
     public Instance(String name, String desc, Type instanceOf) {
@@ -112,6 +90,12 @@ public abstract class Instance extends Node {
         } else {
             throw new RuntimeException("ERROR: can't create Instance, UUID " + instanceOfUuid + " unknown.");
         }
+    }
+
+    public Instance(ObjectNode json, Type isa) {
+        this(json.get("name").asText(), json.get("desc").asText(), isa);
+        instanceData = json.deepCopy();
+        setProperties(json);
     }
 
     public Instance(ObjectNode json, String isa) {

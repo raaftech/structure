@@ -3,30 +3,24 @@ package com.raaftech.structure.graph;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.raaftech.structure.base.Context;
 
-public abstract class Instrument extends Node {
-
-    protected String filePath;
-    protected int weight;
+public abstract class Instrument extends Instance {
 
     public Instrument() {}
 
-    public Instrument(String name, String desc, String uuid, String filePath) {
-        super(name, desc, uuid);
-        this.filePath = filePath;
+    public Instrument(ObjectNode json, Type type) {
+        super(json, type);
     }
 
-    public Instrument(String name, String desc, String filePath) {
-        super(name, desc);
-        this.filePath = filePath;
-    }
-
-    public Instrument(String name, String desc, String filePath, int weight) {
-        this(name, desc, filePath);
-        this.weight = weight;
+    public Instrument(ObjectNode json, String isa) {
+        super(json, isa);
     }
 
     public int getWeight() {
-        return weight;
+        return (Integer)kv.getProperty("weight");
+    }
+
+    public String getFilePath() {
+        return (String)kv.getProperty("fileLocation");
     }
 
     public Instrument save() {
@@ -36,9 +30,9 @@ public abstract class Instrument extends Node {
 
     public ObjectNode toJson() {
         ObjectNode json = super.toJson();
-        json.put("filePath", filePath);
-        if (weight > 0) {
-            json.put("weight", weight);
+        json.put("fileLocation", getFilePath());
+        if (getWeight() > 0) {
+            json.put("weight", getWeight());
         }
         return json;
     }

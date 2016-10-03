@@ -1107,6 +1107,67 @@
   "glyphId" : 231,
   "isa" : "db0c3c65-52fd-4dec-907c-6c8a669e88f3"
 }, {
+  "name" : "Instrument",
+  "desc" : "A representation of a software instrument that gives end user function.",
+  "uuid" : "14dbfbfa-b50a-466f-8539-55d5d3f15e4a",
+  "glyphId" : 96,
+  "isa" : "b1bc963a-19cc-4518-aecb-a35d028c49e3",
+  "descriptors" : {
+    "weight" : {
+      "desc" : "The weight of a instrument, used choose between instruments.",
+      "type" : "number",
+      "required" : false
+    },
+    "filePath" : {
+      "desc" : "The filesystem location of the instrument.",
+      "type" : "string",
+      "required" : true
+    }
+  }
+}, {
+  "name" : "Controller",
+  "desc" : "An implementation of an instrument that gives 'behavior'.",
+  "uuid" : "f482204e-7d63-45ca-96c9-10a7cc2783da",
+  "isa" : "14dbfbfa-b50a-466f-8539-55d5d3f15e4a",
+  "descriptors" : {
+    "extension" : {
+      "desc" : "Possible extension in case of a scriptable instrument.",
+      "type" : "string",
+      "required" : false,
+      "pattern" : "^\\.[a-zA-Z0-9]+$"
+    },
+    "arguments" : {
+      "desc" : "A string representation of the arguments object.",
+      "type" : "string",
+      "required" : false
+    },
+    "subjectIsLocal" : {
+      "desc" : "Is the subject for this instrument local or remote?",
+      "type" : "boolean",
+      "required" : true
+    },
+    "template" : {
+      "desc" : "The handlebars template resulting in a command.",
+      "type" : "string",
+      "required" : true
+    },
+    "resultParser" : {
+      "desc" : "The parser able to convert the raw results of this instrument.",
+      "type" : "string",
+      "required" : false
+    }
+  }
+}, {
+  "name" : "Marker",
+  "desc" : "Markers are considered 'system' instruments that help us build send<->receive paths.",
+  "uuid" : "24702e44-8769-4aea-903d-9e1164f99e5b",
+  "isa" : "14dbfbfa-b50a-466f-8539-55d5d3f15e4a"
+}, {
+  "name" : "Parser",
+  "desc" : "An instrument that parses raw results from controllers into graphable data.",
+  "uuid" : "b5fa636c-1067-45ac-b027-ade2797bef6f",
+  "isa" : "14dbfbfa-b50a-466f-8539-55d5d3f15e4a"
+}, {
   "name" : "Result",
   "desc" : "A result from an operation.",
   "uuid" : "f3498c02-58c6-486b-87c6-9d54607fdb12",
@@ -1121,22 +1182,22 @@
     "process" : {
       "desc" : "Process that resulted in this result.",
       "type" : "string",
-      "required" : false
+      "required" : true
     },
     "returnCode" : {
       "desc" : "The returncode of a process",
       "type" : "number",
-      "required" : false
+      "required" : true
     },
     "stdout" : {
       "desc" : "The stdout of a program.",
       "type" : "string",
-      "required" : false
+      "required" : true
     },
     "stderr" : {
       "desc" : "The stdout of a program.",
       "type" : "string",
-      "required" : false
+      "required" : true
     },
     "dateCreated" : {
       "desc" : "The date + time when the result was created.",

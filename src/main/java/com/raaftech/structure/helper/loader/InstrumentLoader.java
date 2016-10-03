@@ -224,11 +224,14 @@ public class InstrumentLoader implements PackageLoader {
                     // What Type is providing this instrument?
                     String providedByType = preambleJson.get("providedBy").asText();
 
-                    if (uuid == null) {
-                        resultingInstrument = new Marker(name, desc, filePath, capability, appliesTypes, providedByType);
-                    } else {
-                        resultingInstrument = new Marker(name, desc, uuid, filePath, capability, appliesTypes, providedByType);
-                    }
+                    resultingInstrument = new Marker.Builder()
+                            .name(name)
+                            .desc(desc)
+                            .filePath(filePath)
+                            .capability(capability)
+                            .appliesTo(appliesTypes)
+                            .providedBy(providedByType)
+                            .build();
                 } else { // if ("parser".equals(type)) <-- only other possibility because schema
                     // TODO: implement
                     resultingInstrument = null;
