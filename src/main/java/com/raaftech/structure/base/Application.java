@@ -1,8 +1,7 @@
 package com.raaftech.structure.base;
 
 import ch.qos.logback.classic.Level;
-import com.raaftech.structure.graph.Template;
-import com.raaftech.structure.graph.Type;
+import com.raaftech.structure.graph.*;
 import com.raaftech.structure.graph.repositories.InstanceRepository;
 import com.raaftech.structure.graph.repositories.InstrumentRepository;
 import com.raaftech.structure.graph.repositories.TemplateRepository;
@@ -115,14 +114,14 @@ public class Application {
 
             // TRACING mode
             if(line.hasOption("trace")) {
-                System.setProperty("traceMode", "true");
                 log.info("TRACE mode enabled");
+                Configuration.setTraceMode(true);
             }
 
             // MODE
             if(line.hasOption("unsafe")){
                 log.info("UNSAFE mode enabled");
-                System.setProperty("unsafeMode", "true");
+                Configuration.setUnsafeMode(true);
             }
         } catch (ParseException e) {
             log.error("Can't parse commandline options: {}", e.getMessage());
@@ -173,7 +172,7 @@ public class Application {
         
         // If we're in unsafe mode allow direct access to everything
         // on the eventbus and serve the debug page.
-        if (Boolean.parseBoolean(System.getProperty("unsafeMode"))) {
+        if (Configuration.isUnsafeModeOn()) {
             log.debug("Setting InboundPermitted and OutboundPermitted to any address (\".*\")");
             bridgeOptions.addInboundPermitted(new PermittedOptions().setAddressRegex(".*"));
             bridgeOptions.addOutboundPermitted(new PermittedOptions().setAddressRegex(".*"));
@@ -218,7 +217,7 @@ public class Application {
         } catch (Exception e){
             log.error(e.getMessage());
 
-            if(log.isTraceEnabled()){
+            if(Configuration.isTraceModeOn()){
                 e.printStackTrace();
             }
         } finally {
@@ -257,7 +256,7 @@ public class Application {
             } catch (IOException e){
                 log.error(e.getMessage());
 
-                if(log.isTraceEnabled()){
+                if(Configuration.isTraceModeOn()){
                     e.printStackTrace();
                 }
             }
@@ -270,7 +269,7 @@ public class Application {
             } catch (IOException e) {
                 log.error(e.getMessage());
 
-                if(log.isTraceEnabled()){
+                if(Configuration.isTraceModeOn()){
                     e.printStackTrace();
                 }
             }

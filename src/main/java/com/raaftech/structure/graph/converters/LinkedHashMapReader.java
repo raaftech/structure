@@ -2,6 +2,7 @@ package com.raaftech.structure.graph.converters;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.raaftech.structure.base.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.convert.converter.Converter;
@@ -28,7 +29,7 @@ public class LinkedHashMapReader implements Converter<String, LinkedHashMap<Stri
 		} catch (IOException e) {
 			log.error(e.getMessage());
 
-			if (Boolean.parseBoolean(System.getProperty("traceMode"))) {
+			if (Configuration.isTraceModeOn()) {
 				e.printStackTrace();
 			}
 		}

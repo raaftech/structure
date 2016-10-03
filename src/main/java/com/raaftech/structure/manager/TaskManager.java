@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.raaftech.structure.annotations.SchemaPath;
+import com.raaftech.structure.base.Configuration;
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.base.GenericActor;
 import com.raaftech.structure.helper.ProcessRunner;
@@ -172,7 +173,7 @@ public class TaskManager extends GenericActor {
                                                 runJob(job);
                                             } catch (InterruptedException | IOException e) {
                                                 log.error("Ran into error while executing job " + task.id + "." + jobId);
-                                                if (Boolean.parseBoolean(System.getProperty("traceMode"))) {
+                                                if (Configuration.isTraceModeOn()) {
                                                     e.printStackTrace();
                                                 }
                                                 job.status = JobStatus.ERROR;
@@ -284,7 +285,7 @@ public class TaskManager extends GenericActor {
                 try {
                     log.info(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(task.toJson()));
                 } catch (JsonProcessingException e) {
-                    if (Boolean.parseBoolean(System.getProperty("traceMode"))) {
+                    if (Configuration.isTraceModeOn()) {
                         e.printStackTrace();
                     }
                 }

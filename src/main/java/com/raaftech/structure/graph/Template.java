@@ -6,7 +6,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.fge.jsonschema.core.exceptions.ProcessingException;
-import com.raaftech.structure.base.Context;
+import com.raaftech.structure.base.*;
+import com.raaftech.structure.base.Configuration;
 import com.raaftech.structure.graph.repositories.TemplateRepository;
 import com.raaftech.structure.graph.repositories.TypeRepository;
 import com.raaftech.structure.helper.JsonSchemaBuilder;
@@ -265,7 +266,7 @@ public class Template extends Node {
                     } catch (Exception e1) {
             			log.error(e1.getMessage());
 
-            			if (Boolean.parseBoolean(System.getProperty("traceMode"))) {
+            			if (Configuration.isTraceModeOn()) {
             				e1.printStackTrace();
             			}
             			
@@ -300,7 +301,7 @@ public class Template extends Node {
                             } catch (Exception e) {     
                     			log.error(e.getMessage());
 
-                    			if (Boolean.parseBoolean(System.getProperty("traceMode"))) {
+                    			if (Configuration.isTraceModeOn()) {
                     				e.printStackTrace();
                     			}
                     			
@@ -391,7 +392,7 @@ public class Template extends Node {
             // Shouldn't be possible.
         	log.error(e.getMessage());
 
-			if (Boolean.parseBoolean(System.getProperty("traceMode"))) {
+			if (Configuration.isTraceModeOn()) {
 				e.printStackTrace();
 			}
 			
@@ -419,7 +420,7 @@ public class Template extends Node {
         } catch (ProcessingException e) {
             log.error("Error constructing schema: " + e.getMessage());
             
-            if (Boolean.parseBoolean(System.getProperty("traceMode"))) {
+            if (Configuration.isTraceModeOn()) {
                 e.printStackTrace();
             }
             
@@ -443,7 +444,7 @@ public class Template extends Node {
             
             log.error("Transaction failed: " + e.getMessage());
 
-			if (Boolean.parseBoolean(System.getProperty("traceMode"))) {
+			if (Configuration.isTraceModeOn()) {
 				e.printStackTrace();
 			}
 			
@@ -534,7 +535,7 @@ public class Template extends Node {
             
             log.error(e.getMessage());
 
-			if (Boolean.parseBoolean(System.getProperty("traceMode"))) {
+			if (Configuration.isTraceModeOn()) {
 				e.printStackTrace();
 			}
 			
@@ -587,7 +588,7 @@ public class Template extends Node {
         } catch (JsonProcessingException e) {
             log.error(e.getMessage());
 
-			if (Boolean.parseBoolean(System.getProperty("traceMode"))) {
+			if (Configuration.isTraceModeOn()) {
 				e.printStackTrace();
 			}	
         }

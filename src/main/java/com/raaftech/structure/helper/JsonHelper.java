@@ -7,6 +7,7 @@ import com.github.fge.jsonschema.core.report.ProcessingReport;
 import com.github.fge.jsonschema.main.JsonSchema;
 import com.github.fge.jsonschema.main.JsonSchemaFactory;
 import com.github.fge.jsonschema.processors.syntax.SyntaxValidator;
+import com.raaftech.structure.base.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,7 +36,7 @@ public class JsonHelper {
         try {
             result = mapper.readTree(inputStream);
         } catch (Exception e) {
-            if (Boolean.parseBoolean(System.getProperty("traceMode"))) {
+            if (Configuration.isTraceModeOn()) {
                 final String logStatement = "Couldn't open as resource " + resource + ": " + e.getMessage();
                 if (via) {
                     log.warn(logStatement);
@@ -65,7 +66,7 @@ public class JsonHelper {
         try {
             result = mapper.readTree(new File(file));
         } catch (IOException e) {
-            if (Boolean.parseBoolean(System.getProperty("traceMode"))) {
+            if (Configuration.isTraceModeOn()) {
                 final String logStatement = "Couldn't open as file  " + file + ": " + e.getMessage();
                 if (via) {
                     log.warn(logStatement);
@@ -108,7 +109,7 @@ public class JsonHelper {
             final JsonSchema jsonSchema = factory.getJsonSchema(schema);
             valid = jsonSchema.validate(object).isSuccess();
         } catch (ProcessingException e) {
-            if (Boolean.parseBoolean(System.getProperty("traceMode"))) {
+            if (Configuration.isTraceModeOn()) {
                 e.printStackTrace();
             }
         }

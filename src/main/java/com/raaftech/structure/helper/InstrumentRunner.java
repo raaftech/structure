@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.jknack.handlebars.Handlebars;
 import com.github.jknack.handlebars.JsonNodeValueResolver;
 import com.github.jknack.handlebars.Template;
+import com.raaftech.structure.base.Configuration;
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.graph.Component;
 import com.raaftech.structure.graph.Controller;
@@ -173,7 +174,7 @@ public class InstrumentRunner {
             } catch (Exception e) {
             	log.error(e.getMessage());
 
-    			if (Boolean.parseBoolean(System.getProperty("traceMode"))) {
+    			if (Configuration.isTraceModeOn()) {
     				e.printStackTrace();
     			}
     			
@@ -193,7 +194,7 @@ public class InstrumentRunner {
                     ObjectNode args = validateAndSelectArguments(controller);
                     jobList.add(applyTemplate(controller.getTemplate(), args));
                 } catch (IOException e) {
-                    if (Boolean.parseBoolean(System.getProperty("traceMode"))) {
+                    if (Configuration.isTraceModeOn()) {
                         e.printStackTrace();
                     }
                 }
@@ -311,7 +312,7 @@ public class InstrumentRunner {
         } catch (IOException e) {
         	log.error(e.getMessage());
 
-			if (Boolean.parseBoolean(System.getProperty("traceMode"))) {
+			if (Configuration.isTraceModeOn()) {
 				e.printStackTrace();
 			}
 			
@@ -390,7 +391,7 @@ public class InstrumentRunner {
         } catch (IOException e) {
             log.error("Couldn't create FileWriter to write generated script to: " + e.getMessage());
             
-            if (Boolean.parseBoolean(System.getProperty("traceMode"))) {
+            if (Configuration.isTraceModeOn()) {
                 e.printStackTrace();
             }
         }

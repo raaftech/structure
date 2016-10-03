@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.raaftech.structure.base.Configuration;
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.exceptions.InstrumentNotFoundException;
 import com.raaftech.structure.exceptions.JsonValidationException;
@@ -84,7 +85,7 @@ public class InstrumentLoader implements PackageLoader {
             log.info("Successfully created the " + instrument.getName() + " instrument.");
         } catch (Exception e) {
             log.error("Error while saving " + instrument.getName() + ", rolling back transaction.");
-            if (Boolean.parseBoolean(System.getProperty("traceMode"))) {
+            if (Configuration.isTraceModeOn()) {
                 e.printStackTrace();
             }
             tx.failure();
@@ -244,7 +245,7 @@ public class InstrumentLoader implements PackageLoader {
                         + "instrument schema");
             }
         } catch (IOException e) {
-            if (Boolean.parseBoolean(System.getProperty("traceMode"))) {
+            if (Configuration.isTraceModeOn()) {
                 e.printStackTrace();
             }
         }
@@ -264,7 +265,7 @@ public class InstrumentLoader implements PackageLoader {
             parsePreamble(filePath.toString(), contents);
         } catch (IOException e) {
             log.error("Error while reading instrument template " + filePath.toString());
-            if (Boolean.parseBoolean(System.getProperty("traceMode"))) {
+            if (Configuration.isTraceModeOn()) {
                 e.printStackTrace();
             }
         }

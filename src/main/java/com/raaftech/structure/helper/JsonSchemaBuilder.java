@@ -9,6 +9,7 @@ import com.github.fge.jsonschema.core.report.ProcessingReport;
 import com.github.fge.jsonschema.main.JsonSchema;
 import com.github.fge.jsonschema.main.JsonSchemaFactory;
 import com.github.fge.jsonschema.processors.syntax.SyntaxValidator;
+import com.raaftech.structure.base.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -133,7 +134,7 @@ public class JsonSchemaBuilder {
         } catch (ProcessingException e) {
         	log.error(e.getMessage());
 
-			if (Boolean.parseBoolean(System.getProperty("traceMode"))) {
+			if (Configuration.isTraceModeOn()) {
 				e.printStackTrace();
 			}
 			
@@ -148,7 +149,7 @@ public class JsonSchemaBuilder {
             
             log.error(e.getMessage());
 
-			if (Boolean.parseBoolean(System.getProperty("traceMode"))) {
+			if (Configuration.isTraceModeOn()) {
 				e.printStackTrace();
 			}
             
@@ -256,7 +257,7 @@ public class JsonSchemaBuilder {
         } catch (ProcessingException e) {
         	log.error(e.getMessage());
 
-			if (Boolean.parseBoolean(System.getProperty("traceMode"))) {
+			if (Configuration.isTraceModeOn()) {
 				e.printStackTrace();
 			}
 			
@@ -270,7 +271,7 @@ public class JsonSchemaBuilder {
             
             log.error(e.getMessage());
 
-			if (Boolean.parseBoolean(System.getProperty("traceMode"))) {
+			if (Configuration.isTraceModeOn()) {
 				e.printStackTrace();
 			}
 			
@@ -541,7 +542,7 @@ public class JsonSchemaBuilder {
         } catch (ProcessingException e) {
         	log.error(e.getMessage());
 
-			if (Boolean.parseBoolean(System.getProperty("traceMode"))) {
+			if (Configuration.isTraceModeOn()) {
 				e.printStackTrace();
 			}
 			

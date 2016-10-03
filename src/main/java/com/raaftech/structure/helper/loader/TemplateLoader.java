@@ -1,6 +1,7 @@
 package com.raaftech.structure.helper.loader;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.raaftech.structure.base.Configuration;
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.exceptions.JsonValidationException;
 import com.raaftech.structure.exceptions.PackageIOException;
@@ -41,7 +42,7 @@ class TemplateLoader implements PackageLoader {
         } catch (IOException e) {
         	log.error(e.getMessage());
 
-			if (Boolean.parseBoolean(System.getProperty("traceMode"))) {
+			if (Configuration.isTraceModeOn()) {
 				e.printStackTrace();
 			}
 			

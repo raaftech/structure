@@ -2,6 +2,7 @@ package com.raaftech.structure.helper.loader;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.raaftech.structure.base.Configuration;
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.exceptions.JsonLoadException;
 import com.raaftech.structure.exceptions.PackageNotFoundException;
@@ -64,7 +65,7 @@ public class BundleLoader {
         } catch (Exception e) {
             log.error("Loading of bundle \"" + bundle.getName() + "\" cancelled. Transaction rolled back.\n"
                     + "Exception message is \"" + e.getMessage() + "\".");
-            if (Boolean.parseBoolean(System.getProperty("traceMode"))) {
+            if (Configuration.isTraceModeOn()) {
                 e.printStackTrace();
             }
             tx.failure();
@@ -121,7 +122,7 @@ public class BundleLoader {
         } catch (IOException e) {
         	log.debug(e.getMessage());
         	
-        	if (Boolean.parseBoolean(System.getProperty("traceMode"))) {
+        	if (Configuration.isTraceModeOn()) {
         		e.printStackTrace();
         	}
         }

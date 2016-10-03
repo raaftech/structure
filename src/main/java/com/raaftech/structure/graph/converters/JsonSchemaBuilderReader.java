@@ -3,6 +3,7 @@ package com.raaftech.structure.graph.converters;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.fge.jsonschema.core.exceptions.ProcessingException;
+import com.raaftech.structure.base.Configuration;
 import com.raaftech.structure.helper.JsonSchemaBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +30,7 @@ public class JsonSchemaBuilderReader implements Converter<String, JsonSchemaBuil
 		} catch (ProcessingException | IOException e) {
 			log.error(e.getMessage());
 
-			if (Boolean.parseBoolean(System.getProperty("traceMode"))) {
+			if (Configuration.isTraceModeOn()) {
 				e.printStackTrace();
 			}
 		}

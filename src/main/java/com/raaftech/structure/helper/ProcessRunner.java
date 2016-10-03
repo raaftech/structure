@@ -13,6 +13,7 @@ import java.nio.file.attribute.PosixFilePermissions;
 import java.util.ArrayList;
 import java.util.Set;
 
+import com.raaftech.structure.base.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,7 +52,7 @@ public class ProcessRunner {
             processResult.stderr = readFile(tempErr.getPath());
             processResult.stdout = readFile(tempOut.getPath());
         } catch (IOException e) {
-            if (Boolean.parseBoolean(System.getProperty("traceMode"))) {
+            if (Configuration.isTraceModeOn()) {
                 e.printStackTrace();
             }
         }

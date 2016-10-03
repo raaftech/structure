@@ -7,7 +7,8 @@ import com.github.fge.jsonschema.core.exceptions.ProcessingException;
 import com.github.fge.jsonschema.core.report.ProcessingReport;
 import com.github.fge.jsonschema.main.JsonSchema;
 import com.github.fge.jsonschema.main.JsonSchemaFactory;
-import com.raaftech.structure.base.Context;
+import com.raaftech.structure.base.*;
+import com.raaftech.structure.base.Configuration;
 import com.raaftech.structure.exceptions.TypeUnknownException;
 import com.raaftech.structure.graph.repositories.InstanceRepository;
 import com.raaftech.structure.graph.repositories.TypeRepository;
@@ -157,7 +158,7 @@ public abstract class Instance extends Node {
         } catch (ProcessingException e) {
 			log.error(e.getMessage());
 
-			if (log.isTraceEnabled()) {
+			if (Configuration.isTraceModeOn()) {
 				e.printStackTrace();
 			}
 			

@@ -5,7 +5,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.fge.jsonschema.core.exceptions.ProcessingException;
-import com.raaftech.structure.base.Context;
+import com.raaftech.structure.base.*;
+import com.raaftech.structure.base.Configuration;
 import com.raaftech.structure.graph.repositories.TypeRepository;
 import com.raaftech.structure.helper.JsonSchemaBuilder;
 import org.neo4j.graphdb.Direction;
@@ -197,7 +198,7 @@ public class Type extends Node {
                 } catch (ProcessingException e) {
                 	log.error(e.getMessage());
 
-        			if (Boolean.parseBoolean(System.getProperty("traceMode"))) {
+        			if (Configuration.isTraceModeOn()) {
         				e.printStackTrace();
         			}
         		}
@@ -297,7 +298,7 @@ public class Type extends Node {
             } catch (ProcessingException e) {
             	log.error(e.getMessage());
 
-    			if (Boolean.parseBoolean(System.getProperty("traceMode"))) {
+    			if (Configuration.isTraceModeOn()) {
     				e.printStackTrace();
     			}
     			
@@ -347,7 +348,7 @@ public class Type extends Node {
         } catch (JsonProcessingException e) {
         	log.error(e.getMessage());
 
-			if (Boolean.parseBoolean(System.getProperty("traceMode"))) {
+			if (Configuration.isTraceModeOn()) {
 				e.printStackTrace();
 			}
 		}

@@ -2,6 +2,7 @@ package com.raaftech.structure.helper.loader;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.raaftech.structure.base.Configuration;
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.exceptions.JsonValidationException;
 import com.raaftech.structure.exceptions.NodeConstraintViolated;
@@ -56,7 +57,7 @@ class TypeLoader implements PackageLoader {
             
         	log.error(e.getMessage());
 
-			if (Boolean.parseBoolean(System.getProperty("traceMode"))) {
+			if (Configuration.isTraceModeOn()) {
 				e.printStackTrace();
 			}
 			
@@ -101,7 +102,7 @@ class TypeLoader implements PackageLoader {
             } catch (DataIntegrityViolationException e) {
             	log.error(e.getMessage());
 
-    			if (Boolean.parseBoolean(System.getProperty("traceMode"))) {
+    			if (Configuration.isTraceModeOn()) {
     				e.printStackTrace();
     			}
             	

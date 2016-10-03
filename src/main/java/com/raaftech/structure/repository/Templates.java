@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.raaftech.structure.annotations.SchemaPath;
+import com.raaftech.structure.base.Configuration;
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.graph.Template;
 import com.raaftech.structure.graph.Type;
@@ -117,7 +118,7 @@ public class Templates extends Repository<Template> {
                 } catch (RuntimeException e) {
                 	log.error(e.getMessage());
 
-        			if (Boolean.parseBoolean(System.getProperty("traceMode"))) {
+        			if (Configuration.isTraceModeOn()) {
         				e.printStackTrace();
         			}
         			
