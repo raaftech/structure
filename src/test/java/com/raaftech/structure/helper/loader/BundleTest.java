@@ -24,7 +24,7 @@ public class BundleTest {
                 .setOrganizationId("com.raaftech")
                 .setName("test")
                 .setVersion(1)
-                .setMapPackage(Arrays.asList("fooMap.json", "barMap.json"));
+                .setProfilePackage(Arrays.asList("fooMap.json", "barMap.json"));
 
         String serialized =
                 "{\n" +
@@ -32,7 +32,7 @@ public class BundleTest {
                 "  \"name\" : \"test\",\n" +
                 "  \"version\" : 1,\n" +
                 "  \"packages\" : {\n" +
-                "    \"map\" : [ \"fooMap.json\", \"barMap.json\" ]\n" +
+                "    \"profile\" : [ \"fooMap.json\", \"barMap.json\" ]\n" +
                 "  }\n" +
                 "}";
 
@@ -90,7 +90,7 @@ public class BundleTest {
         assertEquals(null, bundle.getInstrumentPackage());
         assertEquals(null, bundle.getTemplatePackage());
         assertEquals(null, bundle.getMetadataPackage());
-        assertEquals(null, bundle.getMapPackage());
+        assertEquals(null, bundle.getProfilePackage());
         assertEquals(null, bundle.getArtworkPackage());
         assertEquals(null, bundle.getDocumentationPackage());
 

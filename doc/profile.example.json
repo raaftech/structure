@@ -1,0 +1,28 @@
+{
+    "name" : "somemap",
+    "desc" : "A profile of Apache HTTPD that makes it possible to recognize itself on various Operating Systems.",
+    "providedBy": "ApacheHTTPD",
+    "appliesTo": ["CentOS", "Fedora", "SLES", "RHEL"],
+    "serviceNames": ["httpd"],
+    "packageNames": ["httpd"],
+    "files": {
+        "logFiles": ["access.log", "error.log"],
+        "dataFiles": ["index.html"],
+        "binaryFiles": ["httpd"],
+        "libraryFiles": ["libapache.so"],
+        "configurationFiles": ["httpd.conf"]
+        },
+    "directories": {
+        "logDirectories": ["/var/log/httpd"],
+        "dataDirectories": ["/var/www"],
+        "binaryDirectories": ["/usr/sbin"],
+        "libraryDirectories": ["/usr/lib"],
+        "configurationDirectories": ["/etc/httpd"]
+    },
+    "commands": {
+        "versionCheck": {
+            "command": ["/usr/bin/httpd", "--version"],
+            "matches": "some expected regexp to match"
+        }
+    }
+}

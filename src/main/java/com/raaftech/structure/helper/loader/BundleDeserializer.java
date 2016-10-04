@@ -41,7 +41,7 @@ class BundleDeserializer extends StdDeserializer<Bundle> {
                 .setInstrumentPackage(deserializePackage(packages, "instrument"))
                 .setTemplatePackage(deserializePackage(packages, "template"))
                 .setMetadataPackage(deserializePackage(packages, "metadata"))
-                .setMapPackage(deserializePackage(packages, "map"))
+                .setProfilePackage(deserializePackage(packages, "profile"))
                 .setArtworkPackage(deserializePackage(packages, "artwork"))
                 .setDocumentationPackage(deserializePackage(packages, "documentation"));
     }

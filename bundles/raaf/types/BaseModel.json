@@ -16,6 +16,39 @@
   "glyphId" : 66,
   "isa" : "b1bc963a-19cc-4518-aecb-a35d028c49e3"
 }, {
+  "name" : "Profile",
+  "desc" : "A profile of software which includes its parts like binaries, data files, directories, etc.",
+  "uuid" : "c970f6d3-4898-4596-bfac-9d6d1f6b2541",
+  "glyphId" : 125,
+  "isa" : "3f4a43f7-b558-4bf0-ba7e-66b99cffaf16",
+  "descriptors" : {
+    "serviceNames" : {
+      "desc" : "A JSON array containing known service names for the software.",
+      "type" : "string",
+      "required" : true
+    },
+    "packageNames" : {
+      "desc" : "A JSON array containing known package names for the software.",
+      "type" : "string",
+      "required" : true
+    },
+    "files" : {
+      "desc" : "A JSON object containing known logFiles/dataFiles/binaryFiles/libraryFiles/configurationFiles arrays for the software.",
+      "type" : "string",
+      "required" : true
+    },
+    "directories" : {
+      "desc" : "A JSON object containing known logDirectories/dataDirectories/binaryDirectories/libraryDirectories/configurationDirectories arrays for the software.",
+      "type" : "string",
+      "required" : true
+    },
+    "commands" : {
+      "desc" : "A JSON object containing commands and their regular expression format matching rules",
+      "type" : "string",
+      "required" : true
+    }
+  }
+}, {
   "name" : "IpAddress",
   "desc" : "An IP address (address only, can be assigned to a network interface).",
   "uuid" : "299001a6-1091-4c0d-87be-c512af03e179",
@@ -101,127 +134,6 @@
       "required" : true
     }
   }
-}, {
-  "name" : "Map",
-  "desc" : "A configuration object that maps keys to multi-valued attributes in the JSON format.",
-  "uuid" : "c970f6d3-4898-4596-bfac-9d6d1f6b2541",
-  "glyphId" : 125,
-  "isa" : "3f4a43f7-b558-4bf0-ba7e-66b99cffaf16",
-  "descriptors" : {
-    "map" : {
-      "desc" : "JSON string containing the Map.",
-      "type" : "string",
-      "required" : true
-    }
-  }
-}, {
-  "name" : "DirectoryMap",
-  "desc" : "A generic map of possible directories this software has. Key: os-shortname, Values: list of directories, Format: JSON.",
-  "uuid" : "64d50e90-8be2-4d97-9dba-dd8518eb3f84",
-  "glyphId" : 0,
-  "isa" : "c970f6d3-4898-4596-bfac-9d6d1f6b2541"
-}, {
-  "name" : "PrefixDirectoryMap",
-  "desc" : "A map of possible/known prefix directories for this software. Key: os-shortname, Values: list of directory prefixes, Format: JSON.",
-  "uuid" : "d47e9ecd-d735-49a0-8d94-c4cb948ea226",
-  "glyphId" : 0,
-  "isa" : "64d50e90-8be2-4d97-9dba-dd8518eb3f84"
-}, {
-  "name" : "ConfigDirectoryMap",
-  "desc" : "A map of possible/known configuration directories for this software. Key: os-shortname, Values: list of config directories, Format: JSON.",
-  "uuid" : "fb83aefa-ec5e-4ad9-a807-4a37ffaa404b",
-  "glyphId" : 0,
-  "isa" : "64d50e90-8be2-4d97-9dba-dd8518eb3f84"
-}, {
-  "name" : "BinaryDirectoryMap",
-  "desc" : "A map of possible/known binary executable directories for this software. Key: os-shortname, Values: list of binary directories, Format: JSON.",
-  "uuid" : "33e5e211-88db-4a78-95cd-2f2a3cd9e297",
-  "glyphId" : 0,
-  "isa" : "64d50e90-8be2-4d97-9dba-dd8518eb3f84"
-}, {
-  "name" : "LibraryDirectoryMap",
-  "desc" : "A map of possible/known dynamic link library directories for this software. Key: os-shortname, Values: list of library directories, Format: JSON.",
-  "uuid" : "8ccf2b1c-3650-408f-8560-4ab9f3a57bbe",
-  "glyphId" : 0,
-  "isa" : "64d50e90-8be2-4d97-9dba-dd8518eb3f84"
-}, {
-  "name" : "DataDirectoryMap",
-  "desc" : "A map of possible/known data directories for this software. Key: os-shortname, Values: list of data directories, Format: JSON.",
-  "uuid" : "07aaa5dd-a747-4474-850d-01ad00a2f533",
-  "glyphId" : 0,
-  "isa" : "64d50e90-8be2-4d97-9dba-dd8518eb3f84"
-}, {
-  "name" : "LogDirectoryMap",
-  "desc" : "A map of possible/known log directories for this software. Key: os-shortname, Values: list of log directories, Format: JSON.",
-  "uuid" : "f8a9ce96-2a50-4a80-8deb-ec6fb294638e",
-  "glyphId" : 0,
-  "isa" : "64d50e90-8be2-4d97-9dba-dd8518eb3f84"
-}, {
-  "name" : "FileMap",
-  "desc" : "A generic map of possible/known files this software has. Key: os-shortname, Values: list of files, Format: JSON.",
-  "uuid" : "35407e44-ec50-4d66-83f9-dacf1f1b49dd",
-  "glyphId" : 0,
-  "isa" : "c970f6d3-4898-4596-bfac-9d6d1f6b2541"
-}, {
-  "name" : "ConfigFileMap",
-  "desc" : "A map of possible/known configuration files for this software, non-full path, checked within ConfigDirectoryMap entries.",
-  "uuid" : "a6125034-55e0-4604-bf21-407837d0b419",
-  "glyphId" : 0,
-  "isa" : "35407e44-ec50-4d66-83f9-dacf1f1b49dd"
-}, {
-  "name" : "BinaryFileMap",
-  "desc" : "A map of possible/known binary executable files for this software, non-full path, checked within BinaryDirectoryMap entries.",
-  "uuid" : "5ffab714-fa0e-416c-a237-9b023fe27bd7",
-  "glyphId" : 0,
-  "isa" : "35407e44-ec50-4d66-83f9-dacf1f1b49dd"
-}, {
-  "name" : "LibraryFileMap",
-  "desc" : "A map of possible/known dynamic link library files for this software, non-full path, checked within LibraryDirectoryMap entries.",
-  "uuid" : "99a6e35b-912e-41f1-b404-d24299e51fb2",
-  "glyphId" : 0,
-  "isa" : "35407e44-ec50-4d66-83f9-dacf1f1b49dd"
-}, {
-  "name" : "DataFileMap",
-  "desc" : "A map of possible/known data files for this software, non-full path, checked within DataDirectoryMap entries.",
-  "uuid" : "b19412ae-dffe-4fe8-9f00-3207ab686fb4",
-  "glyphId" : 0,
-  "isa" : "35407e44-ec50-4d66-83f9-dacf1f1b49dd"
-}, {
-  "name" : "LogFileMap",
-  "desc" : "A map of possible/known log files for this software, non-full path, checked within LogDirectoryMap entries.",
-  "uuid" : "ac583c10-f77c-4d40-84eb-4ffed77c79e0",
-  "glyphId" : 0,
-  "isa" : "35407e44-ec50-4d66-83f9-dacf1f1b49dd"
-}, {
-  "name" : "NameMap",
-  "desc" : "A generic map of possible/known names this software has. Key: os-shortname, Values: list of names, Format: JSON.",
-  "uuid" : "14372d63-a428-46b9-8359-9982ef22cfce",
-  "glyphId" : 0,
-  "isa" : "c970f6d3-4898-4596-bfac-9d6d1f6b2541"
-}, {
-  "name" : "PackageNameMap",
-  "desc" : "A generic map of possible/known package names this software has. Key: os-shortname, Values: list of names, Format: JSON.",
-  "uuid" : "1d691f61-3c9f-46ad-b98b-b968352d59b3",
-  "glyphId" : 0,
-  "isa" : "14372d63-a428-46b9-8359-9982ef22cfce"
-}, {
-  "name" : "ServiceNameMap",
-  "desc" : "A generic map of possible/known service names this software has. Key: os-shortname, Values: list of names, Format: JSON.",
-  "uuid" : "ead61277-e797-406b-96e1-95c155655fac",
-  "glyphId" : 0,
-  "isa" : "14372d63-a428-46b9-8359-9982ef22cfce"
-}, {
-  "name" : "StringMap",
-  "desc" : "A generic map of possible/known strings this software has. Key: *, Values: string pattern, Format: JSON.",
-  "uuid" : "0d554a04-67d6-428f-8e6f-6cdcdaca39cb",
-  "glyphId" : 0,
-  "isa" : "c970f6d3-4898-4596-bfac-9d6d1f6b2541"
-}, {
-  "name" : "VersionStringMap",
-  "desc" : "A map of possible/known version strings this software has. Key: *, Values: version string pattern, Format: JSON.",
-  "uuid" : "1c1af482-f0e0-45f1-9aa1-f7702040067d",
-  "glyphId" : 0,
-  "isa" : "0d554a04-67d6-428f-8e6f-6cdcdaca39cb"
 }, {
   "name" : "Hardware",
   "desc" : "A hardware component.",

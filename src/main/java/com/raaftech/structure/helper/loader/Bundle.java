@@ -18,7 +18,7 @@ class Bundle {
     private List<String> instrumentPackage;
     private List<String> templatePackage;
     private List<String> metadataPackage;
-    private List<String> mapPackage;
+    private List<String> profilePackage;
     private List<String> artworkPackage;
     private List<String> documentationPackage;
 
@@ -94,12 +94,12 @@ class Bundle {
         return this;
     }
 
-    public List<String> getMapPackage() {
-        return mapPackage;
+    public List<String> getProfilePackage() {
+        return profilePackage;
     }
 
-    public Bundle setMapPackage(List<String> mapPackage) {
-        this.mapPackage = mapPackage;
+    public Bundle setProfilePackage(List<String> profilePackage) {
+        this.profilePackage = profilePackage;
         return this;
     }
 

@@ -5,7 +5,6 @@ import com.raaftech.structure.base.Context;
 import com.raaftech.structure.exceptions.ResultBuilderException;
 import com.raaftech.structure.graph.repositories.ResultRepository;
 import com.raaftech.structure.graph.repositories.TypeRepository;
-import com.sun.org.apache.regexp.internal.RE;
 import org.neo4j.graphdb.Direction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

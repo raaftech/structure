@@ -37,7 +37,7 @@
           "type": ["array", "string"],
           "items": { "type": "string" }
         },
-        "map": {
+        "profile": {
           "type": ["array", "string"],
           "items": { "type": "string" }
         },

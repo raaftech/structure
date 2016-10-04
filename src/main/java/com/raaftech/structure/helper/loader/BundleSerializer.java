@@ -31,7 +31,7 @@ class BundleSerializer extends StdSerializer<Bundle> {
         writePackageData(bundle.getInstrumentPackage(), "instrument");
         writePackageData(bundle.getTemplatePackage(), "template");
         writePackageData(bundle.getMetadataPackage(), "metadata");
-        writePackageData(bundle.getMapPackage(), "map");
+        writePackageData(bundle.getProfilePackage(), "profile");
         writePackageData(bundle.getArtworkPackage(), "artwork");
         writePackageData(bundle.getDocumentationPackage(), "documentation");
         jsonGenerator.writeEndObject();

@@ -1,16 +1,17 @@
 package com.raaftech.structure.base;
 
 import ch.qos.logback.classic.Level;
-import com.raaftech.structure.graph.*;
-import com.raaftech.structure.graph.repositories.InstanceRepository;
-import com.raaftech.structure.graph.repositories.InstrumentRepository;
-import com.raaftech.structure.graph.repositories.TemplateRepository;
-import com.raaftech.structure.graph.repositories.TypeRepository;
+import com.raaftech.structure.graph.Template;
+import com.raaftech.structure.graph.Type;
+import com.raaftech.structure.graph.repositories.*;
 import com.raaftech.structure.helper.loader.BundleLoader;
 import com.raaftech.structure.manager.TaskManager;
 import com.raaftech.structure.node.TemplateActor;
 import com.raaftech.structure.node.TypeActor;
-import com.raaftech.structure.repository.*;
+import com.raaftech.structure.repository.Instances;
+import com.raaftech.structure.repository.Nodes;
+import com.raaftech.structure.repository.Templates;
+import com.raaftech.structure.repository.Types;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
@@ -145,6 +146,7 @@ public class Application {
         final InstanceRepository instanceRepository = Context.getInstanceRepository();
         final InstrumentRepository instrumentRepository = Context.getInstrumentRepository();
         final TemplateRepository templateRepository = Context.getTemplateRepository();
+        final ProfileRepository profileRepository = Context.getProfileRepository();
 
         // Setup vertx with a maxWorkerExecuteTime of 5 minutes.
         final String workerTimeoutConfiguration = getConfiguration("workertimeout");
@@ -191,6 +193,10 @@ public class Application {
         log.info("Purging instruments.");
         instrumentRepository.purgeControllers();
         Context.setInstrumentsLoaded(false);
+
+        // Purge all profiles
+        log.info("Purging profiles.");
+        profileRepository.purgeProfiles();
 
         final String propertyFile = "config.properties";
         final String bundlePathProperty = "bundlePath";

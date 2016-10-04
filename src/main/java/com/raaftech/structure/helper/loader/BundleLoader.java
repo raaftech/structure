@@ -5,13 +5,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.raaftech.structure.base.Configuration;
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.exceptions.JsonLoadException;
-import com.raaftech.structure.exceptions.PackageNotFoundException;
 import com.raaftech.structure.helper.JsonHelper;
 import org.neo4j.graphdb.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -57,7 +55,7 @@ public class BundleLoader {
             loadPackage(bundle.getInstrumentPackage(), new InstrumentLoader());
             loadPackage(bundle.getTemplatePackage(), new TemplateLoader());
             loadPackage(bundle.getMetadataPackage(), new MetadataLoader());
-            loadPackage(bundle.getMapPackage(), new MapLoader());
+            loadPackage(bundle.getProfilePackage(), new ProfileLoader());
             loadPackage(bundle.getArtworkPackage(), new ArtworkLoader());
             loadPackage(bundle.getDocumentationPackage(), new DocumentationLoader());
             tx.success();
