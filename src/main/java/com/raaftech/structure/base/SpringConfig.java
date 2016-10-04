@@ -51,7 +51,7 @@ public class SpringConfig extends Neo4jConfiguration {
 
         GraphDatabaseBuilder graphDatabaseBuilder = new GraphDatabaseFactory().newEmbeddedDatabaseBuilder("structure.db");
         GraphDatabaseService graphDatabaseService;
-        if (Boolean.parseBoolean(System.getProperty("unsafeMode"))) {
+        if (com.raaftech.structure.base.Configuration.isUnsafeModeOn()) {
             log.info("Unsafe mode: Enabling graph database remote shell");
         	graphDatabaseBuilder.setConfig("remote_shell_enabled", "true");
 
