@@ -41,7 +41,7 @@ public class InstrumentManager extends GenericActor {
 
     private void purgeInstruments() {
         log.info("Purging instruments.");
-        instrumentRepository.purgeControllers();
+        instrumentRepository.purgeInstruments();
         Context.setInstrumentsLoaded(false);
     }
 

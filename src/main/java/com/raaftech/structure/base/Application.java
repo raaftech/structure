@@ -189,12 +189,12 @@ public class Application {
         queryExecutor.query("CREATE CONSTRAINT ON (n:Type) ASSERT n.name IS UNIQUE", null, null);
         queryExecutor.query("CREATE CONSTRAINT ON (n:Node) ASSERT n.uuid IS UNIQUE", null, null);
 
-        // Purge all instruments
+        // Purge all instruments. When new checksum based create/read/update/delete loader is finished, this will be unneccessary. 
         log.info("Purging instruments.");
-        instrumentRepository.purgeControllers();
+        instrumentRepository.purgeInstruments();
         Context.setInstrumentsLoaded(false);
 
-        // Purge all profiles
+        // Purge all profiles. When new checksum based create/read/update/delete loader is finished, this will be unneccessary.
         log.info("Purging profiles.");
         profileRepository.purgeProfiles();
 

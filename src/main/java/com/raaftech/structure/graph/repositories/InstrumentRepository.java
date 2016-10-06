@@ -68,7 +68,7 @@ public interface InstrumentRepository extends GenericRepository<Instrument> {
     @Query ("MATCH (n:Instrument) " +
             "OPTIONAL MATCH (n)<-[r]->(m) " +
             "DELETE r, n")
-    void purgeControllers();
+    void purgeInstruments();
 
     // This query checks if we can execute something about a patient, on the structure node.
     // A good example would be a ping check. Structure needs a particular tool (ping), that can do something (ICMP echo request)

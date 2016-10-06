@@ -220,7 +220,7 @@ public class InstrumentRepositoryTest {
         long nonInstrumentCount = nodeCount - instrumentCount;
 
         // purge
-        instrumentRepository.purgeControllers();
+        instrumentRepository.purgeInstruments();
         assertEquals(0, StreamSupport.stream(instrumentRepository.findAll().spliterator(), false).count());
         nodeCount = StreamSupport.stream(nodeRepository.findAll().spliterator(), false).count();
 
