@@ -6,7 +6,7 @@ angular.module("structureApp")
 
         $scope.sendMessage = function() {
             var json = JSON.parse($scope.message.unmarshalledText);
-            vertxEventBusService.send($scope.message.address, json, 5000)
+            vertxEventBusService.send($scope.message.address, json)
                 .then(function(reply) {
                     console.log(reply);
                 });
