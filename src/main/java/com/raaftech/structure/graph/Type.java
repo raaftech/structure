@@ -78,6 +78,13 @@ public class Type extends Node {
         initSchema();
     }
 
+    public Type(String name, String desc, int glyphId, String checksum) {
+        super(name, desc);
+        this.glyphId = glyphId;
+        this.checksum = checksum;
+        initSchema();
+    }
+
     public Type(String name, String desc, String uuid) {
         super(name, desc, uuid);
         initSchema();
@@ -89,6 +96,14 @@ public class Type extends Node {
         initSchema();
     }
 
+    public Type(String name, String desc, String uuid, int glyphId, String checksum) {
+        super(name, desc, uuid, checksum);
+        this.glyphId = glyphId;
+        this.checksum = checksum;
+        initSchema();
+    }
+
+
     /*******************/
     /* Private Methods */
     /*******************/
@@ -98,6 +113,7 @@ public class Type extends Node {
         schema.setAdditionalProperties(false);
         schema.addProperty("name", "string", true, "The name of this node.");
         schema.addProperty("desc", "string", true, "The description of this node.");
+        schema.addProperty("checksum", "string", false, "The checksum of this node.");
     }
 
     /******************/
@@ -338,6 +354,7 @@ public class Type extends Node {
             json.put("isa", getIsa().getUuid());
         }
         json.put("desc", getDesc());
+        json.put("checksum", getChecksum());
         try {
             if (getSchema() != null) {
                 json.set("schema", getSchema().getAsObjectNode());

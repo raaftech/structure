@@ -23,6 +23,8 @@ public abstract class Node {
     protected String name;
     @Indexed(indexType = IndexType.FULLTEXT, indexName = "description")
     protected String desc;
+
+    protected String checksum;
     @GraphId
     @SuppressWarnings("unused")
     private Long id;
@@ -37,6 +39,10 @@ public abstract class Node {
         this.uuid = UUID.randomUUID().toString();
     }
 
+    public Node(String name, String desc) {
+        this(name, desc, UUID.randomUUID().toString());
+    }
+
     @SuppressWarnings("unused")
     public Node(String name, String desc, String uuid) {
         UUID check = UUID.fromString(uuid); // throws exception on invalid uuid
@@ -48,9 +54,18 @@ public abstract class Node {
         this.uuid = uuid;
     }
 
-    public Node(String name, String desc) {
-        this(name, desc, UUID.randomUUID().toString());
+    @SuppressWarnings("unused")
+    public Node(String name, String desc, String uuid, String checksum) {
+        UUID check = UUID.fromString(uuid); // throws exception on invalid uuid
+        if (name.length() == 0 || desc.length() == 0) {
+            throw new RuntimeException("Cannot create node with an empty name or description.");
+        }
+        this.name = name;
+        this.desc = desc;
+        this.uuid = uuid;
+        this.checksum = checksum;
     }
+
 
     /******************/
     /* Public Methods */
@@ -76,12 +91,17 @@ public abstract class Node {
         return uuid;
     }
 
+    public String getChecksum() {
+        return checksum;
+    }
+
     public ObjectNode toJson() {
         ObjectNode json = mapper.createObjectNode();
         json
                 .put("name", name)
                 .put("desc", desc)
-                .put("uuid", uuid);
+                .put("uuid", uuid)
+                .put("checksum", checksum);
 
         return json;
     }

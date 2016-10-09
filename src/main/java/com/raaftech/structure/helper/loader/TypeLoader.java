@@ -30,6 +30,7 @@ class TypeLoader implements PackageLoader {
 
     private static final String NAME = "name";
     private static final String UUID = "uuid";
+    private static final String CHECKSUM = "checksum";
     private static final String ISA = "isa";
     private static final String GLYPHID = "glyphId";
     private static final String IMPLEMENTS = "implements";
@@ -128,13 +129,14 @@ class TypeLoader implements PackageLoader {
         final String name = data.get(NAME).asText();
         final String desc = data.get(DESC).asText();
         final String uuid = data.has(UUID) ? data.get(UUID).asText() : null;
+        final String checksum = data.has(CHECKSUM) ? data.get(CHECKSUM).asText() : null;
         final String isa = data.has(ISA) ? data.get(ISA).asText() : null;
         final int glyphId = data.has(GLYPHID) ? data.get(GLYPHID).asInt() : 0;
 
         if (uuid == null) {
-            deserializedType = new Type(name, desc, glyphId);
+            deserializedType = new Type(name, desc, glyphId, checksum);
         } else {
-            deserializedType = new Type(name, desc, uuid, glyphId);
+            deserializedType = new Type(name, desc, uuid, glyphId, checksum);
         }
 
         if (isa != null) {
