@@ -112,6 +112,10 @@ public class Application {
                         break;
                 }
             }
+            else{
+                log.info("No loglevel specified defaulting to INFO...");
+                root.setLevel(Level.INFO);
+            }
 
             // TRACING mode
             if(line.hasOption("trace")) {
