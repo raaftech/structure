@@ -41,7 +41,7 @@ public class ResultTest {
     @Before
     public void setUpDatabase() throws Exception {
         if (!databaseCreated) {
-            final String raafBundle = new File("bundles/raaf/bundle.json").getAbsolutePath();
+            final String raafBundle = new File("bundles/core/bundle.json").getAbsolutePath();
             new BundleLoader(Paths.get(raafBundle)).load();
             databaseCreated = true;
         }

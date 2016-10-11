@@ -1,0 +1,1 @@
+launchctl unload {{ origin.shortName }} 

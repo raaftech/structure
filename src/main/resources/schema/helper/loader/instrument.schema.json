@@ -18,9 +18,12 @@
     },
     "instrumentType": {
       "type": "string",
-      "pattern": "^runner|marker|parser$"
+      "pattern": "^controller|marker|parser$"
     },
     "resultParser": {
+      "type": "string"
+    },
+    "templateFile": {
       "type": "string"
     },
     "capability": {

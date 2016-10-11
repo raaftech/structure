@@ -1,0 +1,9 @@
+{
+  "name": "SshServerReceiveString",
+  "desc": "A marker handler that marks SshServer with ReceiveString.",
+  "instrumentType": "marker",
+  "capability": "ReceiveString",
+  "providedBy": "SshServer",
+  "appliesTo": [ "SshServer" ],
+  "subjectIsLocal": true
+}

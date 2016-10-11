@@ -1,0 +1,21 @@
+{
+  "name": "DosScriptable",
+  "desc": "DosScriptable",
+  "instrumentType": "controller",
+  "capability": "Invoke",
+  "extension": ".bat",
+  "providedBy": "DosShell",
+  "appliesTo": [ "DosShell" ],
+  "templateFile": "dosscriptable.hbs.bat",
+  "subjectIsLocal": true,
+  "arguments": {
+    "script": {
+      "value": {
+	"from": "static",
+	"type": "string"
+      },
+      "canBeUserSupplied": false,
+      "isOptional": false
+    }
+  }
+}

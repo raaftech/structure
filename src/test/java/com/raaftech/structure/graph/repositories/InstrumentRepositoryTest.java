@@ -48,7 +48,7 @@ public class InstrumentRepositoryTest {
     @Before
     public void setUpDatabase() throws Exception {
         if (!databaseCreated) {
-            final String raafBundle = new File("bundles/raaf/bundle.json").getAbsolutePath();
+            final String raafBundle = new File("bundles/core/bundle.json").getAbsolutePath();
             new BundleLoader(Paths.get(raafBundle)).load();
             databaseCreated = true;
         }
@@ -232,15 +232,15 @@ public class InstrumentRepositoryTest {
     @Transactional
     @Rollback
     public void validateNonLocalInstrument() throws Exception {
-        Set<Type> handles = new HashSet<>();
-        handles.add(typeRepository.findOneByName("SshServer"));
+        Set<Type> appliesTo = new HashSet<>();
+        appliesTo.add(typeRepository.findOneByName("SshServer"));
         Controller nonLocal = new Controller.Builder()
                 .subjectIsLocal(false)
                 .name("nonlocal")
                 .desc("nonlocal test instrument")
                 .capability("State")
                 .filePath("/tmp/foo")
-                .handles(handles)
+                .handles(appliesTo)
                 .providedBy(typeRepository.findOneByName("OpenSshClient"))
                 .template("")
                 .build();
@@ -312,15 +312,15 @@ public class InstrumentRepositoryTest {
         assertEquals(0, controllers.stream().count());
 
         // create a controller which has subjectIsLocal set to false, then check again
-        Set<Type> handles = new HashSet<>();
-        handles.add(typeRepository.findOneByName("SshServer"));
+        Set<Type> appliesTo = new HashSet<>();
+        appliesTo.add(typeRepository.findOneByName("SshServer"));
         Controller nonLocal = new Controller.Builder()
                 .subjectIsLocal(false)
                 .name("nonlocal")
                 .desc("nonlocal test instrument")
                 .capability("State")
                 .filePath("/tmp/foo")
-                .handles(handles)
+                .handles(appliesTo)
                 .providedBy(typeRepository.findOneByName("OpenSshClient"))
                 .template("")
                 .build();

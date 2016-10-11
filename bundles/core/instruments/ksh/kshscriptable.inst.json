@@ -1,0 +1,24 @@
+{
+  "name": "KshScriptable",
+  "desc": "KshScriptable",
+  "instrumentType": "controller",
+  "capability": "Invoke",
+  "extension": ".sh",
+  "providedBy": "Ksh",
+  "appliesTo": [ "Ksh" ],
+  "templateFile": "kshscriptable.hbs.sh",
+  "subjectIsLocal": true,
+  "arguments": {
+    "script": {
+      "value": {
+	"from": "static",
+	"type": "string",
+	"strategy": "mustBeOne"
+      },
+      "canBeUserSupplied": false,
+      "isOptional": false
+    }
+  }
+}
+
+}}

@@ -1,0 +1,21 @@
+{
+	"organizationId": "com.raaftech",
+	"name": "core",
+	"version": 1,
+	"packages": {
+		"type": [
+			"types/base.type.json",
+			"types/client.type.json",
+			"types/cloud.type.json",
+			"types/emulator.type.json",
+			"types/hypervisor.type.json",
+			"types/interpreter.type.json",
+			"types/operatingsystem.type.json",
+			"types/packagemanager.type.json",
+			"types/server.type.json",
+			"types/servicemanager.type.json"
+		],
+		"instrument": "instruments/**/*.inst.json",
+		"template": "templates/*.tmpl.json"
+	}
+}

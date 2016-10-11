@@ -14,15 +14,19 @@ import com.raaftech.structure.graph.Marker;
 import com.raaftech.structure.graph.Type;
 import com.raaftech.structure.graph.repositories.TypeRepository;
 import com.raaftech.structure.helper.JsonHelper;
+
+import org.apache.commons.io.FileUtils;
 import org.neo4j.graphdb.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -43,10 +47,6 @@ public class InstrumentLoader implements PackageLoader {
     private final ObjectMapper mapper = new ObjectMapper();
     private final TypeRepository typeRepository = Context.getTypeRepository();
 
-    // Preamble stop and start match mustache multiline comments.
-    // We need these to extract the JSON contained in this comment.
-    private final String preambleStart = "{{!";
-    private final String preambleStop = "}}";
     // Our schema to validate the provided JSON of a template.
     private final String instrumentSchemaPath = "schema/helper/loader/instrument.schema.json";
 
@@ -69,7 +69,7 @@ public class InstrumentLoader implements PackageLoader {
         }
 
         log.info("Loading defined instruments.");
-        readFile(filePath);
+        parseFile(filePath);
     }
 
     /*******************/
@@ -97,120 +97,89 @@ public class InstrumentLoader implements PackageLoader {
     // parsePreamble is passed the content of a instrument/template and extracts the first
     // multi-line comment's contents. The comment is expected to start on the first line as preambleStart and
     // ends on the first found preambleStop.
-    private void parsePreamble(String filePath, ArrayList<String> template) {
-        log.debug("Parsing " + filePath + ".");
-        // We expect at least one line.
-        if (template.size() < 1) {
-            log.error("File " + filePath + " couldn't be parsed.");
-            return;
-        }
+    private void parseFile(Path filePath) {
+        log.debug("Parsing " + filePath.toString() + ".");
 
-        // Check if the first line contains our preamble's starting sequence.
-        String line = template.get(0);
-        if (!line.startsWith(preambleStart)) {
-            log.error("Template missing preamble, can't instantiate Instrument.");
-            return;
-        }
-
-        // Find the line number of the first character sequence matching our preamble's stop sequence.
-        String closingMustache = template.stream()
-                .filter(s -> s.contains(preambleStop))
-                .limit(1)
-                .collect(Collectors.toList()).get(0);
-        int indexClosingMustache = template.indexOf(closingMustache);
-
-        if (indexClosingMustache == -1) {
-            log.error("Couldn't find end of the preamble in " + filePath + ".");
-            return;
-        }
-
-        // Build a new string of everything contained in the preamble.
-        StringBuilder stringBuilder = new StringBuilder();
-        IntStream.range(0, indexClosingMustache+1)
-                .forEach(i -> {
-                    String s = template.get(i);
-                    s = s.replace(preambleStart, "");
-                    s = s.replace(preambleStop, "");
-                    stringBuilder.append(s);
-                });
-        String preamble = stringBuilder.toString();
-
-        stringBuilder.delete(0, stringBuilder.length());
-        IntStream.range(indexClosingMustache+1, template.size())
-                .mapToObj(template::get)
-                .map(l-> l.concat(System.getProperty("line.separator")))
-                .forEach(stringBuilder::append);
-
-        String handlebarsTemplate = stringBuilder.toString().trim();
-
-        // Is the preamble valid?
         try {
-            JsonNode preambleJson = mapper.readTree(preamble);
+            JsonNode instrumentJson = mapper.readTree(filePath.toFile());
             ObjectNode instrumentSchema = (ObjectNode) JsonHelper.jsonFromResource(instrumentSchemaPath);
-            log.debug("Validating preamble using schema: " + instrumentSchemaPath);
-            if (JsonHelper.validateToSchema(instrumentSchema, preambleJson)) {
-                log.debug("Preamble valid. Continuing creation of instruments..");
+            log.debug("Validating instrument using schema: " + instrumentSchemaPath);
+            if (JsonHelper.validateToSchema(instrumentSchema, instrumentJson)) {
+                log.debug("Instrument valid. Continuing..");
 
-                Instrument resultingInstrument;
-                String type = preambleJson.get("instrumentType").asText();
-                String capability = preambleJson.get("capability").asText();
-                String uuid = preambleJson.has("uuid") ? preambleJson.get("uuid").asText() : null;
-                String name = preambleJson.get("name").asText();
-                String desc = preambleJson.get("desc").asText();
-                if ("runner".equals(type)) {
-                    // Required fields
-                    // What kind of capability does this instrument provide?
-                    Boolean subjectIsLocal = preambleJson.get("subjectIsLocal").asBoolean();
-                    // What Type is providing this instrument?
-                    String providedByType = preambleJson.get("providedBy").asText();
+                Instrument newInstrument;
+                String type = instrumentJson.get("instrumentType").asText();
+                String uuid = instrumentJson.has("uuid") ? instrumentJson.get("uuid").asText() : null;
+                String name = instrumentJson.get("name").asText();
+                String desc = instrumentJson.get("desc").asText();
+                
+                // What Capability does this instrument give?
+                String capability = instrumentJson.get("capability").asText();   
+                
+                if ("controller".equals(type)) {
+               	    // What Type is providing this instrument?
+                    String providedByType = instrumentJson.get("providedBy").asText();
 
+                    // What Type(s) does this instrument apply to?
+                    ArrayNode appliesJson = (ArrayNode) instrumentJson.get("appliesTo");
+                    Stream<JsonNode> appliesStream = StreamSupport.stream(appliesJson.spliterator(), false);
+                    Set<Type> appliesTypes = appliesStream
+                        .map(JsonNode::asText)
+                        .peek(t -> log.trace("Looking for type \"" + t + "\"."))
+                        .map(typeRepository::findOneByName)
+                        .peek(associationNode -> {
+                            if (associationNode == null) {
+                                throw new RuntimeException("Couldn't find associated Type.");
+                            }
+                        })
+                        .collect(Collectors.toSet());             	
+                    
+                    // Is where the code runs equal to what the output data is about?
+                    Boolean subjectIsLocal = instrumentJson.get("subjectIsLocal").asBoolean();
+                    
+//                  //The handlebars template.
+                    File hbsFile = Paths.get(filePath.normalize().getParent().toString() + File.separator + instrumentJson.get("templateFile").asText()).toFile();
+                    String handlebarsTemplate = FileUtils.readFileToString(hbsFile, "UTF-8");
+                  
+                    log.debug("Got associated handlebars template data from " + hbsFile.getName());
+                   
                     Controller.Builder builder = new Controller.Builder()
-                            .name(name)
+                    		.filePath(filePath.toString())
+                    		.name(name)
                             .desc(desc)
-                            .filePath(filePath)
-                            .capability(capability)
                             .providedBy(providedByType)
+                            .handles(appliesTypes) 
+                            .capability(capability)
                             .subjectIsLocal(subjectIsLocal)
                             .template(handlebarsTemplate);
-
+                    		
                     if (uuid != null) {
                         builder.uuid(uuid);
                     }
 
-                    // What does this instrument apply to?
-                    ArrayNode appliesJson = (ArrayNode) preambleJson.get("appliesTo");
-                    Stream<JsonNode> appliesStream = StreamSupport.stream(appliesJson.spliterator(), false);
-                    Set<Type> appliesTypes = appliesStream
-                            .map(JsonNode::asText)
-                            .peek(t -> log.trace("Looking for type \"" + t + "\"."))
-                            .map(typeRepository::findOneByName)
-                            .peek(associationNode -> {
-                                if (associationNode == null) {
-                                    throw new RuntimeException("Couldn't find associated Type.");
-                                }
-                            })
-                            .collect(Collectors.toSet());
-                    builder.handles(appliesTypes);
-
                     // Optional fields
-                    if (preambleJson.has("weight")) {
-                        builder.weight(preambleJson.get("weight").asInt());
+                    if (instrumentJson.has("weight")) {
+                        builder.weight(instrumentJson.get("weight").asInt());
                     }
-                    if (preambleJson.has("extension")) {
-                        builder.extension(preambleJson.get("extension").asText());
+                    if (instrumentJson.has("extension")) {
+                        builder.extension(instrumentJson.get("extension").asText());
                     }
-                    if (preambleJson.has("resultParser")) {
+                    if (instrumentJson.has("resultParser")) {
                         //TODO: implement
                     }
-                    if (preambleJson.has("arguments")) {
+                    if (instrumentJson.has("arguments")) {
                         builder.arguments(mapper.writerWithDefaultPrettyPrinter()
-                                .writeValueAsString(preambleJson.get("arguments")));
+                                .writeValueAsString(instrumentJson.get("arguments")));
                     }
 
-                    resultingInstrument = builder.build();
+                    newInstrument = builder.build();
+                
                 } else if ("marker".equals(type)) {
-                    // What does this instrument apply to?
-                    ArrayNode appliesJson = (ArrayNode) preambleJson.get("appliesTo");
+                	 // What Type is providing this instrument?
+                    String providedByType = instrumentJson.get("providedBy").asText();
+            
+                    // What Type(s) does this instrument apply to?
+                	ArrayNode appliesJson = (ArrayNode) instrumentJson.get("appliesTo");
                     Stream<JsonNode> appliesStream = StreamSupport.stream(appliesJson.spliterator(), false);
                     Set<Type> appliesTypes = appliesStream
                             .map(JsonNode::asText)
@@ -222,49 +191,37 @@ public class InstrumentLoader implements PackageLoader {
                                 }
                             })
                             .collect(Collectors.toSet());
-                    // What Type is providing this instrument?
-                    String providedByType = preambleJson.get("providedBy").asText();
-
-                    resultingInstrument = new Marker.Builder()
+                    
+                   
+                    newInstrument = new Marker.Builder()
                             .name(name)
                             .desc(desc)
-                            .filePath(filePath)
+                            .filePath(filePath.toString())
                             .capability(capability)
                             .appliesTo(appliesTypes)
                             .providedBy(providedByType)
                             .build();
-                } else { // if ("parser".equals(type)) <-- only other possibility because schema
-                    // TODO: implement
-                    resultingInstrument = null;
+                
+                } else if ("parser".equals(type)) {
+                	// TODO: implement parser instrument.
+                	log.error("Parser type instruments not implemented yet");
+                	newInstrument = null;
+
+                } else { 
+                    // Should not be able to reach this.
+                	log.error("This should be impossible. type is: " + type);
+                	newInstrument = null;
                 }
+                
                 // Create the instrument
-                createInstrumentNode(resultingInstrument);
+                createInstrumentNode(newInstrument);
+            
             } else {
-                log.error("Preamble of \"" + filePath + "\" didn't validate against instrument schema.");
-                throw new JsonValidationException("Preamble of \"" + filePath + "\" didn't validate against "
+                log.error("JSON in \"" + filePath + "\" didn't validate against instrument schema.");
+                throw new JsonValidationException("JSON in \"" + filePath + "\" didn't validate against "
                         + "instrument schema");
             }
         } catch (IOException e) {
-            if (Configuration.isTraceModeOn()) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    // This method is called for a found template. It reads its contents to an ArrayList<String>
-    // and passes that to our parse function.
-    private void readFile(Path filePath) {
-        log.debug("Reading contents of file " + filePath.toString() + ".");
-        Charset charset = Charset.forName("UTF-8");
-        try (BufferedReader reader = Files.newBufferedReader(filePath, charset)) {
-            ArrayList<String> contents = new ArrayList<>();
-            String line;
-            while ((line = reader.readLine()) != null) {
-                contents.add(line);
-            }
-            parsePreamble(filePath.toString(), contents);
-        } catch (IOException e) {
-            log.error("Error while reading instrument template " + filePath.toString());
             if (Configuration.isTraceModeOn()) {
                 e.printStackTrace();
             }
