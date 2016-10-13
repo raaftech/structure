@@ -1,4 +1,4 @@
-angular.module("structureApp", ["knalli.angular-vertxbus", "schemaForm", "ngRoute", "ui.bootstrap"])
+angular.module("structureApp", ["knalli.angular-vertxbus", "schemaForm", "ngRoute", "ui.bootstrap", "hSweetAlert"])
     .config(function(vertxEventBusProvider, $routeProvider) {
 
         var locationArr = window.location.href.split("/")

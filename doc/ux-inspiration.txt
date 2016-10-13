@@ -1,0 +1,9 @@
+# d3.js tips and tricks
+http://www.d3noob.org/2014/01/tree-diagrams-in-d3js_11.html
+http://blog.pixelingene.com/demos/d3_tree/
+
+# using bootstrap labels
+http://stackoverflow.com/questions/31969955/angularjs-using-ng-repeat-to-display-hierarchical-data
+
+# Popular blocks
+http://bl.ocks.org/

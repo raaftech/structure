@@ -10,4 +10,4 @@ id_rsa*
 .idea
 structure.iml
 generatedscripts/
-web/js/vendor/
+web/js/vendors/

@@ -3,49 +3,45 @@ angular.module("structureApp")
 
         return {
 
-            getType: function(scope, uuid) {
-                vertxEventBusService.send('com.raaftech.structure.repository.types',
+            getType: function(uuid) {
+                return vertxEventBusService.send("com.raaftech.structure.repository.types",
                     {
-                        'msgh': 'findOne',
-                        'args': {
-                            'node': uuid
+                        "msgh": "findOne",
+                        "args": {
+                            "node": uuid
                         }
                     })
-                    .then(function(reply) {
-                        scope.type = reply.result.data;
-                        // get the isa values
-                        vertxEventBusService.send('com.raaftech.structure.repository.types',
-                            {
-                                'msgh': 'findOne',
-                                'args': {
-                                    'node': scope.type.isa
-                                }
-                            })
-                            .then(function(reply) {
-                                scope.isa = reply.result.data;
+                    .then(function(response) {
+                        return response.result.data;
+                    });
+            },
+
+            getChildren: function(uuid) {
+                return vertxEventBusService.send("com.raaftech.structure.node.type." + uuid,
+                    {
+                        "msgh": "getSubtypes",
+                        "args": {}
+                    })
+                    .then(function(response) {
+                        return response.result.data;
+                    });
+            },
+
+            getIsaChildren: function(uuid) {
+                return vertxEventBusService.send("com.raaftech.structure.node.type." + uuid,
+                    {
+                        "msgh": "getSubtypes",
+                        "args": {}
+                    })
+                    .then(function(response) {
+                        var titleMap = [];
+                        angular.forEach(response.result.data, function(node) {
+                            titleMap.push({
+                                "value": node.uuid,
+                                "name": node.name
                             });
-                    });
-            },
-
-            getTypes: function(scope, uuid) {
-                vertxEventBusService.send('com.raaftech.structure.node.type.' + uuid,
-                    {
-                        'msgh': 'getSubtypes',
-                        'args': {}
-                    })
-                    .then(function(reply) {
-                        scope.types = reply.result.data;
-                    });
-            },
-
-            getSubtypes: function(scope, uuid) {
-                vertxEventBusService.send('com.raaftech.structure.node.type.' + uuid,
-                    {
-                        'msgh': 'getSubtypes',
-                        'args': {}
-                    })
-                    .then(function (reply) {
-                        scope.subtypes[uuid] = reply.result.data;
+                        });
+                        return titleMap;
                     });
             }
         }

@@ -7,31 +7,37 @@
     <title>Dashboard Template for Bootstrap</title>
 
     <!-- Bootstrap core CSS -->
-    <link href="js/vendor/bootstrap/dist/css/bootstrap.css" rel="stylesheet">
+    <link href="js/vendors/bootstrap/dist/css/bootstrap.css" rel="stylesheet">
+
+    <!-- Angular Sweetalert CSS -->
+    <link href="js/vendors/sweetalert/dist/sweetalert.css" rel="stylesheet">
 
     <!-- Custom styles for this template -->
     <link href="css/structure.css" rel="stylesheet">
 
-    <script type="text/javascript" src="js/vendor/sockjs-client/dist/sockjs.js"></script>
-    <script type="text/javascript" src="js/vendor/vertx3-eventbus-client/vertxbus.js"></script>
-    <script type="text/javascript" src="js/vendor/angular/angular.min.js"></script>
-    <script type="text/javascript" src="js/vendor/angular-route/angular-route.min.js"></script>
-    <script type="text/javascript" src="js/vendor/angular-bootstrap/ui-bootstrap.min.js"></script>
-    <script type="text/javascript" src="js/vendor/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>
-    <script type="text/javascript" src="js/vendor/angular-sanitize/angular-sanitize.min.js"></script>
-    <script type="text/javascript" src="js/vendor/tv4/tv4.js"></script>
-    <script type="text/javascript" src="js/vendor/objectpath/lib/ObjectPath.js"></script>
-    <script type="text/javascript" src="js/vendor/angular-schema-form/dist/schema-form.min.js"></script>
-    <script type="text/javascript" src="js/vendor/angular-schema-form/dist/bootstrap-decorator.min.js"></script>
-    <script type="text/javascript" src="js/vendor/angular-vertxbus/dist/angular-vertxbus.min.js"></script>
-    <script type="text/javascript" src="js/vendor/jquery/dist/jquery.min.js"></script>
-    <script type="text/javascript" src="js/vendor/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/vendors/sockjs-client/dist/sockjs.js"></script>
+    <script type="text/javascript" src="js/vendors/vertx3-eventbus-client/vertxbus.js"></script>
+    <script type="text/javascript" src="js/vendors/angular/angular.min.js"></script>
+    <script type="text/javascript" src="js/vendors/angular-route/angular-route.min.js"></script>
+    <script type="text/javascript" src="js/vendors/angular-bootstrap/ui-bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/vendors/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>
+    <script type="text/javascript" src="js/vendors/angular-sanitize/angular-sanitize.min.js"></script>
+    <script type="text/javascript" src="js/vendors/tv4/tv4.js"></script>
+    <script type="text/javascript" src="js/vendors/objectpath/lib/ObjectPath.js"></script>
+    <script type="text/javascript" src="js/vendors/angular-schema-form/dist/schema-form.min.js"></script>
+    <script type="text/javascript" src="js/vendors/angular-schema-form-bootstrap/bootstrap-decorator.js"></script>
+    <script type="text/javascript" src="js/vendors/angular-vertxbus/dist/angular-vertxbus.min.js"></script>
+    <script type="text/javascript" src="js/vendors/sweetalert/dist/sweetalert.min.js"></script>
+    <script type="text/javascript" src="js/vendors/angular-h-sweetalert/dist/ngSweetAlert.min.js"></script>
+    <script type="text/javascript" src="js/vendors/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="js/vendors/bootstrap/dist/js/bootstrap.min.js"></script>
 
     <script type="text/javascript" src="js/app.js"></script>
 
     <script src="js/controllers/typeControllers.js"></script>
     <script src="js/controllers/modalControllers.js"></script>
     <script src="js/controllers/modalInstanceControllers.js"></script>
+    <script src="js/controllers/modalTypeControllers.js"></script>
     <script src="js/controllers/searchController.js"></script>
     <script src="js/controllers/searchResultController.js"></script>
     <script src="js/controllers/templatesControllers.js"></script>
@@ -86,25 +92,26 @@
 
     <div class="container-fluid">
       <div class="row">
-        <div class="col-sm-3 col-md-2 sidebar">
-          <search-field></search-field>
-          <div ng-controller="navigationCtrl">
-            <ul class="nav nav-sidebar">
-              <li><a href="#">Overview <span class="sr-only">(current)</span></a></li>
-              <li><a href="">Computers</a></li>
-              <li><a href="">Analytics</a></li>
-              <li><a href="">Export</a></li>
-            </ul>
-            <ul class="nav nav-sidebar">
-              <li><a href="">Nav item</a></li>
-              <li><a href="">Nav item again</a></li>
-              <li><a href="">One more nav</a></li>
-              <li><a href="">Another nav item</a></li>
-              <li><a href="">More navigation</a></li>
-            </ul>
-          </div>
-        </div>
-        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+        <!--<div class="col-sm-3 col-md-2 sidebar">-->
+          <!--<search-field></search-field>-->
+          <!--<div ng-controller="navigationCtrl">-->
+            <!--<ul class="nav nav-sidebar">-->
+              <!--<li><a href="#">Overview <span class="sr-only">(current)</span></a></li>-->
+              <!--<li><a href="">Computers</a></li>-->
+              <!--<li><a href="">Analytics</a></li>-->
+              <!--<li><a href="">Export</a></li>-->
+            <!--</ul>-->
+            <!--<ul class="nav nav-sidebar">-->
+              <!--<li><a href="">Nav item</a></li>-->
+              <!--<li><a href="">Nav item again</a></li>-->
+              <!--<li><a href="">One more nav</a></li>-->
+              <!--<li><a href="">Another nav item</a></li>-->
+              <!--<li><a href="">More navigation</a></li>-->
+            <!--</ul>-->
+          <!--</div>-->
+        <!--</div>-->
+        <!--<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">-->
+        <div class="col-sm-12 main">
           <div ng-view></div>
         </div>
       </div>

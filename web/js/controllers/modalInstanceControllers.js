@@ -1,58 +1,21 @@
 angular.module("structureApp")
-    .controller("modalInstanceCtrl", function($scope, $uibModalInstance, uuid, vertxEventBus, vertxEventBusService) {
-
-        $scope.uuid = uuid;
-
-        $scope.getType = function(uuid) {
-            vertxEventBusService.send('com.raaftech.structure.repository.types',
-                {
-                    'msgh': 'findOne',
-                    'args': {
-                        'node': uuid
-                    }
-                })
-                .then(function(reply) {
-                    $scope.type = reply.result.data;
-
-                    $scope.schema = $scope.type.schema;
-                    $scope.form = [
-                        "*"
-                    ];
-                    $scope.model = {
-                        "node": uuid
-                    };
-                });
-        };
-
-        $scope.ok = function() {
-            $uibModalInstance.close();
-        };
+    .controller("modalInstanceCtrl", function($scope, $uibModalInstance, instanceSrvs) {
 
         $scope.cancel = function() {
-            $uibModalInstance.dismiss('cancel');
+            $uibModalInstance.dismiss("cancel");
         };
 
-        $scope.showFormValues = function() {
-            var formArgs = {};
-            for (var k in $scope.model){
-                if ($scope.model.hasOwnProperty(k)) {
-                    formArgs[k] = $scope.model[k];
+        $scope.showFormValues = function(formData) {
+            if(formData.$valid) {
+                var formArgs = {};
+                for(var k in $scope.model){
+                    if($scope.model.hasOwnProperty(k)) {
+                        formArgs[k] = $scope.model[k];
+                    }
                 }
-            }
-
-            vertxEventBusService.send('com.raaftech.structure.repository.instances',
-                {
-                    'msgh': 'putNode',
-                    'args': formArgs
-                })
-                .then(function(reply) {
-                    if(reply.result.error) {
-                        console.log(reply.result.error);
-                    }
-                    else {
-                        console.log(reply.result.data);
-                    }
-                    $scope.result = reply.result;
+                instanceSrvs.putNode(formArgs).then(function(response) {
+                    $scope.result = response.result;
                 });
+            }
         }
     });

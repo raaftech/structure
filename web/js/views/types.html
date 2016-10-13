@@ -1,4 +1,4 @@
-<div ng-controller="typeCtrl" ng-init="getType('a79ce509-a021-4177-ae61-73abd01fb479')">
+<div ng-controller="typeCtrl">
     <div ng-show="type.name" class="row detailed-info">
         <div class="basic">
             <div class="body">
@@ -6,8 +6,8 @@
                 <div class="text-block">
                     <h1>{{type.name}}</h1>
                     <p>{{type.desc}}</p>
-                    <p ng-controller="modalCtrl">
-                        <button type="button" class="btn button-str" ng-click="open(type.uuid)">Edit</button>
+                    <p>
+                        <button type="button" class="btn button-str" ng-click="editType(type.uuid)">Edit</button>
                         <button type="button" class="btn button-transparent">...</button>
                     </p>
                 </div>
@@ -23,24 +23,34 @@
             </ul>
         </div>
     </div>
-    <div ng-repeat="type in types | orderBy: 'name'">
-        <div class="table-responsive">
-            <table class="table list">
-                <thead>
-                    <tr ng-mouseenter="topMenuButton = true" ng-mouseleave="topMenuButton = false">
-                        <th class="col-xs-4"><span ng-class="{'open': (subtypes[type.uuid] && type.children != '[]'), 'closed': (!subtypes[type.uuid] && type.children != '[]')}" ng-click="getSubtypes(type)"></span><span ng-click="getType(type.uuid)"><show-icon glyphid="{{type.glyphId}}" size="sg-xs"></show-icon> {{type.name}}</span></th>
-                        <th class="col-xs-4">{{subtypes[type.uuid].length ? 'Description': '&nbsp;'}}</th>
-                        <th class="col-xs-4"><list-item-hover-menu ng-show="topMenuButton" uuid="{{type.uuid}}" node-type="{{type._nodeType}}"></list-item-hover-menu>{{subtypes[type.uuid].length ? 'UUID': '&nbsp;'}}</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr ng-repeat="subtype in subtypes[type.uuid] | orderBy: 'name'" ng-mouseenter="menuButton = true" ng-mouseleave="menuButton = false">
-                        <td ng-click="getType(subtype.uuid)"><show-icon glyphid="{{subtype.glyphId}}" size="sg-xs"></show-icon> {{subtype.name}}</td>
-                        <td ng-click="getType(subtype.uuid)">{{subtype.desc}}</td>
-                        <td ng-click="getType(subtype.uuid)"><list-item-hover-menu ng-show="menuButton" uuid="{{subtype.uuid}}" node-type="{{subtype._nodeType}}"></list-item-hover-menu>{{subtype.uuid}}</td>
-                    </tr>
-                </tbody>
-            </table>
+    <script type="text/ng-template" id="nodeTree">
+        <div class="row" ng-mouseenter="topMenuButton = true" ng-mouseleave="topMenuButton = false">
+            <div class="col-xs-4" ng-click="getType(node.uuid)">
+                <span ng-class="
+                          {
+                              'open': (node.children != [] && node.nodes.length > 0),
+                              'closed': (node.children != '[]' && (node.nodes.length == 0 || !node.nodes))
+                          }"
+                      ng-click="$event.stopPropagation(); getChildren(node)"></span>
+                <show-icon glyphid="{{node.glyphId}}" size="sg-xs"></show-icon>
+                {{node.name}}
+            </div>
+            <div class="col-xs-4 wrap-text" ng-click="getType(node.uuid)">{{node.desc}}</div>
+            <div class="col-xs-4 wrap-text" ng-click="getType(node.uuid)">{{node.uuid}}</div>
+            <list-item-hover-menu-types ng-show="topMenuButton" uuid="{{node.uuid}}"></list-item-hover-menu-types>
         </div>
-    </div>
+        <ul ng-if="node.nodes" class="list-group list" ng-show="node.nodes.length > 0">
+            <li ng-repeat="node in node.nodes | orderBy: 'name'" ng-include="'nodeTree'" class="list-group-item"></li>
+        </ul>
+    </script>
+    <ul class="list-group list">
+        <li class="list-group-item header">
+            <div class="row">
+                <div class="col-xs-4">Name</div>
+                <div class="col-xs-4">Description</div>
+                <div class="col-xs-4">UUID</div>
+            </div>
+        </li>
+        <li ng-repeat="node in nodes | orderBy: 'name'" ng-include="'nodeTree'" class="list-group-item"></li>
+    </ul>
 </div>

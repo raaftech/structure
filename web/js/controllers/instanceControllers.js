@@ -1,9 +1,10 @@
 angular.module("structureApp")
-    .controller("instanceCtrl", function($scope, vertxEventBus, vertxEventBusService, instanceSrvs) {
+    .controller("instanceCtrl", function($scope, instanceSrvs) {
 
         $scope.getNInstances = function(n) {
-            $scope.instances = '';
-            instanceSrvs.getNInstances($scope, n);
+            instanceSrvs.getNInstances(n).then(function(response) {
+                $scope.instances = response;
+            });
         };
 
         $scope.getInstance = function(uuid) {

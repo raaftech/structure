@@ -3,29 +3,39 @@ angular.module("structureApp")
 
         return {
 
-            getNInstances: function(scope, n) {
-                vertxEventBusService.send('com.raaftech.structure.repository.instances',
+            getNInstances: function(n) {
+                return vertxEventBusService.send("com.raaftech.structure.repository.instances",
                     {
-                        'msgh': 'nLastCreated',
-                        'args': {
-                            'amount': n
+                        "msgh": "nLastCreated",
+                        "args": {
+                            "amount": n
                         }
                     })
-                    .then(function(reply) {
-                        scope.instances = reply.result.data;
+                    .then(function(response) {
+                        return response.result.data;
                     });
             },
 
             getInstance: function(uuid) {
-                return vertxEventBusService.send('com.raaftech.structure.repository.instances', {
-                    'msgh': 'findOne',
-                    'args': {
-                        'node': uuid
+                return vertxEventBusService.send("com.raaftech.structure.repository.instances", {
+                    "msgh": "findOne",
+                    "args": {
+                        "node": uuid
                     }
                 })
                 .then(function(response) {
                     return response.result.data;
                 });
+            },
+
+            putNode: function(args) {
+                return vertxEventBusService.send("com.raaftech.structure.repository.instances", {
+                        "msgh": "putNode",
+                        "args": args
+                    })
+                    .then(function(response) {
+                        return response;
+                    });
             }
         }
     });

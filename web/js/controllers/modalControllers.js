@@ -5,7 +5,7 @@ angular.module("structureApp")
 
             var modalInstance = $uibModal.open({
                 animation: false,
-                templateUrl: 'js/views/modalWindow.html',
+                templateUrl: 'js/views/modals/schemaFormCreateInstance.html',
                 controller: 'modalInstanceCtrl',
                 resolve: {
                     uuid: function () {

@@ -2,6 +2,7 @@
  * Include styles
  */
 @import url('scheme/blue.css');
+@import url('scheme/blue-sweet-alert.css');
 @import url('font/structureglyph.css');
 
 
@@ -150,6 +151,25 @@ fieldset,
     border-radius: 1px;
 }
 
+.form-group .help-block {
+    display: none;
+    visibility: hidden;
+}
+
+.form-group.has-error .help-block {
+    display: block;
+    visibility: visible;
+}
+
+.has-success .form-control,
+.has-success .form-control:focus {
+    box-shadow: none;
+}
+
+.btn-group.schema-form-actions {
+    margin-top: 20px;
+}
+
 
 /*
  * Placeholder dashboard ideas
@@ -173,13 +193,33 @@ fieldset,
 }
 
 
+/**
+ * CSS for fixed detailed information
+
+.relative-view {
+    position: relative;
+}
+
+.detailed-info {
+    position: fixed;
+    left: 40px;
+    right: 40px;
+}
+
+ul.list.parent {
+    padding-top: 200px;
+}
+
+*/
+
+
 /*
  * Detailed information
  */
 .detailed-info {
     margin-left: 0;
     margin-right: 0;
-    margin-bottom: 20px;
+    margin-bottom: 40px;
 }
 
 /* not used when using icons */
@@ -198,8 +238,8 @@ fieldset,
 
 .basic h1 {
     font-size: 22px;
-    text-transform: uppercase;
     font-weight: normal;
+    text-transform: uppercase;
 }
 
 .basic p {
@@ -307,6 +347,70 @@ span.closed:before {
     font-weight: bold;
 }
 
+ul.list-group.list {
+    margin-bottom: 0;
+}
+
+ul.list-group.list,
+.list > li.list-group-item {
+    border-radius: 0;
+}
+
+.list .header {
+    text-transform: uppercase;
+}
+
+.list > li {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    overflow-x: hidden;
+}
+
+.list > li > div {
+    margin: 0;
+    padding: 7px 0;
+    border-bottom: 1px solid;
+}
+
+.list > li > div > div {
+    line-height: 23px;
+}
+
+.list > li > div > div:nth-child(1) {
+    padding-left: 25px;
+}
+
+.list > li.header > div > div:nth-child(1) {
+    padding-left: 0;
+}
+
+.list > li > ul > li > div > div:nth-child(1) {
+    padding-left: 50px;
+}
+
+.list > li > ul > li > ul > li > div > div:nth-child(1) {
+    padding-left: 75px;
+}
+
+.list > li > ul > li > ul > li > ul > li > div > div:nth-child(1) {
+    padding-left: 100px;
+}
+
+.list > li > ul > li > ul > li > ul > li > ul > li > div > div:nth-child(1) {
+    padding-left: 125px;
+}
+
+.list > li > ul > li > ul > li > ul > li > ul > li > ul > li > div > div:nth-child(1) {
+    padding-left: 150px;
+}
+
+.list div.wrap-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 
 /*
  * Buttons
@@ -328,23 +432,30 @@ span.closed:before {
 /*
  * Testing context menu
  */
-.tools {
-    height: inherit;
-    display: inline;
-    list-style-type: none;
+list-item-hover-menu-types {
     position: absolute;
+    padding: 0 10px 0 0;
+    right: 0;
+    top: 0;
+    margin: 10px 0 0 0;
+}
+
+.tools {
+    display: inline-block;
+    position: relative;
+    list-style-type: none;
     right: 0;
     z-index: 1000;
-    padding-right: 40px;
+    margin: -1px -24px 2px 0;
 }
 
 .tools > li {
-    display: inline;
+    display: inline-block;
     float: left;
 }
 
 .tools > li > a {
-    padding: 10px 15px;
+    padding: 11px 15px;
     text-transform: uppercase;
 }
 
@@ -356,8 +467,14 @@ span.closed:before {
 /**
  * Modal window modifications
  */
+.modal-header h3 {
+    text-transform: uppercase;
+    margin-top: 4px;
+    font-size: 20px;
+}
+
 .modal-backdrop.in {
-    opacity: 0.5;
+    opacity: 0.6;
 }
 
 .modal-content {
@@ -373,6 +490,10 @@ span.closed:before {
 
 .modal-footer {
     border-top: 1px solid;
+}
+
+.nav-tabs {
+    margin-bottom: 20px;
 }
 
 
