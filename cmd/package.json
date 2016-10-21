@@ -1,16 +1,26 @@
 {
-  "name": "structure-repl",
-  "version": "0.0.1",
-  "description": "Structure command line client and read-eval-print-loop.",
-  "main": "main.js",
+  "name": "scli",
+  "version": "0.5.0",
+  "description": "Structure cli/repl",
+  "main": "scli.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "tape tests/helperTest.js | tspec",
+    "start": "node scli.js"
   },
+  "keywords": [
+    "repl",
+    "cli",
+    "structure"
+  ],
+  "author": "Black Orchid",
+  "license": "ISC",
   "dependencies": {
-    "sockjs-client": "1.0.0",
-    "vertx3-eventbus-client": "3.0.0",
+    "neo4j": "^2.0.0-RC2",
+    "ramda": "^0.22.1",
+    "vertx3-eventbus-client": "^3.0.0",
+    "vorpal": "^1.11.4"
   },
-  "author": "Rubin Simons <rubin@raaftech.com>",
-  "license": "LicenseRef-LICENSE",
-  "private": true
+  "devDependencies": {
+    "tape": "^4.6.2"
+  }
 }

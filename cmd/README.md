@@ -2,12 +2,35 @@ Structure REPL
 =========
 How to run
 ----------
-    cd structure
-    mvn package
+    From the directory where scli.js lives do:
 
-    cd structure/web/html/debug
-    bower install
+    npm i
+    optionally run: npm test
+    npm start
 
-    cd structure/repl
-    node main.js
 
+Environment variable:
+
+(these are the defaults):
+
+EVENTBUS=http://localhost:8080/eventbus
+NEO4JURL=http://localhost:7474
+
+
+## Notes:
+
+* type help inside the REPL for the available commands
+* the REPL supports tab-completion (even for options to a command)
+* the REPL supports persistent history
+  * subsequently arrow-up is a relevant key ;)
+
+
+## Testing
+
+make sure the following npm modules are installed globally:
+
+* npm i tape tap-spec -g
+
+then run:
+
+npm test

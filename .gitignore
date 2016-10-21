@@ -11,3 +11,4 @@ id_rsa*
 structure.iml
 generatedscripts/
 web/js/vendors/
+cmd/node_modules/
