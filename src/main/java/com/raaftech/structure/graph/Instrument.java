@@ -5,6 +5,8 @@ import com.raaftech.structure.base.Context;
 
 public abstract class Instrument extends Instance {
 
+    private static  final String WEIGHT = "weight";
+
     public Instrument() {}
 
     public Instrument(ObjectNode json, Type type) {
@@ -16,7 +18,7 @@ public abstract class Instrument extends Instance {
     }
 
     public int getWeight() {
-        return (Integer)kv.getProperty("weight");
+        return kv.getProperty(WEIGHT) == null ? 0 : Integer.parseInt((String) kv.getProperty(WEIGHT));
     }
 
     public String getFilePath() {

@@ -1,6 +1,5 @@
 package com.raaftech.structure.graph;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.exceptions.ComponentBuilderException;
@@ -189,7 +188,7 @@ public class Controller extends Instrument {
     }
 
     public boolean isSubjectIsLocal() {
-        return (boolean) kv.getProperty(SUBJECTLOCAL);
+        return Boolean.parseBoolean((String)kv.getProperty(SUBJECTLOCAL));
     }
 
     public Type getProvidedBy() {
