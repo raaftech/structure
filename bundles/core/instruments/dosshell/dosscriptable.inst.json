@@ -6,7 +6,7 @@
   "extension": ".bat",
   "providedBy": "DosShell",
   "appliesTo": [ "DosShell" ],
-  "templateFile": "dosscriptable.hbs.bat",
+  "templateFile": "dosscriptable.hbs.cmd",
   "subjectIsLocal": true,
   "arguments": {
     "script": {

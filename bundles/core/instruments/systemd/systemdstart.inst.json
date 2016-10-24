@@ -5,7 +5,7 @@
   "capability": "Start",
   "providedBy": "Systemd",
   "appliesTo": [ "Server" ],
-  "templateFile": systemdstart.hbs.sh",
+  "templateFile": "systemdstart.hbs.sh",
   "subjectIsLocal": true,
   "arguments": {
     "origin": {
