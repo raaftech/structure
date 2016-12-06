@@ -9,11 +9,10 @@ import com.github.fge.jsonschema.main.JsonSchema;
 import com.github.fge.jsonschema.main.JsonSchemaFactory;
 import com.raaftech.structure.base.*;
 import com.raaftech.structure.base.Configuration;
-import com.raaftech.structure.exceptions.TypeUnknownException;
 import com.raaftech.structure.graph.repositories.InstanceRepository;
 import com.raaftech.structure.graph.repositories.TypeRepository;
 import com.raaftech.structure.helper.JsonSchemaBuilder;
-import com.raaftech.structure.node.InstanceActor;
+import com.raaftech.structure.node.ComponentActor;
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.Transaction;
 import org.slf4j.Logger;
@@ -173,7 +172,6 @@ public abstract class Instance extends Node {
     }
 
     public Instance save() {
-        boolean newNode = getId() == null || getId() < 0;
         Transaction tx = Context.getGraphDatabase().beginTx();
         if (getInstanceOf().getSchema().validateJson(instanceData)) {
             getInstanceOf().getKv().asMap().entrySet().stream()
@@ -185,11 +183,6 @@ public abstract class Instance extends Node {
             tx.failure();
             tx.close();
             throw new RuntimeException("Can't create instanceNode, missing properties.");
-        }
-
-        if (newNode && Context.getVertx() != null) {
-            Context.getVertx().deployVerticle(
-                    new InstanceActor(this));
         }
 
         return this;

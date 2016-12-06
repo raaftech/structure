@@ -19,16 +19,16 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
-public class InstanceActor extends NodeActor<Instance> {
+public class ComponentActor extends NodeActor<Component> {
 
     private static final InstanceRepository INSTANCE_REPOSITORY = Context.getInstanceRepository();
     private static final ComponentRepository componentRepository = Context.getComponentRepository();
     private static final InstrumentRepository instrumentRepository = Context.getInstrumentRepository();
 
 
-    private Logger log = LoggerFactory.getLogger(InstanceActor.class);
+    private Logger log = LoggerFactory.getLogger(ComponentActor.class);
 
-    public InstanceActor(Instance node) {
+    public ComponentActor(Component node) {
         super(node);
     }
 

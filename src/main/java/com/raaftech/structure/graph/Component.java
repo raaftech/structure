@@ -9,6 +9,7 @@ import com.raaftech.structure.exceptions.JsonValidationException;
 import com.raaftech.structure.graph.repositories.InstanceRepository;
 import com.raaftech.structure.graph.repositories.ResultRepository;
 import com.raaftech.structure.helper.InstrumentRunner;
+import com.raaftech.structure.node.ComponentActor;
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.Transaction;
 import org.slf4j.Logger;
@@ -175,6 +176,17 @@ public class Component extends Instance {
     // Run a controller on this instance
     public Component runController(Controller controller, ObjectNode arguments, String taskId) {
         new InstrumentRunner(this, controller, arguments, taskId).startInstrument();
+        return this;
+    }
+
+    public Component save() {
+        super.save();
+
+        boolean newNode = getId() == null || getId() < 0;
+        if (newNode && Context.getVertx() != null) {
+            Context.getVertx().deployVerticle(
+                    new ComponentActor(this));
+        }
         return this;
     }
 

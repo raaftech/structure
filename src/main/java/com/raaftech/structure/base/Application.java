@@ -1,12 +1,14 @@
 package com.raaftech.structure.base;
 
 import ch.qos.logback.classic.Level;
+import com.raaftech.structure.graph.Component;
 import com.raaftech.structure.graph.Template;
 import com.raaftech.structure.graph.Type;
 import com.raaftech.structure.graph.repositories.*;
 import com.raaftech.structure.helper.ProcessRunner;
 import com.raaftech.structure.helper.loader.BundleLoader;
 import com.raaftech.structure.manager.TaskManager;
+import com.raaftech.structure.node.ComponentActor;
 import com.raaftech.structure.node.TemplateActor;
 import com.raaftech.structure.node.TypeActor;
 import com.raaftech.structure.repository.Instances;
@@ -149,6 +151,7 @@ public class Application {
         final InstrumentRepository instrumentRepository = Context.getInstrumentRepository();
         final TemplateRepository templateRepository = Context.getTemplateRepository();
         final ProfileRepository profileRepository = Context.getProfileRepository();
+        final ComponentRepository componentRepository = Context.getComponentRepository();
 
         // Setup vertx with a maxWorkerExecuteTime of 5 minutes.
         final String workerTimeoutConfiguration = getConfiguration("workertimeout");
@@ -336,17 +339,14 @@ public class Application {
         }
         tx.close();
 
-        // TODO: adapt to new split instancenodes
-        /*
-        // Deploy InstanceActors.
-        log.debug("Deploying InstanceActors..");
+        // Deploy ComponentActors.
+        log.debug("Deploying ComponentsActors..");
         tx = Context.getGraphDatabase().beginTx();
-        for (Instance instanceNode : instanceNodeRepository.findAll()) {
-            InstanceActor instanceNodeActor = new InstanceActor(instanceNode);
-            vertx.deployVerticle(instanceNodeActor, new DeploymentOptions().setWorker(true));
+        for (Component component : componentRepository.findAll()) {
+            ComponentActor componentActor = new ComponentActor(component);
+            vertx.deployVerticle(componentActor, new DeploymentOptions().setWorker(true));
         }
         tx.close();
-        */
 
         // Deploy TemplateActors.
         log.debug("Deploying TemplateActors..");
