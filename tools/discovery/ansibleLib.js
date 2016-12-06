@@ -19,7 +19,8 @@ const createOutput = (data) => {
     output.default_ipv4 = d.ansible_default_ipv4;
     output.distribution = d.ansible_distribution;
     output.distribution_version = d.ansible_distribution_version;
-    output.fqdn = d.ansible_fqdn;
+    output.hostname = d.ansible_hostname;
+    output.nodename = d.ansible_nodename;
     output.os_family = d.ansible_os_family;
     output.service_manager = d.ansible_service_mgr;
     output.system = d.ansible_system;
