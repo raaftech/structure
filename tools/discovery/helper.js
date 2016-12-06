@@ -96,7 +96,11 @@ const transform = (data) => {
     result.push(osData(data.distribution, data.distribution_version));
     result.push(interpreterData(data.shell));
     result.push(mgrData(data.service_manager));
-    result.push(ipData(data.default_ipv4.address));
+    if (Object.keys(data.default_ipv4.address).length > 0) {
+        result.push(ipData(data.default_ipv4.address));
+    } else {
+        result.push(ipData(data.all_ipv4_addresses[0]));
+    }
     result.push(dnsData(data.hostname));
 
     return createEventData(R.concat(result, miscData()));
