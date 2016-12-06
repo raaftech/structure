@@ -1,0 +1,24 @@
+{
+  "name": "combi",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "lint": "jshint *.js",
+    "test": "jshint **.js && cd tests ; tape ansibleLibTest.js | tspec && tape nmapTests.js | tspec",
+    "start": "node combi.js"
+  },
+  "author": "Black Orchid",
+  "license": "ISC",
+  "dependencies": {
+    "command-line-args": "^3.0.4",
+    "command-line-usage": "^3.0.8",
+    "node-ansible": "^0.5.5",
+    "node-nmap": "^3.0.3",
+    "ramda": "^0.22.1"
+  },
+  "devDependencies": {
+    "intercept-stdout": "^0.1.2",
+    "tape": "^4.6.3"
+  }
+}
