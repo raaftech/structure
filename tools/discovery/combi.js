@@ -5,6 +5,8 @@ const cmd = require('command-line-args');
 const getUsage = require('command-line-usage');
 const nmapLib = require('./nmapLib');
 const ansibleLib = require('./ansibleLib');
+const vClient = require('./vertxClient');
+const helper = require('./helper');
 
 const optionDefs = [
     {name: 'cidr', alias: 'c', type: String},
@@ -35,13 +37,22 @@ const main = () => {
 
     let args = R.defaultTo('-p22,80', options.args);
     let cidr = R.defaultTo('localhost', options.cidr);
+    let client = new vClient();
+    let count = 0;
+
     nmapLib.nmapScan(cidr, args)
-        .then((results) => {
-            let ips = R.pluck('ip', results);
+        .then((nmapResults) => {
+            let ips = R.pluck('ip', nmapResults);
+            count = R.length(ips);
+
             R.forEach((ip) => {
                 ansibleLib.setup(ip)
                     .then((result) => {
-                        console.log(result);
+                        let buf = helper.transform(result);
+                        console.log(JSON.stringify(buf, undefined, 2));
+                        client.send(buf);
+                        count--;
+                        console.log('[%s] %s', count,ip);
                     });
             }, ips);
         });

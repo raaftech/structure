@@ -15,7 +15,8 @@
     "command-line-usage": "^3.0.8",
     "node-ansible": "^0.5.5",
     "node-nmap": "^3.0.3",
-    "ramda": "^0.22.1"
+    "ramda": "^0.22.1",
+    "vertx3-eventbus-client": "^3.3.3"
   },
   "devDependencies": {
     "intercept-stdout": "^0.1.2",
