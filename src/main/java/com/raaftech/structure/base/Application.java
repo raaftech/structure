@@ -4,6 +4,7 @@ import ch.qos.logback.classic.Level;
 import com.raaftech.structure.graph.Template;
 import com.raaftech.structure.graph.Type;
 import com.raaftech.structure.graph.repositories.*;
+import com.raaftech.structure.helper.ProcessRunner;
 import com.raaftech.structure.helper.loader.BundleLoader;
 import com.raaftech.structure.manager.TaskManager;
 import com.raaftech.structure.node.TemplateActor;
@@ -34,10 +35,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * The main application entry point.
@@ -367,9 +365,50 @@ public class Application {
             throw e;
         }
 
+        // DEMO STUFF
+        vertx.deployVerticle("com.raaftech.structure.manager.DiscoveryManager", new DeploymentOptions().setWorker(true), (ar) -> {
+            if (ar.succeeded()) {
+                log.info("Discovery manager deployed with ID {}", ar.result());
+            } else {
+                log.error(ar.cause().getMessage());
+            }
+        });
+        log.info("Checking if Structure has registered itself in the database");
+        Optional<String> hostname = getHostname();
+        hostname.map(String::trim).ifPresent((dn) -> {
+            log.info("Hostname is \"{}\"", dn);
+            if (instanceRepository.findHostname(dn).size() == 0) {
+                log.info("Structure is not registered in the database, now discovering itself");
+                ProcessRunner runner = new ProcessRunner("node tools/discovery/combi.js -c 127.0.0.1/32");
+                try {
+                    runner.run();
+                    ProcessRunner.ProcessResult result = runner.finish();
+                    System.out.println(result.stdout);
+                } catch (IOException | InterruptedException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                log.info("Structure was already registered");
+            }
+        });
+        // DEMO STUFF
+
         // A friendly message telling the user we're done.
         httpServer.requestHandler(router::accept).listen(port);
         log.info("Structure is running at http://localhost:{}", port);
+    }
+
+    private static Optional<String> getHostname() {
+        ProcessRunner hostnameProcess = new ProcessRunner("hostname");
+        Optional<String> stdout = Optional.empty();
+        try {
+            hostnameProcess.run();
+            ProcessRunner.ProcessResult result = hostnameProcess.finish();
+            stdout = Optional.of(result.stdout);
+        } catch (IOException | InterruptedException e) {
+            // shouldn't happen
+        }
+        return stdout;
     }
 
     /**
