@@ -53,7 +53,8 @@ const main = () => {
                         client.send(buf);
                         count--;
                         console.log('[%s] %s', count,ip);
-                    });
+                    })
+                    .catch((ex) => console.log(ex));
             }, ips);
         });
 };
