@@ -20,6 +20,7 @@ const createOutput = (data) => {
     output.distribution = d.ansible_distribution;
     output.distribution_version = d.ansible_distribution_version;
     output.hostname = d.ansible_hostname;
+    output.fqdn = d.ansible_fqdn;
     output.nodename = d.ansible_nodename;
     output.os_family = d.ansible_os_family;
     output.service_manager = d.ansible_service_mgr;
@@ -46,7 +47,6 @@ const setupScan = (ip) => {
 
         ansible.exec()
             .then((result) => {
-                console.log('TYPE: '+typeof(result));
                 let json = JSON.parse(sanitize('SUCCESS => ', result.output));
                 resolve(createOutput(json));
             })

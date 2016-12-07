@@ -11,6 +11,7 @@
   "author": "Black Orchid",
   "license": "ISC",
   "dependencies": {
+    "async": "^2.1.4",
     "command-line-args": "^3.0.4",
     "command-line-usage": "^3.0.8",
     "node-ansible": "^0.5.5",

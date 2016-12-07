@@ -1,6 +1,7 @@
 "use strict";
 
 const R = require("ramda");
+const async = require('async');
 const cmd = require('command-line-args');
 const getUsage = require('command-line-usage');
 const nmapLib = require('./nmapLib');
@@ -10,7 +11,8 @@ const helper = require('./helper');
 
 const optionDefs = [
     {name: 'cidr', alias: 'c', type: String},
-    {name: 'args', alias: 'a', type: String}
+    {name: 'args', alias: 'a', type: String},
+    {name: 'verbose', alias: 'v', type: Boolean}
 ];
 const options = cmd(optionDefs);
 
@@ -23,7 +25,8 @@ const sections = [
         header: 'Options',
         optionList: [
             {name: 'cidr', alias: 'c', typeLabel: '[underline]{cidr}', description: 'required argument, cidr to scan'},
-            {name: 'args', alias: 'a', typeLabel: '[underline]{nmap options}', description: 'arguments for the nmap command'}
+            {name: 'args', alias: 'a', typeLabel: '[underline]{nmap options}', description: 'arguments for the nmap command'},
+            {name: 'verbose', alias: 'v', description: 'set verbose mode'}
         ]
     }
 ];
@@ -38,26 +41,38 @@ const main = () => {
     let args = R.defaultTo('-p22,80', options.args);
     let cidr = R.defaultTo('localhost', options.cidr);
     let client = new vClient();
-    let count = 0;
 
     nmapLib.nmapScan(cidr, args)
         .then((nmapResults) => {
-            // let ips = R.pluck('ip', nmapResults);
-            // count = R.length(ips);
-            count = R.length(nmapResults);
-
-            R.forEach((ip) => {
-                ansibleLib.setup(ip.ip)
+            const count = R.length(nmapResults);
+            async.eachOfSeries(nmapResults, function(item,index,done) {
+                console.log('calling ansible for %s [%s]', nmapResults[index].hostname, nmapResults[index].ip);
+                let doneCalled = false;
+                setTimeout(() => {
+                    if(!doneCalled) {
+                        console.log('Ansible query timed out for %s [%s]', nmapResults[index].hostname, nmapResults[index].ip);
+                        console.log('------');
+                        done();
+                    }
+                }, 15000);
+                ansibleLib.setup(item.ip)
                     .then((result) => {
-                        let buf = helper.transform(result,ip.ip, ip.hostname);
-                        console.log(JSON.stringify(buf, undefined, 2));
+                        console.log('got ansible result for %s [%s]', nmapResults[index].hostname, nmapResults[index].ip);
+                        if(options.verbose) console.log(JSON.stringify(result,undefined,2));
+                        let buf = helper.transform(result,item.ip, item.hostname);
+                        if(options.verbose) console.log(JSON.stringify(buf, undefined, 2));
                         client.send(buf);
-                        count--;
-                        if(count <= 0) {
-                            client.close();
-                        }
+                        console.log('Processing result %s of %s for %s [%s]', index, count, nmapResults[index].hostname, nmapResults[index].ip);
+                        console.log('------');
+                        doneCalled = true;
+                        done();
                     });
-            }, nmapResults);
+            }, function(err) {
+                if(err) console.log('Ended with an error: '+err);
+                console.log('Done running discovery of %s', cidr);
+                client.close();
+                process.exit(0);
+            });
         });
 };
 

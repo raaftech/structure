@@ -43,24 +43,25 @@ const ipData = (ip,reachable) => {
     return createInstanceData([x], '0e843d97-c975-42ca-813c-c91f42a7d3cc');
 };
 
-const dnsData = (dns) => {
+const dnsData = (dns,ip) => {
     let x = {
         name: 'DnsName',
         desc: 'The hostname of the machine',
-        dnsname: R.defaultTo('', dns)
+        dnsname: R.defaultTo('unknown-'+ip, dns)
     };
     return createInstanceData([x], '94d10031-5246-4233-b25d-b5f8ef9d0b41');
 };
 
-const osData = (dist, version) => {
+const osData = (dist, version,hostname,ip) => {
+    hostname = R.defaultTo('unknown-'+ip, hostname);
     let c = getConcept(dist);
 	if(R.isNil(c)) {
 	    let generic = createData('f05e325e-1aee-4892-96e4-8bcd6e97c528','An operating system.',
-                                 'OperatingSystem','operatingsystem', 'OperatingSystem', '');
+                                 'OperatingSystem','operatingsystem', hostname, '');
         return createInstanceData([generic], '1b8e0d72-c23d-4091-a4e6-74d07f1ee6fa');
     }
 
-    let x = createData(c._typeUuid, c.desc, c.longName, c.shortName, c.name, version);
+    let x = createData(c._typeUuid, c.desc, c.longName, c.shortName, hostname, version);
     return createInstanceData([x], '1b8e0d72-c23d-4091-a4e6-74d07f1ee6fa');
 };
 
@@ -98,21 +99,21 @@ const miscData = () => {
 const transform = (data, ip, hostname) => {
     if(notNil(data.error)) {
         let r = [];
-        r.push(osData('Unknown', ''));
+        r.push(osData('Unknown', '',hostname,ip));
         r.push(interpreterData('unknown'));
         r.push(mgrData('unknown'));
         r.push(ipData(ip, false));
-        r.push(dnsData(hostname));
+        r.push(dnsData(hostname,ip));
 
         return createEventData(R.concat(r, miscData()));
     }
 
     let result = [];
-    result.push(osData(data.distribution, data.distribution_version));
+    result.push(osData(data.distribution, data.distribution_version,hostname,ip));
     result.push(interpreterData(data.shell));
     result.push(mgrData(data.service_manager));
-    result.push(ipData(R.defaultTo(R.head(data.ipv4_addresses),data.default_ipv4.address), true));
-    result.push(dnsData(data.nodename));
+    result.push(ipData(ip, true));
+    result.push(dnsData(data.nodename,ip));
 
     return createEventData(R.concat(result, miscData()));
 };
