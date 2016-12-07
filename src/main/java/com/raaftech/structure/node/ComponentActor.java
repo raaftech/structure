@@ -117,7 +117,7 @@ public class ComponentActor extends NodeActor<Component> {
             public JsonNode exec(JsonNode request) {
                 ObjectNode result = mapper.createObjectNode();
 
-                Instance structure = INSTANCE_REPOSITORY.findOneByName(Context.selfIdentifier);
+                Instance structure = INSTANCE_REPOSITORY.findByUuid(Context.getSelfIdentifier());
                 String originUuid = getNode().getUuid();
                 Instance startOfComponentGroup = INSTANCE_REPOSITORY.getStartOfComponentGroup(originUuid);
 
