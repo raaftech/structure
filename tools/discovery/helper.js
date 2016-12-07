@@ -14,13 +14,22 @@ const createInstanceData = (instances, templateUuid) => {
         templateUuid: templateUuid
     };
 };
-
 const createEventData = (dataList) => {
     return {
         args: {
             instancedata: dataList
         },
         msgh: 'instantiateDiscoveredComputer'
+    };
+};
+const createData = (uuid, desc, longName, shortName, name, version) => {
+    return {
+        _typeUuid: uuid,
+        desc: desc,
+        longName: longName,
+        name: name,
+        shortName: shortName,
+        ver: version
     };
 };
 
@@ -38,7 +47,7 @@ const dnsData = (dns) => {
     let x = {
         name: 'DnsName',
         desc: 'The hostname of the machine',
-        dnsname: dns
+        dnsname: R.defaultTo('', dns)
     };
     return createInstanceData([x], '94d10031-5246-4233-b25d-b5f8ef9d0b41');
 };
@@ -46,26 +55,12 @@ const dnsData = (dns) => {
 const osData = (dist, version) => {
     let c = getConcept(dist);
 	if(R.isNil(c)) {
-	    console.log('osData: %s concept is undefined', dist);
-	    let generic = {
-	        _typeUuid: 'f05e325e-1aee-4892-96e4-8bcd6e97c528',
-            desc: 'An operating system.',
-            longName: 'OperatingSystem',
-            name: 'OperatingSystem',
-            shortName: R.toLower('OperatingSystem'),
-            ver: ''
-        };
+	    let generic = createData('f05e325e-1aee-4892-96e4-8bcd6e97c528','An operating system.',
+                                 'OperatingSystem','operatingsystem', 'OperatingSystem', '');
         return createInstanceData([generic], '1b8e0d72-c23d-4091-a4e6-74d07f1ee6fa');
     }
-    let x = {
-        _typeUuid: c._typeUuid,
-        desc: c.desc,
-        longName: c.longName,
-        name: c.name,
-        shortName: c.shortName,
-        ver: version
-    };
 
+    let x = createData(c._typeUuid, c.desc, c.longName, c.shortName, c.name, version);
     return createInstanceData([x], '1b8e0d72-c23d-4091-a4e6-74d07f1ee6fa');
 };
 
@@ -73,51 +68,22 @@ const interpreterData = (interpreter) => {
     let fn = R.pipe(R.split('/'), R.last);
     let c = getConcept(fn(interpreter));
 	if(R.isNil(c)) {
-	    console.log('interpreterData: %s concept is undefined', interpreter);
-        let generic = {
-            _typeUuid: 'd047f415-734c-4bd3-92b9-d68d5521ce69',
-            desc: 'A command or programming language interpreter.',
-            longName: 'Interpreter',
-            name: 'Interpreter',
-            shortName: R.toLower('Interpreter'),
-            ver: ''
-        };
-        return createInstanceData([generic], '1b8e0d72-c23d-4091-a4e6-74d07f1ee6fa');
+        let generic = createData('d047f415-734c-4bd3-92b9-d68d5521ce69','A command or programming language interpreter.',
+                                 'Interpreter','interpreter', 'Interpreter', '');
+        return createInstanceData([generic], '2741cc5a-eb45-4532-9a64-c715c07f93bc');
     }
-    let x = {
-        _typeUuid: c._typeUuid,
-        desc: c.desc,
-        longName: c.longName,
-        name: c.name,
-        shortName: c.shortName,
-        ver: ''
-    };
-
+    let x = createData(c._typeUuid, c.desc, c.longName, c.shortName, c.name, '');
     return createInstanceData([x], '2741cc5a-eb45-4532-9a64-c715c07f93bc');
 };
 
 const mgrData = (mgr) => {
     let c = getConcept(mgr);
 	if(R.isNil(c)) {
-	    console.log('mgrData: %s concept is undefined', mgr);
-        let generic = {
-            _typeUuid: 'c3008eec-b454-4ef6-bf7e-0bd92c13d3c3',
-            desc: 'An operating system initialization system.',
-            longName: 'ServiceManager',
-            name: 'ServiceManager',
-            shortName: R.toLower('ServiceManager'),
-            ver: ''
-        };
-        return createInstanceData([generic], '1b8e0d72-c23d-4091-a4e6-74d07f1ee6fa');
+        let generic = createData('c3008eec-b454-4ef6-bf7e-0bd92c13d3c3','An operating system initialization system.',
+                                 'ServiceManager','servicemanager', 'ServiceManager', '');
+        return createInstanceData([generic], '34bfe99f-1d62-48cb-a8a3-e913b69ef225');
 	}
-    let x = {
-        _typeUuid: c._typeUuid,
-        desc: c.desc,
-        longName: c.longName,
-        name: c.name,
-        shortName: c.shortName,
-        ver: ''
-    };
+    let x = createData(c._typeUuid, c.desc, c.longName, c.shortName, c.name, '');
     return createInstanceData([x], '34bfe99f-1d62-48cb-a8a3-e913b69ef225');
 };
 

@@ -18,8 +18,8 @@ gulp.task('watch', () => {
 	gulp.watch(['*.js','tests/*.js'], ['jshint']);
 });
 
-gulp.task('dev', () => {
-	run('node combi.js -c 172.17.1.56').exec()
+gulp.task('raaf', () => {
+	run('node combi.js -c 172.17.1.0/24').exec()
 	.on('data', (data) => gutil.log(data));
 });
 
