@@ -275,6 +275,7 @@ public class Component extends Instance {
             componentNameUuid.put("name", component.getName());
             componentNameUuid.put("uuid", component.getUuid());
             componentNameUuid.put("desc", component.getDesc());
+            componentNameUuid.put("glyphId", Integer.toHexString(component.getInstanceOf().getGlyphId()));
             componentsJson.add(componentNameUuid);
         });
 
