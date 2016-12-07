@@ -14,10 +14,7 @@ import com.raaftech.structure.manager.TaskManager;
 import com.raaftech.structure.node.ComponentActor;
 import com.raaftech.structure.node.TemplateActor;
 import com.raaftech.structure.node.TypeActor;
-import com.raaftech.structure.repository.Instances;
-import com.raaftech.structure.repository.Nodes;
-import com.raaftech.structure.repository.Templates;
-import com.raaftech.structure.repository.Types;
+import com.raaftech.structure.repository.*;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
@@ -327,6 +324,11 @@ public class Application {
         vertx.deployVerticle(new Instances(Context.getInstanceRepository()), ar -> {
             if (ar.succeeded()) {
                 log.info("Deployed InstanceRepository with id: {}", ar.result());
+            }
+        });
+        vertx.deployVerticle(new Components(Context.getComponentRepository()), ar -> {
+            if (ar.succeeded()) {
+                log.info("Deployed ComponentRepository with id: {}", ar.result());
             }
         });
         vertx.deployVerticle(new Templates(Context.getTemplateRepository()), ar -> {

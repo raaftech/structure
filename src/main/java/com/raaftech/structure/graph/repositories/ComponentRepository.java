@@ -5,6 +5,7 @@ import com.raaftech.structure.graph.Instance;
 import org.springframework.data.neo4j.annotation.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Set;
 
 public interface ComponentRepository extends GenericRepository<Component> {
@@ -23,4 +24,8 @@ public interface ComponentRepository extends GenericRepository<Component> {
             "RETURN start")
     Component getStartOfComponentGroup(@Param("instanceUuid") String instanceUuid);
 
+    @Query ("MATCH (n:Component)-[:HAS_COMPONENT]->(m)" +
+            "WHERE NOT (n)<-[:HAS_COMPONENT]-() " +
+            "RETURN DISTINCT n ORDER BY id(n) DESC LIMIT {amount}")
+    Set<Component> getNLastCreated(@Param("amount") int amount);
 }
