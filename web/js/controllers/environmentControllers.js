@@ -102,6 +102,7 @@ angular.module("structureApp")
             instanceSrvs.getNInstances(n).then(function(response) {
                 $scope.instances = response;
                 instanceSrvs.liveStatus($scope);
+                instanceSrvs.startChecking();
             });
         };
 
@@ -144,4 +145,8 @@ angular.module("structureApp")
                 });
             }
         };
+
+        $scope.checkColor = function(uuid) {
+            return $scope.color[uuid];
+        }
     });
