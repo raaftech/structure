@@ -422,6 +422,7 @@ button.close {
 /*
  * Testing context menu
  */
+list-item-hover-menu-instruments,
 list-item-hover-menu-types {
     position: absolute;
     padding: 0 10px 0 0;
