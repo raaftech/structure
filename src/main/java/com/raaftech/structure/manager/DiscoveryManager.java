@@ -1,17 +1,18 @@
 package com.raaftech.structure.manager;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.base.GenericActor;
 import com.raaftech.structure.graph.repositories.ComponentRepository;
 import com.raaftech.structure.graph.repositories.TemplateRepository;
+import io.vertx.core.json.JsonObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Iterator;
-import java.util.Spliterator;
-import java.util.Spliterators;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -51,7 +52,19 @@ public class DiscoveryManager extends GenericActor {
 
                             if (!found) {
                                 log.info("Creating new computer with hostname {} ", dnsname);
-                                templateRepository.findByUuid(template).instantiate(instanceData);
+                                final String newComputerUuid = templateRepository.findByUuid(template).instantiate(instanceData);
+                                // send out message on status channel if this is the start of a component group
+                                ObjectNode data = mapper.createObjectNode()
+                                        .put("uuid", newComputerUuid);
+                                log.debug("Sending status message to status channel");
+                                try {
+                                    log.debug(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(data.toString()));
+                                } catch (JsonProcessingException e) {
+                                    e.printStackTrace();
+                                }
+                                Context.getVertx().eventBus().publish("com.raaftech.structure.status",
+                                        new JsonObject("{\"source\":\"" + this.getClass().getSimpleName() + "\", "
+                                                + "\"event\": \"discoveredComputer\", \"data\": " + new JsonObject(data.toString()) + "}"));
                             }
                         });
 

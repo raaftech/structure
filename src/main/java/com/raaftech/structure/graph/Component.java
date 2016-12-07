@@ -1,5 +1,6 @@
 package com.raaftech.structure.graph;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -213,17 +214,6 @@ public class Component extends Instance {
                     new ComponentActor(this));
         } else {
             log.debug("Not deploying ComponentActor for component \"{}\"", getUuid());
-        }
-
-        // send out message on status channel if this is the start of a component group
-        if (startOfComponentalGroup) {
-            log.debug("Sending status message to status channel");
-            ObjectNode data = mapper.createObjectNode()
-                    .put("uuid", getUuid());
-            Context.getVertx().eventBus().publish("com.raaftech.structure.status",
-                    new JsonObject("{\"source\":\"" + this.getClass().getSimpleName() + "\", "
-                            + "\"event\": \"discoveredComputer\", \"data\": " + new JsonObject(data.toString()) + "}"));
-
         }
 
         return this;
