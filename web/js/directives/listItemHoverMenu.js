@@ -63,7 +63,8 @@ angular.module("structureApp")
                 };
                 scope.editTypeClicked = function() {
                     scope.$watch(
-                        scope.editType(attr.uuid)
+                        scope.editType(attr.uuid),
+                        scope.openPanelRight()
                     );
                 };
                 scope.removeTypeClicked = function() {

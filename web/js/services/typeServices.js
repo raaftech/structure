@@ -34,11 +34,17 @@ angular.module("structureApp")
                         "args": {}
                     })
                     .then(function(response) {
+                        //var titleMap = [{
+                        //    "value": "",
+                        //    "name": "Select an option"
+                        //}];
                         var titleMap = [];
                         angular.forEach(response.result.data, function(node) {
                             titleMap.push({
                                 "value": node.uuid,
-                                "name": node.name
+                                "name": node.name,
+                                "glyphId": node.glyphId,
+                                "node": node
                             });
                         });
                         return titleMap;

@@ -17,14 +17,18 @@
   ],
   "dependencies": {
     "angular": "~1.4",
-    "angular-bootstrap": "~2.1",
+    "angular-animate": "latest",
+    "angular-bootstrap": "~2.2",
     "angular-route": "~1.4",
     "angular-schema-form": "~0.8",
     "angular-schema-form-bootstrap": "latest",
     "angular-sanitize": "~1.4",
+    "angular-pageslide-directive": "latest",
     "angular-h-sweetalert": "latest",
     "angular-vertxbus": "~3.0",
-    "bootstrap": "latest"
+    "angular-dragdrop": "latest",
+    "bootstrap": "latest",
+    "jquery-ui": "latest"
   },
   "resolutions": {
     "angular": "~1.4"

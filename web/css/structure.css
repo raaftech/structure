@@ -13,6 +13,8 @@
 /* Move down content because we have a fixed navbar that is 50px tall */
 body {
     padding-top: 51px;
+    left: 0;
+    right: 0;
 }
 
 a,
@@ -151,6 +153,14 @@ fieldset,
     border-radius: 1px;
 }
 
+.form-group {
+    position: relative;
+}
+
+.form-group label ~ .form-control-feedback {
+    top: 25px;
+}
+
 .form-group .help-block {
     display: none;
     visibility: hidden;
@@ -193,34 +203,9 @@ fieldset,
 }
 
 
-/**
- * CSS for fixed detailed information
-
-.relative-view {
-    position: relative;
-}
-
-.detailed-info {
-    position: fixed;
-    left: 40px;
-    right: 40px;
-}
-
-ul.list.parent {
-    padding-top: 200px;
-}
-
-*/
-
-
 /*
  * Detailed information
  */
-.detailed-info {
-    margin-left: 0;
-    margin-right: 0;
-    margin-bottom: 40px;
-}
 
 /* not used when using icons */
 .basic img {
@@ -428,6 +413,10 @@ ul.list-group.list,
     padding: 4px 8px;
 }
 
+button.close {
+    padding: 2px 0 0 8px;
+}
+
 
 /*
  * Testing context menu
@@ -450,6 +439,7 @@ list-item-hover-menu-types {
 }
 
 .tools > li {
+    margin-right: -2px;
     display: inline-block;
     float: left;
 }
@@ -556,4 +546,22 @@ list-item-hover-menu-types {
 
 show-icon {
     text-transform: none;
+}
+
+
+/**
+ * Pageslide CSS
+ */
+pageslide {
+    margin-top: 51px;
+}
+
+pageslide.panelRight {
+    padding-bottom: 51px;
+    border-left: 1px solid;
+    overflow-y: auto;
+}
+
+body.panelRight-body-open {
+    overflow: hidden;
 }

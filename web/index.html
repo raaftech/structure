@@ -21,15 +21,19 @@
     <script type="text/javascript" src="js/vendors/angular-route/angular-route.min.js"></script>
     <script type="text/javascript" src="js/vendors/angular-bootstrap/ui-bootstrap.min.js"></script>
     <script type="text/javascript" src="js/vendors/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>
+    <script type="text/javascript" src="js/vendors/angular-animate/angular-animate.min.js"></script>
     <script type="text/javascript" src="js/vendors/angular-sanitize/angular-sanitize.min.js"></script>
     <script type="text/javascript" src="js/vendors/tv4/tv4.js"></script>
     <script type="text/javascript" src="js/vendors/objectpath/lib/ObjectPath.js"></script>
     <script type="text/javascript" src="js/vendors/angular-schema-form/dist/schema-form.min.js"></script>
     <script type="text/javascript" src="js/vendors/angular-schema-form-bootstrap/bootstrap-decorator.js"></script>
+    <script type="text/javascript" src="js/vendors/angular-pageslide-directive/dist/angular-pageslide-directive.min.js"></script>
     <script type="text/javascript" src="js/vendors/angular-vertxbus/dist/angular-vertxbus.min.js"></script>
     <script type="text/javascript" src="js/vendors/sweetalert/dist/sweetalert.min.js"></script>
     <script type="text/javascript" src="js/vendors/angular-h-sweetalert/dist/ngSweetAlert.min.js"></script>
     <script type="text/javascript" src="js/vendors/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="js/vendors/jquery-ui/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="js/vendors/angular-dragdrop/src/angular-dragdrop.min.js"></script>
     <script type="text/javascript" src="js/vendors/bootstrap/dist/js/bootstrap.min.js"></script>
 
     <script type="text/javascript" src="js/app.js"></script>
@@ -47,6 +51,9 @@
     <script src="js/controllers/taskManagerControllers.js"></script>
     <script src="js/controllers/navigationControllers.js"></script>
     <script src="js/controllers/iconControllers.js"></script>
+    <script src="js/controllers/panelDetailControllers.js"></script>
+    <script src="js/controllers/panelRightControllers.js"></script>
+    <script src="js/controllers/environmentControllers.js"></script>
 
     <script src="js/directives/listItemHoverMenu.js"></script>
     <script src="js/directives/searchField.js"></script>
@@ -81,6 +88,7 @@
             <li ng-class="navClass('dashboard')"><a href="#dashboard" ng-click="routeReload()">Dashboard</a></li>
             <li ng-class="navClass('types')"><a href="#types" ng-click="routeReload()">Types</a></li>
             <li ng-class="navClass('templates')"><a href="#templates" ng-click="routeReload()">Templates</a></li>
+            <li ng-class="navClass('environment')"><a href="#environment" ng-click="routeReload()">Environment</a></li>
             <li ng-class="navClass('task-manager')"><a href="#task-manager" ng-click="routeReload()">Tasks</a></li>
             <li ng-class="navClass('settings')"><a href="#settings" ng-click="routeReload()">Settings</a></li>
             <li ng-class="navClass('profile')"><a href="#profile" ng-click="routeReload()">Profile</a></li>
