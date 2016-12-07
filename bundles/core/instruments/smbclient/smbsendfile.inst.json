@@ -42,7 +42,7 @@
       "value": {
         "from": "static",
         "type": "string",
-        "defaultValue": "Administrator",
+        "defaultValue": "admin",
         "strategy": "mustBeOne"
       },
       "canBeUserSupplied": true,
@@ -52,6 +52,7 @@
       "value": {
         "from": "static",
         "type": "string",
+        "defaultValue": "5w91xnWJGyJRowMg",
         "strategy": "mustBeOne"
       },
       "canBeUserSupplied": true,

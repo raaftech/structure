@@ -281,6 +281,20 @@ public class TaskManager extends GenericActor {
                 publishStatus("taskFinished", mapper.createObjectNode()
                         .put("taskId", task.id)
                         .set("taskObj", task.toJson()));
+                if (task.jobs.size() == 2) {
+                    Job sendScriptJob = task.jobs.get(1);
+                    if (sendScriptJob.metadata.get("controller").asText().equals("check")) {
+                        ObjectNode status = mapper.createObjectNode()
+                                .put("uuid", sendScriptJob.metadata.get("originUuid").asText())
+                                .put("status", sendScriptJob.process.finish().stdout);
+                        try {
+                            log.debug(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(status));
+                        } catch (JsonProcessingException e) {
+                            e.printStackTrace();
+                        }
+                        publishStatus("serviceStatus", status);
+                    }
+                }
                 // TODO: save results
                 try {
                     log.info(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(task.toJson()));

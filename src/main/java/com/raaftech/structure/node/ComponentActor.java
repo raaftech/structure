@@ -133,10 +133,17 @@ public class ComponentActor extends NodeActor<Component> {
 
                 ObjectNode data = result.putObject("data");
 
-                locallyRun.stream()
-                        .forEach(instrument -> data.put(instrument.getName(), instrument.getUuid()));
-                remotelyRun.stream()
-                        .forEach(instrument -> data.put(instrument.getName(), instrument.getUuid()));
+//                locallyRun.stream()
+//                        .forEach(instrument -> data.put(instrument.getName(), instrument.getUuid()));
+//                remotelyRun.stream()
+//                        .forEach(instrument -> data.put(instrument.getName(), instrument.getUuid()));
+
+                for (Controller controller: locallyRun) {
+                    data.put(controller.getName(), controller.getUuid());
+                }
+                for (Controller controller: remotelyRun) {
+                    data.put(controller.getName(), controller.getUuid());
+                }
 
                 return response(request, result);
             }
