@@ -56,6 +56,8 @@ public class InstrumentRunner {
 
     private final Logger log = LoggerFactory.getLogger(InstrumentRunner.class);
 
+    private int timeAllocated = 3000;
+
     /**
      * Construct the InstrumentRunner, do some checks, etc.
      *
@@ -202,6 +204,11 @@ public class InstrumentRunner {
         }
     }
 
+    public InstrumentRunner(Component origin, Controller controller, ObjectNode arguments, String taskId, int timeAllocated) {
+        this(origin, controller, arguments, taskId);
+        this.timeAllocated = timeAllocated;
+    }
+
     /**
      * Create a send file execution string using the given SendFile controller and context.
      *
@@ -242,7 +249,7 @@ public class InstrumentRunner {
         // convert (copies of) the origin, subject and agent trees and add them to the context
         subject.toArguments().forEach(arg -> collect.accept(arg, "subject"));
         agent.toArguments().forEach(arg -> collect.accept(arg, "agent"));
-        ObjectNode originCopy = (((Instance)origin).toJson().deepCopy()).put("_from", "origin");
+        ObjectNode originCopy = ((ObjectNode)origin.toFlatJson().deepCopy()).put("_from", "origin");
         context.add(originCopy);
         ObjectNode argumentsCopy = arguments.deepCopy();
         // create a copy of the given statically provided arguments
@@ -478,6 +485,7 @@ public class InstrumentRunner {
                             .put("controller", controller.getName())
                             .put("capability", instrumentRepository.getInstrumentCapability(controller.getUuid()).getName());
                     job.put("command", command);
+                    job.put("timeAllocated", timeAllocated);
                     jobs.add(job);
                 });
 

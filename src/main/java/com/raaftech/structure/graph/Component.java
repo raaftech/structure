@@ -188,6 +188,10 @@ public class Component extends Instance {
         return this;
     }
 
+    public Component runController(Controller controller, ObjectNode arguments, String taskId, int timeAllocated) {
+        new InstrumentRunner(this, controller, arguments, taskId, timeAllocated).startInstrument();
+        return this;
+    }
     public Component save() {
         log.info("Saving component with UUID {} ", getUuid());
         super.save();
@@ -260,6 +264,19 @@ public class Component extends Instance {
         }
 
         result.put("_nodeType", getNodeType());
+
+        return result;
+    }
+
+    public JsonNode toFlatJson() {
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode result = mapper.createObjectNode();
+
+        result.put("name", getName());
+        result.put("desc", getDesc());
+        result.put("uuid", getUuid());
+        result.put("_hierarchyPath", getInstanceOf().getHierarchyPath());
+        kv.asMap().forEach((key, val) -> result.put(key, val.toString()));
 
         return result;
     }

@@ -26,12 +26,12 @@
             "type": "object",
             "additionalProperties": false,
             "properties": {
-              "instrument": { "type": "string" },
+              "controller": { "type": "string" },
               "originName": { "type": "string" },
               "originUuid": { "type": "string" },
               "capability": { "type": "string" }
             },
-            "required": [ "instrument", "originName", "originUuid", "capability" ]
+            "required": [ "controller", "originName", "originUuid", "capability" ]
           }
         },
         "required": [ "command" ]
