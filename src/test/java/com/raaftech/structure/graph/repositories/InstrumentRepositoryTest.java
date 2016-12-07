@@ -289,7 +289,7 @@ public class InstrumentRepositoryTest {
 
         Set<Controller> controllers = instrumentRepository.findLocalControllers(sshd.getUuid(), host2.getUuid());
         // expect 4 instruments: SshReceiveString, SshReceiveFile, stop, start
-        assertEquals(4, controllers.stream().count());
+        assertEquals(3, controllers.stream().count());
     }
 
     @Test
@@ -326,7 +326,7 @@ public class InstrumentRepositoryTest {
                 .build();
         nonLocal.save();
 
-        controllers = instrumentRepository.findLocalControllers(sshd.getUuid(), structure.getUuid());
+        controllers = instrumentRepository.findRemoteControllers(sshd.getUuid(), structure.getUuid());
         // expect 1 instruments, the one we just made
         assertEquals(1, controllers.stream().count());
     }
