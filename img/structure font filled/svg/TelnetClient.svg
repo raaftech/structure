@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!-- Generator: Adobe Illustrator 16.0.5, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="1000px"
+	 height="1000px" viewBox="0 0 1000 1000" style="enable-background:new 0 0 1000 1000;" xml:space="preserve">
+<g id="TelnetClient">
+	<g>
+		<path d="M580.238,416.411L320,609.337l163.621-160.748h-63.819L680,255.665L516.379,416.411H580.238z"/>
+		<path d="M905,129.87H95c-24.851,0-45,20.149-45,45v501.746c0,24.873,20.149,45,45,45h292.5v2.266v45
+			c0,18.564-15.183,33.75-33.75,33.75h-135c-18.567,0-33.75,15.182-33.75,33.75v33.75h630v-33.75c0-18.568-15.182-33.75-33.75-33.75
+			h-135c-18.568,0-33.75-15.186-33.75-33.75v-45v-2.266H905c24.85,0,45-20.127,45-45V174.87C950,150.019,929.85,129.87,905,129.87z
+			 M887.5,672.16h-775V179.347h775V672.16z"/>
+		<polygon points="419.802,448.589 483.621,448.589 320,609.337 580.238,416.411 516.379,416.411 680,255.665 		"/>
+	</g>
+</g>
+<g id="Layer_1">
+</g>
+</svg>
