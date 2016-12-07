@@ -36,6 +36,12 @@ angular.module("structureApp")
                     .then(function(response) {
                         return response;
                     });
+            },
+
+            liveStatus: function(scope) {
+                vertxEventBusService.on("com.raaftech.structure.status", function(result) {
+                    scope.logStatus(result);
+                });
             }
         }
     });

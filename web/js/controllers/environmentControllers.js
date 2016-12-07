@@ -101,6 +101,7 @@ angular.module("structureApp")
         $scope.getNInstances = function(n) {
             instanceSrvs.getNInstances(n).then(function(response) {
                 $scope.instances = response;
+                instanceSrvs.liveStatus($scope);
             });
         };
 
@@ -111,6 +112,7 @@ angular.module("structureApp")
         };
 
         $scope.showComponents = [];
+        $scope.color = [];
 
         $scope.setShowComponents = function(instance) {
             if($scope.showComponents[instance.uuid]) {
@@ -118,6 +120,28 @@ angular.module("structureApp")
             }
             else{
                 $scope.showComponents[instance.uuid] = 1;
+            }
+        };
+
+        $scope.logStatus = function(response) {
+            var response = response;
+            //console.log(response);
+            if(response.event == "serviceStatus") {
+                if(!response.data.uuid in $scope.color) {
+                    var obj = {};
+                    obj[response.data.uuid] = response.data.status;
+                    $scope.color.push(obj);
+                }
+                else{
+                    $scope.color[response.data.uuid] = response.data.status;
+                }
+            }
+            if(response.event === "discoveredComputer") {
+                //console.log('get instance: ' + response.data.uuid);
+                instanceSrvs.getInstance(response.data.uuid).then(function(response) {
+                    $scope.instances.push(response);
+                    //console.log(response);
+                });
             }
         };
     });

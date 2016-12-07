@@ -19,7 +19,7 @@ angular.module("structureApp")
                     "instrument": data.uuidInstr
                 };
                 if(data.instrumentname == 'IpAddressDiscover') {
-                    args.timeAllocated = 60000;
+                    args.timeAllocated = 600000;
                 }
                 return vertxEventBusService.send("com.raaftech.structure.node.component." + data.uuid, {
                         "msgh": "runInstrument",
