@@ -293,6 +293,11 @@ public class Application {
                 log.info("Deployed BusManager with id: {}", ar.result());
             }
         });
+        vertx.deployVerticle("com.raaftech.structure.manager.DiscoveryManager", ar -> {
+            if (ar.succeeded()) {
+                log.info("Deployed DiscoveryManager with id: {}", ar.result());
+            }
+        });
         vertx.deployVerticle("com.raaftech.structure.manager.InstrumentManager", new DeploymentOptions().setWorker(false), ar -> {
             if (ar.succeeded()) {
                 log.info("Deployed InstrumentManager with id: {}", ar.result());
@@ -377,7 +382,7 @@ public class Application {
         Optional<String> hostname = getHostname();
         hostname.map(String::trim).ifPresent((dn) -> {
             log.info("Hostname is \"{}\"", dn);
-            if (instanceRepository.findHostname(dn).size() == 0) {
+            if (componentRepository.findHostname(dn).size() == 0) {
                 log.info("Structure is not registered in the database, now discovering itself");
                 ProcessRunner runner = new ProcessRunner("node tools/discovery/combi.js -c 127.0.0.1/32");
                 try {
