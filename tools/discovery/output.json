@@ -1,1 +1,2658 @@
-[{"_typeUuid":"b1bc963a-19cc-4518-aecb-a35d028c49e3","name":"Type","longName":"Type","shortName":"type","desc":"The root type.","ver":""},{"_typeUuid":"a79ce509-a021-4177-ae61-73abd01fb479","name":"Component","longName":"Component","shortName":"component","desc":"An abstract base component.","ver":""},{"_typeUuid":"3f4a43f7-b558-4bf0-ba7e-66b99cffaf16","name":"Configuration","longName":"Configuration","shortName":"configuration","desc":"An abstract configuration component.","ver":""},{"_typeUuid":"299001a6-1091-4c0d-87be-c512af03e179","name":"IpAddress","longName":"IpAddress","shortName":"ipaddress","desc":"An IP address (address only, can be assigned to a network interface).","ver":""},{"_typeUuid":"f7fbe917-9d49-4df5-95f6-6e132067a424","name":"Ipv4Address","longName":"Ipv4Address","shortName":"ipv4address","desc":"An IPv4 address (address only, can be assigned to a network interface).","ver":""},{"_typeUuid":"47b5804d-5f5d-4bf8-89f6-a189c29b05ae","name":"Ipv6Address","longName":"Ipv6Address","shortName":"ipv6address","desc":"An IPv6 address (address only, can be assigned to a network interface).","ver":""},{"_typeUuid":"91c999a0-33ec-42ee-bae0-6f8adae42535","name":"IpListener","longName":"IpListener","shortName":"iplistener","desc":"An IP listener (address and port, can be assigned to a network service).","ver":""},{"_typeUuid":"5ca95f7a-5175-4e7f-8a61-862e24485af3","name":"Ipv4Listener","longName":"Ipv4Listener","shortName":"ipv4listener","desc":"An IPv4 listener (address and port, can be assigned to a network service).","ver":""},{"_typeUuid":"6a79b4e9-13ce-4a09-bc5b-b429d23b34d7","name":"Ipv6Listener","longName":"Ipv6Listener","shortName":"ipv6listener","desc":"An IPv6 listener (address and port, can be assigned to a network service).","ver":""},{"_typeUuid":"0e9f72bd-5bc5-43dc-ab86-30a8f7171bc6","name":"Url","longName":"Url","shortName":"url","desc":"a uniform resource locator.","ver":""},{"_typeUuid":"99c0da37-3599-418d-8ecc-de36d37ae9f4","name":"DnsName","longName":"DnsName","shortName":"dnsname","desc":"Either a short name or a fully-qualified domain name.","ver":""},{"_typeUuid":"ea6a7487-867c-4a74-8849-fb8539b8169f","name":"Hardware","longName":"Hardware","shortName":"hardware","desc":"A hardware component.","ver":""},{"_typeUuid":"3d0865a2-3ecf-4035-886b-0bb603c0e2c2","name":"ConsoleHardware","longName":"ConsoleHardware","shortName":"consolehardware","desc":"A console device.","ver":""},{"_typeUuid":"f5b25736-ec12-4a7e-b198-548b97ebc36f","name":"GenericSerial","longName":"GenericSerial","shortName":"genericserial","desc":"A serial communication device.","ver":""},{"_typeUuid":"a642b995-c073-4c27-a611-c5bf3854958f","name":"GraphicsHardware","longName":"GraphicsHardware","shortName":"graphicshardware","desc":"A graphics device.","ver":""},{"_typeUuid":"b3a2ac7c-ad8a-4047-a460-2ac41a7ddfef","name":"GenericVga","longName":"GenericVga","shortName":"genericvga","desc":"A VGA graphics device.","ver":""},{"_typeUuid":"1c87c672-1f69-4a02-9bc8-9eff28dda5e5","name":"MemoryHardware","longName":"MemoryHardware","shortName":"memoryhardware","desc":"A memory device","ver":""},{"_typeUuid":"44131d46-c1b0-4030-ae5a-9a3108627749","name":"VolatileMemory","longName":"VolatileMemory","shortName":"volatilememory","desc":"A generic volatile memory device.","ver":""},{"_typeUuid":"4c0a0638-1fa7-4f5b-9d69-1d199dcedccc","name":"RandomAccessMemory","longName":"RandomAccessMemory","shortName":"randomaccessmemory","desc":"Random access memory.","ver":""},{"_typeUuid":"7f129e53-ff07-4ed8-9062-daf5f733a3a6","name":"NonVolatileMemory","longName":"NonVolatileMemory","shortName":"nonvolatilememory","desc":"A generic non-volatile memory device.","ver":""},{"_typeUuid":"24cc3545-0d1a-4d85-8d08-a83c3dbe5912","name":"HardDiskDrive","longName":"HardDiskDrive","shortName":"harddiskdrive","desc":"A non-volatile harddisk-based storage device.","ver":""},{"_typeUuid":"7a60ec32-0a9a-40b9-bf1f-d69674d4a233","name":"SolidStateDrive","longName":"SolidStateDrive","shortName":"solidstatedrive","desc":"A non-volatile solid-state storage device.","ver":""},{"_typeUuid":"118ec961-a823-465b-be17-b706f1c8c2f1","name":"FloppyDrive","longName":"FloppyDrive","shortName":"floppydrive","desc":"A floppy disk drive.","ver":""},{"_typeUuid":"a507461f-647b-4b79-936a-721ca2dba145","name":"TapeDrive","longName":"TapeDrive","shortName":"tapedrive","desc":"A tape drive.","ver":""},{"_typeUuid":"30af2fe3-aa05-4912-a3d5-dddfdacf74e2","name":"CdDrive","longName":"CdDrive","shortName":"cddrive","desc":"A Compact Disc drive.","ver":""},{"_typeUuid":"23ab95d2-2815-4121-a81c-63aca40cdcfa","name":"DvdDrive","longName":"DvdDrive","shortName":"dvddrive","desc":"A Digital Video Disc drive.","ver":""},{"_typeUuid":"cbc27482-11d1-4890-a3e1-e9f80baea82c","name":"BdDrive","longName":"BdDrive","shortName":"bddrive","desc":"A Digital Video Disc drive.","ver":""},{"_typeUuid":"86786ed6-d62a-4011-9ae8-0082000e48fa","name":"NetworkHardware","longName":"NetworkHardware","shortName":"networkhardware","desc":"A network device.","ver":""},{"_typeUuid":"0d4c880d-d888-435f-b3a3-3d3eb9e70ddf","name":"WiredNetworkHardware","longName":"WiredNetworkHardware","shortName":"wirednetworkhardware","desc":"A wired network device.","ver":""},{"_typeUuid":"f34b76e4-f5a6-4bae-968e-f22ef09b1e35","name":"ModemHardware","longName":"ModemHardware","shortName":"modemhardware","desc":"A modem networking device.","ver":""},{"_typeUuid":"0dbd26f2-baff-446c-9241-46eaa3e03736","name":"EthernetHardware","longName":"EthernetHardware","shortName":"ethernethardware","desc":"A wired ethernet device.","ver":""},{"_typeUuid":"61328f83-db43-4efe-81be-df47e17814a5","name":"WirelessNetworkHardware","longName":"WirelessNetworkHardware","shortName":"wirelessnetworkhardware","desc":"A wireless network device.","ver":""},{"_typeUuid":"009cf823-39c0-4b17-ae81-ad98ed0d4585","name":"BluetoothHardware","longName":"BluetoothHardware","shortName":"bluetoothhardware","desc":"A Bluetooth device.","ver":""},{"_typeUuid":"42c7997c-0c56-4f93-956f-5fd0778c47c6","name":"IrdaHardware","longName":"IrdaHardware","shortName":"irdahardware","desc":"An IrDA device.","ver":""},{"_typeUuid":"78ff02be-2abe-4a8f-a082-a0d9c3cdae70","name":"WifiHardware","longName":"WifiHardware","shortName":"wifihardware","desc":"A WiFi device.","ver":""},{"_typeUuid":"8d6e0956-033e-4efc-8846-e85bfddc8f98","name":"WwanHardware","longName":"WwanHardware","shortName":"wwanhardware","desc":"A wireless WAN device.","ver":""},{"_typeUuid":"b7b2a2ff-3af7-469b-afbf-e52f1b80be91","name":"ProcessingUnit","longName":"ProcessingUnit","shortName":"processingunit","desc":"A processing unit.","ver":""},{"_typeUuid":"95b9f7a2-1a17-4cb9-8088-3e2e478ce638","name":"AlphaProcessor","longName":"AlphaProcessor","shortName":"alphaprocessor","desc":"An Alpha processor.","ver":""},{"_typeUuid":"f3b1b497-1e83-4a09-a280-04f46a83fe24","name":"ArmProcessor","longName":"ArmProcessor","shortName":"armprocessor","desc":"An ARM processor.","ver":""},{"_typeUuid":"241015c9-72f5-491f-a870-a30d8f7902fd","name":"ItaniumProcessor","longName":"ItaniumProcessor","shortName":"itaniumprocessor","desc":"An Itanium processor.","ver":""},{"_typeUuid":"33920524-4989-4322-a0ca-1cea614d7fef","name":"M68kProcessor","longName":"M68kProcessor","shortName":"m68kprocessor","desc":"A Motorola 68000 series processor.","ver":""},{"_typeUuid":"cbe81157-97f6-401b-bbaa-cfbc4f479298","name":"MipsProcessor","longName":"MipsProcessor","shortName":"mipsprocessor","desc":"A processor using the MIPS ISA.","ver":""},{"_typeUuid":"b4f67698-7eca-4ca1-a4cf-b7ef9737785c","name":"MosProcessor","longName":"MosProcessor","shortName":"mosprocessor","desc":"A MOS Technology processor.","ver":""},{"_typeUuid":"689a4f33-e08d-4e7f-83a5-79fd310bd3f9","name":"PariscProcessor","longName":"PariscProcessor","shortName":"pariscprocessor","desc":"A PA Risc processor.","ver":""},{"_typeUuid":"808f2737-feca-4b70-aa1a-53410b970b10","name":"PowerProcessor","longName":"PowerProcessor","shortName":"powerprocessor","desc":"A PowerPC processor.","ver":""},{"_typeUuid":"798ba8d1-8da7-471a-9efa-30530569b6a1","name":"SparcProcessor","longName":"SparcProcessor","shortName":"sparcprocessor","desc":"A SPARC processor.","ver":""},{"_typeUuid":"4d4971b6-43b3-4c14-a82a-c51d72ba23a5","name":"X86Processor","longName":"X86Processor","shortName":"x86processor","desc":"An x86-based processor.","ver":""},{"_typeUuid":"a68f42c5-2a1d-43cb-bebd-55339f5e61ee","name":"ZilogProcessor","longName":"ZilogProcessor","shortName":"zilogprocessor","desc":"A ZiLOG processor.","ver":""},{"_typeUuid":"99ce31e0-d540-4582-ae38-b84f4bf13868","name":"Z80","longName":"Z80","shortName":"z80","desc":"A ZiLOG Z80 processor.","ver":""},{"_typeUuid":"8db2b492-9a4a-41fe-97a5-bc625da042ea","name":"Software","longName":"Software","shortName":"software","desc":"An abstract software component.","ver":""},{"_typeUuid":"86c0439a-4219-46e6-82a3-6fb2ee774aa4","name":"CloudSystem","longName":"CloudSystem","shortName":"cloudsystem","desc":"A cloud (operating) system and/or environment.","ver":""},{"_typeUuid":"f05e325e-1aee-4892-96e4-8bcd6e97c528","name":"OperatingSystem","longName":"OperatingSystem","shortName":"operatingsystem","desc":"An operating system.","ver":""},{"_typeUuid":"c3008eec-b454-4ef6-bf7e-0bd92c13d3c3","name":"ServiceManager","longName":"ServiceManager","shortName":"servicemanager","desc":"An operating system initialization system.","ver":""},{"_typeUuid":"c409c9de-e23d-429b-a59a-ac46ea296331","name":"Systemctl","longName":"Systemctl","shortName":"systemctl","desc":"Systemd Service Manager.","ver":""},{"_typeUuid":"67d7aa27-e0d9-458c-89fb-82734a8def95","name":"Rc","longName":"Rc","shortName":"rc","desc":"The rc service manager, used on most BSD's.","ver":""},{"_typeUuid":"21b82fbf-803c-4056-b914-502e2ff9952d","name":"Services","longName":"Services","shortName":"services","desc":"Windows Service Manager.","ver":""},{"_typeUuid":"e2b8b9ee-b66f-4252-8fba-4fb172f741bc","name":"PackageManager","longName":"PackageManager","shortName":"packagemanager","desc":"A package manager.","ver":""},{"_typeUuid":"d047f415-734c-4bd3-92b9-d68d5521ce69","name":"Interpreter","longName":"Interpreter","shortName":"interpreter","desc":"A command or programming language interpreter.","ver":""},{"_typeUuid":"c5c7fcb5-8ac3-40cc-b195-b2b6af368e81","name":"Hypervisor","longName":"Hypervisor","shortName":"hypervisor","desc":"A virtualization hypervisor.","ver":""},{"_typeUuid":"59aeae81-9741-4986-b9c2-931504cfc9e3","name":"Emulator","longName":"Emulator","shortName":"emulator","desc":"A hardware platform emulator.","ver":""},{"_typeUuid":"3fb4603b-281e-47c0-b338-768ea05d4660","name":"Server","longName":"Server","shortName":"server","desc":"A generic local/networked/daemonized server.","ver":""},{"_typeUuid":"8f371b1b-52a3-4409-be70-9cd947bec8dd","name":"Client","longName":"Client","shortName":"client","desc":"A generic client.","ver":""},{"_typeUuid":"5f1eb7c5-ec5e-4563-be6a-fc50774fc374","name":"Grouping","longName":"Grouping","shortName":"grouping","desc":"A group of references to things.","ver":""},{"_typeUuid":"f31b8dc9-7b9a-47cc-bd3d-20b94b6daac1","name":"Locational","longName":"Locational","shortName":"locational","desc":"A place/location.","ver":""},{"_typeUuid":"44197148-678f-4421-a618-dc6807beaf30","name":"Building","longName":"Building","shortName":"building","desc":"A building.","ver":""},{"_typeUuid":"9ca8061a-898c-4f2f-aeb3-c77d1747559f","name":"Floor","longName":"Floor","shortName":"floor","desc":"A floor.","ver":""},{"_typeUuid":"94721751-ab2f-4285-9c33-cd91cb919430","name":"Room","longName":"Room","shortName":"room","desc":"A room.","ver":""},{"_typeUuid":"c94c2c32-8e10-48c3-a31b-6337c2ad4df4","name":"Organizational","longName":"Organizational","shortName":"organizational","desc":"An organizational group.","ver":""},{"_typeUuid":"d7582691-8ccc-415c-886b-7d363c8b6e84","name":"Company","longName":"Company","shortName":"company","desc":"A company.","ver":""},{"_typeUuid":"aa6bc876-33fe-4710-b409-edb31e1081de","name":"Department","longName":"Department","shortName":"department","desc":"A department.","ver":""},{"_typeUuid":"9d68148a-28ec-4f24-b1d7-0fc2d407ab78","name":"Team","longName":"Team","shortName":"team","desc":"A team.","ver":""},{"_typeUuid":"ee92c308-80f4-40b2-af3a-77d26cd99517","name":"Componental","longName":"Componental","shortName":"componental","desc":"A group for organizing references to components.","ver":""},{"_typeUuid":"ec11db91-6973-4285-b018-b461fbb432d7","name":"Computer","longName":"Computer","shortName":"computer","desc":"An assembled computer device.","ver":""},{"_typeUuid":"3175d762-dd97-434f-a288-21e4591480cf","name":"Actor","longName":"Actor","shortName":"actor","desc":"Something or someone that interacts/starts/acts within the system.","ver":""},{"_typeUuid":"88d8630d-54ce-4aa5-8505-2068c31df5b1","name":"User","longName":"User","shortName":"user","desc":"A user.","ver":""},{"_typeUuid":"395d3e08-842b-4640-8b57-751e1b0c9e4b","name":"Batch","longName":"Batch","shortName":"batch","desc":"A batch user.","ver":""},{"_typeUuid":"916e04a9-c773-4eaf-9c08-450016426e5a","name":"Capability","longName":"Capability","shortName":"capability","desc":"A software component gives capabilities to its parent or to siblings.","ver":""},{"_typeUuid":"b3cfd296-1090-43c0-ac2e-00e5d7fe7779","name":"State","longName":"State","shortName":"state","desc":"A capability that makes it possible to state-check.","ver":""},{"_typeUuid":"632ca701-2648-4df5-87ee-a41d3d1ef3da","name":"Stop","longName":"Stop","shortName":"stop","desc":"A capability that makes it possible to stop something.","ver":""},{"_typeUuid":"347ca5da-db19-4d98-9fed-60e72d5d6bba","name":"Start","longName":"Start","shortName":"start","desc":"A capability that makes it possible to stop something.","ver":""},{"_typeUuid":"cc558715-63dc-4162-95a4-9c51792c7953","name":"Restart","longName":"Restart","shortName":"restart","desc":"A capability that makes it possible to restart something.","ver":""},{"_typeUuid":"3c077211-0ffa-452f-8d84-5bd5be5598f5","name":"Install","longName":"Install","shortName":"install","desc":"A capability that makes it possible to install something.","ver":""},{"_typeUuid":"3dc7b06a-69a0-4650-897a-34c5d069e3c5","name":"Configure","longName":"Configure","shortName":"configure","desc":"A capability that makes it possible to configure something.","ver":""},{"_typeUuid":"ea1b32de-cf31-4c1b-9b2b-f1a6d9983418","name":"Uninstall","longName":"Uninstall","shortName":"uninstall","desc":"A capability that makes it possible to uninstall something.","ver":""},{"_typeUuid":"b0995f9f-90af-4066-9d00-6b7b33f9a19b","name":"CreateVm","longName":"CreateVm","shortName":"createvm","desc":"A capability that makes it possible to create a virtual machine.","ver":""},{"_typeUuid":"cdb08b91-5998-4f7c-9b82-b345b8052ecd","name":"DestroyVm","longName":"DestroyVm","shortName":"destroyvm","desc":"A capability that makes it possible to destroy a virtual machine.","ver":""},{"_typeUuid":"76fb3116-d4a8-459a-b62b-a2641bcb7e7d","name":"Execute","longName":"Execute","shortName":"execute","desc":"A capability that makes it possible to run commands.","ver":""},{"_typeUuid":"3c170a27-05ee-4999-97d4-e7cc9135cb96","name":"Detect","longName":"Detect","shortName":"detect","desc":"A capability that makes it possible for a component to detect itself.","ver":""},{"_typeUuid":"61cde9d0-3aa2-4951-aaa8-79e5656dac41","name":"Query","longName":"Query","shortName":"query","desc":"A capability that makes it possible to query components that are managed by the querying component.","ver":""},{"_typeUuid":"ca49051c-d7d1-45fa-b327-0f4dca810897","name":"Identify","longName":"Identify","shortName":"identify","desc":"A capability that makes it possible to identify (version, name, etc) something.","ver":""},{"_typeUuid":"64ca8ff9-8071-4933-95d0-bbacb97bd4a8","name":"SendString","longName":"SendString","shortName":"sendstring","desc":"A capability that makes it possible to send a string over a protocol.","ver":""},{"_typeUuid":"8292da1f-75de-41d6-a8fb-cdcca6700ad9","name":"ReceiveString","longName":"ReceiveString","shortName":"receivestring","desc":"A capability that makes it possible to receive a string over a protocol.","ver":""},{"_typeUuid":"371d336a-d328-4468-9b0f-40877bb5b646","name":"SendFile","longName":"SendFile","shortName":"sendfile","desc":"A capability that makes it possible to send a file over a protocol.","ver":""},{"_typeUuid":"f2ba58a6-0934-4f0e-b9cf-1a7430a3fa7a","name":"ReceiveFile","longName":"ReceiveFile","shortName":"receivefile","desc":"A capability that makes it possible to receive a file over a protocol.","ver":""},{"_typeUuid":"4251040d-f05c-4711-8094-59ce773a8c35","name":"Invoke","longName":"Invoke","shortName":"invoke","desc":"A capability that makes it possible to invoke a command to execute.","ver":""},{"_typeUuid":"20d9b0db-92b2-42a7-93d9-f86e00312fef","name":"Access","longName":"Access","shortName":"access","desc":"A capability that makes it possible to access a textual or graphical console.","ver":""},{"_typeUuid":"db0c3c65-52fd-4dec-907c-6c8a669e88f3","name":"Protocol","longName":"Protocol","shortName":"protocol","desc":"A protocol.","ver":""},{"_typeUuid":"9fd04885-179f-4c72-99a2-52c692e61b19","name":"HTTP","longName":"HTTP","shortName":"http","desc":"The hypertext transfer protocol.","ver":""},{"_typeUuid":"09102127-1803-48b6-a9f4-2fd1b891293d","name":"HTTP09","longName":"HTTP09","shortName":"http09","desc":"The hypertext transfer protocol, version 0.9.","ver":""},{"_typeUuid":"256d493d-3b7a-4e28-8e64-8f81de4d92de","name":"HTTP10","longName":"HTTP10","shortName":"http10","desc":"The hypertext transfer protocol, version 1.0.","ver":""},{"_typeUuid":"b11b10d7-6f46-49c0-bc61-3ecdd4342cd7","name":"HTTP11","longName":"HTTP11","shortName":"http11","desc":"The hypertext transfer protocol, version 1.1.","ver":""},{"_typeUuid":"0771de77-c3d8-4db1-92fa-7ac96205f9bb","name":"SMB","longName":"SMB","shortName":"smb","desc":"The server message block protocol.","ver":""},{"_typeUuid":"70960db9-f085-499d-9d22-2569badc41c7","name":"SMB10","longName":"SMB10","shortName":"smb10","desc":"The server message block protocol, version 1.0.","ver":""},{"_typeUuid":"aeefff52-0300-4611-be60-e745bfbd3d37","name":"SMB20","longName":"SMB20","shortName":"smb20","desc":"The server message block protocol, version 2.0.","ver":""},{"_typeUuid":"5c7b0507-dfd9-4617-a45f-3d617cd61e68","name":"SMB21","longName":"SMB21","shortName":"smb21","desc":"The server message block protocol, version 2.1.","ver":""},{"_typeUuid":"dbfb220e-b22c-460e-b27d-65de22501618","name":"SMB30","longName":"SMB30","shortName":"smb30","desc":"The server message block protocol, version 3.0.","ver":""},{"_typeUuid":"008b9566-6317-4ddd-977c-9ddca00b79b8","name":"SSH","longName":"SSH","shortName":"ssh","desc":"The secure shell protocol.","ver":""},{"_typeUuid":"000b0fd3-a121-4194-a441-0857abca490d","name":"SSH10","longName":"SSH10","shortName":"ssh10","desc":"The secure shell protocol, version 1.0.","ver":""},{"_typeUuid":"07b23795-140f-4a72-9c86-e1d3b86cd149","name":"SSH20","longName":"SSH20","shortName":"ssh20","desc":"The secure shell protocol, version 2.0.","ver":""},{"_typeUuid":"27fc7ed2-beb3-41c8-aa69-900ad7bb989f","name":"TELNET","longName":"TELNET","shortName":"telnet","desc":"The telnet protocol.","ver":""},{"_typeUuid":"14dbfbfa-b50a-466f-8539-55d5d3f15e4a","name":"Instrument","longName":"Instrument","shortName":"instrument","desc":"A representation of a software instrument that gives end user function.","ver":""},{"_typeUuid":"f482204e-7d63-45ca-96c9-10a7cc2783da","name":"Controller","longName":"Controller","shortName":"controller","desc":"An implementation of an instrument that gives 'behavior'.","ver":""},{"_typeUuid":"24702e44-8769-4aea-903d-9e1164f99e5b","name":"Marker","longName":"Marker","shortName":"marker","desc":"Markers are considered 'system' instruments that help us build send<->receive paths.","ver":""},{"_typeUuid":"b5fa636c-1067-45ac-b027-ade2797bef6f","name":"Parser","longName":"Parser","shortName":"parser","desc":"An instrument that parses raw results from controllers into graphable data.","ver":""},{"_typeUuid":"f3498c02-58c6-486b-87c6-9d54607fdb12","name":"Result","longName":"Result","shortName":"result","desc":"A result from an operation.","ver":""},{"_typeUuid":"c970f6d3-4898-4596-bfac-9d6d1f6b2541","name":"Profile","longName":"Profile","shortName":"profile","desc":"A profile of software which includes its parts like binaries, data files, directories, etc.","ver":""},{"_typeUuid":"fec4ca89-8e2d-4562-a25c-0638eef3a525","name":"HttpClient","longName":"HttpClient","shortName":"httpclient","desc":"A generic HTTP Client.","ver":""},{"_typeUuid":"bf1826d4-cff3-4b76-8cc9-cc752560a4bb","name":"RemoteAccessClient","longName":"RemoteAccessClient","shortName":"remoteaccessclient","desc":"A generic remote access client.","ver":""},{"_typeUuid":"7d1c7242-2403-4578-b6c4-789573ea3c45","name":"SmbClient","longName":"SmbClient","shortName":"smbclient","desc":"A generic SMB/CIFS Client.","ver":""},{"_typeUuid":"442f0c59-c264-4227-9b50-2ef2b90af968","name":"TelnetClient","longName":"TelnetClient","shortName":"telnetclient","desc":"A generic TELNET Client.","ver":""},{"_typeUuid":"662490c0-778a-46e5-bc9a-c0c6cec17422","name":"GnuTelnetClient","longName":"GnuTelnetClient","shortName":"gnutelnetclient","desc":"GNU telnet client from GNU inetutils.","ver":""},{"_typeUuid":"dce98afb-1a42-48af-8b4b-ab9d08b3b5dc","name":"SshClient","longName":"SshClient","shortName":"sshclient","desc":"A generic SSH Client.","ver":""},{"_typeUuid":"9e977808-78fd-4eb6-95e0-ff7c7011caa5","name":"OpenSshClient","longName":"OpenSshClient","shortName":"opensshclient","desc":"The OpenSSH client.","ver":""},{"_typeUuid":"2f207919-c852-4177-9b8f-e4a368026ca6","name":"Winexe","longName":"Winexe","shortName":"winexe","desc":"A *nix smb client.","ver":""},{"_typeUuid":"f513ddfc-e50b-49b4-9bd8-64afc61ff7a5","name":"Samba","longName":"Samba","shortName":"samba","desc":"A *nix smb toolchain.","ver":""},{"_typeUuid":"6619adef-3bcb-4e32-bfec-d235a7bf3e29","name":"Iputils","longName":"Iputils","shortName":"iputils","desc":"Network monitoring tools, including ping.","ver":""},{"_typeUuid":"c1d0eada-0d22-4026-aa2d-d865c1583482","name":"ApacheCloudStack","longName":"ApacheCloudStack","shortName":"apachecloudstack","desc":"The Apache CloudStack platform.","ver":""},{"_typeUuid":"6d080eef-d9c6-4be7-b81b-b9c57f0fe515","name":"VmwareCloudFoundry","longName":"VmwareCloudFoundry","shortName":"vmwarecloudfoundry","desc":"The VMware CloudFoundry platform.","ver":""},{"_typeUuid":"87c66de2-e24b-4586-8170-5fcf6cc28424","name":"Eucalyptus","longName":"Eucalyptus","shortName":"eucalyptus","desc":"The Eucalyptus Cloud platform.","ver":""},{"_typeUuid":"0e5b0e12-5975-43f5-9e92-5298a75a5f7a","name":"OpenNebula","longName":"OpenNebula","shortName":"opennebula","desc":"The OpenNebula Cloud platform.","ver":""},{"_typeUuid":"e57b8fbb-05a0-4c64-830a-8da17801e757","name":"OpenShift","longName":"OpenShift","shortName":"openshift","desc":"The OpenShift Cloud platform.","ver":""},{"_typeUuid":"55e9f170-9a98-42e3-ba58-f35c592eaeb0","name":"OpenStack","longName":"OpenStack","shortName":"openstack","desc":"The OpenStack Cloud platform.","ver":""},{"_typeUuid":"4cd84c58-3cb3-41c1-89d8-6c2fa70ddb54","name":"AmazonWebServices","longName":"AmazonWebServices","shortName":"amazonwebservices","desc":"The Amazon Web Services Cloud platform.","ver":""},{"_typeUuid":"7e60d3b9-5837-41c3-bd68-12c850171441","name":"IbmBlueMix","longName":"IbmBlueMix","shortName":"ibmbluemix","desc":"The IBM BlueMix Cloud platform.","ver":""},{"_typeUuid":"a5fafd65-2ffc-4509-8289-5760cd15a293","name":"CitrixCloudCom","longName":"CitrixCloudCom","shortName":"citrixcloudcom","desc":"The Citrix Cloud.com platform.","ver":""},{"_typeUuid":"0f48c798-6621-4659-9f13-a37e54ef4568","name":"GoogleCloud","longName":"GoogleCloud","shortName":"googlecloud","desc":"The Google Cloud platform.","ver":""},{"_typeUuid":"26a6929f-ef61-4714-baa0-e72bdbf5960a","name":"HerokuCloud","longName":"HerokuCloud","shortName":"herokucloud","desc":"The Heroku Cloud platform.","ver":""},{"_typeUuid":"e7806e74-9002-4f49-9e87-9adf25490efb","name":"HpCloud","longName":"HpCloud","shortName":"hpcloud","desc":"The HP Cloud platform.","ver":""},{"_typeUuid":"c60297ae-9fc8-4567-a272-7e2b439b4c57","name":"JoyentCloud","longName":"JoyentCloud","shortName":"joyentcloud","desc":"The Joyent Cloud platform.","ver":""},{"_typeUuid":"171c2c6a-9101-437b-b464-e99d276ded47","name":"MicrosoftAzure","longName":"MicrosoftAzure","shortName":"microsoftazure","desc":"The Microsoft Azure Cloud platform.","ver":""},{"_typeUuid":"3f368aba-b0f2-4e14-9d7b-715312a7e385","name":"OnAppCloud","longName":"OnAppCloud","shortName":"onappcloud","desc":"The OnApp Cloud platform.","ver":""},{"_typeUuid":"fc070f26-87a0-45e8-8ae0-e894fcdb83ea","name":"OracleCloud","longName":"OracleCloud","shortName":"oraclecloud","desc":"The Oracle Cloud platform.","ver":""},{"_typeUuid":"cd8f940e-219b-488e-8b75-d9fece8b3b35","name":"Bochs","longName":"Bochs","shortName":"bochs","desc":"The Bochs Emulator.","ver":""},{"_typeUuid":"7e0135dc-b720-440a-9f4e-76747f7a7fe5","name":"DosBox","longName":"DosBox","shortName":"dosbox","desc":"The DOSBox Emulator.","ver":""},{"_typeUuid":"c80fddb7-bdbf-44b9-ac54-f7dd7ce4dbd0","name":"Qemu","longName":"Qemu","shortName":"qemu","desc":"The QEMU Emulator.","ver":""},{"_typeUuid":"04b4bd73-fcec-42f6-bb03-7686ad019fbb","name":"Kvm","longName":"Kvm","shortName":"kvm","desc":"The Linux kernel-based virtual machine.","ver":""},{"_typeUuid":"3c47f326-d613-4f42-b4ac-804a6c22f076","name":"VirtualBox","longName":"VirtualBox","shortName":"virtualbox","desc":"The Oracle VM VirtualBox virtual machine.","ver":""},{"_typeUuid":"b9739ee8-34a6-4308-b7e2-ba775c0e59cf","name":"VmwareEsxi","longName":"VmwareEsxi","shortName":"vmwareesxi","desc":"The VMware ESXi virtual machine.","ver":""},{"_typeUuid":"897281c1-05be-43aa-a49c-50fd9ed4fc88","name":"VmwareWorkstation","longName":"VmwareWorkstation","shortName":"vmwareworkstation","desc":"The VMware Workstation virtual machine.","ver":""},{"_typeUuid":"54916142-640a-41df-82ad-974e92d3371c","name":"Xen","longName":"Xen","shortName":"xen","desc":"The Xen Project virtual machine.","ver":""},{"_typeUuid":"af0ecba0-9c1f-43ec-b555-9a665f904dd3","name":"HpVm","longName":"HpVm","shortName":"hpvm","desc":"The HP Integrity virtual machine.","ver":""},{"_typeUuid":"50a2e964-ed70-4a96-988d-62aa9bfec5a5","name":"PowerVm","longName":"PowerVm","shortName":"powervm","desc":"The IBM PowerVM virtual machine.","ver":""},{"_typeUuid":"b1722662-e3ca-423a-9217-d226e32ab6f4","name":"OracleVm","longName":"OracleVm","shortName":"oraclevm","desc":"The Oracle VM Server for SPARC virtual machine.","ver":""},{"_typeUuid":"ea00099d-5284-4a34-940f-7c0844e137b1","name":"VmwareVsphere","longName":"VmwareVsphere","shortName":"vmwarevsphere","desc":"The vSphere virtual machine manager.","ver":""},{"_typeUuid":"86168e4a-8c99-43c9-ad95-c8f88d96ac32","name":"UnixShell","longName":"UnixShell","shortName":"unixshell","desc":"A generic UNIX shell.","ver":""},{"_typeUuid":"6d467b28-449f-498c-9ca5-8660f522897f","name":"Bash","longName":"Bash","shortName":"bash","desc":"The Bourne Again Shell.","ver":""},{"_typeUuid":"fd95e858-c788-4578-9223-122eceb2e6c6","name":"Ksh","longName":"Ksh","shortName":"ksh","desc":"The Korn Shell.","ver":""},{"_typeUuid":"608c9a23-a194-49b0-a986-c34bd52bf691","name":"Csh","longName":"Csh","shortName":"csh","desc":"The C Shell.","ver":""},{"_typeUuid":"bb3e3458-391d-4c75-8857-4a08be7e5905","name":"Tcsh","longName":"Tcsh","shortName":"tcsh","desc":"The TENEX C Shell.","ver":""},{"_typeUuid":"7c1c3278-6eb4-4be5-8b8d-94204bfd2223","name":"Sh","longName":"Sh","shortName":"sh","desc":"The Bourne Shell.","ver":""},{"_typeUuid":"7d9afc14-8e12-4c56-8ca6-4c43fd9808ab","name":"Zsh","longName":"Zsh","shortName":"zsh","desc":"The Zhong Shao Shell.","ver":""},{"_typeUuid":"bc101145-dde2-4363-a7ed-7091d2ff2621","name":"DosShell","longName":"DosShell","shortName":"dosshell","desc":"A generic DOS shell.","ver":""},{"_typeUuid":"e181e9e8-7f30-42a3-b87f-b8e183ddfd6f","name":"DosLike","longName":"DosLike","shortName":"doslike","desc":"A DOS-like operating system.","ver":""},{"_typeUuid":"4edbaf6a-da58-4644-abac-ae80328ddb49","name":"WindowsLike","longName":"WindowsLike","shortName":"windowslike","desc":"A Windows-like operating system.","ver":""},{"_typeUuid":"060a519d-08d0-4d12-82ac-1e3f14277009","name":"Windows","longName":"Windows","shortName":"windows","desc":"The Microsoft Windows Operating System.","ver":""},{"_typeUuid":"6a1eea8b-1462-4439-8c60-12edbee6c397","name":"UnixLike","longName":"UnixLike","shortName":"unixlike","desc":"A UNIX-like operating system.","ver":""},{"_typeUuid":"a3b228b6-f737-460c-a3bc-bc653167b36c","name":"Unix","longName":"Unix","shortName":"unix","desc":"The UNIX Operating System.","ver":""},{"_typeUuid":"f0bcc651-3ca6-4d4c-ac9d-5a60b2b08520","name":"Illumos","longName":"Illumos","shortName":"illumos","desc":"The Illumos Operating System.","ver":""},{"_typeUuid":"0f81d6dc-d221-464a-ab85-1e3e5d98c3f0","name":"MacOsX","longName":"MacOsX","shortName":"macosx","desc":"The Apple Mac OS X Operating System.","ver":""},{"_typeUuid":"6004436f-7c88-4c2e-a29d-e8077bad10e9","name":"Bsd","longName":"Bsd","shortName":"bsd","desc":"The Berkeley Software Distribution Operating System.","ver":""},{"_typeUuid":"a5613527-2f64-4481-83f2-80b0cb427e28","name":"Linux","longName":"Linux","shortName":"linux","desc":"The Linux Operating System.","ver":""},{"_typeUuid":"0481d915-9d3c-4dbc-a55d-a688652934ef","name":"FreeDos","longName":"FreeDos","shortName":"freedos","desc":"A free DOS-like operating system.","ver":""},{"_typeUuid":"fd4984a4-e593-491d-ad1a-986fc203ff0e","name":"FreeDos1","longName":"FreeDos1","shortName":"freedos1","desc":"A free DOS-like operating system, version 1.x.","ver":""},{"_typeUuid":"dfbe4ce9-75be-4431-9629-3ab7d4a311e5","name":"MsDos","longName":"MsDos","shortName":"msdos","desc":"The Microsoft Disk Operating System.","ver":""},{"_typeUuid":"50dcae6d-48b0-432f-8f26-1cbf302bf504","name":"MsDos5","longName":"MsDos5","shortName":"msdos5","desc":"The Microsoft Disk Operating System, version 5.x.","ver":""},{"_typeUuid":"7d9ce51f-5ff4-40a7-b089-770aa0c29f71","name":"MsDos6","longName":"MsDos6","shortName":"msdos6","desc":"The Microsoft Disk Operating System, version 6.x.","ver":""},{"_typeUuid":"f936f4df-d1a6-4596-808a-6e2891a0688e","name":"Windows9x","longName":"Windows9x","shortName":"windows9x","desc":"The Microsoft Windows 95/98/ME based operating systems.","ver":""},{"_typeUuid":"37730c0d-e581-4089-8fc0-c848094223a7","name":"Windows95","longName":"Windows95","shortName":"windows95","desc":"The Microsoft Windows 95 operating system.","ver":""},{"_typeUuid":"7d7616b2-2fae-4f47-83cf-0e7add8950c5","name":"Windows98","longName":"Windows98","shortName":"windows98","desc":"The Microsoft Windows 98 operating system.","ver":""},{"_typeUuid":"231a2bd9-1b36-42e9-97aa-9144a05d9ade","name":"WindowsMe","longName":"WindowsMe","shortName":"windowsme","desc":"The Microsoft Windows ME operating system.","ver":""},{"_typeUuid":"3d97107a-fb41-4a45-bd98-e93190ea4e83","name":"WindowsNt","longName":"WindowsNt","shortName":"windowsnt","desc":"The Microsoft Windows NT based operating systems.","ver":""},{"_typeUuid":"da560e60-4958-4dee-ab8a-d62d9cdf3593","name":"WindowsNt4","longName":"WindowsNt4","shortName":"windowsnt4","desc":"The Microsoft Windows NT 4.0 operating system.","ver":""},{"_typeUuid":"9c97e86c-24b5-44b8-bef2-4ad465bb5c82","name":"Windows2000","longName":"Windows2000","shortName":"windows2000","desc":"The Microsoft Windows 2000 operating system.","ver":""},{"_typeUuid":"31a0496d-9cb4-4aab-b3ed-86ddb566c0f4","name":"WindowsXp","longName":"WindowsXp","shortName":"windowsxp","desc":"The Microsoft Windows XP operating system.","ver":""},{"_typeUuid":"8eb5e304-7d31-4645-89e2-8c39fefc7278","name":"Windows2003","longName":"Windows2003","shortName":"windows2003","desc":"The Microsoft Windows Server 2003 operating system.","ver":""},{"_typeUuid":"ec9e7f41-cda5-48df-9c22-8f320fff398b","name":"WindowsVista","longName":"WindowsVista","shortName":"windowsvista","desc":"The Microsoft Windows Vista operating system.","ver":""},{"_typeUuid":"a3b0f390-7257-43cb-9b9d-1cef8a4092bf","name":"Windows7","longName":"Windows7","shortName":"windows7","desc":"The Microsoft Windows 7 operating system.","ver":""},{"_typeUuid":"0cb2b9f2-3dfe-4183-8c0d-519a2b16e68a","name":"Windows2008","longName":"Windows2008","shortName":"windows2008","desc":"The Microsoft Windows Server 2008 operating system.","ver":""},{"_typeUuid":"16934de7-609f-4068-a18e-7eb7452b5f01","name":"Windows8","longName":"Windows8","shortName":"windows8","desc":"The Microsoft Windows 8 operating system.","ver":""},{"_typeUuid":"46758eba-4463-4779-91d9-9095f9d87097","name":"Windows2012","longName":"Windows2012","shortName":"windows2012","desc":"The Microsoft Windows Server 2012 operating system.","ver":""},{"_typeUuid":"3a80082c-173f-44fc-b42a-1fb381d2e3bc","name":"ReactOs","longName":"ReactOs","shortName":"reactos","desc":"The ReactOS Operating System.","ver":""},{"_typeUuid":"0a6a1bd2-1a6b-461b-aa28-cca977b8faf1","name":"ReactOs03","longName":"ReactOs03","shortName":"reactos03","desc":"The ReactOS 0.3.x Operating System.","ver":""},{"_typeUuid":"94708506-de30-4827-b9ef-84f6694c4e3f","name":"ReactOs04","longName":"ReactOs04","shortName":"reactos04","desc":"The ReactOS 0.4.x Operating System.","ver":""},{"_typeUuid":"9cf01e40-6be5-48bc-88c5-e9c3c8caaa4b","name":"Aix","longName":"Aix","shortName":"aix","desc":"The IBM AIX Operating System.","ver":""},{"_typeUuid":"154fd2d1-db50-4318-bfdf-49a62f11bdb6","name":"Aix5","longName":"Aix5","shortName":"aix5","desc":"The IBM AIX 5.x Operating System.","ver":""},{"_typeUuid":"843ff854-ee2a-4279-8dca-7caa24fc0727","name":"Aix6","longName":"Aix6","shortName":"aix6","desc":"The IBM AIX 6.x Operating System.","ver":""},{"_typeUuid":"a3f1be8b-f222-4c9d-ad77-d2a5365f418d","name":"Aix7","longName":"Aix7","shortName":"aix7","desc":"The IBM AIX 7.x Operating System.","ver":""},{"_typeUuid":"465b42e6-a7c5-4cf8-96c5-54257f054274","name":"HpUx","longName":"HpUx","shortName":"hpux","desc":"The HP/UX Operating System.","ver":""},{"_typeUuid":"416e6138-b048-4ee5-9554-6481ea996edf","name":"HpUx10","longName":"HpUx10","shortName":"hpux10","desc":"The HP/UX 10.x Operating System.","ver":""},{"_typeUuid":"ac59c16a-89d2-499e-8341-5161ffb4f176","name":"HpUx1020","longName":"HpUx1020","shortName":"hpux1020","desc":"The HP/UX 10.20 Operating System.","ver":""},{"_typeUuid":"1d34dabf-b096-4e43-80c4-7318c81bc1fe","name":"HpUx11","longName":"HpUx11","shortName":"hpux11","desc":"The HP/UX 11.x Operating System.","ver":""},{"_typeUuid":"d5312463-4313-4aea-9ac0-552201a7302c","name":"HpUx1123","longName":"HpUx1123","shortName":"hpux1123","desc":"The HP/UX 11.23 Operating System.","ver":""},{"_typeUuid":"591557b5-f13a-4070-a043-782830560664","name":"HpUx1131","longName":"HpUx1131","shortName":"hpux1131","desc":"The HP/UX 11.31 Operating System.","ver":""},{"_typeUuid":"4190b02e-a832-4316-87c6-d9e9b694e284","name":"Solaris","longName":"Solaris","shortName":"solaris","desc":"The Solaris Operating System.","ver":""},{"_typeUuid":"8e4b0333-3d59-455f-8de9-1bdd8af5ba96","name":"Solaris8","longName":"Solaris8","shortName":"solaris8","desc":"The Solaris 8 Operating System.","ver":""},{"_typeUuid":"d5156f08-91e5-4608-8c97-cd76434b7636","name":"Solaris9","longName":"Solaris9","shortName":"solaris9","desc":"The Solaris 9 Operating System.","ver":""},{"_typeUuid":"e10cd458-1348-488b-8cc4-01af672828ae","name":"Solaris10","longName":"Solaris10","shortName":"solaris10","desc":"The Solaris 10 Operating System.","ver":""},{"_typeUuid":"3a81f815-a426-4269-bdd9-a7ea7527325c","name":"Solaris11","longName":"Solaris11","shortName":"solaris11","desc":"The Solaris 11 Operating System.","ver":""},{"_typeUuid":"f4c41e3a-c59a-42f6-b6c8-b7c9b0df3f0e","name":"OpenIndiana","longName":"OpenIndiana","shortName":"openindiana","desc":"The OpenIndiana Operating System.","ver":""},{"_typeUuid":"c98dc9c8-bcf3-4a88-a24f-ea4b6a6a0951","name":"OpenIndiana151a8","longName":"OpenIndiana151a8","shortName":"openindiana151a8","desc":"The OpenIndiana 151a8 Operating System.","ver":""},{"_typeUuid":"0d73cb36-0f99-417b-a150-cc193ba044b8","name":"NexentaStor","longName":"NexentaStor","shortName":"nexentastor","desc":"The NexentaStor Operating System.","ver":""},{"_typeUuid":"6d90bb5c-bcb7-4c21-b7b9-8ba4aeb753b8","name":"NexentaStor3","longName":"NexentaStor3","shortName":"nexentastor3","desc":"The NexentaStor 3 Operating System.","ver":""},{"_typeUuid":"ef584c3a-b8ec-41da-9435-a9d1f8474dab","name":"NexentaStor4","longName":"NexentaStor4","shortName":"nexentastor4","desc":"The NexentaStor 4 Operating System.","ver":""},{"_typeUuid":"a7fba50f-5ab5-46d2-acf7-08fbe7c41b44","name":"SmartOs","longName":"SmartOs","shortName":"smartos","desc":"The SmartOS Operating System.","ver":""},{"_typeUuid":"70e37ec8-e807-4a82-b968-f596dac97d62","name":"Dyson","longName":"Dyson","shortName":"dyson","desc":"The Dyson Operating System.","ver":""},{"_typeUuid":"e3e34862-6d23-4922-81cd-fb0df4624cb5","name":"OmniOs","longName":"OmniOs","shortName":"omnios","desc":"The OmniOS Operating System.","ver":""},{"_typeUuid":"8e008afd-d1eb-48bd-8f71-684270750927","name":"OmniOsR151006","longName":"OmniOsR151006","shortName":"omniosr151006","desc":"The OmniOS r151006 Operating System.","ver":""},{"_typeUuid":"e164b0ef-707f-48da-a5b7-b185746c4fd0","name":"OmniOsR151010","longName":"OmniOsR151010","shortName":"omniosr151010","desc":"The OmniOS r151010 Operating System.","ver":""},{"_typeUuid":"2bd660a2-1783-4433-81a0-23d82dea1cce","name":"OpenSxce","longName":"OpenSxce","shortName":"opensxce","desc":"The OpenSXCE Operating System.","ver":""},{"_typeUuid":"1724894c-bb76-494f-b999-b467b0f4ccb6","name":"OpenSxce2013","longName":"OpenSxce2013","shortName":"opensxce2013","desc":"The OpenSXCE 2013 Operating System.","ver":""},{"_typeUuid":"c94f703d-7a1b-4ce4-aac5-c786e59117e0","name":"OpenSxce2014","longName":"OpenSxce2014","shortName":"opensxce2014","desc":"The OpenSXCE 2014 Operating System.","ver":""},{"_typeUuid":"edcd8303-03f6-459c-a5c3-2ea00c20f29c","name":"MacOsX3","longName":"MacOsX3","shortName":"macosx3","desc":"The Apple Mac OS X 10.3 Operating System.","ver":""},{"_typeUuid":"3d986bda-2109-4e91-a0ec-ad2be3bae792","name":"MacOsX4","longName":"MacOsX4","shortName":"macosx4","desc":"The Apple Mac OS X 10.4 Operating System.","ver":""},{"_typeUuid":"1cbf8f53-496b-4421-a805-e5bc86c2a56c","name":"MacOsX5","longName":"MacOsX5","shortName":"macosx5","desc":"The Apple Mac OS X 10.5 Operating System.","ver":""},{"_typeUuid":"eae5479b-1c29-41c9-9b8c-28f6663f85b6","name":"MacOsX6","longName":"MacOsX6","shortName":"macosx6","desc":"The Apple Mac OS X 10.6 Operating System.","ver":""},{"_typeUuid":"9c9d4b4c-4896-4a67-873f-2638a3ce4616","name":"MacOsX7","longName":"MacOsX7","shortName":"macosx7","desc":"The Apple Mac OS X 10.7 Operating System.","ver":""},{"_typeUuid":"6d7fc436-1e34-4538-ad6c-e3d8d47aa4b0","name":"MacOsX8","longName":"MacOsX8","shortName":"macosx8","desc":"The Apple Mac OS X 10.8 Operating System.","ver":""},{"_typeUuid":"8453b53d-4c0c-4892-b7c0-390314978a2b","name":"MacOsX9","longName":"MacOsX9","shortName":"macosx9","desc":"The Apple Mac OS X 10.9 Operating System.","ver":""},{"_typeUuid":"66ef29ff-374d-492f-99fe-e6573fcbacdf","name":"MacOsX10","longName":"MacOsX10","shortName":"macosx10","desc":"The Apple Mac OS X 10.10 Operating System.","ver":""},{"_typeUuid":"6bccb300-554a-43ce-981b-fd07b22c83f0","name":"FreeBsd","longName":"FreeBsd","shortName":"freebsd","desc":"The FreeBSD Operating System.","ver":""},{"_typeUuid":"d636ce7f-0da9-434c-b200-e7e409465076","name":"FreeBsd4","longName":"FreeBsd4","shortName":"freebsd4","desc":"The FreeBSD 4.x Operating System.","ver":""},{"_typeUuid":"931e52b3-97b8-43bb-bf4c-3424ba4cce0f","name":"FreeBsd5","longName":"FreeBsd5","shortName":"freebsd5","desc":"The FreeBSD 5.x Operating System.","ver":""},{"_typeUuid":"ac25708a-4b29-41c7-9739-c41fbdc38782","name":"FreeBsd6","longName":"FreeBsd6","shortName":"freebsd6","desc":"The FreeBSD 6.x Operating System.","ver":""},{"_typeUuid":"a05c4070-c1f7-400f-8ff4-00a2ebf613fa","name":"FreeBsd7","longName":"FreeBsd7","shortName":"freebsd7","desc":"The FreeBSD 7.x Operating System.","ver":""},{"_typeUuid":"4eff136f-1f84-4cde-984d-ecd274cd2610","name":"FreeBsd8","longName":"FreeBsd8","shortName":"freebsd8","desc":"The FreeBSD 8.x Operating System.","ver":""},{"_typeUuid":"f9a36f71-9b07-4813-ba2c-35448155e6f3","name":"FreeBsd9","longName":"FreeBsd9","shortName":"freebsd9","desc":"The FreeBSD 9.x Operating System.","ver":""},{"_typeUuid":"e144cfb5-664a-4542-9125-74da72cc0a8a","name":"FreeBsd10","longName":"FreeBsd10","shortName":"freebsd10","desc":"The FreeBSD 10.x Operating System.","ver":""},{"_typeUuid":"33b00a7e-0ddc-4d9e-87d2-876653655d72","name":"NetBsd","longName":"NetBsd","shortName":"netbsd","desc":"The NetBSD Operating System.","ver":""},{"_typeUuid":"e0dfa561-5500-49dd-a532-f5416385d66a","name":"NetBsd4","longName":"NetBsd4","shortName":"netbsd4","desc":"The NetBSD 4.x Operating System.","ver":""},{"_typeUuid":"64cfc48a-0626-4c72-9634-86dd33e94cde","name":"NetBsd5","longName":"NetBsd5","shortName":"netbsd5","desc":"The NetBSD 5.x Operating System.","ver":""},{"_typeUuid":"8ac7f26d-588d-44de-8792-26d6d429f9ff","name":"NetBsd6","longName":"NetBsd6","shortName":"netbsd6","desc":"The NetBSD 6.x Operating System.","ver":""},{"_typeUuid":"5609a5b8-b1fb-4ec3-a297-155c680a7e65","name":"OpenBsd","longName":"OpenBsd","shortName":"openbsd","desc":"The OpenBSD Operating System.","ver":""},{"_typeUuid":"03b4f697-c07a-473f-aae6-92d30e63c2f3","name":"OpenBsd4","longName":"OpenBsd4","shortName":"openbsd4","desc":"The OpenBSD 4.x Operating System.","ver":""},{"_typeUuid":"6330dd4e-92bc-4cab-b218-1c18d37e9742","name":"OpenBsd5","longName":"OpenBsd5","shortName":"openbsd5","desc":"The OpenBSD 5.x Operating System.","ver":""},{"_typeUuid":"41d52588-c248-4018-ac34-a8dfc1204729","name":"DragonFlyBsd","longName":"DragonFlyBsd","shortName":"dragonflybsd","desc":"The DragonFlyBSD Operating System.","ver":""},{"_typeUuid":"85d606c8-1d4b-4657-a67c-19ad78c51117","name":"DragonFlyBsd1","longName":"DragonFlyBsd1","shortName":"dragonflybsd1","desc":"The DragonFlyBSD 1.x Operating System.","ver":""},{"_typeUuid":"32fd5872-9894-4284-ac52-9b6fdf68f3a8","name":"DragonFlyBsd2","longName":"DragonFlyBsd2","shortName":"dragonflybsd2","desc":"The DragonFlyBSD 2.x Operating System.","ver":""},{"_typeUuid":"11666f58-6150-4a65-abea-b8c5fbddfde4","name":"DragonFlyBsd3","longName":"DragonFlyBsd3","shortName":"dragonflybsd3","desc":"The DragonFlyBSD 3.x Operating System.","ver":""},{"_typeUuid":"42a991a2-2f25-479a-a21d-7a7e07f691cf","name":"ArchLinux","longName":"ArchLinux","shortName":"archlinux","desc":"The Arch Linux Operating System.","ver":""},{"_typeUuid":"021488da-3011-4861-97a4-420a7d647e5d","name":"Debian","longName":"Debian","shortName":"debian","desc":"The Debian Linux Operating System.","ver":""},{"_typeUuid":"3de571df-b7cf-4673-8a31-e40e5dde624e","name":"Debian4","longName":"Debian4","shortName":"debian4","desc":"The Debian 4.x Linux Operating System.","ver":""},{"_typeUuid":"4f764a05-7fbd-4810-a069-a7e76f4933cd","name":"Debian5","longName":"Debian5","shortName":"debian5","desc":"The Debian 5.x Linux Operating System.","ver":""},{"_typeUuid":"6cf7eed4-847a-4249-b4cd-e0668091336e","name":"Debian6","longName":"Debian6","shortName":"debian6","desc":"The Debian 6.x Linux Operating System.","ver":""},{"_typeUuid":"368ea969-197b-4e18-8a73-c6b6b26beb9f","name":"Debian7","longName":"Debian7","shortName":"debian7","desc":"The Debian 7.x Linux Operating System.","ver":""},{"_typeUuid":"e7cfb97e-b1b0-4696-92bf-a70499d3fb40","name":"Debian8","longName":"Debian8","shortName":"debian8","desc":"The Debian 8.x Linux Operating System.","ver":""},{"_typeUuid":"1e13acac-4efb-4e62-894d-812492f6c266","name":"Ubuntu","longName":"Ubuntu","shortName":"ubuntu","desc":"The Ubuntu Linux Operating System.","ver":""},{"_typeUuid":"b41dabe4-e012-4c83-b073-4ca202950c44","name":"Ubuntu8","longName":"Ubuntu8","shortName":"ubuntu8","desc":"The Ubuntu 8.x Linux Operating System.","ver":""},{"_typeUuid":"a404e00c-46d7-4c20-940e-e071967dd2fe","name":"Ubuntu9","longName":"Ubuntu9","shortName":"ubuntu9","desc":"The Ubuntu 9.x Linux Operating System.","ver":""},{"_typeUuid":"d98635d0-a229-4755-88e2-30f891ce692d","name":"Ubuntu10","longName":"Ubuntu10","shortName":"ubuntu10","desc":"The Ubuntu 10.x Linux Operating System.","ver":""},{"_typeUuid":"dbb94e1f-72ca-4d2d-a5fd-38d7639df5c1","name":"Ubuntu11","longName":"Ubuntu11","shortName":"ubuntu11","desc":"The Ubuntu 11.x Linux Operating System.","ver":""},{"_typeUuid":"0cf76620-de1f-4e7b-b51b-74ecd980c253","name":"Ubuntu12","longName":"Ubuntu12","shortName":"ubuntu12","desc":"The Ubuntu 12.x Linux Operating System.","ver":""},{"_typeUuid":"ab6a2022-57f1-476c-8013-3cda7554280e","name":"Ubuntu13","longName":"Ubuntu13","shortName":"ubuntu13","desc":"The Ubuntu 13.x Linux Operating System.","ver":""},{"_typeUuid":"61a034bb-19e3-4d8f-bda9-35c90e874dc8","name":"Ubuntu14","longName":"Ubuntu14","shortName":"ubuntu14","desc":"The Ubuntu 14.x Linux Operating System.","ver":""},{"_typeUuid":"7d5b895a-a076-491d-b6ca-58eed0d0c960","name":"Mint","longName":"Mint","shortName":"mint","desc":"The Linux Mint Operating System.","ver":""},{"_typeUuid":"ab5e364d-51c3-4f77-b1d7-a12128e62f9f","name":"Mint10","longName":"Mint10","shortName":"mint10","desc":"The Linux Mint 10.x Operating System.","ver":""},{"_typeUuid":"27a69b62-9e0b-49e1-bb5e-30cd83e6cc68","name":"Mint11","longName":"Mint11","shortName":"mint11","desc":"The Linux Mint 11.x Operating System.","ver":""},{"_typeUuid":"8beb8f4b-cf59-4f2c-81b5-74041d379fc6","name":"Mint12","longName":"Mint12","shortName":"mint12","desc":"The Linux Mint 12.x Operating System.","ver":""},{"_typeUuid":"f204c30e-46be-49d3-82fd-7f455e1d3ac3","name":"Mint13","longName":"Mint13","shortName":"mint13","desc":"The Linux Mint 13.x Operating System.","ver":""},{"_typeUuid":"c4ea3a0d-8bdc-48e0-b985-719453831834","name":"Mint14","longName":"Mint14","shortName":"mint14","desc":"The Linux Mint 14.x Operating System.","ver":""},{"_typeUuid":"4b5a4f58-6f90-404f-a7bf-dd805506b197","name":"Mint15","longName":"Mint15","shortName":"mint15","desc":"The Linux Mint 15.x Operating System.","ver":""},{"_typeUuid":"5a1a5259-3387-4a43-9329-0b090f2b6473","name":"Mint16","longName":"Mint16","shortName":"mint16","desc":"The Linux Mint 16.x Operating System.","ver":""},{"_typeUuid":"b495af93-5b98-4746-ba29-2ec74f530cc6","name":"Mint17","longName":"Mint17","shortName":"mint17","desc":"The Linux Mint 17.x Operating System.","ver":""},{"_typeUuid":"98741859-5dd5-4c8d-a64a-69598f5ccb2f","name":"Rhel","longName":"Rhel","shortName":"rhel","desc":"The Red Hat Enterprise Linux Operating System.","ver":""},{"_typeUuid":"200eed01-43fe-4e9f-a740-a1bf50933751","name":"Rhel3","longName":"Rhel3","shortName":"rhel3","desc":"The Red Hat Enterprise Linux 3.x Operating System.","ver":""},{"_typeUuid":"078f7adf-2647-4f35-8742-96a7c59c992b","name":"Rhel4","longName":"Rhel4","shortName":"rhel4","desc":"The Red Hat Enterprise Linux 4.x Operating System.","ver":""},{"_typeUuid":"04202e27-f9ff-4ce0-8418-0d4aaecd6257","name":"Rhel5","longName":"Rhel5","shortName":"rhel5","desc":"The Red Hat Enterprise Linux 5.x Operating System.","ver":""},{"_typeUuid":"c19c8786-1ed0-4fc1-9ee9-7f0d49022d2c","name":"Rhel6","longName":"Rhel6","shortName":"rhel6","desc":"The Red Hat Enterprise Linux 6.x Operating System.","ver":""},{"_typeUuid":"d4fd6992-f34c-473b-9e05-929d7179ff73","name":"Rhel7","longName":"Rhel7","shortName":"rhel7","desc":"The Red Hat Enterprise Linux 7.x Operating System.","ver":""},{"_typeUuid":"c8b320a0-c5fd-43c0-b52e-305f2daccfec","name":"Centos","longName":"Centos","shortName":"centos","desc":"The Community Enterprise Operating System.","ver":""},{"_typeUuid":"4a43eead-c3a1-4e10-b8c1-b23e0b5b26ef","name":"Centos3","longName":"Centos3","shortName":"centos3","desc":"The Community Enterprise Operating System, version 3.x","ver":""},{"_typeUuid":"8e49d933-dcd4-439f-9d10-91cb48a8e2d4","name":"Centos4","longName":"Centos4","shortName":"centos4","desc":"The Community Enterprise Operating System, version 4.x","ver":""},{"_typeUuid":"caaee566-d43e-44b8-a59d-a87c37300562","name":"Centos5","longName":"Centos5","shortName":"centos5","desc":"The Community Enterprise Operating System, version 5.x","ver":""},{"_typeUuid":"f3122393-1f4f-4916-96d7-a64b8be5736b","name":"Centos6","longName":"Centos6","shortName":"centos6","desc":"The Community Enterprise Operating System, version 6.x","ver":""},{"_typeUuid":"9c13f597-4cd8-4311-a884-6efe24f10c81","name":"Centos7","longName":"Centos7","shortName":"centos7","desc":"The Community Enterprise Operating System, version 7.x","ver":""},{"_typeUuid":"3f90173a-ae4d-4fd5-8c80-5659262d3aef","name":"Fedora","longName":"Fedora","shortName":"fedora","desc":"The Fedora Linux Operating System.","ver":""},{"_typeUuid":"342aecd0-163c-48fa-b0da-8e25b2c27a06","name":"Fedora12","longName":"Fedora12","shortName":"fedora12","desc":"The Fedora 12 Linux Operating System.","ver":""},{"_typeUuid":"f536b385-373e-45d2-9fd5-a41d5171cc45","name":"Fedora13","longName":"Fedora13","shortName":"fedora13","desc":"The Fedora 13 Linux Operating System.","ver":""},{"_typeUuid":"68b7effb-35c0-4b0d-adce-4ea0af5b0c97","name":"Fedora14","longName":"Fedora14","shortName":"fedora14","desc":"The Fedora 14 Linux Operating System.","ver":""},{"_typeUuid":"193c78d5-ad8f-48a4-ac10-8ab775cc7eb9","name":"Fedora15","longName":"Fedora15","shortName":"fedora15","desc":"The Fedora 15 Linux Operating System.","ver":""},{"_typeUuid":"f25ebc43-5f20-469f-90fe-8b907258f648","name":"Fedora16","longName":"Fedora16","shortName":"fedora16","desc":"The Fedora 16 Linux Operating System.","ver":""},{"_typeUuid":"e279d091-8dbe-45af-a41b-02f64800844f","name":"Fedora17","longName":"Fedora17","shortName":"fedora17","desc":"The Fedora 17 Linux Operating System.","ver":""},{"_typeUuid":"ef0cc490-f3cf-48f9-be47-a7ce9a2618db","name":"Fedora18","longName":"Fedora18","shortName":"fedora18","desc":"The Fedora 18 Linux Operating System.","ver":""},{"_typeUuid":"725c35f8-fbf0-442d-a4ec-0d83304e1b2a","name":"Fedora19","longName":"Fedora19","shortName":"fedora19","desc":"The Fedora 19 Linux Operating System.","ver":""},{"_typeUuid":"ca39cf3a-43b2-46b9-8440-cf350c730d29","name":"Fedora20","longName":"Fedora20","shortName":"fedora20","desc":"The Fedora 20 Linux Operating System.","ver":""},{"_typeUuid":"45284c82-2da0-48ae-a698-5f4f707fab94","name":"Fedora21","longName":"Fedora21","shortName":"fedora21","desc":"The Fedora 21 Linux Operating System.","ver":""},{"_typeUuid":"26b0d6c8-4d6b-4ec2-8d15-6e71758cc06c","name":"Mageia","longName":"Mageia","shortName":"mageia","desc":"The Mageia Linux Operating System.","ver":""},{"_typeUuid":"43a6757b-5fc1-4781-9521-b028af50defc","name":"Mageia3","longName":"Mageia3","shortName":"mageia3","desc":"The Mageia 3.x Linux Operating System.","ver":""},{"_typeUuid":"5a516ba5-2d9d-40bb-ba45-c79f630f1953","name":"Mageia4","longName":"Mageia4","shortName":"mageia4","desc":"The Mageia 4.x Linux Operating System.","ver":""},{"_typeUuid":"cdabdf0d-5994-43ce-803b-c4686ed16f48","name":"OpenSuse","longName":"OpenSuse","shortName":"opensuse","desc":"The openSUSE Linux Operating System.","ver":""},{"_typeUuid":"aa0c5261-b3cd-49b8-adf1-243087416064","name":"OpenSuse10","longName":"OpenSuse10","shortName":"opensuse10","desc":"The openSUSE 10.x Linux Operating System.","ver":""},{"_typeUuid":"dbe9b27e-5436-4b5b-a851-f0ba0cb04d69","name":"OpenSuse11","longName":"OpenSuse11","shortName":"opensuse11","desc":"The openSUSE 11.x Linux Operating System.","ver":""},{"_typeUuid":"90fa3322-60c3-4808-9d83-3af9b5a69b62","name":"OpenSuse12","longName":"OpenSuse12","shortName":"opensuse12","desc":"The openSUSE 12.x Linux Operating System.","ver":""},{"_typeUuid":"09ad6070-a602-4e00-ba9c-25a181f7f0df","name":"OpenSuse13","longName":"OpenSuse13","shortName":"opensuse13","desc":"The openSUSE 13.x Linux Operating System.","ver":""},{"_typeUuid":"6cbfc14e-6835-43bc-a29d-aafc8589de4b","name":"Sles","longName":"Sles","shortName":"sles","desc":"The SUSE Linux Enterprise Server Operating System.","ver":""},{"_typeUuid":"019b3997-f28e-4b81-8e5c-b1077fdf86cb","name":"Sles9","longName":"Sles9","shortName":"sles9","desc":"The SUSE Linux Enterprise Server 9.x Operating System.","ver":""},{"_typeUuid":"3f1076ed-dbe7-4ca6-8138-5a909bef9ce8","name":"Sles10","longName":"Sles10","shortName":"sles10","desc":"The SUSE Linux Enterprise Server 10.x Operating System.","ver":""},{"_typeUuid":"db95db3d-fe10-448a-9f30-2a05bf06e699","name":"Sles11","longName":"Sles11","shortName":"sles11","desc":"The SUSE Linux Enterprise Server 11.x Operating System.","ver":""},{"_typeUuid":"e3c6338f-ece3-448e-867b-49a8c16c9974","name":"Sles12","longName":"Sles12","shortName":"sles12","desc":"The SUSE Linux Enterprise Server 12.x Operating System.","ver":""},{"_typeUuid":"ad047d85-792a-4385-a14c-b85266bc5176","name":"PacMan","longName":"PacMan","shortName":"pacman","desc":"Arch Linux Pacman Package Manager.","ver":""},{"_typeUuid":"95d6093b-448b-4a62-8642-dc8d32b43622","name":"BsdPkg","longName":"BsdPkg","shortName":"bsdpkg","desc":"BSD pkg Package Manager.","ver":""},{"_typeUuid":"1a879371-f680-4514-8189-5d6e227ca6cc","name":"BsdPkgNg","longName":"BsdPkgNg","shortName":"bsdpkgng","desc":"BSD pkgng Package Manager.","ver":""},{"_typeUuid":"74528ec1-d223-40ad-8e2f-703b7f6d33b0","name":"Apt","longName":"Apt","shortName":"apt","desc":"Debian Advanced Package Tool.","ver":""},{"_typeUuid":"27a03a73-d654-4999-8888-72043c84172d","name":"Yum","longName":"Yum","shortName":"yum","desc":"YellowDog Updater, Modified.","ver":""},{"_typeUuid":"8a016a93-73f3-4b3d-9129-b3708f5d1afe","name":"Zypp","longName":"Zypp","shortName":"zypp","desc":"ZYpp Package Manager.","ver":""},{"_typeUuid":"2115cfc1-a2e8-4efe-aa58-60ef64a729ca","name":"OptZip","longName":"OptZip","shortName":"optzip","desc":"The very simple unzip-in /opt package manager.","ver":""},{"_typeUuid":"92e1ff01-8f01-4882-be63-ed9d0777924d","name":"SdUx","longName":"SdUx","shortName":"sdux","desc":"SD/UX, the HP/UX Software Distributor.","ver":""},{"_typeUuid":"5da69c0f-ac1f-4fbf-8365-77c2706874aa","name":"AixLpp","longName":"AixLpp","shortName":"aixlpp","desc":"IBM Licensed Program Product Manager.","ver":""},{"_typeUuid":"e70e7353-4e74-4a58-a7ca-eef0005ad5ec","name":"SolarisIps","longName":"SolarisIps","shortName":"solarisips","desc":"Solaris Image Packaging System Manager.","ver":""},{"_typeUuid":"7ed426f2-c163-4bdc-b1a0-0dc05e31f691","name":"SolarisPkg","longName":"SolarisPkg","shortName":"solarispkg","desc":"Older Solaris Package System Manager.","ver":""},{"_typeUuid":"b46cb520-caaf-4d26-b59d-58edca723b8d","name":"HttpServer","longName":"HttpServer","shortName":"httpserver","desc":"A generic HTTP Server.","ver":""},{"_typeUuid":"65af133b-1a2c-4faa-8d2a-a288eaa4f412","name":"SmbServer","longName":"SmbServer","shortName":"smbserver","desc":"A generic SMB/CIFS Server.","ver":""},{"_typeUuid":"7db4a3ef-2d3c-4071-929b-e81505fbd5e2","name":"SshServer","longName":"SshServer","shortName":"sshserver","desc":"A generic SSH Server.","ver":""},{"_typeUuid":"4a09bcce-59c6-4e94-9fc4-ba020733a27c","name":"TelnetServer","longName":"TelnetServer","shortName":"telnetserver","desc":"A generic TELNET Server.","ver":""},{"_typeUuid":"608bfaf1-9edc-4609-b5cd-56d8aeff8174","name":"SysvInit","longName":"SysvInit","shortName":"sysvinit","desc":"SysV Init Service Manager.","ver":""},{"_typeUuid":"b4c067de-e3cf-4b5b-90ca-588725d1b6c4","name":"BsdrcInit","longName":"BsdrcInit","shortName":"bsdrcinit","desc":"BSD RC Init Service Manager.","ver":""},{"_typeUuid":"3aac3563-a493-4efa-a31b-e751ee7d0a6f","name":"Upstart","longName":"Upstart","shortName":"upstart","desc":"Upstart Service Manager.","ver":""},{"_typeUuid":"0c189a0e-6b78-4177-832d-5d9b35b8a6af","name":"Systemd","longName":"Systemd","shortName":"systemd","desc":"Systemd Service Manager.","ver":""},{"_typeUuid":"fd13bd74-6682-4494-92af-a6caf5e64f12","name":"SystemStarter","longName":"SystemStarter","shortName":"systemstarter","desc":"Mac OS X SystemStarter.","ver":""},{"_typeUuid":"7b0bfefb-2212-4c58-a7c5-46ff66f0166a","name":"Launchd","longName":"Launchd","shortName":"launchd","desc":"Mac OS X Launchd.","ver":""},{"_typeUuid":"198435e1-cf1d-4d0a-9fb8-c760b5e8ac2b","name":"Scm","longName":"Scm","shortName":"scm","desc":"Service Control Manager.","ver":""},{"_typeUuid":"300beaaf-5b4c-48b1-be5b-a5fe3fa547b2","name":"Smf","longName":"Smf","shortName":"smf","desc":"The Solaris Service Management Facility.","ver":""}]
+[
+  {
+    "_typeUuid": "b1bc963a-19cc-4518-aecb-a35d028c49e3",
+    "name": "Type",
+    "longName": "Type",
+    "shortName": "type",
+    "desc": "The root type.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "a79ce509-a021-4177-ae61-73abd01fb479",
+    "name": "Component",
+    "longName": "Component",
+    "shortName": "component",
+    "desc": "An abstract base component.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "3f4a43f7-b558-4bf0-ba7e-66b99cffaf16",
+    "name": "Configuration",
+    "longName": "Configuration",
+    "shortName": "configuration",
+    "desc": "An abstract configuration component.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "299001a6-1091-4c0d-87be-c512af03e179",
+    "name": "IpAddress",
+    "longName": "IpAddress",
+    "shortName": "ipaddress",
+    "desc": "An IP address (address only, can be assigned to a network interface).",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "f7fbe917-9d49-4df5-95f6-6e132067a424",
+    "name": "Ipv4Address",
+    "longName": "Ipv4Address",
+    "shortName": "ipv4address",
+    "desc": "An IPv4 address (address only, can be assigned to a network interface).",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "47b5804d-5f5d-4bf8-89f6-a189c29b05ae",
+    "name": "Ipv6Address",
+    "longName": "Ipv6Address",
+    "shortName": "ipv6address",
+    "desc": "An IPv6 address (address only, can be assigned to a network interface).",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "91c999a0-33ec-42ee-bae0-6f8adae42535",
+    "name": "IpListener",
+    "longName": "IpListener",
+    "shortName": "iplistener",
+    "desc": "An IP listener (address and port, can be assigned to a network service).",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "5ca95f7a-5175-4e7f-8a61-862e24485af3",
+    "name": "Ipv4Listener",
+    "longName": "Ipv4Listener",
+    "shortName": "ipv4listener",
+    "desc": "An IPv4 listener (address and port, can be assigned to a network service).",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "6a79b4e9-13ce-4a09-bc5b-b429d23b34d7",
+    "name": "Ipv6Listener",
+    "longName": "Ipv6Listener",
+    "shortName": "ipv6listener",
+    "desc": "An IPv6 listener (address and port, can be assigned to a network service).",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "0e9f72bd-5bc5-43dc-ab86-30a8f7171bc6",
+    "name": "Url",
+    "longName": "Url",
+    "shortName": "url",
+    "desc": "a uniform resource locator.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "99c0da37-3599-418d-8ecc-de36d37ae9f4",
+    "name": "DnsName",
+    "longName": "DnsName",
+    "shortName": "dnsname",
+    "desc": "Either a short name or a fully-qualified domain name.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "ea6a7487-867c-4a74-8849-fb8539b8169f",
+    "name": "Hardware",
+    "longName": "Hardware",
+    "shortName": "hardware",
+    "desc": "A hardware component.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "3d0865a2-3ecf-4035-886b-0bb603c0e2c2",
+    "name": "ConsoleHardware",
+    "longName": "ConsoleHardware",
+    "shortName": "consolehardware",
+    "desc": "A console device.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "f5b25736-ec12-4a7e-b198-548b97ebc36f",
+    "name": "GenericSerial",
+    "longName": "GenericSerial",
+    "shortName": "genericserial",
+    "desc": "A serial communication device.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "a642b995-c073-4c27-a611-c5bf3854958f",
+    "name": "GraphicsHardware",
+    "longName": "GraphicsHardware",
+    "shortName": "graphicshardware",
+    "desc": "A graphics device.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "b3a2ac7c-ad8a-4047-a460-2ac41a7ddfef",
+    "name": "GenericVga",
+    "longName": "GenericVga",
+    "shortName": "genericvga",
+    "desc": "A VGA graphics device.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "1c87c672-1f69-4a02-9bc8-9eff28dda5e5",
+    "name": "MemoryHardware",
+    "longName": "MemoryHardware",
+    "shortName": "memoryhardware",
+    "desc": "A memory device",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "44131d46-c1b0-4030-ae5a-9a3108627749",
+    "name": "VolatileMemory",
+    "longName": "VolatileMemory",
+    "shortName": "volatilememory",
+    "desc": "A generic volatile memory device.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "4c0a0638-1fa7-4f5b-9d69-1d199dcedccc",
+    "name": "RandomAccessMemory",
+    "longName": "RandomAccessMemory",
+    "shortName": "randomaccessmemory",
+    "desc": "Random access memory.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "7f129e53-ff07-4ed8-9062-daf5f733a3a6",
+    "name": "NonVolatileMemory",
+    "longName": "NonVolatileMemory",
+    "shortName": "nonvolatilememory",
+    "desc": "A generic non-volatile memory device.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "24cc3545-0d1a-4d85-8d08-a83c3dbe5912",
+    "name": "HardDiskDrive",
+    "longName": "HardDiskDrive",
+    "shortName": "harddiskdrive",
+    "desc": "A non-volatile harddisk-based storage device.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "7a60ec32-0a9a-40b9-bf1f-d69674d4a233",
+    "name": "SolidStateDrive",
+    "longName": "SolidStateDrive",
+    "shortName": "solidstatedrive",
+    "desc": "A non-volatile solid-state storage device.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "118ec961-a823-465b-be17-b706f1c8c2f1",
+    "name": "FloppyDrive",
+    "longName": "FloppyDrive",
+    "shortName": "floppydrive",
+    "desc": "A floppy disk drive.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "a507461f-647b-4b79-936a-721ca2dba145",
+    "name": "TapeDrive",
+    "longName": "TapeDrive",
+    "shortName": "tapedrive",
+    "desc": "A tape drive.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "30af2fe3-aa05-4912-a3d5-dddfdacf74e2",
+    "name": "CdDrive",
+    "longName": "CdDrive",
+    "shortName": "cddrive",
+    "desc": "A Compact Disc drive.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "23ab95d2-2815-4121-a81c-63aca40cdcfa",
+    "name": "DvdDrive",
+    "longName": "DvdDrive",
+    "shortName": "dvddrive",
+    "desc": "A Digital Video Disc drive.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "cbc27482-11d1-4890-a3e1-e9f80baea82c",
+    "name": "BdDrive",
+    "longName": "BdDrive",
+    "shortName": "bddrive",
+    "desc": "A Digital Video Disc drive.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "86786ed6-d62a-4011-9ae8-0082000e48fa",
+    "name": "NetworkHardware",
+    "longName": "NetworkHardware",
+    "shortName": "networkhardware",
+    "desc": "A network device.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "0d4c880d-d888-435f-b3a3-3d3eb9e70ddf",
+    "name": "WiredNetworkHardware",
+    "longName": "WiredNetworkHardware",
+    "shortName": "wirednetworkhardware",
+    "desc": "A wired network device.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "f34b76e4-f5a6-4bae-968e-f22ef09b1e35",
+    "name": "ModemHardware",
+    "longName": "ModemHardware",
+    "shortName": "modemhardware",
+    "desc": "A modem networking device.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "0dbd26f2-baff-446c-9241-46eaa3e03736",
+    "name": "EthernetHardware",
+    "longName": "EthernetHardware",
+    "shortName": "ethernethardware",
+    "desc": "A wired ethernet device.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "61328f83-db43-4efe-81be-df47e17814a5",
+    "name": "WirelessNetworkHardware",
+    "longName": "WirelessNetworkHardware",
+    "shortName": "wirelessnetworkhardware",
+    "desc": "A wireless network device.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "009cf823-39c0-4b17-ae81-ad98ed0d4585",
+    "name": "BluetoothHardware",
+    "longName": "BluetoothHardware",
+    "shortName": "bluetoothhardware",
+    "desc": "A Bluetooth device.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "42c7997c-0c56-4f93-956f-5fd0778c47c6",
+    "name": "IrdaHardware",
+    "longName": "IrdaHardware",
+    "shortName": "irdahardware",
+    "desc": "An IrDA device.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "78ff02be-2abe-4a8f-a082-a0d9c3cdae70",
+    "name": "WifiHardware",
+    "longName": "WifiHardware",
+    "shortName": "wifihardware",
+    "desc": "A WiFi device.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "8d6e0956-033e-4efc-8846-e85bfddc8f98",
+    "name": "WwanHardware",
+    "longName": "WwanHardware",
+    "shortName": "wwanhardware",
+    "desc": "A wireless WAN device.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "b7b2a2ff-3af7-469b-afbf-e52f1b80be91",
+    "name": "ProcessingUnit",
+    "longName": "ProcessingUnit",
+    "shortName": "processingunit",
+    "desc": "A processing unit.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "95b9f7a2-1a17-4cb9-8088-3e2e478ce638",
+    "name": "AlphaProcessor",
+    "longName": "AlphaProcessor",
+    "shortName": "alphaprocessor",
+    "desc": "An Alpha processor.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "f3b1b497-1e83-4a09-a280-04f46a83fe24",
+    "name": "ArmProcessor",
+    "longName": "ArmProcessor",
+    "shortName": "armprocessor",
+    "desc": "An ARM processor.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "241015c9-72f5-491f-a870-a30d8f7902fd",
+    "name": "ItaniumProcessor",
+    "longName": "ItaniumProcessor",
+    "shortName": "itaniumprocessor",
+    "desc": "An Itanium processor.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "33920524-4989-4322-a0ca-1cea614d7fef",
+    "name": "M68kProcessor",
+    "longName": "M68kProcessor",
+    "shortName": "m68kprocessor",
+    "desc": "A Motorola 68000 series processor.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "cbe81157-97f6-401b-bbaa-cfbc4f479298",
+    "name": "MipsProcessor",
+    "longName": "MipsProcessor",
+    "shortName": "mipsprocessor",
+    "desc": "A processor using the MIPS ISA.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "b4f67698-7eca-4ca1-a4cf-b7ef9737785c",
+    "name": "MosProcessor",
+    "longName": "MosProcessor",
+    "shortName": "mosprocessor",
+    "desc": "A MOS Technology processor.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "689a4f33-e08d-4e7f-83a5-79fd310bd3f9",
+    "name": "PariscProcessor",
+    "longName": "PariscProcessor",
+    "shortName": "pariscprocessor",
+    "desc": "A PA Risc processor.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "808f2737-feca-4b70-aa1a-53410b970b10",
+    "name": "PowerProcessor",
+    "longName": "PowerProcessor",
+    "shortName": "powerprocessor",
+    "desc": "A PowerPC processor.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "798ba8d1-8da7-471a-9efa-30530569b6a1",
+    "name": "SparcProcessor",
+    "longName": "SparcProcessor",
+    "shortName": "sparcprocessor",
+    "desc": "A SPARC processor.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "4d4971b6-43b3-4c14-a82a-c51d72ba23a5",
+    "name": "X86Processor",
+    "longName": "X86Processor",
+    "shortName": "x86processor",
+    "desc": "An x86-based processor.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "a68f42c5-2a1d-43cb-bebd-55339f5e61ee",
+    "name": "ZilogProcessor",
+    "longName": "ZilogProcessor",
+    "shortName": "zilogprocessor",
+    "desc": "A ZiLOG processor.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "99ce31e0-d540-4582-ae38-b84f4bf13868",
+    "name": "Z80",
+    "longName": "Z80",
+    "shortName": "z80",
+    "desc": "A ZiLOG Z80 processor.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "8db2b492-9a4a-41fe-97a5-bc625da042ea",
+    "name": "Software",
+    "longName": "Software",
+    "shortName": "software",
+    "desc": "An abstract software component.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "86c0439a-4219-46e6-82a3-6fb2ee774aa4",
+    "name": "CloudSystem",
+    "longName": "CloudSystem",
+    "shortName": "cloudsystem",
+    "desc": "A cloud (operating) system and/or environment.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "f05e325e-1aee-4892-96e4-8bcd6e97c528",
+    "name": "OperatingSystem",
+    "longName": "OperatingSystem",
+    "shortName": "operatingsystem",
+    "desc": "An operating system.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "c3008eec-b454-4ef6-bf7e-0bd92c13d3c3",
+    "name": "ServiceManager",
+    "longName": "ServiceManager",
+    "shortName": "servicemanager",
+    "desc": "An operating system initialization system.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "c409c9de-e23d-429b-a59a-ac46ea296331",
+    "name": "Systemctl",
+    "longName": "Systemctl",
+    "shortName": "systemctl",
+    "desc": "Systemd Service Manager.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "67d7aa27-e0d9-458c-89fb-82734a8def95",
+    "name": "Rc",
+    "longName": "Rc",
+    "shortName": "rc",
+    "desc": "The rc service manager, used on most BSD's.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "21b82fbf-803c-4056-b914-502e2ff9952d",
+    "name": "Services",
+    "longName": "Services",
+    "shortName": "services",
+    "desc": "Windows Service Manager.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "e2b8b9ee-b66f-4252-8fba-4fb172f741bc",
+    "name": "PackageManager",
+    "longName": "PackageManager",
+    "shortName": "packagemanager",
+    "desc": "A package manager.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "d047f415-734c-4bd3-92b9-d68d5521ce69",
+    "name": "Interpreter",
+    "longName": "Interpreter",
+    "shortName": "interpreter",
+    "desc": "A command or programming language interpreter.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "c5c7fcb5-8ac3-40cc-b195-b2b6af368e81",
+    "name": "Hypervisor",
+    "longName": "Hypervisor",
+    "shortName": "hypervisor",
+    "desc": "A virtualization hypervisor.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "59aeae81-9741-4986-b9c2-931504cfc9e3",
+    "name": "Emulator",
+    "longName": "Emulator",
+    "shortName": "emulator",
+    "desc": "A hardware platform emulator.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "3fb4603b-281e-47c0-b338-768ea05d4660",
+    "name": "Server",
+    "longName": "Server",
+    "shortName": "server",
+    "desc": "A generic local/networked/daemonized server.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "8f371b1b-52a3-4409-be70-9cd947bec8dd",
+    "name": "Client",
+    "longName": "Client",
+    "shortName": "client",
+    "desc": "A generic client.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "5f1eb7c5-ec5e-4563-be6a-fc50774fc374",
+    "name": "Grouping",
+    "longName": "Grouping",
+    "shortName": "grouping",
+    "desc": "A group of references to things.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "f31b8dc9-7b9a-47cc-bd3d-20b94b6daac1",
+    "name": "Locational",
+    "longName": "Locational",
+    "shortName": "locational",
+    "desc": "A place/location.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "44197148-678f-4421-a618-dc6807beaf30",
+    "name": "Building",
+    "longName": "Building",
+    "shortName": "building",
+    "desc": "A building.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "9ca8061a-898c-4f2f-aeb3-c77d1747559f",
+    "name": "Floor",
+    "longName": "Floor",
+    "shortName": "floor",
+    "desc": "A floor.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "94721751-ab2f-4285-9c33-cd91cb919430",
+    "name": "Room",
+    "longName": "Room",
+    "shortName": "room",
+    "desc": "A room.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "c94c2c32-8e10-48c3-a31b-6337c2ad4df4",
+    "name": "Organizational",
+    "longName": "Organizational",
+    "shortName": "organizational",
+    "desc": "An organizational group.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "d7582691-8ccc-415c-886b-7d363c8b6e84",
+    "name": "Company",
+    "longName": "Company",
+    "shortName": "company",
+    "desc": "A company.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "aa6bc876-33fe-4710-b409-edb31e1081de",
+    "name": "Department",
+    "longName": "Department",
+    "shortName": "department",
+    "desc": "A department.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "9d68148a-28ec-4f24-b1d7-0fc2d407ab78",
+    "name": "Team",
+    "longName": "Team",
+    "shortName": "team",
+    "desc": "A team.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "ee92c308-80f4-40b2-af3a-77d26cd99517",
+    "name": "Componental",
+    "longName": "Componental",
+    "shortName": "componental",
+    "desc": "A group for organizing references to components.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "ec11db91-6973-4285-b018-b461fbb432d7",
+    "name": "Computer",
+    "longName": "Computer",
+    "shortName": "computer",
+    "desc": "An assembled computer device.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "3175d762-dd97-434f-a288-21e4591480cf",
+    "name": "Actor",
+    "longName": "Actor",
+    "shortName": "actor",
+    "desc": "Something or someone that interacts/starts/acts within the system.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "88d8630d-54ce-4aa5-8505-2068c31df5b1",
+    "name": "User",
+    "longName": "User",
+    "shortName": "user",
+    "desc": "A user.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "395d3e08-842b-4640-8b57-751e1b0c9e4b",
+    "name": "Batch",
+    "longName": "Batch",
+    "shortName": "batch",
+    "desc": "A batch user.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "916e04a9-c773-4eaf-9c08-450016426e5a",
+    "name": "Capability",
+    "longName": "Capability",
+    "shortName": "capability",
+    "desc": "A software component gives capabilities to its parent or to siblings.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "b3cfd296-1090-43c0-ac2e-00e5d7fe7779",
+    "name": "State",
+    "longName": "State",
+    "shortName": "state",
+    "desc": "A capability that makes it possible to state-check.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "632ca701-2648-4df5-87ee-a41d3d1ef3da",
+    "name": "Stop",
+    "longName": "Stop",
+    "shortName": "stop",
+    "desc": "A capability that makes it possible to stop something.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "347ca5da-db19-4d98-9fed-60e72d5d6bba",
+    "name": "Start",
+    "longName": "Start",
+    "shortName": "start",
+    "desc": "A capability that makes it possible to stop something.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "cc558715-63dc-4162-95a4-9c51792c7953",
+    "name": "Restart",
+    "longName": "Restart",
+    "shortName": "restart",
+    "desc": "A capability that makes it possible to restart something.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "3c077211-0ffa-452f-8d84-5bd5be5598f5",
+    "name": "Install",
+    "longName": "Install",
+    "shortName": "install",
+    "desc": "A capability that makes it possible to install something.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "3dc7b06a-69a0-4650-897a-34c5d069e3c5",
+    "name": "Configure",
+    "longName": "Configure",
+    "shortName": "configure",
+    "desc": "A capability that makes it possible to configure something.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "ea1b32de-cf31-4c1b-9b2b-f1a6d9983418",
+    "name": "Uninstall",
+    "longName": "Uninstall",
+    "shortName": "uninstall",
+    "desc": "A capability that makes it possible to uninstall something.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "b0995f9f-90af-4066-9d00-6b7b33f9a19b",
+    "name": "CreateVm",
+    "longName": "CreateVm",
+    "shortName": "createvm",
+    "desc": "A capability that makes it possible to create a virtual machine.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "cdb08b91-5998-4f7c-9b82-b345b8052ecd",
+    "name": "DestroyVm",
+    "longName": "DestroyVm",
+    "shortName": "destroyvm",
+    "desc": "A capability that makes it possible to destroy a virtual machine.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "76fb3116-d4a8-459a-b62b-a2641bcb7e7d",
+    "name": "Execute",
+    "longName": "Execute",
+    "shortName": "execute",
+    "desc": "A capability that makes it possible to run commands.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "3c170a27-05ee-4999-97d4-e7cc9135cb96",
+    "name": "Detect",
+    "longName": "Detect",
+    "shortName": "detect",
+    "desc": "A capability that makes it possible for a component to detect itself.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "61cde9d0-3aa2-4951-aaa8-79e5656dac41",
+    "name": "Query",
+    "longName": "Query",
+    "shortName": "query",
+    "desc": "A capability that makes it possible to query components that are managed by the querying component.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "ca49051c-d7d1-45fa-b327-0f4dca810897",
+    "name": "Identify",
+    "longName": "Identify",
+    "shortName": "identify",
+    "desc": "A capability that makes it possible to identify (version, name, etc) something.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "64ca8ff9-8071-4933-95d0-bbacb97bd4a8",
+    "name": "SendString",
+    "longName": "SendString",
+    "shortName": "sendstring",
+    "desc": "A capability that makes it possible to send a string over a protocol.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "8292da1f-75de-41d6-a8fb-cdcca6700ad9",
+    "name": "ReceiveString",
+    "longName": "ReceiveString",
+    "shortName": "receivestring",
+    "desc": "A capability that makes it possible to receive a string over a protocol.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "371d336a-d328-4468-9b0f-40877bb5b646",
+    "name": "SendFile",
+    "longName": "SendFile",
+    "shortName": "sendfile",
+    "desc": "A capability that makes it possible to send a file over a protocol.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "f2ba58a6-0934-4f0e-b9cf-1a7430a3fa7a",
+    "name": "ReceiveFile",
+    "longName": "ReceiveFile",
+    "shortName": "receivefile",
+    "desc": "A capability that makes it possible to receive a file over a protocol.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "4251040d-f05c-4711-8094-59ce773a8c35",
+    "name": "Invoke",
+    "longName": "Invoke",
+    "shortName": "invoke",
+    "desc": "A capability that makes it possible to invoke a command to execute.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "20d9b0db-92b2-42a7-93d9-f86e00312fef",
+    "name": "Access",
+    "longName": "Access",
+    "shortName": "access",
+    "desc": "A capability that makes it possible to access a textual or graphical console.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "db0c3c65-52fd-4dec-907c-6c8a669e88f3",
+    "name": "Protocol",
+    "longName": "Protocol",
+    "shortName": "protocol",
+    "desc": "A protocol.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "9fd04885-179f-4c72-99a2-52c692e61b19",
+    "name": "HTTP",
+    "longName": "HTTP",
+    "shortName": "http",
+    "desc": "The hypertext transfer protocol.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "09102127-1803-48b6-a9f4-2fd1b891293d",
+    "name": "HTTP09",
+    "longName": "HTTP09",
+    "shortName": "http09",
+    "desc": "The hypertext transfer protocol, version 0.9.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "256d493d-3b7a-4e28-8e64-8f81de4d92de",
+    "name": "HTTP10",
+    "longName": "HTTP10",
+    "shortName": "http10",
+    "desc": "The hypertext transfer protocol, version 1.0.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "b11b10d7-6f46-49c0-bc61-3ecdd4342cd7",
+    "name": "HTTP11",
+    "longName": "HTTP11",
+    "shortName": "http11",
+    "desc": "The hypertext transfer protocol, version 1.1.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "0771de77-c3d8-4db1-92fa-7ac96205f9bb",
+    "name": "SMB",
+    "longName": "SMB",
+    "shortName": "smb",
+    "desc": "The server message block protocol.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "70960db9-f085-499d-9d22-2569badc41c7",
+    "name": "SMB10",
+    "longName": "SMB10",
+    "shortName": "smb10",
+    "desc": "The server message block protocol, version 1.0.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "aeefff52-0300-4611-be60-e745bfbd3d37",
+    "name": "SMB20",
+    "longName": "SMB20",
+    "shortName": "smb20",
+    "desc": "The server message block protocol, version 2.0.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "5c7b0507-dfd9-4617-a45f-3d617cd61e68",
+    "name": "SMB21",
+    "longName": "SMB21",
+    "shortName": "smb21",
+    "desc": "The server message block protocol, version 2.1.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "dbfb220e-b22c-460e-b27d-65de22501618",
+    "name": "SMB30",
+    "longName": "SMB30",
+    "shortName": "smb30",
+    "desc": "The server message block protocol, version 3.0.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "008b9566-6317-4ddd-977c-9ddca00b79b8",
+    "name": "SSH",
+    "longName": "SSH",
+    "shortName": "ssh",
+    "desc": "The secure shell protocol.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "000b0fd3-a121-4194-a441-0857abca490d",
+    "name": "SSH10",
+    "longName": "SSH10",
+    "shortName": "ssh10",
+    "desc": "The secure shell protocol, version 1.0.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "07b23795-140f-4a72-9c86-e1d3b86cd149",
+    "name": "SSH20",
+    "longName": "SSH20",
+    "shortName": "ssh20",
+    "desc": "The secure shell protocol, version 2.0.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "27fc7ed2-beb3-41c8-aa69-900ad7bb989f",
+    "name": "TELNET",
+    "longName": "TELNET",
+    "shortName": "telnet",
+    "desc": "The telnet protocol.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "14dbfbfa-b50a-466f-8539-55d5d3f15e4a",
+    "name": "Instrument",
+    "longName": "Instrument",
+    "shortName": "instrument",
+    "desc": "A representation of a software instrument that gives end user function.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "f482204e-7d63-45ca-96c9-10a7cc2783da",
+    "name": "Controller",
+    "longName": "Controller",
+    "shortName": "controller",
+    "desc": "An implementation of an instrument that gives 'behavior'.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "24702e44-8769-4aea-903d-9e1164f99e5b",
+    "name": "Marker",
+    "longName": "Marker",
+    "shortName": "marker",
+    "desc": "Markers are considered 'system' instruments that help us build send<->receive paths.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "b5fa636c-1067-45ac-b027-ade2797bef6f",
+    "name": "Parser",
+    "longName": "Parser",
+    "shortName": "parser",
+    "desc": "An instrument that parses raw results from controllers into graphable data.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "f3498c02-58c6-486b-87c6-9d54607fdb12",
+    "name": "Result",
+    "longName": "Result",
+    "shortName": "result",
+    "desc": "A result from an operation.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "c970f6d3-4898-4596-bfac-9d6d1f6b2541",
+    "name": "Profile",
+    "longName": "Profile",
+    "shortName": "profile",
+    "desc": "A profile of software which includes its parts like binaries, data files, directories, etc.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "fec4ca89-8e2d-4562-a25c-0638eef3a525",
+    "name": "HttpClient",
+    "longName": "HttpClient",
+    "shortName": "httpclient",
+    "desc": "A generic HTTP Client.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "bf1826d4-cff3-4b76-8cc9-cc752560a4bb",
+    "name": "RemoteAccessClient",
+    "longName": "RemoteAccessClient",
+    "shortName": "remoteaccessclient",
+    "desc": "A generic remote access client.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "7d1c7242-2403-4578-b6c4-789573ea3c45",
+    "name": "SmbClient",
+    "longName": "SmbClient",
+    "shortName": "smbclient",
+    "desc": "A generic SMB/CIFS Client.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "442f0c59-c264-4227-9b50-2ef2b90af968",
+    "name": "TelnetClient",
+    "longName": "TelnetClient",
+    "shortName": "telnetclient",
+    "desc": "A generic TELNET Client.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "662490c0-778a-46e5-bc9a-c0c6cec17422",
+    "name": "GnuTelnetClient",
+    "longName": "GnuTelnetClient",
+    "shortName": "gnutelnetclient",
+    "desc": "GNU telnet client from GNU inetutils.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "dce98afb-1a42-48af-8b4b-ab9d08b3b5dc",
+    "name": "SshClient",
+    "longName": "SshClient",
+    "shortName": "sshclient",
+    "desc": "A generic SSH Client.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "9e977808-78fd-4eb6-95e0-ff7c7011caa5",
+    "name": "OpenSshClient",
+    "longName": "OpenSshClient",
+    "shortName": "opensshclient",
+    "desc": "The OpenSSH client.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "2f207919-c852-4177-9b8f-e4a368026ca6",
+    "name": "Winexe",
+    "longName": "Winexe",
+    "shortName": "winexe",
+    "desc": "A *nix smb client.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "f513ddfc-e50b-49b4-9bd8-64afc61ff7a5",
+    "name": "Samba",
+    "longName": "Samba",
+    "shortName": "samba",
+    "desc": "A *nix smb toolchain.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "6619adef-3bcb-4e32-bfec-d235a7bf3e29",
+    "name": "Iputils",
+    "longName": "Iputils",
+    "shortName": "iputils",
+    "desc": "Network monitoring tools, including ping.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "c1d0eada-0d22-4026-aa2d-d865c1583482",
+    "name": "ApacheCloudStack",
+    "longName": "ApacheCloudStack",
+    "shortName": "apachecloudstack",
+    "desc": "The Apache CloudStack platform.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "6d080eef-d9c6-4be7-b81b-b9c57f0fe515",
+    "name": "VmwareCloudFoundry",
+    "longName": "VmwareCloudFoundry",
+    "shortName": "vmwarecloudfoundry",
+    "desc": "The VMware CloudFoundry platform.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "87c66de2-e24b-4586-8170-5fcf6cc28424",
+    "name": "Eucalyptus",
+    "longName": "Eucalyptus",
+    "shortName": "eucalyptus",
+    "desc": "The Eucalyptus Cloud platform.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "0e5b0e12-5975-43f5-9e92-5298a75a5f7a",
+    "name": "OpenNebula",
+    "longName": "OpenNebula",
+    "shortName": "opennebula",
+    "desc": "The OpenNebula Cloud platform.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "e57b8fbb-05a0-4c64-830a-8da17801e757",
+    "name": "OpenShift",
+    "longName": "OpenShift",
+    "shortName": "openshift",
+    "desc": "The OpenShift Cloud platform.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "55e9f170-9a98-42e3-ba58-f35c592eaeb0",
+    "name": "OpenStack",
+    "longName": "OpenStack",
+    "shortName": "openstack",
+    "desc": "The OpenStack Cloud platform.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "4cd84c58-3cb3-41c1-89d8-6c2fa70ddb54",
+    "name": "AmazonWebServices",
+    "longName": "AmazonWebServices",
+    "shortName": "amazonwebservices",
+    "desc": "The Amazon Web Services Cloud platform.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "7e60d3b9-5837-41c3-bd68-12c850171441",
+    "name": "IbmBlueMix",
+    "longName": "IbmBlueMix",
+    "shortName": "ibmbluemix",
+    "desc": "The IBM BlueMix Cloud platform.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "a5fafd65-2ffc-4509-8289-5760cd15a293",
+    "name": "CitrixCloudCom",
+    "longName": "CitrixCloudCom",
+    "shortName": "citrixcloudcom",
+    "desc": "The Citrix Cloud.com platform.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "0f48c798-6621-4659-9f13-a37e54ef4568",
+    "name": "GoogleCloud",
+    "longName": "GoogleCloud",
+    "shortName": "googlecloud",
+    "desc": "The Google Cloud platform.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "26a6929f-ef61-4714-baa0-e72bdbf5960a",
+    "name": "HerokuCloud",
+    "longName": "HerokuCloud",
+    "shortName": "herokucloud",
+    "desc": "The Heroku Cloud platform.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "e7806e74-9002-4f49-9e87-9adf25490efb",
+    "name": "HpCloud",
+    "longName": "HpCloud",
+    "shortName": "hpcloud",
+    "desc": "The HP Cloud platform.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "c60297ae-9fc8-4567-a272-7e2b439b4c57",
+    "name": "JoyentCloud",
+    "longName": "JoyentCloud",
+    "shortName": "joyentcloud",
+    "desc": "The Joyent Cloud platform.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "171c2c6a-9101-437b-b464-e99d276ded47",
+    "name": "MicrosoftAzure",
+    "longName": "MicrosoftAzure",
+    "shortName": "microsoftazure",
+    "desc": "The Microsoft Azure Cloud platform.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "3f368aba-b0f2-4e14-9d7b-715312a7e385",
+    "name": "OnAppCloud",
+    "longName": "OnAppCloud",
+    "shortName": "onappcloud",
+    "desc": "The OnApp Cloud platform.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "fc070f26-87a0-45e8-8ae0-e894fcdb83ea",
+    "name": "OracleCloud",
+    "longName": "OracleCloud",
+    "shortName": "oraclecloud",
+    "desc": "The Oracle Cloud platform.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "cd8f940e-219b-488e-8b75-d9fece8b3b35",
+    "name": "Bochs",
+    "longName": "Bochs",
+    "shortName": "bochs",
+    "desc": "The Bochs Emulator.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "7e0135dc-b720-440a-9f4e-76747f7a7fe5",
+    "name": "DosBox",
+    "longName": "DosBox",
+    "shortName": "dosbox",
+    "desc": "The DOSBox Emulator.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "c80fddb7-bdbf-44b9-ac54-f7dd7ce4dbd0",
+    "name": "Qemu",
+    "longName": "Qemu",
+    "shortName": "qemu",
+    "desc": "The QEMU Emulator.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "04b4bd73-fcec-42f6-bb03-7686ad019fbb",
+    "name": "Kvm",
+    "longName": "Kvm",
+    "shortName": "kvm",
+    "desc": "The Linux kernel-based virtual machine.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "3c47f326-d613-4f42-b4ac-804a6c22f076",
+    "name": "VirtualBox",
+    "longName": "VirtualBox",
+    "shortName": "virtualbox",
+    "desc": "The Oracle VM VirtualBox virtual machine.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "b9739ee8-34a6-4308-b7e2-ba775c0e59cf",
+    "name": "VmwareEsxi",
+    "longName": "VmwareEsxi",
+    "shortName": "vmwareesxi",
+    "desc": "The VMware ESXi virtual machine.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "897281c1-05be-43aa-a49c-50fd9ed4fc88",
+    "name": "VmwareWorkstation",
+    "longName": "VmwareWorkstation",
+    "shortName": "vmwareworkstation",
+    "desc": "The VMware Workstation virtual machine.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "54916142-640a-41df-82ad-974e92d3371c",
+    "name": "Xen",
+    "longName": "Xen",
+    "shortName": "xen",
+    "desc": "The Xen Project virtual machine.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "af0ecba0-9c1f-43ec-b555-9a665f904dd3",
+    "name": "HpVm",
+    "longName": "HpVm",
+    "shortName": "hpvm",
+    "desc": "The HP Integrity virtual machine.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "50a2e964-ed70-4a96-988d-62aa9bfec5a5",
+    "name": "PowerVm",
+    "longName": "PowerVm",
+    "shortName": "powervm",
+    "desc": "The IBM PowerVM virtual machine.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "b1722662-e3ca-423a-9217-d226e32ab6f4",
+    "name": "OracleVm",
+    "longName": "OracleVm",
+    "shortName": "oraclevm",
+    "desc": "The Oracle VM Server for SPARC virtual machine.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "ea00099d-5284-4a34-940f-7c0844e137b1",
+    "name": "VmwareVsphere",
+    "longName": "VmwareVsphere",
+    "shortName": "vmwarevsphere",
+    "desc": "The vSphere virtual machine manager.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "86168e4a-8c99-43c9-ad95-c8f88d96ac32",
+    "name": "UnixShell",
+    "longName": "UnixShell",
+    "shortName": "unixshell",
+    "desc": "A generic UNIX shell.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "6d467b28-449f-498c-9ca5-8660f522897f",
+    "name": "Bash",
+    "longName": "Bash",
+    "shortName": "bash",
+    "desc": "The Bourne Again Shell.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "fd95e858-c788-4578-9223-122eceb2e6c6",
+    "name": "Ksh",
+    "longName": "Ksh",
+    "shortName": "ksh",
+    "desc": "The Korn Shell.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "608c9a23-a194-49b0-a986-c34bd52bf691",
+    "name": "Csh",
+    "longName": "Csh",
+    "shortName": "csh",
+    "desc": "The C Shell.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "bb3e3458-391d-4c75-8857-4a08be7e5905",
+    "name": "Tcsh",
+    "longName": "Tcsh",
+    "shortName": "tcsh",
+    "desc": "The TENEX C Shell.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "7c1c3278-6eb4-4be5-8b8d-94204bfd2223",
+    "name": "Sh",
+    "longName": "Sh",
+    "shortName": "sh",
+    "desc": "The Bourne Shell.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "7d9afc14-8e12-4c56-8ca6-4c43fd9808ab",
+    "name": "Zsh",
+    "longName": "Zsh",
+    "shortName": "zsh",
+    "desc": "The Zhong Shao Shell.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "bc101145-dde2-4363-a7ed-7091d2ff2621",
+    "name": "DosShell",
+    "longName": "DosShell",
+    "shortName": "dosshell",
+    "desc": "A generic DOS shell.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "e181e9e8-7f30-42a3-b87f-b8e183ddfd6f",
+    "name": "DosLike",
+    "longName": "DosLike",
+    "shortName": "doslike",
+    "desc": "A DOS-like operating system.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "4edbaf6a-da58-4644-abac-ae80328ddb49",
+    "name": "WindowsLike",
+    "longName": "WindowsLike",
+    "shortName": "windowslike",
+    "desc": "A Windows-like operating system.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "060a519d-08d0-4d12-82ac-1e3f14277009",
+    "name": "Windows",
+    "longName": "Windows",
+    "shortName": "windows",
+    "desc": "The Microsoft Windows Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "6a1eea8b-1462-4439-8c60-12edbee6c397",
+    "name": "UnixLike",
+    "longName": "UnixLike",
+    "shortName": "unixlike",
+    "desc": "A UNIX-like operating system.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "a3b228b6-f737-460c-a3bc-bc653167b36c",
+    "name": "Unix",
+    "longName": "Unix",
+    "shortName": "unix",
+    "desc": "The UNIX Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "f0bcc651-3ca6-4d4c-ac9d-5a60b2b08520",
+    "name": "Illumos",
+    "longName": "Illumos",
+    "shortName": "illumos",
+    "desc": "The Illumos Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "0f81d6dc-d221-464a-ab85-1e3e5d98c3f0",
+    "name": "MacOsX",
+    "longName": "MacOsX",
+    "shortName": "macosx",
+    "desc": "The Apple Mac OS X Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "6004436f-7c88-4c2e-a29d-e8077bad10e9",
+    "name": "Bsd",
+    "longName": "Bsd",
+    "shortName": "bsd",
+    "desc": "The Berkeley Software Distribution Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "a5613527-2f64-4481-83f2-80b0cb427e28",
+    "name": "Linux",
+    "longName": "Linux",
+    "shortName": "linux",
+    "desc": "The Linux Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "0481d915-9d3c-4dbc-a55d-a688652934ef",
+    "name": "FreeDos",
+    "longName": "FreeDos",
+    "shortName": "freedos",
+    "desc": "A free DOS-like operating system.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "fd4984a4-e593-491d-ad1a-986fc203ff0e",
+    "name": "FreeDos1",
+    "longName": "FreeDos1",
+    "shortName": "freedos1",
+    "desc": "A free DOS-like operating system, version 1.x.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "dfbe4ce9-75be-4431-9629-3ab7d4a311e5",
+    "name": "MsDos",
+    "longName": "MsDos",
+    "shortName": "msdos",
+    "desc": "The Microsoft Disk Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "50dcae6d-48b0-432f-8f26-1cbf302bf504",
+    "name": "MsDos5",
+    "longName": "MsDos5",
+    "shortName": "msdos5",
+    "desc": "The Microsoft Disk Operating System, version 5.x.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "7d9ce51f-5ff4-40a7-b089-770aa0c29f71",
+    "name": "MsDos6",
+    "longName": "MsDos6",
+    "shortName": "msdos6",
+    "desc": "The Microsoft Disk Operating System, version 6.x.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "f936f4df-d1a6-4596-808a-6e2891a0688e",
+    "name": "Windows9x",
+    "longName": "Windows9x",
+    "shortName": "windows9x",
+    "desc": "The Microsoft Windows 95/98/ME based operating systems.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "37730c0d-e581-4089-8fc0-c848094223a7",
+    "name": "Windows95",
+    "longName": "Windows95",
+    "shortName": "windows95",
+    "desc": "The Microsoft Windows 95 operating system.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "7d7616b2-2fae-4f47-83cf-0e7add8950c5",
+    "name": "Windows98",
+    "longName": "Windows98",
+    "shortName": "windows98",
+    "desc": "The Microsoft Windows 98 operating system.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "231a2bd9-1b36-42e9-97aa-9144a05d9ade",
+    "name": "WindowsMe",
+    "longName": "WindowsMe",
+    "shortName": "windowsme",
+    "desc": "The Microsoft Windows ME operating system.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "3d97107a-fb41-4a45-bd98-e93190ea4e83",
+    "name": "WindowsNt",
+    "longName": "WindowsNt",
+    "shortName": "windowsnt",
+    "desc": "The Microsoft Windows NT based operating systems.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "da560e60-4958-4dee-ab8a-d62d9cdf3593",
+    "name": "WindowsNt4",
+    "longName": "WindowsNt4",
+    "shortName": "windowsnt4",
+    "desc": "The Microsoft Windows NT 4.0 operating system.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "9c97e86c-24b5-44b8-bef2-4ad465bb5c82",
+    "name": "Windows2000",
+    "longName": "Windows2000",
+    "shortName": "windows2000",
+    "desc": "The Microsoft Windows 2000 operating system.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "31a0496d-9cb4-4aab-b3ed-86ddb566c0f4",
+    "name": "WindowsXp",
+    "longName": "WindowsXp",
+    "shortName": "windowsxp",
+    "desc": "The Microsoft Windows XP operating system.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "8eb5e304-7d31-4645-89e2-8c39fefc7278",
+    "name": "Windows2003",
+    "longName": "Windows2003",
+    "shortName": "windows2003",
+    "desc": "The Microsoft Windows Server 2003 operating system.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "ec9e7f41-cda5-48df-9c22-8f320fff398b",
+    "name": "WindowsVista",
+    "longName": "WindowsVista",
+    "shortName": "windowsvista",
+    "desc": "The Microsoft Windows Vista operating system.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "a3b0f390-7257-43cb-9b9d-1cef8a4092bf",
+    "name": "Windows7",
+    "longName": "Windows7",
+    "shortName": "windows7",
+    "desc": "The Microsoft Windows 7 operating system.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "0cb2b9f2-3dfe-4183-8c0d-519a2b16e68a",
+    "name": "Windows2008",
+    "longName": "Windows2008",
+    "shortName": "windows2008",
+    "desc": "The Microsoft Windows Server 2008 operating system.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "16934de7-609f-4068-a18e-7eb7452b5f01",
+    "name": "Windows8",
+    "longName": "Windows8",
+    "shortName": "windows8",
+    "desc": "The Microsoft Windows 8 operating system.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "46758eba-4463-4779-91d9-9095f9d87097",
+    "name": "Windows2012",
+    "longName": "Windows2012",
+    "shortName": "windows2012",
+    "desc": "The Microsoft Windows Server 2012 operating system.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "3a80082c-173f-44fc-b42a-1fb381d2e3bc",
+    "name": "ReactOs",
+    "longName": "ReactOs",
+    "shortName": "reactos",
+    "desc": "The ReactOS Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "0a6a1bd2-1a6b-461b-aa28-cca977b8faf1",
+    "name": "ReactOs03",
+    "longName": "ReactOs03",
+    "shortName": "reactos03",
+    "desc": "The ReactOS 0.3.x Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "94708506-de30-4827-b9ef-84f6694c4e3f",
+    "name": "ReactOs04",
+    "longName": "ReactOs04",
+    "shortName": "reactos04",
+    "desc": "The ReactOS 0.4.x Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "9cf01e40-6be5-48bc-88c5-e9c3c8caaa4b",
+    "name": "Aix",
+    "longName": "Aix",
+    "shortName": "aix",
+    "desc": "The IBM AIX Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "154fd2d1-db50-4318-bfdf-49a62f11bdb6",
+    "name": "Aix5",
+    "longName": "Aix5",
+    "shortName": "aix5",
+    "desc": "The IBM AIX 5.x Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "843ff854-ee2a-4279-8dca-7caa24fc0727",
+    "name": "Aix6",
+    "longName": "Aix6",
+    "shortName": "aix6",
+    "desc": "The IBM AIX 6.x Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "a3f1be8b-f222-4c9d-ad77-d2a5365f418d",
+    "name": "Aix7",
+    "longName": "Aix7",
+    "shortName": "aix7",
+    "desc": "The IBM AIX 7.x Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "465b42e6-a7c5-4cf8-96c5-54257f054274",
+    "name": "HpUx",
+    "longName": "HpUx",
+    "shortName": "hpux",
+    "desc": "The HP/UX Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "416e6138-b048-4ee5-9554-6481ea996edf",
+    "name": "HpUx10",
+    "longName": "HpUx10",
+    "shortName": "hpux10",
+    "desc": "The HP/UX 10.x Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "ac59c16a-89d2-499e-8341-5161ffb4f176",
+    "name": "HpUx1020",
+    "longName": "HpUx1020",
+    "shortName": "hpux1020",
+    "desc": "The HP/UX 10.20 Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "1d34dabf-b096-4e43-80c4-7318c81bc1fe",
+    "name": "HpUx11",
+    "longName": "HpUx11",
+    "shortName": "hpux11",
+    "desc": "The HP/UX 11.x Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "d5312463-4313-4aea-9ac0-552201a7302c",
+    "name": "HpUx1123",
+    "longName": "HpUx1123",
+    "shortName": "hpux1123",
+    "desc": "The HP/UX 11.23 Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "591557b5-f13a-4070-a043-782830560664",
+    "name": "HpUx1131",
+    "longName": "HpUx1131",
+    "shortName": "hpux1131",
+    "desc": "The HP/UX 11.31 Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "4190b02e-a832-4316-87c6-d9e9b694e284",
+    "name": "Solaris",
+    "longName": "Solaris",
+    "shortName": "solaris",
+    "desc": "The Solaris Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "8e4b0333-3d59-455f-8de9-1bdd8af5ba96",
+    "name": "Solaris8",
+    "longName": "Solaris8",
+    "shortName": "solaris8",
+    "desc": "The Solaris 8 Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "d5156f08-91e5-4608-8c97-cd76434b7636",
+    "name": "Solaris9",
+    "longName": "Solaris9",
+    "shortName": "solaris9",
+    "desc": "The Solaris 9 Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "e10cd458-1348-488b-8cc4-01af672828ae",
+    "name": "Solaris10",
+    "longName": "Solaris10",
+    "shortName": "solaris10",
+    "desc": "The Solaris 10 Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "3a81f815-a426-4269-bdd9-a7ea7527325c",
+    "name": "Solaris11",
+    "longName": "Solaris11",
+    "shortName": "solaris11",
+    "desc": "The Solaris 11 Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "f4c41e3a-c59a-42f6-b6c8-b7c9b0df3f0e",
+    "name": "OpenIndiana",
+    "longName": "OpenIndiana",
+    "shortName": "openindiana",
+    "desc": "The OpenIndiana Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "c98dc9c8-bcf3-4a88-a24f-ea4b6a6a0951",
+    "name": "OpenIndiana151a8",
+    "longName": "OpenIndiana151a8",
+    "shortName": "openindiana151a8",
+    "desc": "The OpenIndiana 151a8 Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "0d73cb36-0f99-417b-a150-cc193ba044b8",
+    "name": "NexentaStor",
+    "longName": "NexentaStor",
+    "shortName": "nexentastor",
+    "desc": "The NexentaStor Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "6d90bb5c-bcb7-4c21-b7b9-8ba4aeb753b8",
+    "name": "NexentaStor3",
+    "longName": "NexentaStor3",
+    "shortName": "nexentastor3",
+    "desc": "The NexentaStor 3 Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "ef584c3a-b8ec-41da-9435-a9d1f8474dab",
+    "name": "NexentaStor4",
+    "longName": "NexentaStor4",
+    "shortName": "nexentastor4",
+    "desc": "The NexentaStor 4 Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "a7fba50f-5ab5-46d2-acf7-08fbe7c41b44",
+    "name": "SmartOs",
+    "longName": "SmartOs",
+    "shortName": "smartos",
+    "desc": "The SmartOS Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "70e37ec8-e807-4a82-b968-f596dac97d62",
+    "name": "Dyson",
+    "longName": "Dyson",
+    "shortName": "dyson",
+    "desc": "The Dyson Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "e3e34862-6d23-4922-81cd-fb0df4624cb5",
+    "name": "OmniOs",
+    "longName": "OmniOs",
+    "shortName": "omnios",
+    "desc": "The OmniOS Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "8e008afd-d1eb-48bd-8f71-684270750927",
+    "name": "OmniOsR151006",
+    "longName": "OmniOsR151006",
+    "shortName": "omniosr151006",
+    "desc": "The OmniOS r151006 Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "e164b0ef-707f-48da-a5b7-b185746c4fd0",
+    "name": "OmniOsR151010",
+    "longName": "OmniOsR151010",
+    "shortName": "omniosr151010",
+    "desc": "The OmniOS r151010 Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "2bd660a2-1783-4433-81a0-23d82dea1cce",
+    "name": "OpenSxce",
+    "longName": "OpenSxce",
+    "shortName": "opensxce",
+    "desc": "The OpenSXCE Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "1724894c-bb76-494f-b999-b467b0f4ccb6",
+    "name": "OpenSxce2013",
+    "longName": "OpenSxce2013",
+    "shortName": "opensxce2013",
+    "desc": "The OpenSXCE 2013 Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "c94f703d-7a1b-4ce4-aac5-c786e59117e0",
+    "name": "OpenSxce2014",
+    "longName": "OpenSxce2014",
+    "shortName": "opensxce2014",
+    "desc": "The OpenSXCE 2014 Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "edcd8303-03f6-459c-a5c3-2ea00c20f29c",
+    "name": "MacOsX3",
+    "longName": "MacOsX3",
+    "shortName": "macosx3",
+    "desc": "The Apple Mac OS X 10.3 Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "3d986bda-2109-4e91-a0ec-ad2be3bae792",
+    "name": "MacOsX4",
+    "longName": "MacOsX4",
+    "shortName": "macosx4",
+    "desc": "The Apple Mac OS X 10.4 Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "1cbf8f53-496b-4421-a805-e5bc86c2a56c",
+    "name": "MacOsX5",
+    "longName": "MacOsX5",
+    "shortName": "macosx5",
+    "desc": "The Apple Mac OS X 10.5 Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "eae5479b-1c29-41c9-9b8c-28f6663f85b6",
+    "name": "MacOsX6",
+    "longName": "MacOsX6",
+    "shortName": "macosx6",
+    "desc": "The Apple Mac OS X 10.6 Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "9c9d4b4c-4896-4a67-873f-2638a3ce4616",
+    "name": "MacOsX7",
+    "longName": "MacOsX7",
+    "shortName": "macosx7",
+    "desc": "The Apple Mac OS X 10.7 Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "6d7fc436-1e34-4538-ad6c-e3d8d47aa4b0",
+    "name": "MacOsX8",
+    "longName": "MacOsX8",
+    "shortName": "macosx8",
+    "desc": "The Apple Mac OS X 10.8 Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "8453b53d-4c0c-4892-b7c0-390314978a2b",
+    "name": "MacOsX9",
+    "longName": "MacOsX9",
+    "shortName": "macosx9",
+    "desc": "The Apple Mac OS X 10.9 Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "66ef29ff-374d-492f-99fe-e6573fcbacdf",
+    "name": "MacOsX10",
+    "longName": "MacOsX10",
+    "shortName": "macosx10",
+    "desc": "The Apple Mac OS X 10.10 Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "6bccb300-554a-43ce-981b-fd07b22c83f0",
+    "name": "FreeBsd",
+    "longName": "FreeBsd",
+    "shortName": "freebsd",
+    "desc": "The FreeBSD Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "d636ce7f-0da9-434c-b200-e7e409465076",
+    "name": "FreeBsd4",
+    "longName": "FreeBsd4",
+    "shortName": "freebsd4",
+    "desc": "The FreeBSD 4.x Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "931e52b3-97b8-43bb-bf4c-3424ba4cce0f",
+    "name": "FreeBsd5",
+    "longName": "FreeBsd5",
+    "shortName": "freebsd5",
+    "desc": "The FreeBSD 5.x Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "ac25708a-4b29-41c7-9739-c41fbdc38782",
+    "name": "FreeBsd6",
+    "longName": "FreeBsd6",
+    "shortName": "freebsd6",
+    "desc": "The FreeBSD 6.x Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "a05c4070-c1f7-400f-8ff4-00a2ebf613fa",
+    "name": "FreeBsd7",
+    "longName": "FreeBsd7",
+    "shortName": "freebsd7",
+    "desc": "The FreeBSD 7.x Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "4eff136f-1f84-4cde-984d-ecd274cd2610",
+    "name": "FreeBsd8",
+    "longName": "FreeBsd8",
+    "shortName": "freebsd8",
+    "desc": "The FreeBSD 8.x Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "f9a36f71-9b07-4813-ba2c-35448155e6f3",
+    "name": "FreeBsd9",
+    "longName": "FreeBsd9",
+    "shortName": "freebsd9",
+    "desc": "The FreeBSD 9.x Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "e144cfb5-664a-4542-9125-74da72cc0a8a",
+    "name": "FreeBsd10",
+    "longName": "FreeBsd10",
+    "shortName": "freebsd10",
+    "desc": "The FreeBSD 10.x Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "33b00a7e-0ddc-4d9e-87d2-876653655d72",
+    "name": "NetBsd",
+    "longName": "NetBsd",
+    "shortName": "netbsd",
+    "desc": "The NetBSD Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "e0dfa561-5500-49dd-a532-f5416385d66a",
+    "name": "NetBsd4",
+    "longName": "NetBsd4",
+    "shortName": "netbsd4",
+    "desc": "The NetBSD 4.x Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "64cfc48a-0626-4c72-9634-86dd33e94cde",
+    "name": "NetBsd5",
+    "longName": "NetBsd5",
+    "shortName": "netbsd5",
+    "desc": "The NetBSD 5.x Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "8ac7f26d-588d-44de-8792-26d6d429f9ff",
+    "name": "NetBsd6",
+    "longName": "NetBsd6",
+    "shortName": "netbsd6",
+    "desc": "The NetBSD 6.x Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "5609a5b8-b1fb-4ec3-a297-155c680a7e65",
+    "name": "OpenBsd",
+    "longName": "OpenBsd",
+    "shortName": "openbsd",
+    "desc": "The OpenBSD Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "03b4f697-c07a-473f-aae6-92d30e63c2f3",
+    "name": "OpenBsd4",
+    "longName": "OpenBsd4",
+    "shortName": "openbsd4",
+    "desc": "The OpenBSD 4.x Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "6330dd4e-92bc-4cab-b218-1c18d37e9742",
+    "name": "OpenBsd5",
+    "longName": "OpenBsd5",
+    "shortName": "openbsd5",
+    "desc": "The OpenBSD 5.x Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "41d52588-c248-4018-ac34-a8dfc1204729",
+    "name": "DragonFlyBsd",
+    "longName": "DragonFlyBsd",
+    "shortName": "dragonflybsd",
+    "desc": "The DragonFlyBSD Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "85d606c8-1d4b-4657-a67c-19ad78c51117",
+    "name": "DragonFlyBsd1",
+    "longName": "DragonFlyBsd1",
+    "shortName": "dragonflybsd1",
+    "desc": "The DragonFlyBSD 1.x Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "32fd5872-9894-4284-ac52-9b6fdf68f3a8",
+    "name": "DragonFlyBsd2",
+    "longName": "DragonFlyBsd2",
+    "shortName": "dragonflybsd2",
+    "desc": "The DragonFlyBSD 2.x Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "11666f58-6150-4a65-abea-b8c5fbddfde4",
+    "name": "DragonFlyBsd3",
+    "longName": "DragonFlyBsd3",
+    "shortName": "dragonflybsd3",
+    "desc": "The DragonFlyBSD 3.x Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "42a991a2-2f25-479a-a21d-7a7e07f691cf",
+    "name": "ArchLinux",
+    "longName": "ArchLinux",
+    "shortName": "archlinux",
+    "desc": "The Arch Linux Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "021488da-3011-4861-97a4-420a7d647e5d",
+    "name": "Debian",
+    "longName": "Debian",
+    "shortName": "debian",
+    "desc": "The Debian Linux Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "3de571df-b7cf-4673-8a31-e40e5dde624e",
+    "name": "Debian4",
+    "longName": "Debian4",
+    "shortName": "debian4",
+    "desc": "The Debian 4.x Linux Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "4f764a05-7fbd-4810-a069-a7e76f4933cd",
+    "name": "Debian5",
+    "longName": "Debian5",
+    "shortName": "debian5",
+    "desc": "The Debian 5.x Linux Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "6cf7eed4-847a-4249-b4cd-e0668091336e",
+    "name": "Debian6",
+    "longName": "Debian6",
+    "shortName": "debian6",
+    "desc": "The Debian 6.x Linux Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "368ea969-197b-4e18-8a73-c6b6b26beb9f",
+    "name": "Debian7",
+    "longName": "Debian7",
+    "shortName": "debian7",
+    "desc": "The Debian 7.x Linux Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "e7cfb97e-b1b0-4696-92bf-a70499d3fb40",
+    "name": "Debian8",
+    "longName": "Debian8",
+    "shortName": "debian8",
+    "desc": "The Debian 8.x Linux Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "1e13acac-4efb-4e62-894d-812492f6c266",
+    "name": "Ubuntu",
+    "longName": "Ubuntu",
+    "shortName": "ubuntu",
+    "desc": "The Ubuntu Linux Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "b41dabe4-e012-4c83-b073-4ca202950c44",
+    "name": "Ubuntu8",
+    "longName": "Ubuntu8",
+    "shortName": "ubuntu8",
+    "desc": "The Ubuntu 8.x Linux Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "a404e00c-46d7-4c20-940e-e071967dd2fe",
+    "name": "Ubuntu9",
+    "longName": "Ubuntu9",
+    "shortName": "ubuntu9",
+    "desc": "The Ubuntu 9.x Linux Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "d98635d0-a229-4755-88e2-30f891ce692d",
+    "name": "Ubuntu10",
+    "longName": "Ubuntu10",
+    "shortName": "ubuntu10",
+    "desc": "The Ubuntu 10.x Linux Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "dbb94e1f-72ca-4d2d-a5fd-38d7639df5c1",
+    "name": "Ubuntu11",
+    "longName": "Ubuntu11",
+    "shortName": "ubuntu11",
+    "desc": "The Ubuntu 11.x Linux Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "0cf76620-de1f-4e7b-b51b-74ecd980c253",
+    "name": "Ubuntu12",
+    "longName": "Ubuntu12",
+    "shortName": "ubuntu12",
+    "desc": "The Ubuntu 12.x Linux Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "ab6a2022-57f1-476c-8013-3cda7554280e",
+    "name": "Ubuntu13",
+    "longName": "Ubuntu13",
+    "shortName": "ubuntu13",
+    "desc": "The Ubuntu 13.x Linux Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "61a034bb-19e3-4d8f-bda9-35c90e874dc8",
+    "name": "Ubuntu14",
+    "longName": "Ubuntu14",
+    "shortName": "ubuntu14",
+    "desc": "The Ubuntu 14.x Linux Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "7d5b895a-a076-491d-b6ca-58eed0d0c960",
+    "name": "Mint",
+    "longName": "Mint",
+    "shortName": "mint",
+    "desc": "The Linux Mint Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "ab5e364d-51c3-4f77-b1d7-a12128e62f9f",
+    "name": "Mint10",
+    "longName": "Mint10",
+    "shortName": "mint10",
+    "desc": "The Linux Mint 10.x Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "27a69b62-9e0b-49e1-bb5e-30cd83e6cc68",
+    "name": "Mint11",
+    "longName": "Mint11",
+    "shortName": "mint11",
+    "desc": "The Linux Mint 11.x Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "8beb8f4b-cf59-4f2c-81b5-74041d379fc6",
+    "name": "Mint12",
+    "longName": "Mint12",
+    "shortName": "mint12",
+    "desc": "The Linux Mint 12.x Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "f204c30e-46be-49d3-82fd-7f455e1d3ac3",
+    "name": "Mint13",
+    "longName": "Mint13",
+    "shortName": "mint13",
+    "desc": "The Linux Mint 13.x Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "c4ea3a0d-8bdc-48e0-b985-719453831834",
+    "name": "Mint14",
+    "longName": "Mint14",
+    "shortName": "mint14",
+    "desc": "The Linux Mint 14.x Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "4b5a4f58-6f90-404f-a7bf-dd805506b197",
+    "name": "Mint15",
+    "longName": "Mint15",
+    "shortName": "mint15",
+    "desc": "The Linux Mint 15.x Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "5a1a5259-3387-4a43-9329-0b090f2b6473",
+    "name": "Mint16",
+    "longName": "Mint16",
+    "shortName": "mint16",
+    "desc": "The Linux Mint 16.x Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "b495af93-5b98-4746-ba29-2ec74f530cc6",
+    "name": "Mint17",
+    "longName": "Mint17",
+    "shortName": "mint17",
+    "desc": "The Linux Mint 17.x Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "98741859-5dd5-4c8d-a64a-69598f5ccb2f",
+    "name": "Rhel",
+    "longName": "Rhel",
+    "shortName": "rhel",
+    "desc": "The Red Hat Enterprise Linux Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "200eed01-43fe-4e9f-a740-a1bf50933751",
+    "name": "Rhel3",
+    "longName": "Rhel3",
+    "shortName": "rhel3",
+    "desc": "The Red Hat Enterprise Linux 3.x Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "078f7adf-2647-4f35-8742-96a7c59c992b",
+    "name": "Rhel4",
+    "longName": "Rhel4",
+    "shortName": "rhel4",
+    "desc": "The Red Hat Enterprise Linux 4.x Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "04202e27-f9ff-4ce0-8418-0d4aaecd6257",
+    "name": "Rhel5",
+    "longName": "Rhel5",
+    "shortName": "rhel5",
+    "desc": "The Red Hat Enterprise Linux 5.x Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "c19c8786-1ed0-4fc1-9ee9-7f0d49022d2c",
+    "name": "Rhel6",
+    "longName": "Rhel6",
+    "shortName": "rhel6",
+    "desc": "The Red Hat Enterprise Linux 6.x Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "d4fd6992-f34c-473b-9e05-929d7179ff73",
+    "name": "Rhel7",
+    "longName": "Rhel7",
+    "shortName": "rhel7",
+    "desc": "The Red Hat Enterprise Linux 7.x Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "c8b320a0-c5fd-43c0-b52e-305f2daccfec",
+    "name": "Centos",
+    "longName": "Centos",
+    "shortName": "centos",
+    "desc": "The Community Enterprise Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "4a43eead-c3a1-4e10-b8c1-b23e0b5b26ef",
+    "name": "Centos3",
+    "longName": "Centos3",
+    "shortName": "centos3",
+    "desc": "The Community Enterprise Operating System, version 3.x",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "8e49d933-dcd4-439f-9d10-91cb48a8e2d4",
+    "name": "Centos4",
+    "longName": "Centos4",
+    "shortName": "centos4",
+    "desc": "The Community Enterprise Operating System, version 4.x",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "caaee566-d43e-44b8-a59d-a87c37300562",
+    "name": "Centos5",
+    "longName": "Centos5",
+    "shortName": "centos5",
+    "desc": "The Community Enterprise Operating System, version 5.x",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "f3122393-1f4f-4916-96d7-a64b8be5736b",
+    "name": "Centos6",
+    "longName": "Centos6",
+    "shortName": "centos6",
+    "desc": "The Community Enterprise Operating System, version 6.x",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "9c13f597-4cd8-4311-a884-6efe24f10c81",
+    "name": "Centos7",
+    "longName": "Centos7",
+    "shortName": "centos7",
+    "desc": "The Community Enterprise Operating System, version 7.x",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "3f90173a-ae4d-4fd5-8c80-5659262d3aef",
+    "name": "Fedora",
+    "longName": "Fedora",
+    "shortName": "fedora",
+    "desc": "The Fedora Linux Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "342aecd0-163c-48fa-b0da-8e25b2c27a06",
+    "name": "Fedora12",
+    "longName": "Fedora12",
+    "shortName": "fedora12",
+    "desc": "The Fedora 12 Linux Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "f536b385-373e-45d2-9fd5-a41d5171cc45",
+    "name": "Fedora13",
+    "longName": "Fedora13",
+    "shortName": "fedora13",
+    "desc": "The Fedora 13 Linux Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "68b7effb-35c0-4b0d-adce-4ea0af5b0c97",
+    "name": "Fedora14",
+    "longName": "Fedora14",
+    "shortName": "fedora14",
+    "desc": "The Fedora 14 Linux Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "193c78d5-ad8f-48a4-ac10-8ab775cc7eb9",
+    "name": "Fedora15",
+    "longName": "Fedora15",
+    "shortName": "fedora15",
+    "desc": "The Fedora 15 Linux Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "f25ebc43-5f20-469f-90fe-8b907258f648",
+    "name": "Fedora16",
+    "longName": "Fedora16",
+    "shortName": "fedora16",
+    "desc": "The Fedora 16 Linux Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "e279d091-8dbe-45af-a41b-02f64800844f",
+    "name": "Fedora17",
+    "longName": "Fedora17",
+    "shortName": "fedora17",
+    "desc": "The Fedora 17 Linux Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "ef0cc490-f3cf-48f9-be47-a7ce9a2618db",
+    "name": "Fedora18",
+    "longName": "Fedora18",
+    "shortName": "fedora18",
+    "desc": "The Fedora 18 Linux Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "725c35f8-fbf0-442d-a4ec-0d83304e1b2a",
+    "name": "Fedora19",
+    "longName": "Fedora19",
+    "shortName": "fedora19",
+    "desc": "The Fedora 19 Linux Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "ca39cf3a-43b2-46b9-8440-cf350c730d29",
+    "name": "Fedora20",
+    "longName": "Fedora20",
+    "shortName": "fedora20",
+    "desc": "The Fedora 20 Linux Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "45284c82-2da0-48ae-a698-5f4f707fab94",
+    "name": "Fedora21",
+    "longName": "Fedora21",
+    "shortName": "fedora21",
+    "desc": "The Fedora 21 Linux Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "26b0d6c8-4d6b-4ec2-8d15-6e71758cc06c",
+    "name": "Mageia",
+    "longName": "Mageia",
+    "shortName": "mageia",
+    "desc": "The Mageia Linux Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "43a6757b-5fc1-4781-9521-b028af50defc",
+    "name": "Mageia3",
+    "longName": "Mageia3",
+    "shortName": "mageia3",
+    "desc": "The Mageia 3.x Linux Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "5a516ba5-2d9d-40bb-ba45-c79f630f1953",
+    "name": "Mageia4",
+    "longName": "Mageia4",
+    "shortName": "mageia4",
+    "desc": "The Mageia 4.x Linux Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "cdabdf0d-5994-43ce-803b-c4686ed16f48",
+    "name": "OpenSuse",
+    "longName": "OpenSuse",
+    "shortName": "opensuse",
+    "desc": "The openSUSE Linux Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "aa0c5261-b3cd-49b8-adf1-243087416064",
+    "name": "OpenSuse10",
+    "longName": "OpenSuse10",
+    "shortName": "opensuse10",
+    "desc": "The openSUSE 10.x Linux Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "dbe9b27e-5436-4b5b-a851-f0ba0cb04d69",
+    "name": "OpenSuse11",
+    "longName": "OpenSuse11",
+    "shortName": "opensuse11",
+    "desc": "The openSUSE 11.x Linux Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "90fa3322-60c3-4808-9d83-3af9b5a69b62",
+    "name": "OpenSuse12",
+    "longName": "OpenSuse12",
+    "shortName": "opensuse12",
+    "desc": "The openSUSE 12.x Linux Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "09ad6070-a602-4e00-ba9c-25a181f7f0df",
+    "name": "OpenSuse13",
+    "longName": "OpenSuse13",
+    "shortName": "opensuse13",
+    "desc": "The openSUSE 13.x Linux Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "6cbfc14e-6835-43bc-a29d-aafc8589de4b",
+    "name": "Sles",
+    "longName": "Sles",
+    "shortName": "sles",
+    "desc": "The SUSE Linux Enterprise Server Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "019b3997-f28e-4b81-8e5c-b1077fdf86cb",
+    "name": "Sles9",
+    "longName": "Sles9",
+    "shortName": "sles9",
+    "desc": "The SUSE Linux Enterprise Server 9.x Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "3f1076ed-dbe7-4ca6-8138-5a909bef9ce8",
+    "name": "Sles10",
+    "longName": "Sles10",
+    "shortName": "sles10",
+    "desc": "The SUSE Linux Enterprise Server 10.x Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "db95db3d-fe10-448a-9f30-2a05bf06e699",
+    "name": "Sles11",
+    "longName": "Sles11",
+    "shortName": "sles11",
+    "desc": "The SUSE Linux Enterprise Server 11.x Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "e3c6338f-ece3-448e-867b-49a8c16c9974",
+    "name": "Sles12",
+    "longName": "Sles12",
+    "shortName": "sles12",
+    "desc": "The SUSE Linux Enterprise Server 12.x Operating System.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "ad047d85-792a-4385-a14c-b85266bc5176",
+    "name": "PacMan",
+    "longName": "PacMan",
+    "shortName": "pacman",
+    "desc": "Arch Linux Pacman Package Manager.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "95d6093b-448b-4a62-8642-dc8d32b43622",
+    "name": "BsdPkg",
+    "longName": "BsdPkg",
+    "shortName": "bsdpkg",
+    "desc": "BSD pkg Package Manager.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "1a879371-f680-4514-8189-5d6e227ca6cc",
+    "name": "BsdPkgNg",
+    "longName": "BsdPkgNg",
+    "shortName": "bsdpkgng",
+    "desc": "BSD pkgng Package Manager.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "74528ec1-d223-40ad-8e2f-703b7f6d33b0",
+    "name": "Apt",
+    "longName": "Apt",
+    "shortName": "apt",
+    "desc": "Debian Advanced Package Tool.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "27a03a73-d654-4999-8888-72043c84172d",
+    "name": "Yum",
+    "longName": "Yum",
+    "shortName": "yum",
+    "desc": "YellowDog Updater, Modified.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "8a016a93-73f3-4b3d-9129-b3708f5d1afe",
+    "name": "Zypp",
+    "longName": "Zypp",
+    "shortName": "zypp",
+    "desc": "ZYpp Package Manager.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "2115cfc1-a2e8-4efe-aa58-60ef64a729ca",
+    "name": "OptZip",
+    "longName": "OptZip",
+    "shortName": "optzip",
+    "desc": "The very simple unzip-in /opt package manager.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "92e1ff01-8f01-4882-be63-ed9d0777924d",
+    "name": "SdUx",
+    "longName": "SdUx",
+    "shortName": "sdux",
+    "desc": "SD/UX, the HP/UX Software Distributor.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "5da69c0f-ac1f-4fbf-8365-77c2706874aa",
+    "name": "AixLpp",
+    "longName": "AixLpp",
+    "shortName": "aixlpp",
+    "desc": "IBM Licensed Program Product Manager.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "e70e7353-4e74-4a58-a7ca-eef0005ad5ec",
+    "name": "SolarisIps",
+    "longName": "SolarisIps",
+    "shortName": "solarisips",
+    "desc": "Solaris Image Packaging System Manager.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "7ed426f2-c163-4bdc-b1a0-0dc05e31f691",
+    "name": "SolarisPkg",
+    "longName": "SolarisPkg",
+    "shortName": "solarispkg",
+    "desc": "Older Solaris Package System Manager.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "b46cb520-caaf-4d26-b59d-58edca723b8d",
+    "name": "HttpServer",
+    "longName": "HttpServer",
+    "shortName": "httpserver",
+    "desc": "A generic HTTP Server.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "65af133b-1a2c-4faa-8d2a-a288eaa4f412",
+    "name": "SmbServer",
+    "longName": "SmbServer",
+    "shortName": "smbserver",
+    "desc": "A generic SMB/CIFS Server.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "7db4a3ef-2d3c-4071-929b-e81505fbd5e2",
+    "name": "SshServer",
+    "longName": "SshServer",
+    "shortName": "sshserver",
+    "desc": "A generic SSH Server.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "4a09bcce-59c6-4e94-9fc4-ba020733a27c",
+    "name": "TelnetServer",
+    "longName": "TelnetServer",
+    "shortName": "telnetserver",
+    "desc": "A generic TELNET Server.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "608bfaf1-9edc-4609-b5cd-56d8aeff8174",
+    "name": "SysvInit",
+    "longName": "SysvInit",
+    "shortName": "sysvinit",
+    "desc": "SysV Init Service Manager.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "b4c067de-e3cf-4b5b-90ca-588725d1b6c4",
+    "name": "BsdrcInit",
+    "longName": "BsdrcInit",
+    "shortName": "bsdrcinit",
+    "desc": "BSD RC Init Service Manager.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "3aac3563-a493-4efa-a31b-e751ee7d0a6f",
+    "name": "Upstart",
+    "longName": "Upstart",
+    "shortName": "upstart",
+    "desc": "Upstart Service Manager.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "0c189a0e-6b78-4177-832d-5d9b35b8a6af",
+    "name": "Systemd",
+    "longName": "Systemd",
+    "shortName": "systemd",
+    "desc": "Systemd Service Manager.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "fd13bd74-6682-4494-92af-a6caf5e64f12",
+    "name": "SystemStarter",
+    "longName": "SystemStarter",
+    "shortName": "systemstarter",
+    "desc": "Mac OS X SystemStarter.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "7b0bfefb-2212-4c58-a7c5-46ff66f0166a",
+    "name": "Launchd",
+    "longName": "Launchd",
+    "shortName": "launchd",
+    "desc": "Mac OS X Launchd.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "198435e1-cf1d-4d0a-9fb8-c760b5e8ac2b",
+    "name": "Scm",
+    "longName": "Scm",
+    "shortName": "scm",
+    "desc": "Service Control Manager.",
+    "ver": ""
+  },
+  {
+    "_typeUuid": "300beaaf-5b4c-48b1-be5b-a5fe3fa547b2",
+    "name": "Smf",
+    "longName": "Smf",
+    "shortName": "smf",
+    "desc": "The Solaris Service Management Facility.",
+    "ver": ""
+  },
+  {
+    "name": "Gentoo",
+    "desc": "The Gentoo Linux Operating System.",
+    "_typeUuid": "5b54c2b9-ba3e-4b2b-9172-0b2e836776cd",
+    "longName": "Gentoo",
+    "shortName": "gentoo",
+    "version": "rolling"
+  }
+]

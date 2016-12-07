@@ -521,6 +521,11 @@
   "glyphId" : 42,
   "isa" : "a5613527-2f64-4481-83f2-80b0cb427e28"
 }, {
+  "name" : "Gentoo",
+  "desc" : "The Gentoo Linux Operating System.",
+  "uuid" : "5b54c2b9-ba3e-4b2b-9172-0b2e836776cd",
+  "isa" : "a5613527-2f64-4481-83f2-80b0cb427e28"
+}, {
   "name" : "Debian",
   "desc" : "The Debian Linux Operating System.",
   "uuid" : "021488da-3011-4861-97a4-420a7d647e5d",
