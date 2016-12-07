@@ -3,7 +3,7 @@
 const R = require('ramda');
 const fs = require('fs');
 
-const bundleData = JSON.parse(fs.readFileSync('output.json'));
+const bundleData = JSON.parse(fs.readFileSync(__dirname + '/' + 'output.json'));
 const getConcept = (name) => R.find(R.propEq('shortName', R.toLower(name)), bundleData);
 
 const createInstanceData = (instances, templateUuid) => {
@@ -101,7 +101,7 @@ const transform = (data) => {
     } else {
         result.push(ipData(data.all_ipv4_addresses[0]));
     }
-    result.push(dnsData(data.hostname));
+    result.push(dnsData(data.nodename));
 
     return createEventData(R.concat(result, miscData()));
 };

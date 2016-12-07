@@ -388,7 +388,7 @@ public class Application {
                     e.printStackTrace();
                 }
             } else {
-                log.info("Structure was already registered");
+                log.info("Structure was already registered in the database");
             }
         });
         // DEMO STUFF
