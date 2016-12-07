@@ -274,6 +274,7 @@ public class Component extends Instance {
             ObjectNode componentNameUuid = mapper.createObjectNode();
             componentNameUuid.put("name", component.getName());
             componentNameUuid.put("uuid", component.getUuid());
+            componentNameUuid.put("desc", component.getDesc());
             componentsJson.add(componentNameUuid);
         });
 
