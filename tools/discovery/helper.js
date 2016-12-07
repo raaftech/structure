@@ -93,7 +93,7 @@ const mgrData = (mgr,ip) => {
     return createInstanceData([x], '34bfe99f-1d62-48cb-a8a3-e913b69ef225');
 };
 
-const daemonData = (sshd, httpd) => {
+const daemonData = (sshd, httpd,ip) => {
     let ssh = createData('7db4a3ef-2d3c-4071-929b-e81505fbd5e2', 'An SSH server.',
                          'SshServer', 'sshserver', 'SshServer', 'unknown');
     let http = createData('b46cb520-caaf-4d26-b59d-58edca723b8d','HTTP daemon',
@@ -102,6 +102,11 @@ const daemonData = (sshd, httpd) => {
     let list = [];
     if(notNil(sshd) && sshd !== 'none') list.push(ssh);
     if(notNil(httpd) && httpd !== 'none') list.push(http);
+
+    if(ip === '172.17.1.56') {
+        list.push(createData('65af133b-1a2c-4faa-8d2a-a288eaa4f412', 'A generic SMB/CIFS Server.',
+                             'Generic Samba Server', 'smbserver', 'SmbServer', 'unknown'));
+    }
 
     return createInstanceData(list, '54126ca8-3a5e-43b9-a501-98c8d158049d');
 };
@@ -121,7 +126,7 @@ const transform = (data, ip, hostname,sshd, httpd) => {
         r.push(mgrData('unknown',ip));
         r.push(ipData(ip, false));
         r.push(dnsData(hostname,ip));
-        r.push(daemonData(sshd, httpd));
+        r.push(daemonData(sshd, httpd,ip));
 
         return createEventData(R.concat(r, miscData()));
     }
@@ -132,7 +137,7 @@ const transform = (data, ip, hostname,sshd, httpd) => {
     result.push(mgrData(data.service_manager,ip));
     result.push(ipData(ip, true));
     result.push(dnsData(data.nodename,ip));
-    result.push(daemonData(sshd, httpd));
+    result.push(daemonData(sshd, httpd, ip));
 
     return createEventData(R.concat(result, miscData()));
 };
