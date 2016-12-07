@@ -18,7 +18,7 @@ const createEventData = (dataList) => {
         args: {
             instancedata: dataList
         },
-        msgh: 'instantiate'
+        msgh: 'instantiateDiscoveredComputer'
     };
 };
 
