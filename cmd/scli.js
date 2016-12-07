@@ -93,7 +93,7 @@ vorpal.command('find <name>', 'Find a specified node in vertx')
 		const self = this;
 		var act = args.options.uuid ? 'findOne' : 'findOneByName';
 		var pargs = args.options.uuid ? {'node': args.name} : {'name': args.name};
-		var addr = args.options.instance ? ['repository', 'instances'] : ['repository', 'nodes'];
+		var addr = args.options.instance ? ['repository', 'instances'] : ['repository', 'types'];
 		sendEvent(helper.getEventBusAddress(addr), act, pargs)
 			.then((data) => {
 				if(args.options.field) {
@@ -177,7 +177,7 @@ vorpal.command('tree <name>', 'Show a relation tree for the requested node')
         const self = this;
         var act = args.options.uuid ? 'findOne' : 'findOneByName';
         var pargs = args.options.uuid ? {'node': args.name} : {'name': args.name};
-        sendEvent(helper.getEventBusAddress(['repository', 'nodes']), act, pargs)
+        sendEvent(helper.getEventBusAddress(['repository', 'types']), act, pargs)
             .then((data) => {
                 var databuf = helper.getResultData(data);
                 var tree = {};
