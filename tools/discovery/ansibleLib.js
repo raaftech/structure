@@ -28,7 +28,11 @@ const createOutput = (data) => {
 
     return output;
 };
-const setupEnv = () => process.env.ANSIBLE_HOST_KEY_CHECKING = false;
+
+const setupEnv = () => {
+	process.env.ANSIBLE_HOST_KEY_CHECKING = false;
+	process.env.ANSIBLE_PYTHON_INTERPRETER = "/usr/bin/python,/usr/local/bin/python2.7";
+};
 
 const setupScan = (ip) => {
     return new Promise((resolve, reject) => {
@@ -42,10 +46,13 @@ const setupScan = (ip) => {
 
         ansible.exec()
             .then((result) => {
+                console.log('TYPE: '+typeof(result));
                 let json = JSON.parse(sanitize('SUCCESS => ', result.output));
                 resolve(createOutput(json));
             })
-            .catch((ex) => reject(createErrorMessage(ex)));
+            .catch((ex) => {
+                resolve(createErrorMessage(ex));
+            });
     });
 };
 
@@ -65,7 +72,6 @@ const shellExec = (ip,args) => {
             .catch((ex) => reject(createErrorMessage(ex)));
     });
 };
-
 
 module.exports = {
     setup: setupScan,

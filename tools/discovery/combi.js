@@ -42,20 +42,22 @@ const main = () => {
 
     nmapLib.nmapScan(cidr, args)
         .then((nmapResults) => {
-            let ips = R.pluck('ip', nmapResults);
-            count = R.length(ips);
+            // let ips = R.pluck('ip', nmapResults);
+            // count = R.length(ips);
+            count = R.length(nmapResults);
 
             R.forEach((ip) => {
-                ansibleLib.setup(ip)
+                ansibleLib.setup(ip.ip)
                     .then((result) => {
-                        let buf = helper.transform(result);
+                        let buf = helper.transform(result,ip.ip, ip.hostname);
                         console.log(JSON.stringify(buf, undefined, 2));
                         client.send(buf);
                         count--;
-                        console.log('[%s] %s', count,ip);
-                    })
-                    .catch((ex) => console.log(ex));
-            }, ips);
+                        if(count <= 0) {
+                            client.close();
+                        }
+                    });
+            }, nmapResults);
         });
 };
 

@@ -15,7 +15,7 @@ test('test quick scan', function(tt) {
         let cidr = '172.17.1.0/24';
         nmapLib.quickScan(cidr)
             .then((result) => {
-                t.equals(R.length(result), 35, 'should be 35 entries');
+				t.ok(R.length(result) >= 35, 'should be at least 35 entries');
                 let res = R.reduce(R.and, true, R.map(itemPropertyTest, result));
                 t.ok(res, 'all items should have all properties');
                 t.end();
@@ -33,8 +33,7 @@ test('test nmap scan', function(tt) {
         let args = '-p22';
         nmapLib.nmapScan(cidr,args)
             .then((result) => {
-                console.log(JSON.stringify(result));
-                t.equals(R.length(result), 35, 'should be 35 entries');
+				t.ok(R.length(result) >= 35, 'should be at least 35 entries');
                 let res = R.reduce(R.and, true, R.map(itemPropertyTest, result));
                 t.ok(res, 'all items should have all properties');
                 t.end();

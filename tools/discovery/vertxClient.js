@@ -1,6 +1,3 @@
-"use strict";
-
-const util = require('util');
 const EventBus = require('vertx3-eventbus-client');
 
 const busUrl = 'http://localhost:8080/eventbus';

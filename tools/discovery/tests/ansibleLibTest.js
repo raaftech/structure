@@ -1,6 +1,5 @@
 "use strict";
 
-const R = require('ramda');
 const test = require('tape');
 const lib = require('../ansibleLib');
 

@@ -19,7 +19,12 @@
     "vertx3-eventbus-client": "^3.3.3"
   },
   "devDependencies": {
-    "intercept-stdout": "^0.1.2",
+    "gulp": "^3.9.1",
+    "gulp-jshint": "^2.0.4",
+    "gulp-run": "^1.7.1",
+    "gulp-util": "^3.0.7",
+    "jshint": "^2.9.4",
+    "jshint-stylish": "^2.2.1",
     "tape": "^4.6.3"
   }
 }
