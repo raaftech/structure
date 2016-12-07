@@ -2,7 +2,7 @@
   "name" : "SysvInit",
   "desc" : "SysV Init Service Manager.",
   "uuid" : "608bfaf1-9edc-4609-b5cd-56d8aeff8174",
-  "glyphId" : 227,
+  "glyphId" : 240,
   "isa" : "c3008eec-b454-4ef6-bf7e-0bd92c13d3c3"
 }, {
   "name" : "BsdrcInit",
@@ -14,36 +14,36 @@
   "name" : "Upstart",
   "desc" : "Upstart Service Manager.",
   "uuid" : "3aac3563-a493-4efa-a31b-e751ee7d0a6f",
-  "glyphId" : 239,
+  "glyphId" : 253,
   "isa" : "c3008eec-b454-4ef6-bf7e-0bd92c13d3c3"
 }, {
   "name" : "Systemd",
   "desc" : "Systemd Service Manager.",
   "uuid" : "0c189a0e-6b78-4177-832d-5d9b35b8a6af",
-  "glyphId" : 225,
+  "glyphId" : 238,
   "isa" : "c3008eec-b454-4ef6-bf7e-0bd92c13d3c3"
 }, {
   "name" : "SystemStarter",
   "desc" : "Mac OS X SystemStarter.",
   "uuid" : "fd13bd74-6682-4494-92af-a6caf5e64f12",
-  "glyphId" : 226,
+  "glyphId" : 239,
   "isa" : "c3008eec-b454-4ef6-bf7e-0bd92c13d3c3"
 }, {
   "name" : "Launchd",
   "desc" : "Mac OS X Launchd.",
   "uuid" : "7b0bfefb-2212-4c58-a7c5-46ff66f0166a",
-  "glyphId" : 119,
+  "glyphId" : 124,
   "isa" : "c3008eec-b454-4ef6-bf7e-0bd92c13d3c3"
 }, {
   "name" : "Scm",
   "desc" : "Service Control Manager.",
   "uuid" : "198435e1-cf1d-4d0a-9fb8-c760b5e8ac2b",
-  "glyphId" : 0,
+  "glyphId" : 213,
   "isa" : "c3008eec-b454-4ef6-bf7e-0bd92c13d3c3"
 }, {
   "name" : "Smf",
   "desc" : "The Solaris Service Management Facility.",
   "uuid" : "300beaaf-5b4c-48b1-be5b-a5fe3fa547b2",
-  "glyphId" : 213,
+  "glyphId" : 225,
   "isa" : "c3008eec-b454-4ef6-bf7e-0bd92c13d3c3"
 } ]
