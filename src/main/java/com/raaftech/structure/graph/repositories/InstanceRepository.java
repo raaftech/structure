@@ -40,6 +40,4 @@ public interface InstanceRepository extends GenericRepository<Instance> {
     @Query ("MATCH (n:Instance) WHERE NOT (n)-[:INSTANCE_OF]->({name:\"Handler\"}) RETURN n ORDER BY id(n) DESC LIMIT {amount}")
     List<Instance> getNLastCreated(@Param("amount") int amount);
 
-    @Query ("MATCH (n:Instance {`kv-dnsname`: {hostname}}) RETURN n")
-    Set<Instance> findHostname(@Param("hostname") String hostname);
 }

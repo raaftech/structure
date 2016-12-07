@@ -1,6 +1,7 @@
 package com.raaftech.structure.graph.repositories;
 
 import com.raaftech.structure.graph.Component;
+import com.raaftech.structure.graph.Instance;
 import org.springframework.data.neo4j.annotation.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -12,5 +13,8 @@ public interface ComponentRepository extends GenericRepository<Component> {
             "MATCH start-[:HAS_COMPONENT*1..]->(n)-[:ISA|INSTANCE_OF*1..]->({name:{type}}) " +
             "RETURN n")
     Set<Component> findChildrenByType(@Param("uuid") String uuid, @Param("type") String type);
+
+    @Query ("MATCH (n:Instance {`kv-dnsname`: {hostname}}) RETURN n")
+    Set<Component> findHostname(@Param("hostname") String hostname);
 
 }
