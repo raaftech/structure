@@ -1,6 +1,8 @@
 package com.raaftech.structure.base;
 
 import ch.qos.logback.classic.Level;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.raaftech.structure.graph.Component;
 import com.raaftech.structure.graph.Instance;
 import com.raaftech.structure.graph.Template;
@@ -39,6 +41,8 @@ import java.io.InputStream;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
+
+import static io.vertx.core.json.Json.mapper;
 
 /**
  * The main application entry point.
@@ -408,6 +412,54 @@ public class Application {
                     log.error(e.getMessage());
                 }
                 host = componentRepository.findHostname(dn);
+                if (host != null) {
+                    Transaction transaction = Context.getGraphDatabase().beginTx();
+                    try {
+                        String openSshUuid = "9e977808-78fd-4eb6-95e0-ff7c7011caa5";
+                        String structureUuid = "81afe6e0-98a2-4a7a-9dad-0ff914afb377";
+                        String iputilsUuid = "6619adef-3bcb-4e32-bfec-d235a7bf3e29";
+                        log.info("Adding SSH and Structure client to Structure");
+                        JsonNode openSsh = mapper.readTree("{\n" +
+                                "\"desc\": \"The OpenSSH client.\",\n" +
+                                "\"longName\": \"OpenSshClient\",\n" +
+                                "\"name\": \"OpenSshClient\",\n" +
+                                "\"shortName\": \"ssh\",\n" +
+                                "\"ver\": \"unknown\"\n" +
+                                "}");
+                        JsonNode structure = mapper.readTree("{\n" +
+                                "\"desc\": \"Structure\",\n" +
+                                "\"longName\": \"Structure\",\n" +
+                                "\"name\": \"Structure\",\n" +
+                                "\"shortName\": \"structure\",\n" +
+                                "\"ver\": \"0.9\"\n" +
+                                "}");
+                        JsonNode iputils = mapper.readTree("{\n" +
+                                "\"desc\": \"IP utilities.\",\n" +
+                                "\"longName\": \"IpUtils\",\n" +
+                                "\"name\": \"IpUtils\",\n" +
+                                "\"shortName\": \"iputils\",\n" +
+                                "\"ver\": \"unknown\"\n" +
+                                "}");
+                        Component openSshComponent = new Component((ObjectNode) openSsh, openSshUuid);
+                        Component structureComponent = new Component((ObjectNode) structure, structureUuid);
+                        Component iputilsComponent = new Component((ObjectNode) iputils, iputilsUuid);
+                        Component start = componentRepository.getStartOfComponentGroup(host.getUuid());
+                        openSshComponent.setComponentOf(start);
+                        structureComponent.setComponentOf(start);
+                        iputilsComponent.setComponentOf(start);
+                        openSshComponent.save();
+                        structureComponent.save();
+                        iputilsComponent.save();
+                        transaction.success();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        transaction.failure();
+                        log.error("Couldn't add SSH and Structure client to Structure");
+                        System.exit(1);
+                    } finally {
+                        transaction.close();
+                    }
+                }
             }
 
             if (host != null) {

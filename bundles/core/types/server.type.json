@@ -19,6 +19,11 @@
   "isa" : "3fb4603b-281e-47c0-b338-768ea05d4660",
   "implements": [ "SSH10", "SSH20" ]
 }, {
+  "name" : "Structure",
+  "desc" : "The structure server",
+  "uuid" : "81afe6e0-98a2-4a7a-9dad-0ff914afb377",
+  "isa" : "3fb4603b-281e-47c0-b338-768ea05d4660"
+}, {
   "name" : "TelnetServer",
   "desc" : "A generic TELNET Server.",
   "uuid" : "4a09bcce-59c6-4e94-9fc4-ba020733a27c",

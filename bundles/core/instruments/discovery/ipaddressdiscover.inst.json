@@ -1,0 +1,23 @@
+{
+  "name": "IpAddressDiscover",
+  "desc": "Scan an IP address using our discovery tool",
+  "instrumentType": "controller",
+  "capability": "Detect",
+  "providedBy": "Structure",
+  "templateFile": "ipaddressdiscover.hbs.sh",
+  "appliesTo": [ "IpAddress" ],
+  "subjectIsLocal": false,
+  "arguments": {
+    "ipaddress": {
+      "value": {
+        "from": "origin",
+        "type": "type.configuration.ipaddress",
+        "matches": { "reachable": "true" },
+        "strategy": "useFirst",
+        "onError": "fail"
+      },
+      "canBeUserSupplied": false,
+      "isOptional": false
+    }
+  }
+}

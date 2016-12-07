@@ -143,6 +143,15 @@ public class Component extends Instance {
         return this;
     }
 
+    public Component setComponentOf(Component component) {
+        if (inComponent == null) {
+            inComponent = component;
+        } else {
+            log.error("Component {} already part of componental group, can't set component of", getUuid());
+        }
+        return this;
+    }
+
     /**
      * Add another component as child of this component.
      * @param componentUuid The UUID of the component to add as a child component.
@@ -180,12 +189,16 @@ public class Component extends Instance {
     }
 
     public Component save() {
+        log.info("Saving component with UUID {} ", getUuid());
         super.save();
 
-        boolean newNode = getId() == null || getId() < 0;
-        if (newNode && Context.getVertx() != null) {
+//        boolean newNode = getId() == null || getId() < 0;
+        if (Context.getVertx() != null) {
+            log.info("Deploying ComponentActor for component \"{}\"", getUuid());
             Context.getVertx().deployVerticle(
                     new ComponentActor(this));
+        } else {
+            log.debug("Not deploying ComponentActor for component \"{}\"", getUuid());
         }
         return this;
     }

@@ -17,4 +17,10 @@ public interface ComponentRepository extends GenericRepository<Component> {
     @Query ("MATCH (n:Instance {`kv-dnsname`: {hostname}}) RETURN n")
     Component findHostname(@Param("hostname") String hostname);
 
+    // Get the root node of a componental group
+    @Query ("MATCH (component:Component {uuid:{instanceUuid}})<-[:HAS_COMPONENT*0..]-(start) " +
+            "WHERE NOT (start)<-[:HAS_COMPONENT]-() " +
+            "RETURN start")
+    Component getStartOfComponentGroup(@Param("instanceUuid") String instanceUuid);
+
 }
