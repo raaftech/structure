@@ -1,0 +1,20 @@
+{
+  "name": "check",
+  "desc": "ServicesCheck",
+  "instrumentType": "controller",
+  "capability": "State",
+  "providedBy": "Services",
+  "templateFile": "servicescheck.hbs.cmd",
+  "appliesTo": [ "Server" ],
+  "subjectIsLocal": true,
+  "arguments": {
+    "origin": {
+      "value": {
+	"from": "origin",
+	"type": "type.component.software.server"
+      },
+      "isOptional": false,
+      "canBeUserSupplied": false
+    }
+  }
+}
