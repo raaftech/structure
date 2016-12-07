@@ -195,6 +195,7 @@ public abstract class Instance extends Node {
         result.put("name", getName());
         result.put("desc", getDesc());
         result.put("uuid", getUuid());
+        result.put("glyphId", Integer.toHexString(getInstanceOf().getGlyphId()));
         result.put("_hierarchyPath", getInstanceOf().getHierarchyPath());
         kv.asMap().forEach((key, val) -> result.put(key, val.toString()));
 

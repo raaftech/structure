@@ -1,5 +1,8 @@
 angular.module("structureApp")
-    .controller("typeCtrl", function($scope, $uibModal, typeSrvs, sweet) {
+    .controller("typeCtrl", function($scope, $uibModal, $controller, typeSrvs, sweet) {
+
+        $controller("panelDetailCtrl", {$scope: $scope});
+        $controller("panelRightCtrl", {$scope: $scope});
 
         $scope.getType = function(uuid) {
             typeSrvs.getType(uuid).then(function(response) {
@@ -71,7 +74,7 @@ angular.module("structureApp")
                             {
                                 "type": "button",
                                 "title": "Cancel",
-                                "onClick": "cancel()"
+                                "onClick": "closePanelRight()"
                             }
                         ]
                     }];
@@ -88,11 +91,11 @@ angular.module("structureApp")
                 angular.forEach($scope.type, function(v, k) {
                     $scope.model[k] = v;
                 });
-                $uibModal.open({
-                    "controller": "modalEditTypeCtrl",
-                    "templateUrl": "js/views/modals/schemaFormEditType.html",
-                    "scope": $scope
-                });
+                // $uibModal.open({
+                //     "controller": "modalEditTypeCtrl",
+                //     "templateUrl": "js/views/modals/schemaFormEditType.html",
+                //     "scope": $scope
+                // });
             });
         };
 
@@ -160,7 +163,9 @@ angular.module("structureApp")
             typeSrvs.getChildren(uuid).then(function(response) {
                 $scope.nodes = response;
             });
+            $scope.showDetails = true;
+            $scope.showSize = "230px";
         };
 
-        $scope.init("a79ce509-a021-4177-ae61-73abd01fb479");
+        $scope.init("b1bc963a-19cc-4518-aecb-a35d028c49e3");
     });

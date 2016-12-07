@@ -15,6 +15,6 @@ public interface ComponentRepository extends GenericRepository<Component> {
     Set<Component> findChildrenByType(@Param("uuid") String uuid, @Param("type") String type);
 
     @Query ("MATCH (n:Instance {`kv-dnsname`: {hostname}}) RETURN n")
-    Set<Component> findHostname(@Param("hostname") String hostname);
+    Component findHostname(@Param("hostname") String hostname);
 
 }

@@ -36,7 +36,17 @@ public class Context implements ApplicationContextAware {
 
 
     // The identifier used to identify this structure instance in the database.
-    public final static String selfIdentifier = "structure";
+    private static String selfIdentifier = null;
+
+    public static void setSelfIdentifier(String selfIdentifier) {
+        if (Context.selfIdentifier == null) {
+            Context.selfIdentifier = selfIdentifier;
+        }
+    }
+
+    public static String getSelfIdentifier() {
+        return selfIdentifier;
+    }
 
     public static NodeRepository getNodeRepository() {
         return (NodeRepository)context.getBean("nodeRepository");

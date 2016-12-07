@@ -43,7 +43,7 @@ public class DiscoveryManager extends GenericActor {
                             while (elements.hasNext() && !found) {
                                 JsonNode el = elements.next();
                                 dnsname = el.get("dnsname").asText();
-                                found = componentRepository.findHostname(dnsname).size() > 0;
+                                found = componentRepository.findHostname(dnsname) != null;
                                 if (found) {
                                     log.info("Computer with hostname {} already exists", dnsname);
                                 }

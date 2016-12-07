@@ -71,13 +71,13 @@ public class InstrumentRunner {
         this.arguments = arguments == null ? mapper.createObjectNode() : arguments;
 
         // TODO: Need a different way of finding the structure node.
-        this.agent = (Component) instanceRepository.findOneByName(Context.selfIdentifier);
+        this.agent = (Component) instanceRepository.findByUuid(Context.getSelfIdentifier());
         this.subject = (Component) instanceRepository.getStartOfComponentGroup(origin.getUuid());
 
         // Did we find the agent?
         if (agent == null) {
             throw new IllegalArgumentException("Couldn't find node running Structure by name \""
-                    + Context.selfIdentifier + "\".");
+                    + Context.getSelfIdentifier() + "\".");
         }
 
         // Does the controller even work on the given origin?

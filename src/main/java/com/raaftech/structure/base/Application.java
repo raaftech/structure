@@ -2,6 +2,7 @@ package com.raaftech.structure.base;
 
 import ch.qos.logback.classic.Level;
 import com.raaftech.structure.graph.Component;
+import com.raaftech.structure.graph.Instance;
 import com.raaftech.structure.graph.Template;
 import com.raaftech.structure.graph.Type;
 import com.raaftech.structure.graph.repositories.*;
@@ -362,13 +363,8 @@ public class Application {
         }
         tx.close();
 
-        // Wait a second so debug messages are done
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            log.error(e.getMessage());
-            throw e;
-        }
+        // Start listening on http
+        httpServer.requestHandler(router::accept).listen(port);
 
         // DEMO STUFF
         vertx.deployVerticle("com.raaftech.structure.manager.DiscoveryManager", new DeploymentOptions().setWorker(true), (ar) -> {
@@ -382,7 +378,8 @@ public class Application {
         Optional<String> hostname = getHostname();
         hostname.map(String::trim).ifPresent((dn) -> {
             log.info("Hostname is \"{}\"", dn);
-            if (componentRepository.findHostname(dn).size() == 0) {
+            Component host = componentRepository.findHostname(dn);
+            if (host == null) {
                 log.info("Structure is not registered in the database, now discovering itself");
                 ProcessRunner runner = new ProcessRunner("node tools/discovery/combi.js -c 127.0.0.1/32");
                 try {
@@ -395,11 +392,38 @@ public class Application {
             } else {
                 log.info("Structure was already registered in the database");
             }
+
+            // Wait a second so debug messages are done
+            int waitCycles = 0;
+            while (host == null && waitCycles < 5) {
+                if (waitCycles == 0) {
+                    log.info("Waiting for registration...");
+                } else {
+                    log.info("...");
+                }
+                waitCycles++;
+                try {
+                    Thread.sleep(1500);
+                } catch (InterruptedException e) {
+                    log.error(e.getMessage());
+                }
+                host = componentRepository.findHostname(dn);
+            }
+
+            if (host != null) {
+                Instance structureInstance = instanceRepository.getStartOfComponentGroup(host.getUuid());
+                log.info("Setting self identifier to {}", structureInstance.getUuid());
+                Context.setSelfIdentifier(structureInstance.getUuid());
+            }
         });
+
+        if (Context.getSelfIdentifier() == null) {
+            log.error("Self identifier is set to null, unrecoverable error");
+            System.exit(1);
+        }
         // DEMO STUFF
 
         // A friendly message telling the user we're done.
-        httpServer.requestHandler(router::accept).listen(port);
         log.info("Structure is running at http://localhost:{}", port);
     }
 
