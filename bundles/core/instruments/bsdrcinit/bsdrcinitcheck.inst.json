@@ -1,0 +1,22 @@
+{
+  "name": "check",
+  "desc": "BsdrcInitCheck",
+  "instrumentType": "controller",
+  "capability": "State",
+  "providedBy": "BsdrcInit",
+  "appliesTo": [ "Server" ],
+  "subjectIsLocal": true,
+  "templateFile": "bsdrcinitcheck.hbs.sh",
+  "arguments": {
+    "origin": {
+      "value": {
+        "from": "origin",
+        "type": "type.component.software.server",
+        "strategy": "mustBeOne",
+        "onError": "fail"
+      },
+      "canBeUserSupplied": false,
+      "isOptional": false
+    }
+  }
+}

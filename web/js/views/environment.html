@@ -117,7 +117,7 @@
                               'closed': (!showComponents[instance.uuid] && instance.components.length > 0)
                           }"
                       ng-click="$event.stopPropagation(); setShowComponents(instance)"></span>
-                <show-icon glyphid="{{instance.glyphId}}" size="sg-xs"></show-icon> {{instance.name}}
+                <show-icon glyphid="{{instance.glyphId}}" size="sg-xs" ng-class="checkColor(instance.uuid)"></show-icon> {{instance.name}}
             </div>
             <div class="col-xs-4 wrap-text" ng-click="getInstance(instance.uuid); detailedInfo();">{{instance.desc}}</div>
             <div class="col-xs-4 wrap-text" ng-click="getInstance(instance.uuid); detailedInfo();">{{instance.uuid}}</div>
