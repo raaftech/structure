@@ -111,14 +111,23 @@
     <script type="text/ng-template" id="nodeTree">
         <div class="row" ng-init="topMenuButton = false" ng-mouseenter="topMenuButton = true" ng-mouseleave="topMenuButton = false">
             <div class="col-xs-4" ng-click="getInstance(instance.uuid); detailedInfo();">
-                {{instance.name}}
+                <span ng-class="
+                          {
+                              'open': (showComponents[instance.uuid] && instance.components != '[]'),
+                              'closed': (!showComponents[instance.uuid] && instance.components.length > 0)
+                          }"
+                      ng-click="$event.stopPropagation(); setShowComponents(instance)"></span>
+                <show-icon glyphid="{{instance.glyphId}}" size="sg-xs"></show-icon> {{instance.name}}
             </div>
             <div class="col-xs-4 wrap-text" ng-click="getInstance(instance.uuid); detailedInfo();">{{instance.desc}}</div>
             <div class="col-xs-4 wrap-text" ng-click="getInstance(instance.uuid); detailedInfo();">{{instance.uuid}}</div>
             <list-item-hover-menu-types ng-show="topMenuButton" uuid="{{instance.uuid}}"></list-item-hover-menu-types>
         </div>
+        <ul ng-if="instance.components" class="list-group list" ng-show="showComponents[instance.uuid] == 1">
+            <li ng-repeat="instance in instance.components | orderBy: 'name'" ng-include="'nodeTree'" class="list-group-item"></li>
+        </ul>
     </script>
-    <ul class="list-group list" ng-init="getNInstances(10)">
+    <ul class="list-group list" ng-init="getNInstances(40)">
         <li class="list-group-item header">
             <div class="row">
                 <div class="col-xs-4">Name</div>

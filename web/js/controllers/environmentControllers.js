@@ -109,4 +109,15 @@ angular.module("structureApp")
                 $scope.instance = response;
             });
         };
+
+        $scope.showComponents = [];
+
+        $scope.setShowComponents = function(instance) {
+            if($scope.showComponents[instance.uuid]) {
+                delete $scope.showComponents[instance.uuid];
+            }
+            else{
+                $scope.showComponents[instance.uuid] = 1;
+            }
+        };
     });
