@@ -4,7 +4,7 @@ const util = require('util');
 const EventBus = require('vertx3-eventbus-client');
 
 const busUrl = 'http://localhost:8080/eventbus';
-const statusChannel = 'com.raaftech.structure.node.template.1b8e0d72-c23d-4091-a4e6-74d07f1ee6fa';
+const statusChannel = 'com.raaftech.structure.manager.discoverymanager';
 
 function vClient() {
     this.eb = new EventBus(busUrl);
