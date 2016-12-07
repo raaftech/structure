@@ -77,8 +77,12 @@ const interpreterData = (interpreter) => {
     return createInstanceData([x], '2741cc5a-eb45-4532-9a64-c715c07f93bc');
 };
 
-const mgrData = (mgr) => {
+const mgrData = (mgr,ip) => {
     if(mgr === 'bsdinit') mgr = 'bsdrcinit';
+    if(ip === '172.17.1.56') {
+        mgr = 'services';
+    }
+
     let c = getConcept(mgr);
 	if(R.isNil(c)) {
         let generic = createData('c3008eec-b454-4ef6-bf7e-0bd92c13d3c3','An operating system initialization system.',
@@ -114,7 +118,7 @@ const transform = (data, ip, hostname,sshd, httpd) => {
         let r = [];
         r.push(osData('Unknown', '',hostname,ip));
         r.push(interpreterData('unknown'));
-        r.push(mgrData('unknown'));
+        r.push(mgrData('unknown',ip));
         r.push(ipData(ip, false));
         r.push(dnsData(hostname,ip));
         r.push(daemonData(sshd, httpd));
@@ -125,7 +129,7 @@ const transform = (data, ip, hostname,sshd, httpd) => {
     let result = [];
     result.push(osData(data.distribution, data.distribution_version,hostname,ip));
     result.push(interpreterData(data.shell));
-    result.push(mgrData(data.service_manager));
+    result.push(mgrData(data.service_manager,ip));
     result.push(ipData(ip, true));
     result.push(dnsData(data.nodename,ip));
     result.push(daemonData(sshd, httpd));
