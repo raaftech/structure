@@ -78,6 +78,7 @@ const interpreterData = (interpreter) => {
 };
 
 const mgrData = (mgr) => {
+    if(mgr === 'bsdinit') mgr = 'bsdrcinit';
     let c = getConcept(mgr);
 	if(R.isNil(c)) {
         let generic = createData('c3008eec-b454-4ef6-bf7e-0bd92c13d3c3','An operating system initialization system.',
