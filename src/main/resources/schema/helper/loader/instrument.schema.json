@@ -1,5 +1,5 @@
 {
-  "id": "https://repo.raaftech.com/schema/instrument.schema.json#",
+  "id": "https://repo.raaftech.com/schema/helper/loader/instrument.schema.json#",
   "$schema": "http://json-schema.org/draft-04/schema#",
   "description": "Schema for Structure instrument metadata.",
   "type": "object",

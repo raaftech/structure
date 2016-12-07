@@ -75,8 +75,8 @@ public class Instances extends Repository<Instance> {
                 args.remove("node");
 
                 try {
-                    if (type.isOfType("Component")) {
-                        Instance newInstance = new Component(args, type);
+                    if (type.isOfType("Type")) {
+                        Component newInstance = new Component(args, type);
                         newInstance.save();
                         result.put("data", newInstance.getUuid());
                     } else {
