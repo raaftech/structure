@@ -15,11 +15,15 @@ angular.module("structureApp")
             },
 
             runInstrument: function(data) {
-                return vertxEventBusService.send("com.raaftech.structure.node.component" + data.uuid, {
+                var args = {
+                    "instrument": data.uuidInstr
+                };
+                if(data.instrumentname == 'IpAddressDiscover') {
+                    args.timeAllocated = 600000;
+                }
+                return vertxEventBusService.send("com.raaftech.structure.node.component." + data.uuid, {
                         "msgh": "runInstrument",
-                        "args": {
-                            "instrument": data.uuidInstr
-                        }
+                        "args": args
                     })
                     .then(function(response) {
                         return response.result;

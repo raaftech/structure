@@ -199,7 +199,12 @@ public class ComponentActor extends NodeActor<Component> {
 
                     try {
                         String taskId = UUID.randomUUID().toString();
-                        ((Component)getNode()).runController(instrument, sanitized, taskId);
+                        if (args.has("timeAllocated")) {
+                            int timeAllocated = args.get("timeAllocated").asInt();
+                            ((Component) getNode()).runController(instrument, sanitized, taskId, timeAllocated);
+                        } else {
+                            ((Component) getNode()).runController(instrument, sanitized, taskId);
+                        }
                         result.put("data", taskId);
                     } catch (RuntimeException e) {
                     	log.error(e.getMessage());

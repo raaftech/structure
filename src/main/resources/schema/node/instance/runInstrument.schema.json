@@ -8,6 +8,9 @@
     "instrument": {
       "type": "string"
     },
+      "timeAllocated": {
+          "type": "number"
+      },
     "arguments": {
       "type": "object",
       "properties": {

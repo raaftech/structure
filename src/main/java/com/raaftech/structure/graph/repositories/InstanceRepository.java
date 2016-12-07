@@ -37,7 +37,7 @@ public interface InstanceRepository extends GenericRepository<Instance> {
             "RETURN start")
     Instance getStartOfComponentGroup(@Param("instanceUuid") String instanceUuid);
 
-    @Query ("MATCH (n:Component)-[:HAS_COMPONENT]->(m) RETURN DISTINCT n ORDER BY id(n) DESC LIMIT {amount}")
+    @Query ("MATCH (n:Instance) WHERE NOT (n)<-[:HAS_COMPONENT]-() AND NOT n:Instrument RETURN DISTINCT n ORDER BY id(n) DESC LIMIT {amount}")
     List<Instance> getNLastCreated(@Param("amount") int amount);
 
 }

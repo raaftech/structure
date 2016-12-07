@@ -1,5 +1,6 @@
 package com.raaftech.structure.graph;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -10,6 +11,7 @@ import com.raaftech.structure.graph.repositories.InstanceRepository;
 import com.raaftech.structure.graph.repositories.ResultRepository;
 import com.raaftech.structure.helper.InstrumentRunner;
 import com.raaftech.structure.node.ComponentActor;
+import io.vertx.core.json.JsonObject;
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.Transaction;
 import org.slf4j.Logger;
@@ -24,6 +26,8 @@ import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+
+import static io.vertx.core.json.Json.mapper;
 
 public class Component extends Instance {
 
@@ -152,6 +156,10 @@ public class Component extends Instance {
         return this;
     }
 
+    public Component getComponentOf() {
+        return inComponent;
+    }
+
     /**
      * Add another component as child of this component.
      * @param componentUuid The UUID of the component to add as a child component.
@@ -188,18 +196,26 @@ public class Component extends Instance {
         return this;
     }
 
+    public Component runController(Controller controller, ObjectNode arguments, String taskId, int timeAllocated) {
+        new InstrumentRunner(this, controller, arguments, taskId, timeAllocated).startInstrument();
+        return this;
+    }
     public Component save() {
         log.info("Saving component with UUID {} ", getUuid());
+        boolean newNode = Context.getComponentRepository().findByUuid(getUuid()) == null;
         super.save();
+        Component thisFromDb = Context.getComponentRepository().findByUuid(getUuid());
+        boolean startOfComponentalGroup = thisFromDb != null && thisFromDb.getComponentOf() == null;
 
 //        boolean newNode = getId() == null || getId() < 0;
-        if (Context.getVertx() != null) {
+        if (newNode && Context.getVertx() != null) {
             log.info("Deploying ComponentActor for component \"{}\"", getUuid());
             Context.getVertx().deployVerticle(
                     new ComponentActor(this));
         } else {
             log.debug("Not deploying ComponentActor for component \"{}\"", getUuid());
         }
+
         return this;
     }
 
@@ -260,6 +276,19 @@ public class Component extends Instance {
         }
 
         result.put("_nodeType", getNodeType());
+
+        return result;
+    }
+
+    public JsonNode toFlatJson() {
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode result = mapper.createObjectNode();
+
+        result.put("name", getName());
+        result.put("desc", getDesc());
+        result.put("uuid", getUuid());
+        result.put("_hierarchyPath", getInstanceOf().getHierarchyPath());
+        kv.asMap().forEach((key, val) -> result.put(key, val.toString()));
 
         return result;
     }
