@@ -88,15 +88,27 @@ const mgrData = (mgr) => {
     return createInstanceData([x], '34bfe99f-1d62-48cb-a8a3-e913b69ef225');
 };
 
+const daemonData = (sshd, httpd) => {
+    let ssh = createData('7db4a3ef-2d3c-4071-929b-e81505fbd5e2', 'An SSH server.',
+                         'SshServer', 'sshserver', 'SshServer', 'unknown');
+    let http = createData('b46cb520-caaf-4d26-b59d-58edca723b8d','HTTP daemon',
+                          'HTTPD', httpd, 'HTTPD', 'unknown');
+
+    let list = [];
+    if(notNil(sshd) && sshd !== 'none') list.push(ssh);
+    if(notNil(httpd) && httpd !== 'none') list.push(http);
+
+    return createInstanceData(list, '54126ca8-3a5e-43b9-a501-98c8d158049d');
+};
+
 const miscData = () => {
     let result = [];
     result.push(createInstanceData([],'39e12352-8305-4b5d-af60-f1725ec458b8'));
-    result.push(createInstanceData([],'54126ca8-3a5e-43b9-a501-98c8d158049d'));
     result.push(createInstanceData([],'e8e3c643-a520-4d63-9088-dd27086a1879'));
     return result;
 };
 
-const transform = (data, ip, hostname) => {
+const transform = (data, ip, hostname,sshd, httpd) => {
     if(notNil(data.error)) {
         let r = [];
         r.push(osData('Unknown', '',hostname,ip));
@@ -104,6 +116,7 @@ const transform = (data, ip, hostname) => {
         r.push(mgrData('unknown'));
         r.push(ipData(ip, false));
         r.push(dnsData(hostname,ip));
+        r.push(daemonData(sshd, httpd));
 
         return createEventData(R.concat(r, miscData()));
     }
@@ -114,6 +127,7 @@ const transform = (data, ip, hostname) => {
     result.push(mgrData(data.service_manager));
     result.push(ipData(ip, true));
     result.push(dnsData(data.nodename,ip));
+    result.push(daemonData(sshd, httpd));
 
     return createEventData(R.concat(result, miscData()));
 };
