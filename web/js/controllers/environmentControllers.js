@@ -3,7 +3,7 @@ angular.module("structureApp")
 
         $controller("panelDetailCtrl", {$scope: $scope});
         $controller("panelRightCtrl", {$scope: $scope});
-        $scope.showSize = "230px";
+        $scope.showSize = "240px";
 
         $scope.schema = {
             "type": "object",
