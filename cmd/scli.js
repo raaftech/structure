@@ -1,12 +1,12 @@
-var vorpal = require('vorpal')();
-var R = require('ramda');
-var util = require('util');
-var helper = require('./helper');
-var EventBus = require('vertx3-eventbus-client');
-var clc = require('cli-color');
-var sprintf = require('sprintf-js').sprintf;
-var treeify = require('treeify');
-var neo = require('./extensions/neo');
+const vorpal = require('vorpal')();
+const R = require('ramda');
+const util = require('util');
+const helper = require('./helper');
+const EventBus = require('vertx3-eventbus-client');
+const clc = require('cli-color');
+const sprintf = require('sprintf-js').sprintf;
+const treeify = require('treeify');
+const neo = require('./extensions/neo');
 
 var eventBusUrl = '';
 var eb = null;
@@ -76,6 +76,17 @@ function toRoot(uuid, childNodes) {
 
 //commands
 //TODO extract commands to extension sets
+
+vorpal.command('connect', 'Connect to the eventbus')
+    .action(function(args, done) {
+        this.log('Connecting to '+clc.green.bold(eventBusUrl));
+        eventBusUrl = R.defaultTo('http://localhost:8080/eventbus', process.env.EVENTBUS);
+        eb = new EventBus(eventBusUrl);
+        wrapper().then((res) => {
+            console.log(res);
+            done();
+        });
+    });
 
 vorpal.command('disconnect', 'Disconnect from the EventBus')
     .action(function(args, done) {
