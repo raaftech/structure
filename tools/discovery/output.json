@@ -1579,7 +1579,7 @@
     "_typeUuid": "465b42e6-a7c5-4cf8-96c5-54257f054274",
     "name": "HpUx",
     "longName": "HpUx",
-    "shortName": "hpux",
+    "shortName": "hp-ux",
     "desc": "The HP/UX Operating System.",
     "ver": ""
   },

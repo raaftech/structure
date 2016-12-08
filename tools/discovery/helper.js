@@ -55,7 +55,11 @@ const dnsData = (dns,ip) => {
 
 const osData = (dist, version,hostname,ip) => {
     hostname = R.defaultTo('unknown-'+ip, hostname);
+    if(ip === '172.17.1.35' || ip === '172.17.1.34') {
+        dist = 'aix';
+    }
     let c = getConcept(dist);
+
 	if(R.isNil(c)) {
 	    let generic = createData('f05e325e-1aee-4892-96e4-8bcd6e97c528',dist,
                                  'OperatingSystem','operatingsystem', hostname, R.defaultTo('unknown', version));
