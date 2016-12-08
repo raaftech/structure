@@ -420,6 +420,8 @@ public class Application {
                         String openSshUuid = "9e977808-78fd-4eb6-95e0-ff7c7011caa5";
                         String structureUuid = "81afe6e0-98a2-4a7a-9dad-0ff914afb377";
                         String iputilsUuid = "6619adef-3bcb-4e32-bfec-d235a7bf3e29";
+                        String sambaUuid = "f513ddfc-e50b-49b4-9bd8-64afc61ff7a5";
+                        String winexeUuid = "2f207919-c852-4177-9b8f-e4a368026ca6";
                         log.info("Adding SSH and Structure client to Structure");
                         JsonNode openSsh = mapper.readTree("{\n" +
                                 "\"desc\": \"The OpenSSH client.\",\n" +
@@ -442,16 +444,36 @@ public class Application {
                                 "\"shortName\": \"iputils\",\n" +
                                 "\"ver\": \"unknown\"\n" +
                                 "}");
+                        JsonNode samba = mapper.readTree("{\n" +
+                                "\"desc\": \"Samba client.\",\n" +
+                                "\"longName\": \"Samba\",\n" +
+                                "\"name\": \"Samba\",\n" +
+                                "\"shortName\": \"samba\",\n" +
+                                "\"ver\": \"unknown\"\n" +
+                                "}");
+                        JsonNode winexe = mapper.readTree("{\n" +
+                                "\"desc\": \"Winexe\",\n" +
+                                "\"longName\": \"Winexe\",\n" +
+                                "\"name\": \"Winexe\",\n" +
+                                "\"shortName\": \"winexe\",\n" +
+                                "\"ver\": \"unknown\"\n" +
+                                "}");
                         Component openSshComponent = new Component((ObjectNode) openSsh, openSshUuid);
                         Component structureComponent = new Component((ObjectNode) structure, structureUuid);
                         Component iputilsComponent = new Component((ObjectNode) iputils, iputilsUuid);
+                        Component sambaComponent = new Component((ObjectNode) samba, sambaUuid);
+                        Component winexeComponent = new Component((ObjectNode) winexe, winexeUuid);
                         Component start = componentRepository.getStartOfComponentGroup(host.getUuid());
                         openSshComponent.setComponentOf(start);
                         structureComponent.setComponentOf(start);
                         iputilsComponent.setComponentOf(start);
+                        sambaComponent.setComponentOf(start);
+                        winexeComponent.setComponentOf(start);
                         openSshComponent.save();
                         structureComponent.save();
                         iputilsComponent.save();
+                        sambaComponent.save();
+                        winexeComponent.save();
                         transaction.success();
                     } catch (IOException e) {
                         e.printStackTrace();

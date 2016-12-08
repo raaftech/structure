@@ -234,9 +234,10 @@ public abstract class GenericActor extends AbstractVerticle {
     // Publish a status on the status channel
     protected void publishStatus(String event, JsonNode data) {
         EventBus eventBus = getVertx().eventBus();
-        eventBus.publish(statusAddress,
-                new JsonObject("{\"source\":\"" + this.getClass().getSimpleName() + "\", "
-                        + "\"event\": \"" + event + "\", \"data\": " + new JsonObject(data.toString()) + "}"));
+        JsonObject message = new JsonObject("{\"source\":\"" + this.getClass().getSimpleName() + "\", "
+                + "\"event\": \"" + event + "\", \"data\": " + new JsonObject(data.toString()) + "}");
+        log.debug(message.toString());
+        eventBus.publish(statusAddress, message);
     }
 
     // Filter a given JsonNode body and enforce basic validity.

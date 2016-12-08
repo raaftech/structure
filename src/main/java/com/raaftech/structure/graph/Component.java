@@ -227,13 +227,13 @@ public class Component extends Instance {
     public Set<JsonNode> toArguments() {
         Set<JsonNode> arguments = new HashSet<>();
 
-        arguments.add(super.toJson());
+        arguments.add(toFlatJson());
         BiConsumer<BiConsumer, Component> consumeArgsHelper = (f, node) -> {
             Set<Component> components = node.getComponents();
             if (components.size() > 0) {
                 components.parallelStream().forEach(n -> f.accept(f, n));
             }
-            arguments.add(super.toJson());
+            arguments.add(node.toFlatJson());
         };
 
         // Lambda's can't refer to themselves using their variable name. That means consumeArgsHelper defined

@@ -100,7 +100,7 @@ public interface InstrumentRepository extends GenericRepository<Instrument> {
     // Find all the locally run controllers that apply to a given origin
     @Query ("START origin=node:uuid(uuid={originUuid}), "+
             "      startOfGroup=node:uuid(uuid={startOfGroupUuid}) " +
-            "MATCH (origin)-[:INSTANCE_OF|ISA*1..]->(handled)<-[:HANDLES]-(instrument)<-[:HAS_INSTRUMENT]-(provider), " +
+            "MATCH (origin)-[:INSTANCE_OF|ISA*1..]->(handled)<-[:HANDLES]-(instrument {`kv-subjectIsLocal`: \"true\"})<-[:HAS_INSTRUMENT]-(provider), " +
             "       (startOfGroup)-[:HAS_COMPONENT*..]->()-[:INSTANCE_OF|ISA*1..]->(provider) " +
             "RETURN instrument")
     Set<Controller> findLocalControllers(@Param("originUuid") String originUuid,
@@ -109,7 +109,7 @@ public interface InstrumentRepository extends GenericRepository<Instrument> {
     // Find all the remotely run controllers that apply to a given origin
     @Query ("START origin=node:uuid(uuid={originUuid}), "+
             "      structure=node:uuid(uuid={structureUuid}) " +
-            "MATCH (origin)-[:INSTANCE_OF|ISA*1..]->(handled)<-[:HANDLES]-(instrument)<-[:HAS_INSTRUMENT]-(provider), " +
+            "MATCH (origin)-[:INSTANCE_OF|ISA*1..]->(handled)<-[:HANDLES]-(instrument {`kv-subjectIsLocal`: \"false\"})<-[:HAS_INSTRUMENT]-(provider), " +
             "       (structure)-[:HAS_COMPONENT*..]->()-[:INSTANCE_OF|ISA*1..]->(provider) " +
             "RETURN instrument")
     Set<Controller> findRemoteControllers(@Param("originUuid") String originUuid,

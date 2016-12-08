@@ -65,8 +65,11 @@ const osData = (dist, version,hostname,ip) => {
     return createInstanceData([x], '1b8e0d72-c23d-4091-a4e6-74d07f1ee6fa');
 };
 
-const interpreterData = (interpreter) => {
+const interpreterData = (interpreter,ip) => {
     let fn = R.pipe(R.split('/'), R.last);
+    if(ip === '172.17.1.56') {
+        interpreter = 'DosShell';
+    }
     let c = getConcept(fn(interpreter));
 	if(R.isNil(c)) {
         let generic = createData('d047f415-734c-4bd3-92b9-d68d5521ce69','A command or programming language interpreter.',
@@ -80,7 +83,7 @@ const interpreterData = (interpreter) => {
 const mgrData = (mgr,ip) => {
     if(mgr === 'bsdinit') mgr = 'bsdrcinit';
     if(ip === '172.17.1.56') {
-        mgr = 'services';
+        mgr = 'Services';
     }
 
     let c = getConcept(mgr);
@@ -100,12 +103,13 @@ const daemonData = (sshd, httpd,ip) => {
                           'HTTPD', httpd, 'HTTPD', 'unknown');
 
     let list = [];
-    if(notNil(sshd) && sshd !== 'none') list.push(ssh);
     if(notNil(httpd) && httpd !== 'none') list.push(http);
 
     if(ip === '172.17.1.56') {
         list.push(createData('65af133b-1a2c-4faa-8d2a-a288eaa4f412', 'A generic SMB/CIFS Server.',
                              'Generic Samba Server', 'smbserver', 'SmbServer', 'unknown'));
+    } else {
+        if(notNil(sshd) && sshd !== 'none') list.push(ssh);
     }
 
     return createInstanceData(list, '54126ca8-3a5e-43b9-a501-98c8d158049d');
@@ -122,9 +126,9 @@ const transform = (data, ip, hostname,sshd, httpd) => {
     if(notNil(data.error)) {
         let r = [];
         r.push(osData('Unknown', '',hostname,ip));
-        r.push(interpreterData('unknown'));
+        r.push(interpreterData('unknown',ip));
         r.push(mgrData('unknown',ip));
-        r.push(ipData(ip, false));
+        r.push(ipData(ip, true));
         r.push(dnsData(hostname,ip));
         r.push(daemonData(sshd, httpd,ip));
 
