@@ -59,7 +59,7 @@ public class SpringConfig extends Neo4jConfiguration {
             
             log.info("Unsafe mode: Enabling graph database web interface");
             ServerConfigurator webConfig = new ServerConfigurator((GraphDatabaseAPI) graphDatabaseService);
-            webConfig.configuration().setProperty("webserver_bind_address", "localhost");
+            webConfig.configuration().setProperty("webserver_bind_address", "0.0.0.0");
 
             bootStrapper = new WrappingNeoServerBootstrapper((GraphDatabaseAPI) graphDatabaseService, webConfig);
             bootStrapper.start();
