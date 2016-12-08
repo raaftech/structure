@@ -47,7 +47,7 @@ const ipData = (ip,reachable) => {
 const dnsData = (dns,ip) => {
     let x = {
         name: 'DnsName',
-        desc: 'The hostname of the machine',
+        desc: R.defaultTo('unknown-'+ip, dns),
         dnsname: R.defaultTo('unknown-'+ip, dns)
     };
     return createInstanceData([x], '94d10031-5246-4233-b25d-b5f8ef9d0b41');
@@ -57,12 +57,12 @@ const osData = (dist, version,hostname,ip) => {
     hostname = R.defaultTo('unknown-'+ip, hostname);
     let c = getConcept(dist);
 	if(R.isNil(c)) {
-	    let generic = createData('f05e325e-1aee-4892-96e4-8bcd6e97c528','An operating system.',
-                                 'OperatingSystem','operatingsystem', hostname, '');
+	    let generic = createData('f05e325e-1aee-4892-96e4-8bcd6e97c528',dist,
+                                 'OperatingSystem','operatingsystem', hostname, R.defaultTo('unknown', version));
         return createInstanceData([generic], '1b8e0d72-c23d-4091-a4e6-74d07f1ee6fa');
     }
 
-    let x = createData(c._typeUuid, dist+' ['+version+']', c.longName, c.shortName, hostname, version);
+    let x = createData(c._typeUuid, dist, c.longName, c.shortName, hostname, R.defaultTo('unknown', version));
     return createInstanceData([x], '1b8e0d72-c23d-4091-a4e6-74d07f1ee6fa');
 };
 
