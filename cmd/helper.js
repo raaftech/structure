@@ -1,4 +1,6 @@
-var R = require('ramda');
+"use strict";
+
+const R = require('ramda');
 
 function generateQuestion(name, type, ask, options) {
 	return R.merge(R.zipObj(['name','type','message'],[name,type,ask]), options);
