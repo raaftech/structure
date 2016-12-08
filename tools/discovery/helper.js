@@ -3,6 +3,7 @@
 const R = require('ramda');
 const fs = require('fs');
 const path = require('path');
+const util = require('util');
 
 const bundleData = JSON.parse(fs.readFileSync(path.join(__dirname, 'output.json')));
 const getConcept = (name) => R.find(R.propEq('shortName', R.toLower(name)), bundleData);
@@ -36,7 +37,7 @@ const createData = (uuid, desc, longName, shortName, name, version) => {
 const ipData = (ip,reachable) => {
     let x = {
         addr: ip,
-        desc: 'Reachable IPv4 address',
+        desc: util.format('Reachable IPv4 address [%s]', ip),
         name: 'Ipv4Address',
         reachable: reachable
     };
@@ -61,7 +62,7 @@ const osData = (dist, version,hostname,ip) => {
         return createInstanceData([generic], '1b8e0d72-c23d-4091-a4e6-74d07f1ee6fa');
     }
 
-    let x = createData(c._typeUuid, c.desc, c.longName, c.shortName, hostname, version);
+    let x = createData(c._typeUuid, dist+' ['+version+']', c.longName, c.shortName, hostname, version);
     return createInstanceData([x], '1b8e0d72-c23d-4091-a4e6-74d07f1ee6fa');
 };
 
@@ -72,11 +73,11 @@ const interpreterData = (interpreter,ip) => {
     }
     let c = getConcept(fn(interpreter));
 	if(R.isNil(c)) {
-        let generic = createData('d047f415-734c-4bd3-92b9-d68d5521ce69','A command or programming language interpreter.',
+        let generic = createData('d047f415-734c-4bd3-92b9-d68d5521ce69',R.defaultTo('A command or programming language interpreter.', interpreter),
                                  'Interpreter','interpreter', 'Interpreter', '');
         return createInstanceData([generic], '2741cc5a-eb45-4532-9a64-c715c07f93bc');
     }
-    let x = createData(c._typeUuid, c.desc, c.longName, c.shortName, c.name, '');
+    let x = createData(c._typeUuid, interpreter, c.longName, c.shortName, c.name, '');
     return createInstanceData([x], '2741cc5a-eb45-4532-9a64-c715c07f93bc');
 };
 
@@ -88,18 +89,18 @@ const mgrData = (mgr,ip) => {
 
     let c = getConcept(mgr);
 	if(R.isNil(c)) {
-        let generic = createData('c3008eec-b454-4ef6-bf7e-0bd92c13d3c3','An operating system initialization system.',
+        let generic = createData('c3008eec-b454-4ef6-bf7e-0bd92c13d3c3',R.defaultTo('An operating system initialization system.',mgr),
                                  'ServiceManager','servicemanager', 'ServiceManager', '');
         return createInstanceData([generic], '34bfe99f-1d62-48cb-a8a3-e913b69ef225');
 	}
-    let x = createData(c._typeUuid, c.desc, c.longName, c.shortName, c.name, '');
+    let x = createData(c._typeUuid, mgr, c.longName, c.shortName, c.name, '');
     return createInstanceData([x], '34bfe99f-1d62-48cb-a8a3-e913b69ef225');
 };
 
 const daemonData = (sshd, httpd,ip) => {
-    let ssh = createData('7db4a3ef-2d3c-4071-929b-e81505fbd5e2', 'An SSH server.',
+    let ssh = createData('7db4a3ef-2d3c-4071-929b-e81505fbd5e2', R.defaultTo('An SSH server.',sshd),
                          'SshServer', 'sshserver', 'SshServer', 'unknown');
-    let http = createData('b46cb520-caaf-4d26-b59d-58edca723b8d','HTTP daemon',
+    let http = createData('b46cb520-caaf-4d26-b59d-58edca723b8d',R.defaultTo('HTTP daemon',httpd),
                           'HTTPD', httpd, 'HTTPD', 'unknown');
 
     let list = [];
@@ -125,7 +126,7 @@ const miscData = () => {
 const transform = (data, ip, hostname,sshd, httpd) => {
     if(notNil(data.error)) {
         let r = [];
-        r.push(osData('Unknown', '',hostname,ip));
+        r.push(osData('unknown', '',hostname,ip));
         r.push(interpreterData('unknown',ip));
         r.push(mgrData('unknown',ip));
         r.push(ipData(ip, true));
