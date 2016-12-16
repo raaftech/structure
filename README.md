@@ -2,7 +2,7 @@ Structure
 =========
 How to run
 ----------
-    git clone git@gitlab.com:raaftech/structure.git
+    git clone git@github.com:raaftech/structure.git
     cd structure
     mvn package
     cd web

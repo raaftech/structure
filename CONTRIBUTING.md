@@ -8,11 +8,11 @@ Structure.
 
 These rules are not cast in stone. Any changes or improvements can be discussed
 either in person, or by creating an issue in
-[Gitlab](https://gitlab.com/raaftech/structure/issues).
+[Github](https://github.com/raaftech/structure/issues).
 
 We have a few scripts that should be installed in your local Structure
 repository. See
-[hooks](https://gitlab.com/raaftech/scripts/tree/master/python/hooks).
+[hooks](https://github.com/raaftech/scripts/tree/master/python/hooks).
 
 Issues
 ------
@@ -42,7 +42,7 @@ with the assignee.
 Weights and milestones are not regularly used right now. We'll need to discuss
 their use.
 
-When a new issue has been created, it'll always be referred to by the ID Gitlab
+When a new issue has been created, it'll always be referred to by the ID Github
 generated for it.
 
 Branches
@@ -55,7 +55,7 @@ The Structure repository has three different types of branches, these are the
 
 The `master` branch is considered stable, and should never point at a broken
 commit. A broken commit is defined as a commit that breaks our tests, which can
-be seen by the build status for a commit in Gitlab, or as a commit that breaks
+be seen by the build status for a commit in Github, or as a commit that breaks
 functionality. The latter is harder to detect, because we don't have thorough
 tests. Ideally we will test everything in the future so broken commits are
 easier to detect.

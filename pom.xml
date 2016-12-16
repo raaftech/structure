@@ -21,19 +21,19 @@
     </organization>
 
     <scm>
-        <url>https://gitlab.com/raaftech/structure</url>
-        <connection>https://gitlab.com/raaftech/structure.git</connection>
-        <developerConnection>git@gitlab.com:raaftech/structure.git</developerConnection>
+        <url>https://github.com/raaftech/structure</url>
+        <connection>https://github.com/raaftech/structure.git</connection>
+        <developerConnection>git@github.com:raaftech/structure.git</developerConnection>
     </scm>
 
     <issueManagement>
         <system>Structure Issues</system>
-        <url>https://gitlab.com/raaftech/structure/issues</url>
+        <url>https://github.com/raaftech/structure/issues</url>
     </issueManagement>
 
     <ciManagement>
         <system>Structure Pipelines</system>
-        <url>https://gitlab.com/raaftech/structure/pipelines</url>
+        <url>https://github.com/raaftech/structure/pipelines</url>
     </ciManagement>
 
     <developers>
