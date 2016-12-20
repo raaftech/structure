@@ -228,6 +228,7 @@ ul.list.parent {
 }
 
 .basic .text-block {
+    margin-left: 25px;
     display: inline-block;
 }
 

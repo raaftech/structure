@@ -8,12 +8,12 @@
   "name" : "DosBox",
   "desc" : "The DOSBox Emulator.",
   "uuid" : "7e0135dc-b720-440a-9f4e-76747f7a7fe5",
-  "glyphId" : 75,
+  "glyphId" : 74,
   "isa" : "59aeae81-9741-4986-b9c2-931504cfc9e3"
 }, {
   "name" : "Qemu",
   "desc" : "The QEMU Emulator.",
   "uuid" : "c80fddb7-bdbf-44b9-ac54-f7dd7ce4dbd0",
-  "glyphId" : 197,
+  "glyphId" : 199,
   "isa" : "59aeae81-9741-4986-b9c2-931504cfc9e3"
 } ]

@@ -1,17 +1,41 @@
 @font-face {
-    font-family: 'Structure Glyph';
-    src: url('structureglyph.eot');
-    src: url('structureglyph.eot?#iefix') format('embedded-opentype'),
-         url('structureglyph.woff') format('woff'),
-         url('structureglyph.ttf') format('truetype'),
-         url('structureglyph.svg') format('svg');
+    font-family: 'Structure Fill Glyph';
+    src: url('structure-fill/StructureFill.eot');
+    src: url('structure-fill/StructureFill.eot?#iefix') format('embedded-opentype'),
+         url('structure-fill/StructureFill.woff2') format('woff2'),
+         url('structure-fill/StructureFill.woff') format('woff'),
+         url('structure-fill/StructureFill.ttf') format('truetype'),
+         url('structure-fill/StructureFill.svg') format('svg');
+}
+
+@font-face {
+    font-family: 'Structure Outline Glyph';
+    src: url('structure-outline/StructureOutline.eot');
+    src: url('structure-outline/StructureOutline.eot?#iefix') format('embedded-opentype'),
+         url('structure-outline/StructureOutline.woff2') format('woff2'),
+         url('structure-outline/StructureOutline.woff') format('woff'),
+         url('structure-outline/StructureOutline.ttf') format('truetype'),
+         url('structure-outline/StructureOutline.svg') format('svg');
 }
 
 .strglyph {
     position: relative;
     top: 1px;
     display: inline-block;
-    font-family: 'Structure Glyph';
+    font-family: 'Structure Fill Glyph';
+    font-style: normal;
+    font-weight: normal;
+    line-height: 1;
+
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.strglyph-outline {
+    position: relative;
+    top: 1px;
+    display: inline-block;
+    font-family: 'Structure Outline Glyph';
     font-style: normal;
     font-weight: normal;
     line-height: 1;

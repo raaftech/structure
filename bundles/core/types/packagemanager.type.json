@@ -2,7 +2,7 @@
   "name" : "PacMan",
   "desc" : "Arch Linux Pacman Package Manager.",
   "uuid" : "ad047d85-792a-4385-a14c-b85266bc5176",
-  "glyphId" : 191,
+  "glyphId" : 192,
   "isa" : "e2b8b9ee-b66f-4252-8fba-4fb172f741bc"
 }, {
   "name" : "BsdPkg",
@@ -20,31 +20,31 @@
   "name" : "Apt",
   "desc" : "Debian Advanced Package Tool.",
   "uuid" : "74528ec1-d223-40ad-8e2f-703b7f6d33b0",
-  "glyphId" : 38,
+  "glyphId" : 41,
   "isa" : "e2b8b9ee-b66f-4252-8fba-4fb172f741bc"
 }, {
   "name" : "Yum",
   "desc" : "YellowDog Updater, Modified.",
   "uuid" : "27a03a73-d654-4999-8888-72043c84172d",
-  "glyphId" : 260,
+  "glyphId" : 277,
   "isa" : "e2b8b9ee-b66f-4252-8fba-4fb172f741bc"
 }, {
   "name" : "Zypp",
   "desc" : "ZYpp Package Manager.",
   "uuid" : "8a016a93-73f3-4b3d-9129-b3708f5d1afe",
-  "glyphId" : 263,
+  "glyphId" : 281,
   "isa" : "e2b8b9ee-b66f-4252-8fba-4fb172f741bc"
 }, {
   "name" : "OptZip",
   "desc" : "The very simple unzip-in /opt package manager.",
   "uuid" : "2115cfc1-a2e8-4efe-aa58-60ef64a729ca",
-  "glyphId" : 186,
+  "glyphId" : 188,
   "isa" : "e2b8b9ee-b66f-4252-8fba-4fb172f741bc"
 }, {
   "name" : "SdUx",
   "desc" : "SD/UX, the HP/UX Software Distributor.",
   "uuid" : "92e1ff01-8f01-4882-be63-ed9d0777924d",
-  "glyphId" : 205,
+  "glyphId" : 214,
   "isa" : "e2b8b9ee-b66f-4252-8fba-4fb172f741bc"
 }, {
   "name" : "AixLpp",
@@ -56,12 +56,12 @@
   "name" : "SolarisIps",
   "desc" : "Solaris Image Packaging System Manager.",
   "uuid" : "e70e7353-4e74-4a58-a7ca-eef0005ad5ec",
-  "glyphId" : 217,
+  "glyphId" : 228,
   "isa" : "e2b8b9ee-b66f-4252-8fba-4fb172f741bc"
 }, {
   "name" : "SolarisPkg",
   "desc" : "Older Solaris Package System Manager.",
   "uuid" : "7ed426f2-c163-4bdc-b1a0-0dc05e31f691",
-  "glyphId" : 218,
+  "glyphId" : 229,
   "isa" : "e2b8b9ee-b66f-4252-8fba-4fb172f741bc"
 } ]
