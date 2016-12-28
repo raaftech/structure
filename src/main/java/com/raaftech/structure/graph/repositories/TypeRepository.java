@@ -5,6 +5,7 @@ import org.springframework.data.neo4j.annotation.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.Set;
+import java.util.List;
 
 /**
  * Give a description of TypeRepository here.
@@ -57,4 +58,9 @@ public interface TypeRepository extends GenericRepository<Type> {
             "MATCH start<-[:ISA*0..]-(n{uuid:{subtypeUuid}}) " +
             "RETURN count(n)")
     int isSubtype(@Param("typeUuid") String typeUuid, @Param("subtypeUuid") String subtypeUuid);
+
+    // Query to get a list of all Type glyphs
+    @Query ("MATCH (n:Type) return n.glyphId")
+    List<Integer> findAllTypeGlyphs();
+
 }
