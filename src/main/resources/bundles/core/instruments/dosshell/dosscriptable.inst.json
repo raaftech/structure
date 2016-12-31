@@ -1,0 +1,60 @@
+{
+  "type": "Controller",
+  "name": "DosScriptable",
+  "desc": "DosScriptable.",
+  "meta": {
+    "uuid": "431d4fbc-4ff5-47ad-b0a0-eac927d84cc4",
+    "relations": {
+      "HAS_INSTRUMENT": {
+        "direction": "incoming",
+        "uuids": [
+          "bc101145-dde2-4363-a7ed-7091d2ff2621"
+        ]
+      },
+      "HANDLES": {
+        "direction": "outgoing",
+        "uuids": [
+          "bc101145-dde2-4363-a7ed-7091d2ff2621"
+        ]
+      },
+      "GIVES_CAPABILITY": {
+        "direction": "outgoing",
+        "uuids": [
+          "4251040d-f05c-4711-8094-59ce773a8c35"
+        ]
+      },
+      "INSTANCE_OF": {
+        "direction": "outgoing",
+        "uuids": [
+          "f482204e-7d63-45ca-96c9-10a7cc2783da"
+        ]
+      }
+    }
+  },
+  "data": {
+    "instrumentType": "controller",
+    "subjectIsLocal": true,
+    "arguments": {
+      "script": {
+        "value": {
+          "from": "static",
+          "type": "string"
+        },
+        "canBeUserSupplied": false,
+        "isOptional": false
+      }
+    }
+  },
+  "file": {
+    "dataSchema": {
+      "encoding": "text",
+      "format": "json",
+      "path": "../../types/schemas/controller.schema.json"
+    },
+    "templateFile": {
+      "encoding": "text",
+      "format": "hbs",
+      "path": "dosscriptable.hbs.cmd"
+    }
+  }
+}

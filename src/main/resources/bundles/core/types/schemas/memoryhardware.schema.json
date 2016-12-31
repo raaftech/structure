@@ -1,0 +1,28 @@
+{
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/schema#",
+  "type": "object",
+  "properties": {
+    "name": {
+      "$ref": "type.schema.json#/properties/name"
+    },
+    "checksum": {
+      "$ref": "type.schema.json#/properties/checksum"
+    },
+    "memSizeKb": {
+      "type": "number",
+      "description": "Memory size in Kb."
+    },
+    "rev": {
+      "$ref": "hardware.schema.json#/properties/rev"
+    },
+    "desc": {
+      "$ref": "type.schema.json#/properties/desc"
+    }
+  },
+  "required": [
+    "name",
+    "desc",
+    "memSizeKb"
+  ]
+}

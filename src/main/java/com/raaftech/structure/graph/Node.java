@@ -4,8 +4,10 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.data.neo4j.annotation.GraphId;
 import org.springframework.data.neo4j.annotation.Indexed;
 import org.springframework.data.neo4j.annotation.NodeEntity;
+import org.springframework.data.neo4j.fieldaccess.DynamicProperties;
 import org.springframework.data.neo4j.support.index.IndexType;
 
+import java.util.Map;
 import java.util.UUID;
 
 import static io.vertx.core.json.Json.mapper;
@@ -23,7 +25,8 @@ public abstract class Node {
     protected String name;
     @Indexed(indexType = IndexType.FULLTEXT, indexName = "description")
     protected String desc;
-
+    protected String bundle;
+    protected String type;
     protected String checksum;
     @GraphId
     @SuppressWarnings("unused")
@@ -31,13 +34,14 @@ public abstract class Node {
     @Indexed(indexType = IndexType.FULLTEXT, indexName = "uuid")
     private String uuid;
 
+    DynamicProperties data;
+    DynamicProperties file;
+
     /****************/
     /* Constructors */
     /****************/
 
-    public Node() {
-        this.uuid = UUID.randomUUID().toString();
-    }
+    public Node() { this.uuid = UUID.randomUUID().toString(); }
 
     public Node(String name, String desc) {
         this(name, desc, UUID.randomUUID().toString());
@@ -93,6 +97,42 @@ public abstract class Node {
 
     public String getChecksum() {
         return checksum;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public String getBundle() {
+        return bundle;
+    }
+
+    public Map<String, Object> getFiles() {
+        return file.asMap();
+    }
+
+    public Map<String, Object> getData() {
+        return data.asMap();
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setDesc(String desc) {
+        this.desc = desc;
+    }
+
+    public void setBundle(String bundle) {
+        this.bundle = bundle;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public void setChecksum(String checksum) {
+        this.checksum = checksum;
     }
 
     public ObjectNode toJson() {

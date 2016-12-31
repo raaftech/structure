@@ -1,0 +1,60 @@
+{
+  "type": "Controller",
+  "name": "start",
+  "desc": "ServicesStart.",
+  "meta": {
+    "uuid": "9e1c1bc5-aeea-4434-8ebc-270ed16f4dc8",
+    "relations": {
+      "HAS_INSTRUMENT": {
+        "direction": "incoming",
+        "uuids": [
+          "21b82fbf-803c-4056-b914-502e2ff9952d"
+        ]
+      },
+      "HANDLES": {
+        "direction": "outgoing",
+        "uuids": [
+          "3fb4603b-281e-47c0-b338-768ea05d4660"
+        ]
+      },
+      "GIVES_CAPABILITY": {
+        "direction": "outgoing",
+        "uuids": [
+          "347ca5da-db19-4d98-9fed-60e72d5d6bba"
+        ]
+      },
+      "INSTANCE_OF": {
+        "direction": "outgoing",
+        "uuids": [
+          "f482204e-7d63-45ca-96c9-10a7cc2783da"
+        ]
+      }
+    }
+  },
+  "data": {
+    "instrumentType": "controller",
+    "subjectIsLocal": true,
+    "arguments": {
+      "origin": {
+        "value": {
+          "from": "origin",
+          "type": "type.component.software.server"
+        },
+        "isOptional": false,
+        "canBeUserSupplied": false
+      }
+    }
+  },
+  "file": {
+    "dataSchema": {
+      "encoding": "text",
+      "format": "json",
+      "path": "../../types/schemas/controller.schema.json"
+    },
+    "templateFile": {
+      "encoding": "text",
+      "format": "hbs",
+      "path": "servicesstart.hbs.cmd"
+    }
+  }
+}

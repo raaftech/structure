@@ -1,0 +1,3360 @@
+[
+  {
+    "type": "Type",
+    "name": "DosLike",
+    "desc": "A DOS-like operating system.",
+    "meta": {
+      "uuid": "e181e9e8-7f30-42a3-b87f-b8e183ddfd6f",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "f05e325e-1aee-4892-96e4-8bcd6e97c528"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/doslike.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "WindowsLike",
+    "desc": "A Windows-like operating system.",
+    "meta": {
+      "uuid": "4edbaf6a-da58-4644-abac-ae80328ddb49",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "f05e325e-1aee-4892-96e4-8bcd6e97c528"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/windowslike.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Windows",
+    "desc": "The Microsoft Windows Operating System.",
+    "meta": {
+      "uuid": "060a519d-08d0-4d12-82ac-1e3f14277009",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "4edbaf6a-da58-4644-abac-ae80328ddb49"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/windows.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "UnixLike",
+    "desc": "A UNIX-like operating system.",
+    "meta": {
+      "uuid": "6a1eea8b-1462-4439-8c60-12edbee6c397",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "f05e325e-1aee-4892-96e4-8bcd6e97c528"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/unixlike.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Unix",
+    "desc": "The UNIX Operating System.",
+    "meta": {
+      "uuid": "a3b228b6-f737-460c-a3bc-bc653167b36c",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "6a1eea8b-1462-4439-8c60-12edbee6c397"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/unix.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Illumos",
+    "desc": "The Illumos Operating System.",
+    "meta": {
+      "uuid": "f0bcc651-3ca6-4d4c-ac9d-5a60b2b08520",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "a3b228b6-f737-460c-a3bc-bc653167b36c"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/illumos.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "MacOsX",
+    "desc": "The Apple Mac OS X Operating System.",
+    "meta": {
+      "uuid": "0f81d6dc-d221-464a-ab85-1e3e5d98c3f0",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "a3b228b6-f737-460c-a3bc-bc653167b36c"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/macosx.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Bsd",
+    "desc": "The Berkeley Software Distribution Operating System.",
+    "meta": {
+      "uuid": "6004436f-7c88-4c2e-a29d-e8077bad10e9",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "6a1eea8b-1462-4439-8c60-12edbee6c397"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/bsd.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Linux",
+    "desc": "The Linux Operating System.",
+    "meta": {
+      "uuid": "a5613527-2f64-4481-83f2-80b0cb427e28",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "6a1eea8b-1462-4439-8c60-12edbee6c397"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/linux.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "FreeDos",
+    "desc": "A free DOS-like operating system.",
+    "meta": {
+      "uuid": "0481d915-9d3c-4dbc-a55d-a688652934ef",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "e181e9e8-7f30-42a3-b87f-b8e183ddfd6f"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/freedos.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "FreeDos1",
+    "desc": "A free DOS-like operating system, version 1.x.",
+    "meta": {
+      "uuid": "fd4984a4-e593-491d-ad1a-986fc203ff0e",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "0481d915-9d3c-4dbc-a55d-a688652934ef"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/freedos1.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "MsDos",
+    "desc": "The Microsoft Disk Operating System.",
+    "meta": {
+      "uuid": "dfbe4ce9-75be-4431-9629-3ab7d4a311e5",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "e181e9e8-7f30-42a3-b87f-b8e183ddfd6f"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/msdos.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "MsDos5",
+    "desc": "The Microsoft Disk Operating System, version 5.x.",
+    "meta": {
+      "uuid": "50dcae6d-48b0-432f-8f26-1cbf302bf504",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "dfbe4ce9-75be-4431-9629-3ab7d4a311e5"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/msdos5.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "MsDos6",
+    "desc": "The Microsoft Disk Operating System, version 6.x.",
+    "meta": {
+      "uuid": "7d9ce51f-5ff4-40a7-b089-770aa0c29f71",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "dfbe4ce9-75be-4431-9629-3ab7d4a311e5"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/msdos6.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Windows9x",
+    "desc": "The Microsoft Windows 95/98/ME based operating systems.",
+    "meta": {
+      "uuid": "f936f4df-d1a6-4596-808a-6e2891a0688e",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "060a519d-08d0-4d12-82ac-1e3f14277009"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/windows9x.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Windows95",
+    "desc": "The Microsoft Windows 95 operating system.",
+    "meta": {
+      "uuid": "37730c0d-e581-4089-8fc0-c848094223a7",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "f936f4df-d1a6-4596-808a-6e2891a0688e"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/windows95.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Windows98",
+    "desc": "The Microsoft Windows 98 operating system.",
+    "meta": {
+      "uuid": "7d7616b2-2fae-4f47-83cf-0e7add8950c5",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "f936f4df-d1a6-4596-808a-6e2891a0688e"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/windows98.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "WindowsMe",
+    "desc": "The Microsoft Windows ME operating system.",
+    "meta": {
+      "uuid": "231a2bd9-1b36-42e9-97aa-9144a05d9ade",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "f936f4df-d1a6-4596-808a-6e2891a0688e"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/windowsme.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "WindowsNt",
+    "desc": "The Microsoft Windows NT based operating systems.",
+    "meta": {
+      "uuid": "3d97107a-fb41-4a45-bd98-e93190ea4e83",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "060a519d-08d0-4d12-82ac-1e3f14277009"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/windowsnt.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "WindowsNt4",
+    "desc": "The Microsoft Windows NT 4.0 operating system.",
+    "meta": {
+      "uuid": "da560e60-4958-4dee-ab8a-d62d9cdf3593",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "3d97107a-fb41-4a45-bd98-e93190ea4e83"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/windowsnt4.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Windows2000",
+    "desc": "The Microsoft Windows 2000 operating system.",
+    "meta": {
+      "uuid": "9c97e86c-24b5-44b8-bef2-4ad465bb5c82",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "3d97107a-fb41-4a45-bd98-e93190ea4e83"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/windows2000.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "WindowsXp",
+    "desc": "The Microsoft Windows XP operating system.",
+    "meta": {
+      "uuid": "31a0496d-9cb4-4aab-b3ed-86ddb566c0f4",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "3d97107a-fb41-4a45-bd98-e93190ea4e83"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/windowsxp.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Windows2003",
+    "desc": "The Microsoft Windows Server 2003 operating system.",
+    "meta": {
+      "uuid": "8eb5e304-7d31-4645-89e2-8c39fefc7278",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "3d97107a-fb41-4a45-bd98-e93190ea4e83"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/windows2003.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "WindowsVista",
+    "desc": "The Microsoft Windows Vista operating system.",
+    "meta": {
+      "uuid": "ec9e7f41-cda5-48df-9c22-8f320fff398b",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "3d97107a-fb41-4a45-bd98-e93190ea4e83"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/windowsvista.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Windows7",
+    "desc": "The Microsoft Windows 7 operating system.",
+    "meta": {
+      "uuid": "a3b0f390-7257-43cb-9b9d-1cef8a4092bf",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "3d97107a-fb41-4a45-bd98-e93190ea4e83"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/windows7.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Windows2008",
+    "desc": "The Microsoft Windows Server 2008 operating system.",
+    "meta": {
+      "uuid": "0cb2b9f2-3dfe-4183-8c0d-519a2b16e68a",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "3d97107a-fb41-4a45-bd98-e93190ea4e83"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/windows2008.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Windows8",
+    "desc": "The Microsoft Windows 8 operating system.",
+    "meta": {
+      "uuid": "16934de7-609f-4068-a18e-7eb7452b5f01",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "3d97107a-fb41-4a45-bd98-e93190ea4e83"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/windows8.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Windows2012",
+    "desc": "The Microsoft Windows Server 2012 operating system.",
+    "meta": {
+      "uuid": "46758eba-4463-4779-91d9-9095f9d87097",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "3d97107a-fb41-4a45-bd98-e93190ea4e83"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/windows2012.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "ReactOs",
+    "desc": "The ReactOS Operating System.",
+    "meta": {
+      "uuid": "3a80082c-173f-44fc-b42a-1fb381d2e3bc",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "4edbaf6a-da58-4644-abac-ae80328ddb49"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/reactos.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "ReactOs03",
+    "desc": "The ReactOS 0.3.x Operating System.",
+    "meta": {
+      "uuid": "0a6a1bd2-1a6b-461b-aa28-cca977b8faf1",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "3a80082c-173f-44fc-b42a-1fb381d2e3bc"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/reactos03.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "ReactOs04",
+    "desc": "The ReactOS 0.4.x Operating System.",
+    "meta": {
+      "uuid": "94708506-de30-4827-b9ef-84f6694c4e3f",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "3a80082c-173f-44fc-b42a-1fb381d2e3bc"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/reactos04.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Aix",
+    "desc": "The IBM AIX Operating System.",
+    "meta": {
+      "uuid": "9cf01e40-6be5-48bc-88c5-e9c3c8caaa4b",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "a3b228b6-f737-460c-a3bc-bc653167b36c"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/aix.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Aix5",
+    "desc": "The IBM AIX 5.x Operating System.",
+    "meta": {
+      "uuid": "154fd2d1-db50-4318-bfdf-49a62f11bdb6",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "9cf01e40-6be5-48bc-88c5-e9c3c8caaa4b"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/aix5.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Aix6",
+    "desc": "The IBM AIX 6.x Operating System.",
+    "meta": {
+      "uuid": "843ff854-ee2a-4279-8dca-7caa24fc0727",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "9cf01e40-6be5-48bc-88c5-e9c3c8caaa4b"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/aix6.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Aix7",
+    "desc": "The IBM AIX 7.x Operating System.",
+    "meta": {
+      "uuid": "a3f1be8b-f222-4c9d-ad77-d2a5365f418d",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "9cf01e40-6be5-48bc-88c5-e9c3c8caaa4b"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/aix7.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "HpUx",
+    "desc": "The HP/UX Operating System.",
+    "meta": {
+      "uuid": "465b42e6-a7c5-4cf8-96c5-54257f054274",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "a3b228b6-f737-460c-a3bc-bc653167b36c"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/hpux.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "HpUx10",
+    "desc": "The HP/UX 10.x Operating System.",
+    "meta": {
+      "uuid": "416e6138-b048-4ee5-9554-6481ea996edf",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "465b42e6-a7c5-4cf8-96c5-54257f054274"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/hpux10.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "HpUx1020",
+    "desc": "The HP/UX 10.20 Operating System.",
+    "meta": {
+      "uuid": "ac59c16a-89d2-499e-8341-5161ffb4f176",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "416e6138-b048-4ee5-9554-6481ea996edf"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/hpux1020.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "HpUx11",
+    "desc": "The HP/UX 11.x Operating System.",
+    "meta": {
+      "uuid": "1d34dabf-b096-4e43-80c4-7318c81bc1fe",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "465b42e6-a7c5-4cf8-96c5-54257f054274"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/hpux11.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "HpUx1123",
+    "desc": "The HP/UX 11.23 Operating System.",
+    "meta": {
+      "uuid": "d5312463-4313-4aea-9ac0-552201a7302c",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "1d34dabf-b096-4e43-80c4-7318c81bc1fe"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/hpux1123.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "HpUx1131",
+    "desc": "The HP/UX 11.31 Operating System.",
+    "meta": {
+      "uuid": "591557b5-f13a-4070-a043-782830560664",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "1d34dabf-b096-4e43-80c4-7318c81bc1fe"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/hpux1131.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Solaris",
+    "desc": "The Solaris Operating System.",
+    "meta": {
+      "uuid": "4190b02e-a832-4316-87c6-d9e9b694e284",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "a3b228b6-f737-460c-a3bc-bc653167b36c"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/solaris.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Solaris8",
+    "desc": "The Solaris 8 Operating System.",
+    "meta": {
+      "uuid": "8e4b0333-3d59-455f-8de9-1bdd8af5ba96",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "4190b02e-a832-4316-87c6-d9e9b694e284"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/solaris8.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Solaris9",
+    "desc": "The Solaris 9 Operating System.",
+    "meta": {
+      "uuid": "d5156f08-91e5-4608-8c97-cd76434b7636",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "4190b02e-a832-4316-87c6-d9e9b694e284"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/solaris9.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Solaris10",
+    "desc": "The Solaris 10 Operating System.",
+    "meta": {
+      "uuid": "e10cd458-1348-488b-8cc4-01af672828ae",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "4190b02e-a832-4316-87c6-d9e9b694e284"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/solaris10.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Solaris11",
+    "desc": "The Solaris 11 Operating System.",
+    "meta": {
+      "uuid": "3a81f815-a426-4269-bdd9-a7ea7527325c",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "4190b02e-a832-4316-87c6-d9e9b694e284"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/solaris11.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "OpenIndiana",
+    "desc": "The OpenIndiana Operating System.",
+    "meta": {
+      "uuid": "f4c41e3a-c59a-42f6-b6c8-b7c9b0df3f0e",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "f0bcc651-3ca6-4d4c-ac9d-5a60b2b08520"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/openindiana.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "OpenIndiana151a8",
+    "desc": "The OpenIndiana 151a8 Operating System.",
+    "meta": {
+      "uuid": "c98dc9c8-bcf3-4a88-a24f-ea4b6a6a0951",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "f4c41e3a-c59a-42f6-b6c8-b7c9b0df3f0e"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/openindiana151a8.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "NexentaStor",
+    "desc": "The NexentaStor Operating System.",
+    "meta": {
+      "uuid": "0d73cb36-0f99-417b-a150-cc193ba044b8",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "f0bcc651-3ca6-4d4c-ac9d-5a60b2b08520"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/nexentastor.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "NexentaStor3",
+    "desc": "The NexentaStor 3 Operating System.",
+    "meta": {
+      "uuid": "6d90bb5c-bcb7-4c21-b7b9-8ba4aeb753b8",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "0d73cb36-0f99-417b-a150-cc193ba044b8"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/nexentastor3.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "NexentaStor4",
+    "desc": "The NexentaStor 4 Operating System.",
+    "meta": {
+      "uuid": "ef584c3a-b8ec-41da-9435-a9d1f8474dab",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "0d73cb36-0f99-417b-a150-cc193ba044b8"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/nexentastor4.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "SmartOs",
+    "desc": "The SmartOS Operating System.",
+    "meta": {
+      "uuid": "a7fba50f-5ab5-46d2-acf7-08fbe7c41b44",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "f0bcc651-3ca6-4d4c-ac9d-5a60b2b08520"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/smartos.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Dyson",
+    "desc": "The Dyson Operating System.",
+    "meta": {
+      "uuid": "70e37ec8-e807-4a82-b968-f596dac97d62",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "f0bcc651-3ca6-4d4c-ac9d-5a60b2b08520"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/dyson.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "OmniOs",
+    "desc": "The OmniOS Operating System.",
+    "meta": {
+      "uuid": "e3e34862-6d23-4922-81cd-fb0df4624cb5",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "f0bcc651-3ca6-4d4c-ac9d-5a60b2b08520"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/omnios.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "OmniOsR151006",
+    "desc": "The OmniOS r151006 Operating System.",
+    "meta": {
+      "uuid": "8e008afd-d1eb-48bd-8f71-684270750927",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "e3e34862-6d23-4922-81cd-fb0df4624cb5"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/omniosr151006.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "OmniOsR151010",
+    "desc": "The OmniOS r151010 Operating System.",
+    "meta": {
+      "uuid": "e164b0ef-707f-48da-a5b7-b185746c4fd0",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "e3e34862-6d23-4922-81cd-fb0df4624cb5"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/omniosr151010.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "OpenSxce",
+    "desc": "The OpenSXCE Operating System.",
+    "meta": {
+      "uuid": "2bd660a2-1783-4433-81a0-23d82dea1cce",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "f0bcc651-3ca6-4d4c-ac9d-5a60b2b08520"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/opensxce.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "OpenSxce2013",
+    "desc": "The OpenSXCE 2013 Operating System.",
+    "meta": {
+      "uuid": "1724894c-bb76-494f-b999-b467b0f4ccb6",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "2bd660a2-1783-4433-81a0-23d82dea1cce"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/opensxce2013.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "OpenSxce2014",
+    "desc": "The OpenSXCE 2014 Operating System.",
+    "meta": {
+      "uuid": "c94f703d-7a1b-4ce4-aac5-c786e59117e0",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "2bd660a2-1783-4433-81a0-23d82dea1cce"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/opensxce2014.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "MacOsX3",
+    "desc": "The Apple Mac OS X 10.3 Operating System.",
+    "meta": {
+      "uuid": "edcd8303-03f6-459c-a5c3-2ea00c20f29c",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "0f81d6dc-d221-464a-ab85-1e3e5d98c3f0"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/macosx3.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "MacOsX4",
+    "desc": "The Apple Mac OS X 10.4 Operating System.",
+    "meta": {
+      "uuid": "3d986bda-2109-4e91-a0ec-ad2be3bae792",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "0f81d6dc-d221-464a-ab85-1e3e5d98c3f0"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/macosx4.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "MacOsX5",
+    "desc": "The Apple Mac OS X 10.5 Operating System.",
+    "meta": {
+      "uuid": "1cbf8f53-496b-4421-a805-e5bc86c2a56c",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "0f81d6dc-d221-464a-ab85-1e3e5d98c3f0"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/macosx5.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "MacOsX6",
+    "desc": "The Apple Mac OS X 10.6 Operating System.",
+    "meta": {
+      "uuid": "eae5479b-1c29-41c9-9b8c-28f6663f85b6",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "0f81d6dc-d221-464a-ab85-1e3e5d98c3f0"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/macosx6.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "MacOsX7",
+    "desc": "The Apple Mac OS X 10.7 Operating System.",
+    "meta": {
+      "uuid": "9c9d4b4c-4896-4a67-873f-2638a3ce4616",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "0f81d6dc-d221-464a-ab85-1e3e5d98c3f0"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/macosx7.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "MacOsX8",
+    "desc": "The Apple Mac OS X 10.8 Operating System.",
+    "meta": {
+      "uuid": "6d7fc436-1e34-4538-ad6c-e3d8d47aa4b0",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "0f81d6dc-d221-464a-ab85-1e3e5d98c3f0"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/macosx8.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "MacOsX9",
+    "desc": "The Apple Mac OS X 10.9 Operating System.",
+    "meta": {
+      "uuid": "8453b53d-4c0c-4892-b7c0-390314978a2b",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "0f81d6dc-d221-464a-ab85-1e3e5d98c3f0"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/macosx9.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "MacOsX10",
+    "desc": "The Apple Mac OS X 10.10 Operating System.",
+    "meta": {
+      "uuid": "66ef29ff-374d-492f-99fe-e6573fcbacdf",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "0f81d6dc-d221-464a-ab85-1e3e5d98c3f0"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/macosx10.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "FreeBsd",
+    "desc": "The FreeBSD Operating System.",
+    "meta": {
+      "uuid": "6bccb300-554a-43ce-981b-fd07b22c83f0",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "6004436f-7c88-4c2e-a29d-e8077bad10e9"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/freebsd.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "FreeBsd4",
+    "desc": "The FreeBSD 4.x Operating System.",
+    "meta": {
+      "uuid": "d636ce7f-0da9-434c-b200-e7e409465076",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "6bccb300-554a-43ce-981b-fd07b22c83f0"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/freebsd4.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "FreeBsd5",
+    "desc": "The FreeBSD 5.x Operating System.",
+    "meta": {
+      "uuid": "931e52b3-97b8-43bb-bf4c-3424ba4cce0f",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "6bccb300-554a-43ce-981b-fd07b22c83f0"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/freebsd5.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "FreeBsd6",
+    "desc": "The FreeBSD 6.x Operating System.",
+    "meta": {
+      "uuid": "ac25708a-4b29-41c7-9739-c41fbdc38782",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "6bccb300-554a-43ce-981b-fd07b22c83f0"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/freebsd6.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "FreeBsd7",
+    "desc": "The FreeBSD 7.x Operating System.",
+    "meta": {
+      "uuid": "a05c4070-c1f7-400f-8ff4-00a2ebf613fa",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "6bccb300-554a-43ce-981b-fd07b22c83f0"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/freebsd7.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "FreeBsd8",
+    "desc": "The FreeBSD 8.x Operating System.",
+    "meta": {
+      "uuid": "4eff136f-1f84-4cde-984d-ecd274cd2610",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "6bccb300-554a-43ce-981b-fd07b22c83f0"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/freebsd8.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "FreeBsd9",
+    "desc": "The FreeBSD 9.x Operating System.",
+    "meta": {
+      "uuid": "f9a36f71-9b07-4813-ba2c-35448155e6f3",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "6bccb300-554a-43ce-981b-fd07b22c83f0"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/freebsd9.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "FreeBsd10",
+    "desc": "The FreeBSD 10.x Operating System.",
+    "meta": {
+      "uuid": "e144cfb5-664a-4542-9125-74da72cc0a8a",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "6bccb300-554a-43ce-981b-fd07b22c83f0"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/freebsd10.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "NetBsd",
+    "desc": "The NetBSD Operating System.",
+    "meta": {
+      "uuid": "33b00a7e-0ddc-4d9e-87d2-876653655d72",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "6004436f-7c88-4c2e-a29d-e8077bad10e9"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/netbsd.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "NetBsd4",
+    "desc": "The NetBSD 4.x Operating System.",
+    "meta": {
+      "uuid": "e0dfa561-5500-49dd-a532-f5416385d66a",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "33b00a7e-0ddc-4d9e-87d2-876653655d72"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/netbsd4.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "NetBsd5",
+    "desc": "The NetBSD 5.x Operating System.",
+    "meta": {
+      "uuid": "64cfc48a-0626-4c72-9634-86dd33e94cde",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "33b00a7e-0ddc-4d9e-87d2-876653655d72"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/netbsd5.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "NetBsd6",
+    "desc": "The NetBSD 6.x Operating System.",
+    "meta": {
+      "uuid": "8ac7f26d-588d-44de-8792-26d6d429f9ff",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "33b00a7e-0ddc-4d9e-87d2-876653655d72"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/netbsd6.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "OpenBsd",
+    "desc": "The OpenBSD Operating System.",
+    "meta": {
+      "uuid": "5609a5b8-b1fb-4ec3-a297-155c680a7e65",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "6004436f-7c88-4c2e-a29d-e8077bad10e9"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/openbsd.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "OpenBsd4",
+    "desc": "The OpenBSD 4.x Operating System.",
+    "meta": {
+      "uuid": "03b4f697-c07a-473f-aae6-92d30e63c2f3",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "5609a5b8-b1fb-4ec3-a297-155c680a7e65"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/openbsd4.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "OpenBsd5",
+    "desc": "The OpenBSD 5.x Operating System.",
+    "meta": {
+      "uuid": "6330dd4e-92bc-4cab-b218-1c18d37e9742",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "5609a5b8-b1fb-4ec3-a297-155c680a7e65"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/openbsd5.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "DragonFlyBsd",
+    "desc": "The DragonFlyBSD Operating System.",
+    "meta": {
+      "uuid": "41d52588-c248-4018-ac34-a8dfc1204729",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "6004436f-7c88-4c2e-a29d-e8077bad10e9"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/dragonflybsd.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "DragonFlyBsd1",
+    "desc": "The DragonFlyBSD 1.x Operating System.",
+    "meta": {
+      "uuid": "85d606c8-1d4b-4657-a67c-19ad78c51117",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "41d52588-c248-4018-ac34-a8dfc1204729"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/dragonflybsd1.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "DragonFlyBsd2",
+    "desc": "The DragonFlyBSD 2.x Operating System.",
+    "meta": {
+      "uuid": "32fd5872-9894-4284-ac52-9b6fdf68f3a8",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "41d52588-c248-4018-ac34-a8dfc1204729"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/dragonflybsd2.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "DragonFlyBsd3",
+    "desc": "The DragonFlyBSD 3.x Operating System.",
+    "meta": {
+      "uuid": "11666f58-6150-4a65-abea-b8c5fbddfde4",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "41d52588-c248-4018-ac34-a8dfc1204729"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/dragonflybsd3.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "ArchLinux",
+    "desc": "The Arch Linux Operating System.",
+    "meta": {
+      "uuid": "42a991a2-2f25-479a-a21d-7a7e07f691cf",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "a5613527-2f64-4481-83f2-80b0cb427e28"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/archlinux.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Debian",
+    "desc": "The Debian Linux Operating System.",
+    "meta": {
+      "uuid": "021488da-3011-4861-97a4-420a7d647e5d",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "a5613527-2f64-4481-83f2-80b0cb427e28"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/debian.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Debian4",
+    "desc": "The Debian 4.x Linux Operating System.",
+    "meta": {
+      "uuid": "3de571df-b7cf-4673-8a31-e40e5dde624e",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "021488da-3011-4861-97a4-420a7d647e5d"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/debian4.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Debian5",
+    "desc": "The Debian 5.x Linux Operating System.",
+    "meta": {
+      "uuid": "4f764a05-7fbd-4810-a069-a7e76f4933cd",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "021488da-3011-4861-97a4-420a7d647e5d"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/debian5.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Debian6",
+    "desc": "The Debian 6.x Linux Operating System.",
+    "meta": {
+      "uuid": "6cf7eed4-847a-4249-b4cd-e0668091336e",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "021488da-3011-4861-97a4-420a7d647e5d"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/debian6.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Debian7",
+    "desc": "The Debian 7.x Linux Operating System.",
+    "meta": {
+      "uuid": "368ea969-197b-4e18-8a73-c6b6b26beb9f",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "021488da-3011-4861-97a4-420a7d647e5d"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/debian7.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Debian8",
+    "desc": "The Debian 8.x Linux Operating System.",
+    "meta": {
+      "uuid": "e7cfb97e-b1b0-4696-92bf-a70499d3fb40",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "021488da-3011-4861-97a4-420a7d647e5d"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/debian8.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Ubuntu",
+    "desc": "The Ubuntu Linux Operating System.",
+    "meta": {
+      "uuid": "1e13acac-4efb-4e62-894d-812492f6c266",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "a5613527-2f64-4481-83f2-80b0cb427e28"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/ubuntu.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Ubuntu8",
+    "desc": "The Ubuntu 8.x Linux Operating System.",
+    "meta": {
+      "uuid": "b41dabe4-e012-4c83-b073-4ca202950c44",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "1e13acac-4efb-4e62-894d-812492f6c266"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/ubuntu8.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Ubuntu9",
+    "desc": "The Ubuntu 9.x Linux Operating System.",
+    "meta": {
+      "uuid": "a404e00c-46d7-4c20-940e-e071967dd2fe",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "1e13acac-4efb-4e62-894d-812492f6c266"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/ubuntu9.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Ubuntu10",
+    "desc": "The Ubuntu 10.x Linux Operating System.",
+    "meta": {
+      "uuid": "d98635d0-a229-4755-88e2-30f891ce692d",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "1e13acac-4efb-4e62-894d-812492f6c266"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/ubuntu10.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Ubuntu11",
+    "desc": "The Ubuntu 11.x Linux Operating System.",
+    "meta": {
+      "uuid": "dbb94e1f-72ca-4d2d-a5fd-38d7639df5c1",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "1e13acac-4efb-4e62-894d-812492f6c266"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/ubuntu11.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Ubuntu12",
+    "desc": "The Ubuntu 12.x Linux Operating System.",
+    "meta": {
+      "uuid": "0cf76620-de1f-4e7b-b51b-74ecd980c253",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "1e13acac-4efb-4e62-894d-812492f6c266"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/ubuntu12.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Ubuntu13",
+    "desc": "The Ubuntu 13.x Linux Operating System.",
+    "meta": {
+      "uuid": "ab6a2022-57f1-476c-8013-3cda7554280e",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "1e13acac-4efb-4e62-894d-812492f6c266"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/ubuntu13.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Ubuntu14",
+    "desc": "The Ubuntu 14.x Linux Operating System.",
+    "meta": {
+      "uuid": "61a034bb-19e3-4d8f-bda9-35c90e874dc8",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "1e13acac-4efb-4e62-894d-812492f6c266"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/ubuntu14.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Mint",
+    "desc": "The Linux Mint Operating System.",
+    "meta": {
+      "uuid": "7d5b895a-a076-491d-b6ca-58eed0d0c960",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "a5613527-2f64-4481-83f2-80b0cb427e28"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/mint.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Mint10",
+    "desc": "The Linux Mint 10.x Operating System.",
+    "meta": {
+      "uuid": "ab5e364d-51c3-4f77-b1d7-a12128e62f9f",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "7d5b895a-a076-491d-b6ca-58eed0d0c960"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/mint10.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Mint11",
+    "desc": "The Linux Mint 11.x Operating System.",
+    "meta": {
+      "uuid": "27a69b62-9e0b-49e1-bb5e-30cd83e6cc68",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "7d5b895a-a076-491d-b6ca-58eed0d0c960"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/mint11.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Mint12",
+    "desc": "The Linux Mint 12.x Operating System.",
+    "meta": {
+      "uuid": "8beb8f4b-cf59-4f2c-81b5-74041d379fc6",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "7d5b895a-a076-491d-b6ca-58eed0d0c960"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/mint12.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Mint13",
+    "desc": "The Linux Mint 13.x Operating System.",
+    "meta": {
+      "uuid": "f204c30e-46be-49d3-82fd-7f455e1d3ac3",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "7d5b895a-a076-491d-b6ca-58eed0d0c960"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/mint13.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Mint14",
+    "desc": "The Linux Mint 14.x Operating System.",
+    "meta": {
+      "uuid": "c4ea3a0d-8bdc-48e0-b985-719453831834",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "7d5b895a-a076-491d-b6ca-58eed0d0c960"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/mint14.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Mint15",
+    "desc": "The Linux Mint 15.x Operating System.",
+    "meta": {
+      "uuid": "4b5a4f58-6f90-404f-a7bf-dd805506b197",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "7d5b895a-a076-491d-b6ca-58eed0d0c960"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/mint15.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Mint16",
+    "desc": "The Linux Mint 16.x Operating System.",
+    "meta": {
+      "uuid": "5a1a5259-3387-4a43-9329-0b090f2b6473",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "7d5b895a-a076-491d-b6ca-58eed0d0c960"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/mint16.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Mint17",
+    "desc": "The Linux Mint 17.x Operating System.",
+    "meta": {
+      "uuid": "b495af93-5b98-4746-ba29-2ec74f530cc6",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "7d5b895a-a076-491d-b6ca-58eed0d0c960"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/mint17.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Rhel",
+    "desc": "The Red Hat Enterprise Linux Operating System.",
+    "meta": {
+      "uuid": "98741859-5dd5-4c8d-a64a-69598f5ccb2f",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "a5613527-2f64-4481-83f2-80b0cb427e28"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/rhel.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Rhel3",
+    "desc": "The Red Hat Enterprise Linux 3.x Operating System.",
+    "meta": {
+      "uuid": "200eed01-43fe-4e9f-a740-a1bf50933751",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "98741859-5dd5-4c8d-a64a-69598f5ccb2f"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/rhel3.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Rhel4",
+    "desc": "The Red Hat Enterprise Linux 4.x Operating System.",
+    "meta": {
+      "uuid": "078f7adf-2647-4f35-8742-96a7c59c992b",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "98741859-5dd5-4c8d-a64a-69598f5ccb2f"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/rhel4.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Rhel5",
+    "desc": "The Red Hat Enterprise Linux 5.x Operating System.",
+    "meta": {
+      "uuid": "04202e27-f9ff-4ce0-8418-0d4aaecd6257",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "98741859-5dd5-4c8d-a64a-69598f5ccb2f"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/rhel5.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Rhel6",
+    "desc": "The Red Hat Enterprise Linux 6.x Operating System.",
+    "meta": {
+      "uuid": "c19c8786-1ed0-4fc1-9ee9-7f0d49022d2c",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "98741859-5dd5-4c8d-a64a-69598f5ccb2f"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/rhel6.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Rhel7",
+    "desc": "The Red Hat Enterprise Linux 7.x Operating System.",
+    "meta": {
+      "uuid": "d4fd6992-f34c-473b-9e05-929d7179ff73",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "98741859-5dd5-4c8d-a64a-69598f5ccb2f"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/rhel7.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Centos",
+    "desc": "The Community Enterprise Operating System.",
+    "meta": {
+      "uuid": "c8b320a0-c5fd-43c0-b52e-305f2daccfec",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "a5613527-2f64-4481-83f2-80b0cb427e28"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/centos.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Centos3",
+    "desc": "The Community Enterprise Operating System, version 3.x.",
+    "meta": {
+      "uuid": "4a43eead-c3a1-4e10-b8c1-b23e0b5b26ef",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "c8b320a0-c5fd-43c0-b52e-305f2daccfec"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/centos3.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Centos4",
+    "desc": "The Community Enterprise Operating System, version 4.x.",
+    "meta": {
+      "uuid": "8e49d933-dcd4-439f-9d10-91cb48a8e2d4",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "c8b320a0-c5fd-43c0-b52e-305f2daccfec"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/centos4.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Centos5",
+    "desc": "The Community Enterprise Operating System, version 5.x.",
+    "meta": {
+      "uuid": "caaee566-d43e-44b8-a59d-a87c37300562",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "c8b320a0-c5fd-43c0-b52e-305f2daccfec"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/centos5.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Centos6",
+    "desc": "The Community Enterprise Operating System, version 6.x.",
+    "meta": {
+      "uuid": "f3122393-1f4f-4916-96d7-a64b8be5736b",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "c8b320a0-c5fd-43c0-b52e-305f2daccfec"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/centos6.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Centos7",
+    "desc": "The Community Enterprise Operating System, version 7.x.",
+    "meta": {
+      "uuid": "9c13f597-4cd8-4311-a884-6efe24f10c81",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "c8b320a0-c5fd-43c0-b52e-305f2daccfec"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/centos7.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Fedora",
+    "desc": "The Fedora Linux Operating System.",
+    "meta": {
+      "uuid": "3f90173a-ae4d-4fd5-8c80-5659262d3aef",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "a5613527-2f64-4481-83f2-80b0cb427e28"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/fedora.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Fedora12",
+    "desc": "The Fedora 12 Linux Operating System.",
+    "meta": {
+      "uuid": "342aecd0-163c-48fa-b0da-8e25b2c27a06",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "3f90173a-ae4d-4fd5-8c80-5659262d3aef"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/fedora12.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Fedora13",
+    "desc": "The Fedora 13 Linux Operating System.",
+    "meta": {
+      "uuid": "f536b385-373e-45d2-9fd5-a41d5171cc45",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "3f90173a-ae4d-4fd5-8c80-5659262d3aef"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/fedora13.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Fedora14",
+    "desc": "The Fedora 14 Linux Operating System.",
+    "meta": {
+      "uuid": "68b7effb-35c0-4b0d-adce-4ea0af5b0c97",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "3f90173a-ae4d-4fd5-8c80-5659262d3aef"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/fedora14.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Fedora15",
+    "desc": "The Fedora 15 Linux Operating System.",
+    "meta": {
+      "uuid": "193c78d5-ad8f-48a4-ac10-8ab775cc7eb9",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "3f90173a-ae4d-4fd5-8c80-5659262d3aef"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/fedora15.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Fedora16",
+    "desc": "The Fedora 16 Linux Operating System.",
+    "meta": {
+      "uuid": "f25ebc43-5f20-469f-90fe-8b907258f648",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "3f90173a-ae4d-4fd5-8c80-5659262d3aef"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/fedora16.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Fedora17",
+    "desc": "The Fedora 17 Linux Operating System.",
+    "meta": {
+      "uuid": "e279d091-8dbe-45af-a41b-02f64800844f",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "3f90173a-ae4d-4fd5-8c80-5659262d3aef"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/fedora17.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Fedora18",
+    "desc": "The Fedora 18 Linux Operating System.",
+    "meta": {
+      "uuid": "ef0cc490-f3cf-48f9-be47-a7ce9a2618db",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "3f90173a-ae4d-4fd5-8c80-5659262d3aef"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/fedora18.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Fedora19",
+    "desc": "The Fedora 19 Linux Operating System.",
+    "meta": {
+      "uuid": "725c35f8-fbf0-442d-a4ec-0d83304e1b2a",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "3f90173a-ae4d-4fd5-8c80-5659262d3aef"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/fedora19.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Fedora20",
+    "desc": "The Fedora 20 Linux Operating System.",
+    "meta": {
+      "uuid": "ca39cf3a-43b2-46b9-8440-cf350c730d29",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "3f90173a-ae4d-4fd5-8c80-5659262d3aef"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/fedora20.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Fedora21",
+    "desc": "The Fedora 21 Linux Operating System.",
+    "meta": {
+      "uuid": "45284c82-2da0-48ae-a698-5f4f707fab94",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "3f90173a-ae4d-4fd5-8c80-5659262d3aef"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/fedora21.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Mageia",
+    "desc": "The Mageia Linux Operating System.",
+    "meta": {
+      "uuid": "26b0d6c8-4d6b-4ec2-8d15-6e71758cc06c",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "a5613527-2f64-4481-83f2-80b0cb427e28"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/mageia.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Mageia3",
+    "desc": "The Mageia 3.x Linux Operating System.",
+    "meta": {
+      "uuid": "43a6757b-5fc1-4781-9521-b028af50defc",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "26b0d6c8-4d6b-4ec2-8d15-6e71758cc06c"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/mageia3.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Mageia4",
+    "desc": "The Mageia 4.x Linux Operating System.",
+    "meta": {
+      "uuid": "5a516ba5-2d9d-40bb-ba45-c79f630f1953",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "26b0d6c8-4d6b-4ec2-8d15-6e71758cc06c"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/mageia4.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "OpenSuse",
+    "desc": "The openSUSE Linux Operating System.",
+    "meta": {
+      "uuid": "cdabdf0d-5994-43ce-803b-c4686ed16f48",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "a5613527-2f64-4481-83f2-80b0cb427e28"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/opensuse.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "OpenSuse10",
+    "desc": "The openSUSE 10.x Linux Operating System.",
+    "meta": {
+      "uuid": "aa0c5261-b3cd-49b8-adf1-243087416064",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "cdabdf0d-5994-43ce-803b-c4686ed16f48"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/opensuse10.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "OpenSuse11",
+    "desc": "The openSUSE 11.x Linux Operating System.",
+    "meta": {
+      "uuid": "dbe9b27e-5436-4b5b-a851-f0ba0cb04d69",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "cdabdf0d-5994-43ce-803b-c4686ed16f48"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/opensuse11.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "OpenSuse12",
+    "desc": "The openSUSE 12.x Linux Operating System.",
+    "meta": {
+      "uuid": "90fa3322-60c3-4808-9d83-3af9b5a69b62",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "cdabdf0d-5994-43ce-803b-c4686ed16f48"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/opensuse12.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "OpenSuse13",
+    "desc": "The openSUSE 13.x Linux Operating System.",
+    "meta": {
+      "uuid": "09ad6070-a602-4e00-ba9c-25a181f7f0df",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "cdabdf0d-5994-43ce-803b-c4686ed16f48"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/opensuse13.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Sles",
+    "desc": "The SUSE Linux Enterprise Server Operating System.",
+    "meta": {
+      "uuid": "6cbfc14e-6835-43bc-a29d-aafc8589de4b",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "a5613527-2f64-4481-83f2-80b0cb427e28"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/sles.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Sles9",
+    "desc": "The SUSE Linux Enterprise Server 9.x Operating System.",
+    "meta": {
+      "uuid": "019b3997-f28e-4b81-8e5c-b1077fdf86cb",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "6cbfc14e-6835-43bc-a29d-aafc8589de4b"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/sles9.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Sles10",
+    "desc": "The SUSE Linux Enterprise Server 10.x Operating System.",
+    "meta": {
+      "uuid": "3f1076ed-dbe7-4ca6-8138-5a909bef9ce8",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "6cbfc14e-6835-43bc-a29d-aafc8589de4b"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/sles10.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Sles11",
+    "desc": "The SUSE Linux Enterprise Server 11.x Operating System.",
+    "meta": {
+      "uuid": "db95db3d-fe10-448a-9f30-2a05bf06e699",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "6cbfc14e-6835-43bc-a29d-aafc8589de4b"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/sles11.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Sles12",
+    "desc": "The SUSE Linux Enterprise Server 12.x Operating System.",
+    "meta": {
+      "uuid": "e3c6338f-ece3-448e-867b-49a8c16c9974",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "6cbfc14e-6835-43bc-a29d-aafc8589de4b"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/sles12.schema.json"
+      }
+    }
+  }
+]

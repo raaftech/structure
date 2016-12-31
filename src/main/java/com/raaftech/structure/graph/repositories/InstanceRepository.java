@@ -16,23 +16,21 @@ import java.util.Set;
 public interface InstanceRepository extends GenericRepository<Instance> {
 
     @Override
-    @Query ("START node=node:name(name={name}) MATCH (node:Instance) return node")
+    @Query ("MATCH (node:Instance {name:{name}}) return node")
     Set<Instance> findByName(@Param("name") String name);
 
     @Override
-    @Query ("START node=node:name(name={name}) MATCH (node:Instance) return node LIMIT 1")
+    @Query ("MATCH (node:Instance {name:{name}}) return node LIMIT 1")
     Instance findOneByName(@Param("name") String name);
 
     // Workaround, returning count(n) > 0 returns null when n is NULL.
     // This returns 0 if we're not of queried type, >0 if we are.
-    @Query ("START start=node:uuid(uuid={uuid}) " +
-            "MATCH start-[:INSTANCE_OF|ISA*1..]->(n{name:{type}}) " +
+    @Query ("MATCH (start {uuid:{uuid}})-[:INSTANCE_OF|ISA*1..]->(n{name:{type}}) " +
             "RETURN count(n)")
     int isOfType(@Param("uuid") String uuid, @Param("type") String type);
 
     // Get the root node of a componental group
-    @Query ("START instance=node:uuid(uuid={instanceUuid}) " +
-            "MATCH (instance)<-[:HAS_COMPONENT*0..]-(start) " +
+    @Query ("MATCH (instance {uuid:{instanceUuid}})<-[:HAS_COMPONENT*0..]-(start) " +
             "WHERE NOT (start)<-[:HAS_COMPONENT]-() " +
             "RETURN start")
     Instance getStartOfComponentGroup(@Param("instanceUuid") String instanceUuid);

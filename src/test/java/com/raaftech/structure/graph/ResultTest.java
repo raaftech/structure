@@ -3,25 +3,28 @@ package com.raaftech.structure.graph;
 import com.raaftech.structure.base.ConverterConfig;
 import com.raaftech.structure.base.SpringTestConfig;
 import com.raaftech.structure.graph.repositories.ResultRepository;
-import com.raaftech.structure.helper.loader.BundleLoader;
+import com.raaftech.structure.helper.loader.EvenNaiverLoader;
+import com.raaftech.structure.next.Entity;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
+import org.neo4j.graphdb.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.neo4j.core.GraphDatabase;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.File;
-import java.nio.file.Paths;
+import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.IntStream;
 
+import static io.vertx.core.json.Json.mapper;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -32,6 +35,8 @@ public class ResultTest {
 
     @Autowired
     ResultRepository resultRepository;
+    @Autowired
+    GraphDatabase graphDatabase;
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
@@ -39,11 +44,33 @@ public class ResultTest {
     private static boolean databaseCreated = false;
 
     @Before
+    @SuppressWarnings("Duplicates")
     public void setUpDatabase() throws Exception {
         if (!databaseCreated) {
-            final String raafBundle = new File("bundles/core/bundle.json").getAbsolutePath();
-            new BundleLoader(Paths.get(raafBundle)).load();
-            databaseCreated = true;
+            final String raafBundle = "src/test/resources/bundles/core";
+            EvenNaiverLoader evenNaiverLoader = new EvenNaiverLoader(raafBundle);
+
+            Transaction tx = graphDatabase.beginTx();
+            try {
+                evenNaiverLoader.getUpdateList(evenNaiverLoader.sortIt(evenNaiverLoader.readAllJson())).stream()
+                        .map(node -> {
+                            try {
+                                return mapper.readValue(node.toString(), Entity.class);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                            return null;
+                        })
+                        .filter(node -> node != null)
+                        .forEach(Entity::toGraph);
+                tx.success();
+                databaseCreated = true;
+            } catch (Exception e) {
+                tx.failure();
+                throw e;
+            } finally {
+                tx.close();
+            }
         }
     }
 

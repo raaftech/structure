@@ -21,11 +21,14 @@ import org.springframework.data.neo4j.core.GraphDatabase;
 import org.springframework.data.neo4j.fieldaccess.DynamicProperties;
 import org.springframework.data.neo4j.fieldaccess.DynamicPropertiesContainer;
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static io.vertx.core.json.Json.mapper;
 
 /**
  * Give a description of Type here.
@@ -55,7 +58,6 @@ public class Type extends Node {
     @Fetch
     private Set<Type> implementsProtocols;
 
-    public JsonSchemaBuilder schema = new JsonSchemaBuilder();
     public DynamicProperties kv = new DynamicPropertiesContainer();
 
     // isaUuid exists only to temporarily save a UUID of a Type's parent
@@ -109,11 +111,7 @@ public class Type extends Node {
     /*******************/
 
     private void initSchema() {
-        schema.setType("object");
-        schema.setAdditionalProperties(false);
-        schema.addProperty("name", "string", true, "The name of this node.");
-        schema.addProperty("desc", "string", true, "The description of this node.");
-        schema.addProperty("checksum", "string", false, "The checksum of this node.");
+        // TODO: Entity, this can go, i think
     }
 
     /******************/
@@ -150,7 +148,7 @@ public class Type extends Node {
         if (parentNode != null && parentNode.getSchema().containsProperty(key)) {
             throw new RuntimeException("Can't override parent schema.");
         } else {
-            schema.addProperty(key, valueType, required, description)
+            getSchema().addProperty(key, valueType, required, description)
                     .setDefault(defaultValue)
                     .setPattern(pattern);
         }
@@ -190,36 +188,7 @@ public class Type extends Node {
     }
 
     public Type setIsa(Type isa) {
-        if (isa != null) {
-            this.isa = isa;
-            JsonSchemaBuilder parentConstraints = isa.getSchema();
-            if (glyphId == 0) {
-                glyphId = isa.glyphId;
-            }
-            if (parentConstraints != null) {
-                try {
-                    if (schema == null) {
-                        schema = new JsonSchemaBuilder(parentConstraints.getAsObjectNode());
-                    } else {
-                        Iterator<String> propertyIterator = parentConstraints.getProperties().fieldNames();
-                        while (propertyIterator.hasNext()) {
-                            String propertyName = propertyIterator.next();
-                            if (!schema.containsProperty(propertyName)) {
-                                JsonNode propertyJson = parentConstraints.getProperties().get(propertyName);
-                                schema.addProperty(propertyName, propertyJson.get("type").asText(),
-                                        parentConstraints.isRequired(propertyName), propertyJson.get("description").asText());
-                            }
-                        }
-                    }
-                } catch (ProcessingException e) {
-                	log.error(e.getMessage());
-
-        			if (Configuration.isTraceModeOn()) {
-        				e.printStackTrace();
-        			}
-        		}
-            }
-        }
+        // TODO: Entity, This can go, i think
         return this;
     }
 
@@ -253,6 +222,18 @@ public class Type extends Node {
     }
 
     public JsonSchemaBuilder getSchema() {
+        JsonSchemaBuilder schema = null;
+        try {
+            schema = new JsonSchemaBuilder((ObjectNode)mapper.readTree((String)getFiles().get("dataSchema")));
+        } catch (ProcessingException e) {
+            if (Configuration.isTraceModeOn()) {
+                e.printStackTrace();
+            }
+        } catch (IOException e) {
+            if (Configuration.isTraceModeOn()) {
+                e.printStackTrace();
+            }
+        }
         return schema;
     }
 
@@ -293,38 +274,6 @@ public class Type extends Node {
 
     public boolean implementsProtocol(Type protocol) {
         return implementsProtocols == null ? false : implementsProtocols.contains(protocol);
-    }
-
-    // fillDescriptor is used to set the value of a descriptor. For example: when modelling a particular CPU model
-    // you know that it'll always have 4 cores, n bytes of cache, etc. This method is used to register that for a Type.
-    public Type fillDescriptor(String key, JsonNode data) {
-        ObjectNode propertySchema = (ObjectNode) schema.getProperties().get(key);
-        // Check if we actually have this property.
-        if (propertySchema != null) {
-            try {
-                JsonSchemaBuilder propertySchemaBuilder = new JsonSchemaBuilder((ObjectNode) schema.getProperties().get(key));
-                // If the data we got validates against that specific part of the schema
-                // we save it as a DynamicProperty and remove that property from the schema.
-                if (propertySchemaBuilder.validateJson(data.get(key))) {
-                    kv.setProperty(key, data.get(key).asText());
-                    schema.removeProperty(key);
-                } else {
-                    throw new IllegalArgumentException("Couldn't fill descriptor of " + getName() + " with data, didn't match the schema.");
-                }
-            } catch (ProcessingException e) {
-            	log.error(e.getMessage());
-
-    			if (Configuration.isTraceModeOn()) {
-    				e.printStackTrace();
-    			}
-    			
-                throw new RuntimeException("Couldn't create JsonSchemaBuilder");
-            }
-        } else {
-            throw new IllegalArgumentException("Type " + getName() + " has no descriptor '" + key + "'.");
-        }
-
-        return this;
     }
 
     public boolean isOfType(String type) {

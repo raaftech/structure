@@ -1,0 +1,35 @@
+{
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/schema#",
+  "type": "object",
+  "properties": {
+    "name": {
+      "$ref": "type.schema.json#/properties/name"
+    },
+    "checksum": {
+      "$ref": "type.schema.json#/properties/checksum"
+    },
+    "ver": {
+      "type": "string",
+      "description": "The version of the software."
+    },
+    "shortName": {
+      "type": "string",
+      "description": "A short lowercase name for the Software without spaces."
+    },
+    "desc": {
+      "$ref": "type.schema.json#/properties/desc"
+    },
+    "longName": {
+      "type": "string",
+      "description": "The full descriptive name of the Software."
+    }
+  },
+  "required": [
+    "name",
+    "desc",
+    "ver",
+    "shortName",
+    "longName"
+  ]
+}
