@@ -1,0 +1,23 @@
+<h1 class="page-header">Environment</h1>
+<div ng-controller="environmentCtrl">
+    <!--<div ng-show="types.length">-->
+        <!--<button ng-repeat="type in types" class="btn btn-default" type="submit">{{type.name}}</button>-->
+    <!--</div>-->
+    <ol class="breadcrumb" ng-show="types.length" style="background-color: #15222a;">
+        <li ng-repeat="type in types">
+            <a ng-if="!$last" ng-click="revertIsa({'uuid': type.uuid, 'index': $index})">{{type.name}}</a>
+            <span ng-if="$last">{{type.name}}</span>
+        </li>
+    </ol>
+    <form name="environmentForm"
+          sf-schema="schema"
+          sf-form="form"
+          sf-model="model"></form>
+    <p>&nbsp;</p>
+    <h3>Stacked selection</h3>
+    <ul class="nav nav-pills">
+        <li ng-repeat="pill in stacked" role="presentation" ng-click="changeIsa(pill.value)">
+            <a class="btn btn-primary" href="">{{pill.name}}</a>
+        </li>
+    </ul>
+</div>

@@ -1,0 +1,13 @@
+<h1 class="page-header">Debug</h1>
+
+<div ng-controller="debugCtrl">
+    <form name="debugForm" ng-submit="debugForm.$valid && sendMessage()" novalidate>
+        <div class="form-group">
+            <label>eventbus address</label>
+            <input ng-model="message.address" class="form-control" type="text" placeholder="com.raaftech.structure.">
+            <label>message</label>
+            <textarea ng-model="message.unmarshalledText" class="form-control" rows="5"></textarea>
+            <input class="btn btn-primary pull-right" type="submit" value="Submit">
+        </div>
+    </form>
+</div>
