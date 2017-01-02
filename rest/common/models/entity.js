@@ -13,7 +13,7 @@ module.exports = function (Entity) {
 
 //TYPES
   Entity.fetchByUuid = function (uuid, callback) {
-    sendEvent(getEventBusAddress(['repository', 'nodes']), 'findOne', {node: uuid})
+    sendEvent(getEventBusAddress(['repository', 'types']), 'findOne', {node: uuid})
       .then((result) => callback(null, getResultData(result)))
       .catch((ex) => callback(ex));
   };
@@ -26,7 +26,7 @@ module.exports = function (Entity) {
   });
 
   Entity.fetchByName = function (name, callback) {
-    sendEvent(getEventBusAddress(['repository', 'nodes']), 'findOneByName', {name: name})
+    sendEvent(getEventBusAddress(['repository', 'types']), 'findOneByName', {name: name})
       .then((result) => callback(null, getResultData(result)))
       .catch((ex) => callback(ex));
   };
