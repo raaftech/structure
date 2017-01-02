@@ -1,0 +1,22 @@
+{
+  "name": "stop",
+  "desc": "SmfStop",
+  "instrumentType": "controller",
+  "capability": "Stop",
+  "providedBy": "Smf",
+  "appliesTo": [ "Server" ],
+  "templateFile": "smfstop.hbs.sh",
+  "subjectIsLocal": true,
+  "arguments": {
+    "origin": {
+      "value": {
+        "from": "origin",
+        "type": "type.component.software.server",
+        "strategy": "mustBeOne",
+        "onError": "fail"
+      },
+      "canBeUserSupplied": false,
+      "isOptional": false
+    }
+  }
+}

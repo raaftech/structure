@@ -1,0 +1,50 @@
+{
+  "name": "OperatingSystem",
+  "desc": "Generic operating system.",
+  "uuid": "1b8e0d72-c23d-4091-a4e6-74d07f1ee6fa",
+  "templateOf": "f05e325e-1aee-4892-96e4-8bcd6e97c528",
+  "components": [
+    {
+      "name": "Client",
+      "desc": "Generic client software.",
+      "uuid": "e8e3c643-a520-4d63-9088-dd27086a1879",
+      "templateOf": "8f371b1b-52a3-4409-be70-9cd947bec8dd"
+    },
+    {
+      "name": "Server",
+      "desc": "Generic server software.",
+      "uuid": "54126ca8-3a5e-43b9-a501-98c8d158049d",
+      "templateOf": "3fb4603b-281e-47c0-b338-768ea05d4660"
+    },
+    {
+      "name": "Interpreter",
+      "desc": "Generic interpreter.",
+      "uuid": "2741cc5a-eb45-4532-9a64-c715c07f93bc",
+      "templateOf": "d047f415-734c-4bd3-92b9-d68d5521ce69"
+    },
+    {
+      "name": "Ipv4Address",
+      "desc": "An IPv4 address.",
+      "uuid": "0e843d97-c975-42ca-813c-c91f42a7d3cc",
+      "templateOf": "f7fbe917-9d49-4df5-95f6-6e132067a424"
+    },
+    {
+      "name": "DnsName",
+      "desc": "The short or fully qualified domain name.",
+      "uuid": "94d10031-5246-4233-b25d-b5f8ef9d0b41",
+      "templateOf": "99c0da37-3599-418d-8ecc-de36d37ae9f4"
+    },
+    {
+      "name": "ServiceManager",
+      "desc": "Generic service manager.",
+      "uuid": "34bfe99f-1d62-48cb-a8a3-e913b69ef225",
+      "templateOf": "c3008eec-b454-4ef6-bf7e-0bd92c13d3c3"
+    },
+    {
+      "name": "Hypervisor",
+      "desc": "A generic hypervisor.",
+      "uuid": "39e12352-8305-4b5d-af60-f1725ec458b8",
+      "templateOf": "c5c7fcb5-8ac3-40cc-b195-b2b6af368e81"
+    }
+  ]
+}

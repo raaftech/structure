@@ -1,0 +1,22 @@
+{
+  "name": "start",
+  "desc": "UpstartStart",
+  "instrumentType": "controller",
+  "capability": "Start",
+  "providedBy": "Upstart",
+  "appliesTo": [ "Server" ],
+  "templateFile": "upstartstart.hbs.sh",
+  "subjectIsLocal": true,
+  "arguments": {
+    "origin": {
+      "value": {
+        "from": "origin",
+        "type": "type.component.software.server",
+        "strategy": "mustBeOne",
+        "onError": "fail"
+      },
+      "canBeUserSupplied": false,
+      "isOptional": false
+    }
+  }
+}

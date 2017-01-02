@@ -195,7 +195,7 @@ public class Controller extends Instrument {
         return providedBy;
     }
 
-    public String getTemplateText() {
+    public String getTemplate() {
         return (String) kv.getProperty(TEMPLATE);
     }
 
@@ -204,7 +204,7 @@ public class Controller extends Instrument {
         ObjectNode json = super.toJson();
         json
                 .put(SUBJECTLOCAL, isSubjectIsLocal())
-                .put(TEMPLATE, getTemplateText());
+                .put(TEMPLATE, getTemplate());
 
         if (getExtension() != null) {
             json.put(EXTENSION, getExtension());

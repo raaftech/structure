@@ -1,0 +1,560 @@
+/**
+ * Include styles
+ */
+@import url('scheme/blue.css');
+@import url('scheme/blue-sweet-alert.css');
+@import url('font/structureglyph.css');
+
+
+/*
+ * Base structure
+ */
+
+/* Move down content because we have a fixed navbar that is 50px tall */
+body {
+    padding-top: 51px;
+}
+
+a,
+a:active,
+a:focus {
+    outline: none;
+}
+
+
+/*
+ * Global add-ons
+ */
+
+.sub-header {
+    padding-bottom: 10px;
+    border-bottom: 1px solid;
+}
+
+/*
+ * Top navigation
+ * Hide default border to remove 1px line.
+ */
+.navbar-fixed-top {
+    border: 0;
+}
+
+.navbar {
+    border-bottom: 1px solid;
+}
+
+.navbar-logo {
+    position: absolute;
+    left: 0;
+    background: url("/img/logo_structure.png") no-repeat;
+    background-size: 50px;
+    height: 50px;
+    width: 50px;
+}
+
+.navbar-brand {
+    padding-left: 55px;
+    font-size: 14px;
+}
+
+.navbar-brand,
+.navbar-nav > li > a {
+    text-transform: uppercase;
+}
+
+.navbar-nav > li > a:hover,
+.navbar-nav > li.active {
+    border-bottom: 1px solid;
+    margin-bottom: -1px;
+}
+
+/*
+ * Sidebar
+ */
+
+/* Hide for mobile, show later */
+.sidebar {
+    display: none;
+}
+
+@media (min-width: 768px) {
+    .sidebar {
+        position: fixed;
+        top: 51px;
+        bottom: 0;
+        left: 0;
+        z-index: 1000;
+        display: block;
+        padding: 20px;
+        overflow-x: hidden;
+        overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
+    }
+}
+
+/* Sidebar navigation */
+.nav-sidebar {
+    margin-right: -21px; /* 20px padding + 1px border */
+    margin-top: 20px;
+    margin-left: -20px;
+}
+
+.nav-sidebar > li > a {
+    padding-right: 20px;
+    padding-left: 20px;
+}
+
+.nav-sidebar > .active > a {
+    border-left: 3px solid;
+    padding-left: 17px;
+}
+
+.nav-sidebar > li > a:hover,
+.nav-sidebar > li > a:focus {
+    border-left: 3px solid;
+    padding-left: 17px;
+}
+
+
+/*
+ * Main content
+ */
+
+.main {
+    padding: 20px;
+}
+
+@media (min-width: 768px) {
+    .main {
+        padding-right: 40px;
+        padding-left: 40px;
+    }
+}
+
+.main .page-header {
+    margin-top: 0;
+}
+
+
+/*
+ * Form adjustments
+ */
+fieldset,
+.list-group-item {
+    padding: 20px;
+    border-radius: 4px;
+    border: 1px solid;
+}
+
+.alert,
+.btn,
+.form-control {
+    border-radius: 1px;
+}
+
+.form-group .help-block {
+    display: none;
+    visibility: hidden;
+}
+
+.form-group.has-error .help-block {
+    display: block;
+    visibility: visible;
+}
+
+.has-success .form-control,
+.has-success .form-control:focus {
+    box-shadow: none;
+}
+
+.btn-group.schema-form-actions {
+    margin-top: 20px;
+}
+
+
+/*
+ * Placeholder dashboard ideas
+ */
+.placeholders {
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.placeholders h4 {
+    margin-bottom: 0;
+}
+
+.placeholder {
+    margin-bottom: 20px;
+}
+
+.placeholder img {
+    display: inline-block;
+    border-radius: 50%;
+}
+
+
+/**
+ * CSS for fixed detailed information
+
+.relative-view {
+    position: relative;
+}
+
+.detailed-info {
+    position: fixed;
+    left: 40px;
+    right: 40px;
+}
+
+ul.list.parent {
+    padding-top: 200px;
+}
+
+*/
+
+
+/*
+ * Detailed information
+ */
+.detailed-info {
+    margin-left: 0;
+    margin-right: 0;
+    margin-bottom: 40px;
+}
+
+/* not used when using icons */
+.basic img {
+    padding-right: 10px;
+}
+
+.basic .text-block {
+    margin-left: 25px;
+    display: inline-block;
+}
+
+.basic .text-block,
+.basic .visual {
+    float: left;
+}
+
+.basic h1 {
+    font-size: 22px;
+    font-weight: normal;
+    text-transform: uppercase;
+}
+
+.basic p {
+    margin: 5px 0;
+    padding-right: 35px;
+}
+
+.detail {
+    display: none;
+}
+
+.detail ul {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+}
+
+.detail h2 {
+    text-transform: uppercase;
+    border-bottom: 1px solid;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+    font-size: 14px;
+    font-weight: normal;
+}
+
+.detail li {
+    margin-bottom: 5px;
+}
+
+.detail label {
+    width: 30%;
+    display: inline-block;
+    float: left;
+    font-weight: normal;
+}
+
+.detail label:first-letter {
+    text-transform: uppercase;
+}
+
+.detail p {
+    width: 75%;
+    display: inline-block;
+}
+
+@media (min-width: 992px) {
+    .basic,
+    .detail {
+        width: 50%;
+    }
+
+    .basic {
+        padding-right: 4%;
+        float: left;
+    }
+
+    .detail {
+        display: block;
+        padding-left: 4%;
+        float: right;
+    }
+}
+
+
+/*
+ * List styles
+ */
+.list:hover {
+    cursor: pointer;
+}
+
+.list > thead > tr > th {
+    font-weight: normal;
+    text-transform: uppercase;
+    border-bottom: 1px solid;
+}
+
+.list > tbody > tr > td {
+    border-bottom: 1px solid;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 0;
+}
+
+.table-responsive {
+    border: 0;
+    overflow: visible;
+}
+
+span.open:before {
+    content: '-';
+    position: relative;
+    margin-left: -17px;
+    padding-right: 11px;
+    font-weight: bold;
+}
+
+span.closed:before {
+    content: '+';
+    position: relative;
+    margin-left: -17px;
+    padding-right: 8px;
+    font-weight: bold;
+}
+
+ul.list-group.list {
+    margin-bottom: 0;
+}
+
+ul.list-group.list,
+.list > li.list-group-item {
+    border-radius: 0;
+}
+
+.list .header {
+    text-transform: uppercase;
+}
+
+.list > li {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    overflow-x: hidden;
+}
+
+.list > li > div {
+    margin: 0;
+    padding: 7px 0;
+    border-bottom: 1px solid;
+}
+
+.list > li > div > div {
+    line-height: 23px;
+}
+
+.list > li > div > div:nth-child(1) {
+    padding-left: 25px;
+}
+
+.list > li.header > div > div:nth-child(1) {
+    padding-left: 0;
+}
+
+.list > li > ul > li > div > div:nth-child(1) {
+    padding-left: 50px;
+}
+
+.list > li > ul > li > ul > li > div > div:nth-child(1) {
+    padding-left: 75px;
+}
+
+.list > li > ul > li > ul > li > ul > li > div > div:nth-child(1) {
+    padding-left: 100px;
+}
+
+.list > li > ul > li > ul > li > ul > li > ul > li > div > div:nth-child(1) {
+    padding-left: 125px;
+}
+
+.list > li > ul > li > ul > li > ul > li > ul > li > ul > li > div > div:nth-child(1) {
+    padding-left: 150px;
+}
+
+.list div.wrap-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+
+/*
+ * Buttons
+ */
+.button-str {
+    border-radius: 50px;
+    text-transform: uppercase;
+    margin-right: 5px;
+    padding: 4px 10px;
+}
+
+.button-transparent {
+    border-radius: 50px;
+    border: 1px solid;
+    padding: 4px 8px;
+}
+
+
+/*
+ * Testing context menu
+ */
+list-item-hover-menu-types {
+    position: absolute;
+    padding: 0 10px 0 0;
+    right: 0;
+    top: 0;
+    margin: 10px 0 0 0;
+}
+
+.tools {
+    display: inline-block;
+    position: relative;
+    list-style-type: none;
+    right: 0;
+    z-index: 1000;
+    margin: -1px -24px 2px 0;
+}
+
+.tools > li {
+    display: inline-block;
+    float: left;
+}
+
+.tools > li > a {
+    padding: 11px 15px;
+    text-transform: uppercase;
+}
+
+.tools > li > a:hover {
+    text-decoration: none;
+}
+
+
+/**
+ * Modal window modifications
+ */
+.modal-header h3 {
+    text-transform: uppercase;
+    margin-top: 4px;
+    font-size: 20px;
+}
+
+.modal-backdrop.in {
+    opacity: 0.6;
+}
+
+.modal-content {
+    border-radius: 0;
+    -webkit-box-shadow: 0 10px 46px 6px rgba(0,0,0,0.6);
+       -moz-box-shadow: 0 10px 46px 6px rgba(0,0,0,0.6);
+            box-shadow: 0 10px 46px 6px rgba(0,0,0,0.6);
+}
+
+.modal-header {
+    border-bottom: 1px solid;
+}
+
+.modal-footer {
+    border-top: 1px solid;
+}
+
+.nav-tabs {
+    margin-bottom: 20px;
+}
+
+
+/**
+ * Progressbar modifications
+ */
+.progress {
+    margin-bottom: 0;
+}
+
+
+/**
+ * Hegagon
+ */
+.hexagon {
+    position: relative;
+    width: 130px;
+    height: 75.06px;
+    background-color: #15222a;
+    margin: 37.53px 0;
+    border-left: solid 5px #22333f;
+    border-right: solid 5px #22333f;
+}
+
+.hexagon:before,
+.hexagon:after {
+    content: "";
+    position: absolute;
+    z-index: 1;
+    width: 91.92px;
+    height: 91.92px;
+    -webkit-transform: scaleY(0.5774) rotate(-45deg);
+    -ms-transform: scaleY(0.5774) rotate(-45deg);
+    transform: scaleY(0.5774) rotate(-45deg);
+    background-color: inherit;
+    left: 14.0381px;
+}
+
+.hexagon:before {
+    top: -45.9619px;
+    border-top: solid 7.0711px #22333f;
+    border-right: solid 7.0711px #22333f;
+}
+
+.hexagon:after {
+    bottom: -45.9619px;
+    border-bottom: solid 7.0711px #22333f;
+    border-left: solid 7.0711px #22333f;
+}
+
+/**
+ * Names and Glyphs preview
+ */
+.names-and-glyphs {
+    -webkit-column-count: 3;
+       -moz-column-count: 3;
+            column-count: 3;
+    list-style-type: none;
+}
+
+show-icon {
+    text-transform: none;
+}

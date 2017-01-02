@@ -1,0 +1,22 @@
+{
+  "name": "start",
+  "desc": "BsdrcInitStart",
+  "instrumentType": "controller",
+  "capability": "Start",
+  "providedBy": "BsdrcInit",
+  "appliesTo": [ "Server" ],
+  "templateFile": "bsdrcinitstart.hbs.sh",
+  "subjectIsLocal": true,
+  "arguments": {
+    "origin": {
+      "value": {
+        "from": "origin",
+        "type": "type.component.software.server",
+        "strategy": "mustBeOne",
+        "onError": "fail"
+      },
+      "canBeUserSupplied": false,
+      "isOptional": false
+    }
+  }
+}

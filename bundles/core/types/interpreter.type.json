@@ -1,0 +1,49 @@
+[ {
+  "name" : "UnixShell",
+  "desc" : "A generic UNIX shell.",
+  "uuid" : "86168e4a-8c99-43c9-ad95-c8f88d96ac32",
+  "glyphId" : 252,
+  "isa" : "d047f415-734c-4bd3-92b9-d68d5521ce69"
+}, {
+  "name" : "Bash",
+  "desc" : "The Bourne Again Shell.",
+  "uuid" : "6d467b28-449f-498c-9ca5-8660f522897f",
+  "glyphId" : 44,
+  "isa" : "86168e4a-8c99-43c9-ad95-c8f88d96ac32"
+}, {
+  "name" : "Ksh",
+  "desc" : "The Korn Shell.",
+  "uuid" : "fd95e858-c788-4578-9223-122eceb2e6c6",
+  "glyphId" : 122,
+  "isa" : "86168e4a-8c99-43c9-ad95-c8f88d96ac32"
+}, {
+  "name" : "Csh",
+  "desc" : "The C Shell.",
+  "uuid" : "608c9a23-a194-49b0-a986-c34bd52bf691",
+  "glyphId" : 68,
+  "isa" : "86168e4a-8c99-43c9-ad95-c8f88d96ac32"
+}, {
+  "name" : "Tcsh",
+  "desc" : "The TENEX C Shell.",
+  "uuid" : "bb3e3458-391d-4c75-8857-4a08be7e5905",
+  "glyphId" : 243,
+  "isa" : "86168e4a-8c99-43c9-ad95-c8f88d96ac32"
+}, {
+  "name" : "Sh",
+  "desc" : "The Bourne Shell.",
+  "uuid" : "7c1c3278-6eb4-4be5-8b8d-94204bfd2223",
+  "glyphId" : 220,
+  "isa" : "86168e4a-8c99-43c9-ad95-c8f88d96ac32"
+}, {
+  "name" : "Zsh",
+  "desc" : "The Zhong Shao Shell.",
+  "uuid" : "7d9afc14-8e12-4c56-8ca6-4c43fd9808ab",
+  "glyphId" : 280,
+  "isa" : "86168e4a-8c99-43c9-ad95-c8f88d96ac32"
+}, {
+  "name" : "DosShell",
+  "desc" : "A generic DOS shell.",
+  "uuid" : "bc101145-dde2-4363-a7ed-7091d2ff2621",
+  "glyphId" : 76,
+  "isa" : "d047f415-734c-4bd3-92b9-d68d5521ce69"
+} ]

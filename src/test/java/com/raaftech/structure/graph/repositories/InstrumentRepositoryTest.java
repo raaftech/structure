@@ -3,22 +3,21 @@ package com.raaftech.structure.graph.repositories;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.raaftech.structure.base.SpringTestConfig;
 import com.raaftech.structure.graph.*;
-import com.raaftech.structure.helper.loader.EvenNaiverLoader;
-import com.raaftech.structure.next.Entity;
+import com.raaftech.structure.helper.loader.BundleLoader;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.neo4j.graphdb.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.neo4j.core.GraphDatabase;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -39,8 +38,6 @@ public class InstrumentRepositoryTest {
     InstrumentRepository instrumentRepository;
     @Autowired
     ComponentRepository componentRepository;
-    @Autowired
-    GraphDatabase graphDatabase;
 
     private Component structure;
     private Component host1;
@@ -49,33 +46,11 @@ public class InstrumentRepositoryTest {
     private static boolean databaseCreated = false;
 
     @Before
-    @SuppressWarnings("Duplicates")
     public void setUpDatabase() throws Exception {
         if (!databaseCreated) {
-            final String raafBundle = "src/test/resources/bundles/core";
-            EvenNaiverLoader evenNaiverLoader = new EvenNaiverLoader(raafBundle);
-
-            Transaction tx = graphDatabase.beginTx();
-            try {
-                evenNaiverLoader.getUpdateList(evenNaiverLoader.sortIt(evenNaiverLoader.readAllJson())).stream()
-                        .map(node -> {
-                            try {
-                                return mapper.readValue(node.toString(), Entity.class);
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                            return null;
-                        })
-                        .filter(node -> node != null)
-                        .forEach(Entity::toGraph);
-                tx.success();
-                databaseCreated = true;
-            } catch (Exception e) {
-                tx.failure();
-                throw e;
-            } finally {
-                tx.close();
-            }
+            final String raafBundle = new File("bundles/core/bundle.json").getAbsolutePath();
+            new BundleLoader(Paths.get(raafBundle)).load();
+            databaseCreated = true;
         }
     }
 
@@ -209,10 +184,8 @@ public class InstrumentRepositoryTest {
     }
 
     @Test
-    @Transactional
-    @Rollback
     public void getMatchingReceiveString() throws Exception {
-        Controller sshSendString = (Controller) instrumentRepository.findOneByName("OpenSshClientSendString");
+        Controller sshSendString = (Controller) instrumentRepository.findOneByName("OpenSSHClientSendString");
         assertNotNull(sshSendString);
         Marker compatible = instrumentRepository.getMatchingReceiveString(sshSendString.getUuid());
         assertNotNull(compatible);
@@ -221,7 +194,7 @@ public class InstrumentRepositoryTest {
 
     @Test
     public void getMatchingReceiveFile() throws Exception {
-        Controller sshSendFile = (Controller) instrumentRepository.findOneByName("OpenSshClientSendFile");
+        Controller sshSendFile = (Controller) instrumentRepository.findOneByName("OpenSSHClientSendFile");
         assertNotNull(sshSendFile);
         Marker compatible = instrumentRepository.getMatchingReceiveFile(sshSendFile.getUuid());
         assertNotNull(compatible);

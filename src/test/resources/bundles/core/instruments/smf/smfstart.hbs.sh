@@ -1,1 +1,0 @@
-svcadm enable {{ origin.shortName }}

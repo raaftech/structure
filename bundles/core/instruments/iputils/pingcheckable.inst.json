@@ -1,0 +1,53 @@
+{
+  "name": "IputilsPingCheckable",
+  "desc": "Provide a check to IP addresses using ping.",
+  "instrumentType": "controller",
+  "capability": "State",
+  "providedBy": "Iputils",
+  "templateFile": "pingcheckable.hbs.sh",
+  "appliesTo": [ "Ipv4Address" ],
+  "subjectIsLocal": false,
+  "arguments": {
+    "ipv4address": {
+      "value": {
+        "from": "origin",
+        "type": "type.configuration.ipaddress.ipv4address",
+        "strategy": "useFirst",
+        "onError": "fail"
+      },
+      "canBeUserSupplied": false,
+      "isOptional": false
+    },
+    "interval": {
+      "value": {
+        "from": "static",
+        "type": "string",
+        "matches": "[0-9]+",
+        "strategy": "mustBeOne"
+      },
+      "canBeUserSupplied": true,
+      "isOptional": true
+    },
+    "count": {
+      "value": {
+        "from": "static",
+        "type": "string",
+        "matches": "[0-9]+",
+        "defaultValue": "4",
+        "strategy": "mustBeOne"
+      },
+      "canBeUserSupplied": true,
+      "isOptional": true
+    },
+    "timeout": {
+      "value": {
+        "from": "static",
+        "type": "string",
+        "matches": "[0-9]+",
+        "strategy": "mustBeOne"
+      },
+      "canBeUserSupplied": true,
+      "isOptional": true
+    }
+  }
+}

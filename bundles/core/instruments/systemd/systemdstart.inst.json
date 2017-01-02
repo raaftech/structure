@@ -1,0 +1,22 @@
+{
+  "name": "start",
+  "desc": "SystemdStart",
+  "instrumentType": "controller",
+  "capability": "Start",
+  "providedBy": "Systemd",
+  "appliesTo": [ "Server" ],
+  "templateFile": "systemdstart.hbs.sh",
+  "subjectIsLocal": true,
+  "arguments": {
+    "origin": {
+      "value": {
+        "from": "origin",
+        "type": "type.component.software.server",
+        "strategy": "mustBeOne",
+        "onError": "fail"
+      },
+      "canBeUserSupplied": false,
+      "isOptional": false
+    }
+  }
+}
