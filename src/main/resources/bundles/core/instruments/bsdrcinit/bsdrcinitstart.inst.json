@@ -1,0 +1,62 @@
+{
+  "type": "Controller",
+  "name": "start",
+  "desc": "BsdrcInitStart.",
+  "meta": {
+    "uuid": "9e45d1c7-2a55-412e-a475-db6e5b18cff8",
+    "relations": {
+      "HAS_INSTRUMENT": {
+        "direction": "incoming",
+        "uuids": [
+          "b4c067de-e3cf-4b5b-90ca-588725d1b6c4"
+        ]
+      },
+      "HANDLES": {
+        "direction": "outgoing",
+        "uuids": [
+          "3fb4603b-281e-47c0-b338-768ea05d4660"
+        ]
+      },
+      "GIVES_CAPABILITY": {
+        "direction": "outgoing",
+        "uuids": [
+          "347ca5da-db19-4d98-9fed-60e72d5d6bba"
+        ]
+      },
+      "INSTANCE_OF": {
+        "direction": "outgoing",
+        "uuids": [
+          "f482204e-7d63-45ca-96c9-10a7cc2783da"
+        ]
+      }
+    }
+  },
+  "data": {
+    "instrumentType": "controller",
+    "subjectIsLocal": true,
+    "arguments": {
+      "origin": {
+        "value": {
+          "from": "origin",
+          "type": "type.component.software.server",
+          "strategy": "mustBeOne",
+          "onError": "fail"
+        },
+        "canBeUserSupplied": false,
+        "isOptional": false
+      }
+    }
+  },
+  "file": {
+    "dataSchema": {
+      "encoding": "text",
+      "format": "json",
+      "path": "../../types/schemas/controller.schema.json"
+    },
+    "templateFile": {
+      "encoding": "text",
+      "format": "hbs",
+      "path": "bsdrcinitstart.hbs.sh"
+    }
+  }
+}

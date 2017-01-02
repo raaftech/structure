@@ -16,6 +16,10 @@ import java.util.Set;
 
 import static io.vertx.core.json.Json.mapper;
 
+/**
+ * @Deprecated We need to redesign the domain classes to use Entity.
+ */
+@Deprecated
 public class Controller extends Instrument {
 
     private static final String NAME = "name";
@@ -195,7 +199,7 @@ public class Controller extends Instrument {
         return providedBy;
     }
 
-    public String getTemplate() {
+    public String getTemplateText() {
         return (String) kv.getProperty(TEMPLATE);
     }
 
@@ -204,7 +208,7 @@ public class Controller extends Instrument {
         ObjectNode json = super.toJson();
         json
                 .put(SUBJECTLOCAL, isSubjectIsLocal())
-                .put(TEMPLATE, getTemplate());
+                .put(TEMPLATE, getTemplateText());
 
         if (getExtension() != null) {
             json.put(EXTENSION, getExtension());

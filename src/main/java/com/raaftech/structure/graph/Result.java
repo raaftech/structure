@@ -15,6 +15,10 @@ import java.util.List;
 
 import static io.vertx.core.json.Json.mapper;
 
+/**
+ * @Deprecated We need to redesign the domain classes to use Entity.
+ */
+@Deprecated
 public class Result extends Instance {
 
     private static final String NAME = "name";

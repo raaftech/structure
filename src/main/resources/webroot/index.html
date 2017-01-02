@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="structureApp">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Dashboard Template for Bootstrap</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="js/vendors/bootstrap/dist/css/bootstrap.css" rel="stylesheet">
+
+    <!-- Angular Sweetalert CSS -->
+    <link href="js/vendors/sweetalert/dist/sweetalert.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="css/structure.css" rel="stylesheet">
+
+    <script type="text/javascript" src="js/vendors/sockjs-client/dist/sockjs.js"></script>
+    <script type="text/javascript" src="js/vendors/vertx3-eventbus-client/vertxbus.js"></script>
+    <script type="text/javascript" src="js/vendors/angular/angular.min.js"></script>
+    <script type="text/javascript" src="js/vendors/angular-route/angular-route.min.js"></script>
+    <script type="text/javascript" src="js/vendors/angular-bootstrap/ui-bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/vendors/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>
+    <script type="text/javascript" src="js/vendors/angular-animate/angular-animate.min.js"></script>
+    <script type="text/javascript" src="js/vendors/angular-sanitize/angular-sanitize.min.js"></script>
+    <script type="text/javascript" src="js/vendors/tv4/tv4.js"></script>
+    <script type="text/javascript" src="js/vendors/objectpath/lib/ObjectPath.js"></script>
+    <script type="text/javascript" src="js/vendors/angular-schema-form/dist/schema-form.min.js"></script>
+    <script type="text/javascript" src="js/vendors/angular-schema-form-bootstrap/bootstrap-decorator.js"></script>
+    <script type="text/javascript" src="js/vendors/angular-pageslide-directive/dist/angular-pageslide-directive.min.js"></script>
+    <script type="text/javascript" src="js/vendors/angular-vertxbus/dist/angular-vertxbus.min.js"></script>
+    <script type="text/javascript" src="js/vendors/sweetalert/dist/sweetalert.min.js"></script>
+    <script type="text/javascript" src="js/vendors/angular-h-sweetalert/dist/ngSweetAlert.min.js"></script>
+    <script type="text/javascript" src="js/vendors/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="js/vendors/jquery-ui/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="js/vendors/angular-dragdrop/src/angular-dragdrop.min.js"></script>
+    <script type="text/javascript" src="js/vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+
+    <script type="text/javascript" src="js/app.js"></script>
+
+    <script src="js/controllers/typeControllers.js"></script>
+    <script src="js/controllers/modalControllers.js"></script>
+    <script src="js/controllers/modalInstanceControllers.js"></script>
+    <script src="js/controllers/modalTypeControllers.js"></script>
+    <script src="js/controllers/searchController.js"></script>
+    <script src="js/controllers/searchResultController.js"></script>
+    <script src="js/controllers/templatesControllers.js"></script>
+    <script src="js/controllers/templatesControllersOld.js"></script>
+    <script src="js/controllers/debugControllers.js"></script>
+    <script src="js/controllers/instanceControllers.js"></script>
+    <script src="js/controllers/taskManagerControllers.js"></script>
+    <script src="js/controllers/navigationControllers.js"></script>
+    <script src="js/controllers/iconControllers.js"></script>
+    <script src="js/controllers/panelDetailControllers.js"></script>
+    <script src="js/controllers/panelRightControllers.js"></script>
+    <script src="js/controllers/environmentControllers.js"></script>
+
+    <script src="js/directives/listItemHoverMenu.js"></script>
+    <script src="js/directives/searchField.js"></script>
+    <script src="js/directives/progressBar.js"></script>
+    <script src="js/directives/showIcon.js"></script>
+
+    <script src="js/services/typeServices.js" type="text/javascript"></script>
+    <script src="js/services/templateServices.js" type="text/javascript"></script>
+    <script src="js/services/searchServices.js" type="text/javascript"></script>
+    <script src="js/services/instanceServices.js" type="text/javascript"></script>
+    <script src="js/services/taskManagerServices.js" type="text/javascript"></script>
+    <script src="js/services/uuidServices.js" type="text/javascript"></script>
+    <script src="js/services/iconServices.js" type="text/javascript"></script>
+  </head>
+
+  <body>
+
+    <nav class="navbar navbar-inverse navbar-fixed-top" ng-controller="navigationCtrl">
+      <div class="container-fluid">
+        <div class="navbar-logo"></div>
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#/">Structure</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li ng-class="navClass('dashboard')"><a href="#dashboard" ng-click="routeReload()">Dashboard</a></li>
+            <li ng-class="navClass('types')"><a href="#types" ng-click="routeReload()">Types</a></li>
+            <li ng-class="navClass('templates')"><a href="#templates" ng-click="routeReload()">Templates</a></li>
+            <li ng-class="navClass('environment')"><a href="#environment" ng-click="routeReload()">Environment</a></li>
+            <li ng-class="navClass('task-manager')"><a href="#task-manager" ng-click="routeReload()">Tasks</a></li>
+            <li ng-class="navClass('settings')"><a href="#settings" ng-click="routeReload()">Settings</a></li>
+            <li ng-class="navClass('profile')"><a href="#profile" ng-click="routeReload()">Profile</a></li>
+            <li ng-class="navClass('help')"><a href="#help" ng-click="routeReload()">Help</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container-fluid">
+      <div class="row">
+        <!--<div class="col-sm-3 col-md-2 sidebar">-->
+          <!--<search-field></search-field>-->
+          <!--<div ng-controller="navigationCtrl">-->
+            <!--<ul class="nav nav-sidebar">-->
+              <!--<li><a href="#">Overview <span class="sr-only">(current)</span></a></li>-->
+              <!--<li><a href="">Computers</a></li>-->
+              <!--<li><a href="">Analytics</a></li>-->
+              <!--<li><a href="">Export</a></li>-->
+            <!--</ul>-->
+            <!--<ul class="nav nav-sidebar">-->
+              <!--<li><a href="">Nav item</a></li>-->
+              <!--<li><a href="">Nav item again</a></li>-->
+              <!--<li><a href="">One more nav</a></li>-->
+              <!--<li><a href="">Another nav item</a></li>-->
+              <!--<li><a href="">More navigation</a></li>-->
+            <!--</ul>-->
+          <!--</div>-->
+        <!--</div>-->
+        <!--<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">-->
+        <div class="col-sm-12 main">
+          <div ng-view></div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

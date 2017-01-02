@@ -1,0 +1,2663 @@
+[
+  {
+    "type": "Type",
+    "name": "Type",
+    "desc": "The root type.",
+    "meta": {
+      "uuid": "b1bc963a-19cc-4518-aecb-a35d028c49e3",
+      "relations": {}
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/type.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Component",
+    "desc": "An abstract base component.",
+    "meta": {
+      "uuid": "a79ce509-a021-4177-ae61-73abd01fb479",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "b1bc963a-19cc-4518-aecb-a35d028c49e3"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/component.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Configuration",
+    "desc": "An abstract configuration component.",
+    "meta": {
+      "uuid": "3f4a43f7-b558-4bf0-ba7e-66b99cffaf16",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "b1bc963a-19cc-4518-aecb-a35d028c49e3"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/configuration.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "IpAddress",
+    "desc": "An IP address (address only, can be assigned to a network interface).",
+    "meta": {
+      "uuid": "299001a6-1091-4c0d-87be-c512af03e179",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "3f4a43f7-b558-4bf0-ba7e-66b99cffaf16"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/ipaddress.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Ipv4Address",
+    "desc": "An IPv4 address (address only, can be assigned to a network interface).",
+    "meta": {
+      "uuid": "f7fbe917-9d49-4df5-95f6-6e132067a424",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "299001a6-1091-4c0d-87be-c512af03e179"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/ipv4address.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Ipv6Address",
+    "desc": "An IPv6 address (address only, can be assigned to a network interface).",
+    "meta": {
+      "uuid": "47b5804d-5f5d-4bf8-89f6-a189c29b05ae",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "299001a6-1091-4c0d-87be-c512af03e179"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/ipv6address.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "IpListener",
+    "desc": "An IP listener (address and port, can be assigned to a network service).",
+    "meta": {
+      "uuid": "91c999a0-33ec-42ee-bae0-6f8adae42535",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "3f4a43f7-b558-4bf0-ba7e-66b99cffaf16"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/iplistener.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Ipv4Listener",
+    "desc": "An IPv4 listener (address and port, can be assigned to a network service).",
+    "meta": {
+      "uuid": "5ca95f7a-5175-4e7f-8a61-862e24485af3",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "91c999a0-33ec-42ee-bae0-6f8adae42535"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/ipv4listener.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Ipv6Listener",
+    "desc": "An IPv6 listener (address and port, can be assigned to a network service).",
+    "meta": {
+      "uuid": "6a79b4e9-13ce-4a09-bc5b-b429d23b34d7",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "91c999a0-33ec-42ee-bae0-6f8adae42535"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/ipv6listener.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Url",
+    "desc": "A uniform resource locator.",
+    "meta": {
+      "uuid": "0e9f72bd-5bc5-43dc-ab86-30a8f7171bc6",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "3f4a43f7-b558-4bf0-ba7e-66b99cffaf16"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/url.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "DnsName",
+    "desc": "Either a short name or a fully-qualified domain name.",
+    "meta": {
+      "uuid": "99c0da37-3599-418d-8ecc-de36d37ae9f4",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "3f4a43f7-b558-4bf0-ba7e-66b99cffaf16"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/dnsname.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Hardware",
+    "desc": "A hardware component.",
+    "meta": {
+      "uuid": "ea6a7487-867c-4a74-8849-fb8539b8169f",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "a79ce509-a021-4177-ae61-73abd01fb479"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/hardware.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "ConsoleHardware",
+    "desc": "A console device.",
+    "meta": {
+      "uuid": "3d0865a2-3ecf-4035-886b-0bb603c0e2c2",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "ea6a7487-867c-4a74-8849-fb8539b8169f"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/consolehardware.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "GenericSerial",
+    "desc": "A serial communication device.",
+    "meta": {
+      "uuid": "f5b25736-ec12-4a7e-b198-548b97ebc36f",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "3d0865a2-3ecf-4035-886b-0bb603c0e2c2"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/genericserial.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "GraphicsHardware",
+    "desc": "A graphics device.",
+    "meta": {
+      "uuid": "a642b995-c073-4c27-a611-c5bf3854958f",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "ea6a7487-867c-4a74-8849-fb8539b8169f"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/graphicshardware.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "GenericVga",
+    "desc": "A VGA graphics device.",
+    "meta": {
+      "uuid": "b3a2ac7c-ad8a-4047-a460-2ac41a7ddfef",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "a642b995-c073-4c27-a611-c5bf3854958f"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/genericvga.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "MemoryHardware",
+    "desc": "A memory device.",
+    "meta": {
+      "uuid": "1c87c672-1f69-4a02-9bc8-9eff28dda5e5",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "ea6a7487-867c-4a74-8849-fb8539b8169f"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/memoryhardware.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "VolatileMemory",
+    "desc": "A generic volatile memory device.",
+    "meta": {
+      "uuid": "44131d46-c1b0-4030-ae5a-9a3108627749",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "1c87c672-1f69-4a02-9bc8-9eff28dda5e5"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/volatilememory.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "RandomAccessMemory",
+    "desc": "Random access memory.",
+    "meta": {
+      "uuid": "4c0a0638-1fa7-4f5b-9d69-1d199dcedccc",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "44131d46-c1b0-4030-ae5a-9a3108627749"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/randomaccessmemory.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "NonVolatileMemory",
+    "desc": "A generic non-volatile memory device.",
+    "meta": {
+      "uuid": "7f129e53-ff07-4ed8-9062-daf5f733a3a6",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "1c87c672-1f69-4a02-9bc8-9eff28dda5e5"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/nonvolatilememory.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "HardDiskDrive",
+    "desc": "A non-volatile harddisk-based storage device.",
+    "meta": {
+      "uuid": "24cc3545-0d1a-4d85-8d08-a83c3dbe5912",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "7f129e53-ff07-4ed8-9062-daf5f733a3a6"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/harddiskdrive.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "SolidStateDrive",
+    "desc": "A non-volatile solid-state storage device.",
+    "meta": {
+      "uuid": "7a60ec32-0a9a-40b9-bf1f-d69674d4a233",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "7f129e53-ff07-4ed8-9062-daf5f733a3a6"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/solidstatedrive.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "FloppyDrive",
+    "desc": "A floppy disk drive.",
+    "meta": {
+      "uuid": "118ec961-a823-465b-be17-b706f1c8c2f1",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "7f129e53-ff07-4ed8-9062-daf5f733a3a6"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/floppydrive.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "TapeDrive",
+    "desc": "A tape drive.",
+    "meta": {
+      "uuid": "a507461f-647b-4b79-936a-721ca2dba145",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "7f129e53-ff07-4ed8-9062-daf5f733a3a6"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/tapedrive.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "CdDrive",
+    "desc": "A Compact Disc drive.",
+    "meta": {
+      "uuid": "30af2fe3-aa05-4912-a3d5-dddfdacf74e2",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "7f129e53-ff07-4ed8-9062-daf5f733a3a6"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/cddrive.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "DvdDrive",
+    "desc": "A Digital Video Disc drive.",
+    "meta": {
+      "uuid": "23ab95d2-2815-4121-a81c-63aca40cdcfa",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "7f129e53-ff07-4ed8-9062-daf5f733a3a6"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/dvddrive.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "BdDrive",
+    "desc": "A Digital Video Disc drive.",
+    "meta": {
+      "uuid": "cbc27482-11d1-4890-a3e1-e9f80baea82c",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "7f129e53-ff07-4ed8-9062-daf5f733a3a6"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/bddrive.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "NetworkHardware",
+    "desc": "A network device.",
+    "meta": {
+      "uuid": "86786ed6-d62a-4011-9ae8-0082000e48fa",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "ea6a7487-867c-4a74-8849-fb8539b8169f"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/networkhardware.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "WiredNetworkHardware",
+    "desc": "A wired network device.",
+    "meta": {
+      "uuid": "0d4c880d-d888-435f-b3a3-3d3eb9e70ddf",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "86786ed6-d62a-4011-9ae8-0082000e48fa"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/wirednetworkhardware.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "ModemHardware",
+    "desc": "A modem networking device.",
+    "meta": {
+      "uuid": "f34b76e4-f5a6-4bae-968e-f22ef09b1e35",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "0d4c880d-d888-435f-b3a3-3d3eb9e70ddf"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/modemhardware.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "EthernetHardware",
+    "desc": "A wired ethernet device.",
+    "meta": {
+      "uuid": "0dbd26f2-baff-446c-9241-46eaa3e03736",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "0d4c880d-d888-435f-b3a3-3d3eb9e70ddf"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/ethernethardware.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "WirelessNetworkHardware",
+    "desc": "A wireless network device.",
+    "meta": {
+      "uuid": "61328f83-db43-4efe-81be-df47e17814a5",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "86786ed6-d62a-4011-9ae8-0082000e48fa"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/wirelessnetworkhardware.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "BluetoothHardware",
+    "desc": "A Bluetooth device.",
+    "meta": {
+      "uuid": "009cf823-39c0-4b17-ae81-ad98ed0d4585",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "61328f83-db43-4efe-81be-df47e17814a5"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/bluetoothhardware.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "IrdaHardware",
+    "desc": "An IrDA device.",
+    "meta": {
+      "uuid": "42c7997c-0c56-4f93-956f-5fd0778c47c6",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "61328f83-db43-4efe-81be-df47e17814a5"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/irdahardware.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "WifiHardware",
+    "desc": "A WiFi device.",
+    "meta": {
+      "uuid": "78ff02be-2abe-4a8f-a082-a0d9c3cdae70",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "61328f83-db43-4efe-81be-df47e17814a5"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/wifihardware.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "WwanHardware",
+    "desc": "A wireless WAN device.",
+    "meta": {
+      "uuid": "8d6e0956-033e-4efc-8846-e85bfddc8f98",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "61328f83-db43-4efe-81be-df47e17814a5"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/wwanhardware.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "ProcessingUnit",
+    "desc": "A processing unit.",
+    "meta": {
+      "uuid": "b7b2a2ff-3af7-469b-afbf-e52f1b80be91",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "ea6a7487-867c-4a74-8849-fb8539b8169f"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/processingunit.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "AlphaProcessor",
+    "desc": "An Alpha processor.",
+    "meta": {
+      "uuid": "95b9f7a2-1a17-4cb9-8088-3e2e478ce638",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "b7b2a2ff-3af7-469b-afbf-e52f1b80be91"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/alphaprocessor.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "ArmProcessor",
+    "desc": "An ARM processor.",
+    "meta": {
+      "uuid": "f3b1b497-1e83-4a09-a280-04f46a83fe24",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "b7b2a2ff-3af7-469b-afbf-e52f1b80be91"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/armprocessor.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "ItaniumProcessor",
+    "desc": "An Itanium processor.",
+    "meta": {
+      "uuid": "241015c9-72f5-491f-a870-a30d8f7902fd",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "b7b2a2ff-3af7-469b-afbf-e52f1b80be91"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/itaniumprocessor.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "M68kProcessor",
+    "desc": "A Motorola 68000 series processor.",
+    "meta": {
+      "uuid": "33920524-4989-4322-a0ca-1cea614d7fef",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "b7b2a2ff-3af7-469b-afbf-e52f1b80be91"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/m68kprocessor.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "MipsProcessor",
+    "desc": "A processor using the MIPS ISA.",
+    "meta": {
+      "uuid": "cbe81157-97f6-401b-bbaa-cfbc4f479298",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "b7b2a2ff-3af7-469b-afbf-e52f1b80be91"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/mipsprocessor.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "MosProcessor",
+    "desc": "A MOS Technology processor.",
+    "meta": {
+      "uuid": "b4f67698-7eca-4ca1-a4cf-b7ef9737785c",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "b7b2a2ff-3af7-469b-afbf-e52f1b80be91"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/mosprocessor.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "PariscProcessor",
+    "desc": "A PA Risc processor.",
+    "meta": {
+      "uuid": "689a4f33-e08d-4e7f-83a5-79fd310bd3f9",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "b7b2a2ff-3af7-469b-afbf-e52f1b80be91"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/pariscprocessor.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "PowerProcessor",
+    "desc": "A PowerPC processor.",
+    "meta": {
+      "uuid": "808f2737-feca-4b70-aa1a-53410b970b10",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "b7b2a2ff-3af7-469b-afbf-e52f1b80be91"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/powerprocessor.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "SparcProcessor",
+    "desc": "A SPARC processor.",
+    "meta": {
+      "uuid": "798ba8d1-8da7-471a-9efa-30530569b6a1",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "b7b2a2ff-3af7-469b-afbf-e52f1b80be91"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/sparcprocessor.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "X86Processor",
+    "desc": "An x86-based processor.",
+    "meta": {
+      "uuid": "4d4971b6-43b3-4c14-a82a-c51d72ba23a5",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "b7b2a2ff-3af7-469b-afbf-e52f1b80be91"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/x86processor.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "ZilogProcessor",
+    "desc": "A ZiLOG processor.",
+    "meta": {
+      "uuid": "a68f42c5-2a1d-43cb-bebd-55339f5e61ee",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "b7b2a2ff-3af7-469b-afbf-e52f1b80be91"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/zilogprocessor.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Z80",
+    "desc": "A ZiLOG Z80 processor.",
+    "meta": {
+      "uuid": "99ce31e0-d540-4582-ae38-b84f4bf13868",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "a68f42c5-2a1d-43cb-bebd-55339f5e61ee"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/z80.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Software",
+    "desc": "An abstract software component.",
+    "meta": {
+      "uuid": "8db2b492-9a4a-41fe-97a5-bc625da042ea",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "a79ce509-a021-4177-ae61-73abd01fb479"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/software.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "CloudSystem",
+    "desc": "A cloud (operating) system and/or environment.",
+    "meta": {
+      "uuid": "86c0439a-4219-46e6-82a3-6fb2ee774aa4",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "8db2b492-9a4a-41fe-97a5-bc625da042ea"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/cloudsystem.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "OperatingSystem",
+    "desc": "An operating system.",
+    "meta": {
+      "uuid": "f05e325e-1aee-4892-96e4-8bcd6e97c528",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "8db2b492-9a4a-41fe-97a5-bc625da042ea"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/operatingsystem.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "ServiceManager",
+    "desc": "An operating system initialization system.",
+    "meta": {
+      "uuid": "c3008eec-b454-4ef6-bf7e-0bd92c13d3c3",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "8db2b492-9a4a-41fe-97a5-bc625da042ea"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/servicemanager.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Systemctl",
+    "desc": "Systemd Service Manager.",
+    "meta": {
+      "uuid": "c409c9de-e23d-429b-a59a-ac46ea296331",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "c3008eec-b454-4ef6-bf7e-0bd92c13d3c3"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/systemctl.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Rc",
+    "desc": "The rc service manager, used on most BSD's.",
+    "meta": {
+      "uuid": "67d7aa27-e0d9-458c-89fb-82734a8def95",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "c3008eec-b454-4ef6-bf7e-0bd92c13d3c3"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/rc.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Services",
+    "desc": "Windows Service Manager.",
+    "meta": {
+      "uuid": "21b82fbf-803c-4056-b914-502e2ff9952d",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "c3008eec-b454-4ef6-bf7e-0bd92c13d3c3"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/services.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "PackageManager",
+    "desc": "A package manager.",
+    "meta": {
+      "uuid": "e2b8b9ee-b66f-4252-8fba-4fb172f741bc",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "8db2b492-9a4a-41fe-97a5-bc625da042ea"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/packagemanager.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Interpreter",
+    "desc": "A command or programming language interpreter.",
+    "meta": {
+      "uuid": "d047f415-734c-4bd3-92b9-d68d5521ce69",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "8db2b492-9a4a-41fe-97a5-bc625da042ea"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/interpreter.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Hypervisor",
+    "desc": "A virtualization hypervisor.",
+    "meta": {
+      "uuid": "c5c7fcb5-8ac3-40cc-b195-b2b6af368e81",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "8db2b492-9a4a-41fe-97a5-bc625da042ea"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/hypervisor.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Emulator",
+    "desc": "A hardware platform emulator.",
+    "meta": {
+      "uuid": "59aeae81-9741-4986-b9c2-931504cfc9e3",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "8db2b492-9a4a-41fe-97a5-bc625da042ea"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/emulator.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Server",
+    "desc": "A generic local/networked/daemonized server.",
+    "meta": {
+      "uuid": "3fb4603b-281e-47c0-b338-768ea05d4660",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "8db2b492-9a4a-41fe-97a5-bc625da042ea"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/server.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Client",
+    "desc": "A generic client.",
+    "meta": {
+      "uuid": "8f371b1b-52a3-4409-be70-9cd947bec8dd",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "8db2b492-9a4a-41fe-97a5-bc625da042ea"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/client.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Grouping",
+    "desc": "A group of references to things.",
+    "meta": {
+      "uuid": "5f1eb7c5-ec5e-4563-be6a-fc50774fc374",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "b1bc963a-19cc-4518-aecb-a35d028c49e3"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/grouping.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Locational",
+    "desc": "A place/location.",
+    "meta": {
+      "uuid": "f31b8dc9-7b9a-47cc-bd3d-20b94b6daac1",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "5f1eb7c5-ec5e-4563-be6a-fc50774fc374"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/locational.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Building",
+    "desc": "A building.",
+    "meta": {
+      "uuid": "44197148-678f-4421-a618-dc6807beaf30",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "f31b8dc9-7b9a-47cc-bd3d-20b94b6daac1"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/building.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Floor",
+    "desc": "A floor.",
+    "meta": {
+      "uuid": "9ca8061a-898c-4f2f-aeb3-c77d1747559f",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "f31b8dc9-7b9a-47cc-bd3d-20b94b6daac1"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/floor.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Room",
+    "desc": "A room.",
+    "meta": {
+      "uuid": "94721751-ab2f-4285-9c33-cd91cb919430",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "f31b8dc9-7b9a-47cc-bd3d-20b94b6daac1"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/room.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Organizational",
+    "desc": "An organizational group.",
+    "meta": {
+      "uuid": "c94c2c32-8e10-48c3-a31b-6337c2ad4df4",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "5f1eb7c5-ec5e-4563-be6a-fc50774fc374"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/organizational.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Company",
+    "desc": "A company.",
+    "meta": {
+      "uuid": "d7582691-8ccc-415c-886b-7d363c8b6e84",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "c94c2c32-8e10-48c3-a31b-6337c2ad4df4"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/company.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Department",
+    "desc": "A department.",
+    "meta": {
+      "uuid": "aa6bc876-33fe-4710-b409-edb31e1081de",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "c94c2c32-8e10-48c3-a31b-6337c2ad4df4"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/department.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Team",
+    "desc": "A team.",
+    "meta": {
+      "uuid": "9d68148a-28ec-4f24-b1d7-0fc2d407ab78",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "c94c2c32-8e10-48c3-a31b-6337c2ad4df4"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/team.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Componental",
+    "desc": "A group for organizing references to components.",
+    "meta": {
+      "uuid": "ee92c308-80f4-40b2-af3a-77d26cd99517",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "5f1eb7c5-ec5e-4563-be6a-fc50774fc374"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/componental.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Computer",
+    "desc": "An assembled computer device.",
+    "meta": {
+      "uuid": "ec11db91-6973-4285-b018-b461fbb432d7",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "ee92c308-80f4-40b2-af3a-77d26cd99517"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/computer.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Actor",
+    "desc": "Something or someone that interacts/starts/acts within the system.",
+    "meta": {
+      "uuid": "3175d762-dd97-434f-a288-21e4591480cf",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "b1bc963a-19cc-4518-aecb-a35d028c49e3"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/actor.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "User",
+    "desc": "A user.",
+    "meta": {
+      "uuid": "88d8630d-54ce-4aa5-8505-2068c31df5b1",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "3175d762-dd97-434f-a288-21e4591480cf"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/user.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Batch",
+    "desc": "A batch user.",
+    "meta": {
+      "uuid": "395d3e08-842b-4640-8b57-751e1b0c9e4b",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "3175d762-dd97-434f-a288-21e4591480cf"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/batch.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Capability",
+    "desc": "A software component gives capabilities to its parent or to siblings.",
+    "meta": {
+      "uuid": "916e04a9-c773-4eaf-9c08-450016426e5a",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "b1bc963a-19cc-4518-aecb-a35d028c49e3"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/capability.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "State",
+    "desc": "A capability that makes it possible to state-check.",
+    "meta": {
+      "uuid": "b3cfd296-1090-43c0-ac2e-00e5d7fe7779",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "916e04a9-c773-4eaf-9c08-450016426e5a"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/state.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Stop",
+    "desc": "A capability that makes it possible to stop something.",
+    "meta": {
+      "uuid": "632ca701-2648-4df5-87ee-a41d3d1ef3da",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "916e04a9-c773-4eaf-9c08-450016426e5a"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/stop.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Start",
+    "desc": "A capability that makes it possible to stop something.",
+    "meta": {
+      "uuid": "347ca5da-db19-4d98-9fed-60e72d5d6bba",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "916e04a9-c773-4eaf-9c08-450016426e5a"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/start.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Restart",
+    "desc": "A capability that makes it possible to restart something.",
+    "meta": {
+      "uuid": "cc558715-63dc-4162-95a4-9c51792c7953",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "916e04a9-c773-4eaf-9c08-450016426e5a"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/restart.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Install",
+    "desc": "A capability that makes it possible to install something.",
+    "meta": {
+      "uuid": "3c077211-0ffa-452f-8d84-5bd5be5598f5",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "916e04a9-c773-4eaf-9c08-450016426e5a"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/install.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Configure",
+    "desc": "A capability that makes it possible to configure something.",
+    "meta": {
+      "uuid": "3dc7b06a-69a0-4650-897a-34c5d069e3c5",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "916e04a9-c773-4eaf-9c08-450016426e5a"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/configure.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Uninstall",
+    "desc": "A capability that makes it possible to uninstall something.",
+    "meta": {
+      "uuid": "ea1b32de-cf31-4c1b-9b2b-f1a6d9983418",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "916e04a9-c773-4eaf-9c08-450016426e5a"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/uninstall.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "CreateVm",
+    "desc": "A capability that makes it possible to create a virtual machine.",
+    "meta": {
+      "uuid": "b0995f9f-90af-4066-9d00-6b7b33f9a19b",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "916e04a9-c773-4eaf-9c08-450016426e5a"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/createvm.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "DestroyVm",
+    "desc": "A capability that makes it possible to destroy a virtual machine.",
+    "meta": {
+      "uuid": "cdb08b91-5998-4f7c-9b82-b345b8052ecd",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "916e04a9-c773-4eaf-9c08-450016426e5a"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/destroyvm.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Execute",
+    "desc": "A capability that makes it possible to run commands.",
+    "meta": {
+      "uuid": "76fb3116-d4a8-459a-b62b-a2641bcb7e7d",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "916e04a9-c773-4eaf-9c08-450016426e5a"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/execute.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Detect",
+    "desc": "A capability that makes it possible for a component to detect itself.",
+    "meta": {
+      "uuid": "3c170a27-05ee-4999-97d4-e7cc9135cb96",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "916e04a9-c773-4eaf-9c08-450016426e5a"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/detect.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Query",
+    "desc": "A capability that makes it possible to query components that are managed by the querying component.",
+    "meta": {
+      "uuid": "61cde9d0-3aa2-4951-aaa8-79e5656dac41",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "916e04a9-c773-4eaf-9c08-450016426e5a"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/query.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Identify",
+    "desc": "A capability that makes it possible to identify (version, name, etc) something.",
+    "meta": {
+      "uuid": "ca49051c-d7d1-45fa-b327-0f4dca810897",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "916e04a9-c773-4eaf-9c08-450016426e5a"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/identify.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "SendString",
+    "desc": "A capability that makes it possible to send a string over a protocol.",
+    "meta": {
+      "uuid": "64ca8ff9-8071-4933-95d0-bbacb97bd4a8",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "916e04a9-c773-4eaf-9c08-450016426e5a"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/sendstring.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "ReceiveString",
+    "desc": "A capability that makes it possible to receive a string over a protocol.",
+    "meta": {
+      "uuid": "8292da1f-75de-41d6-a8fb-cdcca6700ad9",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "916e04a9-c773-4eaf-9c08-450016426e5a"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/receivestring.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "SendFile",
+    "desc": "A capability that makes it possible to send a file over a protocol.",
+    "meta": {
+      "uuid": "371d336a-d328-4468-9b0f-40877bb5b646",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "916e04a9-c773-4eaf-9c08-450016426e5a"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/sendfile.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "ReceiveFile",
+    "desc": "A capability that makes it possible to receive a file over a protocol.",
+    "meta": {
+      "uuid": "f2ba58a6-0934-4f0e-b9cf-1a7430a3fa7a",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "916e04a9-c773-4eaf-9c08-450016426e5a"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/receivefile.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Invoke",
+    "desc": "A capability that makes it possible to invoke a command to execute.",
+    "meta": {
+      "uuid": "4251040d-f05c-4711-8094-59ce773a8c35",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "916e04a9-c773-4eaf-9c08-450016426e5a"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/invoke.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Access",
+    "desc": "A capability that makes it possible to access a textual or graphical console.",
+    "meta": {
+      "uuid": "20d9b0db-92b2-42a7-93d9-f86e00312fef",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "916e04a9-c773-4eaf-9c08-450016426e5a"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/access.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Protocol",
+    "desc": "A protocol.",
+    "meta": {
+      "uuid": "db0c3c65-52fd-4dec-907c-6c8a669e88f3",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "b1bc963a-19cc-4518-aecb-a35d028c49e3"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/protocol.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "HTTP",
+    "desc": "The hypertext transfer protocol.",
+    "meta": {
+      "uuid": "9fd04885-179f-4c72-99a2-52c692e61b19",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "db0c3c65-52fd-4dec-907c-6c8a669e88f3"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/http.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "HTTP09",
+    "desc": "The hypertext transfer protocol, version 0.9.",
+    "meta": {
+      "uuid": "09102127-1803-48b6-a9f4-2fd1b891293d",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "9fd04885-179f-4c72-99a2-52c692e61b19"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/http09.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "HTTP10",
+    "desc": "The hypertext transfer protocol, version 1.0.",
+    "meta": {
+      "uuid": "256d493d-3b7a-4e28-8e64-8f81de4d92de",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "9fd04885-179f-4c72-99a2-52c692e61b19"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/http10.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "HTTP11",
+    "desc": "The hypertext transfer protocol, version 1.1.",
+    "meta": {
+      "uuid": "b11b10d7-6f46-49c0-bc61-3ecdd4342cd7",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "9fd04885-179f-4c72-99a2-52c692e61b19"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/http11.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "SMB",
+    "desc": "The server message block protocol.",
+    "meta": {
+      "uuid": "0771de77-c3d8-4db1-92fa-7ac96205f9bb",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "db0c3c65-52fd-4dec-907c-6c8a669e88f3"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/smb.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "SMB10",
+    "desc": "The server message block protocol, version 1.0.",
+    "meta": {
+      "uuid": "70960db9-f085-499d-9d22-2569badc41c7",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "0771de77-c3d8-4db1-92fa-7ac96205f9bb"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/smb10.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "SMB20",
+    "desc": "The server message block protocol, version 2.0.",
+    "meta": {
+      "uuid": "aeefff52-0300-4611-be60-e745bfbd3d37",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "0771de77-c3d8-4db1-92fa-7ac96205f9bb"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/smb20.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "SMB21",
+    "desc": "The server message block protocol, version 2.1.",
+    "meta": {
+      "uuid": "5c7b0507-dfd9-4617-a45f-3d617cd61e68",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "0771de77-c3d8-4db1-92fa-7ac96205f9bb"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/smb21.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "SMB30",
+    "desc": "The server message block protocol, version 3.0.",
+    "meta": {
+      "uuid": "dbfb220e-b22c-460e-b27d-65de22501618",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "0771de77-c3d8-4db1-92fa-7ac96205f9bb"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/smb30.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "SSH",
+    "desc": "The secure shell protocol.",
+    "meta": {
+      "uuid": "008b9566-6317-4ddd-977c-9ddca00b79b8",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "db0c3c65-52fd-4dec-907c-6c8a669e88f3"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/ssh.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "SSH10",
+    "desc": "The secure shell protocol, version 1.0.",
+    "meta": {
+      "uuid": "000b0fd3-a121-4194-a441-0857abca490d",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "008b9566-6317-4ddd-977c-9ddca00b79b8"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/ssh10.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "SSH20",
+    "desc": "The secure shell protocol, version 2.0.",
+    "meta": {
+      "uuid": "07b23795-140f-4a72-9c86-e1d3b86cd149",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "008b9566-6317-4ddd-977c-9ddca00b79b8"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/ssh20.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "TELNET",
+    "desc": "The telnet protocol.",
+    "meta": {
+      "uuid": "27fc7ed2-beb3-41c8-aa69-900ad7bb989f",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "db0c3c65-52fd-4dec-907c-6c8a669e88f3"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/telnet.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Instrument",
+    "desc": "A representation of a software instrument that gives end user function.",
+    "meta": {
+      "uuid": "14dbfbfa-b50a-466f-8539-55d5d3f15e4a",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "b1bc963a-19cc-4518-aecb-a35d028c49e3"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/instrument.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Controller",
+    "desc": "An implementation of an instrument that gives 'behavior'.",
+    "meta": {
+      "uuid": "f482204e-7d63-45ca-96c9-10a7cc2783da",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "14dbfbfa-b50a-466f-8539-55d5d3f15e4a"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/controller.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Marker",
+    "desc": "Markers are considered 'system' instruments that help us build send<->receive paths.",
+    "meta": {
+      "uuid": "24702e44-8769-4aea-903d-9e1164f99e5b",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "14dbfbfa-b50a-466f-8539-55d5d3f15e4a"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/marker.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Parser",
+    "desc": "An instrument that parses raw results from controllers into graphable data.",
+    "meta": {
+      "uuid": "b5fa636c-1067-45ac-b027-ade2797bef6f",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "14dbfbfa-b50a-466f-8539-55d5d3f15e4a"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/parser.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Result",
+    "desc": "A result from an operation.",
+    "meta": {
+      "uuid": "f3498c02-58c6-486b-87c6-9d54607fdb12",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "b1bc963a-19cc-4518-aecb-a35d028c49e3"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/result.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Profile",
+    "desc": "A profile of software which includes its parts like binaries, data files, directories, etc.",
+    "meta": {
+      "uuid": "c970f6d3-4898-4596-bfac-9d6d1f6b2541",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "b1bc963a-19cc-4518-aecb-a35d028c49e3"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/profile.schema.json"
+      }
+    }
+  }
+]

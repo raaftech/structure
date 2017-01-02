@@ -1,0 +1,48 @@
+{
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/schema#",
+  "type": "object",
+  "properties": {
+    "cpuClockHz": {
+      "type": "number",
+      "description": "CPU clock in hertz."
+    },
+    "rev": {
+      "$ref": "hardware.schema.json#/properties/rev"
+    },
+    "cacheSizeKb": {
+      "type": "number",
+      "description": "The size of cache memory on the CPU."
+    },
+    "smtEnabled": {
+      "type": "boolean",
+      "description": "Simultaneous multithreading (for example hyper-threading) capable true/false."
+    },
+    "name": {
+      "$ref": "type.schema.json#/properties/name"
+    },
+    "checksum": {
+      "$ref": "type.schema.json#/properties/checksum"
+    },
+    "bits": {
+      "type": "number",
+      "description": "Number of bit width supported."
+    },
+    "cpuCoreCount": {
+      "type": "number",
+      "description": "Number of cores."
+    },
+    "desc": {
+      "$ref": "type.schema.json#/properties/desc"
+    }
+  },
+  "required": [
+    "name",
+    "desc",
+    "cacheSizeKb",
+    "cpuCoreCount",
+    "cpuClockHz",
+    "smtEnabled",
+    "bits"
+  ]
+}

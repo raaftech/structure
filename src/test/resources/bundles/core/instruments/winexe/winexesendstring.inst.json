@@ -1,0 +1,103 @@
+{
+  "type": "Controller",
+  "name": "WinexeSendString",
+  "desc": "The handler that provides the SendString capability to winese..",
+  "meta": {
+    "uuid": "09a2938e-380d-4b2b-b6f6-5378de74d3fd",
+    "relations": {
+      "HAS_INSTRUMENT": {
+        "direction": "incoming",
+        "uuids": [
+          "2f207919-c852-4177-9b8f-e4a368026ca6"
+        ]
+      },
+      "HANDLES": {
+        "direction": "outgoing",
+        "uuids": [
+          "2f207919-c852-4177-9b8f-e4a368026ca6"
+        ]
+      },
+      "GIVES_CAPABILITY": {
+        "direction": "outgoing",
+        "uuids": [
+          "64ca8ff9-8071-4933-95d0-bbacb97bd4a8"
+        ]
+      },
+      "INSTANCE_OF": {
+        "direction": "outgoing",
+        "uuids": [
+          "f482204e-7d63-45ca-96c9-10a7cc2783da"
+        ]
+      }
+    }
+  },
+  "data": {
+    "instrumentType": "controller",
+    "subjectIsLocal": false,
+    "weight": 90,
+    "arguments": {
+      "ipv4address": {
+        "value": {
+          "from": "subject",
+          "type": "type.configuration.ipaddress.ipv4address",
+          "matches": {
+            "reachable": "true"
+          },
+          "strategy": "useFirst",
+          "onError": "fail"
+        },
+        "canBeUserSupplied": false,
+        "isOptional": false
+      },
+      "payloadDirectory": {
+        "value": {
+          "from": "static",
+          "type": "string",
+          "strategy": "mustBeOne"
+        },
+        "canBeUserSupplied": false,
+        "isOptional": false
+      },
+      "payloadFileName": {
+        "value": {
+          "from": "static",
+          "type": "string",
+          "strategy": "mustBeOne"
+        },
+        "canBeUserSupplied": false,
+        "isOptional": false
+      },
+      "username": {
+        "value": {
+          "from": "static",
+          "type": "string",
+          "defaultValue": "Administrator",
+          "strategy": "mustBeOne"
+        },
+        "canBeUserSupplied": true,
+        "isOptional": true
+      },
+      "password": {
+        "value": {
+          "from": "static",
+          "type": "string",
+          "strategy": "mustBeOne"
+        },
+        "canBeUserSupplied": true,
+        "isOptional": false
+      }
+    }
+  },
+  "file": {
+    "dataSchema": {
+      "encoding": "text",
+      "format": "json",
+      "path": "../../types/schemas/controller.schema.json"
+    },
+    "templateFile": {
+      "encoding": "text",
+      "format": "hbs",
+      "path": "winexesendstring.hbs.sh"
+    }
+  }
+}

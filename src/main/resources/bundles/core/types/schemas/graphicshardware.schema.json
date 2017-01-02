@@ -1,0 +1,83 @@
+{
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/schema#",
+  "type": "object",
+  "properties": {
+    "maxColorBitsPerScreen": {
+      "type": "number",
+      "description": "Maximum number of bits per pixel on a screen."
+    },
+    "rev": {
+      "$ref": "hardware.schema.json#/properties/rev"
+    },
+    "memBandwidthKbs": {
+      "type": "number",
+      "description": "Memory bandwidth in kilobytes per second."
+    },
+    "memSizekb": {
+      "type": "number",
+      "description": "Memory size in Kb."
+    },
+    "textureMapUnits": {
+      "type": "number",
+      "description": "Number of texture mapping units."
+    },
+    "memBusBits": {
+      "type": "number",
+      "description": "Memory bus width in bits."
+    },
+    "gpuClockhz": {
+      "type": "number",
+      "description": "Clockspeed of the GPU in Hz."
+    },
+    "gpuCoreCount": {
+      "type": "number",
+      "description": "Number of GPU cores if applicable."
+    },
+    "pixelRatesPerSec": {
+      "type": "number",
+      "description": "Pixel fillrate, in pixels per second."
+    },
+    "memClockHz": {
+      "type": "number",
+      "description": "Memory speed in Hz."
+    },
+    "maxColorBitsPerChannel": {
+      "type": "number",
+      "description": "Maximum number of bits to describe color in a color channel (R,G,B,A)."
+    },
+    "shadingUnits": {
+      "type": "number",
+      "description": "Number of shading units."
+    },
+    "name": {
+      "$ref": "type.schema.json#/properties/name"
+    },
+    "checksum": {
+      "$ref": "type.schema.json#/properties/checksum"
+    },
+    "maxVerticalRefreshHz": {
+      "type": "number",
+      "description": "Max"
+    },
+    "flops": {
+      "type": "number",
+      "description": "Number of floating-point operations per second."
+    },
+    "desc": {
+      "$ref": "type.schema.json#/properties/desc"
+    },
+    "renderOutputCores": {
+      "type": "number",
+      "description": "Number of render output cores."
+    },
+    "texelRatesPerSec": {
+      "type": "number",
+      "description": "Texture fillrate, in texels per second."
+    }
+  },
+  "required": [
+    "name",
+    "desc"
+  ]
+}

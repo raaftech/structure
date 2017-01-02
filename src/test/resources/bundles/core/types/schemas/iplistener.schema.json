@@ -1,0 +1,30 @@
+{
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/schema#",
+  "type": "object",
+  "properties": {
+    "name": {
+      "$ref": "type.schema.json#/properties/name"
+    },
+    "checksum": {
+      "$ref": "type.schema.json#/properties/checksum"
+    },
+    "addr": {
+      "type": "string",
+      "description": "IP listeners should at least have the addr and port fields."
+    },
+    "port": {
+      "type": "number",
+      "description": "IP listeners should at least have the addr and port fields."
+    },
+    "desc": {
+      "$ref": "type.schema.json#/properties/desc"
+    }
+  },
+  "required": [
+    "name",
+    "desc",
+    "addr",
+    "port"
+  ]
+}

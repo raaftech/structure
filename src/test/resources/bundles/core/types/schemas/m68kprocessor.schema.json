@@ -1,0 +1,43 @@
+{
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/schema#",
+  "type": "object",
+  "properties": {
+    "cpuClockHz": {
+      "$ref": "processingunit.schema.json#/properties/cpuClockHz"
+    },
+    "rev": {
+      "$ref": "hardware.schema.json#/properties/rev"
+    },
+    "cacheSizeKb": {
+      "$ref": "processingunit.schema.json#/properties/cacheSizeKb"
+    },
+    "smtEnabled": {
+      "$ref": "processingunit.schema.json#/properties/smtEnabled"
+    },
+    "name": {
+      "$ref": "type.schema.json#/properties/name"
+    },
+    "checksum": {
+      "$ref": "type.schema.json#/properties/checksum"
+    },
+    "bits": {
+      "$ref": "processingunit.schema.json#/properties/bits"
+    },
+    "cpuCoreCount": {
+      "$ref": "processingunit.schema.json#/properties/cpuCoreCount"
+    },
+    "desc": {
+      "$ref": "type.schema.json#/properties/desc"
+    }
+  },
+  "required": [
+    "name",
+    "desc",
+    "cacheSizeKb",
+    "cpuCoreCount",
+    "cpuClockHz",
+    "smtEnabled",
+    "bits"
+  ]
+}
