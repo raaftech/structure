@@ -203,7 +203,7 @@ public class Application {
         log.info("Creating indices.");
         CypherQueryExecutor queryExecutor = Context.getNeo4jTemplate().getInfrastructure().getCypherQueryExecutor();
         queryExecutor.query("CREATE CONSTRAINT ON (n:Type) ASSERT n.name IS UNIQUE", null, null);
-        queryExecutor.query("CREATE CONSTRAINT ON (n:Entity) ASSERT n.uuid IS UNIQUE", null, null);
+        queryExecutor.query("CREATE CONSTRAINT ON (n:Node) ASSERT n.uuid IS UNIQUE", null, null);
 
         // Initialize Configuration
         Configuration.init();

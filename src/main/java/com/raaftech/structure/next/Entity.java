@@ -8,8 +8,7 @@ import com.raaftech.structure.base.Context;
 import com.raaftech.structure.graph.repositories.NodeRepository;
 import com.raaftech.structure.graph.repositories.TypeRepository;
 import com.raaftech.structure.helper.Triple;
-import org.neo4j.graphdb.DynamicLabel;
-import org.neo4j.graphdb.Node;
+import org.neo4j.graphdb.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.annotation.Transient;
@@ -22,6 +21,7 @@ import org.springframework.data.neo4j.support.index.IndexType;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 /**
  * A new root entity node with heavily simplified and structured construction.
@@ -211,7 +211,7 @@ public class Entity {
         persist();
         Node node = getPersistentState();
         persistRelations(node);
-        persistLabels(node);
+        persistTypeLabels(node);
     }
 
     public Node getPersistentState() {
@@ -247,15 +247,19 @@ public class Entity {
         if (path != null) {
             properties.put("path", path);
         }
-        persistedState = neo4jTemplate.createNode(properties);
+
+        /* we use neo4jTemplate.merge(...), which is basically getOrCreate(...). Now, if the entity
+        already existed, but has changed properties, we need to update them using Node.setProperty(...).
+        I did not find a way in the API to do this atomically, like "SET" would do in Cypher */
+        persistedState = neo4jTemplate.merge("Node", "uuid", uuid, properties, getClassLabels(type));
+        properties.entrySet().stream().forEach(entry -> persistedState.setProperty(entry.getKey(), entry.getValue()));
+        persistedState.getLabels().forEach(label -> persistedState.removeLabel(label));
+        getClassLabels(type).stream()
+                .map(DynamicLabel::label)
+                .forEach(persistedState::addLabel);
     }
 
-    private void persistLabels(Node node) {
-    	/* From a persisted entity, we can get the Node object. */
-
-        /* A holder for labels to be written. */
-        Set<String> labels = new HashSet<String>();
-
+    private static List<String> getClassLabels(String type) {
         // A map containing the labels needed per type
         Map<String, List<String>> labelsPerType = ImmutableMap.<String, List<String>>builder()
                 .put("Controller", ImmutableList.of("_Controller", "Controller", "Instrument", "Instance", "Node"))
@@ -270,19 +274,17 @@ public class Entity {
                 .put("Type", ImmutableList.of("_Type", "Type", "Node"))
                 .build();
 
+        return labelsPerType.get(type);
+    }
+
+    private void persistTypeLabels(Node node) {
         /* Add labels as Neo4j labels. Node will be null if entity is not persisted. */
         if (node != null && type !=null && uuid != null) {
-            labels.addAll(labelsPerType.get(type));
             if ("Type".equals(type)) {
-                labels.addAll(nodeRepository.getTypeHierarchyForTypeUuid(uuid).stream()
+                nodeRepository.getTypeHierarchyForTypeUuid(uuid).stream()
                         .map(s -> "type:".concat(s))
-                        .collect(Collectors.toSet()));
+                        .forEach(label -> node.addLabel(DynamicLabel.label(label)));
             }
-            labels.remove("Root");
-            labels.forEach((label)-> {
-                log.debug("Creating \"{}\" label for entity \"{}\"", label, name);
-                node.addLabel(DynamicLabel.label(label));
-            });
         } else {
             log.error("Failed to persist labels for entity \"{}\". Are you sure the entity is in a persisted state?", name);
         }
@@ -310,20 +312,27 @@ public class Entity {
 					peers.forEach((uuid) -> {
 						Node peer = nodeRepository.findGraphNodeByUuid(uuid);
 
-						switch (direction) {
-						case "incoming":
-							log.debug("Creating incoming \"{}\" relation from \"{}\" to \"{}\"", rname, (String)peer.getProperty("name"), name);
-                            peer.createRelationshipTo(node, () -> rname);
-							break;
-						case "outgoing":
-							log.debug("Creating outgoing \"{}\" relation from \"{}\" to \"{}\"", rname, name, (String)peer.getProperty("name"));
-                            node.createRelationshipTo(peer, () -> rname);
-							break;
-						case "undirected":
-							log.debug("Creating undirected \"{}\" relation between \"{}\" and \"{}\"", rname, name, (String)peer.getProperty("name"));
-                            peer.createRelationshipTo(node, () -> rname);
-                            node.createRelationshipTo(peer, () -> rname);
-						}
+                        // check if this relationship already exists by getting al relationships with the same name and direction
+                        // and then checking if we have one to "peer".
+                        boolean relExists = StreamSupport.stream(node.getRelationships(Direction.valueOf(direction.toUpperCase()), (RelationshipType) () -> rname).spliterator(), false)
+                                .filter(r -> r.getEndNode().getId() == peer.getId())
+                                .count() > 0;
+                        if (!relExists) {
+                            switch (direction) {
+                                case "incoming":
+                                    log.debug("Creating incoming \"{}\" relation from \"{}\" to \"{}\"", rname, (String) peer.getProperty("name"), name);
+                                    peer.createRelationshipTo(node, () -> rname);
+                                    break;
+                                case "outgoing":
+                                    log.debug("Creating outgoing \"{}\" relation from \"{}\" to \"{}\"", rname, name, (String) peer.getProperty("name"));
+                                    node.createRelationshipTo(peer, () -> rname);
+                                    break;
+                                case "undirected":
+                                    log.debug("Creating undirected \"{}\" relation between \"{}\" and \"{}\"", rname, name, (String) peer.getProperty("name"));
+                                    peer.createRelationshipTo(node, () -> rname);
+                                    node.createRelationshipTo(peer, () -> rname);
+                            }
+                        }
 					});
 
 				});

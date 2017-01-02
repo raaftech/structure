@@ -96,9 +96,9 @@
 
         <!-- Core component versions -->
         <vertx.version>3.3.3</vertx.version>
-        <spring-data-neo4j.version>3.4.6.RELEASE</spring-data-neo4j.version>
-        <neo4j.version>2.2.5</neo4j.version>
-        <jersey.version>1.19.2</jersey.version>
+        <spring-data-neo4j.version>3.2.1.RELEASE</spring-data-neo4j.version>
+        <neo4j.version>2.1.8</neo4j.version>
+        <jersey.version>1.9</jersey.version>
         <handlebars.version>4.0.6</handlebars.version>
 
         <!-- EE api versions -->
