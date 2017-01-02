@@ -133,6 +133,62 @@ public class EntityTest {
         assertTrue(allLabelsMatch(node.getLabels(), "Node", "Instance", "_Component", "Component"));
     }
 
+    /**
+     * Test update procedure for an Entity. Creating two entities with the same UUID
+     * should result in one node, with the properties of the one that was persisted last.
+     *
+     * This test logs error messages because no relationships are defined for the test entity.
+     */
+    @Test
+    @Transactional
+    @Rollback
+    public void testEntityUpdate() {
+        final String uuid = UUID.randomUUID().toString();
+        Entity entity01 = new Entity(neo4jTemplate);
+        entity01.setName("entity01");
+        entity01.setUuid(uuid);
+        entity01.setDesc("Test entity.");
+        entity01.setType("Type");
+        entity01.toGraph();
+
+        // Database should contain only one entity
+        assertEquals(1, StreamSupport.stream(nodeRepository.findAll().spliterator(), false).count());
+
+        Node entity01Node = nodeRepository.findByUuid(uuid);
+        assertNotNull(entity01Node);
+        assertEquals(entity01.getName(), entity01Node.getName());
+        assertEquals(entity01.getDesc(), entity01Node.getDesc());
+        assertEquals(entity01.getType(), entity01Node.getType());
+
+        Entity entity02 = new Entity(neo4jTemplate);
+        entity02.setName("entity02");
+        entity02.setUuid(uuid);
+        entity02.setDesc("Test entity.");
+        entity02.setType("Type");
+        entity02.toGraph();
+
+        // Database should still only contain one entity
+        assertEquals(1, StreamSupport.stream(nodeRepository.findAll().spliterator(), false).count());
+
+        Node entity02Node = nodeRepository.findByUuid(uuid);
+        assertNotNull(entity02Node);
+        assertEquals(entity02.getName(), entity02Node.getName());
+        assertEquals(entity02.getDesc(), entity02Node.getDesc());
+        assertEquals(entity02.getType(), entity02Node.getType());
+
+        assertEquals(entity01Node.getId(), entity02Node.getId());
+
+        Entity entity03 = new Entity(neo4jTemplate);
+        entity03.setName("entity03");
+        entity03.setUuid(UUID.randomUUID().toString());
+        entity03.setDesc("Test entity.");
+        entity03.setType("Type");
+        entity03.toGraph();
+
+        // Database should contain two entities
+        assertEquals(2, StreamSupport.stream(nodeRepository.findAll().spliterator(), false).count());
+    }
+
     @Test
     public void testRootNodeCreationFromJson() throws Exception {
         Transaction tx = graphDatabase.beginTx();
