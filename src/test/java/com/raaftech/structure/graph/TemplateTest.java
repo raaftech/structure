@@ -5,18 +5,24 @@ import com.raaftech.structure.base.SpringTestConfig;
 import com.raaftech.structure.graph.repositories.InstanceRepository;
 import com.raaftech.structure.graph.repositories.TemplateRepository;
 import com.raaftech.structure.graph.repositories.TypeRepository;
+import com.raaftech.structure.helper.loader.EvenNaiverLoader;
+import com.raaftech.structure.next.Entity;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
+import org.neo4j.graphdb.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.neo4j.core.GraphDatabase;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.io.IOException;
 
 import static io.vertx.core.json.Json.mapper;
 import static org.junit.Assert.*;
@@ -31,23 +37,39 @@ public class TemplateTest {
     private TypeRepository typeRepository;
     @Autowired
     private InstanceRepository instanceRepository;
+    @Autowired
+    private GraphDatabase graphDatabase;
 
     @Before
+    @SuppressWarnings("Duplicates")
     @Transactional
     public void setUpClass() throws Exception {
-        new Type("Test1", "Description", "80148d1f-706a-4a78-aaa8-967ac31f2474")
-                .setDescriptor("foo", "string", true, "decription", "default", null)
-                .save();
-        new Type("Test2", "Description", "172f08da-e3f0-477f-88e7-d53de496739e")
-                .setDescriptor("bar", "number", true, "decription", null, null)
-                .save();
+        Transaction tx = graphDatabase.beginTx();
+        final String templateTestBundle = "src/test/resources/bundles/templatetest/";
+        EvenNaiverLoader evenNaiverLoader = new EvenNaiverLoader(templateTestBundle);
+        evenNaiverLoader.getUpdateList(evenNaiverLoader.sortIt(evenNaiverLoader.readAllJson())).stream()
+                .map(node -> {
+                    try {
+                        return mapper.readValue(node.toString(), Entity.class);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    return null;
+                })
+                .filter(node -> node != null)
+                .forEach(Entity::toGraph);
+        tx.success();
+        tx.close();
     }
 
     @After
     @Transactional
     public void tearDown() throws Exception {
+        Transaction tx = graphDatabase.beginTx();
         typeRepository.delete(typeRepository.findOneByName("Test1"));
         typeRepository.delete(typeRepository.findOneByName("Test2"));
+        tx.success();
+        tx.close();
     }
 
     @Rule

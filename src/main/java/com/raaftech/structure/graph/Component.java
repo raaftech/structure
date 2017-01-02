@@ -24,6 +24,10 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+/**
+ * @Deprecated We need to redesign the domain classes to use Entity.
+ */
+@Deprecated
 public class Component extends Instance {
 
     @RelatedTo(type="RESULTS", direction = Direction.OUTGOING)

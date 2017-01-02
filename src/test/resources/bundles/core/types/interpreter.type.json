@@ -1,0 +1,186 @@
+[
+  {
+    "type": "Type",
+    "name": "UnixShell",
+    "desc": "A generic UNIX shell.",
+    "meta": {
+      "uuid": "86168e4a-8c99-43c9-ad95-c8f88d96ac32",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "d047f415-734c-4bd3-92b9-d68d5521ce69"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/unixshell.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Bash",
+    "desc": "The Bourne Again Shell.",
+    "meta": {
+      "uuid": "6d467b28-449f-498c-9ca5-8660f522897f",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "86168e4a-8c99-43c9-ad95-c8f88d96ac32"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/bash.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Ksh",
+    "desc": "The Korn Shell.",
+    "meta": {
+      "uuid": "fd95e858-c788-4578-9223-122eceb2e6c6",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "86168e4a-8c99-43c9-ad95-c8f88d96ac32"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/ksh.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Csh",
+    "desc": "The C Shell.",
+    "meta": {
+      "uuid": "608c9a23-a194-49b0-a986-c34bd52bf691",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "86168e4a-8c99-43c9-ad95-c8f88d96ac32"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/csh.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Tcsh",
+    "desc": "The TENEX C Shell.",
+    "meta": {
+      "uuid": "bb3e3458-391d-4c75-8857-4a08be7e5905",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "86168e4a-8c99-43c9-ad95-c8f88d96ac32"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/tcsh.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Sh",
+    "desc": "The Bourne Shell.",
+    "meta": {
+      "uuid": "7c1c3278-6eb4-4be5-8b8d-94204bfd2223",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "86168e4a-8c99-43c9-ad95-c8f88d96ac32"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/sh.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Zsh",
+    "desc": "The Zhong Shao Shell.",
+    "meta": {
+      "uuid": "7d9afc14-8e12-4c56-8ca6-4c43fd9808ab",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "86168e4a-8c99-43c9-ad95-c8f88d96ac32"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/zsh.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "DosShell",
+    "desc": "A generic DOS shell.",
+    "meta": {
+      "uuid": "bc101145-dde2-4363-a7ed-7091d2ff2621",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "d047f415-734c-4bd3-92b9-d68d5521ce69"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/dosshell.schema.json"
+      }
+    }
+  }
+]

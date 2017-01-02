@@ -11,6 +11,7 @@ import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 import org.neo4j.kernel.GraphDatabaseAPI;
 import org.neo4j.server.Bootstrapper;
 import org.neo4j.server.WrappingNeoServerBootstrapper;
+import org.neo4j.server.configuration.Configurator;
 import org.neo4j.server.configuration.ServerConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,7 +57,7 @@ public class SpringConfig extends Neo4jConfiguration {
         	graphDatabaseBuilder.setConfig("remote_shell_enabled", "true");
 
             graphDatabaseService = graphDatabaseBuilder.newGraphDatabase();
-            
+
             log.info("Unsafe mode: Enabling graph database web interface");
             ServerConfigurator webConfig = new ServerConfigurator((GraphDatabaseAPI) graphDatabaseService);
             webConfig.configuration().setProperty("webserver_bind_address", "localhost");

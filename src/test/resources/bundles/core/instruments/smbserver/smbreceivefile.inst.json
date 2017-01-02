@@ -1,0 +1,45 @@
+{
+  "type": "Marker",
+  "name": "SmbReceiveFile",
+  "desc": "A marker handler that marks SmbServer with ReceiveFile..",
+  "meta": {
+    "uuid": "414c9c6a-7956-4b4f-9e7c-7dd23b3f342f",
+    "relations": {
+      "HAS_INSTRUMENT": {
+        "direction": "incoming",
+        "uuids": [
+          "65af133b-1a2c-4faa-8d2a-a288eaa4f412"
+        ]
+      },
+      "HANDLES": {
+        "direction": "outgoing",
+        "uuids": [
+          "65af133b-1a2c-4faa-8d2a-a288eaa4f412"
+        ]
+      },
+      "GIVES_CAPABILITY": {
+        "direction": "outgoing",
+        "uuids": [
+          "f2ba58a6-0934-4f0e-b9cf-1a7430a3fa7a"
+        ]
+      },
+      "INSTANCE_OF": {
+        "direction": "outgoing",
+        "uuids": [
+          "24702e44-8769-4aea-903d-9e1164f99e5b"
+        ]
+      }
+    }
+  },
+  "data": {
+    "instrumentType": "marker",
+    "subjectIsLocal": true
+  },
+  "file": {
+    "dataSchema": {
+      "encoding": "text",
+      "format": "json",
+      "path": "../../types/schemas/marker.schema.json"
+    }
+  }
+}

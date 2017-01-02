@@ -1,0 +1,1 @@
+svcadm disable {{ origin.shortName }}

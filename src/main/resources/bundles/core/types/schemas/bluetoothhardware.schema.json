@@ -1,0 +1,33 @@
+{
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/schema#",
+  "type": "object",
+  "properties": {
+    "name": {
+      "$ref": "type.schema.json#/properties/name"
+    },
+    "checksum": {
+      "$ref": "type.schema.json#/properties/checksum"
+    },
+    "rev": {
+      "$ref": "hardware.schema.json#/properties/rev"
+    },
+    "speedKbit": {
+      "type": "number",
+      "description": "Speed in Kbits."
+    },
+    "desc": {
+      "$ref": "type.schema.json#/properties/desc"
+    },
+    "macAddr": {
+      "type": "string",
+      "description": "A media access control address."
+    }
+  },
+  "required": [
+    "name",
+    "desc",
+    "macAddr",
+    "speedKbit"
+  ]
+}

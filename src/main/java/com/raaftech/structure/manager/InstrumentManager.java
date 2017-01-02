@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.base.GenericActor;
 import com.raaftech.structure.graph.repositories.InstrumentRepository;
-import com.raaftech.structure.helper.loader.InstrumentLoader;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 
@@ -26,17 +25,18 @@ public class InstrumentManager extends GenericActor {
     private final InstrumentRepository instrumentRepository = Context.getInstrumentRepository();
 
     private void loadInstruments() {
-        // Load all instruments
-        if (System.getProperty("instruments") == null) {
-            System.setProperty("instruments", new File("ht").getAbsolutePath());
-        }
-        InstrumentLoader instrumentLoader = new InstrumentLoader();
-        String instruments = System.getProperty("instruments");
-        Arrays.asList(instruments.split(",")).stream()
-                .map(Paths::get)
-                .distinct()
-                .forEach(instrumentLoader::load);
-        Context.setInstrumentsLoaded(true);
+        // TODO: entity, does throwing away + loading bundle recreate instruments?
+//        // Load all instruments
+//        if (System.getProperty("instruments") == null) {
+//            System.setProperty("instruments", new File("ht").getAbsolutePath());
+//        }
+//        InstrumentLoader instrumentLoader = new InstrumentLoader();
+//        String instruments = System.getProperty("instruments");
+//        Arrays.asList(instruments.split(",")).stream()
+//                .map(Paths::get)
+//                .distinct()
+//                .forEach(instrumentLoader::load);
+//        Context.setInstrumentsLoaded(true);
     }
 
     private void purgeInstruments() {

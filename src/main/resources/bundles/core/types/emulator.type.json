@@ -1,0 +1,71 @@
+[
+  {
+    "type": "Type",
+    "name": "Bochs",
+    "desc": "The Bochs Emulator.",
+    "meta": {
+      "uuid": "cd8f940e-219b-488e-8b75-d9fece8b3b35",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "59aeae81-9741-4986-b9c2-931504cfc9e3"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/bochs.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "DosBox",
+    "desc": "The DOSBox Emulator.",
+    "meta": {
+      "uuid": "7e0135dc-b720-440a-9f4e-76747f7a7fe5",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "59aeae81-9741-4986-b9c2-931504cfc9e3"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/dosbox.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Qemu",
+    "desc": "The QEMU Emulator.",
+    "meta": {
+      "uuid": "c80fddb7-bdbf-44b9-ac54-f7dd7ce4dbd0",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "59aeae81-9741-4986-b9c2-931504cfc9e3"
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/qemu.schema.json"
+      }
+    }
+  }
+]
