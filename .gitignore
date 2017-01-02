@@ -13,3 +13,5 @@ generatedscripts/
 web/js/vendors/
 cmd/node_modules/
 src/main/resources/webroot/js/vendors/
+rest/node_modules/
+rest/client/js/vendors/
