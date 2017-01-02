@@ -1,0 +1,176 @@
+'use strict';
+
+const EventBus = require('vertx3-eventbus-client');
+const R = require('ramda');
+
+const eventBusUrl = 'http://localhost:8080/eventbus';
+const eb = new EventBus(eventBusUrl);
+
+eb.onopen = () => console.log('Connected to: %s', eventBusUrl);
+eb.onclose = (error) => console.log('Eventbus connection closed: %s', stringify(error));
+
+module.exports = function (Entity) {
+
+//TYPES
+  Entity.fetchByUuid = function (uuid, callback) {
+    sendEvent(getEventBusAddress(['repository', 'nodes']), 'findOne', {node: uuid})
+      .then((result) => callback(null, getResultData(result)))
+      .catch((ex) => callback(ex));
+  };
+
+  Entity.remoteMethod('fetchByUuid', {
+    accepts: [{arg: 'uuid', type: 'string', required: true}],
+    returns: {arg: 'result', type: 'object'},
+    http: {verb: 'get', path: '/type/:uuid'},
+    description: 'Fetch a type entity by uuid'
+  });
+
+  Entity.fetchByName = function (name, callback) {
+    sendEvent(getEventBusAddress(['repository', 'nodes']), 'findOneByName', {name: name})
+      .then((result) => callback(null, getResultData(result)))
+      .catch((ex) => callback(ex));
+  };
+
+  Entity.remoteMethod('fetchByName', {
+    accepts: [{arg: 'name', type: 'string', required: true}],
+    returns: {arg: 'result', type: 'object'},
+    http: {verb: 'get', path: '/name/:name'},
+    description: 'Fetch an entity by name'
+  });
+
+  Entity.getChildren = function (uuid, callback) {
+    let children = function (id) {
+      return sendEvent(getEventBusAddress(['node', 'type', id]), 'getSubtypes', {})
+        .then((result) => getResultData(result))
+    };
+
+    children(uuid)
+      .then((kids) => {
+        let promises = R.map((item) => {
+          return children(item.uuid)
+            .then((c) => {
+              item.leaf = (c.length === 0);
+              return item;
+            });
+        }, kids);
+        Promise.all(promises)
+          .then((ps) => callback(null, ps));
+      })
+      .catch((ex) => callback(ex));
+  };
+
+  Entity.remoteMethod('getChildren', {
+    accepts: [{arg: 'uuid', type: 'string', required: true}],
+    returns: {arg: 'result', type: 'object'},
+    http: {verb: 'get', path: '/children/:uuid'},
+    description: 'Fetch subtypes for a given uuid'
+  });
+
+
+//INSTANCES
+  Entity.lastCreated = function (quantity, callback) {
+    sendEvent(getEventBusAddress(['repository', 'instances']), 'nLastCreated', {amount: quantity})
+      .then((result) => callback(null, getResultData(result)))
+      .catch((ex) => callback(ex));
+  };
+
+  Entity.remoteMethod('lastCreated', {
+    accepts: [{arg: 'quantity', type: 'integer', required: true}],
+    returns: {arg: 'result', type: 'object'},
+    http: {verb: 'get', path: '/last/:quantity'},
+    description: 'Fetch the last created instances'
+  });
+
+  Entity.fetchInstance = function (uuid, callback) {
+    sendEvent(getEventBusAddress(['repository', 'instances']), 'findOne', {node: uuid})
+      .then((result) => callback(null, getResultData(result)))
+      .catch((ex) => callback(ex));
+  };
+
+  Entity.remoteMethod('fetchInstance', {
+    accepts: [{arg: 'uuid', type: 'string', required: true}],
+    returns: {arg: 'result', type: 'object'},
+    http: {verb: 'get', path: '/instance/:uuid'},
+    description: 'Fetch an instance by uuid'
+  });
+
+  Entity.createInstance = function (args, callback) {
+    sendEvent(getEventBusAddress(['repository', 'instances']), 'putNode', args)
+      .then((result) => callback(null, getResultData(result)))
+      .catch((ex) => callback(ex));
+  };
+
+  Entity.remoteMethod('createInstance', {
+    accepts: [{arg: 'args', type: 'object', required: true}],
+    returns: {arg: 'result', type: 'object'},
+    http: {verb: 'post', path: '/instance'},
+    description: 'create a new instance'
+  });
+
+
+//TEMPLATES
+  Entity.getTemplate = function (uuid, callback) {
+    sendEvent(getEventBusAddress(['repository', 'templates']), 'findOne', {node: uuid})
+      .then((result) => callback(null, getResultData(result)))
+      .catch((ex) => callback(ex));
+  };
+
+  Entity.remoteMethod('getTemplate', {
+    accepts: [{arg: 'uuid', type: 'string', required: true}],
+    returns: {arg: 'result', type: 'object'},
+    http: {verb: 'get', path: '/template/:uuid'},
+    description: 'fetch a template by uuid'
+  });
+
+  Entity.getTemplates = function (callback) {
+    sendEvent(getEventBusAddress(['repository', 'templates']), 'findAllTemplates', {})
+      .then((result) => callback(null, getResultData(result)))
+      .catch((ex) => callback(ex));
+  };
+
+  Entity.remoteMethod('getTemplates', {
+    accepts: [],
+    returns: {arg: 'result', type: 'object'},
+    http: {verb: 'get', path: '/templates'},
+    description: 'fetch all templates'
+  });
+
+  Entity.getSubTemplates = function (uuid, callback) {
+    sendEvent(getEventBusAddress(['repository', 'templates', uuid]), 'getSubTemplates', {})
+      .then((result) => callback(null, getResultData(result)))
+      .catch((ex) => callback(ex));
+  };
+
+  Entity.remoteMethod('getSubTemplates', {
+    accepts: [{arg: 'uuid', type: 'string', required: true}],
+    returns: {arg: 'result', type: 'object'},
+    http: {verb: 'get', path: '/templates/:uuid'},
+    description: 'fetch all sub templates for a given template'
+  });
+};
+
+
+function sendEvent(base, cmd, args) {
+  return new Promise((resolve, reject) => {
+    eb.send(base, createOptions(cmd, args), (error, result) => {
+      if (error) reject(error);
+      else resolve(result);
+    });
+  });
+}
+
+function createOptions(cmd, args) {
+  return R.zipObj(['msgh', 'args'], [R.defaultTo('help', cmd), R.defaultTo({}, args)]);
+}
+
+function getEventBusAddress(parts) {
+  return R.join('.', R.prepend('com.raaftech.structure', parts));
+}
+
+function getResultData(result) {
+  return R.path(['body', 'result', 'data'])(result);
+}
+
+function stringify(json) {
+  return JSON.stringify(json, undefined, 2);
+}
