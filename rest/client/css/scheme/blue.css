@@ -79,10 +79,12 @@ span.open:before,
 }
 
 show-icon.on {
+    transition: color 0.5s ease;
     color: green;
 }
 
 show-icon.off {
+    transition: color 0.5s ease;
     color: red;
 }
 

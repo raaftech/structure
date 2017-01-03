@@ -1,5 +1,9 @@
 angular.module("structureApp")
-    .controller("environmentCtrl", function($scope, typeSrvs) {
+    .controller("environmentCtrl", function($scope, $controller, typeSrvs, instanceSrvs) {
+
+        $controller("panelDetailCtrl", {$scope: $scope});
+        $controller("panelRightCtrl", {$scope: $scope});
+        $scope.showSize = "240px";
 
         $scope.schema = {
             "type": "object",
@@ -20,10 +24,13 @@ angular.module("structureApp")
 
         $scope.model = {};
         $scope.types = [{"uuid": "a79ce509-a021-4177-ae61-73abd01fb479", "name": "Component"}];
+        $scope.list2 = [];
+        $scope.isCollapsed = true;
 
         $scope.createIsaSelectBox = function(uuid) {
             typeSrvs.getIsaChildren(uuid).then(function(data) {
                 $scope.stacked = data;
+                $scope.list1 = data;
                 $scope.form = [{
                     "key": "isa",
                     "notitle": true,
@@ -49,6 +56,7 @@ angular.module("structureApp")
                     };
                     if(data.length > 1) {
                         $scope.stacked = data;
+                        $scope.list1 = data;
                         dataObject.titleMap = data;
                         dataObject.onChange = "changeIsa(modelValue)";
                         $scope.form = [dataObject];
@@ -63,5 +71,82 @@ angular.module("structureApp")
             $scope.changeIsa(args['uuid']);
         };
 
+        $scope.editTypeForm = {};
+
+        $scope.removeSelected = function(node) {
+            var index = $scope.list2.indexOf(node);
+            $scope.list2.splice(index, 1);
+        };
+
+        $scope.node = {};
+        $scope.node.schema = [];
+        $scope.node.form = [];
+        $scope.node.model = [];
+
+        $scope.createForm = function(node) {
+            $scope.node.schema[node.uuid] = node.schema;
+            $scope.node.form[node.uuid] = ["*"];
+            $scope.node.model[node.uuid] = [];
+            angular.forEach(node, function(v, k) {
+                $scope.node.model[node.uuid][k] = v;
+            });
+        };
+
+        $scope.testSubmit = function() {
+            console.log($scope.editTypeForm);
+        };
+
         $scope.createIsaSelectBox("a79ce509-a021-4177-ae61-73abd01fb479");
+
+        $scope.getNInstances = function(n) {
+            instanceSrvs.getNInstances(n).then(function(response) {
+                $scope.instances = response;
+                instanceSrvs.liveStatus($scope);
+                instanceSrvs.startChecking();
+            });
+        };
+
+        $scope.getInstance = function(uuid) {
+            instanceSrvs.getInstance(uuid).then(function(response) {
+                $scope.instance = response;
+            });
+        };
+
+        $scope.showComponents = [];
+        $scope.color = [];
+
+        $scope.setShowComponents = function(instance) {
+            if($scope.showComponents[instance.uuid]) {
+                delete $scope.showComponents[instance.uuid];
+            }
+            else{
+                $scope.showComponents[instance.uuid] = 1;
+            }
+        };
+
+        $scope.logStatus = function(response) {
+            var response = response;
+            //console.log(response);
+            if(response.event == "serviceStatus") {
+                if(!response.data.uuid in $scope.color) {
+                    var obj = {};
+                    obj[response.data.uuid] = response.data.status;
+                    $scope.color.push(obj);
+                }
+                else{
+                    $scope.color[response.data.uuid] = response.data.status;
+                }
+            }
+            if(response.event === "discoveredComputer") {
+                //console.log('get instance: ' + response.data.uuid);
+                instanceSrvs.getInstance(response.data.uuid).then(function(response) {
+                    $scope.instances.push(response);
+                    //console.log(response);
+                });
+            }
+        };
+
+        $scope.checkColor = function(uuid) {
+            return $scope.color[uuid];
+        }
     });

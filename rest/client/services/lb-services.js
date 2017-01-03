@@ -1572,103 +1572,6 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' &&
               url: urlBase + "/Entities/instance",
               method: "POST",
             },
-
-            /**
-             * @ngdoc method
-             * @name lbServices.Entity#getTemplate
-             * @methodOf lbServices.Entity
-             *
-             * @description
-             *
-             * fetch a template by uuid
-             *
-             * @param {Object=} parameters Request parameters.
-             *
-             *  - `uuid` – `{string}` -
-             *
-             * @param {function(Object,Object)=} successCb
-             *   Success callback with two arguments: `value`, `responseHeaders`.
-             *
-             * @param {function(Object)=} errorCb Error callback with one argument:
-             *   `httpResponse`.
-             *
-             * @returns {Object} An empty reference that will be
-             *   populated with the actual data once the response is returned
-             *   from the server.
-             *
-             * Data properties:
-             *
-             *  - `result` – `{object=}` -
-             */
-            "getTemplate": {
-              url: urlBase + "/Entities/template/:uuid",
-              method: "GET",
-            },
-
-            /**
-             * @ngdoc method
-             * @name lbServices.Entity#getTemplates
-             * @methodOf lbServices.Entity
-             *
-             * @description
-             *
-             * fetch all templates
-             *
-             * @param {Object=} parameters Request parameters.
-             *
-             *   This method does not accept any parameters.
-             *   Supply an empty object or omit this argument altogether.
-             *
-             * @param {function(Object,Object)=} successCb
-             *   Success callback with two arguments: `value`, `responseHeaders`.
-             *
-             * @param {function(Object)=} errorCb Error callback with one argument:
-             *   `httpResponse`.
-             *
-             * @returns {Object} An empty reference that will be
-             *   populated with the actual data once the response is returned
-             *   from the server.
-             *
-             * Data properties:
-             *
-             *  - `result` – `{object=}` -
-             */
-            "getTemplates": {
-              url: urlBase + "/Entities/templates",
-              method: "GET",
-            },
-
-            /**
-             * @ngdoc method
-             * @name lbServices.Entity#getSubTemplates
-             * @methodOf lbServices.Entity
-             *
-             * @description
-             *
-             * fetch all sub templates for a given template
-             *
-             * @param {Object=} parameters Request parameters.
-             *
-             *  - `uuid` – `{string}` -
-             *
-             * @param {function(Object,Object)=} successCb
-             *   Success callback with two arguments: `value`, `responseHeaders`.
-             *
-             * @param {function(Object)=} errorCb Error callback with one argument:
-             *   `httpResponse`.
-             *
-             * @returns {Object} An empty reference that will be
-             *   populated with the actual data once the response is returned
-             *   from the server.
-             *
-             * Data properties:
-             *
-             *  - `result` – `{object=}` -
-             */
-            "getSubTemplates": {
-              url: urlBase + "/Entities/templates/:uuid",
-              method: "GET",
-            },
           }
         );
 
@@ -1893,7 +1796,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' &&
              *  - `result` – `{object=}` -
              */
             "pauseTask": {
-              url: urlBase + "/Tasks/:taskId",
+              url: urlBase + "/Tasks/pause/:taskId",
               method: "PUT",
             },
 

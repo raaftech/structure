@@ -153,6 +153,14 @@ fieldset,
     border-radius: 1px;
 }
 
+.form-group {
+    position: relative;
+}
+
+.form-group label ~ .form-control-feedback {
+    top: 25px;
+}
+
 .form-group .help-block {
     display: none;
     visibility: hidden;
@@ -205,6 +213,7 @@ fieldset,
 }
 
 .basic .text-block {
+    margin-left: 15px;
     display: inline-block;
 }
 
@@ -220,8 +229,7 @@ fieldset,
 }
 
 .basic p {
-    margin: 5px 0;
-    padding-right: 35px;
+    margin: 5px 0 9px 0;
 }
 
 .detail {
@@ -278,6 +286,22 @@ fieldset,
         display: block;
         padding-left: 4%;
         float: right;
+    }
+
+    .text-block {
+        width: 55%;
+    }
+}
+
+@media (min-width: 1100px) {
+    .text-block {
+        width: 60%;
+    }
+}
+
+@media (min-width: 1200px) {
+    .text-block {
+        width: 65%;
     }
 }
 
@@ -405,10 +429,15 @@ ul.list-group.list,
     padding: 4px 8px;
 }
 
+button.close {
+    padding: 2px 0 0 8px;
+}
+
 
 /*
  * Testing context menu
  */
+list-item-hover-menu-instruments,
 list-item-hover-menu-types {
     position: absolute;
     padding: 0 10px 0 0;

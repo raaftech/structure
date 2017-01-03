@@ -3,8 +3,11 @@ angular.module("structureApp")
 
         return {
             getNInstances: function(n) {
+                console.log('getNInstances(%s) called', n);
                 return new Promise((resolve, reject) => {
                   Entity.lastCreated({quantity: n}, function(result) {
+                      console.log(result);
+                      console.log(result.result);
                     resolve(result.result);
                   });
                 });

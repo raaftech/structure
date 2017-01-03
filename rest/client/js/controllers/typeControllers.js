@@ -164,8 +164,8 @@ angular.module("structureApp")
                 $scope.nodes = response;
             });
             $scope.showDetails = true;
-            $scope.showSize = "230px";
+            $scope.showSize = "240px";
         };
 
-        $scope.init("a79ce509-a021-4177-ae61-73abd01fb479");
+        $scope.init("b1bc963a-19cc-4518-aecb-a35d028c49e3");
     });

@@ -5,6 +5,8 @@ angular.module("structureApp",
         "ui.bootstrap",
         "hSweetAlert",
         "pageslide-directive",
+        "ngDragDrop",
+        "ngResource",
         "lbServices"
     ])
     .config(function($routeProvider, $locationProvider) {
