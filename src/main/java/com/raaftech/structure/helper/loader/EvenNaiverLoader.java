@@ -6,14 +6,17 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.raaftech.structure.base.Configuration;
 import com.raaftech.structure.base.Context;
+import com.raaftech.structure.exceptions.FileInjectionException;
 import com.raaftech.structure.graph.Node;
 import com.raaftech.structure.graph.repositories.NodeRepository;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.parboiled.common.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -38,6 +41,8 @@ public class EvenNaiverLoader {
     private static final NodeRepository nodeRepository = Context.getNodeRepository();
 
     private static final String META = "meta";
+    private static final String FILE = "file";
+    private static final String PATH = "path";
     private static final String UUID = "uuid";
 
     private String globPattern = "**/*.{type,inst}.json";
@@ -281,13 +286,13 @@ public class EvenNaiverLoader {
                 // array of tokens
                 if (jsonFile.isArray()) {
                     for (JsonNode token : jsonFile) {
-                        final String entityChecksum = calculateChecksum(token.toString(), "SHA1");
+                        final String entityChecksum = calculateChecksum(injectFileReferences(token, jsonFilePath).toString(), "SHA1");
                         checksumToFiles.put(entityChecksum, jsonFilePath);
                         checksumToUuid.put(entityChecksum, token.get(META).get(UUID).asText());
                         unsorted.add(putBundleName(putChecksum((ObjectNode) token, entityChecksum), fromBundle));
                     }
                 } else { // single token
-                    final String entityChecksum = calculateChecksum(jsonFile.toString(), "SHA1");
+                    final String entityChecksum = calculateChecksum(injectFileReferences(jsonFile, jsonFilePath).toString(), "SHA1");
                     checksumToFiles.put(entityChecksum, jsonFilePath);
                     unsorted.add(putBundleName(putChecksum((ObjectNode) jsonFile, entityChecksum), fromBundle));
                 }
@@ -340,6 +345,44 @@ public class EvenNaiverLoader {
         }
 
         return sorted;
+    }
+
+    /**
+     * Resolve external file references and inject them so we can use them for checksum calculation.
+     * @param entity A JSON representation of an entity.
+     * @param entityFilePath The path of the file containing the entity JSON.
+     * @return The same JSON as went in, but now with injected file content.
+     */
+    private JsonNode injectFileReferences(JsonNode entity, Path entityFilePath) {
+        final JsonNode entityCopy = entity.deepCopy();
+
+        // do we even have a file object?
+        if (entityCopy.has(FILE)) {
+            // iterate over every file declaration
+            final Iterator<Map.Entry<String, JsonNode>> files = entityCopy.get(FILE).fields();
+            while (files.hasNext()) {
+                final Map.Entry<String, JsonNode> file = files.next();
+                final String fileName = file.getKey();
+                final ObjectNode fileObject = (ObjectNode) file.getValue();
+
+                /* if the file declaration does not specify a path its contents are declared inline
+                and are already included in the checksum calculation
+                 */
+                if (!fileObject.has(PATH)) {
+                    continue;
+                }
+
+                final Path entityFileReferencePath = entityFilePath.getParent().resolve(fileObject.get(PATH).asText());
+                // read the file's contents and inject it into the file JSON object
+                if (entityFileReferencePath.toFile().exists()) {
+                    fileObject.put("content", FileUtils.readAllText(entityFileReferencePath.toFile()));
+                } else {
+                    throw new FileInjectionException("Couldn't read " + entityFileReferencePath.toString() + ".");
+                }
+            }
+        }
+
+        return entityCopy;
     }
 
     public List<JsonNode> getUpdateList(List<JsonNode> sortedList) {
