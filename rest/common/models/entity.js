@@ -107,6 +107,39 @@ module.exports = function (Entity) {
     description: 'create a new instance'
   });
 
+//INSTRUMENTS
+    Entity.getInstruments = function (uuid, callback) {
+        sendEvent(getEventBusAddress(['node', 'component', uuid]), 'getInstruments', {})
+            .then((result) => callback(null, getResultData(result)))
+            .catch((ex) => callback(ex));
+    };
+
+    Entity.remoteMethod('getInstruments', {
+        accepts: [{arg: 'uuid', type: 'string', required: true}],
+        returns: {arg: 'result', type: 'object'},
+        http: {verb: 'get', path: '/instrument/:uuid'},
+        description: 'Fetch instruments list by uuid'
+    });
+
+    Entity.runInstrument = function (instrumentName, uuid, callback) {
+        let args = {
+            instrument: instrumentName
+        };
+        //FIXME find a beter way to do this
+        if (instrumentName === 'IpAddressDiscover') args.timeAllocated = 600000;
+
+        sendEvent(getEventBusAddress(['node', 'component', uuid]), 'runInstrument', args)
+            .then((result) => callback(null, getResultData(result)))
+            .catch((ex) => callback(ex));
+    };
+
+    Entity.remoteMethod('runInstrument', {
+        accepts: [{arg: 'instrumentName', type: 'string', required: true},
+            {arg: 'uuid', type: 'string', required: true}],
+        returns: {arg: 'result', type: 'object'},
+        http: {verb: 'post', path: '/instrument'},
+        description: 'run an instrument by uuid'
+    });
 };
 
 

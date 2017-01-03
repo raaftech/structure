@@ -1572,6 +1572,77 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' &&
               url: urlBase + "/Entities/instance",
               method: "POST",
             },
+
+              /**
+               * @ngdoc method
+               * @name lbServices.Entity#getInstruments
+               * @methodOf lbServices.Entity
+               *
+               * @description
+               *
+               * Fetch instruments list by uuid
+               *
+               * @param {Object=} parameters Request parameters.
+               *
+               *  - `uuid` – `{string}` -
+               *
+               * @param {function(Object,Object)=} successCb
+               *   Success callback with two arguments: `value`, `responseHeaders`.
+               *
+               * @param {function(Object)=} errorCb Error callback with one argument:
+               *   `httpResponse`.
+               *
+               * @returns {Object} An empty reference that will be
+               *   populated with the actual data once the response is returned
+               *   from the server.
+               *
+               * Data properties:
+               *
+               *  - `result` – `{object=}` -
+               */
+              "getInstruments": {
+                  url: urlBase + "/Entities/instrument/:uuid",
+                  method: "GET",
+              },
+
+              /**
+               * @ngdoc method
+               * @name lbServices.Entity#runInstrument
+               * @methodOf lbServices.Entity
+               *
+               * @description
+               *
+               * run an instrument by uuid
+               *
+               * @param {Object=} parameters Request parameters.
+               *
+               *   This method does not accept any parameters.
+               *   Supply an empty object or omit this argument altogether.
+               *
+               * @param {Object} postData Request data.
+               *
+               *  - `instrumentName` – `{string}` -
+               *
+               *  - `uuid` – `{string}` -
+               *
+               * @param {function(Object,Object)=} successCb
+               *   Success callback with two arguments: `value`, `responseHeaders`.
+               *
+               * @param {function(Object)=} errorCb Error callback with one argument:
+               *   `httpResponse`.
+               *
+               * @returns {Object} An empty reference that will be
+               *   populated with the actual data once the response is returned
+               *   from the server.
+               *
+               * Data properties:
+               *
+               *  - `result` – `{object=}` -
+               */
+              "runInstrument": {
+                  url: urlBase + "/Entities/instrument",
+                  method: "POST",
+              },
           }
         );
 
