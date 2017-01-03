@@ -107,46 +107,6 @@ module.exports = function (Entity) {
     description: 'create a new instance'
   });
 
-
-//TEMPLATES
-  Entity.getTemplate = function (uuid, callback) {
-    sendEvent(getEventBusAddress(['repository', 'templates']), 'findOne', {node: uuid})
-      .then((result) => callback(null, getResultData(result)))
-      .catch((ex) => callback(ex));
-  };
-
-  Entity.remoteMethod('getTemplate', {
-    accepts: [{arg: 'uuid', type: 'string', required: true}],
-    returns: {arg: 'result', type: 'object'},
-    http: {verb: 'get', path: '/template/:uuid'},
-    description: 'fetch a template by uuid'
-  });
-
-  Entity.getTemplates = function (callback) {
-    sendEvent(getEventBusAddress(['repository', 'templates']), 'findAllTemplates', {})
-      .then((result) => callback(null, getResultData(result)))
-      .catch((ex) => callback(ex));
-  };
-
-  Entity.remoteMethod('getTemplates', {
-    accepts: [],
-    returns: {arg: 'result', type: 'object'},
-    http: {verb: 'get', path: '/templates'},
-    description: 'fetch all templates'
-  });
-
-  Entity.getSubTemplates = function (uuid, callback) {
-    sendEvent(getEventBusAddress(['repository', 'templates', uuid]), 'getSubTemplates', {})
-      .then((result) => callback(null, getResultData(result)))
-      .catch((ex) => callback(ex));
-  };
-
-  Entity.remoteMethod('getSubTemplates', {
-    accepts: [{arg: 'uuid', type: 'string', required: true}],
-    returns: {arg: 'result', type: 'object'},
-    http: {verb: 'get', path: '/templates/:uuid'},
-    description: 'fetch all sub templates for a given template'
-  });
 };
 
 
