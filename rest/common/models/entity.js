@@ -3,7 +3,7 @@
 const EventBus = require('vertx3-eventbus-client');
 const R = require('ramda');
 
-const eventBusUrl = 'http://localhost:8080/eventbus';
+const eventBusUrl = R.defaultTo('http://localhost:8080/eventbus', process.env.EVENTBUS);
 const eb = new EventBus(eventBusUrl);
 
 eb.onopen = () => console.log('Connected to: %s', eventBusUrl);
