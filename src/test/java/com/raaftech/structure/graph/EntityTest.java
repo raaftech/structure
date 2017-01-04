@@ -71,16 +71,16 @@ public class EntityTest {
     @Autowired
     private Neo4jTemplate neo4jTemplate;
 
-    private String createJson(String type, String name, String desc, String meta, String file, String data) {
+    public static String createJson(String type, String name, String desc, String meta, String file, String data) {
         if(data == null) return String.format("{\"type\": \"%s\", \"name\": \"%s\", \"desc\": \"%s\",\"meta\": %s, \"file\": %s}", type, name, desc, meta, file);
         else return String.format("{\"type\": \"%s\", \"name\": \"%s\", \"desc\": \"%s\",\"meta\": %s, \"file\": %s, \"data\": %s}", type, name, desc, meta, file, data);
     }
 
-    private String createMetaSection(String bundle, String uuid, String relations) {
+    public static String createMetaSection(String bundle, String uuid, String relations) {
         return String.format("{\"bundle\": \"%s\", \"uuid\": \"%s\", \"relations\": %s}", bundle, uuid, relations);
     }
 
-    private String createFileSection(String encoding, String format, String checksum, String path, String content) {
+    public static String createFileSection(String encoding, String format, String checksum, String path, String content) {
         String output = String.format("{\"dataSchema\": {\"encoding\": \"%s\", \"format\": \"%s\"",encoding, format);
         if(checksum != null) output += String.format(",\"checksum\": \"%s\"", checksum);
         if(path != null) output += String.format(",\"path\": \"%s\"", path);
@@ -90,7 +90,7 @@ public class EntityTest {
         return output;
     }
 
-    private String createRelationSection() {
+    public static String createRelationSection() {
         return "{}";
     }
 
