@@ -42,6 +42,7 @@ public class EvenNaiverLoader {
 
     private static final String META = "meta";
     private static final String FILE = "file";
+    private static final String CONTENT = "content";
     private static final String PATH = "path";
     private static final String UUID = "uuid";
 
@@ -376,6 +377,9 @@ public class EvenNaiverLoader {
                 // read the file's contents and inject it into the file JSON object
                 if (entityFileReferencePath.toFile().exists()) {
                     fileObject.put("content", FileUtils.readAllText(entityFileReferencePath.toFile()));
+                } else if (fileObject.has(CONTENT)) {
+                    // we can't read the file, but we already have some content. just use that data.
+                    continue;
                 } else {
                     throw new FileInjectionException("Couldn't read " + entityFileReferencePath.toString() + ".");
                 }
