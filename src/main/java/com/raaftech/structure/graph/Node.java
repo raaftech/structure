@@ -1,6 +1,5 @@
 package com.raaftech.structure.graph;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.data.neo4j.annotation.GraphId;
 import org.springframework.data.neo4j.annotation.Indexed;
@@ -22,7 +21,6 @@ import static io.vertx.core.json.Json.mapper;
  * @Deprecated We need to redesign the domain classes to use Entity.
  */
 @NodeEntity
-@JsonSerialize(using = NodeSerializer.class)
 @Deprecated
 public abstract class Node {
 
