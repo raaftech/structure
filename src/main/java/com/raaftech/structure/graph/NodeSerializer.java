@@ -35,6 +35,7 @@ public class NodeSerializer extends StdSerializer<Node> {
     Because some Entities can have relationships to each other we need to make exceptions for some relationships.
     Default is to only save the outgoing relationships, but in some cases we need the incoming rel so we dont
     get an unsortable bundle. See #40 for more details.
+    TODO: Implement this in a more appropriate spot. The loader itself is a good candidate imo (bcd).
      */
     private final Set<String> incomingRelationships = ImmutableSet.of("HAS_INSTRUMENT");
 
