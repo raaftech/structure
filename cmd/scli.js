@@ -247,6 +247,7 @@ vorpal.command('discover <cidr>', 'Discover items in the network')
         };
         sendEvent(helper.getEventBusAddress(['repository', 'instances']), 'putNode', pargs)
             .then((data) => {
+                console.log(data);
                 let uuid = data.body.result.data;
                 self.log('instance uuid: '+uuid);
                 sendEvent(helper.getEventBusAddress(['node', 'component',uuid]), 'runInstrument', {

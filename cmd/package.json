@@ -19,6 +19,7 @@
     "neo4j": "^2.0.0-RC2",
     "ramda": "^0.22.1",
     "sprintf-js": "^1.0.3",
+    "superagent": "^3.3.1",
     "treeify": "^1.0.1",
     "vertx3-eventbus-client": "^3.0.0",
     "vorpal": "^1.11.4"
