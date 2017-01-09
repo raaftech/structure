@@ -20,33 +20,30 @@ const returnGetPromise = (url) => {
     });
 };
 
+const getBaseUrl = (host, port) => util.format('http://%s:%s/api',host, port);
+
 const getEntityByName = (host, port, name) => {
-    let baseUrl = util.format('http://%s:%s/api',host, port);
-    let url = util.format('%s/Entities/name/%s', baseUrl,name);
+    let url = util.format('%s/Entities/name/%s', getBaseUrl(host,port),name);
     return returnGetPromise(url);
 };
 
 const getEntityByUuid = (host, port, uuid) => {
-    let baseUrl = util.format('http://%s:%s/api',host, port);
-    let url = util.format('%s/Entities/type/%s', baseUrl,uuid);
+    let url = util.format('%s/Entities/type/%s', getBaseUrl(host,port),uuid);
     return returnGetPromise(url);
 };
 
 const getChildren = (host, port, uuid) => {
-    let baseUrl = util.format('http://%s:%s/api',host, port);
-    let url = util.format('%s/Entities/children/%s', baseUrl,uuid);
+    let url = util.format('%s/Entities/children/%s', getBaseUrl(host,port),uuid);
     return returnGetPromise(url);
 };
 
 const lastInstances = (host, port, quantity) => {
-    let baseUrl = util.format('http://%s:%s/api',host, port);
-    let url = util.format('%s/Entities/last/%s', baseUrl,quantity);
+    let url = util.format('%s/Entities/last/%s', getBaseUrl(host,port),quantity);
     return returnGetPromise(url);
 };
 
 const getInstanceByUuid = (host, port, uuid) => {
-    let baseUrl = util.format('http://%s:%s/api',host, port);
-    let url = util.format('%s/Entities/instance/%s', baseUrl,uuid);
+    let url = util.format('%s/Entities/instance/%s', getBaseUrl(host,port),uuid);
     return returnGetPromise(url);
 };
 
