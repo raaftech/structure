@@ -18,6 +18,9 @@ public interface NodeRepository extends GenericRepository<Node> {
     @Query("MATCH (node:Node {uuid:{uuid}}) return node")
     org.neo4j.graphdb.Node findGraphNodeByUuid(@Param("uuid") String uuid);
 
+    @Query("MATCH (node:Node {name: {0}}) return node")
+    Node findOneByName(String name);
+
     @Query("MATCH (node:Node {name: {name}}) return node")
     Set<Node> findByName(@Param("name") String name);
 

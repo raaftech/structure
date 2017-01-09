@@ -1,12 +1,11 @@
 package com.raaftech.structure.graph;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.fge.jsonschema.core.exceptions.ProcessingException;
-import com.raaftech.structure.base.*;
 import com.raaftech.structure.base.Configuration;
+import com.raaftech.structure.base.Context;
 import com.raaftech.structure.graph.repositories.TypeRepository;
 import com.raaftech.structure.helper.JsonSchemaBuilder;
 import org.neo4j.graphdb.Direction;
@@ -23,7 +22,6 @@ import org.springframework.data.neo4j.fieldaccess.DynamicPropertiesContainer;
 
 import java.io.IOException;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
