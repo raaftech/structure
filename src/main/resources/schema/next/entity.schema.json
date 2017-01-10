@@ -8,7 +8,8 @@
     "properties": {
         "type": {
             "type": "string",
-            "enum": ["Type", "Instance", "Marker", "Controller"]
+            "enum": ["Type", "Component", "Marker", "Controller", "Parser", "Grouping", "Configuration",
+                "Profile", "Actor", "Result" ]
         },
         "name": {
             "type": "string"
