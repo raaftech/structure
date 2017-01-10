@@ -94,6 +94,24 @@ module.exports = function(Task) {
       http: {verb: 'get', path: '/live'},
       description: 'cancel a task'
   });
+
+  Task.discover = function(uuid, callback) {
+      sendEvent(getEventBusAddress(['node','component',uuid]), 'runInstrument', {
+          instrument: 'IpAddressDiscover',
+          timeAllocated: 600000
+      })
+          .then((result) => callback(null, getResultData(result)))
+          .catch((ex) => callback(ex));
+  };
+
+    Task.remoteMethod('discover', {
+        accepts: [{arg: 'uuid', type: 'string', required: true}],
+        returns: {arg: 'result', type: 'object'},
+        http: {verb: 'get', path: '/discover/:uuid'},
+        description: 'Perform a discovery'
+    });
+
+
 };
 
 

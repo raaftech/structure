@@ -22,6 +22,7 @@ const returnGetPromise = (url) => {
 
 const getBaseUrl = (host, port) => util.format('http://%s:%s/api',host, port);
 
+
 const getEntityByName = (host, port, name) => {
     let url = util.format('%s/Entities/name/%s', getBaseUrl(host,port),name);
     return returnGetPromise(url);
@@ -47,10 +48,26 @@ const getInstanceByUuid = (host, port, uuid) => {
     return returnGetPromise(url);
 };
 
+const createInstance = (host,port,options) => {
+    let url = util.format('%s/Entities/instance', getBaseUrl(host,port));
+	return new Promise((resolve, reject) => {
+		agent.post(url)
+			.send(options)
+			.end(getReturnFunction(resolve,reject));
+	});
+};
+
+const discover = (host,port,uuid) => {
+    let url = util.format('%s/Tasks/discover/%s', getBaseUrl(host,port),uuid);
+	return returnGetPromise(url);	
+};
+
 module.exports = {
     getEntityByName: getEntityByName,
     getEntityByUuid: getEntityByUuid,
     getChildren: getChildren,
     lastInstances: lastInstances,
-    getInstanceByUuid: getInstanceByUuid
+    getInstanceByUuid: getInstanceByUuid,
+	createInstance: createInstance,
+	discover: discover
 };
