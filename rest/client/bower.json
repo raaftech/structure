@@ -28,7 +28,8 @@
     "angular-dragdrop": "latest",
     "angular-resource": "~1.4",
     "bootstrap": "latest",
-    "jquery-ui": "latest"
+    "jquery-ui": "latest",
+    "angular-live-set": "*"
   },
   "resolutions": {
     "angular": "~1.4"

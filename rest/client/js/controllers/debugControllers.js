@@ -1,14 +1,21 @@
 angular.module("structureApp")
-    .controller("debugCtrl", function($scope, $timeout, vertxEventBus, vertxEventBusService) {
+    .controller("debugCtrl", function($scope, $timeout, createChangeStream, LiveSet) {
+        $scope.changeStreamUrl = '/api/Statuses/change-stream?_format=event-stream';
+        $scope.src = new EventSource($scope.changeStreamUrl);
+        $scope.changes = createChangeStream($scope.src);
+        $scope.theSet = new LiveSet([],$scope.changes);
 
-        // newTemplate is used to create the new Template via the eventbus
-        $scope.message = { };
+        //$scope.response = $scope.theSet.toLiveArray();
 
-        $scope.sendMessage = function() {
-            var json = JSON.parse($scope.message.unmarshalledText);
-            vertxEventBusService.send($scope.message.address, json)
-                .then(function(reply) {
-                    console.log(reply);
-                });
-        }
+        $scope.changes.on('data', function(update) {
+            console.log(JSON.stringify(update));
+        });
+
+        $scope.changes.on('end', function() {
+            console.log('ChangeStream end from server');
+        });
+
+        $scope.changes.on('error', function(error) {
+            console.log('ChangeStream error: '+error);
+        });
     });

@@ -7,7 +7,9 @@ angular.module("structureApp",
         "pageslide-directive",
         "ngDragDrop",
         "ngResource",
-        "lbServices"
+        "lbServices",
+        "ls.LiveSet",
+        "ls.ChangeStream"
     ])
     .config(function($routeProvider, $locationProvider) {
         $routeProvider
