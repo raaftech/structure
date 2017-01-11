@@ -55,7 +55,7 @@ class Entity {
         if (file !== null) {
             this.file = file;
         }
-    };
+    }
 
     /**
      * Create a new relation object on this entity.
@@ -67,11 +67,11 @@ class Entity {
         if (!this.meta.hasOwnProperty('relations')) {
             this.meta.relations = {};
         }
-        const relation = new Relation(name, direction);
+        const relation = new Relation(direction);
         this.meta.relations[name] = relation;
         return relation;
     }
-};
+}
 
 /**
  * Given a flat array of entity definitions that adhere to entity.schema.json, create a hierarchy based on relations.
@@ -95,32 +95,40 @@ const readBundle = (entities) => {
                 }
             });
         }
-    };
+    }
     return entityMap;
 };
 
 /**
  * Given an array of {@link Entity entities} that might contain nested entities, flatten and transform them
  * so they validate against entity.schema.json.
- * @param {Entity[]} entities An array of {@link Entity entities} that may contain nested entities.
+ * @param {Entity|Entity[]} entities An array of {@link Entity entities}, or a single {@link Entity entity} that may
+ * contain nested entities.
  * @returns {Array} A flat array or {@link Entity entities} where relations are flattened with UUID references.
  */
-const flatten = (entities) => {
-    const done = [];
-    const flattened = [];
-    entities.forEach((e) => {
-        if (!(e.meta.uuid in done)) {
+const flatten = (entities, done = [], flattened = []) => {
+    const flattenEntity = (e) => {
+        if (!done.includes(e.meta.uuid)) {
             done.push(e.meta.uuid);
             const copy = JSON.parse(JSON.stringify(e));
             for (const key of Object.keys(copy.meta.relations)) {
+                const relEntities = copy.meta.relations[key].entities;
                 delete copy.meta.relations[key].entities;
+
+                relEntities.forEach((relEnt) => flatten([relEnt], done, flattened));
             }
             flattened.push(copy);
         }
-    });
+    };
+
+    if (Array.isArray(entities)) {
+        entities.forEach(flattenEntity);
+    } else {
+        flattenEntity(entities);
+    }
 
     return flattened;
-}
+};
 
 exports.Entity = Entity;
 exports.readBundle = readBundle;
