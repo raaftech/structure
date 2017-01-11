@@ -3,6 +3,7 @@
 const R = require('ramda');
 const util = require('util');
 const clc = require('cli-color');
+const fs = require('fs');
 
 function generateQuestion(name, type, ask, options) {
 	return R.merge(R.zipObj(['name','type','message'],[name,type,ask]), options);
@@ -43,6 +44,10 @@ function consolidateComponents(uuid, componentList) {
     return result;
 }
 
+function readJsonFile(filePath) {
+    return JSON.parse(fs.readFileSync(filePath, {encoding: 'utf8'}));
+}
+
 module.exports = {
 	generateQuestion: generateQuestion,
 	createOptions: createOptions,
@@ -50,5 +55,6 @@ module.exports = {
 	getEventBusAddress: getEventBusAddress,
 	getCommonFields: getCommonFields,
 	stringify: stringify,
-	consolidateComponents: consolidateComponents
+	consolidateComponents: consolidateComponents,
+	readJsonFile: readJsonFile
 };

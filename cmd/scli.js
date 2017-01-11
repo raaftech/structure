@@ -8,6 +8,8 @@ const clc = require('cli-color');
 const sprintf = require('sprintf-js').sprintf;
 const treeify = require('treeify');
 const neo = require('./extensions/neo');
+const fs = require('fs');
+const path = require('path');
 
 let eventBusUrl = '';
 let eb = null;
@@ -96,6 +98,14 @@ function toRoot(uuid, childNodes) {
                 }
             });
     });
+}
+
+function payloadDir() {
+    return path.join(__dirname, 'payloads');
+}
+
+function getPayloadListing() {
+    return fs.readdirSync(payloadDir());
 }
 
 
@@ -257,4 +267,23 @@ vorpal.command('discover <cidr>', 'Discover items in the network')
                     done();
                 });
             });
+    });
+
+vorpal.command('query', 'Place arbitrary requests on the event bus')
+    .action(function(args,done) {
+        const self = this;
+        let qs = [];
+        qs.push(helper.generateQuestion('address', 'input', 'Event bus address: '));
+        qs.push(helper.generateQuestion('cmd', 'input', 'Command (msgh): '));
+        qs.push(helper.generateQuestion('file','list','Select payload file: ',{choices: getPayloadListing()}));
+
+        self.prompt(qs, function(res) {
+            let json = helper.readJsonFile(payloadDir() + '/' + res.file);
+            sendEvent(res.address,res.cmd,json)
+                .then((data) => {
+                    console.log(helper.stringify(data));
+                    done();
+                })
+                .catch((ex) => {console.log(ex); done();});
+        });
     });
