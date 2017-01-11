@@ -108,8 +108,16 @@ const flatten = (entities, done, flattened) => {
     if(!done) done = [];
     if(!flattened) flattened = [];
 
+    const objToList = (obj) => {
+        let list = [];
+        for(const p of Object.keys(obj)) {
+            list.push(obj[p]);
+        }
+        return list;
+    };
+
     const flattenEntity = (e) => {
-        if (!done.includes(e.meta.uuid)) {
+        if(done.indexOf(e.meta.uuid) === -1) {
             done.push(e.meta.uuid);
             const copy = JSON.parse(JSON.stringify(e));
             for (const key of Object.keys(copy.meta.relations)) {
@@ -122,11 +130,10 @@ const flatten = (entities, done, flattened) => {
         }
     };
 
-    if (Array.isArray(entities)) {
-        entities.forEach(flattenEntity);
-    } else {
-        flattenEntity(entities);
+    if(!Array.isArray(entities)) {
+        entities = objToList(entities);
     }
+    entities.forEach(flattenEntity);
 
     return flattened;
 };
