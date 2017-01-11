@@ -8,8 +8,8 @@ class Relation {
      * The relation constructor.
      * @param direction {string} The direction of the relation, defaults to 'outgoing'.
      */
-    constructor(direction = 'outgoing') {
-        this.direction = direction;
+    constructor(direction) {
+        this.direction = direction ? direction : 'outgoing';
         this.entities = [];
         this.uuids = [];
     }
@@ -40,21 +40,17 @@ class Entity {
      * @param {object} relations An object that maps relation names to Relation objects.
      * @param {object} file An object containing file references.
      */
-    constructor(type, name, desc, uuid, data = null, relations = null, file = null) {
+    constructor(type, name, desc, uuid, data, relations, file) {
         this.type = type;
         this.name = name;
         this.desc = desc;
         this.meta = {};
         this.meta.uuid = uuid;
-        if (data !== null) {
-            this.data = data;
-        }
-        if (relations !== null) {
-            this.meta.relations = relations;
-        }
-        if (file !== null) {
-            this.file = file;
-        }
+
+        if (data) this.data = data;
+        if (relations) this.meta.relations = relations;
+        if (file) this.file = file;
+
     }
 
     /**
@@ -63,10 +59,11 @@ class Entity {
      * @param {string} direction The direction, either 'incoming' or 'outgoing', with the latter being default.
      * @returns {Relation} The created relation object, to which entities can be added, see {@link Relation}.
      */
-    relationCreate(name, direction='outgoing') {
+    relationCreate(name, direction) {
         if (!this.meta.hasOwnProperty('relations')) {
             this.meta.relations = {};
         }
+        if(!direction) direction = 'outgoing';
         const relation = new Relation(direction);
         this.meta.relations[name] = relation;
         return relation;
@@ -82,6 +79,7 @@ const readBundle = (entities) => {
     const entityMap = {};
     entities.forEach((e) => entityMap[e.meta.uuid] =
         new Entity(e.type, e.name, e.desc, e.meta.uuid, e.data, e.meta.relations, e.file));
+
     for (const key of Object.keys(entityMap)) {
         const relations = entityMap[key].meta.relations;
         for (const relName of Object.keys(relations)) {
@@ -106,7 +104,10 @@ const readBundle = (entities) => {
  * contain nested entities.
  * @returns {Array} A flat array or {@link Entity entities} where relations are flattened with UUID references.
  */
-const flatten = (entities, done = [], flattened = []) => {
+const flatten = (entities, done, flattened) => {
+    if(!done) done = [];
+    if(!flattened) flattened = [];
+
     const flattenEntity = (e) => {
         if (!done.includes(e.meta.uuid)) {
             done.push(e.meta.uuid);
@@ -130,6 +131,8 @@ const flatten = (entities, done = [], flattened = []) => {
     return flattened;
 };
 
-exports.Entity = Entity;
-exports.readBundle = readBundle;
-exports.flatten = flatten;
+module.exports = {
+    Entity: Entity,
+    readBundle: readBundle,
+    flatten: flatten
+};
