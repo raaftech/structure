@@ -1,8 +1,32 @@
 {
-  "format": "json",
-  "checksum": "5b4f282aa3c65249a3386a66f9f798b837b217bd",
-  "path": "schemas/volatilememory.schema.json",
-  "encoding": "text",
-  "content": "{\n  \"additionalProperties\": false,\n  \"$schema\": \"http://json-schema.org/schema#\",\n  \"type\": \"object\",\n  \"properties\": {\n    \"name\": {\n      \"$ref\": \"type.schema.json#/properties/name\"\n    },\n    \"checksum\": {\n      \"$ref\": \"type.schema.json#/properties/checksum\"\n    },\n    \"memSizeKb\": {\n      \"$ref\": \"memoryhardware.schema.json#/properties/memSizeKb\"\n    },\n    \"rev\": {\n      \"$ref\": \"hardware.schema.json#/properties/rev\"\n    },\n    \"desc\": {\n      \"$ref\": \"type.schema.json#/properties/desc\"\n    },\n    \"memClockHz\": {\n      \"type\": \"number\",\n      \"description\": \"Memory speed in Hz.\"\n    }\n  },\n  \"required\": [\n    \"name\",\n    \"desc\",\n    \"memSizeKb\",\n    \"memClockHz\"\n  ]\n}",
-  "properties": {}
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/schema#",
+  "type": "object",
+  "properties": {
+    "name": {
+      "$ref": "type.schema.json#/properties/name"
+    },
+    "checksum": {
+      "$ref": "type.schema.json#/properties/checksum"
+    },
+    "memSizeKb": {
+      "$ref": "memoryhardware.schema.json#/properties/memSizeKb"
+    },
+    "rev": {
+      "$ref": "hardware.schema.json#/properties/rev"
+    },
+    "desc": {
+      "$ref": "type.schema.json#/properties/desc"
+    },
+    "memClockHz": {
+      "type": "number",
+      "description": "Memory speed in Hz."
+    }
+  },
+  "required": [
+    "name",
+    "desc",
+    "memSizeKb",
+    "memClockHz"
+  ]
 }

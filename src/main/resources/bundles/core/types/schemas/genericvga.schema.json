@@ -1,8 +1,68 @@
 {
-  "format": "json",
-  "checksum": "30a1fd69415cb750218a8066810e65517448eb97",
-  "path": "schemas/genericvga.schema.json",
-  "encoding": "text",
-  "content": "{\n  \"additionalProperties\": false,\n  \"$schema\": \"http://json-schema.org/schema#\",\n  \"type\": \"object\",\n  \"properties\": {\n    \"maxColorBitsPerScreen\": {\n      \"$ref\": \"graphicshardware.schema.json#/properties/maxColorBitsPerScreen\"\n    },\n    \"rev\": {\n      \"$ref\": \"hardware.schema.json#/properties/rev\"\n    },\n    \"memBandwidthKbs\": {\n      \"$ref\": \"graphicshardware.schema.json#/properties/memBandwidthKbs\"\n    },\n    \"memSizekb\": {\n      \"$ref\": \"graphicshardware.schema.json#/properties/memSizekb\"\n    },\n    \"textureMapUnits\": {\n      \"$ref\": \"graphicshardware.schema.json#/properties/textureMapUnits\"\n    },\n    \"memBusBits\": {\n      \"$ref\": \"graphicshardware.schema.json#/properties/memBusBits\"\n    },\n    \"gpuClockhz\": {\n      \"$ref\": \"graphicshardware.schema.json#/properties/gpuClockhz\"\n    },\n    \"gpuCoreCount\": {\n      \"$ref\": \"graphicshardware.schema.json#/properties/gpuCoreCount\"\n    },\n    \"pixelRatesPerSec\": {\n      \"$ref\": \"graphicshardware.schema.json#/properties/pixelRatesPerSec\"\n    },\n    \"memClockHz\": {\n      \"$ref\": \"graphicshardware.schema.json#/properties/memClockHz\"\n    },\n    \"maxColorBitsPerChannel\": {\n      \"$ref\": \"graphicshardware.schema.json#/properties/maxColorBitsPerChannel\"\n    },\n    \"shadingUnits\": {\n      \"$ref\": \"graphicshardware.schema.json#/properties/shadingUnits\"\n    },\n    \"name\": {\n      \"$ref\": \"type.schema.json#/properties/name\"\n    },\n    \"checksum\": {\n      \"$ref\": \"type.schema.json#/properties/checksum\"\n    },\n    \"maxVerticalRefreshHz\": {\n      \"$ref\": \"graphicshardware.schema.json#/properties/maxVerticalRefreshHz\"\n    },\n    \"flops\": {\n      \"$ref\": \"graphicshardware.schema.json#/properties/flops\"\n    },\n    \"desc\": {\n      \"$ref\": \"type.schema.json#/properties/desc\"\n    },\n    \"renderOutputCores\": {\n      \"$ref\": \"graphicshardware.schema.json#/properties/renderOutputCores\"\n    },\n    \"texelRatesPerSec\": {\n      \"$ref\": \"graphicshardware.schema.json#/properties/texelRatesPerSec\"\n    }\n  },\n  \"required\": [\n    \"name\",\n    \"desc\"\n  ]\n}",
-  "properties": {}
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/schema#",
+  "type": "object",
+  "properties": {
+    "maxColorBitsPerScreen": {
+      "$ref": "graphicshardware.schema.json#/properties/maxColorBitsPerScreen"
+    },
+    "rev": {
+      "$ref": "hardware.schema.json#/properties/rev"
+    },
+    "memBandwidthKbs": {
+      "$ref": "graphicshardware.schema.json#/properties/memBandwidthKbs"
+    },
+    "memSizekb": {
+      "$ref": "graphicshardware.schema.json#/properties/memSizekb"
+    },
+    "textureMapUnits": {
+      "$ref": "graphicshardware.schema.json#/properties/textureMapUnits"
+    },
+    "memBusBits": {
+      "$ref": "graphicshardware.schema.json#/properties/memBusBits"
+    },
+    "gpuClockhz": {
+      "$ref": "graphicshardware.schema.json#/properties/gpuClockhz"
+    },
+    "gpuCoreCount": {
+      "$ref": "graphicshardware.schema.json#/properties/gpuCoreCount"
+    },
+    "pixelRatesPerSec": {
+      "$ref": "graphicshardware.schema.json#/properties/pixelRatesPerSec"
+    },
+    "memClockHz": {
+      "$ref": "graphicshardware.schema.json#/properties/memClockHz"
+    },
+    "maxColorBitsPerChannel": {
+      "$ref": "graphicshardware.schema.json#/properties/maxColorBitsPerChannel"
+    },
+    "shadingUnits": {
+      "$ref": "graphicshardware.schema.json#/properties/shadingUnits"
+    },
+    "name": {
+      "$ref": "type.schema.json#/properties/name"
+    },
+    "checksum": {
+      "$ref": "type.schema.json#/properties/checksum"
+    },
+    "maxVerticalRefreshHz": {
+      "$ref": "graphicshardware.schema.json#/properties/maxVerticalRefreshHz"
+    },
+    "flops": {
+      "$ref": "graphicshardware.schema.json#/properties/flops"
+    },
+    "desc": {
+      "$ref": "type.schema.json#/properties/desc"
+    },
+    "renderOutputCores": {
+      "$ref": "graphicshardware.schema.json#/properties/renderOutputCores"
+    },
+    "texelRatesPerSec": {
+      "$ref": "graphicshardware.schema.json#/properties/texelRatesPerSec"
+    }
+  },
+  "required": [
+    "name",
+    "desc"
+  ]
 }

@@ -1,8 +1,30 @@
 {
-  "format": "json",
-  "checksum": "59960852e66807a0f2e9c996964286048c736f3c",
-  "path": "schemas/iplistener.schema.json",
-  "encoding": "text",
-  "content": "{\n  \"additionalProperties\": false,\n  \"$schema\": \"http://json-schema.org/schema#\",\n  \"type\": \"object\",\n  \"properties\": {\n    \"name\": {\n      \"$ref\": \"type.schema.json#/properties/name\"\n    },\n    \"checksum\": {\n      \"$ref\": \"type.schema.json#/properties/checksum\"\n    },\n    \"addr\": {\n      \"type\": \"string\",\n      \"description\": \"IP listeners should at least have the addr and port fields.\"\n    },\n    \"port\": {\n      \"type\": \"number\",\n      \"description\": \"IP listeners should at least have the addr and port fields.\"\n    },\n    \"desc\": {\n      \"$ref\": \"type.schema.json#/properties/desc\"\n    }\n  },\n  \"required\": [\n    \"name\",\n    \"desc\",\n    \"addr\",\n    \"port\"\n  ]\n}",
-  "properties": {}
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/schema#",
+  "type": "object",
+  "properties": {
+    "name": {
+      "$ref": "type.schema.json#/properties/name"
+    },
+    "checksum": {
+      "$ref": "type.schema.json#/properties/checksum"
+    },
+    "addr": {
+      "type": "string",
+      "description": "IP listeners should at least have the addr and port fields."
+    },
+    "port": {
+      "type": "number",
+      "description": "IP listeners should at least have the addr and port fields."
+    },
+    "desc": {
+      "$ref": "type.schema.json#/properties/desc"
+    }
+  },
+  "required": [
+    "name",
+    "desc",
+    "addr",
+    "port"
+  ]
 }

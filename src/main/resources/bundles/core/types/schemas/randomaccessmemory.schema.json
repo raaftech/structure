@@ -1,8 +1,31 @@
 {
-  "format": "json",
-  "checksum": "6ab8ad3511a658dbc678720170930ba4d0be1836",
-  "path": "schemas/randomaccessmemory.schema.json",
-  "encoding": "text",
-  "content": "{\n  \"additionalProperties\": false,\n  \"$schema\": \"http://json-schema.org/schema#\",\n  \"type\": \"object\",\n  \"properties\": {\n    \"name\": {\n      \"$ref\": \"type.schema.json#/properties/name\"\n    },\n    \"checksum\": {\n      \"$ref\": \"type.schema.json#/properties/checksum\"\n    },\n    \"memSizeKb\": {\n      \"$ref\": \"memoryhardware.schema.json#/properties/memSizeKb\"\n    },\n    \"rev\": {\n      \"$ref\": \"hardware.schema.json#/properties/rev\"\n    },\n    \"desc\": {\n      \"$ref\": \"type.schema.json#/properties/desc\"\n    },\n    \"memClockHz\": {\n      \"$ref\": \"volatilememory.schema.json#/properties/memClockHz\"\n    }\n  },\n  \"required\": [\n    \"name\",\n    \"desc\",\n    \"memSizeKb\",\n    \"memClockHz\"\n  ]\n}",
-  "properties": {}
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/schema#",
+  "type": "object",
+  "properties": {
+    "name": {
+      "$ref": "type.schema.json#/properties/name"
+    },
+    "checksum": {
+      "$ref": "type.schema.json#/properties/checksum"
+    },
+    "memSizeKb": {
+      "$ref": "memoryhardware.schema.json#/properties/memSizeKb"
+    },
+    "rev": {
+      "$ref": "hardware.schema.json#/properties/rev"
+    },
+    "desc": {
+      "$ref": "type.schema.json#/properties/desc"
+    },
+    "memClockHz": {
+      "$ref": "volatilememory.schema.json#/properties/memClockHz"
+    }
+  },
+  "required": [
+    "name",
+    "desc",
+    "memSizeKb",
+    "memClockHz"
+  ]
 }

@@ -1,8 +1,28 @@
 {
-  "format": "json",
-  "checksum": "0a5c4aaf8c099dbff86b9c04b399b196428dd998",
-  "path": "schemas/ipv4listener.schema.json",
-  "encoding": "text",
-  "content": "{\n  \"additionalProperties\": false,\n  \"$schema\": \"http://json-schema.org/schema#\",\n  \"type\": \"object\",\n  \"properties\": {\n    \"name\": {\n      \"$ref\": \"type.schema.json#/properties/name\"\n    },\n    \"checksum\": {\n      \"$ref\": \"type.schema.json#/properties/checksum\"\n    },\n    \"addr\": {\n      \"$ref\": \"iplistener.schema.json#/properties/addr\"\n    },\n    \"port\": {\n      \"$ref\": \"iplistener.schema.json#/properties/port\"\n    },\n    \"desc\": {\n      \"$ref\": \"type.schema.json#/properties/desc\"\n    }\n  },\n  \"required\": [\n    \"name\",\n    \"desc\",\n    \"addr\",\n    \"port\"\n  ]\n}",
-  "properties": {}
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/schema#",
+  "type": "object",
+  "properties": {
+    "name": {
+      "$ref": "type.schema.json#/properties/name"
+    },
+    "checksum": {
+      "$ref": "type.schema.json#/properties/checksum"
+    },
+    "addr": {
+      "$ref": "iplistener.schema.json#/properties/addr"
+    },
+    "port": {
+      "$ref": "iplistener.schema.json#/properties/port"
+    },
+    "desc": {
+      "$ref": "type.schema.json#/properties/desc"
+    }
+  },
+  "required": [
+    "name",
+    "desc",
+    "addr",
+    "port"
+  ]
 }

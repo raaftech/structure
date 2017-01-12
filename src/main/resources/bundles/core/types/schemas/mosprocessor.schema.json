@@ -1,8 +1,43 @@
 {
-  "format": "json",
-  "checksum": "e68c56d7068b390107408912796a573943776474",
-  "path": "schemas/mosprocessor.schema.json",
-  "encoding": "text",
-  "content": "{\n  \"additionalProperties\": false,\n  \"$schema\": \"http://json-schema.org/schema#\",\n  \"type\": \"object\",\n  \"properties\": {\n    \"cpuClockHz\": {\n      \"$ref\": \"processingunit.schema.json#/properties/cpuClockHz\"\n    },\n    \"rev\": {\n      \"$ref\": \"hardware.schema.json#/properties/rev\"\n    },\n    \"cacheSizeKb\": {\n      \"$ref\": \"processingunit.schema.json#/properties/cacheSizeKb\"\n    },\n    \"smtEnabled\": {\n      \"$ref\": \"processingunit.schema.json#/properties/smtEnabled\"\n    },\n    \"name\": {\n      \"$ref\": \"type.schema.json#/properties/name\"\n    },\n    \"checksum\": {\n      \"$ref\": \"type.schema.json#/properties/checksum\"\n    },\n    \"bits\": {\n      \"$ref\": \"processingunit.schema.json#/properties/bits\"\n    },\n    \"cpuCoreCount\": {\n      \"$ref\": \"processingunit.schema.json#/properties/cpuCoreCount\"\n    },\n    \"desc\": {\n      \"$ref\": \"type.schema.json#/properties/desc\"\n    }\n  },\n  \"required\": [\n    \"name\",\n    \"desc\",\n    \"cacheSizeKb\",\n    \"cpuCoreCount\",\n    \"cpuClockHz\",\n    \"smtEnabled\",\n    \"bits\"\n  ]\n}",
-  "properties": {}
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/schema#",
+  "type": "object",
+  "properties": {
+    "cpuClockHz": {
+      "$ref": "processingunit.schema.json#/properties/cpuClockHz"
+    },
+    "rev": {
+      "$ref": "hardware.schema.json#/properties/rev"
+    },
+    "cacheSizeKb": {
+      "$ref": "processingunit.schema.json#/properties/cacheSizeKb"
+    },
+    "smtEnabled": {
+      "$ref": "processingunit.schema.json#/properties/smtEnabled"
+    },
+    "name": {
+      "$ref": "type.schema.json#/properties/name"
+    },
+    "checksum": {
+      "$ref": "type.schema.json#/properties/checksum"
+    },
+    "bits": {
+      "$ref": "processingunit.schema.json#/properties/bits"
+    },
+    "cpuCoreCount": {
+      "$ref": "processingunit.schema.json#/properties/cpuCoreCount"
+    },
+    "desc": {
+      "$ref": "type.schema.json#/properties/desc"
+    }
+  },
+  "required": [
+    "name",
+    "desc",
+    "cacheSizeKb",
+    "cpuCoreCount",
+    "cpuClockHz",
+    "smtEnabled",
+    "bits"
+  ]
 }

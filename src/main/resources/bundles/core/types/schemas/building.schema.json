@@ -1,8 +1,42 @@
 {
-  "format": "json",
-  "checksum": "b449fb8ff70370eea3fc1431f9864552bf0d0cb1",
-  "path": "schemas/building.schema.json",
-  "encoding": "text",
-  "content": "{\n  \"additionalProperties\": false,\n  \"$schema\": \"http://json-schema.org/schema#\",\n  \"type\": \"object\",\n  \"properties\": {\n    \"country\": {\n      \"type\": \"string\",\n      \"description\": \"The country where the Building resides\"\n    },\n    \"code\": {\n      \"$ref\": \"locational.schema.json#/properties/code\"\n    },\n    \"city\": {\n      \"type\": \"string\",\n      \"description\": \"The city where the Building resides.\"\n    },\n    \"streetAddress\": {\n      \"type\": \"string\",\n      \"description\": \"The street address and number (if any) of the Building.\"\n    },\n    \"postalCode\": {\n      \"type\": \"string\",\n      \"description\": \"'The postal code or the Building.\"\n    },\n    \"name\": {\n      \"$ref\": \"type.schema.json#/properties/name\"\n    },\n    \"checksum\": {\n      \"$ref\": \"type.schema.json#/properties/checksum\"\n    },\n    \"desc\": {\n      \"$ref\": \"type.schema.json#/properties/desc\"\n    }\n  },\n  \"required\": [\n    \"name\",\n    \"desc\",\n    \"city\",\n    \"streetAddress\",\n    \"country\"\n  ]\n}",
-  "properties": {}
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/schema#",
+  "type": "object",
+  "properties": {
+    "country": {
+      "type": "string",
+      "description": "The country where the Building resides"
+    },
+    "code": {
+      "$ref": "locational.schema.json#/properties/code"
+    },
+    "city": {
+      "type": "string",
+      "description": "The city where the Building resides."
+    },
+    "streetAddress": {
+      "type": "string",
+      "description": "The street address and number (if any) of the Building."
+    },
+    "postalCode": {
+      "type": "string",
+      "description": "'The postal code or the Building."
+    },
+    "name": {
+      "$ref": "type.schema.json#/properties/name"
+    },
+    "checksum": {
+      "$ref": "type.schema.json#/properties/checksum"
+    },
+    "desc": {
+      "$ref": "type.schema.json#/properties/desc"
+    }
+  },
+  "required": [
+    "name",
+    "desc",
+    "city",
+    "streetAddress",
+    "country"
+  ]
 }

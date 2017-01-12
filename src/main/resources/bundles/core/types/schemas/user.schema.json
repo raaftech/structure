@@ -1,8 +1,43 @@
 {
-  "format": "json",
-  "checksum": "fea116e8c85404345f1324285dbbd0e18b4f80f5",
-  "path": "schemas/user.schema.json",
-  "encoding": "text",
-  "content": "{\n  \"additionalProperties\": false,\n  \"$schema\": \"http://json-schema.org/schema#\",\n  \"type\": \"object\",\n  \"properties\": {\n    \"firstName\": {\n      \"type\": \"string\",\n      \"description\": \"The first name of the User.\"\n    },\n    \"lastName\": {\n      \"type\": \"string\",\n      \"description\": \"The last name of the User.\"\n    },\n    \"emailAddress\": {\n      \"type\": \"string\",\n      \"description\": \"The email address of the User.\"\n    },\n    \"name\": {\n      \"$ref\": \"type.schema.json#/properties/name\"\n    },\n    \"checksum\": {\n      \"$ref\": \"type.schema.json#/properties/checksum\"\n    },\n    \"title\": {\n      \"type\": \"string\",\n      \"description\": \"The title of the user.\"\n    },\n    \"birthDate\": {\n      \"type\": \"number\",\n      \"description\": \"The birth date of the User\"\n    },\n    \"desc\": {\n      \"$ref\": \"type.schema.json#/properties/desc\"\n    }\n  },\n  \"required\": [\n    \"name\",\n    \"desc\",\n    \"emailAddress\",\n    \"firstName\",\n    \"lastName\"\n  ]\n}",
-  "properties": {}
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/schema#",
+  "type": "object",
+  "properties": {
+    "firstName": {
+      "type": "string",
+      "description": "The first name of the User."
+    },
+    "lastName": {
+      "type": "string",
+      "description": "The last name of the User."
+    },
+    "emailAddress": {
+      "type": "string",
+      "description": "The email address of the User."
+    },
+    "name": {
+      "$ref": "type.schema.json#/properties/name"
+    },
+    "checksum": {
+      "$ref": "type.schema.json#/properties/checksum"
+    },
+    "title": {
+      "type": "string",
+      "description": "The title of the user."
+    },
+    "birthDate": {
+      "type": "number",
+      "description": "The birth date of the User"
+    },
+    "desc": {
+      "$ref": "type.schema.json#/properties/desc"
+    }
+  },
+  "required": [
+    "name",
+    "desc",
+    "emailAddress",
+    "firstName",
+    "lastName"
+  ]
 }

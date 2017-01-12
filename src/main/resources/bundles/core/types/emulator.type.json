@@ -14,9 +14,6 @@
         }
       }
     },
-    "data": {
-      "glyphId": 48
-    },
     "file": {
       "dataSchema": {
         "encoding": "text",
@@ -40,9 +37,6 @@
         }
       }
     },
-    "data": {
-      "glyphId": 74
-    },
     "file": {
       "dataSchema": {
         "encoding": "text",
@@ -65,9 +59,6 @@
           ]
         }
       }
-    },
-    "data": {
-      "glyphId": 199
     },
     "file": {
       "dataSchema": {

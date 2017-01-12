@@ -1,8 +1,32 @@
 {
-  "format": "json",
-  "checksum": "49e004499673968f364cac748c09c2f810173c3c",
-  "path": "schemas/fedora12.schema.json",
-  "encoding": "text",
-  "content": "{\n  \"additionalProperties\": false,\n  \"$schema\": \"http://json-schema.org/schema#\",\n  \"type\": \"object\",\n  \"properties\": {\n    \"name\": {\n      \"$ref\": \"type.schema.json#/properties/name\"\n    },\n    \"checksum\": {\n      \"$ref\": \"type.schema.json#/properties/checksum\"\n    },\n    \"ver\": {\n      \"$ref\": \"software.schema.json#/properties/ver\"\n    },\n    \"shortName\": {\n      \"$ref\": \"software.schema.json#/properties/shortName\"\n    },\n    \"desc\": {\n      \"$ref\": \"type.schema.json#/properties/desc\"\n    },\n    \"longName\": {\n      \"$ref\": \"software.schema.json#/properties/longName\"\n    }\n  },\n  \"required\": [\n    \"name\",\n    \"desc\",\n    \"ver\",\n    \"shortName\",\n    \"longName\"\n  ]\n}",
-  "properties": {}
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/schema#",
+  "type": "object",
+  "properties": {
+    "name": {
+      "$ref": "type.schema.json#/properties/name"
+    },
+    "checksum": {
+      "$ref": "type.schema.json#/properties/checksum"
+    },
+    "ver": {
+      "$ref": "software.schema.json#/properties/ver"
+    },
+    "shortName": {
+      "$ref": "software.schema.json#/properties/shortName"
+    },
+    "desc": {
+      "$ref": "type.schema.json#/properties/desc"
+    },
+    "longName": {
+      "$ref": "software.schema.json#/properties/longName"
+    }
+  },
+  "required": [
+    "name",
+    "desc",
+    "ver",
+    "shortName",
+    "longName"
+  ]
 }

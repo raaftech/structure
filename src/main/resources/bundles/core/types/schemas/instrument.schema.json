@@ -1,8 +1,29 @@
 {
-  "format": "json",
-  "checksum": "1c5099b3ad59c04cb467245fd962c125e184a531",
-  "path": "schemas/instrument.schema.json",
-  "encoding": "text",
-  "content": "{\n  \"additionalProperties\": false,\n  \"$schema\": \"http://json-schema.org/schema#\",\n  \"type\": \"object\",\n  \"properties\": {\n    \"name\": {\n      \"$ref\": \"type.schema.json#/properties/name\"\n    },\n    \"checksum\": {\n      \"$ref\": \"type.schema.json#/properties/checksum\"\n    },\n    \"weight\": {\n      \"type\": \"number\",\n      \"description\": \"The weight of a instrument, used choose between instruments.\"\n    },\n    \"desc\": {\n      \"$ref\": \"type.schema.json#/properties/desc\"\n    },\n    \"filePath\": {\n      \"type\": \"string\",\n      \"description\": \"The filesystem location of the instrument.\"\n    }\n  },\n  \"required\": [\n    \"name\",\n    \"desc\",\n    \"filePath\"\n  ]\n}",
-  "properties": {}
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/schema#",
+  "type": "object",
+  "properties": {
+    "name": {
+      "$ref": "type.schema.json#/properties/name"
+    },
+    "checksum": {
+      "$ref": "type.schema.json#/properties/checksum"
+    },
+    "weight": {
+      "type": "number",
+      "description": "The weight of a instrument, used choose between instruments."
+    },
+    "desc": {
+      "$ref": "type.schema.json#/properties/desc"
+    },
+    "filePath": {
+      "type": "string",
+      "description": "The filesystem location of the instrument."
+    }
+  },
+  "required": [
+    "name",
+    "desc",
+    "filePath"
+  ]
 }

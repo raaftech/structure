@@ -1,8 +1,28 @@
 {
-  "format": "json",
-  "checksum": "a4f91b76002bc50287b05087220a33399307a58f",
-  "path": "schemas/ipv6address.schema.json",
-  "encoding": "text",
-  "content": "{\n  \"additionalProperties\": false,\n  \"$schema\": \"http://json-schema.org/schema#\",\n  \"type\": \"object\",\n  \"properties\": {\n    \"name\": {\n      \"$ref\": \"type.schema.json#/properties/name\"\n    },\n    \"checksum\": {\n      \"$ref\": \"type.schema.json#/properties/checksum\"\n    },\n    \"addr\": {\n      \"$ref\": \"ipaddress.schema.json#/properties/addr\"\n    },\n    \"reachable\": {\n      \"$ref\": \"ipaddress.schema.json#/properties/reachable\"\n    },\n    \"desc\": {\n      \"$ref\": \"type.schema.json#/properties/desc\"\n    }\n  },\n  \"required\": [\n    \"name\",\n    \"desc\",\n    \"addr\",\n    \"reachable\"\n  ]\n}",
-  "properties": {}
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/schema#",
+  "type": "object",
+  "properties": {
+    "name": {
+      "$ref": "type.schema.json#/properties/name"
+    },
+    "checksum": {
+      "$ref": "type.schema.json#/properties/checksum"
+    },
+    "addr": {
+      "$ref": "ipaddress.schema.json#/properties/addr"
+    },
+    "reachable": {
+      "$ref": "ipaddress.schema.json#/properties/reachable"
+    },
+    "desc": {
+      "$ref": "type.schema.json#/properties/desc"
+    }
+  },
+  "required": [
+    "name",
+    "desc",
+    "addr",
+    "reachable"
+  ]
 }
