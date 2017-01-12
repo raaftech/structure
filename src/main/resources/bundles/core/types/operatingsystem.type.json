@@ -14,9 +14,6 @@
         }
       }
     },
-    "data": {
-      "glyphId": 75
-    },
     "file": {
       "dataSchema": {
         "encoding": "text",
@@ -39,9 +36,6 @@
           ]
         }
       }
-    },
-    "data": {
-      "glyphId": 267
     },
     "file": {
       "dataSchema": {
@@ -66,9 +60,6 @@
         }
       }
     },
-    "data": {
-      "glyphId": 263
-    },
     "file": {
       "dataSchema": {
         "encoding": "text",
@@ -91,9 +82,6 @@
           ]
         }
       }
-    },
-    "data": {
-      "glyphId": 251
     },
     "file": {
       "dataSchema": {
@@ -118,9 +106,6 @@
         }
       }
     },
-    "data": {
-      "glyphId": 250
-    },
     "file": {
       "dataSchema": {
         "encoding": "text",
@@ -143,9 +128,6 @@
           ]
         }
       }
-    },
-    "data": {
-      "glyphId": 109
     },
     "file": {
       "dataSchema": {
@@ -170,9 +152,6 @@
         }
       }
     },
-    "data": {
-      "glyphId": 162
-    },
     "file": {
       "dataSchema": {
         "encoding": "text",
@@ -195,9 +174,6 @@
           ]
         }
       }
-    },
-    "data": {
-      "glyphId": 49
     },
     "file": {
       "dataSchema": {
@@ -222,9 +198,6 @@
         }
       }
     },
-    "data": {
-      "glyphId": 125
-    },
     "file": {
       "dataSchema": {
         "encoding": "text",
@@ -247,9 +220,6 @@
           ]
         }
       }
-    },
-    "data": {
-      "glyphId": 89
     },
     "file": {
       "dataSchema": {
@@ -274,9 +244,6 @@
         }
       }
     },
-    "data": {
-      "glyphId": 89
-    },
     "file": {
       "dataSchema": {
         "encoding": "text",
@@ -299,9 +266,6 @@
           ]
         }
       }
-    },
-    "data": {
-      "glyphId": 171
     },
     "file": {
       "dataSchema": {
@@ -326,9 +290,6 @@
         }
       }
     },
-    "data": {
-      "glyphId": 171
-    },
     "file": {
       "dataSchema": {
         "encoding": "text",
@@ -351,9 +312,6 @@
           ]
         }
       }
-    },
-    "data": {
-      "glyphId": 171
     },
     "file": {
       "dataSchema": {
@@ -378,9 +336,6 @@
         }
       }
     },
-    "data": {
-      "glyphId": 266
-    },
     "file": {
       "dataSchema": {
         "encoding": "text",
@@ -403,9 +358,6 @@
           ]
         }
       }
-    },
-    "data": {
-      "glyphId": 266
     },
     "file": {
       "dataSchema": {
@@ -430,9 +382,6 @@
         }
       }
     },
-    "data": {
-      "glyphId": 266
-    },
     "file": {
       "dataSchema": {
         "encoding": "text",
@@ -455,9 +404,6 @@
           ]
         }
       }
-    },
-    "data": {
-      "glyphId": 268
     },
     "file": {
       "dataSchema": {
@@ -482,9 +428,6 @@
         }
       }
     },
-    "data": {
-      "glyphId": 266
-    },
     "file": {
       "dataSchema": {
         "encoding": "text",
@@ -507,9 +450,6 @@
           ]
         }
       }
-    },
-    "data": {
-      "glyphId": 266
     },
     "file": {
       "dataSchema": {
@@ -534,9 +474,6 @@
         }
       }
     },
-    "data": {
-      "glyphId": 264
-    },
     "file": {
       "dataSchema": {
         "encoding": "text",
@@ -559,9 +496,6 @@
           ]
         }
       }
-    },
-    "data": {
-      "glyphId": 270
     },
     "file": {
       "dataSchema": {
@@ -586,9 +520,6 @@
         }
       }
     },
-    "data": {
-      "glyphId": 270
-    },
     "file": {
       "dataSchema": {
         "encoding": "text",
@@ -611,9 +542,6 @@
           ]
         }
       }
-    },
-    "data": {
-      "glyphId": 269
     },
     "file": {
       "dataSchema": {
@@ -638,9 +566,6 @@
         }
       }
     },
-    "data": {
-      "glyphId": 270
-    },
     "file": {
       "dataSchema": {
         "encoding": "text",
@@ -663,9 +588,6 @@
           ]
         }
       }
-    },
-    "data": {
-      "glyphId": 270
     },
     "file": {
       "dataSchema": {
@@ -690,9 +612,6 @@
         }
       }
     },
-    "data": {
-      "glyphId": 265
-    },
     "file": {
       "dataSchema": {
         "encoding": "text",
@@ -715,9 +634,6 @@
           ]
         }
       }
-    },
-    "data": {
-      "glyphId": 265
     },
     "file": {
       "dataSchema": {
@@ -742,9 +658,6 @@
         }
       }
     },
-    "data": {
-      "glyphId": 202
-    },
     "file": {
       "dataSchema": {
         "encoding": "text",
@@ -767,9 +680,6 @@
           ]
         }
       }
-    },
-    "data": {
-      "glyphId": 202
     },
     "file": {
       "dataSchema": {
@@ -794,9 +704,6 @@
         }
       }
     },
-    "data": {
-      "glyphId": 202
-    },
     "file": {
       "dataSchema": {
         "encoding": "text",
@@ -819,9 +726,6 @@
           ]
         }
       }
-    },
-    "data": {
-      "glyphId": 35
     },
     "file": {
       "dataSchema": {
@@ -846,9 +750,6 @@
         }
       }
     },
-    "data": {
-      "glyphId": 35
-    },
     "file": {
       "dataSchema": {
         "encoding": "text",
@@ -871,9 +772,6 @@
           ]
         }
       }
-    },
-    "data": {
-      "glyphId": 35
     },
     "file": {
       "dataSchema": {
@@ -898,9 +796,6 @@
         }
       }
     },
-    "data": {
-      "glyphId": 35
-    },
     "file": {
       "dataSchema": {
         "encoding": "text",
@@ -923,9 +818,6 @@
           ]
         }
       }
-    },
-    "data": {
-      "glyphId": 101
     },
     "file": {
       "dataSchema": {
@@ -950,9 +842,6 @@
         }
       }
     },
-    "data": {
-      "glyphId": 101
-    },
     "file": {
       "dataSchema": {
         "encoding": "text",
@@ -975,9 +864,6 @@
           ]
         }
       }
-    },
-    "data": {
-      "glyphId": 101
     },
     "file": {
       "dataSchema": {
@@ -1002,9 +888,6 @@
         }
       }
     },
-    "data": {
-      "glyphId": 101
-    },
     "file": {
       "dataSchema": {
         "encoding": "text",
@@ -1027,9 +910,6 @@
           ]
         }
       }
-    },
-    "data": {
-      "glyphId": 101
     },
     "file": {
       "dataSchema": {
@@ -1054,9 +934,6 @@
         }
       }
     },
-    "data": {
-      "glyphId": 101
-    },
     "file": {
       "dataSchema": {
         "encoding": "text",
@@ -1079,9 +956,6 @@
           ]
         }
       }
-    },
-    "data": {
-      "glyphId": 227
     },
     "file": {
       "dataSchema": {
@@ -1106,9 +980,6 @@
         }
       }
     },
-    "data": {
-      "glyphId": 227
-    },
     "file": {
       "dataSchema": {
         "encoding": "text",
@@ -1131,9 +1002,6 @@
           ]
         }
       }
-    },
-    "data": {
-      "glyphId": 227
     },
     "file": {
       "dataSchema": {
@@ -1158,9 +1026,6 @@
         }
       }
     },
-    "data": {
-      "glyphId": 227
-    },
     "file": {
       "dataSchema": {
         "encoding": "text",
@@ -1183,9 +1048,6 @@
           ]
         }
       }
-    },
-    "data": {
-      "glyphId": 227
     },
     "file": {
       "dataSchema": {
@@ -1210,9 +1072,6 @@
         }
       }
     },
-    "data": {
-      "glyphId": 180
-    },
     "file": {
       "dataSchema": {
         "encoding": "text",
@@ -1235,9 +1094,6 @@
           ]
         }
       }
-    },
-    "data": {
-      "glyphId": 180
     },
     "file": {
       "dataSchema": {
@@ -1262,9 +1118,6 @@
         }
       }
     },
-    "data": {
-      "glyphId": 175
-    },
     "file": {
       "dataSchema": {
         "encoding": "text",
@@ -1287,9 +1140,6 @@
           ]
         }
       }
-    },
-    "data": {
-      "glyphId": 175
     },
     "file": {
       "dataSchema": {
@@ -1314,9 +1164,6 @@
         }
       }
     },
-    "data": {
-      "glyphId": 175
-    },
     "file": {
       "dataSchema": {
         "encoding": "text",
@@ -1339,9 +1186,6 @@
           ]
         }
       }
-    },
-    "data": {
-      "glyphId": 222
     },
     "file": {
       "dataSchema": {
@@ -1366,9 +1210,6 @@
         }
       }
     },
-    "data": {
-      "glyphId": 79
-    },
     "file": {
       "dataSchema": {
         "encoding": "text",
@@ -1391,9 +1232,6 @@
           ]
         }
       }
-    },
-    "data": {
-      "glyphId": 177
     },
     "file": {
       "dataSchema": {
@@ -1418,9 +1256,6 @@
         }
       }
     },
-    "data": {
-      "glyphId": 177
-    },
     "file": {
       "dataSchema": {
         "encoding": "text",
@@ -1443,9 +1278,6 @@
           ]
         }
       }
-    },
-    "data": {
-      "glyphId": 177
     },
     "file": {
       "dataSchema": {
@@ -1470,9 +1302,6 @@
         }
       }
     },
-    "data": {
-      "glyphId": 186
-    },
     "file": {
       "dataSchema": {
         "encoding": "text",
@@ -1495,9 +1324,6 @@
           ]
         }
       }
-    },
-    "data": {
-      "glyphId": 186
     },
     "file": {
       "dataSchema": {
@@ -1522,9 +1348,6 @@
         }
       }
     },
-    "data": {
-      "glyphId": 186
-    },
     "file": {
       "dataSchema": {
         "encoding": "text",
@@ -1547,9 +1370,6 @@
           ]
         }
       }
-    },
-    "data": {
-      "glyphId": 162
     },
     "file": {
       "dataSchema": {
@@ -1574,9 +1394,6 @@
         }
       }
     },
-    "data": {
-      "glyphId": 162
-    },
     "file": {
       "dataSchema": {
         "encoding": "text",
@@ -1599,9 +1416,6 @@
           ]
         }
       }
-    },
-    "data": {
-      "glyphId": 0
     },
     "file": {
       "dataSchema": {
@@ -1626,9 +1440,6 @@
         }
       }
     },
-    "data": {
-      "glyphId": 162
-    },
     "file": {
       "dataSchema": {
         "encoding": "text",
@@ -1651,9 +1462,6 @@
           ]
         }
       }
-    },
-    "data": {
-      "glyphId": 162
     },
     "file": {
       "dataSchema": {
@@ -1678,9 +1486,6 @@
         }
       }
     },
-    "data": {
-      "glyphId": 162
-    },
     "file": {
       "dataSchema": {
         "encoding": "text",
@@ -1703,9 +1508,6 @@
           ]
         }
       }
-    },
-    "data": {
-      "glyphId": 162
     },
     "file": {
       "dataSchema": {
@@ -1730,9 +1532,6 @@
         }
       }
     },
-    "data": {
-      "glyphId": 162
-    },
     "file": {
       "dataSchema": {
         "encoding": "text",
@@ -1755,9 +1554,6 @@
           ]
         }
       }
-    },
-    "data": {
-      "glyphId": 88
     },
     "file": {
       "dataSchema": {
@@ -1782,9 +1578,6 @@
         }
       }
     },
-    "data": {
-      "glyphId": 88
-    },
     "file": {
       "dataSchema": {
         "encoding": "text",
@@ -1807,9 +1600,6 @@
           ]
         }
       }
-    },
-    "data": {
-      "glyphId": 88
     },
     "file": {
       "dataSchema": {
@@ -1834,9 +1624,6 @@
         }
       }
     },
-    "data": {
-      "glyphId": 88
-    },
     "file": {
       "dataSchema": {
         "encoding": "text",
@@ -1859,9 +1646,6 @@
           ]
         }
       }
-    },
-    "data": {
-      "glyphId": 88
     },
     "file": {
       "dataSchema": {
@@ -1886,9 +1670,6 @@
         }
       }
     },
-    "data": {
-      "glyphId": 88
-    },
     "file": {
       "dataSchema": {
         "encoding": "text",
@@ -1911,9 +1692,6 @@
           ]
         }
       }
-    },
-    "data": {
-      "glyphId": 88
     },
     "file": {
       "dataSchema": {
@@ -1938,9 +1716,6 @@
         }
       }
     },
-    "data": {
-      "glyphId": 88
-    },
     "file": {
       "dataSchema": {
         "encoding": "text",
@@ -1963,9 +1738,6 @@
           ]
         }
       }
-    },
-    "data": {
-      "glyphId": 172
     },
     "file": {
       "dataSchema": {
@@ -1990,9 +1762,6 @@
         }
       }
     },
-    "data": {
-      "glyphId": 172
-    },
     "file": {
       "dataSchema": {
         "encoding": "text",
@@ -2015,9 +1784,6 @@
           ]
         }
       }
-    },
-    "data": {
-      "glyphId": 172
     },
     "file": {
       "dataSchema": {
@@ -2042,9 +1808,6 @@
         }
       }
     },
-    "data": {
-      "glyphId": 172
-    },
     "file": {
       "dataSchema": {
         "encoding": "text",
@@ -2067,9 +1830,6 @@
           ]
         }
       }
-    },
-    "data": {
-      "glyphId": 179
     },
     "file": {
       "dataSchema": {
@@ -2094,9 +1854,6 @@
         }
       }
     },
-    "data": {
-      "glyphId": 179
-    },
     "file": {
       "dataSchema": {
         "encoding": "text",
@@ -2119,9 +1876,6 @@
           ]
         }
       }
-    },
-    "data": {
-      "glyphId": 179
     },
     "file": {
       "dataSchema": {
@@ -2146,9 +1900,6 @@
         }
       }
     },
-    "data": {
-      "glyphId": 77
-    },
     "file": {
       "dataSchema": {
         "encoding": "text",
@@ -2171,9 +1922,6 @@
           ]
         }
       }
-    },
-    "data": {
-      "glyphId": 77
     },
     "file": {
       "dataSchema": {
@@ -2198,9 +1946,6 @@
         }
       }
     },
-    "data": {
-      "glyphId": 77
-    },
     "file": {
       "dataSchema": {
         "encoding": "text",
@@ -2223,9 +1968,6 @@
           ]
         }
       }
-    },
-    "data": {
-      "glyphId": 77
     },
     "file": {
       "dataSchema": {
@@ -2250,9 +1992,6 @@
         }
       }
     },
-    "data": {
-      "glyphId": 42
-    },
     "file": {
       "dataSchema": {
         "encoding": "text",
@@ -2275,9 +2014,6 @@
           ]
         }
       }
-    },
-    "data": {
-      "glyphId": 69
     },
     "file": {
       "dataSchema": {
@@ -2302,9 +2038,6 @@
         }
       }
     },
-    "data": {
-      "glyphId": 69
-    },
     "file": {
       "dataSchema": {
         "encoding": "text",
@@ -2327,9 +2060,6 @@
           ]
         }
       }
-    },
-    "data": {
-      "glyphId": 69
     },
     "file": {
       "dataSchema": {
@@ -2354,9 +2084,6 @@
         }
       }
     },
-    "data": {
-      "glyphId": 69
-    },
     "file": {
       "dataSchema": {
         "encoding": "text",
@@ -2379,9 +2106,6 @@
           ]
         }
       }
-    },
-    "data": {
-      "glyphId": 69
     },
     "file": {
       "dataSchema": {
@@ -2406,9 +2130,6 @@
         }
       }
     },
-    "data": {
-      "glyphId": 69
-    },
     "file": {
       "dataSchema": {
         "encoding": "text",
@@ -2431,9 +2152,6 @@
           ]
         }
       }
-    },
-    "data": {
-      "glyphId": 248
     },
     "file": {
       "dataSchema": {
@@ -2458,9 +2176,6 @@
         }
       }
     },
-    "data": {
-      "glyphId": 248
-    },
     "file": {
       "dataSchema": {
         "encoding": "text",
@@ -2483,9 +2198,6 @@
           ]
         }
       }
-    },
-    "data": {
-      "glyphId": 248
     },
     "file": {
       "dataSchema": {
@@ -2510,9 +2222,6 @@
         }
       }
     },
-    "data": {
-      "glyphId": 248
-    },
     "file": {
       "dataSchema": {
         "encoding": "text",
@@ -2535,9 +2244,6 @@
           ]
         }
       }
-    },
-    "data": {
-      "glyphId": 248
     },
     "file": {
       "dataSchema": {
@@ -2562,9 +2268,6 @@
         }
       }
     },
-    "data": {
-      "glyphId": 248
-    },
     "file": {
       "dataSchema": {
         "encoding": "text",
@@ -2587,9 +2290,6 @@
           ]
         }
       }
-    },
-    "data": {
-      "glyphId": 248
     },
     "file": {
       "dataSchema": {
@@ -2614,9 +2314,6 @@
         }
       }
     },
-    "data": {
-      "glyphId": 248
-    },
     "file": {
       "dataSchema": {
         "encoding": "text",
@@ -2639,9 +2336,6 @@
           ]
         }
       }
-    },
-    "data": {
-      "glyphId": 167
     },
     "file": {
       "dataSchema": {
@@ -2666,9 +2360,6 @@
         }
       }
     },
-    "data": {
-      "glyphId": 167
-    },
     "file": {
       "dataSchema": {
         "encoding": "text",
@@ -2691,9 +2382,6 @@
           ]
         }
       }
-    },
-    "data": {
-      "glyphId": 167
     },
     "file": {
       "dataSchema": {
@@ -2718,9 +2406,6 @@
         }
       }
     },
-    "data": {
-      "glyphId": 167
-    },
     "file": {
       "dataSchema": {
         "encoding": "text",
@@ -2743,9 +2428,6 @@
           ]
         }
       }
-    },
-    "data": {
-      "glyphId": 167
     },
     "file": {
       "dataSchema": {
@@ -2770,9 +2452,6 @@
         }
       }
     },
-    "data": {
-      "glyphId": 167
-    },
     "file": {
       "dataSchema": {
         "encoding": "text",
@@ -2795,9 +2474,6 @@
           ]
         }
       }
-    },
-    "data": {
-      "glyphId": 167
     },
     "file": {
       "dataSchema": {
@@ -2822,9 +2498,6 @@
         }
       }
     },
-    "data": {
-      "glyphId": 167
-    },
     "file": {
       "dataSchema": {
         "encoding": "text",
@@ -2847,9 +2520,6 @@
           ]
         }
       }
-    },
-    "data": {
-      "glyphId": 167
     },
     "file": {
       "dataSchema": {
@@ -2874,9 +2544,6 @@
         }
       }
     },
-    "data": {
-      "glyphId": 208
-    },
     "file": {
       "dataSchema": {
         "encoding": "text",
@@ -2899,9 +2566,6 @@
           ]
         }
       }
-    },
-    "data": {
-      "glyphId": 208
     },
     "file": {
       "dataSchema": {
@@ -2926,9 +2590,6 @@
         }
       }
     },
-    "data": {
-      "glyphId": 208
-    },
     "file": {
       "dataSchema": {
         "encoding": "text",
@@ -2951,9 +2612,6 @@
           ]
         }
       }
-    },
-    "data": {
-      "glyphId": 208
     },
     "file": {
       "dataSchema": {
@@ -2978,9 +2636,6 @@
         }
       }
     },
-    "data": {
-      "glyphId": 208
-    },
     "file": {
       "dataSchema": {
         "encoding": "text",
@@ -3003,9 +2658,6 @@
           ]
         }
       }
-    },
-    "data": {
-      "glyphId": 208
     },
     "file": {
       "dataSchema": {
@@ -3030,9 +2682,6 @@
         }
       }
     },
-    "data": {
-      "glyphId": 56
-    },
     "file": {
       "dataSchema": {
         "encoding": "text",
@@ -3052,7 +2701,21 @@
           "direction": "outgoing",
           "uuids": [
             "c8b320a0-c5fd-43c0-b52e-305f2daccfec"
-          ] } } }, "data": { "glyphId": 56 }, "file": { "dataSchema": { "encoding": "text", "format": "json", "path": "schemas/centos3.schema.json" } } }, { "type": "Type", "name": "Centos4",
+          ]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/centos3.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Centos4",
     "desc": "The Community Enterprise Operating System, version 4.x.",
     "meta": {
       "uuid": "8e49d933-dcd4-439f-9d10-91cb48a8e2d4",
@@ -3064,9 +2727,6 @@
           ]
         }
       }
-    },
-    "data": {
-      "glyphId": 56
     },
     "file": {
       "dataSchema": {
@@ -3091,9 +2751,6 @@
         }
       }
     },
-    "data": {
-      "glyphId": 56
-    },
     "file": {
       "dataSchema": {
         "encoding": "text",
@@ -3116,9 +2773,6 @@
           ]
         }
       }
-    },
-    "data": {
-      "glyphId": 56
     },
     "file": {
       "dataSchema": {
@@ -3143,9 +2797,6 @@
         }
       }
     },
-    "data": {
-      "glyphId": 56
-    },
     "file": {
       "dataSchema": {
         "encoding": "text",
@@ -3168,9 +2819,6 @@
           ]
         }
       }
-    },
-    "data": {
-      "glyphId": 85
     },
     "file": {
       "dataSchema": {
@@ -3195,9 +2843,6 @@
         }
       }
     },
-    "data": {
-      "glyphId": 85
-    },
     "file": {
       "dataSchema": {
         "encoding": "text",
@@ -3220,9 +2865,6 @@
           ]
         }
       }
-    },
-    "data": {
-      "glyphId": 85
     },
     "file": {
       "dataSchema": {
@@ -3247,9 +2889,6 @@
         }
       }
     },
-    "data": {
-      "glyphId": 85
-    },
     "file": {
       "dataSchema": {
         "encoding": "text",
@@ -3272,9 +2911,6 @@
           ]
         }
       }
-    },
-    "data": {
-      "glyphId": 85
     },
     "file": {
       "dataSchema": {
@@ -3299,9 +2935,6 @@
         }
       }
     },
-    "data": {
-      "glyphId": 85
-    },
     "file": {
       "dataSchema": {
         "encoding": "text",
@@ -3324,9 +2957,6 @@
           ]
         }
       }
-    },
-    "data": {
-      "glyphId": 85
     },
     "file": {
       "dataSchema": {
@@ -3351,9 +2981,6 @@
         }
       }
     },
-    "data": {
-      "glyphId": 85
-    },
     "file": {
       "dataSchema": {
         "encoding": "text",
@@ -3376,9 +3003,6 @@
           ]
         }
       }
-    },
-    "data": {
-      "glyphId": 85
     },
     "file": {
       "dataSchema": {
@@ -3403,9 +3027,6 @@
         }
       }
     },
-    "data": {
-      "glyphId": 85
-    },
     "file": {
       "dataSchema": {
         "encoding": "text",
@@ -3428,9 +3049,6 @@
           ]
         }
       }
-    },
-    "data": {
-      "glyphId": 85
     },
     "file": {
       "dataSchema": {
@@ -3455,9 +3073,6 @@
         }
       }
     },
-    "data": {
-      "glyphId": 163
-    },
     "file": {
       "dataSchema": {
         "encoding": "text",
@@ -3480,9 +3095,6 @@
           ]
         }
       }
-    },
-    "data": {
-      "glyphId": 163
     },
     "file": {
       "dataSchema": {
@@ -3507,9 +3119,6 @@
         }
       }
     },
-    "data": {
-      "glyphId": 163
-    },
     "file": {
       "dataSchema": {
         "encoding": "text",
@@ -3532,9 +3141,6 @@
           ]
         }
       }
-    },
-    "data": {
-      "glyphId": 185
     },
     "file": {
       "dataSchema": {
@@ -3559,9 +3165,6 @@
         }
       }
     },
-    "data": {
-      "glyphId": 185
-    },
     "file": {
       "dataSchema": {
         "encoding": "text",
@@ -3584,9 +3187,6 @@
           ]
         }
       }
-    },
-    "data": {
-      "glyphId": 185
     },
     "file": {
       "dataSchema": {
@@ -3611,9 +3211,6 @@
         }
       }
     },
-    "data": {
-      "glyphId": 185
-    },
     "file": {
       "dataSchema": {
         "encoding": "text",
@@ -3636,9 +3233,6 @@
           ]
         }
       }
-    },
-    "data": {
-      "glyphId": 185
     },
     "file": {
       "dataSchema": {
@@ -3663,9 +3257,6 @@
         }
       }
     },
-    "data": {
-      "glyphId": 221
-    },
     "file": {
       "dataSchema": {
         "encoding": "text",
@@ -3688,9 +3279,6 @@
           ]
         }
       }
-    },
-    "data": {
-      "glyphId": 221
     },
     "file": {
       "dataSchema": {
@@ -3715,9 +3303,6 @@
         }
       }
     },
-    "data": {
-      "glyphId": 221
-    },
     "file": {
       "dataSchema": {
         "encoding": "text",
@@ -3741,9 +3326,6 @@
         }
       }
     },
-    "data": {
-      "glyphId": 221
-    },
     "file": {
       "dataSchema": {
         "encoding": "text",
@@ -3766,9 +3348,6 @@
           ]
         }
       }
-    },
-    "data": {
-      "glyphId": 221
     },
     "file": {
       "dataSchema": {

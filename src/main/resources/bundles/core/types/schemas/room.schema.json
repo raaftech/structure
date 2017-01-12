@@ -1,8 +1,23 @@
 {
-  "format": "json",
-  "checksum": "cff450ad646f286bb5f415893dcb4cb51bf635a1",
-  "path": "schemas/room.schema.json",
-  "encoding": "text",
-  "content": "{\n  \"additionalProperties\": false,\n  \"$schema\": \"http://json-schema.org/schema#\",\n  \"type\": \"object\",\n  \"properties\": {\n    \"name\": {\n      \"$ref\": \"type.schema.json#/properties/name\"\n    },\n    \"checksum\": {\n      \"$ref\": \"type.schema.json#/properties/checksum\"\n    },\n    \"code\": {\n      \"$ref\": \"locational.schema.json#/properties/code\"\n    },\n    \"desc\": {\n      \"$ref\": \"type.schema.json#/properties/desc\"\n    }\n  },\n  \"required\": [\n    \"name\",\n    \"desc\"\n  ]\n}",
-  "properties": {}
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/schema#",
+  "type": "object",
+  "properties": {
+    "name": {
+      "$ref": "type.schema.json#/properties/name"
+    },
+    "checksum": {
+      "$ref": "type.schema.json#/properties/checksum"
+    },
+    "code": {
+      "$ref": "locational.schema.json#/properties/code"
+    },
+    "desc": {
+      "$ref": "type.schema.json#/properties/desc"
+    }
+  },
+  "required": [
+    "name",
+    "desc"
+  ]
 }

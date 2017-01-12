@@ -1,8 +1,50 @@
 {
-  "format": "json",
-  "checksum": "cc77d0e97dde9cb6ec2d2172e07c445d9fa8ae43",
-  "path": "schemas/controller.schema.json",
-  "encoding": "text",
-  "content": "{\n  \"additionalProperties\": false,\n  \"$schema\": \"http://json-schema.org/schema#\",\n  \"type\": \"object\",\n  \"properties\": {\n    \"template\": {\n      \"type\": \"string\",\n      \"description\": \"The handlebars template resulting in a command.\"\n    },\n    \"resultParser\": {\n      \"type\": \"string\",\n      \"description\": \"The parser able to convert the raw results of this instrument.\"\n    },\n    \"extension\": {\n      \"type\": \"string\",\n      \"pattern\": \"^\\\\.[a-zA-Z0-9]+$\",\n      \"description\": \"Possible extension in case of a scriptable instrument.\"\n    },\n    \"subjectIsLocal\": {\n      \"type\": \"boolean\",\n      \"description\": \"Is the subject for this instrument local or remote?\"\n    },\n    \"filePath\": {\n      \"$ref\": \"instrument.schema.json#/properties/filePath\"\n    },\n    \"name\": {\n      \"$ref\": \"type.schema.json#/properties/name\"\n    },\n    \"checksum\": {\n      \"$ref\": \"type.schema.json#/properties/checksum\"\n    },\n    \"weight\": {\n      \"$ref\": \"instrument.schema.json#/properties/weight\"\n    },\n    \"arguments\": {\n      \"type\": \"string\",\n      \"description\": \"A string representation of the arguments object.\"\n    },\n    \"desc\": {\n      \"$ref\": \"type.schema.json#/properties/desc\"\n    }\n  },\n  \"required\": [\n    \"name\",\n    \"desc\",\n    \"filePath\",\n    \"subjectIsLocal\",\n    \"template\"\n  ]\n}",
-  "properties": {}
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/schema#",
+  "type": "object",
+  "properties": {
+    "template": {
+      "type": "string",
+      "description": "The handlebars template resulting in a command."
+    },
+    "resultParser": {
+      "type": "string",
+      "description": "The parser able to convert the raw results of this instrument."
+    },
+    "extension": {
+      "type": "string",
+      "pattern": "^\\.[a-zA-Z0-9]+$",
+      "description": "Possible extension in case of a scriptable instrument."
+    },
+    "subjectIsLocal": {
+      "type": "boolean",
+      "description": "Is the subject for this instrument local or remote?"
+    },
+    "filePath": {
+      "$ref": "instrument.schema.json#/properties/filePath"
+    },
+    "name": {
+      "$ref": "type.schema.json#/properties/name"
+    },
+    "checksum": {
+      "$ref": "type.schema.json#/properties/checksum"
+    },
+    "weight": {
+      "$ref": "instrument.schema.json#/properties/weight"
+    },
+    "arguments": {
+      "type": "string",
+      "description": "A string representation of the arguments object."
+    },
+    "desc": {
+      "$ref": "type.schema.json#/properties/desc"
+    }
+  },
+  "required": [
+    "name",
+    "desc",
+    "filePath",
+    "subjectIsLocal",
+    "template"
+  ]
 }
