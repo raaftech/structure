@@ -1,0 +1,25 @@
+{
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/schema#",
+  "type": "object",
+  "properties": {
+    "name": {
+      "$ref": "type.schema.json#/properties/name"
+    },
+    "checksum": {
+      "$ref": "type.schema.json#/properties/checksum"
+    },
+    "addr": {
+      "type": "string",
+      "description": "IP networks should at least have the addr field."
+    },
+    "desc": {
+      "$ref": "type.schema.json#/properties/desc"
+    }
+  },
+  "required": [
+    "name",
+    "desc",
+    "addr"
+  ]
+}

@@ -72,6 +72,84 @@
   },
   {
     "type": "Type",
+    "name": "IpNetwork",
+    "desc": "An IP network.",
+    "meta": {
+      "uuid": "ca419a9e-f71f-4bae-a948-f964a523336b",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "3f4a43f7-b558-4bf0-ba7e-66b99cffaf16"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 283
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/ipnetwork.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Ipv4Network",
+    "desc": "An IPv4 network.",
+    "meta": {
+      "uuid": "29648f07-8493-464a-b733-2889bfd3708a",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "ca419a9e-f71f-4bae-a948-f964a523336b"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 283
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/ipv4network.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Ipv6Network",
+    "desc": "An IPv6 network.",
+    "meta": {
+      "uuid": "d5bb0276-fac4-46f8-b513-5f1c8142fa9b",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "ca419a9e-f71f-4bae-a948-f964a523336b"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 283
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/ipv6network.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
     "name": "IpAddress",
     "desc": "An IP address (address only, can be assigned to a network interface).",
     "meta": {
