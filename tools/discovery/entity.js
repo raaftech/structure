@@ -124,7 +124,9 @@ const flatten = (entities, done, flattened) => {
                 const relEntities = copy.meta.relations[key].entities;
                 delete copy.meta.relations[key].entities;
 
-                relEntities.forEach((relEnt) => flatten([relEnt], done, flattened));
+                if (relEntities != null) {
+                    relEntities.forEach((relEnt) => flatten([relEnt], done, flattened));
+                }
             }
             flattened.push(copy);
         }

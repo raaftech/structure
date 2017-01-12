@@ -16,7 +16,7 @@ const isNested = (obj) => {
     return R.gt(R.length(res), 0);
 };
 
-test.only('Entity class tests', function(tt) {
+test('Entity class tests', function(tt) {
     tt.test('construction test', function(t) {
         let e = new entityLib.Entity('Component','TestComponent','my desc.','234hklj-2k3jh4');
         t.ok(R.has('type',e), 'should have type property');
