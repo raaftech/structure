@@ -1,30 +1,8 @@
 {
-  "additionalProperties": false,
-  "$schema": "http://json-schema.org/schema#",
-  "type": "object",
-  "properties": {
-    "name": {
-      "$ref": "type.schema.json#/properties/name"
-    },
-    "checksum": {
-      "$ref": "type.schema.json#/properties/checksum"
-    },
-    "addr": {
-      "type": "string",
-      "description": "IP addresses should at least have the addr field."
-    },
-    "reachable": {
-      "type": "boolean",
-      "description": "Is this IP address reachable from the outside?"
-    },
-    "desc": {
-      "$ref": "type.schema.json#/properties/desc"
-    }
-  },
-  "required": [
-    "name",
-    "desc",
-    "addr",
-    "reachable"
-  ]
+  "format": "json",
+  "checksum": "fdb0344686f562a1bd54a58b351e07233b9ea358",
+  "path": "schemas/ipaddress.schema.json",
+  "encoding": "text",
+  "content": "{\n  \"additionalProperties\": false,\n  \"$schema\": \"http://json-schema.org/schema#\",\n  \"type\": \"object\",\n  \"properties\": {\n    \"name\": {\n      \"$ref\": \"type.schema.json#/properties/name\"\n    },\n    \"checksum\": {\n      \"$ref\": \"type.schema.json#/properties/checksum\"\n    },\n    \"addr\": {\n      \"type\": \"string\",\n      \"description\": \"IP addresses should at least have the addr field.\"\n    },\n    \"reachable\": {\n      \"type\": \"boolean\",\n      \"description\": \"Is this IP address reachable from the outside?\"\n    },\n    \"desc\": {\n      \"$ref\": \"type.schema.json#/properties/desc\"\n    }\n  },\n  \"required\": [\n    \"name\",\n    \"desc\",\n    \"addr\",\n    \"reachable\"\n  ]\n}",
+  "properties": {}
 }

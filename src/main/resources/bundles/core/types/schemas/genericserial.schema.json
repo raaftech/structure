@@ -1,35 +1,8 @@
 {
-  "additionalProperties": false,
-  "$schema": "http://json-schema.org/schema#",
-  "type": "object",
-  "properties": {
-    "baudRate": {
-      "$ref": "consolehardware.schema.json#/properties/baudRate"
-    },
-    "rev": {
-      "$ref": "hardware.schema.json#/properties/rev"
-    },
-    "stopBits": {
-      "$ref": "consolehardware.schema.json#/properties/stopBits"
-    },
-    "parity": {
-      "$ref": "consolehardware.schema.json#/properties/parity"
-    },
-    "name": {
-      "$ref": "type.schema.json#/properties/name"
-    },
-    "checksum": {
-      "$ref": "type.schema.json#/properties/checksum"
-    },
-    "dataBits": {
-      "$ref": "consolehardware.schema.json#/properties/dataBits"
-    },
-    "desc": {
-      "$ref": "type.schema.json#/properties/desc"
-    }
-  },
-  "required": [
-    "name",
-    "desc"
-  ]
+  "format": "json",
+  "checksum": "641fe6c4a817fc291fd163e7191b671683c1acb9",
+  "path": "schemas/genericserial.schema.json",
+  "encoding": "text",
+  "content": "{\n  \"additionalProperties\": false,\n  \"$schema\": \"http://json-schema.org/schema#\",\n  \"type\": \"object\",\n  \"properties\": {\n    \"baudRate\": {\n      \"$ref\": \"consolehardware.schema.json#/properties/baudRate\"\n    },\n    \"rev\": {\n      \"$ref\": \"hardware.schema.json#/properties/rev\"\n    },\n    \"stopBits\": {\n      \"$ref\": \"consolehardware.schema.json#/properties/stopBits\"\n    },\n    \"parity\": {\n      \"$ref\": \"consolehardware.schema.json#/properties/parity\"\n    },\n    \"name\": {\n      \"$ref\": \"type.schema.json#/properties/name\"\n    },\n    \"checksum\": {\n      \"$ref\": \"type.schema.json#/properties/checksum\"\n    },\n    \"dataBits\": {\n      \"$ref\": \"consolehardware.schema.json#/properties/dataBits\"\n    },\n    \"desc\": {\n      \"$ref\": \"type.schema.json#/properties/desc\"\n    }\n  },\n  \"required\": [\n    \"name\",\n    \"desc\"\n  ]\n}",
+  "properties": {}
 }

@@ -1,35 +1,8 @@
 {
-  "additionalProperties": false,
-  "$schema": "http://json-schema.org/schema#",
-  "type": "object",
-  "properties": {
-    "name": {
-      "$ref": "type.schema.json#/properties/name"
-    },
-    "checksum": {
-      "$ref": "type.schema.json#/properties/checksum"
-    },
-    "ver": {
-      "type": "string",
-      "description": "The version of the software."
-    },
-    "shortName": {
-      "type": "string",
-      "description": "A short lowercase name for the Software without spaces."
-    },
-    "desc": {
-      "$ref": "type.schema.json#/properties/desc"
-    },
-    "longName": {
-      "type": "string",
-      "description": "The full descriptive name of the Software."
-    }
-  },
-  "required": [
-    "name",
-    "desc",
-    "ver",
-    "shortName",
-    "longName"
-  ]
+  "format": "json",
+  "checksum": "4f226e8997883f13315ee60d45f40d270d135bf1",
+  "path": "schemas/software.schema.json",
+  "encoding": "text",
+  "content": "{\n  \"additionalProperties\": false,\n  \"$schema\": \"http://json-schema.org/schema#\",\n  \"type\": \"object\",\n  \"properties\": {\n    \"name\": {\n      \"$ref\": \"type.schema.json#/properties/name\"\n    },\n    \"checksum\": {\n      \"$ref\": \"type.schema.json#/properties/checksum\"\n    },\n    \"ver\": {\n      \"type\": \"string\",\n      \"description\": \"The version of the software.\"\n    },\n    \"shortName\": {\n      \"type\": \"string\",\n      \"description\": \"A short lowercase name for the Software without spaces.\"\n    },\n    \"desc\": {\n      \"$ref\": \"type.schema.json#/properties/desc\"\n    },\n    \"longName\": {\n      \"type\": \"string\",\n      \"description\": \"The full descriptive name of the Software.\"\n    }\n  },\n  \"required\": [\n    \"name\",\n    \"desc\",\n    \"ver\",\n    \"shortName\",\n    \"longName\"\n  ]\n}",
+  "properties": {}
 }

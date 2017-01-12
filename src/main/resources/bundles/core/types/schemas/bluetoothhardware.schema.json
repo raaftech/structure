@@ -1,33 +1,8 @@
 {
-  "additionalProperties": false,
-  "$schema": "http://json-schema.org/schema#",
-  "type": "object",
-  "properties": {
-    "name": {
-      "$ref": "type.schema.json#/properties/name"
-    },
-    "checksum": {
-      "$ref": "type.schema.json#/properties/checksum"
-    },
-    "rev": {
-      "$ref": "hardware.schema.json#/properties/rev"
-    },
-    "speedKbit": {
-      "type": "number",
-      "description": "Speed in Kbits."
-    },
-    "desc": {
-      "$ref": "type.schema.json#/properties/desc"
-    },
-    "macAddr": {
-      "type": "string",
-      "description": "A media access control address."
-    }
-  },
-  "required": [
-    "name",
-    "desc",
-    "macAddr",
-    "speedKbit"
-  ]
+  "format": "json",
+  "checksum": "991eba7a65918e902159964b084c523baf18c01e",
+  "path": "schemas/bluetoothhardware.schema.json",
+  "encoding": "text",
+  "content": "{\n  \"additionalProperties\": false,\n  \"$schema\": \"http://json-schema.org/schema#\",\n  \"type\": \"object\",\n  \"properties\": {\n    \"name\": {\n      \"$ref\": \"type.schema.json#/properties/name\"\n    },\n    \"checksum\": {\n      \"$ref\": \"type.schema.json#/properties/checksum\"\n    },\n    \"rev\": {\n      \"$ref\": \"hardware.schema.json#/properties/rev\"\n    },\n    \"speedKbit\": {\n      \"type\": \"number\",\n      \"description\": \"Speed in Kbits.\"\n    },\n    \"desc\": {\n      \"$ref\": \"type.schema.json#/properties/desc\"\n    },\n    \"macAddr\": {\n      \"type\": \"string\",\n      \"description\": \"A media access control address.\"\n    }\n  },\n  \"required\": [\n    \"name\",\n    \"desc\",\n    \"macAddr\",\n    \"speedKbit\"\n  ]\n}",
+  "properties": {}
 }

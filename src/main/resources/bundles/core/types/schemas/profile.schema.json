@@ -1,45 +1,8 @@
 {
-  "additionalProperties": false,
-  "$schema": "http://json-schema.org/schema#",
-  "type": "object",
-  "properties": {
-    "packageNames": {
-      "type": "string",
-      "description": "A JSON array containing known package names for the software."
-    },
-    "name": {
-      "$ref": "type.schema.json#/properties/name"
-    },
-    "checksum": {
-      "$ref": "type.schema.json#/properties/checksum"
-    },
-    "files": {
-      "type": "string",
-      "description": "A JSON object containing known logFiles/dataFiles/binaryFiles/libraryFiles/configurationFiles arrays for the software."
-    },
-    "directories": {
-      "type": "string",
-      "description": "A JSON object containing known logDirectories/dataDirectories/binaryDirectories/libraryDirectories/configurationDirectories arrays for the software."
-    },
-    "serviceNames": {
-      "type": "string",
-      "description": "A JSON array containing known service names for the software."
-    },
-    "commands": {
-      "type": "string",
-      "description": "A JSON object containing commands and their regular expression format matching rules"
-    },
-    "desc": {
-      "$ref": "type.schema.json#/properties/desc"
-    }
-  },
-  "required": [
-    "name",
-    "desc",
-    "serviceNames",
-    "packageNames",
-    "files",
-    "directories",
-    "commands"
-  ]
+  "format": "json",
+  "checksum": "7e85c906e1edd3e5dac9bb4bf58c4bd91d5235dc",
+  "path": "schemas/profile.schema.json",
+  "encoding": "text",
+  "content": "{\n  \"additionalProperties\": false,\n  \"$schema\": \"http://json-schema.org/schema#\",\n  \"type\": \"object\",\n  \"properties\": {\n    \"packageNames\": {\n      \"type\": \"string\",\n      \"description\": \"A JSON array containing known package names for the software.\"\n    },\n    \"name\": {\n      \"$ref\": \"type.schema.json#/properties/name\"\n    },\n    \"checksum\": {\n      \"$ref\": \"type.schema.json#/properties/checksum\"\n    },\n    \"files\": {\n      \"type\": \"string\",\n      \"description\": \"A JSON object containing known logFiles/dataFiles/binaryFiles/libraryFiles/configurationFiles arrays for the software.\"\n    },\n    \"directories\": {\n      \"type\": \"string\",\n      \"description\": \"A JSON object containing known logDirectories/dataDirectories/binaryDirectories/libraryDirectories/configurationDirectories arrays for the software.\"\n    },\n    \"serviceNames\": {\n      \"type\": \"string\",\n      \"description\": \"A JSON array containing known service names for the software.\"\n    },\n    \"commands\": {\n      \"type\": \"string\",\n      \"description\": \"A JSON object containing commands and their regular expression format matching rules\"\n    },\n    \"desc\": {\n      \"$ref\": \"type.schema.json#/properties/desc\"\n    }\n  },\n  \"required\": [\n    \"name\",\n    \"desc\",\n    \"serviceNames\",\n    \"packageNames\",\n    \"files\",\n    \"directories\",\n    \"commands\"\n  ]\n}",
+  "properties": {}
 }

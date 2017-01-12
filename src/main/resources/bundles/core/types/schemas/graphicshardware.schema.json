@@ -1,83 +1,8 @@
 {
-  "additionalProperties": false,
-  "$schema": "http://json-schema.org/schema#",
-  "type": "object",
-  "properties": {
-    "maxColorBitsPerScreen": {
-      "type": "number",
-      "description": "Maximum number of bits per pixel on a screen."
-    },
-    "rev": {
-      "$ref": "hardware.schema.json#/properties/rev"
-    },
-    "memBandwidthKbs": {
-      "type": "number",
-      "description": "Memory bandwidth in kilobytes per second."
-    },
-    "memSizekb": {
-      "type": "number",
-      "description": "Memory size in Kb."
-    },
-    "textureMapUnits": {
-      "type": "number",
-      "description": "Number of texture mapping units."
-    },
-    "memBusBits": {
-      "type": "number",
-      "description": "Memory bus width in bits."
-    },
-    "gpuClockhz": {
-      "type": "number",
-      "description": "Clockspeed of the GPU in Hz."
-    },
-    "gpuCoreCount": {
-      "type": "number",
-      "description": "Number of GPU cores if applicable."
-    },
-    "pixelRatesPerSec": {
-      "type": "number",
-      "description": "Pixel fillrate, in pixels per second."
-    },
-    "memClockHz": {
-      "type": "number",
-      "description": "Memory speed in Hz."
-    },
-    "maxColorBitsPerChannel": {
-      "type": "number",
-      "description": "Maximum number of bits to describe color in a color channel (R,G,B,A)."
-    },
-    "shadingUnits": {
-      "type": "number",
-      "description": "Number of shading units."
-    },
-    "name": {
-      "$ref": "type.schema.json#/properties/name"
-    },
-    "checksum": {
-      "$ref": "type.schema.json#/properties/checksum"
-    },
-    "maxVerticalRefreshHz": {
-      "type": "number",
-      "description": "Max"
-    },
-    "flops": {
-      "type": "number",
-      "description": "Number of floating-point operations per second."
-    },
-    "desc": {
-      "$ref": "type.schema.json#/properties/desc"
-    },
-    "renderOutputCores": {
-      "type": "number",
-      "description": "Number of render output cores."
-    },
-    "texelRatesPerSec": {
-      "type": "number",
-      "description": "Texture fillrate, in texels per second."
-    }
-  },
-  "required": [
-    "name",
-    "desc"
-  ]
+  "format": "json",
+  "checksum": "4a2c34b8c332ef91dbe5d62cbaed5b77f64d6bf1",
+  "path": "schemas/graphicshardware.schema.json",
+  "encoding": "text",
+  "content": "{\n  \"additionalProperties\": false,\n  \"$schema\": \"http://json-schema.org/schema#\",\n  \"type\": \"object\",\n  \"properties\": {\n    \"maxColorBitsPerScreen\": {\n      \"type\": \"number\",\n      \"description\": \"Maximum number of bits per pixel on a screen.\"\n    },\n    \"rev\": {\n      \"$ref\": \"hardware.schema.json#/properties/rev\"\n    },\n    \"memBandwidthKbs\": {\n      \"type\": \"number\",\n      \"description\": \"Memory bandwidth in kilobytes per second.\"\n    },\n    \"memSizekb\": {\n      \"type\": \"number\",\n      \"description\": \"Memory size in Kb.\"\n    },\n    \"textureMapUnits\": {\n      \"type\": \"number\",\n      \"description\": \"Number of texture mapping units.\"\n    },\n    \"memBusBits\": {\n      \"type\": \"number\",\n      \"description\": \"Memory bus width in bits.\"\n    },\n    \"gpuClockhz\": {\n      \"type\": \"number\",\n      \"description\": \"Clockspeed of the GPU in Hz.\"\n    },\n    \"gpuCoreCount\": {\n      \"type\": \"number\",\n      \"description\": \"Number of GPU cores if applicable.\"\n    },\n    \"pixelRatesPerSec\": {\n      \"type\": \"number\",\n      \"description\": \"Pixel fillrate, in pixels per second.\"\n    },\n    \"memClockHz\": {\n      \"type\": \"number\",\n      \"description\": \"Memory speed in Hz.\"\n    },\n    \"maxColorBitsPerChannel\": {\n      \"type\": \"number\",\n      \"description\": \"Maximum number of bits to describe color in a color channel (R,G,B,A).\"\n    },\n    \"shadingUnits\": {\n      \"type\": \"number\",\n      \"description\": \"Number of shading units.\"\n    },\n    \"name\": {\n      \"$ref\": \"type.schema.json#/properties/name\"\n    },\n    \"checksum\": {\n      \"$ref\": \"type.schema.json#/properties/checksum\"\n    },\n    \"maxVerticalRefreshHz\": {\n      \"type\": \"number\",\n      \"description\": \"Max\"\n    },\n    \"flops\": {\n      \"type\": \"number\",\n      \"description\": \"Number of floating-point operations per second.\"\n    },\n    \"desc\": {\n      \"$ref\": \"type.schema.json#/properties/desc\"\n    },\n    \"renderOutputCores\": {\n      \"type\": \"number\",\n      \"description\": \"Number of render output cores.\"\n    },\n    \"texelRatesPerSec\": {\n      \"type\": \"number\",\n      \"description\": \"Texture fillrate, in texels per second.\"\n    }\n  },\n  \"required\": [\n    \"name\",\n    \"desc\"\n  ]\n}",
+  "properties": {}
 }
