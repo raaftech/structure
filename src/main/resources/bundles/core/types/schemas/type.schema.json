@@ -1,23 +1,7 @@
 {
-  "additionalProperties": false,
-  "$schema": "http://json-schema.org/schema#",
-  "type": "object",
-  "properties": {
-    "name": {
-      "type": "string",
-      "description": "The name of this node."
-    },
-    "checksum": {
-      "type": "string",
-      "description": "The checksum of this node."
-    },
-    "desc": {
-      "type": "string",
-      "description": "The description of this node."
-    }
-  },
-  "required": [
-    "name",
-    "desc"
-  ]
+  "format": "json",
+  "checksum": "2988032c7fa324a1b79b31d5254298453f853ae3",
+  "path": "schemas/type.schema.json",
+  "encoding": "text",
+  "content": "{\n  \"additionalProperties\": false,\n  \"$schema\": \"http://json-schema.org/schema#\",\n  \"type\": \"object\",\n  \"properties\": {\n    \"name\": {\n      \"type\": \"string\",\n      \"description\": \"The name of this node.\"\n    },\n    \"checksum\": {\n      \"type\": \"string\",\n      \"description\": \"The checksum of this node.\"\n    },\n    \"desc\": {\n      \"type\": \"string\",\n      \"description\": \"The description of this node.\"\n    }\n  },\n  \"required\": [\n    \"name\",\n    \"desc\"\n  ]\n}"
 }

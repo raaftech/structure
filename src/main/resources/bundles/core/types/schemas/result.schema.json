@@ -1,50 +1,8 @@
 {
-  "additionalProperties": false,
-  "$schema": "http://json-schema.org/schema#",
-  "type": "object",
-  "properties": {
-    "returnCode": {
-      "type": "number",
-      "description": "The returncode of a process"
-    },
-    "process": {
-      "type": "string",
-      "description": "Process that resulted in this result."
-    },
-    "task": {
-      "type": "string",
-      "description": "The task ID."
-    },
-    "dateCreated": {
-      "type": "number",
-      "description": "The date + time when the result was created."
-    },
-    "stdout": {
-      "type": "string",
-      "description": "The stdout of a program."
-    },
-    "name": {
-      "$ref": "type.schema.json#/properties/name"
-    },
-    "checksum": {
-      "$ref": "type.schema.json#/properties/checksum"
-    },
-    "stderr": {
-      "type": "string",
-      "description": "The stdout of a program."
-    },
-    "desc": {
-      "$ref": "type.schema.json#/properties/desc"
-    }
-  },
-  "required": [
-    "name",
-    "desc",
-    "task",
-    "process",
-    "returnCode",
-    "stdout",
-    "stderr",
-    "dateCreated"
-  ]
+  "format": "json",
+  "checksum": "bb4758854805d5b10f3178bca4dac8f5703d8c27",
+  "path": "schemas/result.schema.json",
+  "encoding": "text",
+  "content": "{\n  \"additionalProperties\": false,\n  \"$schema\": \"http://json-schema.org/schema#\",\n  \"type\": \"object\",\n  \"properties\": {\n    \"returnCode\": {\n      \"type\": \"number\",\n      \"description\": \"The returncode of a process\"\n    },\n    \"process\": {\n      \"type\": \"string\",\n      \"description\": \"Process that resulted in this result.\"\n    },\n    \"task\": {\n      \"type\": \"string\",\n      \"description\": \"The task ID.\"\n    },\n    \"dateCreated\": {\n      \"type\": \"number\",\n      \"description\": \"The date + time when the result was created.\"\n    },\n    \"stdout\": {\n      \"type\": \"string\",\n      \"description\": \"The stdout of a program.\"\n    },\n    \"name\": {\n      \"$ref\": \"type.schema.json#/properties/name\"\n    },\n    \"checksum\": {\n      \"$ref\": \"type.schema.json#/properties/checksum\"\n    },\n    \"stderr\": {\n      \"type\": \"string\",\n      \"description\": \"The stdout of a program.\"\n    },\n    \"desc\": {\n      \"$ref\": \"type.schema.json#/properties/desc\"\n    }\n  },\n  \"required\": [\n    \"name\",\n    \"desc\",\n    \"task\",\n    \"process\",\n    \"returnCode\",\n    \"stdout\",\n    \"stderr\",\n    \"dateCreated\"\n  ]\n}",
+  "properties": {}
 }

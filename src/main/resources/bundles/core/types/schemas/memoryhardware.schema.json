@@ -1,28 +1,8 @@
 {
-  "additionalProperties": false,
-  "$schema": "http://json-schema.org/schema#",
-  "type": "object",
-  "properties": {
-    "name": {
-      "$ref": "type.schema.json#/properties/name"
-    },
-    "checksum": {
-      "$ref": "type.schema.json#/properties/checksum"
-    },
-    "memSizeKb": {
-      "type": "number",
-      "description": "Memory size in Kb."
-    },
-    "rev": {
-      "$ref": "hardware.schema.json#/properties/rev"
-    },
-    "desc": {
-      "$ref": "type.schema.json#/properties/desc"
-    }
-  },
-  "required": [
-    "name",
-    "desc",
-    "memSizeKb"
-  ]
+  "format": "json",
+  "checksum": "02c430ff09fdd89f08de27f8dd433eace8678c4b",
+  "path": "schemas/memoryhardware.schema.json",
+  "encoding": "text",
+  "content": "{\n  \"additionalProperties\": false,\n  \"$schema\": \"http://json-schema.org/schema#\",\n  \"type\": \"object\",\n  \"properties\": {\n    \"name\": {\n      \"$ref\": \"type.schema.json#/properties/name\"\n    },\n    \"checksum\": {\n      \"$ref\": \"type.schema.json#/properties/checksum\"\n    },\n    \"memSizeKb\": {\n      \"type\": \"number\",\n      \"description\": \"Memory size in Kb.\"\n    },\n    \"rev\": {\n      \"$ref\": \"hardware.schema.json#/properties/rev\"\n    },\n    \"desc\": {\n      \"$ref\": \"type.schema.json#/properties/desc\"\n    }\n  },\n  \"required\": [\n    \"name\",\n    \"desc\",\n    \"memSizeKb\"\n  ]\n}",
+  "properties": {}
 }

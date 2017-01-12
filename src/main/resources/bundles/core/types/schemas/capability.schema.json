@@ -1,25 +1,8 @@
 {
-  "additionalProperties": false,
-  "$schema": "http://json-schema.org/schema#",
-  "type": "object",
-  "properties": {
-    "name": {
-      "$ref": "type.schema.json#/properties/name"
-    },
-    "checksum": {
-      "$ref": "type.schema.json#/properties/checksum"
-    },
-    "system": {
-      "type": "boolean",
-      "description": "Is this capability for internal use?"
-    },
-    "desc": {
-      "$ref": "type.schema.json#/properties/desc"
-    }
-  },
-  "required": [
-    "name",
-    "desc",
-    "system"
-  ]
+  "format": "json",
+  "checksum": "cba0a1952936efdb51a802a34c3ea3b399f4f94a",
+  "path": "schemas/capability.schema.json",
+  "encoding": "text",
+  "content": "{\n  \"additionalProperties\": false,\n  \"$schema\": \"http://json-schema.org/schema#\",\n  \"type\": \"object\",\n  \"properties\": {\n    \"name\": {\n      \"$ref\": \"type.schema.json#/properties/name\"\n    },\n    \"checksum\": {\n      \"$ref\": \"type.schema.json#/properties/checksum\"\n    },\n    \"system\": {\n      \"type\": \"boolean\",\n      \"description\": \"Is this capability for internal use?\"\n    },\n    \"desc\": {\n      \"$ref\": \"type.schema.json#/properties/desc\"\n    }\n  },\n  \"required\": [\n    \"name\",\n    \"desc\",\n    \"system\"\n  ]\n}",
+  "properties": {}
 }

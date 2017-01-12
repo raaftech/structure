@@ -1,33 +1,8 @@
 {
-  "additionalProperties": false,
-  "$schema": "http://json-schema.org/schema#",
-  "type": "object",
-  "properties": {
-    "name": {
-      "$ref": "type.schema.json#/properties/name"
-    },
-    "checksum": {
-      "$ref": "type.schema.json#/properties/checksum"
-    },
-    "speedMbit": {
-      "type": "number",
-      "description": "Speed in Mbits."
-    },
-    "rev": {
-      "$ref": "hardware.schema.json#/properties/rev"
-    },
-    "desc": {
-      "$ref": "type.schema.json#/properties/desc"
-    },
-    "macAddr": {
-      "type": "string",
-      "description": "A media access control address."
-    }
-  },
-  "required": [
-    "name",
-    "desc",
-    "speedMbit",
-    "macAddr"
-  ]
+  "format": "json",
+  "checksum": "2414749b0d4ce9aba5e7464c40ac47e36c8bad8a",
+  "path": "schemas/ethernethardware.schema.json",
+  "encoding": "text",
+  "content": "{\n  \"additionalProperties\": false,\n  \"$schema\": \"http://json-schema.org/schema#\",\n  \"type\": \"object\",\n  \"properties\": {\n    \"name\": {\n      \"$ref\": \"type.schema.json#/properties/name\"\n    },\n    \"checksum\": {\n      \"$ref\": \"type.schema.json#/properties/checksum\"\n    },\n    \"speedMbit\": {\n      \"type\": \"number\",\n      \"description\": \"Speed in Mbits.\"\n    },\n    \"rev\": {\n      \"$ref\": \"hardware.schema.json#/properties/rev\"\n    },\n    \"desc\": {\n      \"$ref\": \"type.schema.json#/properties/desc\"\n    },\n    \"macAddr\": {\n      \"type\": \"string\",\n      \"description\": \"A media access control address.\"\n    }\n  },\n  \"required\": [\n    \"name\",\n    \"desc\",\n    \"speedMbit\",\n    \"macAddr\"\n  ]\n}",
+  "properties": {}
 }

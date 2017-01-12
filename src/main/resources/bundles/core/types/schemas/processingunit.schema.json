@@ -1,48 +1,8 @@
 {
-  "additionalProperties": false,
-  "$schema": "http://json-schema.org/schema#",
-  "type": "object",
-  "properties": {
-    "cpuClockHz": {
-      "type": "number",
-      "description": "CPU clock in hertz."
-    },
-    "rev": {
-      "$ref": "hardware.schema.json#/properties/rev"
-    },
-    "cacheSizeKb": {
-      "type": "number",
-      "description": "The size of cache memory on the CPU."
-    },
-    "smtEnabled": {
-      "type": "boolean",
-      "description": "Simultaneous multithreading (for example hyper-threading) capable true/false."
-    },
-    "name": {
-      "$ref": "type.schema.json#/properties/name"
-    },
-    "checksum": {
-      "$ref": "type.schema.json#/properties/checksum"
-    },
-    "bits": {
-      "type": "number",
-      "description": "Number of bit width supported."
-    },
-    "cpuCoreCount": {
-      "type": "number",
-      "description": "Number of cores."
-    },
-    "desc": {
-      "$ref": "type.schema.json#/properties/desc"
-    }
-  },
-  "required": [
-    "name",
-    "desc",
-    "cacheSizeKb",
-    "cpuCoreCount",
-    "cpuClockHz",
-    "smtEnabled",
-    "bits"
-  ]
+  "format": "json",
+  "checksum": "4c45cd47b1df37e3401cc631c01250072234fefb",
+  "path": "schemas/processingunit.schema.json",
+  "encoding": "text",
+  "content": "{\n  \"additionalProperties\": false,\n  \"$schema\": \"http://json-schema.org/schema#\",\n  \"type\": \"object\",\n  \"properties\": {\n    \"cpuClockHz\": {\n      \"type\": \"number\",\n      \"description\": \"CPU clock in hertz.\"\n    },\n    \"rev\": {\n      \"$ref\": \"hardware.schema.json#/properties/rev\"\n    },\n    \"cacheSizeKb\": {\n      \"type\": \"number\",\n      \"description\": \"The size of cache memory on the CPU.\"\n    },\n    \"smtEnabled\": {\n      \"type\": \"boolean\",\n      \"description\": \"Simultaneous multithreading (for example hyper-threading) capable true/false.\"\n    },\n    \"name\": {\n      \"$ref\": \"type.schema.json#/properties/name\"\n    },\n    \"checksum\": {\n      \"$ref\": \"type.schema.json#/properties/checksum\"\n    },\n    \"bits\": {\n      \"type\": \"number\",\n      \"description\": \"Number of bit width supported.\"\n    },\n    \"cpuCoreCount\": {\n      \"type\": \"number\",\n      \"description\": \"Number of cores.\"\n    },\n    \"desc\": {\n      \"$ref\": \"type.schema.json#/properties/desc\"\n    }\n  },\n  \"required\": [\n    \"name\",\n    \"desc\",\n    \"cacheSizeKb\",\n    \"cpuCoreCount\",\n    \"cpuClockHz\",\n    \"smtEnabled\",\n    \"bits\"\n  ]\n}",
+  "properties": {}
 }

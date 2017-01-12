@@ -1,28 +1,8 @@
 {
-  "additionalProperties": false,
-  "$schema": "http://json-schema.org/schema#",
-  "type": "object",
-  "properties": {
-    "name": {
-      "$ref": "type.schema.json#/properties/name"
-    },
-    "checksum": {
-      "$ref": "type.schema.json#/properties/checksum"
-    },
-    "baudRate": {
-      "type": "number",
-      "description": "110,300,600,1200,2400,4800,9600,14400,19200,28800,38400,56000,57600 or 115200."
-    },
-    "rev": {
-      "$ref": "hardware.schema.json#/properties/rev"
-    },
-    "desc": {
-      "$ref": "type.schema.json#/properties/desc"
-    }
-  },
-  "required": [
-    "name",
-    "desc",
-    "baudRate"
-  ]
+  "format": "json",
+  "checksum": "dd50656e131ad3520350ec525a0098e3e2a60777",
+  "path": "schemas/modemhardware.schema.json",
+  "encoding": "text",
+  "content": "{\n  \"additionalProperties\": false,\n  \"$schema\": \"http://json-schema.org/schema#\",\n  \"type\": \"object\",\n  \"properties\": {\n    \"name\": {\n      \"$ref\": \"type.schema.json#/properties/name\"\n    },\n    \"checksum\": {\n      \"$ref\": \"type.schema.json#/properties/checksum\"\n    },\n    \"baudRate\": {\n      \"type\": \"number\",\n      \"description\": \"110,300,600,1200,2400,4800,9600,14400,19200,28800,38400,56000,57600 or 115200.\"\n    },\n    \"rev\": {\n      \"$ref\": \"hardware.schema.json#/properties/rev\"\n    },\n    \"desc\": {\n      \"$ref\": \"type.schema.json#/properties/desc\"\n    }\n  },\n  \"required\": [\n    \"name\",\n    \"desc\",\n    \"baudRate\"\n  ]\n}",
+  "properties": {}
 }
