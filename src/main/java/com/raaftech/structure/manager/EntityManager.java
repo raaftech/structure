@@ -12,7 +12,6 @@ import com.raaftech.structure.exceptions.EntityDeserializationException;
 import com.raaftech.structure.graph.repositories.NodeRepository;
 import com.raaftech.structure.helper.JsonHelper;
 import com.raaftech.structure.helper.Triple;
-import com.raaftech.structure.helper.loader.EvenNaiverLoader;
 import com.raaftech.structure.next.Entity;
 import org.neo4j.graphdb.Transaction;
 import org.slf4j.Logger;
@@ -35,7 +34,7 @@ public class EntityManager extends GenericActor {
     private static final String UUID = "uuid";
 
     // An entity is new when it has no UUID, or the UUID is unknown in the database
-    private Predicate<ObjectNode> isNewEntity = (json) -> {
+    private Predicate<ObjectNode> isNewEntity = json -> {
         if (json.has(META) && !json.get(META).has(UUID)) {
             return true;
         }
@@ -130,14 +129,14 @@ public class EntityManager extends GenericActor {
                         e.setUuid(java.util.UUID.randomUUID().toString());
                     }
                 })
-                .collect(Collectors.toMap(e -> e.getUuid(), e -> e));
+                .collect(Collectors.toMap(Entity::getUuid, e -> e));
 
         // Used to collect our sorted entities.
         List<Entity> sorted = new ArrayList<>();
 
         // Takes all the UUIDs an entity is related to, checks which ones are in our working set,
         // then checks if those are sorted already. If so, return true.
-        Predicate<Entity> peersAreSorted = (entity) -> {
+        Predicate<Entity> peersAreSorted = entity -> {
             Set<Triple<String, String, Set<String>>> relations = entity.getRelations();
             return relations.stream()
                     .flatMap(triple -> triple.getRight().stream())
