@@ -9,20 +9,13 @@ import com.raaftech.structure.base.Configuration;
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.base.GenericActor;
 import com.raaftech.structure.exceptions.EntityDeserializationException;
-import com.raaftech.structure.graph.Node;
 import com.raaftech.structure.graph.repositories.NodeRepository;
 import com.raaftech.structure.helper.JsonHelper;
 import com.raaftech.structure.helper.Triple;
 import com.raaftech.structure.next.Entity;
-import org.neo4j.graphdb.Direction;
-import org.neo4j.graphdb.Label;
-import org.neo4j.graphdb.PathExpanders;
 import org.neo4j.graphdb.Transaction;
-import org.neo4j.graphdb.traversal.Evaluation;
-import org.neo4j.graphdb.traversal.TraversalDescription;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.neo4j.support.Neo4jTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +28,6 @@ import java.util.stream.StreamSupport;
 public class EntityManager extends GenericActor {
 
     private static final Logger log = LoggerFactory.getLogger(EntityManager.class);
-    private static final Neo4jTemplate neo4jTemplate = Context.getNeo4jTemplate();
     private static final NodeRepository nodeRepository = Context.getNodeRepository();
 
     private static final String META = "meta";
@@ -123,67 +115,13 @@ public class EntityManager extends GenericActor {
         };
     }
 
-    public MessageHandler read() {
-        return new MessageHandler() {
-            @Override
-            public JsonNode exec(JsonNode request) {
-                ObjectNode args = (ObjectNode) request.get("args");
-                ArrayNode result = mapper.createArrayNode();
-
-
-
-                return response(request, result);
-            }
-
-            @Override
-            public JsonNode help(JsonNode request) {
-                return null;
-            }
-        };
-    }
-
-    /**
-     * Given a starting point v_s, find collect every vertex v_e that where the path from v_s to v_e contains
-     * only vertices that have at least one of the labels in {@code labels}.
-     * @param labels If a traversal encounters a vertex that does not have at least one label included in this parameter
-     *               the traversal will be pruned.
-     * @param start The start node v_s.
-     * @param includeStart Should we include v_s in the resulting list?
-     * @return A list containing every vertex that can be found by the traversal and, optionally, v_s.
-     */
-    protected List<Node> labelBasedTraversal(Set<String> labels, Node start, boolean includeStart) {
-        /*
-        This traversal description simply follows all outgoing edges of the start vertex, and tests
-        whether the end node's labels contains at least one label that is provided as an argument to this method.
-         */
-        TraversalDescription traversalDescription = Context.getGraphDatabase().traversalDescription()
-                .depthFirst()
-                .expand(PathExpanders.forDirection(Direction.OUTGOING))
-                .evaluator(path -> {
-                    if (path.length() == 0) {
-                        return includeStart ? Evaluation.INCLUDE_AND_CONTINUE : Evaluation.EXCLUDE_AND_CONTINUE;
-                    }
-                    final boolean include = StreamSupport.stream(path.endNode().getLabels().spliterator(), false)
-                            .map(Label::name)
-                            .anyMatch(labels::contains);
-                    return Evaluation.of(include, include);
-                });
-
-        // We'll need the org.neo4j.graphdb.Node counterpart of our "start" argument
-        org.neo4j.graphdb.Node startNode = neo4jTemplate.getPersistentState(start);
-        // Every vertex found by this traversal will be mapped to Node, collected, and returned
-        return StreamSupport.stream(traversalDescription.traverse(startNode).spliterator(), true)
-                .map(n -> neo4jTemplate.convert(n, Node.class))
-                .collect(Collectors.toList());
-    }
-
     /**
      * This method takes a list of entities, and sorts them. Entities that are leafs in the
      * resulting graph are at the start of the list, their parents after that, etc.
      * @param entities A list of entities.
      * @return A list of entities that can persisted to the graph in that order.
      */
-    protected List<Entity> sortForCreation(List<Entity> entities) {
+    private List<Entity> sortForCreation(List<Entity> entities) {
         // Create a map from the entity UUIDs to the entities, generating UUIDs if we need to.
         Map<String, Entity> uuidToEntity = entities.stream()
                 .peek(e -> {

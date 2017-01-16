@@ -150,23 +150,4 @@ public abstract class Node {
 
         return json;
     }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Node node = (Node) o;
-
-        if (id != null ? !id.equals(node.id) : node.id != null) return false;
-        return uuid != null ? uuid.equals(node.uuid) : node.uuid == null;
-
-    }
-
-    @Override
-    public int hashCode() {
-        int result = id != null ? id.hashCode() : 0;
-        result = 31 * result + (uuid != null ? uuid.hashCode() : 0);
-        return result;
-    }
 }
