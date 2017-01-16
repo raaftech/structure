@@ -47,7 +47,7 @@ test('Entity class tests', function(tt) {
 
 test('readBundle tests', function(tt) {
     tt.test('core bundle test', function(t) {
-        let result = entityLib.readBundle(baseTypeJson);
+        const result = entityLib.readBundle(baseTypeJson);
         //console.log(stringify(result));
 
         let check = R.map(isNested, R.values(result));
@@ -63,7 +63,7 @@ test('readBundle tests', function(tt) {
 
 test('flatten tests', function(tt) {
     tt.test('flatten core bundle test', function(t) {
-        let bundle = entityLib.readBundle(baseTypeJson);
+        const bundle = entityLib.readBundle(baseTypeJson);
 
         t.ok(R.is(Object, bundle), 'Result should be an object');
         t.ok(isNotAnArray(bundle), 'Result should not be an array');
@@ -82,16 +82,95 @@ test('flatten tests', function(tt) {
 });
 
 test('findEntity tests', function(tt) {
-    let content = entityLib.readBundle(baseTypeJson);
+    const content = entityLib.readBundle(baseTypeJson);
     tt.test('find Parser type by case-different name', function(t) {
         let result = entityLib.findEntity(content, 'parser');
-        console.log(stringify(result));
+
+        t.equals(result.name, 'Parser', 'Should be the Parser type');
+        t.equals(result.meta.uuid, 'b5fa636c-1067-45ac-b027-ade2797bef6f', 'Should be uuid: b5fa636c-1067-45ac-b027-ade2797bef6f')
         t.end();
     });
 
     tt.test('find Parser type by uuid', function(t) {
         let result = entityLib.findEntity(content, 'b5fa636c-1067-45ac-b027-ade2797bef6f');
-        console.log(stringify(result));
+
+        t.equals(result.name, 'Parser', 'Should be the Parser type');
+        t.equals(result.meta.uuid, 'b5fa636c-1067-45ac-b027-ade2797bef6f', 'Should be uuid: b5fa636c-1067-45ac-b027-ade2797bef6f')
+        t.end();
+    });
+
+    tt.test('search for unknown type', function(t) {
+        let result = entityLib.findEntity(content, 'foobar');
+        t.equals(result, null, 'Should be a null value');
+        t.end();
+    });
+});
+
+test('insertEntity tests', function(tt) {
+    const subgraph = entityLib.readBundle(baseTypeJson);
+
+    tt.test('insert a new entity', function(t) {
+        let entity = new entityLib.Entity('MyType','TestType','my desc.','234hklj-2k3jh4');
+        let rootType = entityLib.findEntity(subgraph, 'b1bc963a-19cc-4518-aecb-a35d028c49e3');
+
+        let newGraph = entityLib.insertEntity(subgraph, entity, 'ISA', 'outgoing', rootType);
+        t.equals(Object.keys(newGraph).length, 117, 'Should be 117 property keys');
+        let createdNode = entityLib.findEntity(newGraph, '234hklj-2k3jh4');
+        t.ok(notNil(createdNode), 'The newly created node should exist in the new subgraph');
+        t.equals(createdNode.meta.relations.ISA.entities[0].meta.uuid,
+                 'b1bc963a-19cc-4518-aecb-a35d028c49e3',
+                 'Root type should be nested in the ISA relation');
+        t.end();
+    });
+
+    tt.test('insert already existing entity', function(t) {
+        let entity = entityLib.findEntity(subgraph, 'parser');
+        let rootType = entityLib.findEntity(subgraph, 'b1bc963a-19cc-4518-aecb-a35d028c49e3');
+        let newGraph = entityLib.insertEntity(subgraph, entity, 'ISA', 'outgoing', rootType);
+
+        t.equals(Object.keys(newGraph).length, 116, 'Should still be 116 property keys');
+
+        t.end();
+    });
+
+    tt.test('insert already entity with new uuid but existing name', function(t) {
+        let entity = entityLib.findEntity(subgraph, 'parser');
+        let oldUuid = entity.meta.uuid;
+        entity.meta.uuid = 'my-new-test-uuid';
+        let rootType = entityLib.findEntity(subgraph, 'b1bc963a-19cc-4518-aecb-a35d028c49e3');
+        let newGraph = entityLib.insertEntity(subgraph, entity, 'ISA', 'outgoing', rootType);
+
+        t.equals(Object.keys(newGraph).length, 116, 'Should still be 116 property keys');
+        let createdNode = entityLib.findEntity(newGraph, 'my-new-test-uuid');
+        t.equals(createdNode, null, 'No new node should have been created');
+
+        createdNode = entityLib.findEntity(newGraph, oldUuid);
+        t.ok(notNil(createdNode), 'old node should still be there.');
+
+        t.end();
+    });
+});
+
+test('removeEntity test', function(tt) {
+    const subgraph = entityLib.readBundle(baseTypeJson);
+
+    tt.test('test removal of non-dependency type', function(t) {
+        let parser = entityLib.findEntity(subgraph, 'parser');
+        let newGraph = entityLib.removeEntity(subgraph, parser.meta.uuid);
+
+        t.equals(Object.keys(newGraph).length, 115, 'Should be 115 property keys');
+        let removed = entityLib.findEntity(newGraph, 'parser');
+        t.ok(removed === null, 'Entity should not be in new graph anymore');
+        t.end();
+    });
+
+    tt.test('test removal of dependency type', function(t) {
+        let parser = entityLib.findEntity(subgraph, 'type');
+        let newGraph = entityLib.removeEntity(subgraph, parser.meta.uuid);
+
+        t.equals(Object.keys(newGraph).length, 116, 'Should be 116 property keys');
+        let removed = entityLib.findEntity(newGraph, 'parser');
+        t.ok(removed !== null, 'Entity should still be in the new graph');
         t.end();
     });
 });

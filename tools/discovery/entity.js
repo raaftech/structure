@@ -76,8 +76,9 @@ class Entity {
  * @returns {Object.<string, Entity>} A map of entity UUID's to the entities themselves.
  */
 const readBundle = (entities) => {
+    const ents = clone(entities);
     const entityMap = {};
-    entities.forEach((e) => entityMap[e.meta.uuid] =
+    ents.forEach((e) => entityMap[e.meta.uuid] =
         new Entity(e.type, e.name, e.desc, e.meta.uuid, e.data, e.meta.relations, e.file));
 
     for (const key of Object.keys(entityMap)) {
@@ -97,20 +98,50 @@ const readBundle = (entities) => {
     return entityMap;
 };
 
-const insertEntity = (entity) => {
+const insertEntity = (subgraph, entity,relationName, relationDirection, relatedEntity) => {
+    let sg = clone(subgraph);
+    let check = findEntity(sg, entity.meta.uuid);
+    if(check !== null) return sg;
 
+    let check2 = findEntity(sg, entity.name);
+    if(check2 !== null) return sg;
+
+    let relation = entity.relationCreate(relationName, relationDirection);
+    relation.addEntity(relatedEntity);
+    sg[entity.meta.uuid] = entity;
+    return sg;
 };
 
-const removeEntity = (entity) => {
+const removeEntity = (subgraph, uuid) => {
+    let sg = clone(subgraph);
+    const isDependency = (subgraph, uuid) => {
+        for(const key of Object.keys(subgraph)) {
+            const e = subgraph[key];
+            for(const k of Object.keys(e.meta.relations)) {
+                const rel = e.meta.relations[k];
+                for(let i=0;i<rel.entities.length;i++) {
+                    let u = rel.entities[i];
+                    if(u.meta.uuid === uuid) return true;
+                }
+            }
+        }
+        return false;
+    };
 
+    let entity = findEntity(sg, uuid);
+    if(entity !== null) {
+        if(!isDependency(sg, uuid)) delete sg[uuid];
+    }
+
+    return sg;
 };
 
-const findEntity = (bundle, id) => {
+const findEntity = (subgraph, id) => {
     const equals = (predicate,value) => value.toLowerCase() === predicate.toLowerCase();
 
-    for(const key of Object.keys(bundle)) {
-        const entity = bundle[key];
-        if(equals(id, entity.name) || equals(id, entity.meta.uuid)) return entity;
+    for(const key of Object.keys(subgraph)) {
+        const entity = subgraph[key];
+        if(equals(id, entity.name) || equals(id, entity.meta.uuid)) return clone(entity);
     }
     return null;
 };
@@ -137,7 +168,7 @@ const flatten = (entities, done, flattened) => {
     const flattenEntity = (e) => {
         if(done.indexOf(e.meta.uuid) === -1) {
             done.push(e.meta.uuid);
-            const copy = JSON.parse(JSON.stringify(e));
+            const copy = clone(e);
             for (const key of Object.keys(copy.meta.relations)) {
                 const relEntities = copy.meta.relations[key].entities;
                 delete copy.meta.relations[key].entities;
@@ -158,9 +189,15 @@ const flatten = (entities, done, flattened) => {
     return flattened;
 };
 
+const clone = (obj) => {
+    return JSON.parse(JSON.stringify(obj));
+};
+
 module.exports = {
     Entity: Entity,
     readBundle: readBundle,
     flatten: flatten,
-    findEntity: findEntity
+    findEntity: findEntity,
+    insertEntity: insertEntity,
+    removeEntity: removeEntity
 };
