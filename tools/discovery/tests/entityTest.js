@@ -26,7 +26,7 @@ test('Entity class tests', function(tt) {
         t.ok(R.has('desc',e), 'should have desc property');
         t.equals(R.prop('desc',e), 'my desc.', 'desc value should be "my desc."');
         t.ok(R.has('meta',e), 'should have meta property');
-        t.equals(R.path(['meta','uuid'],e), '234hklj-2k3jh4', 'uuid should be 234hklj-2k3jh4')
+        t.equals(R.path(['meta','uuid'],e), '234hklj-2k3jh4', 'uuid should be 234hklj-2k3jh4');
         t.end();
     });
 
@@ -47,8 +47,8 @@ test('Entity class tests', function(tt) {
 
 test('readBundle tests', function(tt) {
     tt.test('core bundle test', function(t) {
-        let content = baseTypeJson;
-        let result = entityLib.readBundle(content);
+        let result = entityLib.readBundle(baseTypeJson);
+        //console.log(stringify(result));
 
         let check = R.map(isNested, R.values(result));
         let nested = R.gt(R.length(R.filter(R.equals(R.T()), check)),0);
@@ -63,8 +63,7 @@ test('readBundle tests', function(tt) {
 
 test('flatten tests', function(tt) {
     tt.test('flatten core bundle test', function(t) {
-        let content = baseTypeJson;
-        let bundle = entityLib.readBundle(content);
+        let bundle = entityLib.readBundle(baseTypeJson);
 
         t.ok(R.is(Object, bundle), 'Result should be an object');
         t.ok(isNotAnArray(bundle), 'Result should not be an array');
@@ -78,6 +77,21 @@ test('flatten tests', function(tt) {
         t.ok(R.isArrayLike(result), 'Flattened result should be an array');
         t.equals(result.length,Object.keys(bundle).length,
             'Flattened array length should be the same as the number of keys in the bundle hierarchy');
+        t.end();
+    });
+});
+
+test('findEntity tests', function(tt) {
+    let content = entityLib.readBundle(baseTypeJson);
+    tt.test('find Parser type by case-different name', function(t) {
+        let result = entityLib.findEntity(content, 'parser');
+        console.log(stringify(result));
+        t.end();
+    });
+
+    tt.test('find Parser type by uuid', function(t) {
+        let result = entityLib.findEntity(content, 'b5fa636c-1067-45ac-b027-ade2797bef6f');
+        console.log(stringify(result));
         t.end();
     });
 });

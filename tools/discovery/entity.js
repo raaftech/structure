@@ -97,6 +97,24 @@ const readBundle = (entities) => {
     return entityMap;
 };
 
+const insertEntity = (entity) => {
+
+};
+
+const removeEntity = (entity) => {
+
+};
+
+const findEntity = (bundle, id) => {
+    const equals = (predicate,value) => value.toLowerCase() === predicate.toLowerCase();
+
+    for(const key of Object.keys(bundle)) {
+        const entity = bundle[key];
+        if(equals(id, entity.name) || equals(id, entity.meta.uuid)) return entity;
+    }
+    return null;
+};
+
 /**
  * Given an array of {@link Entity entities} that might contain nested entities, flatten and transform them
  * so they validate against entity.schema.json.
@@ -143,5 +161,6 @@ const flatten = (entities, done, flattened) => {
 module.exports = {
     Entity: Entity,
     readBundle: readBundle,
-    flatten: flatten
+    flatten: flatten,
+    findEntity: findEntity
 };
