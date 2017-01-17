@@ -98,6 +98,17 @@ const readBundle = (entities) => {
     return entityMap;
 };
 
+/**
+ * insertEntity :: {k: Entity} -> Entity -> String -> String -> Entity -> {k: Entity}
+ * Given a subgraph, an entity to insert, the relation name to bind to, the direction of the relation
+ * and an Entity to relate to; creates a new subgraph with the Entity, including relation, added to it.
+ * @param {Object.<string,Entity>} subgraph The subgraph to insert the entity into.
+ * @param {Entity} entity The entity to insert.
+ * @param {String} relationName The name of the relation to add to the entity.
+ * @param {String} relationDirection outgoing | incoming Direction of the relation.
+ * @param {Entity} relatedEntity The related Entity.
+ * @returns {Object.<string,Entity>} A newly created Subgraph with the entity inserted.
+ */
 const insertEntity = (subgraph, entity,relationName, relationDirection, relatedEntity) => {
     let sg = clone(subgraph);
     let check = findEntity(sg, entity.meta.uuid);
@@ -112,6 +123,13 @@ const insertEntity = (subgraph, entity,relationName, relationDirection, relatedE
     return sg;
 };
 
+/**
+ * removeEntity :: {k: Entity} -> String -> {k: Entity}
+ * Given a subgraph and a uuid, remove the Entity from the subgraph that corresponds to the uuid.
+ * @param {Object.<string,Entity>} subgraph The subgraph to work on.
+ * @param {String} uuid The uuid to search for.
+ * @returns {Object.<string,Entity>} A newly created subgraph with the entity removed.
+ */
 const removeEntity = (subgraph, uuid) => {
     let sg = clone(subgraph);
     const isDependency = (subgraph, uuid) => {
@@ -136,6 +154,13 @@ const removeEntity = (subgraph, uuid) => {
     return sg;
 };
 
+/**
+ * findEntity :: {k: Entity} -> String -> Entity | null
+ * Given a subgraph and an id, find the first Entity in the subgraph that matches the predicate
+ * @param {Object.<string,Entity>} subgraph The subgraph to work on.
+ * @param {String} id Predicate that matches either the name of an entity or the uuid.
+ * @returns {Entity|null} The found entity or null if nothing was found.
+ */
 const findEntity = (subgraph, id) => {
     const equals = (predicate,value) => value.toLowerCase() === predicate.toLowerCase();
 
