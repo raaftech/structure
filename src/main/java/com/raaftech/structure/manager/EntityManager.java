@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.raaftech.structure.annotations.SchemaPath;
 import com.raaftech.structure.base.Configuration;
@@ -14,7 +15,9 @@ import com.raaftech.structure.exceptions.EntitySerializationException;
 import com.raaftech.structure.graph.Node;
 import com.raaftech.structure.graph.repositories.NodeRepository;
 import com.raaftech.structure.helper.JsonHelper;
+import com.raaftech.structure.helper.LambdaHelper;
 import com.raaftech.structure.helper.Triple;
+import com.raaftech.structure.helper.loader.EvenNaiverLoader;
 import com.raaftech.structure.next.Entity;
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.Label;
@@ -26,12 +29,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.neo4j.support.Neo4jTemplate;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 public class EntityManager extends GenericActor {
@@ -52,6 +54,11 @@ public class EntityManager extends GenericActor {
 
         return nodeRepository.findByUuid(uuid) == null;
     };
+
+    // An entity was updated if the checksum changed
+    private Predicate<Entity> wasUpdated = entity ->
+            !Objects.equals(entity.getChecksum(),
+                    nodeRepository.findByUuid(entity.getUuid()).getChecksum());
 
     /**
      * Create takes an array containing entities as input. It'll check which of them
@@ -179,6 +186,71 @@ public class EntityManager extends GenericActor {
                 }
 
                 tx.close();
+
+                return response(request, result);
+            }
+
+            @Override
+            public JsonNode help(JsonNode request) {
+                return null;
+            }
+        };
+    }
+
+    public MessageHandler update() {
+        return new MessageHandler() {
+            @Override
+            public JsonNode exec(JsonNode request) {
+                final JsonNode args = request.get("args");
+                final ObjectNode result = mapper.createObjectNode();
+                final Stream<JsonNode> entities = StreamSupport.stream(args.get("entities").spliterator(), false);
+
+                final Consumer<Throwable> exceptionHandler = (e) -> {
+                    if (!result.has("error")) {
+                        result.putArray("error");
+                    }
+                    ((ArrayNode)result.get("error")).add(e.getMessage());
+                };
+
+                final List<Entity> updatedEntities = entities
+                        .map(e -> (ObjectNode) e)
+                        // only keep existing entities
+                        .filter(isNewEntity.negate())
+                        // calculate and inject checksum
+                        .peek(entity -> ((ObjectNode) entity.get("meta"))
+                                .put("checksum", EvenNaiverLoader.calculateChecksum(entity.toString(), "sha1")))
+                        // deserialize to Entity
+                        .map(e -> LambdaHelper.wrapWithExceptionHandler(
+                                () -> mapper.treeToValue(e, Entity.class), exceptionHandler))
+                        .filter(Optional::isPresent)
+                        .map(Optional::get)
+                        // do the checksums differ?
+                        .filter(wasUpdated)
+                        // then collect
+                        .collect(Collectors.toList());
+
+                if (updatedEntities.size() > 0) {
+                    Transaction tx = Context.getGraphDatabase().beginTx();
+                    try {
+                        final ArrayNode data = result.putArray("data");
+                        updatedEntities.stream()
+//                                .peek(Entity::toGraph)
+                                .map(Entity::getUuid)
+                                .collect(Collectors.toList())
+                                .forEach(data::add);
+                        tx.success();
+                    } catch (Exception exception) {
+                        if (Configuration.isTraceModeOn()) {
+                            exception.printStackTrace();
+                        }
+                        log.error(exception.getMessage());
+                        // This overwrites any existing error property, which is ok.
+                        result.put("error", "Error while persisting updated entities to database.");
+                        tx.failure();
+                    } finally {
+                        tx.close();
+                    }
+                }
 
                 return response(request, result);
             }
