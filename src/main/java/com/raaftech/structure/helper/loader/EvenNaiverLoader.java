@@ -26,6 +26,7 @@ import java.io.InputStream;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -301,14 +302,13 @@ public class EvenNaiverLoader {
         try {
             for (Path jsonFilePath : jsonFilePaths) {
                 JsonNode jsonFile = mapper.readTree(jsonFilePath.toFile());
-                String fileChecksum = calculateChecksum(new FileInputStream(jsonFilePath.toFile()), ChecksumAlgorithm.SHA1);
                 String[] bundlePaths = bundlePath.split(":");
                 String fromBundle = null;
                 // the next piece of code finds the bundle name where the json originates from
                 for (String s: bundlePaths) {
                     if (jsonFilePath.startsWith(s)) {
                         int bundleIndex = s.endsWith(File.separator) ? 0 : 1;
-                        fromBundle = jsonFilePath.toString().replace(s, "").split(File.separator)[bundleIndex];
+                        fromBundle = jsonFilePath.toString().replace(s, "").split(Pattern.quote(File.separator))[bundleIndex];
                         break;
                     }
                 }
