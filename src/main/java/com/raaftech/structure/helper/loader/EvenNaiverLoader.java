@@ -92,7 +92,7 @@ public class EvenNaiverLoader {
      * @return The calculated hash.
      */
     @SuppressWarnings("Duplicates")
-    public String calculateChecksum(String input, ChecksumAlgorithm algorithm) {
+    public static String calculateChecksum(String input, ChecksumAlgorithm algorithm) {
         final String output;
 
         switch (algorithm) {
@@ -117,7 +117,7 @@ public class EvenNaiverLoader {
      * @throws IOException
      */
     @SuppressWarnings("Duplicates")
-    private String calculateChecksum(Path path, ChecksumAlgorithm algorithm) throws IOException {
+    public static String calculateChecksum(Path path, ChecksumAlgorithm algorithm) throws IOException {
         final String result;
         FileInputStream fis = new FileInputStream(path.toFile());
 
