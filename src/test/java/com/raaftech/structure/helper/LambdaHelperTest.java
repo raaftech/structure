@@ -48,7 +48,7 @@ public class LambdaHelperTest {
         List<String> source = Arrays.asList("foo", "bar", null, "baz", null, "deadbeef");
         AtomicInteger errors = new AtomicInteger(0);
         List<String> transformed = source.stream()
-                .map(s -> LambdaHelper.wrapWithExceptionHandler(s::toUpperCase, e -> errors.getAndIncrement()))
+                .map(s -> LambdaHelper.wrapWithExceptionHandler(() -> s.toUpperCase(), e -> errors.getAndIncrement()))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .collect(Collectors.toList());
