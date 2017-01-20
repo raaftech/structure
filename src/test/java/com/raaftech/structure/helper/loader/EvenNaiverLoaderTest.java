@@ -55,6 +55,13 @@ public class EvenNaiverLoaderTest {
                         new ByteArrayInputStream(a.toString().getBytes()), EvenNaiverLoader.ChecksumAlgorithm.MD5),
                 EvenNaiverLoader.calculateChecksum(
                         new ByteArrayInputStream(b.toString().getBytes()), EvenNaiverLoader.ChecksumAlgorithm.MD5)));
+
+
+        // add some properties that should be filtered from the JSON, see if the checksums still match
+        meta.put("path", "foo");
+        metb.put("path", "bar");
+        assertTrue(Objects.equals(EvenNaiverLoader.calculateChecksum(a, EvenNaiverLoader.ChecksumAlgorithm.SHA1),
+                EvenNaiverLoader.calculateChecksum(b, EvenNaiverLoader.ChecksumAlgorithm.SHA1)));
     }
 
 }

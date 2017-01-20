@@ -4,6 +4,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 import com.raaftech.structure.base.Configuration;
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.exceptions.FileInjectionException;
@@ -88,6 +91,10 @@ public class EvenNaiverLoader {
     }
 
     public enum ChecksumAlgorithm { MD5, SHA1 }
+    private static Map<String, List<String>> checksumPropertyFilter = ImmutableMap.of(
+            META, ImmutableList.of("checksum", "bundle", "path"),
+            FILE, ImmutableList.of("checksum", "path")
+    );
 
     private static ArrayNode prepareForHashing(ObjectNode input) {
         if (!JsonHelper.validateToSchema(JsonHelper.jsonFromResource(ENTITYSCHEMA), input)) {
@@ -97,7 +104,17 @@ public class EvenNaiverLoader {
 
         final ArrayNode result = new ObjectMapper().createArrayNode();
 
-        Iterable<Map.Entry<String, JsonNode>> iterable = () -> input.fields();
+        ObjectNode inputCopy = input.deepCopy();
+
+        // remove unwanted keys from JSON before calculating checksum
+        checksumPropertyFilter.keySet().stream()
+                .filter(inputCopy::has)
+                .forEach(key -> {
+                        checksumPropertyFilter.get(key)
+                                .forEach(val -> ((ObjectNode) inputCopy.get(key)).remove(val));
+                });
+
+        Iterable<Map.Entry<String, JsonNode>> iterable = () -> inputCopy.fields();
         StreamSupport.stream(iterable.spliterator(), false)
                 .sorted((a, b) -> a.getKey().compareTo(b.getKey()))
                 .map(Map.Entry::getValue)
