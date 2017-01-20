@@ -83,6 +83,8 @@ public class EvenNaiverLoader {
         return node;
     }
 
+    public enum ChecksumAlgorithm { MD5, SHA1 }
+
     /**
      * Calculate the checksum of a string.
      * @param input The string to calculate the hash for.
@@ -90,16 +92,16 @@ public class EvenNaiverLoader {
      * @return The calculated hash.
      */
     @SuppressWarnings("Duplicates")
-    private String calculateChecksum(String input, String algorithm) {
+    public String calculateChecksum(String input, ChecksumAlgorithm algorithm) {
         final String output;
 
-        switch (algorithm.toLowerCase()) {
-            case "md5":
+        switch (algorithm) {
+            case MD5:
                 output = DigestUtils.md5Hex(input);
                 break;
             default:
                 log.warn("Invalid algorithm given to calculateChecksum, defaulting to SHA1");
-            case "sha1":
+            case SHA1:
                 output = DigestUtils.sha1Hex(input);
                 break;
         }
@@ -110,22 +112,22 @@ public class EvenNaiverLoader {
      * Calculate a checksum of a file
      *
      * @param path the file to calculate the checksum of
-     * @param algo the algorithm
+     * @param algorithm the algorithm
      * @return the checksum for the file using the algorithm
      * @throws IOException
      */
     @SuppressWarnings("Duplicates")
-    private String calculateChecksum(Path path, String algo) throws IOException {
+    private String calculateChecksum(Path path, ChecksumAlgorithm algorithm) throws IOException {
         final String result;
         FileInputStream fis = new FileInputStream(path.toFile());
 
-        switch (algo) {
-            case "md5":
+        switch (algorithm) {
+            case MD5:
                 result = DigestUtils.md5Hex(fis);
                 break;
             default:
                 log.warn("Invalid algorithm given to calculateChecksum, defaulting to SHA1");
-            case "sha1":
+            case SHA1:
                 result = DigestUtils.sha1Hex(fis);
                 break;
         }
@@ -271,7 +273,7 @@ public class EvenNaiverLoader {
         try {
             for (Path jsonFilePath : jsonFilePaths) {
                 JsonNode jsonFile = mapper.readTree(jsonFilePath.toFile());
-                String fileChecksum = calculateChecksum(jsonFilePath, "sha1");
+                String fileChecksum = calculateChecksum(jsonFilePath, ChecksumAlgorithm.SHA1);
                 String[] bundlePaths = bundlePath.split(":");
                 String fromBundle = null;
                 // the next piece of code finds the bundle name where the json originates from
@@ -287,13 +289,13 @@ public class EvenNaiverLoader {
                 // array of tokens
                 if (jsonFile.isArray()) {
                     for (JsonNode token : jsonFile) {
-                        final String entityChecksum = calculateChecksum(injectFileReferences(token, jsonFilePath).toString(), "SHA1");
+                        final String entityChecksum = calculateChecksum(injectFileReferences(token, jsonFilePath).toString(), ChecksumAlgorithm.SHA1);
                         checksumToFiles.put(entityChecksum, jsonFilePath);
                         checksumToUuid.put(entityChecksum, token.get(META).get(UUID).asText());
                         unsorted.add(putBundleName(putChecksum((ObjectNode) token, entityChecksum), fromBundle));
                     }
                 } else { // single token
-                    final String entityChecksum = calculateChecksum(injectFileReferences(jsonFile, jsonFilePath).toString(), "SHA1");
+                    final String entityChecksum = calculateChecksum(injectFileReferences(jsonFile, jsonFilePath).toString(), ChecksumAlgorithm.SHA1);
                     checksumToFiles.put(entityChecksum, jsonFilePath);
                     unsorted.add(putBundleName(putChecksum((ObjectNode) jsonFile, entityChecksum), fromBundle));
                 }
