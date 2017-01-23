@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.raaftech.structure.annotations.SchemaPath;
 import com.raaftech.structure.base.Configuration;
@@ -29,6 +30,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.neo4j.support.Neo4jTemplate;
 
 import java.util.*;
+import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -43,6 +45,7 @@ public class EntityManager extends GenericActor {
 
     private static final String META = "meta";
     private static final String UUID = "uuid";
+    private static final String CHECKSUM = "checksum";
 
     // An entity is new when it has no UUID, or the UUID is unknown in the database
     private Predicate<ObjectNode> isNewEntity = json -> {
@@ -200,8 +203,11 @@ public class EntityManager extends GenericActor {
      * Update takes an array containing entities as input. It'll check which of them
      * are updated, and persist those updates to the graph.
      * An entity is updated when it has a UUID that is known in the graph, and its checksum is changed.
+     * Optionally, {@code update} can be provided with an {@code oldEntities} array that contains
+     * the entities in their original state, used to see if entities were updated while we were editing them.
      * @return A list containing the UUIDs of the updated entities, in the order they were persisted.
      */
+    @SchemaPath("schema/manager/entitymanager/update.schema.json")
     public MessageHandler update() {
         return new MessageHandler() {
             @Override
@@ -209,12 +215,31 @@ public class EntityManager extends GenericActor {
                 final JsonNode args = request.get("args");
                 final ObjectNode result = mapper.createObjectNode();
                 final Stream<JsonNode> entities = StreamSupport.stream(args.get("entities").spliterator(), false);
+                final Map<String, String> oldEntitiesUuidToChecksum;
+
+                if (args.has("oldEntities")) {
+                    oldEntitiesUuidToChecksum = StreamSupport.stream(args.get("oldEntities").spliterator(), false)
+                            .collect(Collectors.toMap(e -> e.get(META).get(UUID).asText(),
+                                    e -> e.get(META).get(CHECKSUM).asText()));
+                } else {
+                    oldEntitiesUuidToChecksum = ImmutableMap.of();
+                }
 
                 final Consumer<Throwable> exceptionHandler = (e) -> {
                     if (!result.has("error")) {
                         result.putArray("error");
                     }
                     ((ArrayNode)result.get("error")).add(e.getMessage());
+                };
+
+                /*
+                 Checks whether an entity was updated between the read operation and the update operation,
+                 simply by checking if an entity's checksum before editing it is still the same as its checksum
+                 in the database.
+                  */
+                final BiPredicate<Map<String, String>, String> entityAlreadyChanged = (map, uuid) -> {
+                    final String persistedChecksum = nodeRepository.findByUuid(uuid).getChecksum();
+                    return !Objects.equals(oldEntitiesUuidToChecksum.get(uuid), persistedChecksum);
                 };
 
                 final List<Entity> updatedEntities = entities
@@ -236,6 +261,14 @@ public class EntityManager extends GenericActor {
                         .collect(Collectors.toList());
 
                 if (updatedEntities.size() > 0) {
+                    if (oldEntitiesUuidToChecksum.size() > 0) {
+                        if (updatedEntities.stream()
+                                .map(e -> entityAlreadyChanged.test(oldEntitiesUuidToChecksum, e.getUuid()))
+                                .reduce((a, b) -> a || b).get()) {
+                            result.put("error", "Entity work set was updated in the mean while.");
+                            return response(request, result);
+                        }
+                    }
                     Transaction tx = Context.getGraphDatabase().beginTx();
                     try {
                         final ArrayNode data = result.putArray("data");
