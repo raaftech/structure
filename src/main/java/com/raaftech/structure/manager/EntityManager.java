@@ -197,6 +197,12 @@ public class EntityManager extends GenericActor {
         };
     }
 
+    /**
+     * Update takes an array containing entities as input. It'll check which of them
+     * are updated, and persist those updates to the graph.
+     * An entity is updated when it has a UUID that is known in the graph, and its checksum is changed.
+     * @return A list containing the UUIDs of the updated entities, in the order they were persisted.
+     */
     public MessageHandler update() {
         return new MessageHandler() {
             @Override
@@ -218,7 +224,8 @@ public class EntityManager extends GenericActor {
                         .filter(isNewEntity.negate())
                         // calculate and inject checksum
                         .peek(entity -> ((ObjectNode) entity.get("meta"))
-                                .put("checksum", EvenNaiverLoader.calculateChecksum(entity.toString(), "sha1")))
+                                .put("checksum", EvenNaiverLoader.calculateChecksum(entity, EvenNaiverLoader
+                                        .ChecksumAlgorithm.SHA1)))
                         // deserialize to Entity
                         .map(e -> LambdaHelper.wrapWithExceptionHandler(
                                 () -> mapper.treeToValue(e, Entity.class), exceptionHandler))
@@ -234,7 +241,7 @@ public class EntityManager extends GenericActor {
                     try {
                         final ArrayNode data = result.putArray("data");
                         updatedEntities.stream()
-//                                .peek(Entity::toGraph)
+                                .peek(Entity::toGraph)
                                 .map(Entity::getUuid)
                                 .collect(Collectors.toList())
                                 .forEach(data::add);
