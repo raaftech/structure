@@ -46,6 +46,10 @@ public class EntityManager extends GenericActor {
     private static final String META = "meta";
     private static final String UUID = "uuid";
     private static final String CHECKSUM = "checksum";
+    private static final String ERROR = "error";
+    private static final String START = "start";
+    private static final String INCLUDESTART = "includeStart";
+    private static final String LABELS = "labels";
 
     // An entity is new when it has no UUID, or the UUID is unknown in the database
     private Predicate<ObjectNode> isNewEntity = json -> {
@@ -118,7 +122,7 @@ public class EntityManager extends GenericActor {
                     result.set("data", mapper.valueToTree(newUuids));
                     tx.success();
                 } catch (Exception e) {
-                    result.put("error", e.getMessage());
+                    result.put(ERROR, e.getMessage());
                     tx.failure();
                 } finally {
                     tx.close();
@@ -143,9 +147,6 @@ public class EntityManager extends GenericActor {
      */
     @SchemaPath("schema/manager/entitymanager/read.schema.json")
     public MessageHandler read() {
-        final String START = "start";
-        final String INCLUDESTART = "includeStart";
-        final String LABELS = "labels";
 
         return new MessageHandler() {
             @Override
@@ -181,10 +182,10 @@ public class EntityManager extends GenericActor {
                                 })
                                 .forEach(data::add);
                     } catch (EntitySerializationException e) {
-                        result.put("error", e.getMessage());
+                        result.put(ERROR, e.getMessage());
                     }
                 } else {
-                    result.put("error", "Couldn't find starting node.");
+                    result.put(ERROR, "Couldn't find starting node.");
                 }
 
                 tx.close();
@@ -225,11 +226,11 @@ public class EntityManager extends GenericActor {
                     oldEntitiesUuidToChecksum = ImmutableMap.of();
                 }
 
-                final Consumer<Throwable> exceptionHandler = (e) -> {
-                    if (!result.has("error")) {
-                        result.putArray("error");
+                final Consumer<Throwable> exceptionHandler = e -> {
+                    if (!result.has(ERROR)) {
+                        result.putArray(ERROR);
                     }
-                    ((ArrayNode)result.get("error")).add(e.getMessage());
+                    ((ArrayNode)result.get(ERROR)).add(e.getMessage());
                 };
 
                 /*
@@ -260,12 +261,12 @@ public class EntityManager extends GenericActor {
                         // then collect
                         .collect(Collectors.toList());
 
-                if (updatedEntities.size() > 0) {
+                if (updatedEntities.isEmpty()) {
                     if (oldEntitiesUuidToChecksum.size() > 0) {
                         if (updatedEntities.stream()
                                 .map(e -> entityAlreadyChanged.test(oldEntitiesUuidToChecksum, e.getUuid()))
                                 .reduce((a, b) -> a || b).get()) {
-                            result.put("error", "Entity work set was updated in the mean while.");
+                            result.put(ERROR, "Entity work set was updated in the mean while.");
                             return response(request, result);
                         }
                     }
@@ -284,7 +285,7 @@ public class EntityManager extends GenericActor {
                         }
                         log.error(exception.getMessage());
                         // This overwrites any existing error property, which is ok.
-                        result.put("error", "Error while persisting updated entities to database.");
+                        result.put(ERROR, "Error while persisting updated entities to database.");
                         tx.failure();
                     } finally {
                         tx.close();
@@ -326,8 +327,9 @@ public class EntityManager extends GenericActor {
                         tx.success();
                     }
                 } catch (Exception e) {
-                    result.put("error", "Error while deleting node \"" + toDelete.getUuid() + "\", exception: "
+                    result.put(ERROR, "Error while deleting node \"" + toDelete.getUuid() + "\", exception: "
                             + e.getMessage());
+                    tx.failure();
                 } finally {
                     tx.close();
                 }
@@ -351,7 +353,7 @@ public class EntityManager extends GenericActor {
      * @param includeStart Should we include v_s in the resulting list?
      * @return A list containing every vertex that can be found by the traversal and, optionally, v_s.
      */
-    protected List<Node> labelBasedTraversal(Set<String> labels, Node start, boolean includeStart) {
+    List<Node> labelBasedTraversal(Set<String> labels, Node start, boolean includeStart) {
         /*
         This traversal description simply follows all outgoing edges of the start vertex, and tests
         whether the end node's labels contains at least one label that is provided as an argument to this method.
@@ -388,7 +390,7 @@ public class EntityManager extends GenericActor {
      * @param start The start node v_s.
      * @return True if we can safely delete v_s, false otherwise.
      */
-    protected boolean safeDeleteTraversal(List<String> labels, Node start) {
+    private boolean safeDeleteTraversal(List<String> labels, Node start) {
         // We'll need the org.neo4j.graphdb.Node counterpart of our "start" argument
         org.neo4j.graphdb.Node startNode = neo4jTemplate.getPersistentState(start);
 
@@ -429,7 +431,7 @@ public class EntityManager extends GenericActor {
      * @param entities A list of entities.
      * @return A list of entities that can persisted to the graph in that order.
      */
-    protected List<Entity> sortForCreation(List<Entity> entities) {
+    private List<Entity> sortForCreation(List<Entity> entities) {
         // Create a map from the entity UUIDs to the entities, generating UUIDs if we need to.
         Map<String, Entity> uuidToEntity = entities.stream()
                 .peek(e -> {
