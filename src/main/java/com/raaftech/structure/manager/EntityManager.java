@@ -302,6 +302,47 @@ public class EntityManager extends GenericActor {
     }
 
     /**
+     * Given a UUID of an entity and an array of labels, check if we can safely delete it, and act accordingly.
+     * For a description of what "safe deletion" means, see {@link #safeDeleteTraversal(List, Node)}.
+     * @return Returns the UUID of the entity in case of deletion, an empty result otherwise.
+     */
+    public MessageHandler delete() {
+        return new MessageHandler() {
+            @Override
+            public JsonNode exec(JsonNode request) {
+                ObjectNode args = (ObjectNode) request.get("args");
+                ObjectNode result = mapper.createObjectNode();
+
+                List<String> labels = StreamSupport.stream(args.get("labels").spliterator(), true)
+                        .map(JsonNode::asText)
+                        .collect(Collectors.toList());
+
+                Node toDelete = nodeRepository.findByUuid(args.get("uuid").asText());
+                Transaction tx = Context.getGraphDatabase().beginTx();
+                try {
+                    if (safeDeleteTraversal(labels, toDelete)) {
+                        nodeRepository.delete(toDelete);
+                        result.put("data", toDelete.getUuid());
+                        tx.success();
+                    }
+                } catch (Exception e) {
+                    result.put("error", "Error while deleting node \"" + toDelete.getUuid() + "\", exception: "
+                            + e.getMessage());
+                } finally {
+                    tx.close();
+                }
+
+                return response(request, result);
+            }
+
+            @Override
+            public JsonNode help(JsonNode request) {
+                return null;
+            }
+        };
+    }
+
+    /**
      * Given a starting point v_s, find collect every vertex v_e that where the path from v_s to v_e contains
      * only vertices that have at least one of the labels in {@code labels}.
      * @param labels If a traversal encounters a vertex that does not have at least one label included in this parameter
@@ -334,6 +375,52 @@ public class EntityManager extends GenericActor {
         return StreamSupport.stream(traversalDescription.traverse(startNode).spliterator(), true)
                 .map(n -> neo4jTemplate.convert(n, Node.class))
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * Given a starting point v_s, and a list of labels, check if we can safely delete v_s. We do this by checking
+     * every neighbor v_n of v_s. For the following: if v_s is a
+     * <a href="https://en.wikipedia.org/wiki/Glossary_of_graph_theory_terms#predecessor">predecessor</a> of v_n,
+     * and v_n contains a label that is also in {@code labels}, deletion is unsafe.
+     * If v_s is a <a href="https://en.wikipedia.org/wiki/Glossary_of_graph_theory_terms#successor">successor</a> of v_n
+     * , and v_n does not contains a label that is also in {@code labels}, deletion is unsafe.
+     * @param labels The list of labels that dictate whether deletion is safe or not.
+     * @param start The start node v_s.
+     * @return True if we can safely delete v_s, false otherwise.
+     */
+    protected boolean safeDeleteTraversal(List<String> labels, Node start) {
+        // We'll need the org.neo4j.graphdb.Node counterpart of our "start" argument
+        org.neo4j.graphdb.Node startNode = neo4jTemplate.getPersistentState(start);
+
+        TraversalDescription traversalDescription = Context.getGraphDatabase().traversalDescription()
+                .depthFirst()
+                .expand(PathExpanders.allTypesAndDirections())
+                .evaluator(path -> {
+                    if (path.length() == 0) {
+                        return Evaluation.EXCLUDE_AND_CONTINUE;
+                    }
+                    if (path.length() > 1) {
+                        return Evaluation.EXCLUDE_AND_PRUNE;
+                    }
+                    /*
+                     Check if we are at the start of an outgoing edge, or the end of one. In the first case
+                     we need to make sure we don't point to vertices of the same type, in the latter case we need to
+                     make sure there aren't any vertices pointing to us that aren't of the same type.
+                      */
+                    final boolean include;
+                    if (path.lastRelationship().getStartNode().getId() == startNode.getId()) {
+                        include = StreamSupport.stream(path.endNode().getLabels().spliterator(), false)
+                                .map(Label::name)
+                                .anyMatch(labels::contains);
+                    } else {
+                        include = !StreamSupport.stream(path.endNode().getLabels().spliterator(), false)
+                                .map(Label::name)
+                                .anyMatch(labels::contains);
+                    }
+                    return Evaluation.of(include, include);
+                });
+
+        return StreamSupport.stream(traversalDescription.traverse(startNode).spliterator(), false).count() == 0;
     }
 
     /**
