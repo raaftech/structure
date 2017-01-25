@@ -298,6 +298,7 @@ public class EntityManager extends GenericActor {
      * For a description of what "safe deletion" means, see {@link #safeDeleteTraversal(List, Node)}.
      * @return Returns the UUID of the entity in case of deletion, an empty result otherwise.
      */
+    @SchemaPath("schema/manager/entitymanager/delete.schema.json")
     public MessageHandler delete() {
         return new MessageHandler() {
             @Override
