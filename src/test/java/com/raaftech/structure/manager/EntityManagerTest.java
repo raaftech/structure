@@ -253,10 +253,7 @@ public class EntityManagerTest {
         computerGrouping.setDesc("Edited outside of EntityManager.");
         computerGrouping.setChecksum(EvenNaiverLoader.calculateChecksum(mapper.valueToTree(computerGrouping),
                 EvenNaiverLoader.ChecksumAlgorithm.SHA1));
-        Transaction tx = graphDatabase.beginTx();
         nodeRepository.save(computerGrouping);
-        tx.success();
-        tx.close();
 
         // send the message constructed above and get the result
         response = entityManager.update().exec(message);
@@ -264,5 +261,11 @@ public class EntityManagerTest {
 
         // the result should not have an error property
         assertTrue(result.has("error"));
+    }
+
+    @Test
+    @Transactional
+    @Rollback
+    public void testDelete() throws Exception {
     }
 }
