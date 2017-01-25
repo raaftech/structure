@@ -183,4 +183,86 @@ public class EntityManagerTest {
             mapper.treeToValue(iterator.next(), Entity.class);
         }
     }
+
+    @Test
+    @Transactional
+    @Rollback
+    public void testUpdate() throws Exception {
+        EntityManager entityManager = new EntityManager();
+
+        // get two nodes, of which we are going to update only one
+        Node computerGrouping = nodeRepository.findByUuid("84b97c5c-5c5c-4654-b102-706e036f4374");
+        Node linuxType = nodeRepository.findByUuid("a5613527-2f64-4481-83f2-80b0cb427e28");
+
+        // set the name of the Linux type to something else
+        final String newName = "Updated name";
+        linuxType.setName(newName);
+
+        // construct a message that updates the name of an entity
+        ObjectNode message = mapper.createObjectNode();
+        message.put("msgh", "update");
+        ObjectNode args = message.putObject("args");
+        ArrayNode entities = args.putArray("entities");
+
+        // add the two entities to the array
+        entities.add(mapper.valueToTree(computerGrouping));
+        entities.add(mapper.valueToTree(linuxType));
+
+        // send the message constructed above and get the result
+        JsonNode response = entityManager.update().exec(message);
+        ObjectNode result = (ObjectNode) response.get("result");
+
+        // the result should not have an error property
+        assertFalse(result.has("error"));
+        // it should have a data array
+        assertTrue(result.has("data"));
+        assertTrue(result.get("data").isArray());
+
+        ArrayNode data = (ArrayNode) result.get("data");
+
+        // we should have 1 node contained in the array
+        assertEquals(1, data.size());
+
+        // data should contain the UUID of the "Linux" type
+        assertEquals(linuxType.getUuid(), data.get(0).asText());
+
+        // retrieve "Linux" from the graph again, check if it was indeed updated
+        assertEquals(newName, nodeRepository.findByUuid(linuxType.getUuid()).getName());
+
+
+        /*
+         try an update again, this time a safe update, which means we send the old entities as well,
+         and we compare the old versions to the graph version before we update.
+          */
+        computerGrouping = nodeRepository.findByUuid("84b97c5c-5c5c-4654-b102-706e036f4374");
+        linuxType = nodeRepository.findByUuid("a5613527-2f64-4481-83f2-80b0cb427e28");
+
+        // add the "original" versions of our entities to the oldEntities array
+        ArrayNode oldEntities = args.putArray("oldEntities");
+        entities.removeAll();
+        oldEntities.add(mapper.valueToTree(computerGrouping));
+        oldEntities.add(mapper.valueToTree(linuxType));
+
+        // change the "Computer" entity and add it to our updated entities array
+        computerGrouping.setDesc("New description.");
+        entities.add(mapper.valueToTree(computerGrouping));
+        entities.add(mapper.valueToTree(linuxType));
+
+        // now, edit the "Computer" entity outside of EntityManager and save it
+        computerGrouping = nodeRepository.findByUuid("84b97c5c-5c5c-4654-b102-706e036f4374");
+        computerGrouping.setDesc("Edited outside of EntityManager.");
+        computerGrouping.setChecksum(EvenNaiverLoader.calculateChecksum(mapper.valueToTree(computerGrouping),
+                EvenNaiverLoader.ChecksumAlgorithm.SHA1));
+        Transaction tx = graphDatabase.beginTx();
+        nodeRepository.save(computerGrouping);
+        tx.success();
+        tx.close();
+
+        // send the message constructed above and get the result
+        response = entityManager.update().exec(message);
+        result = (ObjectNode) response.get("result");
+
+        // the result should not have an error property
+        assertTrue(result.has("error"));
+    }
 }
