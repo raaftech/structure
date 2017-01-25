@@ -252,7 +252,7 @@ public class EntityManager extends GenericActor {
                         // then collect
                         .collect(Collectors.toList());
 
-                if (updatedEntities.isEmpty()) {
+                if (!updatedEntities.isEmpty()) {
                     if (oldEntitiesUuidToChecksum.size() > 0) {
                         if (updatedEntities.stream()
                                 .map(e -> entityAlreadyChanged.test(oldEntitiesUuidToChecksum, e.getUuid()))
