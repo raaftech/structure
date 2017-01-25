@@ -170,17 +170,8 @@ public class EntityManager extends GenericActor {
                     try {
                         ArrayNode data = result.putArray("data");
                         labelBasedTraversal(labels, start, includeStart).stream()
-                                .map(n -> {
-                                    try {
-                                        return mapper.writeValueAsString(n);
-                                    } catch (JsonProcessingException e) {
-                                        if (Configuration.isTraceModeOn()) {
-                                            e.printStackTrace();
-                                        }
-                                        throw new EntitySerializationException("Error while serializing entity.");
-                                    }
-                                })
-                                .forEach(data::add);
+                                .map(mapper::valueToTree)
+                                .forEach(t -> data.add((JsonNode)t));
                     } catch (EntitySerializationException e) {
                         result.put(ERROR, e.getMessage());
                     }
