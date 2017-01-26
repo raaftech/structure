@@ -4,10 +4,29 @@ const R = require('ramda');
 const fs = require('fs');
 const path = require('path');
 const util = require('util');
+const FuzzyMatching = require('fuzzy-matching');
 
 const bundleData = JSON.parse(fs.readFileSync(path.join(__dirname, 'output.json')));
-//TODO make getConcept use fuzzy matching
-const getConcept = (name) => R.find(R.propEq('shortName', R.toLower(name)), bundleData);
+const initMatcher = (types) => {
+    let concepts = R.map(R.prop('shortName'),types);
+    return new FuzzyMatching(concepts);
+};
+const fuzzyMatcher = initMatcher(bundleData);
+
+const getConcept = (name) => {
+    if(name === 'unknown') return null;
+
+    let match = fuzzyMatcher.get(name);
+    const f = R.ifElse(
+                R.pipe(R.prop('distance'), R.lte(0.5)),
+                R.prop('value'),
+                R.always(name)
+              );
+     //console.log('Requested: %s, Resolved: %s, Distance: %s',name, f(match), JSON.stringify(match));
+     let data = R.find(R.propEq('shortName', f(match)), bundleData);
+     return R.defaultTo(null, data);
+};
+
 const notNil = R.compose(R.not, R.isNil);
 
 const createInstanceData = (instances, templateUuid) => {
