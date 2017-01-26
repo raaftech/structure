@@ -317,6 +317,8 @@ public class EntityManager extends GenericActor {
                         nodeRepository.delete(toDelete);
                         result.put("data", toDelete.getUuid());
                         tx.success();
+                    } else {
+                        result.put("error", "Couldn't delete entity.");
                     }
                 } catch (Exception e) {
                     result.put(ERROR, "Error while deleting node \"" + toDelete.getUuid() + "\", exception: "
