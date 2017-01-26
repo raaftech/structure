@@ -1,0 +1,13 @@
+{
+  "id": "https://repo.raaftech.com/schema/manager/entitymanager/create.schema.json#",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Schema for EntityManager's create method.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "entities": {
+      "type": "array"
+    }
+  },
+  "required": [ "entities" ]
+}

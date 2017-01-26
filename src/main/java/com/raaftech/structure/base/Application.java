@@ -297,6 +297,11 @@ public class Application {
                 log.info("Deployed InstrumentManager with id: {}", ar.result());
             }
         });
+        vertx.deployVerticle("com.raaftech.structure.manager.EntityManager", ar -> {
+            if (ar.succeeded()) {
+                log.info("Deployed EntityManager with id: {}", ar.result());
+            }
+        });
         String jobpoolConfiguration = getConfiguration("jobpool");
         int jobpool = jobpoolConfiguration == null ?
                 50 :

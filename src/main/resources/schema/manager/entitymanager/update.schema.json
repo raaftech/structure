@@ -1,0 +1,16 @@
+{
+  "id": "https://repo.raaftech.com/schema/manager/entitymanager/update.schema.json#",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Schema for EntityManager's update method.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "entities": {
+      "type": "array"
+    },
+    "oldEntities": {
+      "type": "array"
+    }
+  },
+  "required": [ "entities" ]
+}
