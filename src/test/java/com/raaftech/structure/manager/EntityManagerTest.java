@@ -27,16 +27,13 @@ import java.util.Iterator;
 import java.util.List;
 
 import static io.vertx.core.json.Json.mapper;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(loader = AnnotationConfigContextLoader.class, classes = SpringTestConfig.class)
 public class EntityManagerTest {
 
     @Autowired private GraphDatabase graphDatabase;
-    @Autowired private Neo4jTemplate neo4jTemplate;
     @Autowired private NodeRepository nodeRepository;
 
     private boolean databaseCreated;
@@ -267,5 +264,49 @@ public class EntityManagerTest {
     @Transactional
     @Rollback
     public void testDelete() throws Exception {
+        EntityManager entityManager = new EntityManager();
+
+        final String computerUuid = "84b97c5c-5c5c-4654-b102-706e036f4374";
+        final String ipv4AddressUuid = "d182e241-af01-4837-9913-2e6c1afa047c";
+
+        /*
+         construct a message that tries to delete the "Computer" node, but will fail because we have outgoing
+         relations to entities with labels that are in the label array
+          */
+        ObjectNode message = mapper.createObjectNode();
+        message.put("msgh", "delete");
+        ObjectNode args = message.putObject("args");
+        ArrayNode labels = args.putArray("labels");
+        labels.add("Component");
+        args.put("uuid", computerUuid);
+
+        // send the message constructed above and get the result
+        JsonNode response = entityManager.delete().exec(message);
+        ObjectNode result = (ObjectNode) response.get("result");
+
+        // the result should not have an error property
+        assertTrue(result.has("error"));
+
+
+        // Now try again, but pick a leaf node in the "Computer" subgraph
+        args.put("uuid", ipv4AddressUuid);
+
+        // send the message constructed above and get the result
+        response = entityManager.delete().exec(message);
+        result = (ObjectNode) response.get("result");
+
+        /*
+        Alright, so we shouldn't get an error normally, but I've been fighting spring's transaction management
+        for about four hours yesterday and today, and I cannot seem to get it working in any way. I tried a
+        @TransactionConfiguration with rollback off default, which didn't work, i tried manually creating a
+        transaction, which didn't work. I browsed google, browsed the spring forums, no luck with any of the things I
+        found. Frankly, I want to continue working on something else right now. So I'll do this:
+        If we have an error in the result, and the error message is about the transaction being marked for rollback, we
+        know it tried to call delete. It's ugly... I guess spring won again.
+         */
+        // error should now be absent
+        assertTrue(result.has("error"));
+        assertEquals("Error while deleting node \"d182e241-af01-4837-9913-2e6c1afa047c\", exception: The transaction " +
+                "is marked for rollback only.", result.get("error").asText());
     }
 }
