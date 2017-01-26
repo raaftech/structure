@@ -6,6 +6,7 @@ const path = require('path');
 const util = require('util');
 
 const bundleData = JSON.parse(fs.readFileSync(path.join(__dirname, 'output.json')));
+//TODO make getConcept use fuzzy matching
 const getConcept = (name) => R.find(R.propEq('shortName', R.toLower(name)), bundleData);
 const notNil = R.compose(R.not, R.isNil);
 
@@ -55,9 +56,6 @@ const dnsData = (dns,ip) => {
 
 const osData = (dist, version,hostname,ip) => {
     hostname = R.defaultTo('unknown-'+ip, hostname);
-    if(ip === '172.17.1.35' || ip === '172.17.1.34') {
-        dist = 'aix';
-    }
     let c = getConcept(dist);
 
 	if(R.isNil(c)) {
@@ -72,9 +70,6 @@ const osData = (dist, version,hostname,ip) => {
 
 const interpreterData = (interpreter,ip) => {
     let fn = R.pipe(R.split('/'), R.last);
-    if(ip === '172.17.1.56') {
-        interpreter = 'DosShell';
-    }
     let c = getConcept(fn(interpreter));
 	if(R.isNil(c)) {
         let generic = createData('d047f415-734c-4bd3-92b9-d68d5521ce69',R.defaultTo('A command or programming language interpreter.', interpreter),
@@ -86,10 +81,11 @@ const interpreterData = (interpreter,ip) => {
 };
 
 const mgrData = (mgr,ip) => {
+    //FIXME not sure if this should be fixed, 3 ways to do this
+    //1. see if fuzzy matching matches this
+    //2. fix in the bundle definitions
+    //3. leave this static hack.
     if(mgr === 'bsdinit') mgr = 'bsdrcinit';
-    if(ip === '172.17.1.56') {
-        mgr = 'Services';
-    }
 
     let c = getConcept(mgr);
 	if(R.isNil(c)) {
@@ -110,12 +106,7 @@ const daemonData = (sshd, httpd,ip) => {
     let list = [];
     if(notNil(httpd) && httpd !== 'none') list.push(http);
 
-    if(ip === '172.17.1.56') {
-        list.push(createData('65af133b-1a2c-4faa-8d2a-a288eaa4f412', 'A generic SMB/CIFS Server.',
-                             'Generic Samba Server', 'smbserver', 'SmbServer', 'unknown'));
-    } else {
-        if(notNil(sshd) && sshd !== 'none') list.push(ssh);
-    }
+    if(notNil(sshd) && sshd !== 'none') list.push(ssh);
 
     return createInstanceData(list, '54126ca8-3a5e-43b9-a501-98c8d158049d');
 };
@@ -150,7 +141,6 @@ const transform = (data, ip, hostname,sshd, httpd) => {
 
     return createEventData(R.concat(result, miscData()));
 };
-
 
 module.exports = {
     transform: transform

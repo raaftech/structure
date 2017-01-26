@@ -12,6 +12,8 @@ const itemPropertyTest = R.allPass([
 ]);
 //Function to check if the length of an array is greater or equal to 35
 const lengthCheck = R.pipe(R.length, R.lt(35));
+const stringify = (str) => JSON.stringify(str, undefined, 2);
+const getOpenPorts = R.pipe(R.project(['ip', 'openPorts']), stringify);
 
 test('test quick scan', function(tt) {
 
@@ -34,7 +36,7 @@ test('test nmap scan', function(tt) {
 
     tt.test('nmap scan raaf network', function(t) {
         let cidr = '172.17.1.0/24';
-        let args = '-p22';
+        let args = '-p22,80';
         nmapLib.nmapScan(cidr,args)
             .then((result) => {
 				t.ok(lengthCheck(result), 'should be at least 35 entries in the result');
