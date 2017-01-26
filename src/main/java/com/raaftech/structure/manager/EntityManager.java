@@ -97,18 +97,8 @@ public class EntityManager extends GenericActor {
                             // Remove all the objects whose UUID already exist in the database
                             .filter(isNewEntity)
                             // Map those objects to an Entity instance
-                            .map(json -> {
-                                try {
-                                    return mapper.treeToValue(json, Entity.class);
-                                } catch (JsonProcessingException e) {
-                                    if (Configuration.isTraceModeOn()) {
-                                        e.printStackTrace();
-                                        log.error(e.getMessage());
-                                    }
-                                    throw new EntityDeserializationException("Exception thrown while deserializing " +
-                                            "an entity, cannot continue.");
-                                }
-                            })
+                             .map(json -> LambdaHelper.wrapWithExceptionPropagation(
+                                     () -> mapper.treeToValue(json, Entity.class)).get())
                             .collect(Collectors.toList());
 
                     List<String> newUuids = sortForCreation(entities).stream()
