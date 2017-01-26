@@ -6,7 +6,10 @@
   "additionalProperties": false,
   "properties": {
     "labels": {
-      "type": "array"
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
     },
     "start": {
       "type": "string",
