@@ -68,6 +68,7 @@ public class NodeSerializer extends StdSerializer<Node> {
         gen.writeFieldName("meta");
         gen.writeStartObject();
         gen.writeStringField("uuid", value.getUuid());
+        gen.writeStringField("checksum", value.getChecksum());
 
         // start relations object, which should always exist
         gen.writeFieldName("relations");
