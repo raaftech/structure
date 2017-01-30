@@ -1,7 +1,6 @@
 package com.raaftech.structure.base;
 
 import ch.qos.logback.classic.Level;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.raaftech.structure.graph.repositories.InstanceRepository;
 import com.raaftech.structure.graph.repositories.InstrumentRepository;
 import com.raaftech.structure.graph.repositories.ProfileRepository;
@@ -37,6 +36,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.StreamSupport;
 
 import static io.vertx.core.json.Json.mapper;
@@ -139,7 +139,6 @@ public class Application {
         HttpServer httpServer;
         Router router;
         SockJSHandler sockJsHandler;
-        final int port = 8080;
 
         // Tell the user we're starting up.
         log.info("Structure is starting up..");
@@ -162,11 +161,8 @@ public class Application {
         final InstrumentRepository instrumentRepository = Context.getInstrumentRepository();
         final ProfileRepository profileRepository = Context.getProfileRepository();
 
-        // Setup vertx with a maxWorkerExecuteTime of 5 minutes.
-        final String workerTimeoutConfiguration = getConfiguration("workertimeout");
-        Long workerTimeout = workerTimeoutConfiguration == null ?
-                5L*60*1000*1000000 :
-                Long.parseLong(workerTimeoutConfiguration);
+        // Setup vertx with a maxWorkerExecuteTime of 5 minutes, in ns.
+        Long workerTimeout = Long.parseLong(getConfiguration("workertimeout").orElse("300000000000"));
         vertx = Vertx.vertx(new VertxOptions().setMaxWorkerExecuteTime(workerTimeout));
 
 
@@ -287,10 +283,8 @@ public class Application {
                 log.info("Deployed EntityManager with id: {}", ar.result());
             }
         });
-        String jobpoolConfiguration = getConfiguration("jobpool");
-        int jobpool = jobpoolConfiguration == null ?
-                50 :
-                Integer.parseInt(jobpoolConfiguration);
+
+        final int jobpool = Integer.parseInt(getConfiguration("jobpool").orElse("50"));
         vertx.deployVerticle(new TaskManager(jobpool), ar -> {
             if (ar.succeeded()) {
                 log.info("Deployed TaskManager with id: {}", ar.result());
@@ -343,8 +337,11 @@ public class Application {
         }
 
         // Open up the http server and send a friendly message telling the user we're done.
-        httpServer.requestHandler(router::accept).listen(port);
-        log.info("Structure is running at http://localhost:{}", port);
+        final String webHost = getConfiguration("webHost").orElse("localhost");
+        final int webPort = Integer.parseInt(getConfiguration("webPort").orElse("8080"));
+        Configuration.setWebLocation(String.format("http://%s:%s/", webHost, webPort));
+        httpServer.requestHandler(router::accept).listen(webPort, webHost);
+        log.info("Structure is running at {}", Configuration.getWebLocation());
     }
 
     /**
@@ -352,13 +349,13 @@ public class Application {
      * @param configurationKey The name of the configuration key
      * @return The value of the configuration key, or null if there was no configuration
      */
-    private static String getConfiguration(String configurationKey) {
+    private static Optional<String> getConfiguration(String configurationKey) {
         if (System.getenv(configurationKey.toUpperCase()) != null) {
-            return System.getenv(configurationKey.toUpperCase());
+            return Optional.of(System.getenv(configurationKey.toUpperCase()));
         } else if (System.getProperty(configurationKey) != null){
-            return System.getProperty(configurationKey);
+            return Optional.of(System.getProperty(configurationKey));
         } else {
-            return null;
+            return Optional.empty();
         }
     }
 }

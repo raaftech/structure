@@ -23,6 +23,7 @@ public enum Configuration {
 	private static boolean initialized = false; 
 	private static boolean traceMode = false;
 	private static boolean unsafeMode = false;
+	private static String webLocation;
 	static final String bundlePathProperty = "bundlePath";
 
 	public static boolean isTraceModeOn() {
@@ -47,6 +48,14 @@ public enum Configuration {
 
 	public static String getBundlePath() {
 		return System.getProperty(bundlePathProperty);
+	}
+
+	public static String getWebLocation() {
+		return webLocation;
+	}
+
+	public static void setWebLocation(String webLocation) {
+		Configuration.webLocation = webLocation;
 	}
 
 	public static void init() {
