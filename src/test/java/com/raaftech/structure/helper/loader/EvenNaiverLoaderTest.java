@@ -23,7 +23,7 @@ public class EvenNaiverLoaderTest {
 
         ObjectNode a = mapper.createObjectNode()
                 .put("name", "Foo")
-                .put("type", "Instance")
+                .put("type", "Component")
                 .put("desc", "Foo.");
         ObjectNode meta = a
                 .putObject("meta")
@@ -31,7 +31,7 @@ public class EvenNaiverLoaderTest {
         meta.putObject("relations");
 
         ObjectNode b = mapper.createObjectNode()
-                .put("type", "Instance")
+                .put("type", "Component")
                 .put("desc", "Foo.")
                 .put("name", "Foo");
         ObjectNode metb = b
