@@ -15,6 +15,8 @@ module.exports = function (Status) {
         });
     }
 
+    //TODO think about if we want to persist status messages
+    //TODO if not, we need a way to auto clean status message resources in memory db
     function setupStatusChannel() {
         eb.registerHandler('com.raaftech.structure.status', function(error, message) {
             if(error) {
@@ -40,6 +42,23 @@ module.exports = function (Status) {
         console.log(res);
         setupStatusChannel();
     });
+
+
+    //Disable a few endpoints that are not needed in Status channel
+    let isStatic = true;
+    Status.disableRemoteMethod('find', isStatic);
+    Status.disableRemoteMethod('findOne', isStatic);
+    Status.disableRemoteMethod('findById', isStatic);
+    Status.disableRemoteMethod('exists', isStatic);
+    Status.disableRemoteMethod('upsert', isStatic);
+    Status.disableRemoteMethod('upsertWithWhere', isStatic);
+    Status.disableRemoteMethod('updateAll', isStatic);
+    Status.disableRemoteMethod('updateAttributes', false);
+    Status.disableRemoteMethod('deleteById', isStatic);
+    Status.disableRemoteMethod('replaceById', isStatic);
+    Status.disableRemoteMethod('count', isStatic);
+    Status.disableRemoteMethod('create', isStatic);
+    Status.disableRemoteMethod('replaceOrCreate', isStatic);
 };
 
 function stringify(json) {
