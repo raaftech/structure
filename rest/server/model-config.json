@@ -14,7 +14,8 @@
     ]
   },
   "User": {
-    "dataSource": "db"
+    "dataSource": "db",
+    "public": false
   },
   "AccessToken": {
     "dataSource": "db",
@@ -33,10 +34,6 @@
     "public": false
   },
   "Entity": {
-    "dataSource": "db",
-    "public": true
-  },
-  "Task": {
     "dataSource": "db",
     "public": true
   },
