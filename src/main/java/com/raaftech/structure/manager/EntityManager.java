@@ -84,7 +84,7 @@ public class EntityManager extends GenericActor {
                 // Transform the received array to a stream
                 Transaction tx = Context.getGraphDatabase().beginTx();
                 try {
-                     List<Entity> entities = StreamSupport.stream(data.spliterator(), true)
+                     List<Entity> entities = StreamSupport.stream(data.spliterator(), false)
                             // If an object doesn't adhere to entity.schema.json, throw an exception
                             .peek(json -> {
                                 if (!JsonHelper.validateToSchema(
@@ -147,7 +147,7 @@ public class EntityManager extends GenericActor {
                 final String startUuid = args.get(START).asText();
                 final boolean includeStart = args.has(INCLUDESTART) ? args.get(INCLUDESTART).asBoolean() : true;
                 final Set<String> labels = ImmutableSet.copyOf(
-                        StreamSupport.stream(args.get(LABELS).spliterator(), true)
+                        StreamSupport.stream(args.get(LABELS).spliterator(), false)
                         .map(JsonNode::asText)
                         .collect(Collectors.toList())
                 );
@@ -296,7 +296,7 @@ public class EntityManager extends GenericActor {
                 ObjectNode args = (ObjectNode) request.get("args");
                 ObjectNode result = mapper.createObjectNode();
 
-                List<String> labels = StreamSupport.stream(args.get("labels").spliterator(), true)
+                List<String> labels = StreamSupport.stream(args.get("labels").spliterator(), false)
                         .map(JsonNode::asText)
                         .collect(Collectors.toList());
 
@@ -358,7 +358,7 @@ public class EntityManager extends GenericActor {
         // We'll need the org.neo4j.graphdb.Node counterpart of our "start" argument
         org.neo4j.graphdb.Node startNode = neo4jTemplate.getPersistentState(start);
         // Every vertex found by this traversal will be mapped to Node, collected, and returned
-        return StreamSupport.stream(traversalDescription.traverse(startNode).spliterator(), true)
+        return StreamSupport.stream(traversalDescription.traverse(startNode).spliterator(), false)
                 .map(n -> neo4jTemplate.convert(n, Node.class))
                 .collect(Collectors.toList());
     }
