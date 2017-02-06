@@ -36,10 +36,6 @@
     "dataSource": "db",
     "public": true
   },
-  "Task": {
-    "dataSource": "db",
-    "public": true
-  },
   "Status": {
     "dataSource": "db",
     "public": true
