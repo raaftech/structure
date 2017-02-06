@@ -8,7 +8,8 @@
     "properties": {
         "type": {
             "type": "string",
-            "enum": ["Type", "Instance", "Marker", "Controller"]
+            "enum": ["Type", "Component", "Marker", "Controller", "Parser", "Grouping", "Configuration",
+                "Profile", "Actor", "Result" ]
         },
         "name": {
             "type": "string"
@@ -104,15 +105,22 @@
             }
         }
     },
-    "dependencies": {
-        "data": {
-            "required": ["file"],
-            "properties": {
-                "file": {
-                    "type": "object",
-                    "required": ["dataSchema"]
-                }
-            }
+    "oneOf": [
+      {
+        "properties": {
+          "type": {"enum": ["Type"]},
+          "file": {
+            "type": "object",
+              "required": ["dataSchema"]
+          }
+        },
+        "required": ["file"]
+      },
+      {
+        "properties": {
+          "type": {"enum": ["Component", "Marker", "Controller", "Parser", "Grouping", "Configuration",
+                "Profile", "Actor", "Result"]}
         }
-    }
+      }
+    ]
 }

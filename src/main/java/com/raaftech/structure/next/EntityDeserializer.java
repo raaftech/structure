@@ -161,24 +161,11 @@ public class EntityDeserializer extends StdDeserializer<Entity> {
             /* Handle checksum within meta if existent, else create. */
             if (metaJson.has("checksum")) {
                 checksum = metaJson.get("checksum").asText();
-                log.debug("Setting checksum to \"{}\"", checksum);
-                entity.setChecksum(checksum);
             } else {
-                // this situation should not occur usually, because the entityloader will precalculate checksums
-                // if they aren't defined for an entity.
-                log.warn("No checksum specified for entity " + name + ", please make sure a checksum has been " +
-                        "calculated before passing it to the deserializer.");
-                if (path.exists() && !path.isDirectory()) {
-                    InputStream is = new FileInputStream(path);
-                    checksum = DigestUtils.sha1Hex(is);
-                    log.debug("Created checksum \"{}\" from file \"{}\"", checksum, path.toString());
-                    entity.setChecksum(checksum);
-                } else {
-                    checksum = DigestUtils.sha1Hex(entityJson.asText());
-                    log.debug("Created checksum \"{}\" from json data", checksum);
-                    entity.setChecksum(checksum);
-                }
+                checksum = EvenNaiverLoader.calculateChecksum(entityJson, EvenNaiverLoader.ChecksumAlgorithm.SHA1);
             }
+            log.debug("Setting checksum to \"{}\"", checksum);
+            entity.setChecksum(checksum);
 
             /* Handle the file object if existent. */
             if (entityJson.has("file")) {

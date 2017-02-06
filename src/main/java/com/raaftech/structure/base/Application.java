@@ -271,21 +271,6 @@ public class Application {
             tx.close();
         }
 
-
-        // TODO: add sorting (see issue/70)
-//        matchingFiles.stream().forEach(bundle -> {
-//            try {
-//                new BundleLoader(bundle).load();
-//            } catch (IOException e) {
-//                log.error(e.getMessage());
-//
-//                if(Configuration.isTraceModeOn()){
-//                    e.printStackTrace();
-//                }
-//            }
-//        });
-//        Context.setInstrumentsLoaded(true);
-
         // Deploy our main actors.
         vertx.deployVerticle("com.raaftech.structure.manager.BusManager", ar -> {
             if (ar.succeeded()) {
@@ -295,6 +280,11 @@ public class Application {
         vertx.deployVerticle("com.raaftech.structure.manager.InstrumentManager", new DeploymentOptions().setWorker(false), ar -> {
             if (ar.succeeded()) {
                 log.info("Deployed InstrumentManager with id: {}", ar.result());
+            }
+        });
+        vertx.deployVerticle("com.raaftech.structure.manager.EntityManager", ar -> {
+            if (ar.succeeded()) {
+                log.info("Deployed EntityManager with id: {}", ar.result());
             }
         });
         String jobpoolConfiguration = getConfiguration("jobpool");

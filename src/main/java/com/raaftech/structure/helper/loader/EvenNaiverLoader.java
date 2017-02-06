@@ -4,11 +4,16 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 import com.raaftech.structure.base.Configuration;
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.exceptions.FileInjectionException;
+import com.raaftech.structure.exceptions.JsonValidationException;
 import com.raaftech.structure.graph.Node;
 import com.raaftech.structure.graph.repositories.NodeRepository;
+import com.raaftech.structure.helper.JsonHelper;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.parboiled.common.FileUtils;
 import org.slf4j.Logger;
@@ -16,13 +21,15 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 /**
  * EvenNaiverLoader handles loading all json from bundle locations do dependency
@@ -38,8 +45,9 @@ public class EvenNaiverLoader {
     private final String bundlePath;
     public static final Map<String, Path> checksumToFiles = new HashMap<>();
     public static final Map<String, String> checksumToUuid = new HashMap<>();
-    private static final NodeRepository nodeRepository = Context.getNodeRepository();
+    private final NodeRepository nodeRepository = Context.getNodeRepository();
 
+    private static final String ENTITYSCHEMA = "schema/next/entity.schema.json";
     private static final String META = "meta";
     private static final String FILE = "file";
     private static final String CONTENT = "content";
@@ -83,6 +91,39 @@ public class EvenNaiverLoader {
         return node;
     }
 
+    public enum ChecksumAlgorithm { MD5, SHA1 }
+    private static Map<String, List<String>> checksumPropertyFilter = ImmutableMap.of(
+            META, ImmutableList.of("checksum", "bundle", "path"),
+            FILE, ImmutableList.of("checksum", "path")
+    );
+
+    private static ArrayNode prepareForHashing(ObjectNode input) {
+        if (!JsonHelper.validateToSchema(JsonHelper.jsonFromResource(ENTITYSCHEMA), input)) {
+            throw new JsonValidationException("Cannot calculate a checksum: JSON does not validate against " +
+                    "entity schema");
+        }
+
+        final ArrayNode result = new ObjectMapper().createArrayNode();
+
+        ObjectNode inputCopy = input.deepCopy();
+
+        // remove unwanted keys from JSON before calculating checksum
+        checksumPropertyFilter.keySet().stream()
+                .filter(inputCopy::has)
+                .forEach(key -> {
+                        checksumPropertyFilter.get(key)
+                                .forEach(val -> ((ObjectNode) inputCopy.get(key)).remove(val));
+                });
+
+        Iterable<Map.Entry<String, JsonNode>> iterable = () -> inputCopy.fields();
+        StreamSupport.stream(iterable.spliterator(), false)
+                .sorted((a, b) -> a.getKey().compareTo(b.getKey()))
+                .map(Map.Entry::getValue)
+                .forEach(result::add);
+
+        return result;
+    }
+
     /**
      * Calculate the checksum of a string.
      * @param input The string to calculate the hash for.
@@ -90,17 +131,18 @@ public class EvenNaiverLoader {
      * @return The calculated hash.
      */
     @SuppressWarnings("Duplicates")
-    private String calculateChecksum(String input, String algorithm) {
+    public static String calculateChecksum(ObjectNode input, ChecksumAlgorithm algorithm) {
         final String output;
+        final ArrayNode preparedJson = prepareForHashing(input);
 
-        switch (algorithm.toLowerCase()) {
-            case "md5":
-                output = DigestUtils.md5Hex(input);
+        switch (algorithm) {
+            case MD5:
+                output = DigestUtils.md5Hex(preparedJson.toString());
                 break;
             default:
                 log.warn("Invalid algorithm given to calculateChecksum, defaulting to SHA1");
-            case "sha1":
-                output = DigestUtils.sha1Hex(input);
+            case SHA1:
+                output = DigestUtils.sha1Hex(preparedJson.toString());
                 break;
         }
         return output;
@@ -109,30 +151,19 @@ public class EvenNaiverLoader {
     /**
      * Calculate a checksum of a file
      *
-     * @param path the file to calculate the checksum of
-     * @param algo the algorithm
+     * @param inputStream This input will be marshalled to a JSON object, and then used to calculate the checksum.
+     * @param algorithm the algorithm
      * @return the checksum for the file using the algorithm
      * @throws IOException
      */
-    @SuppressWarnings("Duplicates")
-    private String calculateChecksum(Path path, String algo) throws IOException {
-        final String result;
-        FileInputStream fis = new FileInputStream(path.toFile());
-
-        switch (algo) {
-            case "md5":
-                result = DigestUtils.md5Hex(fis);
-                break;
-            default:
-                log.warn("Invalid algorithm given to calculateChecksum, defaulting to SHA1");
-            case "sha1":
-                result = DigestUtils.sha1Hex(fis);
-                break;
+    public static String calculateChecksum(InputStream inputStream, ChecksumAlgorithm algorithm) throws IOException {
+        JsonNode input = new ObjectMapper().readTree(inputStream);
+        inputStream.close();
+        if (!(input instanceof ObjectNode)) {
+            throw new JsonValidationException("Expected a JSON object, got something else.");
         }
 
-        fis.close();
-
-        return result;
+        return calculateChecksum((ObjectNode) input, algorithm);
     }
 
     /**
@@ -271,14 +302,13 @@ public class EvenNaiverLoader {
         try {
             for (Path jsonFilePath : jsonFilePaths) {
                 JsonNode jsonFile = mapper.readTree(jsonFilePath.toFile());
-                String fileChecksum = calculateChecksum(jsonFilePath, "sha1");
                 String[] bundlePaths = bundlePath.split(":");
                 String fromBundle = null;
                 // the next piece of code finds the bundle name where the json originates from
                 for (String s: bundlePaths) {
                     if (jsonFilePath.startsWith(s)) {
                         int bundleIndex = s.endsWith(File.separator) ? 0 : 1;
-                        fromBundle = jsonFilePath.toString().replace(s, "").split(File.separator)[bundleIndex];
+                        fromBundle = jsonFilePath.toString().replace(s, "").split(Pattern.quote(File.separator))[bundleIndex];
                         break;
                     }
                 }
@@ -287,13 +317,13 @@ public class EvenNaiverLoader {
                 // array of tokens
                 if (jsonFile.isArray()) {
                     for (JsonNode token : jsonFile) {
-                        final String entityChecksum = calculateChecksum(injectFileReferences(token, jsonFilePath).toString(), "SHA1");
+                        final String entityChecksum = calculateChecksum(injectFileReferences(token, jsonFilePath), ChecksumAlgorithm.SHA1);
                         checksumToFiles.put(entityChecksum, jsonFilePath);
                         checksumToUuid.put(entityChecksum, token.get(META).get(UUID).asText());
                         unsorted.add(putBundleName(putChecksum((ObjectNode) token, entityChecksum), fromBundle));
                     }
                 } else { // single token
-                    final String entityChecksum = calculateChecksum(injectFileReferences(jsonFile, jsonFilePath).toString(), "SHA1");
+                    final String entityChecksum = calculateChecksum(injectFileReferences(jsonFile, jsonFilePath), ChecksumAlgorithm.SHA1);
                     checksumToFiles.put(entityChecksum, jsonFilePath);
                     unsorted.add(putBundleName(putChecksum((ObjectNode) jsonFile, entityChecksum), fromBundle));
                 }
@@ -354,8 +384,11 @@ public class EvenNaiverLoader {
      * @param entityFilePath The path of the file containing the entity JSON.
      * @return The same JSON as went in, but now with injected file content.
      */
-    private JsonNode injectFileReferences(JsonNode entity, Path entityFilePath) {
-        final JsonNode entityCopy = entity.deepCopy();
+    private ObjectNode injectFileReferences(JsonNode entity, Path entityFilePath) {
+        if (!(entity instanceof ObjectNode)) {
+            throw new FileInjectionException("Can't inject files into non object JSON.");
+        }
+        final ObjectNode entityCopy = entity.deepCopy();
 
         // do we even have a file object?
         if (entityCopy.has(FILE)) {
