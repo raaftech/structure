@@ -18,7 +18,7 @@ test('ping a dead host', function(t) {
     let host = '172.17.1.233';
     pingLib.pingScan(host)
         .then((result) => {
-            t.equal(result.host, '172.17.1.233', 'Should be localhost entry');
+            t.equal(result.host, '172.17.1.233', 'Should be 172.17.1.233 entry');
             t.equal(result.alive, false, 'Should be dead');
             t.end();
         });
