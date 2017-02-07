@@ -71,6 +71,87 @@ class Entity {
 }
 
 /**
+ * The SubGraph class is used to hold a graph of Entity objects
+ */
+class SubGraph {
+    constructor(entitySet) {
+        this.entitySet = clone(entitySet) || {};
+    }
+
+    /**
+     * insertEntity :: Entity -> String -> String -> Entity -> {k: Entity}
+     * Given a subgraph, an entity to insert, the relation name to bind to, the direction of the relation
+     * and an Entity to relate to; creates a new subgraph with the Entity, including relation, added to it.
+     * @param {Entity} entity The entity to insert.
+     * @param {String} relationName The name of the relation to add to the entity.
+     * @param {String} relationDirection outgoing | incoming Direction of the relation.
+     * @param {Entity} relatedEntity The related Entity.
+     * @returns {Object.<string,Entity>} A newly created Subgraph with the entity inserted.
+     */
+    insertEntity(entity, relationName, relationDirection, relatedEntity) {
+        let check = this.findEntity(entity.meta.uuid);
+        if(check !== null) return this;
+
+        let check2 = this.findEntity(entity.name);
+        if(check2 !== null) return this;
+
+        let relation = entity.relationCreate(relationName, relationDirection);
+        relation.addEntity(relatedEntity);
+        this.entitySet[entity.meta.uuid] = entity;
+        return this;
+    }
+
+    /**
+     * removeEntity :: String -> {k: Entity}
+     * Given a subgraph and a uuid, remove the Entity from the subgraph that corresponds to the uuid.
+     * @param {String} uuid The uuid to search for.
+     * @returns {Object.<string,Entity>} A newly created subgraph with the entity removed.
+     */
+    removeEntity(uuid) {
+        const isDependency = (subgraph, uuid) => {
+            for(const key of Object.keys(subgraph)) {
+                const e = subgraph[key];
+                for(const k of Object.keys(e.meta.relations)) {
+                    const rel = e.meta.relations[k];
+                    for(let i=0;i<rel.entities.length;i++) {
+                        let u = rel.entities[i];
+                        if(u.meta.uuid === uuid) return true;
+                    }
+                }
+            }
+            return false;
+        };
+
+        let entity = this.findEntity(uuid);
+        if(entity !== null) {
+            if(!isDependency(this.entitySet, uuid)) delete this.entitySet[uuid];
+        }
+
+        return this;
+    }
+
+    /**
+     * findEntity :: String -> Entity | null
+     * Given a subgraph and an id, find the first Entity in the subgraph that matches the predicate
+     * @param {String} id Predicate that matches either the name of an entity or the uuid.
+     * @returns {Entity|null} The found entity or null if nothing was found.
+     */
+    findEntity(id) {
+        const equals = (predicate,value) => value.toLowerCase() === predicate.toLowerCase();
+
+        for(const key of Object.keys(this.entitySet)) {
+            const entity = this.entitySet[key];
+            if(equals(id, entity.name) || equals(id, entity.meta.uuid)) return clone(entity);
+        }
+        return null;
+    }
+
+    nodeCount() {
+        return Object.keys(this.entitySet).length;
+    }
+}
+
+/**
  * Given a flat array of entity definitions that adhere to entity.schema.json, create a hierarchy based on relations.
  * @param {Object[]} entities
  * @returns {Object.<string, Entity>} A map of entity UUID's to the entities themselves.
@@ -96,79 +177,6 @@ const readBundle = (entities) => {
         }
     }
     return entityMap;
-};
-
-/**
- * insertEntity :: {k: Entity} -> Entity -> String -> String -> Entity -> {k: Entity}
- * Given a subgraph, an entity to insert, the relation name to bind to, the direction of the relation
- * and an Entity to relate to; creates a new subgraph with the Entity, including relation, added to it.
- * @param {Object.<string,Entity>} subgraph The subgraph to insert the entity into.
- * @param {Entity} entity The entity to insert.
- * @param {String} relationName The name of the relation to add to the entity.
- * @param {String} relationDirection outgoing | incoming Direction of the relation.
- * @param {Entity} relatedEntity The related Entity.
- * @returns {Object.<string,Entity>} A newly created Subgraph with the entity inserted.
- */
-const insertEntity = (subgraph, entity,relationName, relationDirection, relatedEntity) => {
-    let sg = clone(subgraph);
-    let check = findEntity(sg, entity.meta.uuid);
-    if(check !== null) return sg;
-
-    let check2 = findEntity(sg, entity.name);
-    if(check2 !== null) return sg;
-
-    let relation = entity.relationCreate(relationName, relationDirection);
-    relation.addEntity(relatedEntity);
-    sg[entity.meta.uuid] = entity;
-    return sg;
-};
-
-/**
- * removeEntity :: {k: Entity} -> String -> {k: Entity}
- * Given a subgraph and a uuid, remove the Entity from the subgraph that corresponds to the uuid.
- * @param {Object.<string,Entity>} subgraph The subgraph to work on.
- * @param {String} uuid The uuid to search for.
- * @returns {Object.<string,Entity>} A newly created subgraph with the entity removed.
- */
-const removeEntity = (subgraph, uuid) => {
-    let sg = clone(subgraph);
-    const isDependency = (subgraph, uuid) => {
-        for(const key of Object.keys(subgraph)) {
-            const e = subgraph[key];
-            for(const k of Object.keys(e.meta.relations)) {
-                const rel = e.meta.relations[k];
-                for(let i=0;i<rel.entities.length;i++) {
-                    let u = rel.entities[i];
-                    if(u.meta.uuid === uuid) return true;
-                }
-            }
-        }
-        return false;
-    };
-
-    let entity = findEntity(sg, uuid);
-    if(entity !== null) {
-        if(!isDependency(sg, uuid)) delete sg[uuid];
-    }
-
-    return sg;
-};
-
-/**
- * findEntity :: {k: Entity} -> String -> Entity | null
- * Given a subgraph and an id, find the first Entity in the subgraph that matches the predicate
- * @param {Object.<string,Entity>} subgraph The subgraph to work on.
- * @param {String} id Predicate that matches either the name of an entity or the uuid.
- * @returns {Entity|null} The found entity or null if nothing was found.
- */
-const findEntity = (subgraph, id) => {
-    const equals = (predicate,value) => value.toLowerCase() === predicate.toLowerCase();
-
-    for(const key of Object.keys(subgraph)) {
-        const entity = subgraph[key];
-        if(equals(id, entity.name) || equals(id, entity.meta.uuid)) return clone(entity);
-    }
-    return null;
 };
 
 /**
@@ -220,9 +228,7 @@ const clone = (obj) => {
 
 module.exports = {
     Entity: Entity,
+    SubGraph: SubGraph,
     readBundle: readBundle,
-    flatten: flatten,
-    findEntity: findEntity,
-    insertEntity: insertEntity,
-    removeEntity: removeEntity
+    flatten: flatten
 };
