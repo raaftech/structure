@@ -271,21 +271,6 @@ public class Application {
             tx.close();
         }
 
-
-        // TODO: add sorting (see issue/70)
-//        matchingFiles.stream().forEach(bundle -> {
-//            try {
-//                new BundleLoader(bundle).load();
-//            } catch (IOException e) {
-//                log.error(e.getMessage());
-//
-//                if(Configuration.isTraceModeOn()){
-//                    e.printStackTrace();
-//                }
-//            }
-//        });
-//        Context.setInstrumentsLoaded(true);
-
         // Deploy our main actors.
         vertx.deployVerticle("com.raaftech.structure.manager.BusManager", ar -> {
             if (ar.succeeded()) {
