@@ -45,8 +45,8 @@ test('Entity class tests', function(tt) {
     });
 });
 
-test('SubGraph construction (readBundle/toMap) tests', function(tt) {
-    tt.test('core bundle test', function(t) {
+test.only('SubGraph construction (readBundle/toMap) tests', function(tt) {
+    tt.test('core bundle load test', function(t) {
         let sg = new entityLib.SubGraph(baseTypeJson);
         const result = sg.toMap();
 
@@ -57,6 +57,28 @@ test('SubGraph construction (readBundle/toMap) tests', function(tt) {
         t.ok(isNotAnArray(result), 'Result should not be an array');
         t.equals(Object.keys(result).length, 116, 'Should be 116 property keys');
         t.ok(nested,'Should contain nested items');
+        t.end();
+    });
+
+    tt.test('Instantiation with invalid type string', function(t) {
+        let sg = new entityLib.SubGraph("INVALID CONSTRUCTOR INPUT");
+        const map = sg.toMap();
+        t.ok(R.isEmpty(map), 'Should be an empty subgraph');
+        t.end();
+    });
+
+    tt.test('Instantiation with invalid type number', function(t) {
+        let sg = new entityLib.SubGraph(554489);
+        const map = sg.toMap();
+        t.ok(R.isEmpty(map), 'Should be an empty subgraph');
+        t.end();
+    });
+
+    tt.test('Instantiation with invalid type Date', function(t) {
+        let sg = new entityLib.SubGraph(new Date());
+        const map = sg.toMap();
+
+        t.ok(R.isEmpty(map), 'Should be an empty subgraph');
         t.end();
     });
 });

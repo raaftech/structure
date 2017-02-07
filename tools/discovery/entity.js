@@ -77,12 +77,16 @@ class SubGraph {
     constructor(entities) {
         this.entitySet = {};
 
+        //TODO make this more generically robust
         if(entities) {
             if(Array.isArray(entities)) {
                 this.entitySet = readBundle(entities);
             } else {
                 if(typeof(entities) === 'object') {
-                    this.entitySet = clone(entities);
+                    if(entities instanceof Date) {
+                    } else {
+                        this.entitySet = clone(entities);
+                    }
                 }
             }
         }
