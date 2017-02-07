@@ -45,7 +45,7 @@ test('Entity class tests', function(tt) {
     });
 });
 
-test.only('SubGraph construction (readBundle/toMap) tests', function(tt) {
+test('SubGraph construction (readBundle/toMap) tests', function(tt) {
     tt.test('core bundle load test', function(t) {
         let sg = new entityLib.SubGraph(baseTypeJson);
         const result = sg.toMap();
