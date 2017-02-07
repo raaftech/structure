@@ -74,8 +74,18 @@ class Entity {
  * The SubGraph class is used to hold a graph of Entity objects
  */
 class SubGraph {
-    constructor(entitySet) {
-        this.entitySet = clone(entitySet) || {};
+    constructor(entities) {
+        this.entitySet = {};
+
+        if(entities) {
+            if(Array.isArray(entities)) {
+                this.entitySet = readBundle(entities);
+            } else {
+                if(typeof(entities) === 'object') {
+                    this.entitySet = clone(entities);
+                }
+            }
+        }
     }
 
     /**
@@ -148,6 +158,14 @@ class SubGraph {
 
     nodeCount() {
         return Object.keys(this.entitySet).length;
+    }
+
+    toMap() {
+        return clone(this.entitySet);
+    }
+
+    toList() {
+        return flatten(this.entitySet);
     }
 }
 
@@ -228,7 +246,5 @@ const clone = (obj) => {
 
 module.exports = {
     Entity: Entity,
-    SubGraph: SubGraph,
-    readBundle: readBundle,
-    flatten: flatten
+    SubGraph: SubGraph
 };

@@ -45,10 +45,10 @@ test('Entity class tests', function(tt) {
     });
 });
 
-test('readBundle tests', function(tt) {
+test('SubGraph construction (readBundle/toMap) tests', function(tt) {
     tt.test('core bundle test', function(t) {
-        const result = entityLib.readBundle(baseTypeJson);
-        //console.log(stringify(result));
+        let sg = new entityLib.SubGraph(baseTypeJson);
+        const result = sg.toMap();
 
         let check = R.map(isNested, R.values(result));
         let nested = R.gt(R.length(R.filter(R.equals(R.T()), check)),0);
@@ -62,14 +62,15 @@ test('readBundle tests', function(tt) {
 });
 
 test('flatten tests', function(tt) {
-    tt.test('flatten core bundle test', function(t) {
-        const bundle = entityLib.readBundle(baseTypeJson);
+    tt.test('SubGraph.toList() core bundle test', function(t) {
+        const sg = new entityLib.SubGraph(baseTypeJson);
+        const bundle = sg.toMap();
 
         t.ok(R.is(Object, bundle), 'Result should be an object');
         t.ok(isNotAnArray(bundle), 'Result should not be an array');
         t.equals(Object.keys(bundle).length, 116, 'Should be 116 property keys');
 
-        let result = entityLib.flatten(bundle);
+        let result = sg.toList();
         let check = R.map(isNested, result);
         let nested = R.equals(R.length(R.filter(R.equals(R.T()), check)),0);
 
@@ -82,9 +83,8 @@ test('flatten tests', function(tt) {
 });
 
 test('findEntity tests', function(tt) {
-    const content = entityLib.readBundle(baseTypeJson);
     tt.test('find Parser type by case-different name', function(t) {
-        let sg = new entityLib.SubGraph(content);
+        let sg = new entityLib.SubGraph(baseTypeJson);
         let result = sg.findEntity('parser');
 
         t.equals(result.name, 'Parser', 'Should be the Parser type');
@@ -93,7 +93,7 @@ test('findEntity tests', function(tt) {
     });
 
     tt.test('find Parser type by uuid', function(t) {
-        let sg = new entityLib.SubGraph(content);
+        let sg = new entityLib.SubGraph(baseTypeJson);
         let result = sg.findEntity('b5fa636c-1067-45ac-b027-ade2797bef6f');
 
         t.equals(result.name, 'Parser', 'Should be the Parser type');
@@ -102,7 +102,7 @@ test('findEntity tests', function(tt) {
     });
 
     tt.test('search for unknown type', function(t) {
-        let sg = new entityLib.SubGraph(content);
+        let sg = new entityLib.SubGraph(baseTypeJson);
         let result = sg.findEntity('foobar');
         t.equals(result, null, 'Should be a null value');
         t.end();
@@ -110,10 +110,8 @@ test('findEntity tests', function(tt) {
 });
 
 test('insertEntity tests', function(tt) {
-    const subgraph = entityLib.readBundle(baseTypeJson);
-
     tt.test('insert a new entity', function(t) {
-        let sg = new entityLib.SubGraph(subgraph);
+        let sg = new entityLib.SubGraph(baseTypeJson);
         let entity = new entityLib.Entity('MyType','TestType','my desc.','234hklj-2k3jh4');
         let rootType = sg.findEntity('b1bc963a-19cc-4518-aecb-a35d028c49e3');
 
@@ -128,7 +126,7 @@ test('insertEntity tests', function(tt) {
     });
 
     tt.test('insert already existing entity', function(t) {
-        let sg = new entityLib.SubGraph(subgraph);
+        let sg = new entityLib.SubGraph(baseTypeJson);
         let entity = sg.findEntity('parser');
         let rootType = sg.findEntity('b1bc963a-19cc-4518-aecb-a35d028c49e3');
         sg.insertEntity(entity, 'ISA', 'outgoing', rootType);
@@ -139,7 +137,7 @@ test('insertEntity tests', function(tt) {
     });
 
     tt.test('insert already entity with new uuid but existing name', function(t) {
-        let sg = new entityLib.SubGraph(subgraph);
+        let sg = new entityLib.SubGraph(baseTypeJson);
         let entity = sg.findEntity('parser');
         let oldUuid = entity.meta.uuid;
         entity.meta.uuid = 'my-new-test-uuid';
@@ -158,10 +156,8 @@ test('insertEntity tests', function(tt) {
 });
 
 test('removeEntity test', function(tt) {
-    const subgraph = entityLib.readBundle(baseTypeJson);
-
     tt.test('test removal of non-dependency type', function(t) {
-        let sg = new entityLib.SubGraph(subgraph);
+        let sg = new entityLib.SubGraph(baseTypeJson);
         let parser = sg.findEntity('parser');
         let newGraph = sg.removeEntity(parser.meta.uuid);
 
@@ -172,7 +168,7 @@ test('removeEntity test', function(tt) {
     });
 
     tt.test('test removal of dependency type', function(t) {
-        let sg = new entityLib.SubGraph(subgraph);
+        let sg = new entityLib.SubGraph(baseTypeJson);
         let parser = sg.findEntity('type');
         let newGraph = sg.removeEntity(parser.meta.uuid);
 
