@@ -1,6 +1,7 @@
 package com.raaftech.structure.graph;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.fge.jsonschema.core.exceptions.ProcessingException;
@@ -225,12 +226,9 @@ public class Type extends Node {
     public JsonSchemaBuilder getSchema() {
         JsonSchemaBuilder schema = null;
         try {
-            schema = new JsonSchemaBuilder((ObjectNode)mapper.readTree((String)getFiles().get("dataSchema")));
-        } catch (ProcessingException e) {
-            if (Configuration.isTraceModeOn()) {
-                e.printStackTrace();
-            }
-        } catch (IOException e) {
+            String dataSchemaContent = mapper.readTree((String)getFiles().get("dataSchema")).get("content").asText();
+            schema = new JsonSchemaBuilder((ObjectNode)mapper.readTree(dataSchemaContent));
+        } catch (ProcessingException | IOException e) {
             if (Configuration.isTraceModeOn()) {
                 e.printStackTrace();
             }
