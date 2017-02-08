@@ -27,6 +27,10 @@ public interface TypeRepository extends GenericRepository<Type> {
     @Query ("MATCH (node:Type {name:{name}}) return node LIMIT 1")
     Type findOneByName(@Param("name") String name);
 
+    // Find a type by it's name, but case insensitive. This is more expensive than the case sensitive search.
+    @Query ("MATCH (node:Type) WHERE LOWER(node.name) = LOWER({0}) RETURN node")
+    Type findOneByCaseInsensitiveName(String name);
+
     // Workaround, returning count(n) > 0 returns null when n is NULL.
     // This returns 0 if we're not of queried type, >0 if we are.
     @Query ("MATCH (start {uuid:{uuid}})-[:ISA*1..]->(n{name:{type}}) " +

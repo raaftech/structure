@@ -6,6 +6,7 @@ import com.raaftech.structure.graph.repositories.InstrumentRepository;
 import com.raaftech.structure.graph.repositories.ProfileRepository;
 import com.raaftech.structure.graph.repositories.TypeRepository;
 import com.raaftech.structure.helper.loader.EvenNaiverLoader;
+import com.raaftech.structure.manager.SchemaManager;
 import com.raaftech.structure.manager.TaskManager;
 import com.raaftech.structure.next.Entity;
 import com.raaftech.structure.node.TypeActor;
@@ -181,11 +182,14 @@ public class Application {
         sockJsHandler = SockJSHandler.create(vertx);
         sockJsHandler.bridge(bridgeOptions);
         router = Router.router(vertx);
+        // One of the endpoints will be routed to SchemaManager, so instance it
+        SchemaManager schemaManager = new SchemaManager();
+        // Setup routes
         router.route("/eventbus/*").handler(sockJsHandler);
         router.route("/bundles/*").handler(StaticHandler.create().setWebRoot("src/main/resources/bundles/"));
-        router.route("/schema/*").handler(StaticHandler.create().setWebRoot("src/main/resources/schema/"));
+        router.route("/schema/:schema").handler(schemaManager::getSchema);
         router.route("/*").handler(StaticHandler.create().setWebRoot("src/main/resources/webroot/"));
-        
+
         
         // If we're in unsafe mode allow direct access to everything
         // on the eventbus and serve the debug page.
