@@ -106,7 +106,7 @@ public class TemplateActor extends NodeActor<Template> {
      * @return A JSON object containing the first Instance in the group's uuid,
      * or a JSON object with an error field when an error occurs.
      */
-    @SchemaPath("schema/node/template/instantiate.schema.json")
+    @SchemaPath("resource:/schema/node/template/instantiate.schema.json")
     @SuppressWarnings("unused")
     public MessageHandler instantiate() {
         return new MessageHandler() {
@@ -151,7 +151,7 @@ public class TemplateActor extends NodeActor<Template> {
      * Run a discovery routine on a template.
      * @return Nothing really informative... WIP
      */
-    @SchemaPath("schema/node/template/discover.schema.json")
+    @SchemaPath("resource:/schema/node/template/discover.schema.json")
     @SuppressWarnings("unused")
     public MessageHandler discover() {
         return new MessageHandler() {

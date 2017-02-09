@@ -303,7 +303,7 @@ public class TaskManager extends GenericActor {
      * @return A JSON object containing an error field if something went wrong.
      */
     @SuppressWarnings("unused")
-    @SchemaPath("schema/manager/taskmanager/canceljob.schema.json")
+    @SchemaPath("resource:/schema/manager/taskmanager/canceljob.schema.json")
     public MessageHandler cancelJob() {
         return new MessageHandler() {
             @Override
@@ -350,7 +350,7 @@ public class TaskManager extends GenericActor {
      * if something went wrong.
      */
     @SuppressWarnings("unused")
-    @SchemaPath("schema/manager/taskmanager/task.schema.json")
+    @SchemaPath("resource:/schema/manager/taskmanager/task.schema.json")
     public MessageHandler cancelTask() {
         return new MessageHandler() {
             @Override
@@ -419,7 +419,7 @@ public class TaskManager extends GenericActor {
      * @return A response, containing the task id, or an error.
      */
     @SuppressWarnings("unused")
-    @SchemaPath("schema/manager/taskmanager/queuetask.schema.json")
+    @SchemaPath("resource:/schema/manager/taskmanager/queuetask.schema.json")
     public MessageHandler queueTask() {
         return new MessageHandler() {
             @Override
@@ -473,7 +473,7 @@ public class TaskManager extends GenericActor {
      * doesn't exist.
      */
     @SuppressWarnings("unused")
-    @SchemaPath("schema/manager/taskmanager/task.schema.json")
+    @SchemaPath("resource:/schema/manager/taskmanager/task.schema.json")
     public MessageHandler taskStatus() {
         return new MessageHandler() {
             @Override
@@ -505,7 +505,7 @@ public class TaskManager extends GenericActor {
      * doesn't exist.
      */
     @SuppressWarnings("unused")
-    @SchemaPath("schema/manager/taskmanager/task.schema.json")
+    @SchemaPath("resource:/schema/manager/taskmanager/task.schema.json")
     public MessageHandler toggleTaskPause() {
         return new MessageHandler() {
             @Override
