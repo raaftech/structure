@@ -3,6 +3,8 @@ package com.raaftech.structure.helper;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonschema.core.exceptions.ProcessingException;
+import com.github.fge.jsonschema.core.load.configuration.LoadingConfiguration;
+import com.github.fge.jsonschema.core.load.uri.URITranslatorConfiguration;
 import com.github.fge.jsonschema.core.report.ProcessingMessage;
 import com.github.fge.jsonschema.core.report.ProcessingReport;
 import com.github.fge.jsonschema.main.JsonSchema;
@@ -15,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.util.Iterator;
 
 /**
@@ -112,10 +115,25 @@ public class JsonHelper {
 		Boolean validationState = false;
 
 		try {
-			JsonSchemaFactory factory = JsonSchemaFactory.byDefault();
-			JsonSchema jsonSchema = factory.getJsonSchema(schema);
+		    JsonSchemaFactory jsonSchemaFactory;
 
-			SyntaxValidator syntaxValidator = factory.getSyntaxValidator();
+            if (Configuration.getSchemaNamespace() != null) {
+                final URI nameSpaceURI = Configuration.getSchemaNamespace().resolve("schemas/");
+                final URITranslatorConfiguration uriTranslatorConfiguration = URITranslatorConfiguration.newBuilder()
+                        .setNamespace(nameSpaceURI)
+                        .freeze();
+                final LoadingConfiguration loadingConfiguration = LoadingConfiguration.newBuilder()
+                        .setURITranslatorConfiguration(uriTranslatorConfiguration)
+                        .freeze();
+                jsonSchemaFactory = JsonSchemaFactory.newBuilder()
+                        .setLoadingConfiguration(loadingConfiguration)
+                        .freeze();
+            } else {
+                jsonSchemaFactory = JsonSchemaFactory.byDefault();
+            }
+			JsonSchema jsonSchema = jsonSchemaFactory.getJsonSchema(schema);
+
+			SyntaxValidator syntaxValidator = jsonSchemaFactory.getSyntaxValidator();
 
 			ProcessingReport validSchema = syntaxValidator.validateSchema(schema);
 			ProcessingReport validJson = jsonSchema.validate(object);
