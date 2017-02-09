@@ -531,23 +531,7 @@ public class JsonSchemaBuilder {
      * @return True when the JSON successfully validated, false if not.
      */
     public boolean validateJson(JsonNode data) {
-        try {
-            final JsonSchema schema = factory.getJsonSchema(json);
-            ProcessingReport report;
-            report = schema.validate(data);
-            if (!report.isSuccess()) {
-                log.debug(report.toString());
-            }
-            return report.isSuccess();
-        } catch (ProcessingException e) {
-        	log.error(e.getMessage());
-
-			if (Configuration.isTraceModeOn()) {
-				e.printStackTrace();
-			}
-			
-			return false;
-        }
+        return JsonHelper.validateToSchema(json, data);
     }
 
     /**

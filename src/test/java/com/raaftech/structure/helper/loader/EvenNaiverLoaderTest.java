@@ -38,6 +38,7 @@ public class EvenNaiverLoaderTest {
                 .putObject("meta")
                 .put("uuid", "abba2750-7e05-4e70-8b36-1a56665dccd6");
         metb.putObject("relations");
+        System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(b));
 
         // our old way:
         assertFalse(Objects.equals(DigestUtils.md5Hex(a.toString()), DigestUtils.md5Hex(b.toString())));

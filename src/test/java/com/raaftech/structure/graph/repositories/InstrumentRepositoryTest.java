@@ -19,6 +19,7 @@ import org.springframework.test.context.support.AnnotationConfigContextLoader;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.nio.file.FileSystems;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -52,8 +53,10 @@ public class InstrumentRepositoryTest {
     @SuppressWarnings("Duplicates")
     public void setUpDatabase() throws Exception {
         if (!databaseCreated) {
-            final String raafBundle = "src/test/resources/bundles/core";
-            EvenNaiverLoader evenNaiverLoader = new EvenNaiverLoader(raafBundle);
+            final String testBundle = "src/test/resources/bundles/core";
+            com.raaftech.structure.base.Configuration
+                    .setSchemaNamespace(FileSystems.getDefault().getPath(testBundle).toUri().resolve("types/"));
+            EvenNaiverLoader evenNaiverLoader = new EvenNaiverLoader(testBundle);
 
             Transaction tx = graphDatabase.beginTx();
             try {

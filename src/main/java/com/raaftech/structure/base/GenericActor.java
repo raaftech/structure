@@ -211,24 +211,7 @@ public abstract class GenericActor extends AbstractVerticle {
 
     // Return whether JSON is valid according to JSON Schema
     public boolean isValidJson(JsonNode schemaDoc, JsonNode jsonDoc) {
-        try {
-            final JsonSchemaFactory factory = JsonSchemaFactory.byDefault();
-            final JsonSchema schema = factory.getJsonSchema(schemaDoc);
-            ProcessingReport report = schema.validate(jsonDoc);
-
-            if (!report.isSuccess()) {
-                log.error(report.toString());
-            }
-            return report.isSuccess();
-        } catch (ProcessingException e) {
-            log.error(e.getMessage());
-            
-            if (Configuration.isTraceModeOn()) {
-                e.printStackTrace();
-            }
-            
-            return false;
-        }
+        return JsonHelper.validateToSchema(schemaDoc, jsonDoc);
     }
 
     // Publish a status on the status channel

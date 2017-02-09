@@ -32,6 +32,8 @@ import org.springframework.data.neo4j.support.query.CypherQueryExecutor;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
@@ -187,7 +189,7 @@ public class Application {
         // Setup routes
         router.route("/eventbus/*").handler(sockJsHandler);
         router.route("/bundles/*").handler(StaticHandler.create().setWebRoot("src/main/resources/bundles/"));
-        router.route("/schema/:schema").handler(schemaManager::getSchema);
+        router.route("/schemas/:schema").handler(schemaManager::getSchema);
         router.route("/*").handler(StaticHandler.create().setWebRoot("src/main/resources/webroot/"));
 
         
@@ -343,9 +345,17 @@ public class Application {
         // Open up the http server and send a friendly message telling the user we're done.
         final String webHost = getConfiguration("webHost").orElse("localhost");
         final int webPort = Integer.parseInt(getConfiguration("webPort").orElse("8080"));
-        Configuration.setWebLocation(String.format("http://%s:%s/", webHost, webPort));
+        try {
+            Configuration.setSchemaNamespace(new URI(String.format("http://%s:%s/", webHost, webPort)));
+        } catch (URISyntaxException e) {
+            if (Configuration.isTraceModeOn()) {
+                e.printStackTrace();
+            }
+            log.error("Unrecoverable error while setting schema namespace");
+            System.exit(1);
+        }
         httpServer.requestHandler(router::accept).listen(webPort, webHost);
-        log.info("Structure is running at {}", Configuration.getWebLocation());
+        log.info("Structure is running at {}", Configuration.getSchemaNamespace());
     }
 
     /**
