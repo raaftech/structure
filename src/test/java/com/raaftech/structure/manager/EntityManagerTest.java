@@ -59,11 +59,14 @@ public class EntityManagerTest {
                     .filter(node -> node != null)
                     .forEach(Entity::toGraph);
 
+            tx.success();
+            tx.close();
             databaseCreated = true;
         }
     }
 
     @Test
+    @Transactional
     public void testTraversal() throws Exception {
         Node computerGrouping = nodeRepository.findByUuid("84b97c5c-5c5c-4654-b102-706e036f4374");
         EntityManager entityManager = new EntityManager();

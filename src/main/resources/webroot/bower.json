@@ -16,21 +16,17 @@
     "vendors"
   ],
   "dependencies": {
-    "angular": "~1.4",
-    "angular-animate": "latest",
-    "angular-bootstrap": "~2.2",
-    "angular-route": "~1.4",
-    "angular-schema-form": "~0.8",
-    "angular-schema-form-bootstrap": "latest",
-    "angular-sanitize": "~1.4",
-    "angular-pageslide-directive": "latest",
-    "angular-h-sweetalert": "latest",
-    "angular-vertxbus": "~3.0",
-    "angular-dragdrop": "latest",
-    "bootstrap": "latest",
-    "jquery-ui": "latest"
+    "angular-animate": "1.4.14",
+    "angular-bootstrap": "2.2.0",
+    "angular-route": "1.4.14",
+    "angular-schema-form-bootstrap": "0.2.0",
+    "angular-pageslide-directive": "2.1.4",
+    "angular-h-sweetalert": "1.4.7",
+    "angular-vertxbus": "3.0.2",
+    "angular-dragdrop": "1.0.13",
+    "bootstrap": "3.1.1"
   },
   "resolutions": {
-    "angular": "~1.4"
+    "angular": "1.4.14"
   }
 }
