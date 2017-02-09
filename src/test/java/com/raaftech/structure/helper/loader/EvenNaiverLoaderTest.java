@@ -23,7 +23,7 @@ public class EvenNaiverLoaderTest {
 
         ObjectNode a = mapper.createObjectNode()
                 .put("name", "Foo")
-                .put("type", "Instance")
+                .put("type", "Component")
                 .put("desc", "Foo.");
         ObjectNode meta = a
                 .putObject("meta")
@@ -31,13 +31,14 @@ public class EvenNaiverLoaderTest {
         meta.putObject("relations");
 
         ObjectNode b = mapper.createObjectNode()
-                .put("type", "Instance")
+                .put("type", "Component")
                 .put("desc", "Foo.")
                 .put("name", "Foo");
         ObjectNode metb = b
                 .putObject("meta")
                 .put("uuid", "abba2750-7e05-4e70-8b36-1a56665dccd6");
         metb.putObject("relations");
+        System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(b));
 
         // our old way:
         assertFalse(Objects.equals(DigestUtils.md5Hex(a.toString()), DigestUtils.md5Hex(b.toString())));

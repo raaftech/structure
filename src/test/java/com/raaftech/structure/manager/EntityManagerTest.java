@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableSet;
+import com.raaftech.structure.base.Configuration;
 import com.raaftech.structure.base.SpringTestConfig;
 import com.raaftech.structure.graph.Node;
 import com.raaftech.structure.graph.repositories.NodeRepository;
@@ -15,7 +16,6 @@ import org.junit.runner.RunWith;
 import org.neo4j.graphdb.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.neo4j.core.GraphDatabase;
-import org.springframework.data.neo4j.support.Neo4jTemplate;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -23,6 +23,7 @@ import org.springframework.test.context.support.AnnotationConfigContextLoader;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.nio.file.FileSystems;
 import java.util.Iterator;
 import java.util.List;
 
@@ -44,8 +45,9 @@ public class EntityManagerTest {
     public void setUp() throws Exception {
         if (!databaseCreated) {
             Transaction tx = graphDatabase.beginTx();
-            final String templateTestBundle = "src/test/resources/bundles/core/";
-            EvenNaiverLoader evenNaiverLoader = new EvenNaiverLoader(templateTestBundle);
+            final String testBundle = "src/test/resources/bundles/core/";
+            Configuration.setSchemaNamespace(FileSystems.getDefault().getPath(testBundle).toUri().resolve("types/"));
+            EvenNaiverLoader evenNaiverLoader = new EvenNaiverLoader(testBundle);
             evenNaiverLoader.getUpdateList(evenNaiverLoader.sortIt(evenNaiverLoader.readAllJson())).stream()
                     .map(node -> {
                         try {
