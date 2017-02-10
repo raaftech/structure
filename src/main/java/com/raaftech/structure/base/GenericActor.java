@@ -40,12 +40,16 @@ public abstract class GenericActor extends AbstractVerticle {
 
     private Logger log = LoggerFactory.getLogger(GenericActor.class);
 
+
     @Transient
-    URI schemaForRequest;
+    final URI schemaForRequest = URI.create("resource:/schema/base/request.schema.json");
     @Transient
-    URI schemaForResponse;
+    final URI schemaForResponse = URI.create("resource:/schema/base/response.schema.json");
     @Transient
-    URI schemaForManual;
+    final URI schemaForManual = URI.create("resource:/schema/base/manual.schema.json");
+    // used as a default schema in case we need to fallback on something
+    @Transient
+    final URI fallbackSchema = URI.create("resource:/schema/base/args.schema.json");
 
     @Transient
     Map<String, HandlerSchema> handlers = new HashMap<>();
@@ -55,9 +59,6 @@ public abstract class GenericActor extends AbstractVerticle {
     // statusAddress is used to push notifications of events within Structure
     // that the GUI may be interested about.
     private static final String statusAddress = "com.raaftech.structure.status";
-
-    // used as a default schema in case we need to fallback on something
-    final URI fallbackSchema = URI.create("resource:/schema/base/args.schema.json");
 
     class HandlerSchema {
         URI schemaPath;
@@ -112,11 +113,6 @@ public abstract class GenericActor extends AbstractVerticle {
                 }
             }
         });
-
-        // Read settings and initialize schema documents.
-        schemaForRequest = URI.create("resource:/schema/base/request.schema.json");
-        schemaForResponse = URI.create("resource:/schema/base/response.schema.json");
-        schemaForManual = URI.create("resource:/schema/base/manual.schema.json");
     }
 
     // A json file loader (looks in your classpath/resources.)
