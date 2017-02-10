@@ -24,6 +24,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -38,12 +40,16 @@ public abstract class GenericActor extends AbstractVerticle {
 
     private Logger log = LoggerFactory.getLogger(GenericActor.class);
 
+
     @Transient
-    JsonNode schemaForRequest;
+    final URI schemaForRequest = URI.create("resource:/schema/base/request.schema.json");
     @Transient
-    JsonNode schemaForResponse;
+    final URI schemaForResponse = URI.create("resource:/schema/base/response.schema.json");
     @Transient
-    JsonNode schemaForManual;
+    final URI schemaForManual = URI.create("resource:/schema/base/manual.schema.json");
+    // used as a default schema in case we need to fallback on something
+    @Transient
+    final URI fallbackSchema = URI.create("resource:/schema/base/args.schema.json");
 
     @Transient
     Map<String, HandlerSchema> handlers = new HashMap<>();
@@ -55,10 +61,10 @@ public abstract class GenericActor extends AbstractVerticle {
     private static final String statusAddress = "com.raaftech.structure.status";
 
     class HandlerSchema {
-        String schemaPath;
+        URI schemaPath;
         MessageHandler handler;
 
-        public HandlerSchema(String schemaPath, MessageHandler handler) {
+        public HandlerSchema(URI schemaPath, MessageHandler handler) {
             this.schemaPath = schemaPath;
             this.handler = handler;
         }
@@ -68,16 +74,24 @@ public abstract class GenericActor extends AbstractVerticle {
     protected GenericActor() {
         // Initialize arrays.
         Method methods[] = this.getClass().getMethods();
-        Map<Method, String> messageHandlersAndSchemas = new HashMap<>();
+        Map<Method, URI> messageHandlersAndSchemas = new HashMap<>();
 
         // Fill messageHandlers.
         for (Method method : methods) {
             if (method.getReturnType().equals(MessageHandler.class)) {
                 if (method.isAnnotationPresent(SchemaPath.class)) {
                     SchemaPath schemaPath = method.getAnnotation(SchemaPath.class);
-                    messageHandlersAndSchemas.put(method, schemaPath.value());
+                    try {
+                        messageHandlersAndSchemas.put(method, new URI(schemaPath.value()));
+                    } catch (URISyntaxException e) {
+                        if (Configuration.isTraceModeOn()) {
+                            e.printStackTrace();
+                        }
+                        log.error("Error while parsing @SchemaPath value as URI");
+                        messageHandlersAndSchemas.put(method, fallbackSchema);
+                    }
                 } else {
-                    messageHandlersAndSchemas.put(method, "schema/base/args.schema.json");
+                    messageHandlersAndSchemas.put(method, fallbackSchema);
                 }
             }
         }
@@ -85,7 +99,7 @@ public abstract class GenericActor extends AbstractVerticle {
         messageHandlersAndSchemas.entrySet().stream()
         .forEach((entry) -> {
             Method mh = entry.getKey();
-            String schema = entry.getValue();
+            URI schema = entry.getValue();
             String s = entry.getKey().getName();
 
             try {
@@ -99,11 +113,6 @@ public abstract class GenericActor extends AbstractVerticle {
                 }
             }
         });
-
-        // Read settings and initialize schema documents.
-        schemaForRequest = jsonFromResource("schema/base/request.schema.json");
-        schemaForResponse = jsonFromResource("schema/base/response.schema.json");
-        schemaForManual = jsonFromResource("schema/base/manual.schema.json");
     }
 
     // A json file loader (looks in your classpath/resources.)
@@ -190,10 +199,10 @@ public abstract class GenericActor extends AbstractVerticle {
     }
 
     // The validator.
-    public JsonNode validate(JsonNode schemaDoc, JsonNode jsonDoc) {
+    public JsonNode validate(URI schemaDoc, JsonNode jsonDoc) {
         try {
             final JsonSchemaFactory factory = JsonSchemaFactory.byDefault();
-            final JsonSchema schema = factory.getJsonSchema(schemaDoc);
+            final JsonSchema schema = factory.getJsonSchema(schemaDoc.toString());
             ProcessingReport report = schema.validate(jsonDoc);
             if (!report.isSuccess()) {
                 log.error(report.toString());
@@ -210,25 +219,8 @@ public abstract class GenericActor extends AbstractVerticle {
     }
 
     // Return whether JSON is valid according to JSON Schema
-    public boolean isValidJson(JsonNode schemaDoc, JsonNode jsonDoc) {
-        try {
-            final JsonSchemaFactory factory = JsonSchemaFactory.byDefault();
-            final JsonSchema schema = factory.getJsonSchema(schemaDoc);
-            ProcessingReport report = schema.validate(jsonDoc);
-
-            if (!report.isSuccess()) {
-                log.error(report.toString());
-            }
-            return report.isSuccess();
-        } catch (ProcessingException e) {
-            log.error(e.getMessage());
-            
-            if (Configuration.isTraceModeOn()) {
-                e.printStackTrace();
-            }
-            
-            return false;
-        }
+    public boolean isValidJson(URI schemaDoc, JsonNode jsonDoc) {
+        return JsonHelper.validateToSchema(schemaDoc, jsonDoc);
     }
 
     // Publish a status on the status channel
@@ -411,10 +403,10 @@ public abstract class GenericActor extends AbstractVerticle {
                 args = mapper.createObjectNode();
             }
             HandlerSchema handlerAndSchema = handlers.get(msgh);
-            JsonNode schema = jsonFromResource(handlerAndSchema.schemaPath);
+            URI schema = handlerAndSchema.schemaPath;
             if (schema == null) {
                 log.warn("Couldn't load " + handlerAndSchema.schemaPath + " using empty schema as default. Validation will always pass.");
-                schema = jsonFromResource("schema/base/args.schema.json");
+                schema = fallbackSchema;
             }
             if (isValidJson(schema, args)) {
                 // Response! Convert "Jackson JsonNode" to "Vert.x JsonObject".

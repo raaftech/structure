@@ -3,6 +3,8 @@ package com.raaftech.structure.helper;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonschema.core.exceptions.ProcessingException;
+import com.github.fge.jsonschema.core.load.configuration.LoadingConfiguration;
+import com.github.fge.jsonschema.core.load.uri.URITranslatorConfiguration;
 import com.github.fge.jsonschema.core.report.ProcessingMessage;
 import com.github.fge.jsonschema.core.report.ProcessingReport;
 import com.github.fge.jsonschema.main.JsonSchema;
@@ -15,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.util.Iterator;
 
 /**
@@ -107,51 +110,106 @@ public class JsonHelper {
 		return result;
 	}
 
-	public static boolean validateToSchema(JsonNode schema, JsonNode object) {
+	private static boolean validateToSchema(JsonSchema schema, JsonNode object) {
+        Boolean validationState = false;
 
+        try {
+            ProcessingReport validJson = schema.validate(object);
+            Iterator<ProcessingMessage> validJsonIterator = validJson.iterator();
+            ProcessingMessage validJsonMessage;
+
+            if (!validJson.isSuccess()) {
+                while (validJsonIterator.hasNext()) {
+                    validJsonMessage = validJsonIterator.next();
+                    if (validJsonMessage != null) {
+                        log.error("JSON data validation message: " + validJsonMessage.getMessage());
+                    }
+                }
+                return validationState;
+            } else {
+                validationState = true;
+            }
+        } catch (ProcessingException e) {
+            log.error(e.getMessage());
+            return validationState;
+        }
+
+        return validationState;
+    }
+
+	/**
+	 * See if a JSON object validates against a given schema.
+	 * We mainly use this method with static schema's located in our resources.
+	 * @param schema The URI of the schema to use for validation.
+	 * @param object The object to validate.
+	 * @return Does object validate against schema?
+	 */
+    public static boolean validateToSchema(URI schema, JsonNode object) {
+        boolean validationState = false;
+        JsonSchemaFactory jsonSchemaFactory = JsonSchemaFactory.byDefault();
+        try {
+            JsonSchema jsonSchema = jsonSchemaFactory.getJsonSchema(schema.toString());
+            validationState = validateToSchema(jsonSchema, object);
+        } catch (ProcessingException e) {
+            if (Configuration.isTraceModeOn()) {
+                e.printStackTrace();
+            }
+        }
+
+        return validationState;
+    }
+
+	/**
+	 * See if a JSON object validates against a given schema.
+	 * This version of validateSchema(...) is mainly used for schema's that are retrieved from the database.
+	 * Because we can't natively expose the graph as a namespace for schema's, we need to provide a proxy to
+	 * these schema's. That is {@link com.raaftech.structure.manager.SchemaManager SchemaManager}'s job,
+	 * and this method sets the namespace to {@link com.raaftech.structure.manager.SchemaManager SchemaManager}'s
+	 * location on the webserver.
+	 * @param schema The URI of the schema to use for validation.
+	 * @param object The object to validate.
+	 * @return Does object validate against schema?
+	 */
+	public static boolean validateToSchema(JsonNode schema, JsonNode object) {
 		Boolean validationState = false;
 
 		try {
-			JsonSchemaFactory factory = JsonSchemaFactory.byDefault();
-			JsonSchema jsonSchema = factory.getJsonSchema(schema);
+            JsonSchemaFactory jsonSchemaFactory;
 
-			SyntaxValidator syntaxValidator = factory.getSyntaxValidator();
+            if (Configuration.getSchemaNamespace() != null) {
+                final URI nameSpaceURI = Configuration.getSchemaNamespace().resolve("schemas/");
+                final URITranslatorConfiguration uriTranslatorConfiguration = URITranslatorConfiguration.newBuilder()
+                        .setNamespace(nameSpaceURI)
+                        .freeze();
+                final LoadingConfiguration loadingConfiguration = LoadingConfiguration.newBuilder()
+                        .setURITranslatorConfiguration(uriTranslatorConfiguration)
+                        .freeze();
+                jsonSchemaFactory = JsonSchemaFactory.newBuilder()
+                        .setLoadingConfiguration(loadingConfiguration)
+                        .freeze();
+            } else {
+                jsonSchemaFactory = JsonSchemaFactory.byDefault();
+            }
+            SyntaxValidator syntaxValidator = jsonSchemaFactory.getSyntaxValidator();
+            ProcessingReport validSchema = syntaxValidator.validateSchema(schema);
+            ProcessingMessage validSchemaMessage;
+            Iterator<ProcessingMessage> validSchemaIterator = validSchema.iterator();
+            if (!validSchema.isSuccess()) {
+                while (validSchemaIterator.hasNext()) {
+                    validSchemaMessage = validSchemaIterator.next();
+                    if (validSchemaMessage != null) {
+                        log.error("JSON schema validation message: " + validSchemaMessage.getMessage());
+                    }
+                }
+                return validationState;
+            }
 
-			ProcessingReport validSchema = syntaxValidator.validateSchema(schema);
-			ProcessingReport validJson = jsonSchema.validate(object);
+            JsonSchema jsonSchema = jsonSchemaFactory.getJsonSchema(schema);
+            validationState = validateToSchema(jsonSchema, object);
+        } catch (ProcessingException e) {
+            e.printStackTrace();
+        }
 
-			Iterator<ProcessingMessage> validSchemaIterator = validSchema.iterator();
-			Iterator<ProcessingMessage> validJsonIterator = validJson.iterator();
-
-			ProcessingMessage validSchemaMessage;
-			ProcessingMessage validJsonMessage;
-
-			if (!validSchema.isSuccess()) {
-				while (validSchemaIterator.hasNext()) {
-					validSchemaMessage = validSchemaIterator.next();
-					if (validSchemaMessage != null) {
-						log.error("JSON schema validation message: " + validSchemaMessage.getMessage());
-					}
-				}
-				return validationState;
-			}
-
-			if (!validJson.isSuccess()) {
-				while (validJsonIterator.hasNext()) {
-					validJsonMessage = validJsonIterator.next();
-					if (validJsonMessage != null) {
-						log.error("JSON data validation message: " + validJsonMessage.getMessage());
-					}
-				}
-				return validationState;
-			} else {
-				validationState = true;
-			}
-		} catch (ProcessingException e) {
-			log.error(e.getMessage());
-			return validationState;
-		}
-
-		return validationState;
-	}
+        return validationState;
+    }
 }

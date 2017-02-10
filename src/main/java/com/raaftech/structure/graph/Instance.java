@@ -12,6 +12,7 @@ import com.raaftech.structure.base.Configuration;
 import com.raaftech.structure.exceptions.TypeUnknownException;
 import com.raaftech.structure.graph.repositories.InstanceRepository;
 import com.raaftech.structure.graph.repositories.TypeRepository;
+import com.raaftech.structure.helper.JsonHelper;
 import com.raaftech.structure.helper.JsonSchemaBuilder;
 import com.raaftech.structure.node.InstanceActor;
 import org.neo4j.graphdb.Direction;
@@ -137,35 +138,18 @@ public abstract class Instance extends Node {
      * @return The Instance setProperties was called on.
      */
     protected Instance setProperties(ObjectNode properties) {
-        try {
-            JsonSchemaBuilder jsonSchema = instanceOf.getSchema();
-            final JsonSchemaFactory factory = JsonSchemaFactory.byDefault();
-            final JsonSchema schema = factory.getJsonSchema(jsonSchema.getAsObjectNode());
-            ProcessingReport report;
-
-            report = schema.validate(properties);
-
-            if (report.isSuccess()) {
-                // Name and desc are saved already, so we can remove those.
-                properties.remove("name");
-                properties.remove("desc");
-                Iterator<String> iter = properties.fieldNames();
-                while (iter.hasNext()) {
-                    String key = iter.next();
-                    kv.setProperty(key, properties.get(key).asText());
-                }
-            } else {
-                log.debug(report.toString());
-                throw new RuntimeException("Supplied JSON did not match Type schema.");
+        boolean success = JsonHelper.validateToSchema(instanceOf.getSchema().getAsObjectNode(), properties);
+        if (success) {
+            // Name and desc are saved already, so we can remove those.
+            properties.remove("name");
+            properties.remove("desc");
+            Iterator<String> iter = properties.fieldNames();
+            while (iter.hasNext()) {
+                String key = iter.next();
+                kv.setProperty(key, properties.get(key).asText());
             }
-        } catch (ProcessingException e) {
-			log.error(e.getMessage());
-
-			if (Configuration.isTraceModeOn()) {
-				e.printStackTrace();
-			}
-			
-			throw new RuntimeException("Supplied JSON did not match Type schema.");
+        } else {
+            throw new RuntimeException("Supplied JSON did not match Type schema.");
         }
 
         return this;

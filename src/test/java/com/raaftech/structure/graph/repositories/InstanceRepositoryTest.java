@@ -1,5 +1,6 @@
 package com.raaftech.structure.graph.repositories;
 
+import com.raaftech.structure.base.Configuration;
 import com.raaftech.structure.base.SpringTestConfig;
 import com.raaftech.structure.graph.Component;
 import com.raaftech.structure.graph.Type;
@@ -17,6 +18,7 @@ import org.springframework.test.context.support.AnnotationConfigContextLoader;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.nio.file.FileSystems;
 
 import static io.vertx.core.json.Json.mapper;
 import static org.junit.Assert.*;
@@ -41,8 +43,9 @@ public class InstanceRepositoryTest {
     public void setUp() throws Exception {
         if (!databaseCreated) {
             Transaction tx = graphDatabase.beginTx();
-            final String templateTestBundle = "src/test/resources/bundles/repositorytests/";
-            EvenNaiverLoader evenNaiverLoader = new EvenNaiverLoader(templateTestBundle);
+            final String testBundle = "src/test/resources/bundles/repositorytests/";
+            Configuration.setSchemaNamespace(FileSystems.getDefault().getPath(testBundle).toUri().resolve("types/"));
+            EvenNaiverLoader evenNaiverLoader = new EvenNaiverLoader(testBundle);
             evenNaiverLoader.getUpdateList(evenNaiverLoader.sortIt(evenNaiverLoader.readAllJson())).stream()
                     .map(node -> {
                         try {

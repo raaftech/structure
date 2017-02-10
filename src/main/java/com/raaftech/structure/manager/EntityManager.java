@@ -72,7 +72,7 @@ public class EntityManager extends GenericActor {
      * An entity is new when it has no UUID defined, or its UUID doesn't exist in the database.
      * @return A list containing the UUIDs of the created entities, in the order they were persisted.
      */
-    @SchemaPath("schema/manager/entitymanager/create.schema.json")
+    @SchemaPath("resource:/schema/manager/entitymanager/create.schema.json")
     public MessageHandler create() {
         return new MessageHandler() {
             @Override
@@ -135,7 +135,7 @@ public class EntityManager extends GenericActor {
      * be included in the result as arguments.
      * @return An array containing the vertices that could be reached with the traversal.
      */
-    @SchemaPath("schema/manager/entitymanager/read.schema.json")
+    @SchemaPath("resource:/schema/manager/entitymanager/read.schema.json")
     public MessageHandler read() {
 
         return new MessageHandler() {
@@ -189,7 +189,7 @@ public class EntityManager extends GenericActor {
      * the entities in their original state, used to see if entities were updated while we were editing them.
      * @return A list containing the UUIDs of the updated entities, in the order they were persisted.
      */
-    @SchemaPath("schema/manager/entitymanager/update.schema.json")
+    @SchemaPath("resource:/schema/manager/entitymanager/update.schema.json")
     public MessageHandler update() {
         return new MessageHandler() {
             @Override
@@ -288,7 +288,7 @@ public class EntityManager extends GenericActor {
      * For a description of what "safe deletion" means, see {@link #safeDeleteTraversal(List, Node)}.
      * @return Returns the UUID of the entity in case of deletion, an empty result otherwise.
      */
-    @SchemaPath("schema/manager/entitymanager/delete.schema.json")
+    @SchemaPath("resource:/schema/manager/entitymanager/delete.schema.json")
     public MessageHandler delete() {
         return new MessageHandler() {
             @Override

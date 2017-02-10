@@ -3,6 +3,7 @@
 package com.raaftech.structure.base;
 
 import java.io.InputStream;
+import java.net.URI;
 import java.util.Properties;
 
 import org.slf4j.Logger;
@@ -23,6 +24,7 @@ public enum Configuration {
 	private static boolean initialized = false; 
 	private static boolean traceMode = false;
 	private static boolean unsafeMode = false;
+	private static URI schemaNamespace;
 	static final String bundlePathProperty = "bundlePath";
 
 	public static boolean isTraceModeOn() {
@@ -47,6 +49,14 @@ public enum Configuration {
 
 	public static String getBundlePath() {
 		return System.getProperty(bundlePathProperty);
+	}
+
+	public static URI getSchemaNamespace() {
+		return schemaNamespace;
+	}
+
+	public static void setSchemaNamespace(URI schemaNamespace) {
+		Configuration.schemaNamespace = schemaNamespace;
 	}
 
 	public static void init() {

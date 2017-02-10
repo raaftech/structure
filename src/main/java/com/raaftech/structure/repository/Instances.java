@@ -32,7 +32,7 @@ public class Instances extends Repository<Instance> {
      * @return A data array containing the last N created Instances. If we don't have N nodes, then return
      * as many as we have.
      */
-    @SchemaPath("schema/repository/instances/nLastCreated.schema.json")
+    @SchemaPath("resource:/schema/repository/instances/nLastCreated.schema.json")
     @SuppressWarnings("unused")
     public MessageHandler nLastCreated() {
         return new MessageHandler() {
@@ -61,7 +61,7 @@ public class Instances extends Repository<Instance> {
      * @return A JSON object containing the UUID of the new Instance
      * or an error field if something went wrong.
      */
-    @SchemaPath("schema/repository/instances/putNode.schema.json")
+    @SchemaPath("resource:/schema/repository/instances/putNode.schema.json")
     @SuppressWarnings("unused")
     public MessageHandler putNode() {
         return new MessageHandler() {
