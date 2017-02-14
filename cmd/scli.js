@@ -1,15 +1,18 @@
-var vorpal = require('vorpal')();
-var R = require('ramda');
-var util = require('util');
-var helper = require('./helper');
-var EventBus = require('vertx3-eventbus-client');
-var clc = require('cli-color');
-var sprintf = require('sprintf-js').sprintf;
-var treeify = require('treeify');
-var neo = require('./extensions/neo');
+"use strict";
+const vorpal = require('vorpal')();
+const R = require('ramda');
+const util = require('util');
+const helper = require('./helper');
+const EventBus = require('vertx3-eventbus-client');
+const clc = require('cli-color');
+const sprintf = require('sprintf-js').sprintf;
+const treeify = require('treeify');
+const neo = require('./extensions/neo');
+const fs = require('fs');
+const path = require('path');
 
-var eventBusUrl = '';
-var eb = null;
+let eventBusUrl = '';
+let eb = null;
 init();
 
 
@@ -18,6 +21,7 @@ function init() {
 	eb = new EventBus(eventBusUrl);
 	wrapper().then((res) => {
 		console.log(res);
+		setupStatusChannel();
 		scli();
 	});
 }
@@ -36,9 +40,32 @@ function scli() {
 	vorpal.delimiter(clc.magenta.bold('structure$')).show();
 }
 
+function setupStatusChannel() {
+    eb.registerHandler('com.raaftech.structure.status',function(error, message) {
+        if(error) {
+            console.log("ERROR: "+error);
+        } else {
+            let uuid = message.body.data.uuid;
+            if(!R.isNil(uuid)) {
+                sendEvent(helper.getEventBusAddress(['repository','types']),'findOne',{node: uuid})
+                    .then((data) => {
+                        console.log(helper.stringify(data));
+                        let comps = helper.getResultData(data)["components"];
+                        comps = helper.consolidateComponents(clc.green(uuid), comps);
+                        let name = helper.getResultData(data)['name'];
+                        if(name.indexOf('unknown-') !== -1) name = clc.red(name);
+                        else name = clc.green(name);
+                        let tree = {};
+                        tree[name] = comps;
+                        console.log(treeify.asTree(tree, true));
+                    });
+            }
+        }
+    });
+}
 
 function sendEvent(base, cmd, args) {
-	var options = helper.createOptions(cmd,args);
+	let options = helper.createOptions(cmd,args);
 	return new Promise((resolve,reject) => {
 		eb.send(base, options, (error, result) => {
 			if(error) reject(error);
@@ -51,7 +78,7 @@ function getChildren(uuid) {
     return new Promise((resolve, reject) => {
         sendEvent(helper.getEventBusAddress(['node','type',uuid]),'getSubtypes',{})
             .then((data) => {
-                var response = R.project(['name','uuid'], helper.getResultData(data));
+                let response = R.project(['name','uuid'], helper.getResultData(data));
                 resolve(response);
             });
     });
@@ -62,7 +89,7 @@ function toRoot(uuid, childNodes) {
         sendEvent(helper.getEventBusAddress(['repository', 'nodes']), 'findOne', {'node': uuid})
             .then((parent) => {
                 parent = helper.getResultData(parent);
-                var tree = {};
+                let tree = {};
                 tree[parent.name] = childNodes;
                 if(R.isNil(parent.isa)) {
                     resolve(tree);
@@ -73,15 +100,35 @@ function toRoot(uuid, childNodes) {
     });
 }
 
+function payloadDir() {
+    return path.join(__dirname, 'payloads');
+}
+
+function getPayloadListing() {
+    return fs.readdirSync(payloadDir());
+}
+
 
 //commands
 //TODO extract commands to extension sets
+
+vorpal.command('connect', 'Connect to the eventbus')
+    .action(function(args, done) {
+        this.log('Connecting to '+clc.green.bold(eventBusUrl));
+        eventBusUrl = R.defaultTo('http://localhost:8080/eventbus', process.env.EVENTBUS);
+        eb = new EventBus(eventBusUrl);
+        wrapper().then((res) => {
+            console.log(res);
+            done();
+        });
+    });
 
 vorpal.command('disconnect', 'Disconnect from the EventBus')
     .action(function(args, done) {
         this.log(clc.red(util.format('Closing connection to EventBus (%s)', eventBusUrl)));
         eb.close();
         this.log(clc.red.bold('Connection closed.'));
+        done();
     });
 
 vorpal.command('find <name>', 'Find a specified node in vertx')
@@ -91,22 +138,22 @@ vorpal.command('find <name>', 'Find a specified node in vertx')
 	.option('-i, --instance', 'Set search mode to instance based search')
 	.action(function(args, done) {
 		const self = this;
-		var act = args.options.uuid ? 'findOne' : 'findOneByName';
-		var pargs = args.options.uuid ? {'node': args.name} : {'name': args.name};
-		var addr = args.options.instance ? ['repository', 'instances'] : ['repository', 'nodes'];
+		let act = args.options.uuid ? 'findOne' : 'findOneByName';
+		let pargs = args.options.uuid ? {'node': args.name} : {'name': args.name};
+		let addr = args.options.instance ? ['repository', 'instances'] : ['repository', 'types'];
 		sendEvent(helper.getEventBusAddress(addr), act, pargs)
 			.then((data) => {
 				if(args.options.field) {
-					var val = helper.stringify(helper.getResultData(data)[args.options.field]);
+					let val = helper.stringify(helper.getResultData(data)[args.options.field]);
 					self.log(sprintf('%-16s: %s', args.options.field, val));
 					done();
 				} else {
-				    var databuf = helper.getResultData(data);
-				    var keys = R.pipe(R.keys, R.prepend('ALL'))(databuf);
+				    let databuf = helper.getResultData(data);
+				    let keys = R.pipe(R.keys, R.prepend('ALL'))(databuf);
 				    self.prompt(helper.generateQuestion('list', 'list', 'Choose a field', {choices: keys}), function(result) {
 				        if(result.list === 'ALL') self.log(helper.stringify(databuf));
 				        else {
-				            var prop = clc.green.bold(result.list);
+				            let prop = clc.green.bold(result.list);
 				            self.log(util.format('%s: %s',prop,helper.stringify(databuf[result.list])));
 				        }
 				        done();
@@ -120,12 +167,12 @@ vorpal.command('instance')
     .option('-f, --find <name>', 'Find a specific instance by name')
     .action(function(args, done) {
         const self = this;
-        var act = args.options.last ? 'nLastCreated' : 'findOneByName';
-        var pargs = args.options.last ? {'amount': args.options.last} : {'name': args.options.find};
-        var addr = ['repository', 'instances'];
+        let act = args.options.last ? 'nLastCreated' : 'findOneByName';
+        let pargs = args.options.last ? {'amount': args.options.last} : {'name': args.options.find};
+        let addr = ['repository', 'instances'];
         sendEvent(helper.getEventBusAddress(addr), act, pargs)
             .then((data) => {
-                var databuf = helper.getResultData(data);
+                let databuf = helper.getResultData(data);
                 self.log(helper.stringify(databuf));
                 done();
             });
@@ -136,7 +183,7 @@ vorpal.command('dig <uuid>', 'Get the child elements for a node')
         const self = this;
         sendEvent(helper.getEventBusAddress(['node','type',args.uuid]),'getSubtypes',{})
             .then((data) => {
-                var response = R.project(['name','uuid'], helper.getResultData(data));
+                let response = R.project(['name','uuid'], helper.getResultData(data));
                 R.forEach((item) => {
                     self.log(sprintf('%-16s: %24s', item.name,item.uuid));
                 }, response);
@@ -156,12 +203,12 @@ vorpal.command('show <uuid>', 'Show a node by its uuid.')
                     self.log(helper.stringify(data.body.result[args.options.field]));
                     done();
                 } else {
-                    var databuf = data.body.result;
-                    var keys = R.pipe(R.keys, R.prepend('ALL'))(databuf);
+                    let databuf = data.body.result;
+                    let keys = R.pipe(R.keys, R.prepend('ALL'))(databuf);
                     self.prompt(helper.generateQuestion('list', 'list', 'Choose a field', {choices: keys}), function(result) {
                         if(result.list === 'ALL') self.log(helper.stringify(databuf));
                         else {
-                            var prop = clc.green.bold(result.list);
+                            let prop = clc.green.bold(result.list);
                             self.log(util.format('%s: %s',prop,helper.stringify(databuf[result.list])));
                         }
                         done();
@@ -175,12 +222,12 @@ vorpal.command('tree <name>', 'Show a relation tree for the requested node')
     .option('-u, --uuid', 'Make the search go by uuid instead of name')
     .action(function(args, done) {
         const self = this;
-        var act = args.options.uuid ? 'findOne' : 'findOneByName';
-        var pargs = args.options.uuid ? {'node': args.name} : {'name': args.name};
-        sendEvent(helper.getEventBusAddress(['repository', 'nodes']), act, pargs)
+        let act = args.options.uuid ? 'findOne' : 'findOneByName';
+        let pargs = args.options.uuid ? {'node': args.name} : {'name': args.name};
+        sendEvent(helper.getEventBusAddress(['repository', 'types']), act, pargs)
             .then((data) => {
-                var databuf = helper.getResultData(data);
-                var tree = {};
+                let databuf = helper.getResultData(data);
+                let tree = {};
                 getChildren(databuf.uuid)
                     .then((children) => {
                         R.forEach((item) => {
@@ -194,4 +241,49 @@ vorpal.command('tree <name>', 'Show a relation tree for the requested node')
                             });
                     });
             });
+    });
+
+
+vorpal.command('discover <cidr>', 'Discover items in the network')
+    .action(function(args, done) {
+        const self = this;
+        let pargs = {
+            node: '299001a6-1091-4c0d-87be-c512af03e179',
+            name: 'testname',
+            checksum: 'foobar',
+            addr: args.cidr,
+            reachable: true,
+            desc: 'Some cidr description.'
+        };
+        sendEvent(helper.getEventBusAddress(['repository', 'instances']), 'putNode', pargs)
+            .then((data) => {
+                console.log(data);
+                let uuid = data.body.result.data;
+                self.log('instance uuid: '+uuid);
+                sendEvent(helper.getEventBusAddress(['node', 'component',uuid]), 'runInstrument', {
+                    instrument: 'IpAddressDiscover',
+                    timeAllocated: 600000
+                }).then((result) => {
+                    done();
+                });
+            });
+    });
+
+vorpal.command('query', 'Place arbitrary requests on the event bus')
+    .action(function(args,done) {
+        const self = this;
+        let qs = [];
+        qs.push(helper.generateQuestion('address', 'input', 'Event bus address: '));
+        qs.push(helper.generateQuestion('cmd', 'input', 'Command (msgh): '));
+        qs.push(helper.generateQuestion('file','list','Select payload file: ',{choices: getPayloadListing()}));
+
+        self.prompt(qs, function(res) {
+            let json = helper.readJsonFile(payloadDir() + '/' + res.file);
+            sendEvent(res.address,res.cmd,json)
+                .then((data) => {
+                    console.log(helper.stringify(data));
+                    done();
+                })
+                .catch((ex) => {console.log(ex); done();});
+        });
     });

@@ -10,6 +10,9 @@ id_rsa*
 .idea
 structure.iml
 generatedscripts/
-vendors
+web/js/vendors/
 cmd/node_modules/
-data/
+src/main/resources/webroot/js/vendors/
+rest/node_modules/
+rest/client/js/vendors/
+tools/discovery/node_modules/
