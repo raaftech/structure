@@ -43,7 +43,7 @@ public class InstanceActor extends NodeActor<Instance> {
      * filter on a particular task.
      * @return An array containing the queried results.
      */
-    @SchemaPath("schema/node/instance/getresults.schema.json")
+    @SchemaPath("resource:/schema/node/instance/getresults.schema.json")
     public MessageHandler getResults() {
         return new MessageHandler() {
             @Override
@@ -148,7 +148,7 @@ public class InstanceActor extends NodeActor<Instance> {
         };
     }
 
-    @SchemaPath("schema/node/instance/runInstrument.schema.json")
+    @SchemaPath("resource:/schema/node/instance/runInstrument.schema.json")
     @SuppressWarnings("unused")
     public MessageHandler runInstrument() {
         return new MessageHandler() {

@@ -58,7 +58,7 @@ public class Templates extends Repository<Template> {
      * @return A JSON object containing the UUID of the new Template
      * or an error field if something went wrong.
      */
-    @SchemaPath("schema/repository/templates/putNode.schema.json")
+    @SchemaPath("resource:/schema/repository/templates/putNode.schema.json")
     @SuppressWarnings("unused")
     public MessageHandler putNode() {
         return new MessageHandler() {
