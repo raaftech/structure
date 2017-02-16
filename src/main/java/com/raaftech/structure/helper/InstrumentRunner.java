@@ -71,8 +71,8 @@ public class InstrumentRunner {
         this.arguments = arguments == null ? mapper.createObjectNode() : arguments;
 
         // TODO: Need a different way of finding the structure node.
-        this.agent = (Component) instanceRepository.findOneByName(Context.selfIdentifier);
-        this.subject = (Component) instanceRepository.getStartOfComponentGroup(origin.getUuid());
+        this.agent = instanceRepository.findOneByName(Context.selfIdentifier);
+        this.subject = instanceRepository.getStartOfComponentGroup(origin.getUuid());
 
         // Did we find the agent?
         if (agent == null) {
