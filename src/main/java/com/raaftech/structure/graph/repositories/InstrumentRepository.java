@@ -73,7 +73,7 @@ public interface InstrumentRepository extends GenericRepository<Instrument> {
     // This query checks if we can execute something about a patient, on the structure node.
     // A good example would be a ping check. Structure needs a particular tool (ping), that can do something (ICMP echo request)
     // which is about something that doesn't belong to its tree (the IP address of the patient).
-    @Query ("MATCH (structure {uuid:{structureUuid}})-[:HAS_COMPONENT*..]->()-[:INSTANCE_OF|ISA*..]->()-[:HAS_INSTRUMENT]->(instrument {uuid:{instrumentUuid}})," +
+    @Query ("MATCH (structure {uuid:{structureUuid}})-[:GROUPS|HAS_COMPONENT*..]->()-[:INSTANCE_OF|ISA*..]->()-[:HAS_INSTRUMENT]->(instrument {uuid:{instrumentUuid}})," +
         "(instrument)-[:HANDLES]->(patientType)<-[:INSTANCE_OF|ISA*..]-(patient {uuid:{patientUuid}})" +
             "RETURN instrument")
     Instrument validateNonLocalInstrument(@Param("instrumentUuid") String instrumentUuid, @Param("structureUuid") String structureUuid,

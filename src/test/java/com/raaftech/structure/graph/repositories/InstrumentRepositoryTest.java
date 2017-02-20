@@ -12,6 +12,7 @@ import org.junit.runner.RunWith;
 import org.neo4j.graphdb.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.neo4j.core.GraphDatabase;
+import org.springframework.data.neo4j.support.Neo4jTemplate;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -41,11 +42,17 @@ public class InstrumentRepositoryTest {
     @Autowired
     ComponentRepository componentRepository;
     @Autowired
+    InstanceRepository instanceRepository;
+    @Autowired
+    Neo4jTemplate neo4jTemplate;
+    @Autowired
     GraphDatabase graphDatabase;
 
-    private Component structure;
-    private Component host1;
-    private Component host2;
+    private Grouping structure;
+    private Grouping host1;
+    private Component host1OS;
+    private Grouping host2;
+    private Component host2OS;
 
     private static boolean databaseCreated = false;
 
@@ -86,6 +93,15 @@ public class InstrumentRepositoryTest {
     @Transactional
     public void setupComponents() throws IOException {
         // Create the simplest structure server representation
+        Type groupingType = typeRepository.findOneByName("Grouping");
+        assertNotNull(groupingType);
+        ObjectNode groupingData = (ObjectNode) mapper.readTree(
+                "{\n" +
+                        "    \"desc\": \"A groupingType representing a computer.\",\n" +
+                        "    \"name\": \"Computer\"\n" +
+                        "}"
+        );
+        structure = new Grouping(groupingData, groupingType);
         Type genericLinuxType = typeRepository.findOneByName("Linux");
         assertNotNull(genericLinuxType);
         ObjectNode genericLinuxData = (ObjectNode) mapper.readTree(
@@ -97,7 +113,7 @@ public class InstrumentRepositoryTest {
                         "    \"ver\": \"unknown\"\n" +
                         "}"
         );
-        structure = new Component(genericLinuxData, genericLinuxType);
+        Component structureOS = new Component(genericLinuxData, genericLinuxType);
 
         Type sshClientType = typeRepository.findOneByName("OpenSshClient");
         ObjectNode sshClientData = (ObjectNode) mapper.readTree(
@@ -122,12 +138,14 @@ public class InstrumentRepositoryTest {
         );
         Component bash = new Component(bashData, bashType);
 
-        structure.addComponent(structureSshClient);
-        structure.addComponent(bash);
+        structureOS.addComponent(structureSshClient);
+        structureOS.addComponent(bash);
+        structure.getComponents().add(structureOS);
         structure.save();
 
         // Create the simplest host1 representation
-        host1 = new Component(genericLinuxData, genericLinuxType);
+        host1 = new Grouping(groupingData, groupingType);
+        host1OS = new Component(genericLinuxData, genericLinuxType);
 
         Type sshServerType = typeRepository.findOneByName("SshServer");
         ObjectNode sshServerData = (ObjectNode) mapper.readTree(
@@ -152,7 +170,8 @@ public class InstrumentRepositoryTest {
         );
         Component systemd = new Component(systemdData, systemdType);
 
-        host1.addComponent(hostSshServer).addComponent(systemd);
+        host1OS.addComponent(hostSshServer).addComponent(systemd);
+        host1.getComponents().add(host1OS);
         host1.save();
 
         // Create the simplest host2 representation
@@ -168,19 +187,23 @@ public class InstrumentRepositoryTest {
         );
         Component upstart = new Component(upstartData, upstartType);
 
-        host2 = new Component(genericLinuxData, genericLinuxType);
+        host2 = new Grouping(groupingData, groupingType);
+        host2OS = new Component(genericLinuxData, genericLinuxType);
         bash = new Component(bashData, bashType);
         hostSshServer = new Component(sshServerData, sshServerType);
 
-        host2.addComponent(bash).addComponent(hostSshServer).addComponent(upstart);
+        host2OS.addComponent(bash).addComponent(hostSshServer).addComponent(upstart);
+        host2.getComponents().add(host2OS);
         host2.save();
     }
 
     @After
     @Transactional
     public void tearDown() throws Exception {
-        componentRepository.delete(structure);
-        componentRepository.delete(host1);
+        neo4jTemplate.query("MATCH (:Component)-[r]-() DELETE r", null);
+        neo4jTemplate.query("MATCH (n:Component) DELETE n", null);
+        neo4jTemplate.query("MATCH (:Grouping)-[r]-() DELETE r", null);
+        neo4jTemplate.query("MATCH (n:Grouping) DELETE n", null);
     }
 
     @Test
@@ -259,8 +282,6 @@ public class InstrumentRepositoryTest {
     }
 
     @Test
-    @Transactional
-    @Rollback
     public void validateNonLocalInstrument() throws Exception {
         Set<Type> appliesTo = new HashSet<>();
         appliesTo.add(typeRepository.findOneByName("SshServer"));
@@ -275,11 +296,14 @@ public class InstrumentRepositoryTest {
                 .template("")
                 .build();
         nonLocal.save();
+        assertNotNull(instanceRepository.findByUuid(nonLocal.getUuid()));
 
-        Set<Component> hostSshServers = componentRepository.findChildrenByType(host1.getUuid(), "SshServer");
+        Set<Component> hostSshServers = componentRepository.findChildrenByType(host1OS.getUuid(), "SshServer");
         assertEquals(1, hostSshServers.size());
         Component hostSshServer = hostSshServers.iterator().next();
         assertNotNull(instrumentRepository.validateNonLocalInstrument(nonLocal.getUuid(), structure.getUuid(), hostSshServer.getUuid()));
+
+        instanceRepository.delete(nonLocal.getId());
     }
 
     @Test
@@ -297,7 +321,7 @@ public class InstrumentRepositoryTest {
         assertTrue(instruments.size() > 1);
 
         // find the sshd belonging to host2
-        final Component sshd = host2.getComponents().stream()
+        final Component sshd = host2OS.getComponents().stream()
                 .filter(c -> "SshServer".equals(c.getName()))
                 .collect(Collectors.toList())
                 .get(0);
@@ -311,7 +335,7 @@ public class InstrumentRepositoryTest {
     @Test
     public void findLocalControllers() throws Exception {
         // find the sshd belonging to host2
-        final Component sshd = host2.getComponents().stream()
+        final Component sshd = host2OS.getComponents().stream()
                 .filter(c -> "SshServer".equals(c.getName()))
                 .collect(Collectors.toList())
                 .get(0);
@@ -327,13 +351,13 @@ public class InstrumentRepositoryTest {
     @Rollback
     public void findRemoteControllers() throws Exception {
         // find the sshd belonging to host2
-        final Component sshd = host2.getComponents().stream()
+        final Component sshd = host2OS.getComponents().stream()
                 .filter(c -> "SshServer".equals(c.getName()))
                 .collect(Collectors.toList())
                 .get(0);
         assertNotNull(sshd);
 
-        final Component bash = host1.getComponents().stream()
+        final Component bash = host1OS.getComponents().stream()
                 .filter(c -> "Systemd".equals(c.getName()))
                 .collect(Collectors.toList())
                 .get(0);

@@ -129,6 +129,9 @@ public abstract class Instance extends Node {
      * @return The Instance setProperties was called on.
      */
     protected Instance setProperties(ObjectNode properties) {
+        if (data == null) {
+            data = new DynamicPropertiesContainer();
+        }
         boolean success = JsonHelper.validateToSchema(instanceOf.getSchema().getAsObjectNode(), properties);
         if (success) {
             // Name and desc are saved already, so we can remove those.

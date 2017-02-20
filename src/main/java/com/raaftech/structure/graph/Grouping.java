@@ -1,6 +1,8 @@
 package com.raaftech.structure.graph;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.raaftech.structure.exceptions.JsonValidationException;
 import org.neo4j.graphdb.Direction;
 import org.springframework.data.neo4j.annotation.Fetch;
 import org.springframework.data.neo4j.annotation.RelatedTo;
@@ -21,8 +23,38 @@ public class Grouping extends Instance {
     private Set<Component> components;
 
     public Set<Component> getComponents() {
+        if (components == null) {
+            components = new HashSet<>();
+        }
         return components;
     }
+
+    public Grouping() {}
+
+    /**
+     * Construct a component based on a type and the data that represents it.
+     * @param instanceData The data needed to instantiate the type.
+     * @param type The type to instantiate.
+     */
+    public Grouping(ObjectNode instanceData, Type type) {
+        ObjectNode instanceDataCopy = instanceData.deepCopy();
+        if (type == null) {
+            throw new IllegalArgumentException("Component constructor called with null as type.");
+        }
+        if (!type.getSchema().validateJson(instanceDataCopy)) {
+            throw new JsonValidationException("Cannot create component of type \"" + type.getName()
+                    + "\", JSON doesn't validate against it.");
+        }
+        final String name = instanceDataCopy.get("name").asText();
+        final String desc = instanceDataCopy.get("desc").asText();
+
+        this.name = name;
+        this.desc = desc;
+        this.instanceOf = type;
+        this.instanceData = instanceData.deepCopy();
+        setProperties(instanceDataCopy);
+    }
+
 
     /**
      * Used to create a JSON representation of a single Instance that
