@@ -1,5 +1,6 @@
 package com.raaftech.structure.helper;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -9,10 +10,7 @@ import com.github.jknack.handlebars.JsonNodeValueResolver;
 import com.github.jknack.handlebars.Template;
 import com.raaftech.structure.base.Configuration;
 import com.raaftech.structure.base.Context;
-import com.raaftech.structure.graph.Component;
-import com.raaftech.structure.graph.Controller;
-import com.raaftech.structure.graph.Instance;
-import com.raaftech.structure.graph.Marker;
+import com.raaftech.structure.graph.*;
 import com.raaftech.structure.graph.repositories.InstanceRepository;
 import com.raaftech.structure.graph.repositories.InstrumentRepository;
 import com.raaftech.structure.helper.classification.ArgumentsToClassificationTreeParser;
@@ -43,8 +41,8 @@ public class InstrumentRunner {
     private final String taskId;
     private final Component origin;
     private final Controller controller;
-    private final Component subject;
-    private final Component agent;
+    private final Grouping subject;
+    private final Grouping agent;
     private final ObjectNode arguments;
 
     private final String templateProperty = "template";
@@ -71,8 +69,8 @@ public class InstrumentRunner {
         this.arguments = arguments == null ? mapper.createObjectNode() : arguments;
 
         // TODO: Need a different way of finding the structure node.
-        this.agent = instanceRepository.findOneByName(Context.selfIdentifier);
-        this.subject = instanceRepository.getStartOfComponentGroup(origin.getUuid());
+        this.agent = (Grouping) instanceRepository.findOneByName(Context.selfIdentifier);
+        this.subject = (Grouping) instanceRepository.getStartOfComponentGroup(origin.getUuid());
 
         // Did we find the agent?
         if (agent == null) {
@@ -229,6 +227,8 @@ public class InstrumentRunner {
         // Result will contain the filtered result set of our context
         ObjectNode result;
 
+        log.debug("Validating and selecting arguments for \"{}\"", controller.getName());
+
         //
         // Create the context we're working with.
         //
@@ -262,7 +262,7 @@ public class InstrumentRunner {
         JsonNode arguments;
         String tmpArguments = controller.getArguments();
         // If we don't even have arguments, return right away.
-        if (tmpArguments == null) {
+        if (tmpArguments == null || tmpArguments.equals("")) {
             return null;
         }
 
@@ -319,6 +319,9 @@ public class InstrumentRunner {
 			throw new RuntimeException("Ran into an unknown exception while parsing controller " + this.controller.getName()
                     +"'s arguments object. See logging for more details.");
         }
+
+        log.debug("Selected the following arguments: \n{}", result);
+
         return result;
     }
 
@@ -420,15 +423,15 @@ public class InstrumentRunner {
      */
     private Controller findHeaviest(Set<Controller> controllers) {
         // Collect controllers by weight filtering out duplicate weights
-        Map<Integer, Controller> controllersByWeight = controllers.stream()
+        Map<Double, Controller> controllersByWeight = controllers.stream()
                 .collect(Collectors.toMap(
                         controller -> controller.getWeight(),
                         instrument -> instrument,
                         (instrument1, instrument2) -> instrument1));
 
         // Find the maximum weight
-        Optional<Integer> heaviestController = controllersByWeight.keySet().stream()
-                .max(Integer::compare);
+        Optional<Double> heaviestController = controllersByWeight.keySet().stream()
+                .max(Double::compare);
 
         if (heaviestController.isPresent()) {
             return controllersByWeight.get(heaviestController.get());
@@ -456,12 +459,15 @@ public class InstrumentRunner {
                 .resolver(JsonNodeValueResolver.INSTANCE).build();
 
         // Apply the context to our template
-        return compiledTemplate.apply(ctx).trim();
+        String appliedTemplate = compiledTemplate.apply(ctx).trim();
+        log.debug("Mustache returned:\n{}", appliedTemplate);
+        return appliedTemplate;
     }
 
     // Schedule the actual execution of the controller.
     // This will always be done sequentially, until we implement automatic hierarchical execution of instruments.
     public void startInstrument() {
+        log.debug("Sending execution task of \"" + controller.getName() + "\" to TaskManager.");
         final EventBus eventBus = Context.getVertx().eventBus();
         ObjectNode message = mapper.createObjectNode();
         message.put("msgh", "queueTask");
@@ -475,7 +481,7 @@ public class InstrumentRunner {
                     job.putObject("metadata")
                             .put("originName", origin.getName())
                             .put("originUuid", origin.getUuid())
-                            .put("controller", controller.getName())
+                            .put("instrument", controller.getName())
                             .put("capability", instrumentRepository.getInstrumentCapability(controller.getUuid()).getName());
                     job.put("command", command);
                     jobs.add(job);
