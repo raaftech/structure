@@ -1,7 +1,7 @@
 {
   "type": "Controller",
   "name": "stop",
-  "desc": "BsdrcInitStop.",
+  "desc": "RcInitStop.",
   "meta": {
     "uuid": "c5012b52-dbac-4fbf-acf8-6d3fa1661dfd",
     "relations": {

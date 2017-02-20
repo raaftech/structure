@@ -1,1 +1,1 @@
-service stop {{ origin.shortName }}
+service {{ origin.shortName }} stop

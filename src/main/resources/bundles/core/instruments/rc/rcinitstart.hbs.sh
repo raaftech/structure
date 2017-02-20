@@ -1,1 +1,1 @@
-service start {{ origin.shortName }}
+service {{ origin.shortName }} start
