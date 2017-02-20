@@ -188,12 +188,6 @@ public abstract class GenericActor extends AbstractVerticle {
             UUID uuid = UUID.fromString(str);
             return true;
         } catch (IllegalArgumentException e) {
-            log.error(e.getMessage());
-            
-            if (Configuration.isTraceModeOn()) {
-                e.printStackTrace();
-            }
-            
         	return false;
         }
     }
