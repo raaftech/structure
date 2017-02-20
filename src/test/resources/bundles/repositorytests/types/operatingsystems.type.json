@@ -17,6 +17,32 @@
   },
   {
     "type": "Type",
+    "name": "Grouping",
+    "desc": "A group of references to things.",
+    "meta": {
+      "uuid": "5f1eb7c5-ec5e-4563-be6a-fc50774fc374",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "b1bc963a-19cc-4518-aecb-a35d028c49e3"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 95
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/grouping.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
     "name": "Component",
     "desc": "An abstract base component.",
     "meta": {
