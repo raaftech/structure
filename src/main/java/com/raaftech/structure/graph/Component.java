@@ -16,7 +16,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.neo4j.annotation.Fetch;
 import org.springframework.data.neo4j.annotation.RelatedTo;
-import org.springframework.data.neo4j.core.GraphDatabase;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -107,7 +106,7 @@ public class Component extends Instance {
     }
 
     public Set<Component> getComponents() {
-        if (components.isEmpty() || getFirstComponent().getName() == null) {
+        if (components == null || components.isEmpty() || getFirstComponent().getName() == null) {
             Transaction tx = Context.getGraphDatabase().beginTx();
             Context.getNeo4jTemplate().fetch(components);
             tx.close();
@@ -196,7 +195,7 @@ public class Component extends Instance {
             if (components.size() > 0) {
                 components.parallelStream().forEach(n -> f.accept(f, n));
             }
-            arguments.add(super.toJson());
+            arguments.add(node.toJson());
         };
 
         // Lambda's can't refer to themselves using their variable name. That means consumeArgsHelper defined
@@ -217,8 +216,8 @@ public class Component extends Instance {
 
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode result = mapper.createObjectNode();
-        ObjectNode kvJson = result.putObject("kv");
-        kv.asMap().forEach((key, val) -> kvJson.put(key, val.toString()));
+        ObjectNode kvJson = result.putObject("data");
+        data.asMap().forEach((key, val) -> kvJson.put(key, val.toString()));
         ObjectNode componentsJson = mapper.createObjectNode();
         if (dimension > 1) {
             getComponents().forEach(component -> {
@@ -246,8 +245,8 @@ public class Component extends Instance {
     public ObjectNode toJson() {
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode result = mapper.createObjectNode();
-        ObjectNode kvJson = result.putObject("kv");
-        kv.asMap().forEach((key, val) -> kvJson.put(key, val.toString()));
+//        ObjectNode kvJson = result.putObject("data");
+        data.asMap().forEach((key, val) -> result.put(key, val.toString()));
         ArrayNode componentsJson = mapper.createArrayNode();
         components.forEach(component -> {
             ObjectNode componentNameUuid = mapper.createObjectNode();
@@ -269,6 +268,7 @@ public class Component extends Instance {
         }
 
         result.put("_nodeType", getNodeType());
+        result.put("_hierarchyPath", getInstanceOf().getHierarchyPath());
 
         return result;
     }
