@@ -1,5 +1,6 @@
 package com.raaftech.structure.graph;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.exceptions.ComponentBuilderException;
@@ -11,6 +12,7 @@ import org.springframework.data.annotation.Transient;
 import org.springframework.data.neo4j.annotation.Fetch;
 import org.springframework.data.neo4j.annotation.RelatedTo;
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -28,6 +30,8 @@ public class Controller extends Instrument {
     private static final String FILELOCATION = "filePath";
     private static final String SUBJECTLOCAL = "subjectIsLocal";
     private static final String TEMPLATE = "template";
+    private static final String TEMPLATEFILE = "templateFile";
+    private static final String TEMPLATEFILE_CONTENT = "content";
     private static final String ARGUMENTS = "arguments";
     private static final String EXTENSION = "extension";
     private static final String RESULTPARSER = "resultParser";
@@ -184,15 +188,15 @@ public class Controller extends Instrument {
     }
 
     public String getArguments() {
-        return (String) kv.getProperty(ARGUMENTS);
+        return (String) data.getProperty(ARGUMENTS);
     }
 
     public String getExtension() {
-        return (String) kv.getProperty(EXTENSION);
+        return (String) data.getProperty(EXTENSION);
     }
 
     public boolean isSubjectIsLocal() {
-        return Boolean.parseBoolean((String)kv.getProperty(SUBJECTLOCAL));
+        return  (boolean) data.getProperty(SUBJECTLOCAL);
     }
 
     public Type getProvidedBy() {
@@ -200,7 +204,17 @@ public class Controller extends Instrument {
     }
 
     public String getTemplateText() {
-        return (String) kv.getProperty(TEMPLATE);
+        String content = null;
+        try {
+            JsonNode templateFile = mapper.readTree((String) file.getProperty(TEMPLATEFILE));
+            content = templateFile.get(TEMPLATEFILE_CONTENT).asText();
+        } catch (IOException e) {
+            if (com.raaftech.structure.base.Configuration.isTraceModeOn()) {
+                e.printStackTrace();
+            }
+            log.error("Error while parsing controller template for \"" + getName() + "\".");
+        }
+        return content;
     }
 
 
