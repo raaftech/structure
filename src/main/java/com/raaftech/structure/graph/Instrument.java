@@ -21,12 +21,12 @@ public abstract class Instrument extends Instance {
         super(json, isa);
     }
 
-    public int getWeight() {
-        return kv.getProperty(WEIGHT) == null ? 0 : Integer.parseInt((String) kv.getProperty(WEIGHT));
+    public double getWeight() {
+        return (double) data.getProperty(WEIGHT);
     }
 
     public String getFilePath() {
-        return (String)kv.getProperty("fileLocation");
+        return (String) data.getProperty("fileLocation");
     }
 
     public Instrument save() {
