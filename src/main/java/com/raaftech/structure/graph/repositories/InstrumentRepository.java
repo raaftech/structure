@@ -94,11 +94,13 @@ public interface InstrumentRepository extends GenericRepository<Instrument> {
                                            @Param("instrumentName") String instrumentName);
 
     // Find all the locally run controllers that apply to a given origin
-    @Query ("MATCH (origin {uuid:{originUuid}})-[:INSTANCE_OF|ISA*1..]->(handled)<-[:HANDLES]-(instrument)<-[:HAS_INSTRUMENT]-(provider), " +
-            "       (startOfGroup {uuid:{startOfGroupUuid}})-[:GROUPS|HAS_COMPONENT*..]->()-[:INSTANCE_OF|ISA*1..]->(provider) " +
-            "RETURN instrument")
-    Set<Controller> findLocalControllers(@Param("originUuid") String originUuid,
-                                         @Param("startOfGroupUuid") String startOfGroupUuid);
+    @Query ("MATCH (origin{uuid:{originUuid}})-[:INSTANCE_OF|ISA*..]->(handled)" +
+                    "<-[:HANDLES]-(instrument)<-[:HAS_INSTRUMENT]-(enabler)" +
+                "MATCH (origin)<-[:HAS_COMPONENT*0..]-()<-[:GROUPS]-(grouping)" +
+                "MATCH (grouping)-[:GROUPS|HAS_COMPONENT*1..]->(instance_of_enabler)-[:INSTANCE_OF|ISA*0..]->(enabler)" +
+                    "-[:HAS_INSTRUMENT]->(instrument)" +
+                "RETURN instrument")
+    Set<Controller> findLocalControllers(@Param("originUuid") String originUuid);
 
     // Find all the remotely run controllers that apply to a given origin
     @Query ("MATCH (origin {uuid:{originUuid}})-[:INSTANCE_OF|ISA*1..]->(handled)<-[:HANDLES]-(instrument)<-[:HAS_INSTRUMENT]-(provider), " +

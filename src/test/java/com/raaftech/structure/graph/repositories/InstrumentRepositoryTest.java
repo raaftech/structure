@@ -341,7 +341,7 @@ public class InstrumentRepositoryTest {
                 .get(0);
         assertNotNull(sshd);
 
-        Set<Controller> controllers = instrumentRepository.findLocalControllers(sshd.getUuid(), host2.getUuid());
+        Set<Controller> controllers = instrumentRepository.findLocalControllers(sshd.getUuid());
         // expect 4 instruments: SshReceiveString, SshReceiveFile, stop, start
         assertEquals(4, controllers.stream().count());
     }
@@ -361,7 +361,7 @@ public class InstrumentRepositoryTest {
                 .filter(c -> "Systemd".equals(c.getName()))
                 .collect(Collectors.toList())
                 .get(0);
-        Set<Controller> controllers = instrumentRepository.findLocalControllers(bash.getUuid(), host1.getUuid());
+        Set<Controller> controllers = instrumentRepository.findRemoteControllers(bash.getUuid(), host1.getUuid());
         // expect 0 instruments
         assertEquals(0, controllers.stream().count());
 
@@ -380,7 +380,7 @@ public class InstrumentRepositoryTest {
                 .build();
         nonLocal.save();
 
-        controllers = instrumentRepository.findLocalControllers(sshd.getUuid(), structure.getUuid());
+        controllers = instrumentRepository.findRemoteControllers(sshd.getUuid(), structure.getUuid());
         // expect 1 instruments, the one we just made
         assertEquals(1, controllers.stream().count());
     }
