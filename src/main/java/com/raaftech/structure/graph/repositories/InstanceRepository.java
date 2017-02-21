@@ -17,6 +17,10 @@ import java.util.Set;
 public interface InstanceRepository extends GenericRepository<Instance> {
 
     @Override
+    @Query ("MATCH (node:Instance {uuid:{uuid}}) return node")
+    Instance findByUuid(@Param("uuid") String uuid);
+
+    @Override
     @Query ("MATCH (node:Instance {name:{name}}) return node")
     Set<Instance> findByName(@Param("name") String name);
 

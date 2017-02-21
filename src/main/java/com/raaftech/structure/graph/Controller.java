@@ -2,18 +2,24 @@ package com.raaftech.structure.graph;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.raaftech.structure.base.Context;
+import com.google.common.io.Files;
+import com.raaftech.structure.base.*;
 import com.raaftech.structure.exceptions.ComponentBuilderException;
 import com.raaftech.structure.graph.repositories.TypeRepository;
+import com.sun.javafx.scene.shape.PathUtils;
 import org.neo4j.graphdb.Direction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.*;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.neo4j.annotation.Fetch;
 import org.springframework.data.neo4j.annotation.RelatedTo;
 
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 import static io.vertx.core.json.Json.mapper;
@@ -191,8 +197,28 @@ public class Controller extends Instrument {
         return (String) data.getProperty(ARGUMENTS);
     }
 
-    public String getExtension() {
-        return (String) data.getProperty(EXTENSION);
+    public Optional<String> getExtension() {
+        final Optional<String> extension;
+        ObjectNode template = null;
+
+        try {
+            template = getTemplateFile();
+        } catch (IOException e) {
+            if (com.raaftech.structure.base.Configuration.isTraceModeOn()) {
+                log.error(e.getMessage());
+                e.printStackTrace();
+            }
+        }
+
+        if (template != null && template.has("path")) {
+            extension = Optional.of(Files.getFileExtension(template.get("path").asText()));
+        } else if (data.hasProperty("extension")) {
+            extension = Optional.of((String) data.getProperty("extension"));
+        } else {
+            extension = Optional.empty();
+        }
+
+        return extension;
     }
 
     public boolean isSubjectIsLocal() {
@@ -203,10 +229,10 @@ public class Controller extends Instrument {
         return providedBy;
     }
 
-    public String getTemplateText() {
+    public String getTemplateContent() {
         String content = null;
         try {
-            JsonNode templateFile = mapper.readTree((String) file.getProperty(TEMPLATEFILE));
+            JsonNode templateFile = getTemplateFile();
             content = templateFile.get(TEMPLATEFILE_CONTENT).asText();
         } catch (IOException e) {
             if (com.raaftech.structure.base.Configuration.isTraceModeOn()) {
@@ -217,15 +243,20 @@ public class Controller extends Instrument {
         return content;
     }
 
+    private ObjectNode getTemplateFile() throws IOException {
+        return (ObjectNode) mapper.readTree((String) file.getProperty(TEMPLATEFILE));
+    }
+
 
     public ObjectNode toJson() {
         ObjectNode json = super.toJson();
         json
                 .put(SUBJECTLOCAL, isSubjectIsLocal())
-                .put(TEMPLATE, getTemplateText());
+                .put(TEMPLATE, getTemplateContent());
 
-        if (getExtension() != null) {
-            json.put(EXTENSION, getExtension());
+        Optional<String> extension = getExtension();
+        if (extension.isPresent()) {
+            json.put(EXTENSION, extension.get());
         }
         if (getArguments() != null) {
             json.put(ARGUMENTS, getArguments());

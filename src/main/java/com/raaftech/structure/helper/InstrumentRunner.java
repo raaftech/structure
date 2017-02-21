@@ -1,6 +1,5 @@
 package com.raaftech.structure.helper;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -190,7 +189,7 @@ public class InstrumentRunner {
                 try {
                     // TODO: create method
                     ObjectNode args = validateAndSelectArguments(controller);
-                    jobList.add(applyTemplate(controller.getTemplateText(), args));
+                    jobList.add(applyTemplate(controller.getTemplateContent(), args));
                 } catch (IOException e) {
                     if (Configuration.isTraceModeOn()) {
                         e.printStackTrace();
@@ -211,7 +210,7 @@ public class InstrumentRunner {
     private String sendFile(Controller sendFileController) throws IOException, IllegalArgumentException {
         ObjectNode arguments = validateAndSelectArguments(sendFileController);
         if (arguments != null) {
-            return applyTemplate(sendFileController.getTemplateText(), arguments);
+            return applyTemplate(sendFileController.getTemplateContent(), arguments);
         } else {
             throw new IllegalArgumentException("Error while checking arguments.");
         }
@@ -336,7 +335,7 @@ public class InstrumentRunner {
     private String sendString(Controller sendStringInstrument) throws IOException {
         ObjectNode arguments = validateAndSelectArguments(sendStringInstrument);
         if (arguments != null) {
-            return applyTemplate(sendStringInstrument.getTemplateText(), arguments);
+            return applyTemplate(sendStringInstrument.getTemplateContent(), arguments);
         } else {
             throw new IllegalArgumentException("Error while checking arguments.");
         }
@@ -352,13 +351,13 @@ public class InstrumentRunner {
      */
     private void createScript(Controller controller, Controller invokableInterpreter) throws IOException {
         ObjectNode context = validateAndSelectArguments(controller);
-        String script = applyTemplate(controller.getTemplateText(), context);
+        String script = applyTemplate(controller.getTemplateContent(), context);
         arguments.put("script", script);
         context = validateAndSelectArguments(invokableInterpreter);
-        script = applyTemplate(invokableInterpreter.getTemplateText(), context);
+        script = applyTemplate(invokableInterpreter.getTemplateContent(), context);
 
         String scriptFilename = origin.getName() + "-" + controller.getName() + "_" + System.currentTimeMillis()
-                + invokableInterpreter.getExtension();
+                + invokableInterpreter.getExtension().orElse(".out");
         FileWriter scriptWriter = createFileWriter(scriptFilename);
         scriptWriter.write(script);
         scriptWriter.close();
