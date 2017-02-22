@@ -4,9 +4,30 @@ const R = require('ramda');
 const fs = require('fs');
 const path = require('path');
 const util = require('util');
+const FuzzyMatching = require('fuzzy-matching');
+const Entity = require('./entity');
 
 const bundleData = JSON.parse(fs.readFileSync(path.join(__dirname, 'output.json')));
-const getConcept = (name) => R.find(R.propEq('shortName', R.toLower(name)), bundleData);
+const initMatcher = (types) => {
+    let concepts = R.map(R.prop('shortName'),types);
+    return new FuzzyMatching(concepts);
+};
+const fuzzyMatcher = initMatcher(bundleData);
+
+const getConcept = (name) => {
+    if(name === 'unknown') return null;
+
+    let match = fuzzyMatcher.get(name);
+    const f = R.ifElse(
+                R.pipe(R.prop('distance'), R.lte(0.5)),
+                R.prop('value'),
+                R.always(name)
+              );
+     //console.log('Requested: %s, Resolved: %s, Distance: %s',name, f(match), JSON.stringify(match));
+     let data = R.find(R.propEq('shortName', f(match)), bundleData);
+     return R.defaultTo(null, data);
+};
+
 const notNil = R.compose(R.not, R.isNil);
 
 const createInstanceData = (instances, templateUuid) => {
@@ -55,42 +76,34 @@ const dnsData = (dns,ip) => {
 
 const osData = (dist, version,hostname,ip) => {
     hostname = R.defaultTo('unknown-'+ip, hostname);
-    if(ip === '172.17.1.35' || ip === '172.17.1.34') {
-        dist = 'aix';
-    }
     let c = getConcept(dist);
 
 	if(R.isNil(c)) {
-	    let generic = createData('f05e325e-1aee-4892-96e4-8bcd6e97c528',dist,
-                                 'OperatingSystem','operatingsystem', hostname, R.defaultTo('unknown', version));
-        return createInstanceData([generic], '1b8e0d72-c23d-4091-a4e6-74d07f1ee6fa');
+	    //TODO handle relations
+	    return new Entity.Entity('Type', 'OperatingSystem', dist,
+	                                    'f05e325e-1aee-4892-96e4-8bcd6e97c528',
+	                                    {hostname: hostname,version: R.defaultTo('unknown', version)});
     }
 
-    let x = createData(c._typeUuid, dist, c.longName, c.shortName, hostname, R.defaultTo('unknown', version));
-    return createInstanceData([x], '1b8e0d72-c23d-4091-a4e6-74d07f1ee6fa');
+    //TODO insert relation to ISA parent
+    return new Entity.Entity('Type', c.name, dist, c._typeUuid,
+                             {hostname: hostname, version: R.defaultTo('unknown', version)});
 };
 
 const interpreterData = (interpreter,ip) => {
     let fn = R.pipe(R.split('/'), R.last);
-    if(ip === '172.17.1.56') {
-        interpreter = 'DosShell';
-    }
     let c = getConcept(fn(interpreter));
 	if(R.isNil(c)) {
-        let generic = createData('d047f415-734c-4bd3-92b9-d68d5521ce69',R.defaultTo('A command or programming language interpreter.', interpreter),
-                                 'Interpreter','interpreter', 'Interpreter', '');
-        return createInstanceData([generic], '2741cc5a-eb45-4532-9a64-c715c07f93bc');
+	    //TODO handle relations
+        return new Entity.Entity('Type', 'Interpreter', R.defaultTo('A command or programming language interpreter.', interpreter),
+                                 'd047f415-734c-4bd3-92b9-d68d5521ce69');
     }
-    let x = createData(c._typeUuid, interpreter, c.longName, c.shortName, c.name, '');
-    return createInstanceData([x], '2741cc5a-eb45-4532-9a64-c715c07f93bc');
+
+    //TODO insert relation to ISA parent
+    return new Entity.Entity('Type', c.name, interpreter, c._typeUuid);
 };
 
 const mgrData = (mgr,ip) => {
-    if(mgr === 'bsdinit') mgr = 'bsdrcinit';
-    if(ip === '172.17.1.56') {
-        mgr = 'Services';
-    }
-
     let c = getConcept(mgr);
 	if(R.isNil(c)) {
         let generic = createData('c3008eec-b454-4ef6-bf7e-0bd92c13d3c3',R.defaultTo('An operating system initialization system.',mgr),
@@ -110,12 +123,7 @@ const daemonData = (sshd, httpd,ip) => {
     let list = [];
     if(notNil(httpd) && httpd !== 'none') list.push(http);
 
-    if(ip === '172.17.1.56') {
-        list.push(createData('65af133b-1a2c-4faa-8d2a-a288eaa4f412', 'A generic SMB/CIFS Server.',
-                             'Generic Samba Server', 'smbserver', 'SmbServer', 'unknown'));
-    } else {
-        if(notNil(sshd) && sshd !== 'none') list.push(ssh);
-    }
+    if(notNil(sshd) && sshd !== 'none') list.push(ssh);
 
     return createInstanceData(list, '54126ca8-3a5e-43b9-a501-98c8d158049d');
 };
@@ -125,6 +133,27 @@ const miscData = () => {
     result.push(createInstanceData([],'39e12352-8305-4b5d-af60-f1725ec458b8'));
     result.push(createInstanceData([],'e8e3c643-a520-4d63-9088-dd27086a1879'));
     return result;
+};
+
+const transform2 = (data, ip, hostname, sshd, httpd) => {
+    let parentMap = {
+        os: 'f05e325e-1aee-4892-96e4-8bcd6e97c528',
+        interpreter: 'd047f415-734c-4bd3-92b9-d68d5521ce69',
+        manager: 'c3008eec-b454-4ef6-bf7e-0bd92c13d3c3',
+        ssh: '7db4a3ef-2d3c-4071-929b-e81505fbd5e2',
+        http: 'b46cb520-caaf-4d26-b59d-58edca723b8d'
+    };
+
+    //TODO create the combining instance
+
+    let os = osData(data.distribution, data.distribution_version,hostname,ip);
+    let interpreter = interpreterDataNEW(data.shell);
+    let manager = mgrDataNEW(data.service_manager, ip);
+    let ip = ipDataNEW(ip, true);
+    let dns = dnsDataNEW(data.nodename, ip);
+    let daemon = daemonData(sshd, httpd, ip);
+
+    return [os,interpreter,manager,ip,dns,daemon];
 };
 
 const transform = (data, ip, hostname,sshd, httpd) => {
@@ -151,7 +180,6 @@ const transform = (data, ip, hostname,sshd, httpd) => {
     return createEventData(R.concat(result, miscData()));
 };
 
-
 module.exports = {
-    transform: transform
+    transform: transform2
 };
