@@ -13,7 +13,7 @@ module.exports = function (Entity) {
 
 //TYPES
   Entity.fetchByUuid = function (uuid, callback) {
-    sendEvent(getEventBusAddress(['repository', 'types']), 'findOne', {node: uuid})
+    sendEvent(getEventBusAddress(['manager', 'entitymanager']), 'read', {labels: ['type'], start: uuid, includeStart: true})
       .then((result) => callback(null, getResultData(result)))
       .catch((ex) => callback(ex));
   };
