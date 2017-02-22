@@ -20,7 +20,7 @@ module.exports = function (Entity) {
 
   Entity.remoteMethod('fetchByUuid', {
     accepts: [{arg: 'uuid', type: 'string', required: true}],
-    returns: {arg: 'result', type: 'object'},
+    returns: {root: true, type: 'object'},
     http: {verb: 'get', path: '/type/:uuid'},
     description: 'Fetch a type entity by uuid'
   });
