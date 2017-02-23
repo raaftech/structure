@@ -41,7 +41,7 @@
                         },
                         "format": {
                             "type": "string",
-                            "enum": ["json", "hbs"]
+                            "enum": ["json", "hbs", "script"]
                         },
                         "encoding": {
                             "type": "string",

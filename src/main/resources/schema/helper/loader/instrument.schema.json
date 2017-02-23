@@ -20,6 +20,9 @@
       "type": "string",
       "pattern": "^controller|marker|parser$"
     },
+    "interpreter": {
+      "type": "string"
+    },
     "resultParser": {
       "type": "string"
     },
