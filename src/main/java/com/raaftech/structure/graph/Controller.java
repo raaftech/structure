@@ -1,6 +1,5 @@
 package com.raaftech.structure.graph;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.io.Files;
 import com.raaftech.structure.base.Context;
@@ -33,11 +32,13 @@ public class Controller extends Instrument {
     private static final String SUBJECTLOCAL = "subjectIsLocal";
     private static final String TEMPLATE = "template";
     private static final String TEMPLATEFILE = "templateFile";
-    private static final String TEMPLATEFILE_CONTENT = "content";
+    private static final String CONTENT = "content";
+    private static final String SCRIPTFILE = "script";
     private static final String ARGUMENTS = "arguments";
     private static final String EXTENSION = "extension";
     private static final String RESULTPARSER = "resultParser";
     private static final String WEIGHT = "weight";
+    private static final String INTERPRETER = "interpreter";
 
     @RelatedTo(type="GIVES_CAPABILITY", direction=Direction.OUTGOING)
     private Type capability;
@@ -134,6 +135,14 @@ public class Controller extends Instrument {
             json.put(WEIGHT, weight);
             return this;
         }
+        public Builder interpreter(Type interpreter) {
+            if (interpreter.isOfType("Interpreter")) {
+                json.put(INTERPRETER, interpreter.getName());
+                return this;
+            } else {
+                throw new IllegalArgumentException("Given type is not an interpreter.");
+            }
+        }
 
         public Controller build() {
             if (!json.has(NAME) || !json.has(DESC) || capability == null || !json.has(FILELOCATION)
@@ -195,18 +204,12 @@ public class Controller extends Instrument {
 
     public Optional<String> getExtension() {
         final Optional<String> extension;
-        ObjectNode template = null;
+        final Optional<ObjectNode> maybeTemplate = getFile(TEMPLATEFILE);
 
-        try {
-            template = getTemplateFile();
-        } catch (IOException e) {
-            if (com.raaftech.structure.base.Configuration.isTraceModeOn()) {
-                log.error(e.getMessage());
-                e.printStackTrace();
-            }
-        }
+        if (!maybeTemplate.isPresent()) { return Optional.empty(); }
 
-        if (template != null && template.has("path")) {
+        final ObjectNode template = maybeTemplate.get();
+        if (template.has("path")) {
             extension = Optional.of(Files.getFileExtension(template.get("path").asText()));
         } else if (data.hasProperty("extension")) {
             extension = Optional.of((String) data.getProperty("extension"));
@@ -225,31 +228,29 @@ public class Controller extends Instrument {
         return providedBy;
     }
 
-    public String getTemplateContent() {
-        String content = null;
-        try {
-            JsonNode templateFile = getTemplateFile();
-            content = templateFile.get(TEMPLATEFILE_CONTENT).asText();
-        } catch (IOException e) {
-            if (com.raaftech.structure.base.Configuration.isTraceModeOn()) {
-                e.printStackTrace();
-            }
-            log.error("Error while parsing controller template for \"" + getName() + "\".");
-        }
-        return content;
+    public Optional<String> getInterpreter() {
+        return data.hasProperty(INTERPRETER) ?
+                Optional.of((String) data.getProperty(INTERPRETER)) :
+                Optional.empty();
     }
 
-    private ObjectNode getTemplateFile() throws IOException {
-        return (ObjectNode) mapper.readTree((String) file.getProperty(TEMPLATEFILE));
+    public Optional<String> getScriptContent() {
+        return getFileContent(SCRIPTFILE);
+    }
+
+    public Optional<String> getTemplateContent() {
+        return getFileContent(TEMPLATEFILE);
     }
 
 
     public ObjectNode toJson() {
         ObjectNode json = super.toJson();
-        json
-                .put(SUBJECTLOCAL, isSubjectIsLocal())
-                .put(TEMPLATE, getTemplateContent());
 
+        json.put(SUBJECTLOCAL, isSubjectIsLocal());
+        Optional<String> templateContent = getTemplateContent();
+        if (templateContent.isPresent()) {
+            json.put(TEMPLATE, templateContent.get());
+        }
         Optional<String> extension = getExtension();
         if (extension.isPresent()) {
             json.put(EXTENSION, extension.get());
