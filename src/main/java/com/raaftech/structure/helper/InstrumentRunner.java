@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.function.BiConsumer;
@@ -44,7 +45,6 @@ public class InstrumentRunner {
     private final Grouping agent;
     private final ObjectNode arguments;
 
-    private final String templateProperty = "template";
     private final String workingDirectory = getCurrentWorkingDirectory() + "/generatedscripts/";
 
     // jobs will contain the system commands eventually sent to the agent with the TaskManager.
@@ -69,7 +69,7 @@ public class InstrumentRunner {
 
         // TODO: Need a different way of finding the structure node.
         this.agent = (Grouping) instanceRepository.findOneByName(Context.selfIdentifier);
-        this.subject = (Grouping) instanceRepository.getStartOfComponentGroup(origin.getUuid());
+        this.subject = instanceRepository.getStartOfComponentGroup(origin.getUuid());
 
         // Did we find the agent?
         if (agent == null) {
@@ -148,36 +148,77 @@ public class InstrumentRunner {
                         + heaviestSendFile.getName() + ":" + matchingReceiveFile.getName());
             }
 
-            Controller invokableInterpreter = instrumentRepository.getInvokableInterpreter(subject.getUuid());
-            if (invokableInterpreter == null) {
-                throw new RuntimeException("Couldn't find an invokable interpreter on subject [" + subject.getUuid() + "]"
-                        + " for task [" + taskId + "].");
+            /*
+            Now we have a way of transporting a script and executing that script, we look whether we have an
+            appropriate interpreter for the script.
+            There are two cases:
+            1) The controller simply creates a command which needs to be execute by an interpreter, in which case
+                we don't care which interpreter, as long as it can execute commands.
+            2) The controller is a script, in which case it has a hard dependency on a particular interpreter.
+            */
+
+            Optional<String> scriptInterpreter = controller.getInterpreter();
+            if (scriptInterpreter.isPresent()) {
+                // The controller is a script. So we expect a "script" file, and an interpreter for the script on the subject.
+                Optional<String> scriptContent = controller.getScriptContent();
+                if (!scriptContent.isPresent()) {
+                    throw new RuntimeException("Controller " + controller.getName() + " should have a script, but none was found.");
+                }
+                Set<Instance> interpreters = subject.getChildrenOfType(scriptInterpreter.get());
+                if (interpreters.size() < 1) {
+                    throw new RuntimeException("Expected interpreter \"" + scriptInterpreter.get() + "\" to be available on subject, " +
+                            "but none was found");
+                }
+
+                try {
+                    constructScriptExecution(scriptContent.get(), controller.getExtension().orElse(".out"));
+                    // send file to subject (assumes sendFile + receiveFile)
+                    jobList.add(sendFile(heaviestSendFile));
+                    // send execution to subject (assumes sendString + receiveString)
+                    jobList.add(sendString(heaviestSendString));
+                } catch (IOException e) {
+                    log.error(e.getMessage());
+
+                    if (Configuration.isTraceModeOn()) {
+                        e.printStackTrace();
+                    }
+
+                    throw new RuntimeException("Error while creating script to transfer for controller " + this.controller.getName()
+                            + ". See logging for more details.");
+                }
             } else {
-                log.debug("Using the following Invokable controller for task [" + taskId + "]: "
-                        + invokableInterpreter.getName() + ".");
+                Controller invokableInterpreter = instrumentRepository.getInvokableInterpreter(subject.getUuid());
+                if (invokableInterpreter == null) {
+                    throw new RuntimeException("Couldn't find an invokable interpreter on subject [" + subject.getUuid() + "]"
+
+                            + " for task [" + taskId + "].");
+                } else {
+                    log.debug("Using the following Invokable controller for task [" + taskId + "]: "
+                            + invokableInterpreter.getName() + ".");
+                }
+                // We now have everything we need: an controller with an origin to run from, the subject, and ways
+                // to send files (the script) and strings (the command to run the script)
+                try {
+                    // create script file, this will put the file metadata in our static arguments
+                    createScript(controller, invokableInterpreter);
+                    // send file to subject (assumes sendFile + receiveFile)
+                    jobList.add(sendFile(heaviestSendFile));
+                    // send execution to subject (assumes sendString + receiveString)
+                    jobList.add(sendString(heaviestSendString));
+
+                } catch (Exception e) {
+                    log.error(e.getMessage());
+
+                    if (Configuration.isTraceModeOn()) {
+                        e.printStackTrace();
+                    }
+
+                    throw new RuntimeException("Error while creating script to transfer for controller " + this.controller.getName()
+                            + ". See logging for more details.");
+                }
             }
 
 
-            // We now have everything we need: an controller with an origin to run from, the subject, and ways
-            // to send files (the script) and strings (the command to run the script)
-            try {
-                // create script file, this will put the file metadata in our static arguments
-                createScript(controller, invokableInterpreter);
-                // send file to subject (assumes sendFile + receiveFile)
-                jobList.add(sendFile(heaviestSendFile));
-                // send execution to subject (assumes sendString + receiveString)
-                jobList.add(sendString(heaviestSendString));
-
-            } catch (Exception e) {
-            	log.error(e.getMessage());
-
-    			if (Configuration.isTraceModeOn()) {
-    				e.printStackTrace();
-    			}
-    			
-                throw new RuntimeException("Error while creating script to transfer for controller " + this.controller.getName()
-                        + ". See logging for more details.");
-            }
         } else {
             // Check if the controller is connected to structure via HAS_INSTRUMENT
             if (instrumentRepository.validateNonLocalInstrument(controller.getUuid(), agent.getUuid(), origin.getUuid()) == null) {
@@ -189,7 +230,7 @@ public class InstrumentRunner {
                 try {
                     // TODO: create method
                     ObjectNode args = validateAndSelectArguments(controller);
-                    jobList.add(applyTemplate(controller.getTemplateContent(), args));
+                    jobList.add(applyTemplate(controller.getTemplateContent().get(), args));
                 } catch (IOException e) {
                     if (Configuration.isTraceModeOn()) {
                         e.printStackTrace();
@@ -197,6 +238,16 @@ public class InstrumentRunner {
                 }
             }
         }
+    }
+
+    private void constructScriptExecution(String script, String extension) throws IOException {
+        // create script file, this will put the file metadata in our static arguments
+        final String scriptFilename = origin.getName() + "-" + controller.getName() + "_" + System.currentTimeMillis()
+                + controller.getExtension().orElse(".out");
+        copyStringToFile(script, scriptFilename);
+
+        arguments.put("payloadDirectory", workingDirectory);
+        arguments.put("payloadFileName", scriptFilename);
     }
 
     /**
@@ -209,8 +260,9 @@ public class InstrumentRunner {
      */
     private String sendFile(Controller sendFileController) throws IOException, IllegalArgumentException {
         ObjectNode arguments = validateAndSelectArguments(sendFileController);
-        if (arguments != null) {
-            return applyTemplate(sendFileController.getTemplateContent(), arguments);
+        final Optional<String> templateContent = sendFileController.getTemplateContent();
+        if (arguments != null && templateContent.isPresent()) {
+            return applyTemplate(templateContent.get(), arguments);
         } else {
             throw new IllegalArgumentException("Error while checking arguments.");
         }
@@ -334,11 +386,18 @@ public class InstrumentRunner {
      */
     private String sendString(Controller sendStringInstrument) throws IOException {
         ObjectNode arguments = validateAndSelectArguments(sendStringInstrument);
-        if (arguments != null) {
-            return applyTemplate(sendStringInstrument.getTemplateContent(), arguments);
+        final Optional<String> templateContent = sendStringInstrument.getTemplateContent();
+        if (arguments != null && templateContent.isPresent()) {
+            return applyTemplate(templateContent.get(), arguments);
         } else {
             throw new IllegalArgumentException("Error while checking arguments.");
         }
+    }
+
+    private void copyStringToFile(String content, String name) throws IOException {
+        FileWriter scriptWriter = createFileWriter(name);
+        scriptWriter.write(content);
+        scriptWriter.close();
     }
 
     /**
@@ -350,17 +409,21 @@ public class InstrumentRunner {
      * @throws IOException Is thrown when we run into trouble parsing the handlebars template.
      */
     private void createScript(Controller controller, Controller invokableInterpreter) throws IOException {
+        final Optional<String> controllerTemplateContent = controller.getTemplateContent();
+        final Optional<String> interpreterTemplateContent = invokableInterpreter.getTemplateContent();
+        if (!(controllerTemplateContent.isPresent() && interpreterTemplateContent.isPresent())) {
+            throw new IllegalArgumentException("Cannot create a script for \"" + controller.getName() + "\" and" +
+                    " \"" + invokableInterpreter.getName() + "\", either one or both are missing a template.");
+        }
         ObjectNode context = validateAndSelectArguments(controller);
-        String script = applyTemplate(controller.getTemplateContent(), context);
+        String script = applyTemplate(controllerTemplateContent.get(), context);
         arguments.put("script", script);
         context = validateAndSelectArguments(invokableInterpreter);
-        script = applyTemplate(invokableInterpreter.getTemplateContent(), context);
+        script = applyTemplate(interpreterTemplateContent.get(), context);
 
         String scriptFilename = origin.getName() + "-" + controller.getName() + "_" + System.currentTimeMillis()
                 + invokableInterpreter.getExtension().orElse(".out");
-        FileWriter scriptWriter = createFileWriter(scriptFilename);
-        scriptWriter.write(script);
-        scriptWriter.close();
+        copyStringToFile(script, scriptFilename);
 
         arguments.put("payloadDirectory", workingDirectory);
         arguments.put("payloadFileName", scriptFilename);
