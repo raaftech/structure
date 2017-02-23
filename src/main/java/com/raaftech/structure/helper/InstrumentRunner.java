@@ -10,6 +10,7 @@ import com.github.jknack.handlebars.Template;
 import com.raaftech.structure.base.Configuration;
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.graph.*;
+import com.raaftech.structure.graph.repositories.GroupingRepository;
 import com.raaftech.structure.graph.repositories.InstanceRepository;
 import com.raaftech.structure.graph.repositories.InstrumentRepository;
 import com.raaftech.structure.helper.classification.ArgumentsToClassificationTreeParser;
@@ -34,8 +35,9 @@ import java.util.stream.Collectors;
  */
 public class InstrumentRunner {
 
-    private final InstanceRepository instanceRepository = Context.getInstanceRepository();
-    private final InstrumentRepository instrumentRepository = Context.getInstrumentRepository();
+    private InstanceRepository instanceRepository = Context.getInstanceRepository();
+    private InstrumentRepository instrumentRepository = Context.getInstrumentRepository();
+    private GroupingRepository groupingRepository = Context.getGroupingRepository();
     private final ObjectMapper mapper = new ObjectMapper();
 
     private final String taskId;
@@ -53,6 +55,12 @@ public class InstrumentRunner {
 
     private final Logger log = LoggerFactory.getLogger(InstrumentRunner.class);
 
+    public InstrumentRunner(InstanceRepository instanceRepository, InstrumentRepository instrumentRepository,
+                            Component origin, Controller controller, ObjectNode arguments, String taskId) {
+        this(origin, controller, arguments, taskId);
+        this.instrumentRepository = instrumentRepository;
+        this.instanceRepository = instanceRepository;
+    }
     /**
      * Construct the InstrumentRunner, do some checks, etc.
      *
@@ -62,6 +70,8 @@ public class InstrumentRunner {
      * @param taskId     The ID used to track progress of this action.
      */
     public InstrumentRunner(Component origin, Controller controller, ObjectNode arguments, String taskId) {
+        instanceRepository = Context.getInstanceRepository();
+        instrumentRepository = Context.getInstrumentRepository();
         this.taskId = taskId;
         this.origin = origin;
         this.controller = controller;
@@ -164,14 +174,14 @@ public class InstrumentRunner {
                 if (!scriptContent.isPresent()) {
                     throw new RuntimeException("Controller " + controller.getName() + " should have a script, but none was found.");
                 }
-                Set<Instance> interpreters = subject.getChildrenOfType(scriptInterpreter.get());
+                Set<Instance> interpreters = groupingRepository.getChildrenOfType(subject.getUuid(), scriptInterpreter.get());
                 if (interpreters.size() < 1) {
                     throw new RuntimeException("Expected interpreter \"" + scriptInterpreter.get() + "\" to be available on subject, " +
                             "but none was found");
                 }
 
                 try {
-                    constructScriptExecution(scriptContent.get(), controller.getExtension().orElse(".out"));
+                    constructScriptExecution(scriptContent.get());
                     // send file to subject (assumes sendFile + receiveFile)
                     jobList.add(sendFile(heaviestSendFile));
                     // send execution to subject (assumes sendString + receiveString)
@@ -240,10 +250,17 @@ public class InstrumentRunner {
         }
     }
 
-    private void constructScriptExecution(String script, String extension) throws IOException {
+    private void constructScriptExecution(String script) throws IOException {
         // create script file, this will put the file metadata in our static arguments
-        final String scriptFilename = origin.getName() + "-" + controller.getName() + "_" + System.currentTimeMillis()
-                + controller.getExtension().orElse(".out");
+        final String scriptFilename = new StringBuilder()
+                .append(origin.getName())
+                .append("-")
+                .append(controller.getName())
+                .append("_")
+                .append(System.currentTimeMillis())
+                .append(".")
+                .append(controller.getExtension().orElse("out"))
+                .toString();
         copyStringToFile(script, scriptFilename);
 
         arguments.put("payloadDirectory", workingDirectory);
