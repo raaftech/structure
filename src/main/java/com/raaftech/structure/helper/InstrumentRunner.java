@@ -7,6 +7,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.jknack.handlebars.Handlebars;
 import com.github.jknack.handlebars.JsonNodeValueResolver;
 import com.github.jknack.handlebars.Template;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
+import com.google.common.collect.ImmutableList;
 import com.raaftech.structure.base.Configuration;
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.graph.*;
@@ -18,6 +21,7 @@ import com.raaftech.structure.helper.classification.tree.RootNode;
 import com.raaftech.structure.helper.handlebars.ReachableAddress;
 import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.json.JsonObject;
+import joptsimple.internal.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,7 +32,11 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 /**
  * Created by Boy van Duuren &lt;boy@raaftech.com&gt;.
@@ -182,10 +190,13 @@ public class InstrumentRunner {
 
                 try {
                     constructScriptExecution(scriptContent.get());
+                    ObjectNode filteredContext = validateAndSelectArguments(controller);
+                    List<String> argumentsToScript = createArgumentList(controller, filteredContext);
+                    log.debug("Found the following arguments: " + argumentsToScript);
                     // send file to subject (assumes sendFile + receiveFile)
                     jobList.add(sendFile(heaviestSendFile));
                     // send execution to subject (assumes sendString + receiveString)
-                    jobList.add(sendString(heaviestSendString));
+                    jobList.add(sendString(heaviestSendString) + " " + Strings.join(argumentsToScript, " "));
                 } catch (IOException e) {
                     log.error(e.getMessage());
 
@@ -286,6 +297,79 @@ public class InstrumentRunner {
     }
 
     /**
+     * Given a controller and a filtered context, create an ordered argument list that can be passed
+     * to a script.
+     * @param controller A controller which will be used as a script, not a command.
+     * @param context The context.
+     * @return An ordered list containing arguments as they can be passed along to a script.
+     */
+    private List<String> createArgumentList(Controller controller, ObjectNode context) {
+        final String pass = "pass";
+        final String index = "index";
+        final String option = "option";
+        Optional<ObjectNode> arguments = controller.getArguments();
+
+        // Check if we have everything we need
+        if (!arguments.isPresent() || context == null) {
+            log.warn("Cannot create an argument list, either no selection defined for controller or context is null");
+            return ImmutableList.of();
+        }
+
+        /*
+        When we filter something from the context that is meant to be passed as an argument to the script, that
+        filter definition needs to have a "pass" object. Filter what we need from the controller's arguments.
+         */
+        BiMap<String, JsonNode> toPass = HashBiMap.create();
+        Iterator<Map.Entry<String, JsonNode>> iter = arguments.get().fields();
+        while (iter.hasNext()) {
+            Map.Entry<String, JsonNode> entry = iter.next();
+            JsonNode selector = entry.getValue();
+            if (selector.has(pass)) {
+                toPass.put(entry.getKey(), selector);
+            }
+        }
+        log.debug("Found the following keys used for argument passing: " + toPass);
+
+        Function<JsonNode, String> propertySelector = selector -> {
+            final String contextKey = toPass.inverse().get(selector);
+            final String contextProperty = selector.get(pass).get("key").asText();
+            final String contextValue = context.get(contextKey).has(contextProperty) ?
+                    context.get(contextKey).get(contextProperty).asText():
+                    "";
+            final String arg;
+
+            if (selector.get(pass).has(option)) {
+                arg = new StringBuilder()
+                .append(selector.get(pass).get(option).asText())
+                        .append(" '")
+                        .append(contextValue)
+                        .append("'")
+                        .toString();
+            } else {
+                arg = Strings.surround(contextValue, '\'', '\'');
+            }
+
+            return arg;
+        };
+
+        return toPass.values().stream()
+                // Options should be passed first, indices should be sorted on numerical value ascending
+                .sorted((s1, s2) -> {
+                    JsonNode pass1 = s1.get(pass);
+                    JsonNode pass2 = s2.get(pass);
+                    if (pass1.has(index) && pass2.has(option)) {
+                        return 1;
+                    } else if (pass1.has(index) && pass2.has(index)) {
+                        return pass1.get(index).asInt() - pass2.get(index).asInt() > 0 ? 1 : -1;
+                    } else {
+                        return 0;
+                    }
+                })
+                .map(propertySelector)
+                .collect(Collectors.toList());
+    }
+
+    /**
      * Given an controller and the context (which consists of the origin, subject, agent and arguments)
      * return a filtered context usable in handlebars templates.
      * @param controller The controller we want to use the context in.
@@ -327,65 +411,53 @@ public class InstrumentRunner {
         // After that, we start filtering using the class. tree, and check for missing
         // data in our filtered context.
         //
-        JsonNode arguments;
-        String tmpArguments = controller.getArguments();
+        Optional<ObjectNode> tmpArguments = controller.getArguments();
         // If we don't even have arguments, return right away.
-        if (tmpArguments == null || tmpArguments.equals("")) {
+        if (!tmpArguments.isPresent()) {
             return null;
         }
 
-        try {
-            // Prepare objects
-            arguments = mapper.readTree(tmpArguments);
-            ArgumentsToClassificationTreeParser.ClassificationTreeObjects classTreeObjects =
-                    ArgumentsToClassificationTreeParser.asTree((ObjectNode)arguments);
-            RootNode<JsonNode> startOfClassificationTree = classTreeObjects.root;
-            // Start classifying
-            startOfClassificationTree.consumeInput(context);
-            result = classTreeObjects.result;
-            // Were there any failures?
-            if (classTreeObjects.failed.size() > 0) {
-                throw new RuntimeException("Validation of arguments " + classTreeObjects.failed.toString()
-                        + " failed while running controller " + this.controller.getName() + " for task [ " + taskId + "].");
-            } else if (classTreeObjects.askUser == null || classTreeObjects.askUser.size() > 0) {
-                // todo: implement this. when we finish calling instruments from UI we'll have a better grasp at what & how
-            } else {
-                // Check for missing arguments, taking default values if provided
-                final String optionalKey = "isOptional";
-                final String defaultValueKey = "defaultValue";
-                Set<String> missingKeys = new HashSet<>();
-                Iterator<Map.Entry<String, JsonNode>> argIter = arguments.fields();
-                while (argIter.hasNext()) {
-                    Map.Entry<String, JsonNode> arg = argIter.next();
-                    String key = arg.getKey();
-                    JsonNode value = arg.getValue();
-                    boolean missing = result.get(key) == null;
-                    if (missing) {
-                        JsonNode data = value.get("value").get(defaultValueKey);
-                        if (data != null) {
-                            result.set(key, data);
-                        } else {
-                            if (value.get(optionalKey) == null || !value.get(optionalKey).asBoolean()) {
-                                missingKeys.add(key);
-                            }
+        // Prepare objects
+        JsonNode arguments = tmpArguments.get();
+        ArgumentsToClassificationTreeParser.ClassificationTreeObjects classTreeObjects =
+                ArgumentsToClassificationTreeParser.asTree((ObjectNode)arguments);
+        RootNode<JsonNode> startOfClassificationTree = classTreeObjects.root;
+        // Start classifying
+        startOfClassificationTree.consumeInput(context);
+        result = classTreeObjects.result;
+        // Were there any failures?
+        if (classTreeObjects.failed.size() > 0) {
+            throw new RuntimeException("Validation of arguments " + classTreeObjects.failed.toString()
+                    + " failed while running controller " + this.controller.getName() + " for task [ " + taskId + "].");
+        } else if (classTreeObjects.askUser == null || classTreeObjects.askUser.size() > 0) {
+            // todo: implement this. when we finish calling instruments from UI we'll have a better grasp at what & how
+        } else {
+            // Check for missing arguments, taking default values if provided
+            final String optionalKey = "isOptional";
+            final String defaultValueKey = "defaultValue";
+            Set<String> missingKeys = new HashSet<>();
+            Iterator<Map.Entry<String, JsonNode>> argIter = arguments.fields();
+            while (argIter.hasNext()) {
+                Map.Entry<String, JsonNode> arg = argIter.next();
+                String key = arg.getKey();
+                JsonNode value = arg.getValue();
+                boolean missing = result.get(key) == null;
+                if (missing) {
+                    JsonNode data = value.get("value").get(defaultValueKey);
+                    if (data != null) {
+                        result.set(key, data);
+                    } else {
+                        if (value.get(optionalKey) == null || !value.get(optionalKey).asBoolean()) {
+                            missingKeys.add(key);
                         }
                     }
                 }
-                if (missingKeys.size() > 0) {
-                    throw new RuntimeException("Missing or invalid parameter(s) " + missingKeys.toString() + " while running controller "
-                            + this.controller.getName() + "->" + controller.getName()
-                            + " for task [" + taskId + "].");
-                }
             }
-        } catch (IOException e) {
-        	log.error(e.getMessage());
-
-			if (Configuration.isTraceModeOn()) {
-				e.printStackTrace();
-			}
-			
-			throw new RuntimeException("Ran into an unknown exception while parsing controller " + this.controller.getName()
-                    +"'s arguments object. See logging for more details.");
+            if (missingKeys.size() > 0) {
+                throw new RuntimeException("Missing or invalid parameter(s) " + missingKeys.toString() + " while running controller "
+                        + this.controller.getName() + "->" + controller.getName()
+                        + " for task [" + taskId + "].");
+            }
         }
 
         log.debug("Selected the following arguments: \n{}", result);
