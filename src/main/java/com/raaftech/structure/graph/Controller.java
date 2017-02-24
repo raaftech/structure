@@ -1,8 +1,9 @@
 package com.raaftech.structure.graph;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.io.Files;
-import com.raaftech.structure.base.Context;
+import com.raaftech.structure.base.*;
 import com.raaftech.structure.exceptions.ComponentBuilderException;
 import com.raaftech.structure.graph.repositories.TypeRepository;
 import org.neo4j.graphdb.Direction;
@@ -14,6 +15,7 @@ import org.springframework.data.neo4j.annotation.RelatedTo;
 
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -198,8 +200,24 @@ public class Controller extends Instrument {
         return this;
     }
 
-    public String getArguments() {
-        return (String) data.getProperty(ARGUMENTS);
+    public Optional<ObjectNode> getArguments() {
+        Optional<ObjectNode> arguments = Optional.empty();
+        // Check if we have an arguments property and it's not an empty string
+        if (
+                data.hasProperty(ARGUMENTS) &&
+                !(Objects.equals("", data.getProperty(ARGUMENTS)))
+        ) {
+            // Try to map it to an ObjectNode and create an Optional of it.
+            try {
+                arguments = Optional.of((ObjectNode) mapper.readTree((String) data.getProperty(ARGUMENTS)));
+            } catch (IOException e) {
+                if (com.raaftech.structure.base.Configuration.isTraceModeOn()) {
+                    log.error("Error while trying to get arguments object from " + getName());
+                    e.printStackTrace();
+                }
+            }
+        }
+        return arguments;
     }
 
     public Optional<String> getExtension() {
@@ -255,8 +273,9 @@ public class Controller extends Instrument {
         if (extension.isPresent()) {
             json.put(EXTENSION, extension.get());
         }
-        if (getArguments() != null) {
-            json.put(ARGUMENTS, getArguments());
+        Optional<ObjectNode> arguments = getArguments();
+        if (arguments.isPresent()) {
+            json.put(ARGUMENTS, arguments.get());
         }
 
         return json;
