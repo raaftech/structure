@@ -12,7 +12,7 @@
             "ec11db91-6973-4285-b018-b461fbb432d7"
           ]
         },
-        "HAS_COMPONENT": {
+        "GROUPS": {
           "direction": "outgoing",
           "uuids": [
             "3206badd-e0b5-48f6-8120-cff5544bf6ba",
@@ -87,7 +87,8 @@
             "510045ca-84f0-4e23-a6de-19de87d2b81e",
             "036e2fba-611f-4363-b422-2de0ad331eed",
             "9dc49989-3c5c-427e-b3a5-bf181e119247",
-            "14cec381-6bb4-4373-b2e0-458ab10dea41"
+            "14cec381-6bb4-4373-b2e0-458ab10dea41",
+            "f8375ef6-aecd-4183-b454-974f37bf0f88"
           ]
         }
       }
@@ -117,6 +118,27 @@
       "shortName": "openssh",
       "longName": "OpenSSH client",
       "ver": "7.4p1-2"
+    }
+  },
+  {
+    "type": "Component",
+    "name": "Bash",
+    "desc": "The bash shell.",
+    "meta": {
+      "uuid": "f8375ef6-aecd-4183-b454-974f37bf0f88",
+      "relations": {
+        "INSTANCE_OF": {
+          "direction": "outgoing",
+          "uuids": [
+            "6d467b28-449f-498c-9ca5-8660f522897f"
+          ]
+        }
+      }
+    },
+    "data": {
+      "shortName": "bash",
+      "longName": "Bash",
+      "ver": "4.4.12(1)-release"
     }
   },
   {

@@ -12,7 +12,7 @@
             "ec11db91-6973-4285-b018-b461fbb432d7"
           ]
         },
-        "HAS_COMPONENT": {
+        "GROUPS": {
           "direction": "outgoing",
           "uuids": [
             "fbba07e4-9839-42fa-8149-b5bad361b16e",
@@ -171,7 +171,8 @@
             "931b50c2-3f83-4f37-9f94-648d29d401a4",
             "a45410ad-4f03-4180-9e8a-47e2a2225595",
             "7e91e877-3acf-4d6c-b36a-2d7f547c17c8",
-            "d182e241-af01-4837-9913-2e6c1afa047c"
+            "d182e241-af01-4837-9913-2e6c1afa047c",
+            "695d4dcb-ead2-480c-a0a8-c3df1fed978e"
           ]
         }
       }
@@ -180,6 +181,27 @@
       "shortName": "arch",
       "longName": "Arch Linux",
       "ver": "rolling"
+    }
+  },
+  {
+    "type": "Component",
+    "name": "Bash",
+    "desc": "The bash shell.",
+    "meta": {
+      "uuid": "695d4dcb-ead2-480c-a0a8-c3df1fed978e",
+      "relations": {
+        "INSTANCE_OF": {
+          "direction": "outgoing",
+          "uuids": [
+            "6d467b28-449f-498c-9ca5-8660f522897f"
+          ]
+        }
+      }
+    },
+    "data": {
+      "shortName": "bash",
+      "longName": "Bash",
+      "ver": "4.4.12(1)-release"
     }
   },
   {
