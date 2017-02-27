@@ -45,9 +45,6 @@
             "pass": {
               "type": "object",
               "additionalProperties": false,
-              "required": [
-                "key"
-              ],
               "properties": {
                 "index": {
                   "type": "number"

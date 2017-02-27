@@ -28,15 +28,11 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 /**
  * Created by Boy van Duuren &lt;boy@raaftech.com&gt;.
@@ -189,7 +185,7 @@ public class InstrumentRunner {
                 }
 
                 try {
-                    constructScriptExecution(scriptContent.get());
+                    createScriptWithoutTemplating(scriptContent.get());
                     ObjectNode filteredContext = validateAndSelectArguments(controller);
                     List<String> argumentsToScript = createArgumentList(controller, filteredContext);
                     log.debug("Found the following arguments: " + argumentsToScript);
@@ -261,7 +257,13 @@ public class InstrumentRunner {
         }
     }
 
-    private void constructScriptExecution(String script) throws IOException {
+
+    /**
+     * Simply create a script file from a string without using a templating engine.
+     * @param script The string to use as content for the script.
+     * @throws IOException Thrown when there are any issues creating the script.
+     */
+    private void createScriptWithoutTemplating(String script) throws IOException {
         // create script file, this will put the file metadata in our static arguments
         final String scriptFilename = new StringBuilder()
                 .append(origin.getName())
@@ -304,9 +306,11 @@ public class InstrumentRunner {
      * @return An ordered list containing arguments as they can be passed along to a script.
      */
     private List<String> createArgumentList(Controller controller, ObjectNode context) {
+        final String key = "key";
         final String pass = "pass";
         final String index = "index";
         final String option = "option";
+
         Optional<ObjectNode> arguments = controller.getArguments();
 
         // Check if we have everything we need
@@ -332,21 +336,39 @@ public class InstrumentRunner {
 
         Function<JsonNode, String> propertySelector = selector -> {
             final String contextKey = toPass.inverse().get(selector);
-            final String contextProperty = selector.get(pass).get("key").asText();
-            final String contextValue = context.get(contextKey).has(contextProperty) ?
-                    context.get(contextKey).get(contextProperty).asText():
-                    "";
-            final String arg;
+            // We may have a particular property we're interested in, or we just want the whole object
+            final Optional<String> contextProperty = selector.get(pass).has(key) ?
+                    Optional.of(selector.get(pass).get(key).asText()) :
+                    Optional.empty();
+            /*
+            If contextProperty is present, get the value of the key we want from the context.
+            If it's not, just cast the whole object to a string and pass that in stead.
+            Also, if we cannot find the object or property at all, it's selection was marked as optional, and we'll
+            just return an empty string.
+              */
+            final String contextValue;
+            if (context.has(contextKey)) {
+                if (contextProperty.isPresent()) {
+                    contextValue = context.get(contextKey).has(contextProperty.get()) ?
+                            context.get(contextKey).get(contextProperty.get()).asText() :
+                            "";
+                } else {
+                    contextValue = context.get(contextKey).toString();
+                }
+            } else {
+                    contextValue = "";
+            }
 
+            final char delim = '\'';
+            final String arg;
             if (selector.get(pass).has(option)) {
                 arg = new StringBuilder()
-                .append(selector.get(pass).get(option).asText())
-                        .append(" '")
-                        .append(contextValue)
-                        .append("'")
+                        .append(Strings.surround(selector.get(pass).get(option).asText(), delim, delim))
+                        .append(" ")
+                        .append(Strings.surround(contextValue, delim, delim))
                         .toString();
             } else {
-                arg = Strings.surround(contextValue, '\'', '\'');
+                arg = Strings.surround(contextValue, delim, delim);
             }
 
             return arg;
