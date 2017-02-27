@@ -11,6 +11,7 @@ angular.module("structureApp")
                   });
                 });
 
+//TODO remove this code when verified that above code replaces it correctly
 //                vertxEventBusService.send('com.raaftech.structure.repository.templates',
 //                    {
 //                        'msgh': 'findOne',
@@ -41,6 +42,7 @@ angular.module("structureApp")
                   });
                 });
 
+//TODO remove this code when verified that above code replaces it correctly
 //                vertxEventBusService.send('com.raaftech.structure.repository.templates',
 //                    {
 //                        'msgh': 'findAllTemplates',
@@ -59,6 +61,7 @@ angular.module("structureApp")
                   });
                 });
 
+//TODO remove this code when verified that above code replaces it correctly
 //                vertxEventBusService.send('com.raaftech.structure.node.template.' + uuid,
 //                    {
 //                        'msgh': 'getSubTemplates',
@@ -72,6 +75,8 @@ angular.module("structureApp")
             getSubTemplates: function(uuid) {
               console.log('getSubTemplates called');
               return getTemplates(uuid);
+
+              //TODO remove this code when verified that above code replaces it correctly
 //                vertxEventBusService.send('com.raaftech.structure.node.template.' + uuid,
 //                    {
 //                        'msgh': 'getSubTemplates',

@@ -9,7 +9,7 @@ angular.module("structureApp")
                     d = Math.floor(d / 16);
                     return (c == 'x' ? r : (r&0x3 | 0x8)).toString(16);
                 });
-                return uuid;
+                return Promise.resolve(uuid);
             }
         }
     });

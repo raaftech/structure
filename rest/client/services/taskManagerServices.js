@@ -51,6 +51,7 @@ angular.module("structureApp")
                   })
                 });
 
+//TODO remove this code when verified that above code replaces it correctly
 //                vertxEventBusService.send('com.raaftech.structure.manager.taskmanager',
 //                    {
 //                        'msgh': 'queueStatus',
@@ -69,6 +70,7 @@ angular.module("structureApp")
                     });
                 });
 
+//TODO remove this code when verified that above code replaces it correctly
 //                vertxEventBusService.send('com.raaftech.structure.manager.taskmanager',
 //                    {
 //                        'msgh': 'cancelJob',
@@ -86,6 +88,7 @@ angular.module("structureApp")
                     });
                 });
 
+//TODO remove this code when verified that above code replaces it correctly
 //                vertxEventBusService.send('com.raaftech.structure.manager.taskmanager',
 //                    {
 //                        'msgh': 'cancelTask',
@@ -102,6 +105,7 @@ angular.module("structureApp")
                     });
                 });
 
+//TODO remove this code when verified that above code replaces it correctly
 //                vertxEventBusService.send('com.raaftech.structure.manager.taskmanager',
 //                    {
 //                        'msgh': 'toggleTaskPause',
@@ -112,6 +116,7 @@ angular.module("structureApp")
             },
 
             liveStatus: function(scope) {
+            //FIXME create replacement code if required
 //                vertxEventBusService.on('com.raaftech.structure.status', function(result) {
 //                    scope.updateState(result);
 //                });
