@@ -348,6 +348,10 @@ public class InstrumentRunner {
               */
             final String contextValue;
             if (context.has(contextKey)) {
+                if (context.get(contextKey).isArray()) {
+                    throw new RuntimeException("While constructing arguments to pass to controller \""
+                            + controller.getName() + "\" we got an array in stead of an object");
+                }
                 if (contextProperty.isPresent()) {
                     contextValue = context.get(contextKey).has(contextProperty.get()) ?
                             context.get(contextKey).get(contextProperty.get()).asText() :
