@@ -16,7 +16,7 @@ module.exports = function (Status) {
     }
 
     //TODO think about if we want to persist status messages
-    //TODO if not, we need a way to auto clean status message resources in memory db
+    //FIXME if not, we need a way to auto clean status message resources in memory db
     function setupStatusChannel() {
         eb.registerHandler('com.raaftech.structure.status', function(error, message) {
             if(error) {

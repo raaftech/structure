@@ -27,13 +27,16 @@ module.exports = function (Entity) {
 
   Entity.fetchByName = function (name, callback) {
     sendEvent(getEventBusAddress(['repository', 'types']), 'findOneByName', {name: name})
-      .then((result) => callback(null, getResultData(result)))
+      .then((result) => {
+        sendEvent(getEventBusAddress(['manager', 'entitymanager']), 'read', {labels: ['type'], start: result.body.result.data.uuid, includeStart: true})
+          .then((result) => callback(null, getResultData(result)));
+      })
       .catch((ex) => callback(ex));
   };
 
   Entity.remoteMethod('fetchByName', {
     accepts: [{arg: 'name', type: 'string', required: true}],
-    returns: {arg: 'result', type: 'object'},
+    returns: {root:true, type: 'object'},
     http: {verb: 'get', path: '/name/:name'},
     description: 'Fetch an entity by name'
   });
@@ -41,7 +44,7 @@ module.exports = function (Entity) {
   Entity.getChildren = function (uuid, callback) {
     let children = function (id) {
       return sendEvent(getEventBusAddress(['node', 'type', id]), 'getSubtypes', {})
-        .then((result) => getResultData(result))
+                .then((result) => getResultData(result));
     };
 
     children(uuid)
@@ -54,14 +57,22 @@ module.exports = function (Entity) {
             });
         }, kids);
         Promise.all(promises)
-          .then((ps) => callback(null, ps));
+          .then((ps) => {
+            console.log(ps);
+            let proms = R.map((item) => {
+                return sendEvent(getEventBusAddress(['manager', 'entitymanager']), 'read', {labels: ['type'], start: item.uuid, includeStart: true})
+                            .then((result) => R.head(getResultData(result)));
+            }, ps);
+            Promise.all(proms)
+                .then(res => callback(null, res));
+          });
       })
       .catch((ex) => callback(ex));
   };
 
   Entity.remoteMethod('getChildren', {
     accepts: [{arg: 'uuid', type: 'string', required: true}],
-    returns: {arg: 'result', type: 'object'},
+    returns: {root:true, type: 'object'},
     http: {verb: 'get', path: '/children/:uuid'},
     description: 'Fetch subtypes for a given uuid'
   });
@@ -76,7 +87,7 @@ module.exports = function (Entity) {
 
   Entity.remoteMethod('lastCreated', {
     accepts: [{arg: 'quantity', type: 'integer', required: true}],
-    returns: {arg: 'result', type: 'object'},
+    returns: {root:true, type: 'object'},
     http: {verb: 'get', path: '/last/:quantity'},
     description: 'Fetch the last created instances'
   });
@@ -89,7 +100,7 @@ module.exports = function (Entity) {
 
   Entity.remoteMethod('fetchInstance', {
     accepts: [{arg: 'uuid', type: 'string', required: true}],
-    returns: {arg: 'result', type: 'object'},
+    returns: {root:true, type: 'object'},
     http: {verb: 'get', path: '/instance/:uuid'},
     description: 'Fetch an instance by uuid'
   });
@@ -102,7 +113,7 @@ module.exports = function (Entity) {
 
   Entity.remoteMethod('createInstance', {
     accepts: [{arg: 'args', type: 'object', required: true}],
-    returns: {arg: 'result', type: 'object'},
+    returns: {root:true, type: 'object'},
     http: {verb: 'post', path: '/instance'},
     description: 'create a new instance'
   });
@@ -116,7 +127,7 @@ module.exports = function (Entity) {
 
     Entity.remoteMethod('getInstruments', {
         accepts: [{arg: 'uuid', type: 'string', required: true}],
-        returns: {arg: 'result', type: 'object'},
+        returns: {root:true, type: 'object'},
         http: {verb: 'get', path: '/instrument/:uuid'},
         description: 'Fetch instruments list by uuid'
     });
@@ -136,7 +147,7 @@ module.exports = function (Entity) {
     Entity.remoteMethod('runInstrument', {
         accepts: [{arg: 'instrumentName', type: 'string', required: true},
             {arg: 'uuid', type: 'string', required: true}],
-        returns: {arg: 'result', type: 'object'},
+        returns: {root:true, type: 'object'},
         http: {verb: 'post', path: '/instrument'},
         description: 'run an instrument by uuid'
     });
