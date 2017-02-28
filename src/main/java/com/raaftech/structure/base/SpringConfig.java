@@ -96,5 +96,8 @@ public class SpringConfig extends Neo4jConfiguration {
     ProfileRepository profileRepository;
 
     @Autowired
+    GroupingRepository groupingRepository;
+
+    @Autowired
     GraphDatabase graphDatabase;
 }

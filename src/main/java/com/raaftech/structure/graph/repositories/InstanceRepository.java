@@ -1,5 +1,6 @@
 package com.raaftech.structure.graph.repositories;
 
+import com.raaftech.structure.graph.Grouping;
 import com.raaftech.structure.graph.Instance;
 import org.springframework.data.neo4j.annotation.Query;
 import org.springframework.data.repository.query.Param;
@@ -16,6 +17,10 @@ import java.util.Set;
 public interface InstanceRepository extends GenericRepository<Instance> {
 
     @Override
+    @Query ("MATCH (node:Instance {uuid:{uuid}}) return node")
+    Instance findByUuid(@Param("uuid") String uuid);
+
+    @Override
     @Query ("MATCH (node:Instance {name:{name}}) return node")
     Set<Instance> findByName(@Param("name") String name);
 
@@ -30,10 +35,9 @@ public interface InstanceRepository extends GenericRepository<Instance> {
     int isOfType(@Param("uuid") String uuid, @Param("type") String type);
 
     // Get the root node of a componental group
-    @Query ("MATCH (instance {uuid:{instanceUuid}})<-[:HAS_COMPONENT*0..]-(start) " +
-            "WHERE NOT (start)<-[:HAS_COMPONENT]-() " +
-            "RETURN start")
-    Instance getStartOfComponentGroup(@Param("instanceUuid") String instanceUuid);
+    @Query ("MATCH (instance {uuid:{instanceUuid}})<-[:HAS_COMPONENT*0..]-()<-[:GROUPS]-(grouping) " +
+            "RETURN grouping")
+    Grouping getStartOfComponentGroup(@Param("instanceUuid") String instanceUuid);
 
     @Query ("MATCH (n:Instance) WHERE NOT (n)-[:INSTANCE_OF]->({name:\"Handler\"}) RETURN n ORDER BY id(n) DESC LIMIT {amount}")
     List<Instance> getNLastCreated(@Param("amount") int amount);

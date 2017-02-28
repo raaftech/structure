@@ -1,47 +1,19 @@
 {
-  "id": "https://repo.raaftech.com/schema/instrument.schema.json#",
   "$schema": "http://json-schema.org/draft-04/schema#",
   "description": "Schema for Structure instrument metadata.",
   "type": "object",
-  "required": [ "name", "desc", "capability", "instrumentType", "appliesTo", "providedBy", "subjectIsLocal" ],
+  "required": [
+    "instrumentType",
+    "subjectIsLocal"
+  ],
   "additionalProperties": false,
   "properties": {
-    "uuid": {
-      "type": "string",
-      "pattern": "^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89aAbB][a-f0-9]{3}-[a-f0-9]{12}$"
-    },
-    "name": {
-      "type": "string"
-    },
-    "desc": {
-      "type": "string"
-    },
     "instrumentType": {
       "type": "string",
       "pattern": "^controller|marker|parser$"
     },
-    "resultParser": {
+    "interpreter": {
       "type": "string"
-    },
-    "templateFile": {
-      "type": "string"
-    },
-    "capability": {
-      "type": "string",
-      "pattern": "^[a-zA-Z]+$"
-    },
-    "providedBy": {
-      "type":"string",
-      "pattern": "^[a-zA-Z0-9]+$"
-    },
-    "appliesTo": {
-      "type": "array",
-      "items": {
-        "type": "string",
-        "pattern": "^[a-zA-Z0-9\\.]+$"
-      },
-      "minItems": 1,
-      "uniqueItems": true
     },
     "subjectIsLocal": {
       "type": "boolean"
@@ -57,7 +29,46 @@
       "type": "object",
       "patternProperties": {
         "^[a-zA-Z0-9]+$": {
+          "additionalProperties": false,
+          "required": [
+            "value"
+          ],
           "properties": {
+            "canBeUserSupplied": {
+              "type": "boolean",
+              "default": "false"
+            },
+            "isOptional": {
+              "type": "boolean",
+              "default": "false"
+            },
+            "pass": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "index": {
+                  "type": "number"
+                },
+                "option": {
+                  "type": "string"
+                },
+                "key": {
+                  "type": "string"
+                }
+              },
+              "oneOf": [
+                {
+                  "required": [
+                    "option"
+                  ]
+                },
+                {
+                  "required": [
+                    "index"
+                  ]
+                }
+              ]
+            },
             "value": {
               "type": "object",
               "properties": {
@@ -70,7 +81,10 @@
                   "pattern": "^\\w+(\\.\\w+)+|string$"
                 },
                 "matches": {
-                  "type": [ "object", "string" ]
+                  "type": [
+                    "object",
+                    "string"
+                  ]
                 },
                 "defaultValue": {
                   "type": "string"
@@ -86,21 +100,14 @@
                   "default": "fail"
                 }
               },
-              "required": [ "from", "type" ]
-            },
-            "canBeUserSupplied": {
-              "type": "boolean",
-              "default": "false"
-            },
-            "isOptional": {
-              "type": "boolean",
-              "default": "false"
+              "required": [
+                "from",
+                "type"
+              ]
             }
-          },
-          "required": [ "value" ]
+          }
         }
-      },
-      "additionalProperties": false
+      }
     }
   }
 }

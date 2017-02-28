@@ -20,7 +20,9 @@ import static io.vertx.core.json.Json.mapper;
  */
 public class ArgumentsToClassificationTreeParser {
 
-    private static JsonNode argumentsSchema = JsonHelper.jsonFromResource("schema/instrument.schema.json")
+    private static final String INSTRUMENTSCHEMA = "schema/helper/loader/instrument.schema.json";
+
+    private static JsonNode argumentsSchema = JsonHelper.jsonFromResource(INSTRUMENTSCHEMA)
             .get("properties")
             .get("arguments");
     private static String typeKey = "_hierarchyPath";
@@ -64,7 +66,7 @@ public class ArgumentsToClassificationTreeParser {
         ClassificationTreeObjects returnObject = new ClassificationTreeObjects();
 
         // Get defaults from the instrument schema. This is not very pretty.
-        JsonNode argumentsKeySchema = JsonHelper.jsonFromResource("schema/instrument.schema.json")
+        JsonNode argumentsKeySchema = JsonHelper.jsonFromResource(INSTRUMENTSCHEMA)
                 .get("properties")
                 .get("arguments")
                 .get("patternProperties")

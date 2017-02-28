@@ -16,3 +16,4 @@ src/main/resources/webroot/js/vendors/
 rest/node_modules/
 rest/client/js/vendors/
 tools/discovery/node_modules/
+cmd/payloads/

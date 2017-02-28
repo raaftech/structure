@@ -3,6 +3,7 @@ package com.raaftech.structure.graph.repositories;
 import com.raaftech.structure.base.Configuration;
 import com.raaftech.structure.base.SpringTestConfig;
 import com.raaftech.structure.graph.Component;
+import com.raaftech.structure.graph.Grouping;
 import com.raaftech.structure.graph.Type;
 import com.raaftech.structure.helper.loader.EvenNaiverLoader;
 import com.raaftech.structure.next.Entity;
@@ -35,6 +36,7 @@ public class InstanceRepositoryTest {
     GraphDatabase graphDatabase;
     private static boolean databaseCreated;
 
+    private static Grouping grouping;
     private static Component parent, child01, child02;
 
     @Before
@@ -57,8 +59,19 @@ public class InstanceRepositoryTest {
                     .filter(node -> node != null)
                     .forEach(Entity::toGraph);
 
+            Type groupingType = typeRepository.findOneByName("Grouping");
+            assertNotNull(groupingType);
             Type parentType = typeRepository.findOneByName("Software");
+            assertNotNull(parentType);
             Type childType = typeRepository.findOneByName("Linux");
+            assertNotNull(childType);
+            if (grouping == null) {
+                grouping = new Grouping(
+                        mapper.createObjectNode()
+                                .put("name", "Grouping")
+                                .put("desc", "A description."),
+                        groupingType);
+            }
             if (parent == null) {
                 parent = new Component(mapper.createObjectNode()
                         .put("name", "parent")
@@ -67,6 +80,7 @@ public class InstanceRepositoryTest {
                         .put("ver", "1")
                         .put("shortName", "parent")
                         .put("longName", "parent"), parentType);
+                grouping.getComponents().add(parent);
             }
             if (child01 == null) {
                 child01 = new Component(mapper.createObjectNode()
@@ -88,7 +102,7 @@ public class InstanceRepositoryTest {
                         .put("longName", "child"), childType);
                 parent.addComponent(child02);
             }
-            parent.save();
+            grouping.save();
 
             tx.success();
             tx.close();
@@ -113,12 +127,12 @@ public class InstanceRepositoryTest {
 
     @Test
     public void getStartOfComponentGroup() throws Exception {
-        assertEquals(parent.getUuid(), instanceRepository.getStartOfComponentGroup(child01.getUuid()).getUuid());
+        assertEquals(grouping.getUuid(), instanceRepository.getStartOfComponentGroup(child01.getUuid()).getUuid());
     }
 
     @Test
     public void getNLastCreated() throws Exception {
-        assertEquals(3, instanceRepository.getNLastCreated(10).size());
+        assertEquals(4, instanceRepository.getNLastCreated(10).size());
     }
 
 }

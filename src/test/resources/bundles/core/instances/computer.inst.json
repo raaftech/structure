@@ -12,7 +12,7 @@
             "ec11db91-6973-4285-b018-b461fbb432d7"
           ]
         },
-        "HAS_COMPONENT": {
+        "GROUPS": {
           "direction": "outgoing",
           "uuids": [
             "fbba07e4-9839-42fa-8149-b5bad361b16e",

@@ -21,12 +21,8 @@ public abstract class Instrument extends Instance {
         super(json, isa);
     }
 
-    public int getWeight() {
-        return kv.getProperty(WEIGHT) == null ? 0 : Integer.parseInt((String) kv.getProperty(WEIGHT));
-    }
-
-    public String getFilePath() {
-        return (String)kv.getProperty("fileLocation");
+    public double getWeight() {
+        return data.hasProperty(WEIGHT) ? (double) data.getProperty(WEIGHT) : 0;
     }
 
     public Instrument save() {
@@ -36,7 +32,6 @@ public abstract class Instrument extends Instance {
 
     public ObjectNode toJson() {
         ObjectNode json = super.toJson();
-        json.put("fileLocation", getFilePath());
         if (getWeight() > 0) {
             json.put("weight", getWeight());
         }

@@ -126,8 +126,7 @@ public class InstanceActor extends NodeActor<Instance> {
                     return response(request, result);
                 }
 
-                Set<Controller> locallyRun = instrumentRepository.findLocalControllers(originUuid,
-                        startOfComponentGroup.getUuid());
+                Set<Controller> locallyRun = instrumentRepository.findLocalControllers(originUuid);
                 Set<Controller> remotelyRun = instrumentRepository.findRemoteControllers(originUuid,
                         structure.getUuid());
 

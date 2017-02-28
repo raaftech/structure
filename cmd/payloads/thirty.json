@@ -1,0 +1,247 @@
+{"entities": [
+  {
+    "type": "Grouping",
+    "name": "Computer",
+    "desc": "A grouping representing a computer.",
+    "meta": {
+      "uuid": "ce584183-8fcd-4723-8733-2e16242c91ea",
+      "relations": {
+        "INSTANCE_OF": {
+          "direction": "outgoing",
+          "uuids": [
+            "ec11db91-6973-4285-b018-b461fbb432d7"
+          ]
+        },
+        "GROUPS": {
+          "direction": "outgoing",
+          "uuids": [
+            "3206badd-e0b5-48f6-8120-cff5544bf6ba",
+            "7c83965a-7bd5-4d60-aa0a-5fe54c3694ae",
+            "8c01980b-0027-46c6-b6fc-d4267f5ba70f"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "type": "Component",
+    "name": "X86Processor",
+    "desc": "An x86-based processor.",
+    "meta": {
+      "uuid": "3206badd-e0b5-48f6-8120-cff5544bf6ba",
+      "relations": {
+        "INSTANCE_OF": {
+          "direction": "outgoing",
+          "uuids": [
+            "4d4971b6-43b3-4c14-a82a-c51d72ba23a5"
+          ]
+        }
+      }
+    },
+    "data": {
+      "cpuClockHz": "1300000",
+      "rev": "1",
+      "cacheSizeKb": 524288,
+      "smtEnabled": true,
+      "bits": 64,
+      "cpuCoreCount": 6
+    }
+  },
+  {
+    "type": "Component",
+    "name": "NVMe",
+    "desc": "An NVMe solid state disk.",
+    "meta": {
+      "uuid": "7c83965a-7bd5-4d60-aa0a-5fe54c3694ae",
+      "relations": {
+        "INSTANCE_OF": {
+          "direction": "outgoing",
+          "uuids": [
+            "7a60ec32-0a9a-40b9-bf1f-d69674d4a233"
+          ]
+        }
+      }
+    },
+    "data": {
+      "memSizeKb": 268435456
+    }
+  },
+  {
+    "type": "Component",
+    "name": "CentOS",
+    "desc": "The CentOS Operating System.",
+    "meta": {
+      "uuid": "8c01980b-0027-46c6-b6fc-d4267f5ba70f",
+      "relations": {
+        "INSTANCE_OF": {
+          "direction": "outgoing",
+          "uuids": [
+            "f3122393-1f4f-4916-96d7-a64b8be5736b"
+          ]
+        },
+        "HAS_COMPONENT": {
+          "direction": "outgoing",
+          "uuids": [
+            "2bdad7f8-bd9a-416b-9716-5d1af5d4ba9c",
+            "0105bffa-44e6-41d6-a57f-da56e9ffbd49",
+            "510045ca-84f0-4e23-a6de-19de87d2b81e",
+            "036e2fba-611f-4363-b422-2de0ad331eed",
+            "9dc49989-3c5c-427e-b3a5-bf181e119247",
+            "14cec381-6bb4-4373-b2e0-458ab10dea41",
+            "f8375ef6-aecd-4183-b454-974f37bf0f88"
+          ]
+        }
+      }
+    },
+    "data": {
+      "shortName": "centos6",
+      "longName": "CentOS 6",
+      "ver": "6"
+    }
+  },
+  {
+    "type": "Component",
+    "name": "OpenSSHServer",
+    "desc": "The OpenSSH server.",
+    "meta": {
+      "uuid": "036e2fba-611f-4363-b422-2de0ad331eed",
+      "relations": {
+        "INSTANCE_OF": {
+          "direction": "outgoing",
+          "uuids": [
+            "7db4a3ef-2d3c-4071-929b-e81505fbd5e2"
+          ]
+        }
+      }
+    },
+    "data": {
+      "shortName": "openssh",
+      "longName": "OpenSSH client",
+      "ver": "7.4p1-2"
+    }
+  },
+  {
+    "type": "Component",
+    "name": "Bash",
+    "desc": "The bash shell.",
+    "meta": {
+      "uuid": "f8375ef6-aecd-4183-b454-974f37bf0f88",
+      "relations": {
+        "INSTANCE_OF": {
+          "direction": "outgoing",
+          "uuids": [
+            "6d467b28-449f-498c-9ca5-8660f522897f"
+          ]
+        }
+      }
+    },
+    "data": {
+      "shortName": "bash",
+      "longName": "Bash",
+      "ver": "4.4.12(1)-release"
+    }
+  },
+  {
+    "type": "Component",
+    "name": "Rc",
+    "desc": "The rc service manager.",
+    "meta": {
+      "uuid": "14cec381-6bb4-4373-b2e0-458ab10dea41",
+      "relations": {
+        "INSTANCE_OF": {
+          "direction": "outgoing",
+          "uuids": [
+            "67d7aa27-e0d9-458c-89fb-82734a8def95"
+          ]
+        }
+      }
+    },
+    "data": {
+      "shortName": "rc",
+      "longName": "Rc Service Manager",
+      "ver": "unknown"
+    }
+  },
+  {
+    "type": "Component",
+    "name": "httpd",
+    "desc": "Apache httpd for CentOS 6.",
+    "meta": {
+      "uuid": "9dc49989-3c5c-427e-b3a5-bf181e119247",
+      "relations": {
+        "INSTANCE_OF": {
+          "direction": "outgoing",
+          "uuids": [
+            "b46cb520-caaf-4d26-b59d-58edca723b8d"
+          ]
+        }
+      }
+    },
+    "data": {
+      "shortName": "httpd",
+      "longName": "Apache httpd.",
+      "ver": "unknown"
+    }
+  },
+  {
+    "type": "Configuration",
+    "name": "Ipv4Listener",
+    "desc": "An IPv4 listener (address and port, can be assigned to a network service).",
+    "meta": {
+      "uuid": "2bdad7f8-bd9a-416b-9716-5d1af5d4ba9c",
+      "relations": {
+        "INSTANCE_OF": {
+          "direction": "outgoing",
+          "uuids": [
+            "5ca95f7a-5175-4e7f-8a61-862e24485af3"
+          ]
+        }
+      }
+    },
+    "data": {
+      "addr": "172.17.1.83",
+      "port": 22
+    }
+  },
+  {
+    "type": "Configuration",
+    "name": "Ipv4Listener",
+    "desc": "An IPv4 listener (address and port, can be assigned to a network service).",
+    "meta": {
+      "uuid": "0105bffa-44e6-41d6-a57f-da56e9ffbd49",
+      "relations": {
+        "INSTANCE_OF": {
+          "direction": "outgoing",
+          "uuids": [
+            "5ca95f7a-5175-4e7f-8a61-862e24485af3"
+          ]
+        }
+      }
+    },
+    "data": {
+      "addr": "172.17.1.83",
+      "port": 80
+    }
+  },
+  {
+    "type": "Configuration",
+    "name": "Ipv4Address",
+    "desc": "An IPv4 address (address only, can be assigned to a network interface).",
+    "meta": {
+      "uuid": "510045ca-84f0-4e23-a6de-19de87d2b81e",
+      "relations": {
+        "INSTANCE_OF": {
+          "direction": "outgoing",
+          "uuids": [
+            "f7fbe917-9d49-4df5-95f6-6e132067a424"
+          ]
+        }
+      }
+    },
+    "data": {
+      "addr": "172.17.1.49",
+      "reachable": true
+    }
+  }
+]
+}

@@ -7,12 +7,13 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.jknack.handlebars.Handlebars;
 import com.github.jknack.handlebars.JsonNodeValueResolver;
 import com.github.jknack.handlebars.Template;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
+import com.google.common.collect.ImmutableList;
 import com.raaftech.structure.base.Configuration;
 import com.raaftech.structure.base.Context;
-import com.raaftech.structure.graph.Component;
-import com.raaftech.structure.graph.Controller;
-import com.raaftech.structure.graph.Instance;
-import com.raaftech.structure.graph.Marker;
+import com.raaftech.structure.graph.*;
+import com.raaftech.structure.graph.repositories.GroupingRepository;
 import com.raaftech.structure.graph.repositories.InstanceRepository;
 import com.raaftech.structure.graph.repositories.InstrumentRepository;
 import com.raaftech.structure.helper.classification.ArgumentsToClassificationTreeParser;
@@ -20,6 +21,7 @@ import com.raaftech.structure.helper.classification.tree.RootNode;
 import com.raaftech.structure.helper.handlebars.ReachableAddress;
 import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.json.JsonObject;
+import joptsimple.internal.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,6 +31,7 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -36,18 +39,18 @@ import java.util.stream.Collectors;
  */
 public class InstrumentRunner {
 
-    private final InstanceRepository instanceRepository = Context.getInstanceRepository();
-    private final InstrumentRepository instrumentRepository = Context.getInstrumentRepository();
+    private InstanceRepository instanceRepository = Context.getInstanceRepository();
+    private InstrumentRepository instrumentRepository = Context.getInstrumentRepository();
+    private GroupingRepository groupingRepository = Context.getGroupingRepository();
     private final ObjectMapper mapper = new ObjectMapper();
 
     private final String taskId;
     private final Component origin;
     private final Controller controller;
-    private final Component subject;
-    private final Component agent;
+    private final Grouping subject;
+    private final Grouping agent;
     private final ObjectNode arguments;
 
-    private final String templateProperty = "template";
     private final String workingDirectory = getCurrentWorkingDirectory() + "/generatedscripts/";
 
     // jobs will contain the system commands eventually sent to the agent with the TaskManager.
@@ -71,8 +74,8 @@ public class InstrumentRunner {
         this.arguments = arguments == null ? mapper.createObjectNode() : arguments;
 
         // TODO: Need a different way of finding the structure node.
-        this.agent = (Component) instanceRepository.findOneByName(Context.selfIdentifier);
-        this.subject = (Component) instanceRepository.getStartOfComponentGroup(origin.getUuid());
+        this.agent = groupingRepository.findOneByName(Context.selfIdentifier);
+        this.subject = instanceRepository.getStartOfComponentGroup(origin.getUuid());
 
         // Did we find the agent?
         if (agent == null) {
@@ -106,7 +109,12 @@ public class InstrumentRunner {
 
             // Because we may have multiple protocols giving us SendString capabilities, we want the "heaviest" one. For
             // instance, SSH is preferred over telnet on all occasions, so that has a heavier weight.
-            Controller heaviestSendString = findHeaviest(sendStringControllers);
+            final Controller heaviestSendString;
+            if (sendStringControllers.size() > 1) {
+                heaviestSendString = findHeaviest(sendStringControllers);
+            } else {
+                heaviestSendString = sendStringControllers.iterator().next();
+            }
             // Get the matching ReceiveString controller on the subject.
             Marker matchingReceiveString = null;
             if (heaviestSendString != null) {
@@ -132,7 +140,12 @@ public class InstrumentRunner {
 
             // Because we may have multiple protocols giving us SendFile capabilities, we want the "heaviest" one. For
             // instance, SSH is preferred over ftp on all occasions, so that has a heavier weight.
-            Controller heaviestSendFile = findHeaviest(sendFileControllers);
+            final Controller heaviestSendFile;
+            if (sendFileControllers.size() > 1) {
+                heaviestSendFile = findHeaviest(sendFileControllers);
+            } else {
+                heaviestSendFile = sendFileControllers.iterator().next();
+            }
             // Get the matching ReceiveFile controller on the subject.
             Marker matchingReceiveFile = null;
             if (heaviestSendFile != null) {
@@ -151,36 +164,80 @@ public class InstrumentRunner {
                         + heaviestSendFile.getName() + ":" + matchingReceiveFile.getName());
             }
 
-            Controller invokableInterpreter = instrumentRepository.getInvokableInterpreter(subject.getUuid());
-            if (invokableInterpreter == null) {
-                throw new RuntimeException("Couldn't find an invokable interpreter on subject [" + subject.getUuid() + "]"
-                        + " for task [" + taskId + "].");
+            /*
+            Now we have a way of transporting a script and executing that script, we look whether we have an
+            appropriate interpreter for the script.
+            There are two cases:
+            1) The controller simply creates a command which needs to be execute by an interpreter, in which case
+                we don't care which interpreter, as long as it can execute commands.
+            2) The controller is a script, in which case it has a hard dependency on a particular interpreter.
+            */
+
+            Optional<String> scriptInterpreter = controller.getInterpreter();
+            if (scriptInterpreter.isPresent()) {
+                // The controller is a script. So we expect a "script" file, and an interpreter for the script on the subject.
+                Optional<String> scriptContent = controller.getScriptContent();
+                if (!scriptContent.isPresent()) {
+                    throw new RuntimeException("Controller " + controller.getName() + " should have a script, but none was found.");
+                }
+                Set<Instance> interpreters = groupingRepository.getChildrenOfType(subject.getUuid(), scriptInterpreter.get());
+                if (interpreters.size() < 1) {
+                    throw new RuntimeException("Expected interpreter \"" + scriptInterpreter.get() + "\" to be available on subject, " +
+                            "but none was found");
+                }
+
+                try {
+                    createScriptWithoutTemplating(scriptContent.get());
+                    ObjectNode filteredContext = validateAndSelectArguments(controller);
+                    List<String> argumentsToScript = createArgumentList(controller, filteredContext);
+                    log.debug("Found the following arguments: " + argumentsToScript);
+                    // send file to subject (assumes sendFile + receiveFile)
+                    jobList.add(sendFile(heaviestSendFile));
+                    // send execution to subject (assumes sendString + receiveString)
+                    jobList.add(sendString(heaviestSendString) + " " + Strings.join(argumentsToScript, " "));
+                } catch (IOException e) {
+                    log.error(e.getMessage());
+
+                    if (Configuration.isTraceModeOn()) {
+                        e.printStackTrace();
+                    }
+
+                    throw new RuntimeException("Error while creating script to transfer for controller " + this.controller.getName()
+                            + ". See logging for more details.");
+                }
             } else {
-                log.debug("Using the following Invokable controller for task [" + taskId + "]: "
-                        + invokableInterpreter.getName() + ".");
+                Controller invokableInterpreter = instrumentRepository.getInvokableInterpreter(subject.getUuid());
+                if (invokableInterpreter == null) {
+                    throw new RuntimeException("Couldn't find an invokable interpreter on subject [" + subject.getUuid() + "]"
+
+                            + " for task [" + taskId + "].");
+                } else {
+                    log.debug("Using the following Invokable controller for task [" + taskId + "]: "
+                            + invokableInterpreter.getName() + ".");
+                }
+                // We now have everything we need: an controller with an origin to run from, the subject, and ways
+                // to send files (the script) and strings (the command to run the script)
+                try {
+                    // create script file, this will put the file metadata in our static arguments
+                    createScript(controller, invokableInterpreter);
+                    // send file to subject (assumes sendFile + receiveFile)
+                    jobList.add(sendFile(heaviestSendFile));
+                    // send execution to subject (assumes sendString + receiveString)
+                    jobList.add(sendString(heaviestSendString));
+
+                } catch (Exception e) {
+                    log.error(e.getMessage());
+
+                    if (Configuration.isTraceModeOn()) {
+                        e.printStackTrace();
+                    }
+
+                    throw new RuntimeException("Error while creating script to transfer for controller " + this.controller.getName()
+                            + ". See logging for more details.");
+                }
             }
 
 
-            // We now have everything we need: an controller with an origin to run from, the subject, and ways
-            // to send files (the script) and strings (the command to run the script)
-            try {
-                // create script file, this will put the file metadata in our static arguments
-                createScript(controller, invokableInterpreter);
-                // send file to subject (assumes sendFile + receiveFile)
-                jobList.add(sendFile(heaviestSendFile));
-                // send execution to subject (assumes sendString + receiveString)
-                jobList.add(sendString(heaviestSendString));
-
-            } catch (Exception e) {
-            	log.error(e.getMessage());
-
-    			if (Configuration.isTraceModeOn()) {
-    				e.printStackTrace();
-    			}
-    			
-                throw new RuntimeException("Error while creating script to transfer for controller " + this.controller.getName()
-                        + ". See logging for more details.");
-            }
         } else {
             // Check if the controller is connected to structure via HAS_INSTRUMENT
             if (instrumentRepository.validateNonLocalInstrument(controller.getUuid(), agent.getUuid(), origin.getUuid()) == null) {
@@ -192,7 +249,7 @@ public class InstrumentRunner {
                 try {
                     // TODO: create method
                     ObjectNode args = validateAndSelectArguments(controller);
-                    jobList.add(applyTemplate(controller.getTemplateText(), args));
+                    jobList.add(applyTemplate(controller.getTemplateContent().get(), args));
                 } catch (IOException e) {
                     if (Configuration.isTraceModeOn()) {
                         e.printStackTrace();
@@ -200,6 +257,29 @@ public class InstrumentRunner {
                 }
             }
         }
+    }
+
+
+    /**
+     * Simply create a script file from a string without using a templating engine.
+     * @param script The string to use as content for the script.
+     * @throws IOException Thrown when there are any issues creating the script.
+     */
+    private void createScriptWithoutTemplating(String script) throws IOException {
+        // create script file, this will put the file metadata in our static arguments
+        final String scriptFilename = new StringBuilder()
+                .append(origin.getName())
+                .append("-")
+                .append(controller.getName())
+                .append("_")
+                .append(System.currentTimeMillis())
+                .append(".")
+                .append(controller.getExtension().orElse("out"))
+                .toString();
+        copyStringToFile(script, scriptFilename);
+
+        arguments.put("payloadDirectory", workingDirectory);
+        arguments.put("payloadFileName", scriptFilename);
     }
 
     /**
@@ -212,11 +292,110 @@ public class InstrumentRunner {
      */
     private String sendFile(Controller sendFileController) throws IOException, IllegalArgumentException {
         ObjectNode arguments = validateAndSelectArguments(sendFileController);
-        if (arguments != null) {
-            return applyTemplate(sendFileController.getTemplateText(), arguments);
+        final Optional<String> templateContent = sendFileController.getTemplateContent();
+        if (arguments != null && templateContent.isPresent()) {
+            return applyTemplate(templateContent.get(), arguments);
         } else {
-            throw new IllegalArgumentException("Error while checking arguments.");
+            throw new IllegalArgumentException("Couldn't create a command to transfer the constructed file" +
+                    " because either we couldn't find a filename in the context, or we don't have a transfer method.");
         }
+    }
+
+    /**
+     * Given a controller and a filtered context, create an ordered argument list that can be passed
+     * to a script.
+     * @param controller A controller which will be used as a script, not a command.
+     * @param context The context.
+     * @return An ordered list containing arguments as they can be passed along to a script.
+     */
+    private List<String> createArgumentList(Controller controller, ObjectNode context) {
+        final String key = "key";
+        final String pass = "pass";
+        final String index = "index";
+        final String option = "option";
+
+        Optional<ObjectNode> arguments = controller.getArguments();
+
+        // Check if we have everything we need
+        if (!arguments.isPresent() || context == null) {
+            log.warn("Cannot create an argument list, either no selection defined for controller or context is null");
+            return ImmutableList.of();
+        }
+
+        /*
+        When we filter something from the context that is meant to be passed as an argument to the script, that
+        filter definition needs to have a "pass" object. Filter what we need from the controller's arguments.
+         */
+        BiMap<String, JsonNode> toPass = HashBiMap.create();
+        Iterator<Map.Entry<String, JsonNode>> iter = arguments.get().fields();
+        while (iter.hasNext()) {
+            Map.Entry<String, JsonNode> entry = iter.next();
+            JsonNode selector = entry.getValue();
+            if (selector.has(pass)) {
+                toPass.put(entry.getKey(), selector);
+            }
+        }
+        log.debug("Found the following keys used for argument passing: " + toPass);
+
+        Function<JsonNode, String> propertySelector = selector -> {
+            final String contextKey = toPass.inverse().get(selector);
+            // We may have a particular property we're interested in, or we just want the whole object
+            final Optional<String> contextProperty = selector.get(pass).has(key) ?
+                    Optional.of(selector.get(pass).get(key).asText()) :
+                    Optional.empty();
+            /*
+            If contextProperty is present, get the value of the key we want from the context.
+            If it's not, just cast the whole object to a string and pass that in stead.
+            Also, if we cannot find the object or property at all, it's selection was marked as optional, and we'll
+            just return an empty string.
+              */
+            final String contextValue;
+            if (context.has(contextKey)) {
+                if (context.get(contextKey).isArray()) {
+                    throw new RuntimeException("While constructing arguments to pass to controller \""
+                            + controller.getName() + "\" we got an array in stead of an object");
+                }
+                if (contextProperty.isPresent()) {
+                    contextValue = context.get(contextKey).has(contextProperty.get()) ?
+                            context.get(contextKey).get(contextProperty.get()).asText() :
+                            "";
+                } else {
+                    contextValue = context.get(contextKey).toString();
+                }
+            } else {
+                    contextValue = "";
+            }
+
+            final char delim = '\'';
+            final String arg;
+            if (selector.get(pass).has(option)) {
+                arg = new StringBuilder()
+                        .append(Strings.surround(selector.get(pass).get(option).asText(), delim, delim))
+                        .append(" ")
+                        .append(Strings.surround(contextValue, delim, delim))
+                        .toString();
+            } else {
+                arg = Strings.surround(contextValue, delim, delim);
+            }
+
+            return arg;
+        };
+
+        return toPass.values().stream()
+                // Options should be passed first, indices should be sorted on numerical value ascending
+                .sorted((s1, s2) -> {
+                    JsonNode pass1 = s1.get(pass);
+                    JsonNode pass2 = s2.get(pass);
+                    if (pass1.has(index) && pass2.has(option)) {
+                        return 1;
+                    } else if (pass1.has(index) && pass2.has(index)) {
+                        return pass1.get(index).asInt() - pass2.get(index).asInt() > 0 ? 1 : -1;
+                    } else {
+                        return 0;
+                    }
+                })
+                .map(propertySelector)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -228,6 +407,14 @@ public class InstrumentRunner {
     private ObjectNode validateAndSelectArguments(Controller controller) {
         // Result will contain the filtered result set of our context
         ObjectNode result;
+
+        Optional<ObjectNode> tmpArguments = controller.getArguments();
+        // If we don't even have arguments, return right away.
+        if (!tmpArguments.isPresent()) {
+            return null;
+        }
+
+        log.debug("Validating and selecting arguments for \"{}\"", controller.getName());
 
         //
         // Create the context we're working with.
@@ -259,66 +446,52 @@ public class InstrumentRunner {
         // After that, we start filtering using the class. tree, and check for missing
         // data in our filtered context.
         //
-        JsonNode arguments;
-        String tmpArguments = controller.getArguments();
-        // If we don't even have arguments, return right away.
-        if (tmpArguments == null) {
-            return null;
-        }
 
-        try {
-            // Prepare objects
-            arguments = mapper.readTree(tmpArguments);
-            ArgumentsToClassificationTreeParser.ClassificationTreeObjects classTreeObjects =
-                    ArgumentsToClassificationTreeParser.asTree((ObjectNode)arguments);
-            RootNode<JsonNode> startOfClassificationTree = classTreeObjects.root;
-            // Start classifying
-            startOfClassificationTree.consumeInput(context);
-            result = classTreeObjects.result;
-            // Were there any failures?
-            if (classTreeObjects.failed.size() > 0) {
-                throw new RuntimeException("Validation of arguments " + classTreeObjects.failed.toString()
-                        + " failed while running controller " + this.controller.getName() + " for task [ " + taskId + "].");
-            } else if (classTreeObjects.askUser == null || classTreeObjects.askUser.size() > 0) {
-                // todo: implement this. when we finish calling instruments from UI we'll have a better grasp at what & how
-            } else {
-                // Check for missing arguments, taking default values if provided
-                final String optionalKey = "isOptional";
-                final String defaultValueKey = "defaultValue";
-                Set<String> missingKeys = new HashSet<>();
-                Iterator<Map.Entry<String, JsonNode>> argIter = arguments.fields();
-                while (argIter.hasNext()) {
-                    Map.Entry<String, JsonNode> arg = argIter.next();
-                    String key = arg.getKey();
-                    JsonNode value = arg.getValue();
-                    boolean missing = result.get(key) == null;
-                    if (missing) {
-                        JsonNode data = value.get("value").get(defaultValueKey);
-                        if (data != null) {
-                            result.set(key, data);
-                        } else {
-                            if (value.get(optionalKey) == null || !value.get(optionalKey).asBoolean()) {
-                                missingKeys.add(key);
-                            }
+        // Prepare objects
+        JsonNode arguments = tmpArguments.get();
+        ArgumentsToClassificationTreeParser.ClassificationTreeObjects classTreeObjects =
+                ArgumentsToClassificationTreeParser.asTree((ObjectNode)arguments);
+        RootNode<JsonNode> startOfClassificationTree = classTreeObjects.root;
+        // Start classifying
+        startOfClassificationTree.consumeInput(context);
+        result = classTreeObjects.result;
+        // Were there any failures?
+        if (classTreeObjects.failed.size() > 0) {
+            throw new RuntimeException("Validation of arguments " + classTreeObjects.failed.toString()
+                    + " failed while running controller " + this.controller.getName() + " for task [ " + taskId + "].");
+        } else if (classTreeObjects.askUser == null || classTreeObjects.askUser.size() > 0) {
+            // todo: implement this. when we finish calling instruments from UI we'll have a better grasp at what & how
+        } else {
+            // Check for missing arguments, taking default values if provided
+            final String optionalKey = "isOptional";
+            final String defaultValueKey = "defaultValue";
+            Set<String> missingKeys = new HashSet<>();
+            Iterator<Map.Entry<String, JsonNode>> argIter = arguments.fields();
+            while (argIter.hasNext()) {
+                Map.Entry<String, JsonNode> arg = argIter.next();
+                String key = arg.getKey();
+                JsonNode value = arg.getValue();
+                boolean missing = result.get(key) == null;
+                if (missing) {
+                    JsonNode data = value.get("value").get(defaultValueKey);
+                    if (data != null) {
+                        result.set(key, data);
+                    } else {
+                        if (value.get(optionalKey) == null || !value.get(optionalKey).asBoolean()) {
+                            missingKeys.add(key);
                         }
                     }
                 }
-                if (missingKeys.size() > 0) {
-                    throw new RuntimeException("Missing or invalid parameter(s) " + missingKeys.toString() + " while running controller "
-                            + this.controller.getName() + "->" + controller.getName()
-                            + " for task [" + taskId + "].");
-                }
             }
-        } catch (IOException e) {
-        	log.error(e.getMessage());
-
-			if (Configuration.isTraceModeOn()) {
-				e.printStackTrace();
-			}
-			
-			throw new RuntimeException("Ran into an unknown exception while parsing controller " + this.controller.getName()
-                    +"'s arguments object. See logging for more details.");
+            if (missingKeys.size() > 0) {
+                throw new RuntimeException("Missing or invalid parameter(s) " + missingKeys.toString() + " while running controller "
+                        + this.controller.getName() + "->" + controller.getName()
+                        + " for task [" + taskId + "].");
+            }
         }
+
+        log.debug("Selected the following arguments: \n{}", result);
+
         return result;
     }
 
@@ -332,11 +505,18 @@ public class InstrumentRunner {
      */
     private String sendString(Controller sendStringInstrument) throws IOException {
         ObjectNode arguments = validateAndSelectArguments(sendStringInstrument);
-        if (arguments != null) {
-            return applyTemplate(sendStringInstrument.getTemplateText(), arguments);
+        final Optional<String> templateContent = sendStringInstrument.getTemplateContent();
+        if (arguments != null && templateContent.isPresent()) {
+            return applyTemplate(templateContent.get(), arguments);
         } else {
             throw new IllegalArgumentException("Error while checking arguments.");
         }
+    }
+
+    private void copyStringToFile(String content, String name) throws IOException {
+        FileWriter scriptWriter = createFileWriter(name);
+        scriptWriter.write(content);
+        scriptWriter.close();
     }
 
     /**
@@ -348,17 +528,21 @@ public class InstrumentRunner {
      * @throws IOException Is thrown when we run into trouble parsing the handlebars template.
      */
     private void createScript(Controller controller, Controller invokableInterpreter) throws IOException {
+        final Optional<String> controllerTemplateContent = controller.getTemplateContent();
+        final Optional<String> interpreterTemplateContent = invokableInterpreter.getTemplateContent();
+        if (!(controllerTemplateContent.isPresent() && interpreterTemplateContent.isPresent())) {
+            throw new IllegalArgumentException("Cannot create a script for \"" + controller.getName() + "\" and" +
+                    " \"" + invokableInterpreter.getName() + "\", either one or both are missing a template.");
+        }
         ObjectNode context = validateAndSelectArguments(controller);
-        String script = applyTemplate(controller.getTemplateText(), context);
+        String script = applyTemplate(controllerTemplateContent.get(), context);
         arguments.put("script", script);
         context = validateAndSelectArguments(invokableInterpreter);
-        script = applyTemplate(invokableInterpreter.getTemplateText(), context);
+        script = applyTemplate(interpreterTemplateContent.get(), context);
 
         String scriptFilename = origin.getName() + "-" + controller.getName() + "_" + System.currentTimeMillis()
-                + invokableInterpreter.getExtension();
-        FileWriter scriptWriter = createFileWriter(scriptFilename);
-        scriptWriter.write(script);
-        scriptWriter.close();
+                + invokableInterpreter.getExtension().orElse(".out");
+        copyStringToFile(script, scriptFilename);
 
         arguments.put("payloadDirectory", workingDirectory);
         arguments.put("payloadFileName", scriptFilename);
@@ -420,15 +604,15 @@ public class InstrumentRunner {
      */
     private Controller findHeaviest(Set<Controller> controllers) {
         // Collect controllers by weight filtering out duplicate weights
-        Map<Integer, Controller> controllersByWeight = controllers.stream()
+        Map<Double, Controller> controllersByWeight = controllers.stream()
                 .collect(Collectors.toMap(
                         controller -> controller.getWeight(),
                         instrument -> instrument,
                         (instrument1, instrument2) -> instrument1));
 
         // Find the maximum weight
-        Optional<Integer> heaviestController = controllersByWeight.keySet().stream()
-                .max(Integer::compare);
+        Optional<Double> heaviestController = controllersByWeight.keySet().stream()
+                .max(Double::compare);
 
         if (heaviestController.isPresent()) {
             return controllersByWeight.get(heaviestController.get());
@@ -456,12 +640,19 @@ public class InstrumentRunner {
                 .resolver(JsonNodeValueResolver.INSTANCE).build();
 
         // Apply the context to our template
-        return compiledTemplate.apply(ctx).trim();
+        String appliedTemplate = compiledTemplate.apply(ctx).trim();
+        log.debug("Mustache returned:\n{}", appliedTemplate);
+        return appliedTemplate;
+    }
+
+    public List<String> getJobs() {
+        return jobList;
     }
 
     // Schedule the actual execution of the controller.
     // This will always be done sequentially, until we implement automatic hierarchical execution of instruments.
     public void startInstrument() {
+        log.debug("Sending execution task of \"" + controller.getName() + "\" to TaskManager.");
         final EventBus eventBus = Context.getVertx().eventBus();
         ObjectNode message = mapper.createObjectNode();
         message.put("msgh", "queueTask");
@@ -475,7 +666,7 @@ public class InstrumentRunner {
                     job.putObject("metadata")
                             .put("originName", origin.getName())
                             .put("originUuid", origin.getUuid())
-                            .put("controller", controller.getName())
+                            .put("instrument", controller.getName())
                             .put("capability", instrumentRepository.getInstrumentCapability(controller.getUuid()).getName());
                     job.put("command", command);
                     jobs.add(job);
