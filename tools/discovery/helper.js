@@ -17,8 +17,6 @@ class Helper {
     }
 
     transform(data, ip, hostname, sshd, httpd) {
-        //TODO create the combining instance
-
         let os = this.osData(data.distribution, data.distribution_version,hostname,ip);
         console.log('found OS');
         let interpreter = this.interpreterData(data.shell);
@@ -32,7 +30,9 @@ class Helper {
         let daemons = this.daemonData(sshd, httpd, ip);
         console.log('done');
 
-        return [os,interpreter,manager,ipd,dns,daemons];
+        //TODO create the combining instance
+        let ents = R.concat([os,interpreter,manager,ipd,dns], daemons);
+        return new Entity.SubGraph(ents);
     }
 
     osData(dist, version, hostname, ip) {
@@ -65,9 +65,9 @@ class Helper {
         let ssh = this.getConcept(sshd);
         let http = this.getConcept(httpd);
         let list = [];
-        if(notNil(httpd) && httpd !== 'none') list.push(http);
+        if(notNil(http) && httpd !== 'none') list.push(http);
 
-        if(notNil(sshd) && sshd !== 'none') list.push(ssh);
+        if(notNil(ssh) && sshd !== 'none') list.push(ssh);
 
         return list;
     }
