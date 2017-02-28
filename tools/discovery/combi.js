@@ -7,7 +7,7 @@ const getUsage = require('command-line-usage');
 const nmapLib = require('./nmapLib');
 const ansibleLib = require('./ansibleLib');
 const vClient = require('./vertxClient');
-const helper = require('./helper');
+const Helper = require('./helper');
 const serviceHelper = require('./serviceHelper');
 
 const optionDefs = [
@@ -33,16 +33,12 @@ const sections = [
 ];
 const usage = getUsage(sections);
 
-const main = () => {
-    if(R.isNil(options.cidr)) {
-        console.log(usage);
-        process.exit(0);
-    }
-
+const main = (db) => {
     let args = R.defaultTo('-p22,80', options.args);
     let cidr = R.defaultTo('localhost', options.cidr);
     const getSshService = serviceHelper.getService('ssh');
     const getHttpService = serviceHelper.getService('http');
+    const helper = new Helper(db);
     let client = new vClient();
 
     nmapLib.nmapScan(cidr, args)
@@ -60,7 +56,7 @@ const main = () => {
                 }, 15000);
                 ansibleLib.setup(item.ip)
                     .then((result) => {
-                        console.log('got ansible result for %s [%s]', nmapResults[index].hostname, nmapResults[index].ip);
+                        //console.log('got ansible result for %s [%s]', nmapResults[index].hostname, nmapResults[index].ip);
                         if(options.verbose) console.log(JSON.stringify(result,undefined,2));
 
                         let buf = helper.transform(result, item.ip, item.hostname,
@@ -83,4 +79,12 @@ const main = () => {
         });
 };
 
-main();
+if(R.isNil(options.cidr)) {
+    console.log(usage);
+    process.exit(0);
+}
+
+let client = new vClient();
+client.getAllTypes().then(typeDB => {
+    main(typeDB);
+});
