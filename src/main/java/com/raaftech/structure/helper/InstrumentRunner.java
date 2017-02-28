@@ -59,12 +59,6 @@ public class InstrumentRunner {
 
     private final Logger log = LoggerFactory.getLogger(InstrumentRunner.class);
 
-    public InstrumentRunner(InstanceRepository instanceRepository, InstrumentRepository instrumentRepository,
-                            Component origin, Controller controller, ObjectNode arguments, String taskId) {
-        this(origin, controller, arguments, taskId);
-        this.instrumentRepository = instrumentRepository;
-        this.instanceRepository = instanceRepository;
-    }
     /**
      * Construct the InstrumentRunner, do some checks, etc.
      *
@@ -74,15 +68,13 @@ public class InstrumentRunner {
      * @param taskId     The ID used to track progress of this action.
      */
     public InstrumentRunner(Component origin, Controller controller, ObjectNode arguments, String taskId) {
-        instanceRepository = Context.getInstanceRepository();
-        instrumentRepository = Context.getInstrumentRepository();
         this.taskId = taskId;
         this.origin = origin;
         this.controller = controller;
         this.arguments = arguments == null ? mapper.createObjectNode() : arguments;
 
         // TODO: Need a different way of finding the structure node.
-        this.agent = (Grouping) instanceRepository.findOneByName(Context.selfIdentifier);
+        this.agent = groupingRepository.findOneByName(Context.selfIdentifier);
         this.subject = instanceRepository.getStartOfComponentGroup(origin.getUuid());
 
         // Did we find the agent?
@@ -117,7 +109,12 @@ public class InstrumentRunner {
 
             // Because we may have multiple protocols giving us SendString capabilities, we want the "heaviest" one. For
             // instance, SSH is preferred over telnet on all occasions, so that has a heavier weight.
-            Controller heaviestSendString = findHeaviest(sendStringControllers);
+            final Controller heaviestSendString;
+            if (sendStringControllers.size() > 1) {
+                heaviestSendString = findHeaviest(sendStringControllers);
+            } else {
+                heaviestSendString = sendStringControllers.iterator().next();
+            }
             // Get the matching ReceiveString controller on the subject.
             Marker matchingReceiveString = null;
             if (heaviestSendString != null) {
@@ -143,7 +140,12 @@ public class InstrumentRunner {
 
             // Because we may have multiple protocols giving us SendFile capabilities, we want the "heaviest" one. For
             // instance, SSH is preferred over ftp on all occasions, so that has a heavier weight.
-            Controller heaviestSendFile = findHeaviest(sendFileControllers);
+            final Controller heaviestSendFile;
+            if (sendFileControllers.size() > 1) {
+                heaviestSendFile = findHeaviest(sendFileControllers);
+            } else {
+                heaviestSendFile = sendFileControllers.iterator().next();
+            }
             // Get the matching ReceiveFile controller on the subject.
             Marker matchingReceiveFile = null;
             if (heaviestSendFile != null) {
@@ -294,7 +296,8 @@ public class InstrumentRunner {
         if (arguments != null && templateContent.isPresent()) {
             return applyTemplate(templateContent.get(), arguments);
         } else {
-            throw new IllegalArgumentException("Error while checking arguments.");
+            throw new IllegalArgumentException("Couldn't create a command to transfer the constructed file" +
+                    " because either we couldn't find a filename in the context, or we don't have a transfer method.");
         }
     }
 
@@ -405,6 +408,12 @@ public class InstrumentRunner {
         // Result will contain the filtered result set of our context
         ObjectNode result;
 
+        Optional<ObjectNode> tmpArguments = controller.getArguments();
+        // If we don't even have arguments, return right away.
+        if (!tmpArguments.isPresent()) {
+            return null;
+        }
+
         log.debug("Validating and selecting arguments for \"{}\"", controller.getName());
 
         //
@@ -437,11 +446,6 @@ public class InstrumentRunner {
         // After that, we start filtering using the class. tree, and check for missing
         // data in our filtered context.
         //
-        Optional<ObjectNode> tmpArguments = controller.getArguments();
-        // If we don't even have arguments, return right away.
-        if (!tmpArguments.isPresent()) {
-            return null;
-        }
 
         // Prepare objects
         JsonNode arguments = tmpArguments.get();
@@ -639,6 +643,10 @@ public class InstrumentRunner {
         String appliedTemplate = compiledTemplate.apply(ctx).trim();
         log.debug("Mustache returned:\n{}", appliedTemplate);
         return appliedTemplate;
+    }
+
+    public List<String> getJobs() {
+        return jobList;
     }
 
     // Schedule the actual execution of the controller.
