@@ -74,12 +74,21 @@ class Helper {
 
     //DnsName
     dnsData(dns, ip) {
-        return this.getConcept('DnsName');
+        let dnsd = this.getConcept('DnsName');
+        dnsd.data = {
+            dnsname: dns
+        };
+        return dnsd;
     }
 
     //Ipv4Address
     ipData(ip, reachable) {
-        return this.getConcept('Ipv4Address');
+        let ipd = this.getConcept('Ipv4Address');
+        ipd.data = {
+            addr: ip,
+            reachable: reachable
+        };
+        return ipd;
     }
 }
 
