@@ -1,7 +1,9 @@
 package com.raaftech.structure.graph;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.raaftech.structure.base.Context;
+import com.google.common.io.Files;
+import com.raaftech.structure.base.*;
 import com.raaftech.structure.exceptions.ComponentBuilderException;
 import com.raaftech.structure.graph.repositories.TypeRepository;
 import org.neo4j.graphdb.Direction;
@@ -11,7 +13,10 @@ import org.springframework.data.annotation.Transient;
 import org.springframework.data.neo4j.annotation.Fetch;
 import org.springframework.data.neo4j.annotation.RelatedTo;
 
+import java.io.IOException;
 import java.util.HashSet;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 import static io.vertx.core.json.Json.mapper;
@@ -28,10 +33,14 @@ public class Controller extends Instrument {
     private static final String FILELOCATION = "filePath";
     private static final String SUBJECTLOCAL = "subjectIsLocal";
     private static final String TEMPLATE = "template";
+    private static final String TEMPLATEFILE = "templateFile";
+    private static final String CONTENT = "content";
+    private static final String SCRIPTFILE = "script";
     private static final String ARGUMENTS = "arguments";
     private static final String EXTENSION = "extension";
     private static final String RESULTPARSER = "resultParser";
     private static final String WEIGHT = "weight";
+    private static final String INTERPRETER = "interpreter";
 
     @RelatedTo(type="GIVES_CAPABILITY", direction=Direction.OUTGOING)
     private Type capability;
@@ -128,6 +137,14 @@ public class Controller extends Instrument {
             json.put(WEIGHT, weight);
             return this;
         }
+        public Builder interpreter(Type interpreter) {
+            if (interpreter.isOfType("Interpreter")) {
+                json.put(INTERPRETER, interpreter.getName());
+                return this;
+            } else {
+                throw new IllegalArgumentException("Given type is not an interpreter.");
+            }
+        }
 
         public Controller build() {
             if (!json.has(NAME) || !json.has(DESC) || capability == null || !json.has(FILELOCATION)
@@ -183,38 +200,82 @@ public class Controller extends Instrument {
         return this;
     }
 
-    public String getArguments() {
-        return (String) kv.getProperty(ARGUMENTS);
+    public Optional<ObjectNode> getArguments() {
+        Optional<ObjectNode> arguments = Optional.empty();
+        // Check if we have an arguments property and it's not an empty string
+        if (
+                data.hasProperty(ARGUMENTS) &&
+                !(Objects.equals("", data.getProperty(ARGUMENTS)))
+        ) {
+            // Try to map it to an ObjectNode and create an Optional of it.
+            try {
+                arguments = Optional.of((ObjectNode) mapper.readTree((String) data.getProperty(ARGUMENTS)));
+            } catch (IOException e) {
+                if (com.raaftech.structure.base.Configuration.isTraceModeOn()) {
+                    log.error("Error while trying to get arguments object from " + getName());
+                    e.printStackTrace();
+                }
+            }
+        }
+        return arguments;
     }
 
-    public String getExtension() {
-        return (String) kv.getProperty(EXTENSION);
+    public Optional<String> getExtension() {
+        final Optional<String> extension;
+        final Optional<ObjectNode> maybeTemplate = getFile(TEMPLATEFILE);
+
+        if (!maybeTemplate.isPresent()) { return Optional.empty(); }
+
+        final ObjectNode template = maybeTemplate.get();
+        if (template.has("path")) {
+            extension = Optional.of(Files.getFileExtension(template.get("path").asText()));
+        } else if (data.hasProperty("extension")) {
+            extension = Optional.of((String) data.getProperty("extension"));
+        } else {
+            extension = Optional.empty();
+        }
+
+        return extension;
     }
 
     public boolean isSubjectIsLocal() {
-        return Boolean.parseBoolean((String)kv.getProperty(SUBJECTLOCAL));
+        return  (boolean) data.getProperty(SUBJECTLOCAL);
     }
 
     public Type getProvidedBy() {
         return providedBy;
     }
 
-    public String getTemplateText() {
-        return (String) kv.getProperty(TEMPLATE);
+    public Optional<String> getInterpreter() {
+        return data.hasProperty(INTERPRETER) ?
+                Optional.of((String) data.getProperty(INTERPRETER)) :
+                Optional.empty();
+    }
+
+    public Optional<String> getScriptContent() {
+        return getFileContent(SCRIPTFILE);
+    }
+
+    public Optional<String> getTemplateContent() {
+        return getFileContent(TEMPLATEFILE);
     }
 
 
     public ObjectNode toJson() {
         ObjectNode json = super.toJson();
-        json
-                .put(SUBJECTLOCAL, isSubjectIsLocal())
-                .put(TEMPLATE, getTemplateText());
 
-        if (getExtension() != null) {
-            json.put(EXTENSION, getExtension());
+        json.put(SUBJECTLOCAL, isSubjectIsLocal());
+        Optional<String> templateContent = getTemplateContent();
+        if (templateContent.isPresent()) {
+            json.put(TEMPLATE, templateContent.get());
         }
-        if (getArguments() != null) {
-            json.put(ARGUMENTS, getArguments());
+        Optional<String> extension = getExtension();
+        if (extension.isPresent()) {
+            json.put(EXTENSION, extension.get());
+        }
+        Optional<ObjectNode> arguments = getArguments();
+        if (arguments.isPresent()) {
+            json.put(ARGUMENTS, arguments.get());
         }
 
         return json;

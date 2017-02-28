@@ -1,6 +1,7 @@
 package com.raaftech.structure.base;
 
 import ch.qos.logback.classic.Level;
+import com.raaftech.structure.graph.Instance;
 import com.raaftech.structure.graph.repositories.InstanceRepository;
 import com.raaftech.structure.graph.repositories.InstrumentRepository;
 import com.raaftech.structure.graph.repositories.ProfileRepository;
@@ -9,6 +10,7 @@ import com.raaftech.structure.helper.loader.EvenNaiverLoader;
 import com.raaftech.structure.manager.SchemaManager;
 import com.raaftech.structure.manager.TaskManager;
 import com.raaftech.structure.next.Entity;
+import com.raaftech.structure.node.InstanceActor;
 import com.raaftech.structure.node.TypeActor;
 import com.raaftech.structure.repository.Instances;
 import com.raaftech.structure.repository.Nodes;
@@ -322,17 +324,14 @@ public class Application {
                 .forEach(vertx::deployVerticle);
         tx.close();
 
-        // TODO: adapt to new split instancenodes
-        /*
         // Deploy InstanceActors.
         log.debug("Deploying InstanceActors..");
         tx = Context.getGraphDatabase().beginTx();
-        for (Instance instanceNode : instanceNodeRepository.findAll()) {
+        for (Instance instanceNode : instanceRepository.findAll()) {
             InstanceActor instanceNodeActor = new InstanceActor(instanceNode);
-            vertx.deployVerticle(instanceNodeActor, new DeploymentOptions().setWorker(true));
+            vertx.deployVerticle(instanceNodeActor);
         }
         tx.close();
-        */
 
         // Wait a second so debug messages are done
         try {

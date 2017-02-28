@@ -262,8 +262,8 @@ public class Template extends Node {
             HashMap<String, String> collect = new HashMap<>();
             entry.entrySet().stream()
             .forEach((e) -> {
-                // If this entry is the kv entry parse it as JSON and get the plugin field
-                if (e.getKey().equals("kv")) {
+                // If this entry is the data entry parse it as JSON and get the plugin field
+                if (e.getKey().equals("data")) {
                     try {
                         collect.put("address", mapper.readTree(e.getValue()).get("plugin").asText());
                     } catch (Exception e1) {

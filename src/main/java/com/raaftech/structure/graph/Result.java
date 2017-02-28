@@ -106,27 +106,27 @@ public class Result extends Instance {
     }
 
     public String getProcess() {
-        return (String) kv.getProperty(PROCESS);
+        return (String) data.getProperty(PROCESS);
     }
 
     public String getStdout() {
-        return (String) kv.getProperty(STDOUT);
+        return (String) data.getProperty(STDOUT);
     }
 
     public String getStderr() {
-        return (String) kv.getProperty(STDERR);
+        return (String) data.getProperty(STDERR);
     }
 
     public long getDate() {
-        return Long.parseLong((String)kv.getProperty(DATECREATED));
+        return Long.parseLong((String) data.getProperty(DATECREATED));
     }
 
     public int getReturnCode() {
-        return Integer.parseInt((String)kv.getProperty(RETURNCODE));
+        return Integer.parseInt((String) data.getProperty(RETURNCODE));
     }
 
     public String getTaskId() {
-        return (String) kv.getProperty(TASKID);
+        return (String) data.getProperty(TASKID);
     }
 
     public Result getNext() {

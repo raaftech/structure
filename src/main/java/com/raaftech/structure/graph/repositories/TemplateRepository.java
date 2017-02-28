@@ -29,6 +29,6 @@ public interface TemplateRepository extends GenericRepository<Template> {
 
     // This query returns all the UUID's + connected Discovery Handler addresses of a Template group
     @Query ("MATCH (start {uuid:{uuid}})-[:HAS_COMPONENT*0..]->(component)-[:COMPONENT_FOR]->()-[:HAS_CAPABILITY]->({name:'Discoverable'})-[:HAS_HANDLER]->(handler) " +
-            "RETURN component.uuid AS uuid, handler.kv AS kv")
+            "RETURN component.uuid AS uuid, handler.data AS data")
     Iterable<Map<String, String>> getDiscoveryData(@Param("uuid") String uuid);
 }

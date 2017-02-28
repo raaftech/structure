@@ -3,17 +3,10 @@ package com.raaftech.structure.graph;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.github.fge.jsonschema.core.exceptions.ProcessingException;
-import com.github.fge.jsonschema.core.report.ProcessingReport;
-import com.github.fge.jsonschema.main.JsonSchema;
-import com.github.fge.jsonschema.main.JsonSchemaFactory;
 import com.raaftech.structure.base.*;
-import com.raaftech.structure.base.Configuration;
-import com.raaftech.structure.exceptions.TypeUnknownException;
 import com.raaftech.structure.graph.repositories.InstanceRepository;
 import com.raaftech.structure.graph.repositories.TypeRepository;
 import com.raaftech.structure.helper.JsonHelper;
-import com.raaftech.structure.helper.JsonSchemaBuilder;
 import com.raaftech.structure.node.InstanceActor;
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.Transaction;
@@ -45,8 +38,6 @@ public abstract class Instance extends Node {
     @RelatedTo(type="INSTANCE_OF", direction=Direction.OUTGOING)
     @Fetch
     protected Type instanceOf;
-
-    protected DynamicProperties kv = new DynamicPropertiesContainer();
 
     @Transient
     protected static final InstanceRepository INSTANCE_REPOSITORY = Context.getInstanceRepository();
@@ -124,7 +115,7 @@ public abstract class Instance extends Node {
     }
 
     public String getProperty(String key) {
-        Object property = kv.getProperty(key);
+        Object property = data.getProperty(key);
         if (property == null) {
             return null;
         } else {
@@ -138,6 +129,9 @@ public abstract class Instance extends Node {
      * @return The Instance setProperties was called on.
      */
     protected Instance setProperties(ObjectNode properties) {
+        if (data == null) {
+            data = new DynamicPropertiesContainer();
+        }
         boolean success = JsonHelper.validateToSchema(instanceOf.getSchema().getAsObjectNode(), properties);
         if (success) {
             // Name and desc are saved already, so we can remove those.
@@ -146,7 +140,7 @@ public abstract class Instance extends Node {
             Iterator<String> iter = properties.fieldNames();
             while (iter.hasNext()) {
                 String key = iter.next();
-                kv.setProperty(key, properties.get(key).asText());
+                data.setProperty(key, properties.get(key).asText());
             }
         } else {
             throw new RuntimeException("Supplied JSON did not match Type schema.");
@@ -164,7 +158,7 @@ public abstract class Instance extends Node {
         Transaction tx = Context.getGraphDatabase().beginTx();
         if (getInstanceOf().getSchema().validateJson(instanceData)) {
             getInstanceOf().getKv().asMap().entrySet().stream()
-                    .forEach(entry -> kv.setProperty(entry.getKey(), entry.getValue()));
+                    .forEach(entry -> data.setProperty(entry.getKey(), entry.getValue()));
             INSTANCE_REPOSITORY.save(this);
             tx.success();
             tx.close();
@@ -190,7 +184,7 @@ public abstract class Instance extends Node {
         result.put("desc", getDesc());
         result.put("uuid", getUuid());
         result.put("_hierarchyPath", getInstanceOf().getHierarchyPath());
-        kv.asMap().forEach((key, val) -> result.put(key, val.toString()));
+        data.asMap().forEach((key, val) -> result.put(key, val.toString()));
 
         return result;
     }

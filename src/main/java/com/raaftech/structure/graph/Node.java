@@ -2,13 +2,17 @@ package com.raaftech.structure.graph;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.neo4j.annotation.GraphId;
 import org.springframework.data.neo4j.annotation.Indexed;
 import org.springframework.data.neo4j.annotation.NodeEntity;
 import org.springframework.data.neo4j.fieldaccess.DynamicProperties;
 import org.springframework.data.neo4j.support.index.IndexType;
 
+import java.io.IOException;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import static io.vertx.core.json.Json.mapper;
@@ -25,6 +29,8 @@ import static io.vertx.core.json.Json.mapper;
 @JsonSerialize(using = NodeSerializer.class)
 @Deprecated
 public abstract class Node {
+
+    private static final Logger log = LoggerFactory.getLogger(Node.class);
 
     @Indexed(indexType = IndexType.FULLTEXT, indexName = "name")
     protected String name;
@@ -149,6 +155,37 @@ public abstract class Node {
                 .put("checksum", checksum);
 
         return json;
+    }
+
+    public Optional<ObjectNode> getFile(String name) {
+        Optional<ObjectNode> maybeFile = Optional.empty();
+        if (file.hasProperty(name)) {
+            try {
+                maybeFile = Optional.of((ObjectNode) mapper.readTree((String) file.getProperty(name)));
+            } catch (IOException e) {
+                if (com.raaftech.structure.base.Configuration.isTraceModeOn()) {
+                    log.error("Error while trying to get file object on {}", getUuid());
+                    e.printStackTrace();
+                }
+            }
+        }
+        return maybeFile;
+    }
+
+    public Optional<String> getFileContent(String name) {
+        final Optional<String> content;
+        final Optional<ObjectNode> file = getFile(name);
+        if (file.isPresent()) {
+            content = Optional.of(
+                    file
+                            .get()
+                            .get("content")
+                            .asText()
+            );
+        } else {
+            content = Optional.empty();
+        }
+        return content;
     }
 
     @Override

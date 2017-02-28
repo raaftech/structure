@@ -99,7 +99,7 @@
         <spring-data-neo4j.version>3.2.1.RELEASE</spring-data-neo4j.version>
         <neo4j.version>2.1.8</neo4j.version>
         <jersey.version>1.9</jersey.version>
-        <handlebars.version>4.0.6</handlebars.version>
+        <handlebars.version>2.2.3</handlebars.version>
 
         <!-- EE api versions -->
         <persistence-api.version>1.0.2</persistence-api.version>
@@ -115,6 +115,7 @@
         <javassist.version>3.21.0-GA</javassist.version>
         <logback.version>1.1.7</logback.version>
         <slf4j.version>1.7.21</slf4j.version>
+        <jmockit.version>1.30</jmockit.version>
 
         <!-- Test component versions -->
         <junit.version>4.12</junit.version>
@@ -294,6 +295,12 @@
         </dependency>
 
         <!--Test dependencies -->
+        <dependency>
+            <groupId>org.jmockit</groupId>
+            <artifactId>jmockit</artifactId>
+            <version>${jmockit.version}</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
