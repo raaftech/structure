@@ -52,6 +52,29 @@ public class Types extends Repository<Type> {
         };
     }
 
+    public MessageHandler getAll() {
+        return new MessageHandler() {
+            @Override
+            public JsonNode exec(JsonNode request) {
+                ObjectNode result = mapper.createObjectNode();
+                ArrayNode data = result.putArray("data");
+                Transaction tx = Context.getGraphDatabase().beginTx();
+                repository.getAll().stream()
+                        .map(mapper::valueToTree)
+                        .map(obj -> (ObjectNode) obj)
+                        .forEach(data::add);
+                tx.close();
+
+                return response(request, result);
+            }
+
+            @Override
+            public JsonNode help(JsonNode request) {
+                return null;
+            }
+        };
+    }
+
     public MessageHandler findAllTypeGlyphs() {
         return new MessageHandler() {
             @Override
