@@ -85,7 +85,8 @@ class SubGraph {
                 if(typeof(entities) === 'object') {
                     if(entities instanceof Date) {
                     } else {
-                        this.entitySet = clone(entities);
+                        //this.entitySet = clone(entities);
+                        this.entitySet[entities.meta.uuid] = clone(entities);
                     }
                 }
             }
