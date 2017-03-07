@@ -57,14 +57,13 @@ const main = (db) => {
                 ansibleLib.setup(item.ip)
                     .then((result) => {
                         //console.log('got ansible result for %s [%s]', nmapResults[index].hostname, nmapResults[index].ip);
-                        console.log(nmapResults[index]);
-                        if(options.verbose) console.log(JSON.stringify(result,undefined,2));
+                        //if(options.verbose) console.log(JSON.stringify(result,undefined,2));
 
                         let subGraph = helper.transform(result, item.ip,
                                                    getSshService(nmapResults[index]),
                                                    getHttpService(nmapResults[index]));
 
-                        if(options.verbose) console.log(JSON.stringify(subGraph.toList(), undefined, 2));
+                        if(options.verbose) Helper.prettyPrint(subGraph);
                         client.send(subGraph.toList());
                         console.log('Processing result %s of %s for %s [%s]', index, count, nmapResults[index].hostname, nmapResults[index].ip);
                         console.log('------');
