@@ -57,9 +57,10 @@ const main = (db) => {
                 ansibleLib.setup(item.ip)
                     .then((result) => {
                         //console.log('got ansible result for %s [%s]', nmapResults[index].hostname, nmapResults[index].ip);
+                        console.log(nmapResults[index]);
                         if(options.verbose) console.log(JSON.stringify(result,undefined,2));
 
-                        let subGraph = helper.transform(result, item.ip, item.hostname,
+                        let subGraph = helper.transform(result, item.ip,
                                                    getSshService(nmapResults[index]),
                                                    getHttpService(nmapResults[index]));
 
@@ -69,7 +70,8 @@ const main = (db) => {
                         console.log('------');
                         doneCalled = true;
                         done();
-                    });
+                    })
+                    .catch(ex => console.log(ex));
             }, function(err) {
                 if(err) console.log('Ended with an error: '+err);
                 console.log('Done running discovery of %s', cidr);

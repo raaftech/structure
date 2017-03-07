@@ -13,16 +13,16 @@ class Helper {
 
     getConcept(name) {
         if(name === 'unknown') return null;
-        return R.defaultTo(null, this.json2Entity(this.db.match(name)));
+        return R.defaultTo(null, Helper.json2Entity(this.db.match(name)));
     }
 
-    transform(data, ip, hostname, sshd, httpd) {
+    transform(data, ip, sshd, httpd) {
         let root = this.createRootNode();
         let rootHasComponentRelation = root.relationCreate('HAS_COMPONENT', 'outgoing');
         let rootHasConfigurationRelation = root.relationCreate('HAS_CONFIGURATION', 'outgoing');
 
         //Operating System
-        let os = this.osData(data.distribution, data.distribution_version,hostname,ip);
+        let os = this.osData(data.distribution, data.distribution_version);
         rootHasComponentRelation.addEntity(os);
         //Interpreter
         let interpreter = this.interpreterData(data.shell);
@@ -42,9 +42,8 @@ class Helper {
         return new Entity.SubGraph(root);
     }
 
-    osData(dist, version, hostname, ip) {
-        hostname = R.defaultTo('unknown-'+ip, hostname);
-
+    osData(dist, version) {
+        console.log('OS: '+dist+' , version: '+version);
         let c = this.getConcept(dist);
         if(R.isNil(c)) {
             let gc = this.getConcept('OperatingSystem');
@@ -52,10 +51,22 @@ class Helper {
             return this.createInstance(gc,'OperatingSystem');
         }
         c.type = 'Component';
+        c.data = {
+            name: c.name,
+            desc: c.desc,
+            ver: version,
+            shortName: c.name,
+            longName: c.name
+        };
         return this.createInstance(c, dist);
     }
 
     interpreterData(interpreter) {
+        if(R.isNil(interpreter)) {
+            let gc = this.getConcept('Interpreter');
+            gc.type = 'Component';
+            return this.createInstance(gc, 'Interpreter');
+        }
         let fn = R.pipe(R.split('/'), R.last);
         let c = this.getConcept(fn(interpreter));
         if(R.isNil(c)) {
@@ -99,7 +110,7 @@ class Helper {
         let dnsd = this.getConcept('DnsName');
         dnsd.type = 'Configuration';
         dnsd.data = {
-            dnsname: dns
+            dnsname: R.defaultTo(ip, dns)
         };
         return this.createInstance(dnsd, 'DnsName');
     }
@@ -115,7 +126,7 @@ class Helper {
         return this.createInstance(ipd,'Ipv4Address');
     }
 
-    json2Entity(json) {
+    static json2Entity(json) {
         if(R.isNil(json)) return null;
 
         return new Entity.Entity(
@@ -145,14 +156,5 @@ class Helper {
         return computer;
     }
 }
-
-const createEventData = (dataList) => {
-    return {
-        args: {
-            instancedata: dataList
-        },
-        msgh: 'instantiateDiscoveredComputer'
-    };
-};
 
 module.exports = Helper;
