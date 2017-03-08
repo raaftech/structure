@@ -6,6 +6,7 @@ const TypeDB = require('./TypeDB');
 
 const busUrl = R.defaultTo('http://localhost:8080/eventbus', process.env.EVENTBUS);
 const statusChannel = 'com.raaftech.structure.manager.discoverymanager';
+const entityManagerChannel = 'com.raaftech.structure.manager.entitymanager';
 
 class vClient {
     constructor() {
@@ -33,6 +34,16 @@ class vClient {
 
     send(message) {
         this.eb.send(statusChannel, message);
+    }
+
+    createGraph(message) {
+        let self = this;
+        return new Promise((resolve, reject) => {
+            self.eb.send(entityManagerChannel, message, (error, result) => {
+                if(error) reject(error);
+                else resolve(result);
+            });
+        });
     }
 
     close() {

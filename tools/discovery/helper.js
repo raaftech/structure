@@ -4,6 +4,7 @@ const R = require('ramda');
 const util = require('util');
 const Entity = require('./entity');
 const treeify = require('treeify');
+const uuidV4 = require('uuid');
 
 const notNil = R.compose(R.not, R.isNil);
 
@@ -14,7 +15,12 @@ class Helper {
 
     getConcept(name) {
         if(name === 'unknown') return null;
-        return R.defaultTo(null, Helper.json2Entity(this.db.match(name)));
+        return R.defaultTo(null, Helper.json2Entity(this.db.match(name),true));
+    }
+
+    getType(name) {
+        if(name === 'unknown') return null;
+        return R.defaultTo(null, Helper.json2Entity(this.db.match(name), false));
     }
 
     transform(data, ip, sshd, httpd) {
@@ -215,7 +221,7 @@ class Helper {
 
 
     createInstance(entity, instanceName) {
-        let i = this.getConcept(instanceName);
+        let i = this.getType(instanceName);
         let rel = entity.relationCreate('INSTANCE_OF', 'outgoing');
         rel.addEntity(i);
         return entity;
@@ -225,18 +231,22 @@ class Helper {
         let computer = this.getConcept('Computer');
         computer.type = 'Grouping';
         let rel = computer.relationCreate('INSTANCE_OF', 'outgoing');
-        rel.addEntity(this.getConcept('Computer'));
+        rel.addEntity(this.getType('Computer'));
         return computer;
     }
 
-    static json2Entity(json) {
+    static json2Entity(json, generateUuid) {
         if(R.isNil(json)) return null;
+        let defaultUuid = R.defaultTo(null, json.meta.uuid);
+        if(generateUuid) {
+            defaultUuid = uuidV4();
+        }
 
         return new Entity.Entity(
             R.defaultTo(null, json.type),
             R.defaultTo(null, json.name),
             R.defaultTo(null, json.desc),
-            R.defaultTo(null, json.meta.uuid),
+            defaultUuid,
             R.defaultTo(null, R.clone(json.data)),
             R.defaultTo(null, R.clone(json.meta.relations)),
             R.defaultTo(null, R.clone(json.file))
