@@ -25,27 +25,30 @@ class Helper {
 
     transform(data, ip, sshd, httpd) {
         let root = this.createRootNode();
-        let rootHasComponentRelation = root.relationCreate('HAS_COMPONENT', 'outgoing');
-        let rootHasConfigurationRelation = root.relationCreate('HAS_CONFIGURATION', 'outgoing');
+        let rootRelation = root.relationCreate('HAS_COMPONENT', 'outgoing');
 
         //Operating System
         let os = this.osData(data.distribution, data.distribution_version);
-        rootHasComponentRelation.addEntity(os);
+        rootRelation.addEntity(os);
+        let osHasComponentRelation = os.relationCreate('HAS_COMPONENT', 'outgoing');
+        let osHasConfigurationRelation = os.relationCreate('HAS_CONFIGURATION', 'outgoing');
+
+
         //Interpreter
         let interpreter = this.interpreterData(data.shell);
-        rootHasComponentRelation.addEntity(interpreter);
+        osHasComponentRelation.addEntity(interpreter);
         //ServiceManager
         let manager = this.mgrData(data.service_manager);
-        rootHasComponentRelation.addEntity(manager);
+        osHasComponentRelation.addEntity(manager);
         //Ip data
         let ipd = this.ipData(ip, true);
-        rootHasConfigurationRelation.addEntity(ipd);
+        osHasConfigurationRelation.addEntity(ipd);
         //DNS
         let dns = this.dnsData(data.nodename, ip);
-        rootHasConfigurationRelation.addEntity(dns);
+        osHasConfigurationRelation.addEntity(dns);
         //Daemons (http, ssh only atm)
         let daemonList = this.daemonData(sshd.service, httpd.service);
-        R.forEach(item => rootHasComponentRelation.addEntity(item), daemonList);
+        R.forEach(item => osHasComponentRelation.addEntity(item), daemonList);
         return new Entity.SubGraph(root);
     }
 
