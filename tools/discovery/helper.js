@@ -13,7 +13,7 @@ class Helper {
         this.db = db;
     }
 
-    getConcept(name) {
+    getInstance(name) {
         if(name === 'unknown') return null;
         return R.defaultTo(null, Helper.json2Entity(this.db.match(name),true));
     }
@@ -53,9 +53,9 @@ class Helper {
     }
 
     osData(dist, version) {
-        let c = this.getConcept(dist);
+        let c = this.getInstance(dist);
         if(R.isNil(c)) {
-            let gc = this.getConcept('OperatingSystem');
+            let gc = this.getInstance('OperatingSystem');
             gc.type = 'Component';
             gc.data = {
                 name: gc.name,
@@ -79,7 +79,7 @@ class Helper {
 
     interpreterData(interpreter) {
         if(R.isNil(interpreter)) {
-            let gc = this.getConcept('Interpreter');
+            let gc = this.getInstance('Interpreter');
             gc.type = 'Component';
             gc.data = {
                 name: gc.name,
@@ -91,9 +91,9 @@ class Helper {
             return this.createInstance(gc, 'Interpreter');
         }
         let fn = R.pipe(R.split('/'), R.last);
-        let c = this.getConcept(fn(interpreter));
+        let c = this.getInstance(fn(interpreter));
         if(R.isNil(c)) {
-            let gc = this.getConcept('Interpreter');
+            let gc = this.getInstance('Interpreter');
             gc.type = 'Component';
             gc.data = {
                 name: gc.name,
@@ -116,9 +116,9 @@ class Helper {
     }
 
     mgrData(mgr) {
-        let c = this.getConcept(mgr);
+        let c = this.getInstance(mgr);
         if(R.isNil(c)) {
-            let gc = this.getConcept('ServiceManager');
+            let gc = this.getInstance('ServiceManager');
             gc.type = 'Component';
             gc.data = {
                 name: gc.name,
@@ -144,8 +144,8 @@ class Helper {
         if(sshd === 'ssh') sshd = 'sshserver';
         if(httpd === 'http') httpd = 'httpserver';
 
-        let ssh = this.getConcept(sshd);
-        let http = this.getConcept(httpd);
+        let ssh = this.getInstance(sshd);
+        let http = this.getInstance(httpd);
         let list = [];
 
         if(notNil(http) && httpd !== 'none') {
@@ -159,7 +159,7 @@ class Helper {
             };
             list.push(this.createInstance(http, httpd));
         } else if(R.isNil(http) && httpd !== 'none') {
-            http = this.getConcept('HttpServer');
+            http = this.getInstance('HttpServer');
             http.type = 'Component';
             http.data = {
                 name: httpd,
@@ -182,7 +182,7 @@ class Helper {
             };
             list.push(this.createInstance(ssh, sshd));
         }else if(R.isNil(ssh) && sshd !== 'none') {
-            ssh = this.getConcept('SshServer');
+            ssh = this.getInstance('SshServer');
             ssh.type = 'Component';
             ssh.data = {
                 name: sshd,
@@ -199,7 +199,7 @@ class Helper {
 
     //DnsName
     dnsData(dns, ip) {
-        let dnsd = this.getConcept('DnsName');
+        let dnsd = this.getInstance('DnsName');
         dnsd.type = 'Configuration';
         dnsd.data = {
             name: dnsd.name,
@@ -211,7 +211,7 @@ class Helper {
 
     //Ipv4Address
     ipData(ip, reachable) {
-        let ipd = this.getConcept('Ipv4Address');
+        let ipd = this.getInstance('Ipv4Address');
         ipd.data = {
             name: ipd.name,
             desc: ipd.desc,
@@ -231,7 +231,7 @@ class Helper {
     }
 
     createRootNode() {
-        let computer = this.getConcept('Computer');
+        let computer = this.getInstance('Computer');
         computer.type = 'Grouping';
         let rel = computer.relationCreate('INSTANCE_OF', 'outgoing');
         rel.addEntity(this.getType('Computer'));
@@ -241,8 +241,12 @@ class Helper {
     static json2Entity(json, generateUuid) {
         if(R.isNil(json)) return null;
         let defaultUuid = R.defaultTo(null, json.meta.uuid);
+        let defaultRelations = R.defaultTo(null, R.clone(json.meta.relations));
+
         if(generateUuid) {
             defaultUuid = uuidV4();
+            //defaultRelations = R.omit(['ISA'], defaultRelations);
+            defaultRelations = R.ifElse(notNil, R.omit(['ISA']), R.identity)(defaultRelations);
         }
 
         return new Entity.Entity(
@@ -251,7 +255,7 @@ class Helper {
             R.defaultTo(null, json.desc),
             defaultUuid,
             R.defaultTo(null, R.clone(json.data)),
-            R.defaultTo(null, R.clone(json.meta.relations)),
+            defaultRelations,
             R.defaultTo(null, R.clone(json.file))
         );
     }
