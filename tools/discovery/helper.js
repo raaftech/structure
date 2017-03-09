@@ -240,14 +240,10 @@ class Helper {
 
     static json2Entity(json, generateUuid) {
         if(R.isNil(json)) return null;
-        let defaultUuid = R.defaultTo(null, json.meta.uuid);
-        let defaultRelations = R.defaultTo(null, R.clone(json.meta.relations));
-
-        if(generateUuid) {
-            defaultUuid = uuidV4();
-            //defaultRelations = R.omit(['ISA'], defaultRelations);
-            defaultRelations = R.ifElse(notNil, R.omit(['ISA']), R.identity)(defaultRelations);
-        }
+        let defaultUuid = R.ifElse(R.identity, x => uuidV4(), x => R.defaultTo(null, json.meta.uuid))(generateUuid);
+        let defaultRelations = R.ifElse(R.identity,
+                            x => R.ifElse(notNil, R.omit(['ISA']), R.identity)(R.defaultTo(null, R.clone(json.meta.relations))),
+                            x => R.defaultTo(null, R.clone(json.meta.relations)))(generateUuid);
 
         return new Entity.Entity(
             R.defaultTo(null, json.type),
