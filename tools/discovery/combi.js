@@ -43,7 +43,8 @@ const main = (db) => {
     let client = new vClient();
 
     let network = helper.createNetwork();
-    let networkRelation = network.relationCreate('HAS_COMPONENT', 'outgoing');
+    //let networkRelation = network.relationCreate('HAS_COMPONENT', 'outgoing');
+    let networkGroup = network.relationCreate('GROUPS', 'outgoing');
 
     nmapLib.nmapScan(cidr, args)
         .then((nmapResults) => {
@@ -62,9 +63,7 @@ const main = (db) => {
                     .then((result) => {
                         let subGraph = helper.transform(result, item.ip,
                                                    getSshService(nmapResults[index]),
-                                                   getHttpService(nmapResults[index]),
-                                                   network,
-                                                   networkRelation);
+                                                   getHttpService(nmapResults[index]));
 
                         //if(options.verbose) Helper.prettyPrint(subGraph);
                         //if(options.verbose) console.log(JSON.stringify(subGraph.toList(),undefined,2));
@@ -77,7 +76,8 @@ const main = (db) => {
                         //         doneCalled = true;
                         //         done();
                         //     });
-                        networkRelation.addEntity(subGraph);
+                        //networkRelation.addEntity(subGraph);
+                        networkGroup.addEntity(subGraph);
                         doneCalled = true;
                         done();
                     })

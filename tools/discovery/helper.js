@@ -26,14 +26,15 @@ class Helper {
     transform(data, ip, sshd, httpd) {
         let root = this.createRootNode();
         //TODO also create the GROUPS relation and add entities to it.
-        let rootRelation = root.relationCreate('HAS_COMPONENT', 'outgoing');
+        //let rootRelation = root.relationCreate('HAS_COMPONENT', 'outgoing');
+        let groupsRelation = root.relationCreate('GROUPS', 'outgoing');
 
         //Operating System
         let os = this.osData(data.distribution, data.distribution_version);
-        rootRelation.addEntity(os);
+        //rootRelation.addEntity(os);
+        groupsRelation.addEntity(os);
         let osHasComponentRelation = os.relationCreate('HAS_COMPONENT', 'outgoing');
         let osHasConfigurationRelation = os.relationCreate('HAS_CONFIGURATION', 'outgoing');
-
 
         //Interpreter
         let interpreter = this.interpreterData(data.shell);
@@ -51,8 +52,6 @@ class Helper {
         let daemonList = this.daemonData(sshd.service, httpd.service);
         R.forEach(item => osHasComponentRelation.addEntity(item), daemonList);
 
-        // networkRelation.addEntity(root);
-        // return new Entity.SubGraph(network);
         return root;
     }
 
