@@ -47,12 +47,10 @@ const setupScan = (ip) => {
 
         ansible.exec()
             .then((result) => {
-                //console.log(result);
                 let json = JSON.parse(sanitize('SUCCESS => ', result.output));
                 resolve(createOutput(json));
             })
             .catch((ex) => {
-            //console.log(ex);
                 resolve(createErrorMessage(ex));
             });
     });

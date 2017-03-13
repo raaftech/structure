@@ -9,6 +9,7 @@ const ansibleLib = require('./ansibleLib');
 const vClient = require('./vertxClient');
 const Helper = require('./helper');
 const serviceHelper = require('./serviceHelper');
+const Entity = require('./entity');
 
 const optionDefs = [
     {name: 'cidr', alias: 'c', type: String},
@@ -41,6 +42,9 @@ const main = (db) => {
     const helper = new Helper(db);
     let client = new vClient();
 
+    let network = helper.createNetwork();
+    let networkRelation = network.relationCreate('HAS_COMPONENT', 'outgoing');
+
     nmapLib.nmapScan(cidr, args)
         .then((nmapResults) => {
             const count = R.length(nmapResults);
@@ -58,24 +62,42 @@ const main = (db) => {
                     .then((result) => {
                         let subGraph = helper.transform(result, item.ip,
                                                    getSshService(nmapResults[index]),
-                                                   getHttpService(nmapResults[index]));
+                                                   getHttpService(nmapResults[index]),
+                                                   network,
+                                                   networkRelation);
 
                         //if(options.verbose) Helper.prettyPrint(subGraph);
-                        if(options.verbose) console.log(JSON.stringify(subGraph.toList(),undefined,2));
-                        client.createGraph({msgh: "create", args: {entities: subGraph.toList()}})
-                            .then((created) => {
-                                console.log('Processing result %s of %s for %s [%s]', index, count, nmapResults[index].hostname, nmapResults[index].ip);
-                                console.log('------CREATE result');
-                                console.log(created.body.result.data);
-                                console.log('------');
-                                doneCalled = true;
-                                done();
-                            });
+                        //if(options.verbose) console.log(JSON.stringify(subGraph.toList(),undefined,2));
+                        // client.createGraph({msgh: "create", args: {entities: subGraph.toList()}})
+                        //     .then((created) => {
+                        //         console.log('Processing result %s of %s for %s [%s]', index, count, nmapResults[index].hostname, nmapResults[index].ip);
+                        //         console.log('------CREATE result');
+                        //         console.log(created.body.result.data);
+                        //         console.log('------');
+                        //         doneCalled = true;
+                        //         done();
+                        //     });
+                        networkRelation.addEntity(subGraph);
+                        doneCalled = true;
+                        done();
                     })
                     .catch(ex => console.log(ex));
             }, function(err) {
                 if(err) console.log('Ended with an error: '+err);
                 console.log('Done running discovery of %s', cidr);
+
+                let finalGraph = new Entity.SubGraph(network);
+                //console.log(JSON.stringify(finalGraph.toList(),undefined,2));
+                R.forEach(item => {
+                    client.createGraph({msgh: "create", args: {entities: [item]}})
+                        .then((created) => {
+                            //console.log('Processing result %s of %s for %s [%s]', index, count, nmapResults[index].hostname, nmapResults[index].ip);
+                            // console.log('------CREATE result');
+                            // console.log(created.body.result.data);
+                            // console.log('------');
+                        });
+                }, finalGraph.toList());
+
                 client.close();
                 process.exit(0);
             });

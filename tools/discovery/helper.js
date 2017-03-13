@@ -25,6 +25,7 @@ class Helper {
 
     transform(data, ip, sshd, httpd) {
         let root = this.createRootNode();
+        //TODO also create the GROUPS relation and add entities to it.
         let rootRelation = root.relationCreate('HAS_COMPONENT', 'outgoing');
 
         //Operating System
@@ -49,7 +50,10 @@ class Helper {
         //Daemons (http, ssh only atm)
         let daemonList = this.daemonData(sshd.service, httpd.service);
         R.forEach(item => osHasComponentRelation.addEntity(item), daemonList);
-        return new Entity.SubGraph(root);
+
+        // networkRelation.addEntity(root);
+        // return new Entity.SubGraph(network);
+        return root;
     }
 
     osData(dist, version) {
@@ -144,6 +148,10 @@ class Helper {
         if(sshd === 'ssh') sshd = 'sshserver';
         if(httpd === 'http') httpd = 'httpserver';
 
+        if(R.isNil(sshd)) sshd = 'none';
+        if(R.isNil(httpd)) httpd = 'none';
+
+        console.log('ssh: %s , http: %s', sshd, httpd);
         let ssh = this.getInstance(sshd);
         let http = this.getInstance(httpd);
         let list = [];
@@ -236,6 +244,15 @@ class Helper {
         let rel = computer.relationCreate('INSTANCE_OF', 'outgoing');
         rel.addEntity(this.getType('Computer'));
         return computer;
+    }
+
+    createNetwork() {
+        //TODO add properties of the network
+        let network = this.getInstance('Ipv4Network');
+        network.type = 'Grouping';
+        let rel = network.relationCreate('INSTANCE_OF', 'outgoing');
+        rel.addEntity(this.getType('Ipv4Network'));
+        return network;
     }
 
     static json2Entity(json, generateUuid) {
