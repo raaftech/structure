@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.IntStream;
 
+import static junit.framework.TestCase.assertFalse;
+import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -207,5 +209,37 @@ public class ResultTest {
         r1.setNext(r2);
         thrown.expect(IllegalStateException.class);
         r1.setNext(r3);
+    }
+
+    @Test
+    public void testStatusCodes() throws Exception {
+        // 0, 1 and 2 should be fine
+        IntStream.of(0, 1, 2).forEach(i -> new Result.Builder().stateCode(i));
+
+        // Anything else should result in an exception
+        thrown.expect(IllegalArgumentException.class);
+        new Result.Builder()
+                .stateCode(-1);
+    }
+
+    @Test
+    public void testOptionals() throws Exception {
+        Result result = new Result.Builder()
+                .process("1")
+                .taskId(UUID.randomUUID().toString())
+                .stdout("1")
+                .stderr("1")
+                .returnCode(1)
+                .stateCode(0)
+                .stateDisplay("OK")
+                .build();
+
+        assertTrue(result.getStateCode().isPresent());
+        assertTrue(result.getStateDisplay().isPresent());
+        assertFalse(result.getUser().isPresent());
+        assertFalse(result.getStateDescription().isPresent());
+
+        assertEquals(0, (int) result.getStateCode().get());
+        assertEquals("OK", result.getStateDisplay().get());
     }
 }

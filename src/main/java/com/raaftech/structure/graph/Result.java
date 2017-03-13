@@ -12,6 +12,7 @@ import org.springframework.data.neo4j.annotation.RelatedTo;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 import static io.vertx.core.json.Json.mapper;
 
@@ -29,6 +30,10 @@ public class Result extends Instance {
     private static final String STDERR = "stderr";
     private static final String RETURNCODE = "returnCode";
     private static final String DATECREATED = "dateCreated";
+    private static final String USER = "user";
+    private static final String STATECODE = "stateCode";
+    private static final String STATEDISPLAY = "stateDisplay";
+    private static final String STATEDESCRIPTION = "stateDescription";
 
     public static final ResultRepository resultRepository = Context.getResultRepository();
 
@@ -42,11 +47,18 @@ public class Result extends Instance {
     private static final TypeRepository typeRepository = Context.getTypeRepository();
 
     public static class Builder {
+        // Required
         private String process;
         private String taskId;
         private String stdout;
         private String stderr;
         private Integer returnCode;
+        // Optional
+        private String user;
+        private int stateCode = -1;
+        private String stateDisplay;
+        private String stateDescription;
+
 
         public Builder() {}
         public Builder process(String process) {
@@ -69,6 +81,27 @@ public class Result extends Instance {
             this.returnCode = returnCode;
             return this;
         }
+        // Optional fields
+        public Builder user(String user) {
+            this.user = user;
+            return this;
+        }
+        public Builder stateCode(int stateCode) {
+            if (0 <= stateCode && stateCode <= 2) {
+                this.stateCode = stateCode;
+            } else {
+                throw new IllegalArgumentException("State code should be 0, 1 or 2");
+            }
+            return this;
+        }
+        public Builder stateDisplay(String stateDisplay) {
+            this.stateDisplay = stateDisplay;
+            return this;
+        }
+        public Builder stateDescription(String stateDescription) {
+            this.stateDescription = stateDescription;
+            return this;
+        }
         public Result build() {
             if (process == null || taskId == null || stdout == null || stderr == null || returnCode == null) {
                 log.error("Error while building Result");
@@ -84,6 +117,19 @@ public class Result extends Instance {
                     .put(STDERR, stderr)
                     .put(RETURNCODE, returnCode)
                     .put(DATECREATED, System.currentTimeMillis());
+
+            if (user != null) {
+                json.put(USER, user);
+            }
+            if (stateCode != -1) {
+                json.put(STATECODE, stateCode);
+            }
+            if (stateDisplay != null) {
+                json.put(STATEDISPLAY, stateDisplay);
+            }
+            if (stateDescription != null) {
+                json.put(STATEDESCRIPTION, stateDescription);
+            }
 
             return new Result(json, resultType);
         }
@@ -131,6 +177,30 @@ public class Result extends Instance {
 
     public Result getNext() {
         return next;
+    }
+
+    public Optional<String> getUser() {
+        return data.hasProperty(USER) ?
+                Optional.of((String) data.getProperty(USER)) :
+                Optional.empty();
+    }
+
+    public Optional<Integer> getStateCode() {
+        return data.hasProperty(STATECODE) ?
+                Optional.of(Integer.parseInt((String) data.getProperty(STATECODE))) :
+                Optional.empty();
+    }
+
+    public Optional<String> getStateDisplay() {
+        return data.hasProperty(STATEDISPLAY) ?
+                Optional.of((String) data.getProperty(STATEDISPLAY)) :
+                Optional.empty();
+    }
+
+    public Optional<String> getStateDescription() {
+        return data.hasProperty(STATEDESCRIPTION) ?
+                Optional.of((String) data.getProperty(STATEDESCRIPTION)) :
+                Optional.empty();
     }
 
     public Result setNext(Result next) {
