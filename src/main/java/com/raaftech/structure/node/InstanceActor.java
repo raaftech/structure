@@ -180,25 +180,9 @@ public class InstanceActor extends NodeActor<Instance> {
                     }
                 }
                 if (instrument != null) {
-
-                    // Sanitize our input
-                    ObjectNode sanitized = null;
-                    if (args.has("arguments")) {
-                        instrumentArgs = args.get("arguments");
-                        sanitized = mapper.createObjectNode();
-                        Iterator<Map.Entry<String, JsonNode>> iter = instrumentArgs.fields();
-                        while (iter.hasNext()) {
-                            Map.Entry<String, JsonNode> entry = iter.next();
-                            String value = entry.getValue().asText();
-                            value = value.replaceAll(" ", "\\\\ ");
-                            value = value.replaceAll("-", "\\\\-");
-                            sanitized.put(entry.getKey(), value);
-                        }
-                    }
-
                     try {
                         String taskId = UUID.randomUUID().toString();
-                        ((Component)getNode()).runController(instrument, sanitized, taskId);
+                        ((Component)getNode()).runController(instrument, (ObjectNode) args.get("arguments"), taskId);
                         result.put("data", taskId);
                     } catch (RuntimeException e) {
                     	log.error(e.getMessage());
