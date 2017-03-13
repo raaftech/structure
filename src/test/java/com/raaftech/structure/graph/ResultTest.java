@@ -14,7 +14,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.springframework.data.neo4j.core.GraphDatabase;
 
 import java.util.List;
 import java.util.UUID;
@@ -235,11 +234,11 @@ public class ResultTest {
                 .build();
 
         assertTrue(result.getStateCode().isPresent());
-        assertTrue(result.getStateDisplay().isPresent());
+        assertTrue(result.getStateInterpretation().isPresent());
         assertFalse(result.getUser().isPresent());
         assertFalse(result.getStateDescription().isPresent());
 
         assertEquals(0, (int) result.getStateCode().get());
-        assertEquals("OK", result.getStateDisplay().get());
+        assertEquals("OK", result.getStateInterpretation().get());
     }
 }

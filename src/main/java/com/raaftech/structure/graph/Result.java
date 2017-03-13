@@ -32,7 +32,7 @@ public class Result extends Instance {
     private static final String DATECREATED = "dateCreated";
     private static final String USER = "user";
     private static final String STATECODE = "stateCode";
-    private static final String STATEDISPLAY = "stateDisplay";
+    private static final String STATEINTERPRETATION = "stateInterpretation";
     private static final String STATEDESCRIPTION = "stateDescription";
 
     public static final ResultRepository resultRepository = Context.getResultRepository();
@@ -56,7 +56,7 @@ public class Result extends Instance {
         // Optional
         private String user;
         private int stateCode = -1;
-        private String stateDisplay;
+        private String stateInterpretation;
         private String stateDescription;
 
 
@@ -94,8 +94,8 @@ public class Result extends Instance {
             }
             return this;
         }
-        public Builder stateDisplay(String stateDisplay) {
-            this.stateDisplay = stateDisplay;
+        public Builder stateDisplay(String stateInterpretation) {
+            this.stateInterpretation = stateInterpretation;
             return this;
         }
         public Builder stateDescription(String stateDescription) {
@@ -124,8 +124,8 @@ public class Result extends Instance {
             if (stateCode != -1) {
                 json.put(STATECODE, stateCode);
             }
-            if (stateDisplay != null) {
-                json.put(STATEDISPLAY, stateDisplay);
+            if (stateInterpretation != null) {
+                json.put(STATEINTERPRETATION, stateInterpretation);
             }
             if (stateDescription != null) {
                 json.put(STATEDESCRIPTION, stateDescription);
@@ -191,9 +191,9 @@ public class Result extends Instance {
                 Optional.empty();
     }
 
-    public Optional<String> getStateDisplay() {
-        return data.hasProperty(STATEDISPLAY) ?
-                Optional.of((String) data.getProperty(STATEDISPLAY)) :
+    public Optional<String> getStateInterpretation() {
+        return data.hasProperty(STATEINTERPRETATION) ?
+                Optional.of((String) data.getProperty(STATEINTERPRETATION)) :
                 Optional.empty();
     }
 

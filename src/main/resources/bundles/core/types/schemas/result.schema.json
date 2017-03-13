@@ -13,7 +13,7 @@
       "maximum": 2,
       "description": "A code representing the \"goodness\" of the result, 0 being \"good\", 2 being \"bad\"."
     },
-    "stateDisplay": {
+    "stateInterpretation": {
       "type": "string",
       "description": "A short word conveying the meaning of \"stateCode\", e.g. \"OK\", \"MAYBE\", \"NOK\""
     },
