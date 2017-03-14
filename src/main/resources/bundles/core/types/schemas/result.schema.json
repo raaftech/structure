@@ -40,7 +40,15 @@
     "desc": {
       "$ref": "type.schema.json#/properties/desc"
     },
-    "state": {
+    "stateCode": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2
+    },
+    "stateInterpretation": {
+      "type": "string"
+    },
+    "stateDescription": {
       "type": "string"
     }
   },
@@ -53,27 +61,5 @@
     "stdout",
     "stderr",
     "dateCreated"
-  ],
-  "definitions": {
-    "state": {
-      "type": "object",
-      "required": [ "code", "interpretation", "description" ],
-      "properties": {
-        "code": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 2,
-          "description": "A code representing the \"goodness\" of the result, 0 being \"good\", 2 being \"bad\"."
-        },
-        "interpretation": {
-          "type": "string",
-          "description": "A short word conveying the meaning of \"stateCode\", e.g. \"OK\", \"MAYBE\", \"NOK\""
-        },
-        "description": {
-          "type": "string",
-          "description": "A longer description of the reason for the status code."
-        }
-      }
-    }
-  }
+  ]
 }
