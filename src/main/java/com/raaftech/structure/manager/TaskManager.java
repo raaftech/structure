@@ -8,6 +8,7 @@ import com.raaftech.structure.annotations.SchemaPath;
 import com.raaftech.structure.base.Configuration;
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.base.GenericActor;
+import com.raaftech.structure.graph.Result;
 import com.raaftech.structure.helper.ProcessRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -275,13 +276,37 @@ public class TaskManager extends GenericActor {
             if (task.isFinished()) {
                 task.status = TaskStatus.FINISHED;
                 log.info("Task " + job.taskId + " is finished.");
+                log.info("{}", job.metadata.get("stateMap").toString());
                 // Remove task from taskMap.
                 taskMap.remove(task.id);
                 // Notify interested parties
                 publishStatus("taskFinished", mapper.createObjectNode()
                         .put("taskId", task.id)
                         .set("taskObj", task.toJson()));
-                // TODO: save results
+                // Save result
+                ProcessRunner.ProcessResult jobResult = job.process.finish();
+                Result.Builder resultBuilder = new Result.Builder()
+                        .taskId(job.taskId)
+                        .process(job.process.getCommand())
+                        .returnCode(jobResult.returnCode)
+                        .stderr(jobResult.stderr)
+                        .stdout(jobResult.stdout);
+
+                /*
+                If this job was provided with a stateMap, see if we can map the exit code to a specific state.
+                In case the exit code is unknown, the state will be set to an error state "UNKNOWN".
+                 */
+                if (job.metadata.has("stateMap")) {
+                    JsonNode stateMap = job.metadata.get("stateMap");
+                    if (stateMap.has(Integer.toString(jobResult.returnCode))) {
+                        JsonNode state = stateMap.get(Integer.toString(jobResult.returnCode));
+                        resultBuilder.state(new Result.State(state.get("code").asInt(),
+                                state.get("interpretation").asText(), state.get("description").asText()));
+                    } else {
+                        resultBuilder.state(new Result.State(2, "UNKNOWN", "Received an unknown exit code."));
+                    }
+                }
+                resultBuilder.build().save();
                 try {
                     log.info(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(task.toJson()));
                 } catch (JsonProcessingException e) {

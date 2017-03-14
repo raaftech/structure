@@ -1,17 +1,21 @@
 package com.raaftech.structure.graph;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.raaftech.structure.base.Context;
+import com.raaftech.structure.base.*;
 import com.raaftech.structure.exceptions.ResultBuilderException;
 import com.raaftech.structure.graph.repositories.ResultRepository;
 import com.raaftech.structure.graph.repositories.TypeRepository;
+import org.apache.commons.lang3.Validate;
 import org.neo4j.graphdb.Direction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.neo4j.annotation.RelatedTo;
 
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 import static io.vertx.core.json.Json.mapper;
 
@@ -29,6 +33,10 @@ public class Result extends Instance {
     private static final String STDERR = "stderr";
     private static final String RETURNCODE = "returnCode";
     private static final String DATECREATED = "dateCreated";
+    private static final String USER = "user";
+    private static final String STATECODE = "stateCode";
+    private static final String STATEINTERPRETATION = "stateInterpretation";
+    private static final String STATEDESCRIPTION = "stateDescription";
 
     public static final ResultRepository resultRepository = Context.getResultRepository();
 
@@ -41,12 +49,44 @@ public class Result extends Instance {
 
     private static final TypeRepository typeRepository = Context.getTypeRepository();
 
+    /**
+     * A state is a simple object that allows us to express the "goodness" of a return value.
+     */
+    public static class State {
+        final private int code;
+        final private String interpretation;
+        final private String description;
+
+        public State(int code,  String interpretation, String description) {
+            Validate.inclusiveBetween(0, 2, code);
+            Validate.notNull(interpretation);
+            Validate.notNull(description);
+            this.code = code;
+            this.interpretation = interpretation;
+            this.description = description;
+        }
+        public int getCode() {
+            return code;
+        }
+        public String getDescription() {
+            return description;
+        }
+        public String getInterpretation() {
+            return interpretation;
+        }
+    }
+
     public static class Builder {
+        // Required
         private String process;
         private String taskId;
         private String stdout;
         private String stderr;
         private Integer returnCode;
+        // Optional
+        private String user;
+        private State state;
+
 
         public Builder() {}
         public Builder process(String process) {
@@ -69,6 +109,15 @@ public class Result extends Instance {
             this.returnCode = returnCode;
             return this;
         }
+        // Optional fields
+        public Builder user(String user) {
+            this.user = user;
+            return this;
+        }
+        public Builder state(State state) {
+            this.state = state;
+            return this;
+        }
         public Result build() {
             if (process == null || taskId == null || stdout == null || stderr == null || returnCode == null) {
                 log.error("Error while building Result");
@@ -85,6 +134,15 @@ public class Result extends Instance {
                     .put(RETURNCODE, returnCode)
                     .put(DATECREATED, System.currentTimeMillis());
 
+            if (user != null) {
+                json.put(USER, user);
+            }
+            if (state != null) {
+                json.put(STATECODE, state.code);
+                json.put(STATEINTERPRETATION, state.interpretation);
+                json.put(STATEDESCRIPTION, state.description);
+            }
+
             return new Result(json, resultType);
         }
     }
@@ -94,6 +152,7 @@ public class Result extends Instance {
 
     private Result(ObjectNode json, Type type) {
         super(json, type);
+
     }
 
     /**
@@ -131,6 +190,23 @@ public class Result extends Instance {
 
     public Result getNext() {
         return next;
+    }
+
+    public Optional<String> getUser() {
+        return data.hasProperty(USER) ?
+                Optional.of((String) data.getProperty(USER)) :
+                Optional.empty();
+    }
+
+    public Optional<State> getState() {
+        final Optional<State> maybeState;
+        if (data.hasProperty(STATECODE)) {
+            maybeState = Optional.of(new Result.State(Integer.parseInt((String) data.getProperty(STATECODE)),
+                    (String) data.getProperty(STATEINTERPRETATION), (String) data.getProperty(STATEDESCRIPTION)));
+        } else {
+            maybeState = Optional.empty();
+        }
+        return maybeState;
     }
 
     public Result setNext(Result next) {
