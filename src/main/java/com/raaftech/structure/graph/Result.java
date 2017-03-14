@@ -1,10 +1,12 @@
 package com.raaftech.structure.graph;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.exceptions.ResultBuilderException;
 import com.raaftech.structure.graph.repositories.ResultRepository;
 import com.raaftech.structure.graph.repositories.TypeRepository;
+import org.apache.commons.lang3.Validate;
 import org.neo4j.graphdb.Direction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,9 +33,7 @@ public class Result extends Instance {
     private static final String RETURNCODE = "returnCode";
     private static final String DATECREATED = "dateCreated";
     private static final String USER = "user";
-    private static final String STATECODE = "stateCode";
-    private static final String STATEINTERPRETATION = "stateInterpretation";
-    private static final String STATEDESCRIPTION = "stateDescription";
+    private static final String STATE = "state";
 
     public static final ResultRepository resultRepository = Context.getResultRepository();
 
@@ -46,6 +46,33 @@ public class Result extends Instance {
 
     private static final TypeRepository typeRepository = Context.getTypeRepository();
 
+    /**
+     * A state is a simple object that allows us to express the "goodness" of a return value.
+     */
+    public static class State {
+        final private int code;
+        final private String interpretation;
+        final private String description;
+
+        public State(int code,  String interpretation, String description) {
+            Validate.inclusiveBetween(0, 2, code);
+            Validate.notNull(interpretation);
+            Validate.notNull(description);
+            this.code = code;
+            this.interpretation = interpretation;
+            this.description = description;
+        }
+        public int getCode() {
+            return code;
+        }
+        public String getDescription() {
+            return description;
+        }
+        public String getInterpretation() {
+            return interpretation;
+        }
+    }
+
     public static class Builder {
         // Required
         private String process;
@@ -55,9 +82,7 @@ public class Result extends Instance {
         private Integer returnCode;
         // Optional
         private String user;
-        private int stateCode = -1;
-        private String stateInterpretation;
-        private String stateDescription;
+        private State state;
 
 
         public Builder() {}
@@ -86,20 +111,8 @@ public class Result extends Instance {
             this.user = user;
             return this;
         }
-        public Builder stateCode(int stateCode) {
-            if (0 <= stateCode && stateCode <= 2) {
-                this.stateCode = stateCode;
-            } else {
-                throw new IllegalArgumentException("State code should be 0, 1 or 2");
-            }
-            return this;
-        }
-        public Builder stateDisplay(String stateInterpretation) {
-            this.stateInterpretation = stateInterpretation;
-            return this;
-        }
-        public Builder stateDescription(String stateDescription) {
-            this.stateDescription = stateDescription;
+        public Builder state(State state) {
+            this.state = state;
             return this;
         }
         public Result build() {
@@ -121,14 +134,8 @@ public class Result extends Instance {
             if (user != null) {
                 json.put(USER, user);
             }
-            if (stateCode != -1) {
-                json.put(STATECODE, stateCode);
-            }
-            if (stateInterpretation != null) {
-                json.put(STATEINTERPRETATION, stateInterpretation);
-            }
-            if (stateDescription != null) {
-                json.put(STATEDESCRIPTION, stateDescription);
+            if (state != null) {
+                json.put(STATE, mapper.valueToTree(state));
             }
 
             return new Result(json, resultType);
@@ -140,6 +147,7 @@ public class Result extends Instance {
 
     private Result(ObjectNode json, Type type) {
         super(json, type);
+
     }
 
     /**
@@ -185,22 +193,19 @@ public class Result extends Instance {
                 Optional.empty();
     }
 
-    public Optional<Integer> getStateCode() {
-        return data.hasProperty(STATECODE) ?
-                Optional.of(Integer.parseInt((String) data.getProperty(STATECODE))) :
-                Optional.empty();
-    }
-
-    public Optional<String> getStateInterpretation() {
-        return data.hasProperty(STATEINTERPRETATION) ?
-                Optional.of((String) data.getProperty(STATEINTERPRETATION)) :
-                Optional.empty();
-    }
-
-    public Optional<String> getStateDescription() {
-        return data.hasProperty(STATEDESCRIPTION) ?
-                Optional.of((String) data.getProperty(STATEDESCRIPTION)) :
-                Optional.empty();
+    public Optional<State> getState() {
+        final Optional<State> maybeState;
+        // Deserialize state object
+        if (data.hasProperty(STATE)) {
+                JsonNode state = (JsonNode) data.getProperty(STATE);
+                maybeState = Optional.of(new Result.State(
+                        state.get("code").asInt(),
+                        state.get("interpretation").asText(),
+                        state.get("description").asText()));
+        } else {
+            maybeState = Optional.empty();
+        }
+        return maybeState;
     }
 
     public Result setNext(Result next) {

@@ -7,20 +7,6 @@
       "type": "string",
       "description": "The user that invoked the action leading to this result."
     },
-    "stateCode": {
-      "type": "integer",
-      "minimum": 0,
-      "maximum": 2,
-      "description": "A code representing the \"goodness\" of the result, 0 being \"good\", 2 being \"bad\"."
-    },
-    "stateInterpretation": {
-      "type": "string",
-      "description": "A short word conveying the meaning of \"stateCode\", e.g. \"OK\", \"MAYBE\", \"NOK\""
-    },
-    "stateDescription": {
-      "type": "string",
-      "description": "A longer description of the reason for the status code."
-    },
     "returnCode": {
       "type": "number",
       "description": "The returncode of a process"
@@ -53,6 +39,9 @@
     },
     "desc": {
       "$ref": "type.schema.json#/properties/desc"
+    },
+    "state": {
+      "$ref": "#/definitions/state"
     }
   },
   "required": [
@@ -64,5 +53,27 @@
     "stdout",
     "stderr",
     "dateCreated"
-  ]
+  ],
+  "definitions": {
+    "state": {
+      "type": "object",
+      "required": [ "code", "interpretation", "description" ],
+      "properties": {
+        "code": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2,
+          "description": "A code representing the \"goodness\" of the result, 0 being \"good\", 2 being \"bad\"."
+        },
+        "interpretation": {
+          "type": "string",
+          "description": "A short word conveying the meaning of \"stateCode\", e.g. \"OK\", \"MAYBE\", \"NOK\""
+        },
+        "description": {
+          "type": "string",
+          "description": "A longer description of the reason for the status code."
+        }
+      }
+    }
+  }
 }

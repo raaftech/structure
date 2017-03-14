@@ -3,7 +3,7 @@ package com.raaftech.structure.graph;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.raaftech.structure.base.*;
+import com.raaftech.structure.base.Context;
 import com.raaftech.structure.graph.repositories.InstanceRepository;
 import com.raaftech.structure.graph.repositories.TypeRepository;
 import com.raaftech.structure.helper.JsonHelper;
@@ -16,7 +16,6 @@ import org.springframework.data.annotation.Transient;
 import org.springframework.data.neo4j.annotation.Fetch;
 import org.springframework.data.neo4j.annotation.NodeEntity;
 import org.springframework.data.neo4j.annotation.RelatedTo;
-import org.springframework.data.neo4j.fieldaccess.DynamicProperties;
 import org.springframework.data.neo4j.fieldaccess.DynamicPropertiesContainer;
 
 import java.util.Iterator;
@@ -140,7 +139,11 @@ public abstract class Instance extends Node {
             Iterator<String> iter = properties.fieldNames();
             while (iter.hasNext()) {
                 String key = iter.next();
-                data.setProperty(key, properties.get(key).asText());
+                if (properties.get(key).isObject()) {
+                    data.setProperty(key, properties.get(key));
+                } else {
+                    data.setProperty(key, properties.get(key).asText());
+                }
             }
         } else {
             throw new RuntimeException("Supplied JSON did not match Type schema.");

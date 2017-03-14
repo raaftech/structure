@@ -211,14 +211,17 @@ public class ResultTest {
     }
 
     @Test
-    public void testStatusCodes() throws Exception {
-        // 0, 1 and 2 should be fine
-        IntStream.of(0, 1, 2).forEach(i -> new Result.Builder().stateCode(i));
+    public void testInvalidStateConstructions() throws Exception {
+        final String stateInterpretation = "OK";
+        final String stateDescription = "Test";
+        // 0, 1 and 2 should be fine, with non null strings
+        IntStream.of(0, 1, 2).forEach(i -> new Result.State(i, stateInterpretation, stateDescription));
 
         // Anything else should result in an exception
         thrown.expect(IllegalArgumentException.class);
-        new Result.Builder()
-                .stateCode(-1);
+        new Result.State(-1, stateInterpretation, stateDescription);
+        new Result.State(0, null, stateDescription);
+        new Result.State(0, stateInterpretation, null);
     }
 
     @Test
@@ -229,16 +232,15 @@ public class ResultTest {
                 .stdout("1")
                 .stderr("1")
                 .returnCode(1)
-                .stateCode(0)
-                .stateDisplay("OK")
+                .state(new Result.State(0, "OK", "Test"))
                 .build();
 
-        assertTrue(result.getStateCode().isPresent());
-        assertTrue(result.getStateInterpretation().isPresent());
+        assertTrue(result.getState().isPresent());
         assertFalse(result.getUser().isPresent());
-        assertFalse(result.getStateDescription().isPresent());
 
-        assertEquals(0, (int) result.getStateCode().get());
-        assertEquals("OK", result.getStateInterpretation().get());
+        final Result.State state = result.getState().get();
+        assertEquals(0, state.getCode());
+        assertEquals("OK", state.getInterpretation());
+        assertEquals("Test", state.getDescription());
     }
 }
