@@ -6,6 +6,7 @@ import com.google.common.io.Files;
 import com.raaftech.structure.base.*;
 import com.raaftech.structure.exceptions.ComponentBuilderException;
 import com.raaftech.structure.graph.repositories.TypeRepository;
+import org.apache.commons.lang3.Validate;
 import org.neo4j.graphdb.Direction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,10 +15,7 @@ import org.springframework.data.neo4j.annotation.Fetch;
 import org.springframework.data.neo4j.annotation.RelatedTo;
 
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import static io.vertx.core.json.Json.mapper;
 
@@ -41,6 +39,7 @@ public class Controller extends Instrument {
     private static final String RESULTPARSER = "resultParser";
     private static final String WEIGHT = "weight";
     private static final String INTERPRETER = "interpreter";
+    private static final String STATUSMAP = "statusMap";
 
     @RelatedTo(type="GIVES_CAPABILITY", direction=Direction.OUTGOING)
     private Type capability;
@@ -70,6 +69,7 @@ public class Controller extends Instrument {
         private Type capability;
         private Set<Type> appliesTo;
         private Type providedBy;
+        private Map<Integer, Result.State> exitCodeToState = new HashMap<>();
 
         ObjectNode json = mapper.createObjectNode();
 
@@ -145,12 +145,21 @@ public class Controller extends Instrument {
                 throw new IllegalArgumentException("Given type is not an interpreter.");
             }
         }
+        public Builder addExitCodeToState(int exitCode, Result.State state) {
+            Validate.inclusiveBetween(0, 255, exitCode);
+            Validate.notNull(state);
+            exitCodeToState.put(exitCode, state);
+            return this;
+        }
 
         public Controller build() {
             if (!json.has(NAME) || !json.has(DESC) || capability == null || !json.has(FILELOCATION)
                     || appliesTo == null || providedBy == null || !json.has(SUBJECTLOCAL) || !json.has(TEMPLATE)) {
                 log.error("Error while building Controller instrument.");
                 throw new ComponentBuilderException("Not all required parameters were set.");
+            }
+            if (!exitCodeToState.isEmpty()) {
+                json.put(STATUSMAP, mapper.valueToTree(exitCodeToState));
             }
             Controller controller =  new Controller(json);
             controller.capability = capability;
