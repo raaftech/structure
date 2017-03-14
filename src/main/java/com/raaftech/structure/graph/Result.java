@@ -34,7 +34,9 @@ public class Result extends Instance {
     private static final String RETURNCODE = "returnCode";
     private static final String DATECREATED = "dateCreated";
     private static final String USER = "user";
-    private static final String STATE = "state";
+    private static final String STATECODE = "stateCode";
+    private static final String STATEINTERPRETATION = "stateInterpretation";
+    private static final String STATEDESCRIPTION = "stateDescription";
 
     public static final ResultRepository resultRepository = Context.getResultRepository();
 
@@ -136,7 +138,9 @@ public class Result extends Instance {
                 json.put(USER, user);
             }
             if (state != null) {
-                json.put(STATE, mapper.valueToTree(state).toString());
+                json.put(STATECODE, state.code);
+                json.put(STATEINTERPRETATION, state.interpretation);
+                json.put(STATEDESCRIPTION, state.description);
             }
 
             return new Result(json, resultType);
@@ -195,23 +199,10 @@ public class Result extends Instance {
     }
 
     public Optional<State> getState() {
-        Optional<State> maybeState;
-        // Deserialize state object
-        if (data.hasProperty(STATE)) {
-            JsonNode state = null;
-            try {
-                state = mapper.readTree((String) data.getProperty(STATE));
-                maybeState = Optional.of(new Result.State(
-                        state.get("code").asInt(),
-                        state.get("interpretation").asText(),
-                        state.get("description").asText()));
-            } catch (IOException e) {
-                maybeState = Optional.empty();
-                log.error("Error while deserializing state object of result " + getUuid());
-                if (com.raaftech.structure.base.Configuration.isTraceModeOn()) {
-                    e.printStackTrace();
-                }
-            }
+        final Optional<State> maybeState;
+        if (data.hasProperty(STATECODE)) {
+            maybeState = Optional.of(new Result.State(Integer.parseInt((String) data.getProperty(STATECODE)),
+                    (String) data.getProperty(STATEINTERPRETATION), (String) data.getProperty(STATEDESCRIPTION)));
         } else {
             maybeState = Optional.empty();
         }
