@@ -1,9 +1,11 @@
 package com.raaftech.structure.graph;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.type.MapType;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.google.common.io.Files;
 import com.raaftech.structure.base.*;
+import com.raaftech.structure.base.Configuration;
 import com.raaftech.structure.exceptions.ComponentBuilderException;
 import com.raaftech.structure.graph.repositories.TypeRepository;
 import org.apache.commons.lang3.Validate;
@@ -39,7 +41,7 @@ public class Controller extends Instrument {
     private static final String RESULTPARSER = "resultParser";
     private static final String WEIGHT = "weight";
     private static final String INTERPRETER = "interpreter";
-    private static final String STATUSMAP = "statusMap";
+    private static final String STATEMAP = "stateMap";
 
     @RelatedTo(type="GIVES_CAPABILITY", direction=Direction.OUTGOING)
     private Type capability;
@@ -159,7 +161,7 @@ public class Controller extends Instrument {
                 throw new ComponentBuilderException("Not all required parameters were set.");
             }
             if (!exitCodeToState.isEmpty()) {
-                json.put(STATUSMAP, mapper.valueToTree(exitCodeToState));
+                json.put(STATEMAP, mapper.valueToTree(exitCodeToState));
             }
             Controller controller =  new Controller(json);
             controller.capability = capability;
@@ -269,6 +271,44 @@ public class Controller extends Instrument {
         return getFileContent(TEMPLATEFILE);
     }
 
+    public Optional<ObjectNode> getStateMapAsJson() {
+        Optional<ObjectNode> maybeStateMap;
+        if (data.hasProperty(STATEMAP)) {
+            try {
+                maybeStateMap = Optional.of((ObjectNode) mapper.readTree((String) data.getProperty(STATEMAP)));
+            } catch (IOException e) {
+                maybeStateMap = Optional.empty();
+                log.error("Error while deserializing statusmap of controller " + getName());
+                if (Configuration.isTraceModeOn()) {
+                    e.printStackTrace();
+                }
+            }
+        } else {
+            maybeStateMap = Optional.empty();
+        }
+        return maybeStateMap;
+    }
+
+    public Optional<Map<Integer, Result.State>> getStateMap() {
+        Optional<Map<Integer, Result.State>> maybeStateMap;
+        if (data.hasProperty(STATEMAP)) {
+            TypeFactory typeFactory = mapper.getTypeFactory();
+            MapType mapType = typeFactory.constructMapType(HashMap.class, Integer.class, Result.State.class);
+            try {
+                maybeStateMap = Optional.of(mapper.readValue(data.getProperty(STATEMAP).toString(),
+                            mapType));
+            } catch (IOException e) {
+                maybeStateMap = Optional.empty();
+                if (Configuration.isTraceModeOn()) {
+                    e.printStackTrace();
+                }
+            }
+        } else {
+            maybeStateMap = Optional.empty();
+        }
+
+        return maybeStateMap;
+    }
 
     public ObjectNode toJson() {
         ObjectNode json = super.toJson();
