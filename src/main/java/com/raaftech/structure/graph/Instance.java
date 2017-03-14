@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.graph.repositories.InstanceRepository;
 import com.raaftech.structure.graph.repositories.TypeRepository;
+import com.raaftech.structure.helper.InstrumentRunner;
 import com.raaftech.structure.helper.JsonHelper;
 import com.raaftech.structure.node.InstanceActor;
 import org.neo4j.graphdb.Direction;
@@ -149,6 +150,12 @@ public abstract class Instance extends Node {
             throw new RuntimeException("Supplied JSON did not match Type schema.");
         }
 
+        return this;
+    }
+
+    // Run a controller on this instance
+    public Instance runController(Controller controller, ObjectNode arguments, String taskId) {
+        new InstrumentRunner(this, controller, arguments, taskId).startInstrument();
         return this;
     }
 

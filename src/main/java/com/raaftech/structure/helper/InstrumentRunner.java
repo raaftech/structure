@@ -45,7 +45,7 @@ public class InstrumentRunner {
     private final ObjectMapper mapper = new ObjectMapper();
 
     private final String taskId;
-    private final Component origin;
+    private final Instance origin;
     private final Controller controller;
     private final Grouping subject;
     private final Grouping agent;
@@ -67,7 +67,7 @@ public class InstrumentRunner {
      * @param arguments  Given arguments, can be null.
      * @param taskId     The ID used to track progress of this action.
      */
-    public InstrumentRunner(Component origin, Controller controller, ObjectNode arguments, String taskId) {
+    public InstrumentRunner(Instance origin, Controller controller, ObjectNode arguments, String taskId) {
         this.taskId = taskId;
         this.origin = origin;
         this.controller = controller;
@@ -668,6 +668,10 @@ public class InstrumentRunner {
                             .put("originUuid", origin.getUuid())
                             .put("instrument", controller.getName())
                             .put("capability", instrumentRepository.getInstrumentCapability(controller.getUuid()).getName());
+                    Optional<ObjectNode> maybeStateMap = controller.getStateMapAsJson();
+                    if (maybeStateMap.isPresent()) {
+                        ((ObjectNode) job.get("metadata")).put("stateMap", maybeStateMap.get());
+                    }
                     job.put("command", command);
                     jobs.add(job);
                 });

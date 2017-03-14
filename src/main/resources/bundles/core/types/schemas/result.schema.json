@@ -41,7 +41,7 @@
       "$ref": "type.schema.json#/properties/desc"
     },
     "state": {
-      "$ref": "#/definitions/state"
+      "type": "string"
     }
   },
   "required": [

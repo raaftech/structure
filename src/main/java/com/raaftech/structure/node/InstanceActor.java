@@ -182,7 +182,7 @@ public class InstanceActor extends NodeActor<Instance> {
                 if (instrument != null) {
                     try {
                         String taskId = UUID.randomUUID().toString();
-                        ((Component)getNode()).runController(instrument, (ObjectNode) args.get("arguments"), taskId);
+                        getNode().runController(instrument, (ObjectNode) args.get("arguments"), taskId);
                         result.put("data", taskId);
                     } catch (RuntimeException e) {
                     	log.error(e.getMessage());

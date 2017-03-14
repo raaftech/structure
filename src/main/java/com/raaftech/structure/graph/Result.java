@@ -2,7 +2,7 @@ package com.raaftech.structure.graph;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.raaftech.structure.base.Context;
+import com.raaftech.structure.base.*;
 import com.raaftech.structure.exceptions.ResultBuilderException;
 import com.raaftech.structure.graph.repositories.ResultRepository;
 import com.raaftech.structure.graph.repositories.TypeRepository;
@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.neo4j.annotation.RelatedTo;
 
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -135,7 +136,7 @@ public class Result extends Instance {
                 json.put(USER, user);
             }
             if (state != null) {
-                json.put(STATE, mapper.valueToTree(state));
+                json.put(STATE, mapper.valueToTree(state).toString());
             }
 
             return new Result(json, resultType);
@@ -194,14 +195,23 @@ public class Result extends Instance {
     }
 
     public Optional<State> getState() {
-        final Optional<State> maybeState;
+        Optional<State> maybeState;
         // Deserialize state object
         if (data.hasProperty(STATE)) {
-                JsonNode state = (JsonNode) data.getProperty(STATE);
+            JsonNode state = null;
+            try {
+                state = mapper.readTree((String) data.getProperty(STATE));
                 maybeState = Optional.of(new Result.State(
                         state.get("code").asInt(),
                         state.get("interpretation").asText(),
                         state.get("description").asText()));
+            } catch (IOException e) {
+                maybeState = Optional.empty();
+                log.error("Error while deserializing state object of result " + getUuid());
+                if (com.raaftech.structure.base.Configuration.isTraceModeOn()) {
+                    e.printStackTrace();
+                }
+            }
         } else {
             maybeState = Optional.empty();
         }

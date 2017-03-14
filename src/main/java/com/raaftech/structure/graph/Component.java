@@ -175,12 +175,6 @@ public class Component extends Instance {
         return this;
     }
 
-    // Run a controller on this instance
-    public Component runController(Controller controller, ObjectNode arguments, String taskId) {
-        new InstrumentRunner(this, controller, arguments, taskId).startInstrument();
-        return this;
-    }
-
     /**
      * Used to create a JSON representation of a single Instance that
      * can be used to as an argument for an instrument.
