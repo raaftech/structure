@@ -277,7 +277,6 @@ public class TaskManager extends GenericActor {
             if (task.isFinished()) {
                 task.status = TaskStatus.FINISHED;
                 log.info("Task " + job.taskId + " is finished.");
-                log.info("{}", job.metadata.get("stateMap").toString());
                 // Remove task from taskMap.
                 taskMap.remove(task.id);
                 // Notify interested parties
