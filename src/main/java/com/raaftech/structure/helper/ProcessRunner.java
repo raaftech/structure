@@ -49,8 +49,10 @@ public class ProcessRunner {
 
     public ProcessResult finish() {
         try {
+            processResult.process = command;
             processResult.stderr = readFile(tempErr.getPath());
             processResult.stdout = readFile(tempOut.getPath());
+            processResult.returnCode = process.exitValue();
         } catch (IOException e) {
             if (Configuration.isTraceModeOn()) {
                 e.printStackTrace();
