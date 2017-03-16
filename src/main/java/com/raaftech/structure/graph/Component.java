@@ -7,8 +7,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.exceptions.JsonValidationException;
 import com.raaftech.structure.graph.repositories.InstanceRepository;
-import com.raaftech.structure.graph.repositories.ResultRepository;
-import com.raaftech.structure.helper.InstrumentRunner;
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.Transaction;
 import org.slf4j.Logger;
@@ -29,10 +27,6 @@ import java.util.stream.Collectors;
 @Deprecated
 public class Component extends Instance {
 
-    @RelatedTo(type="RESULTS", direction = Direction.OUTGOING)
-    @Fetch
-    private Result startOfResultChain;
-
     @RelatedTo(type="HAS_COMPONENT", direction = Direction.OUTGOING)
     private Set<Component> components;
 
@@ -52,9 +46,6 @@ public class Component extends Instance {
 
     @Transient
     private static final InstanceRepository instanceRepository = Context.getInstanceRepository();
-
-    @Transient
-    private static final ResultRepository resultRepository = Context.getResultRepository();
 
     @Transient
     private Logger log = LoggerFactory.getLogger(Component.class);
@@ -114,11 +105,6 @@ public class Component extends Instance {
         return components;
     }
 
-    // Get all the startOfResultChain belonging to this Instance
-    public Result getStartOfResultChain() {
-        return startOfResultChain;
-    }
-
     /**
      * Get all the startOfResultChain belonging to this Instance while filtering on the task ID.
      * @param task The ID of the task.
@@ -159,20 +145,6 @@ public class Component extends Instance {
                 addComponent((Component)component);
             }
         }
-    }
-
-    public Component addResult(Result result) {
-        Result oldHead = startOfResultChain;
-        oldHead.setNext(result);
-        startOfResultChain = result;
-
-        return this;
-    }
-
-    public Component addResult(String resultUuid) {
-        Result result = resultRepository.findByUuid(resultUuid);
-        addResult(result);
-        return this;
     }
 
     /**

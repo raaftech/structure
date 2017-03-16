@@ -8,6 +8,7 @@ import com.raaftech.structure.annotations.SchemaPath;
 import com.raaftech.structure.base.Configuration;
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.base.GenericActor;
+import com.raaftech.structure.graph.Instance;
 import com.raaftech.structure.graph.Result;
 import com.raaftech.structure.helper.ProcessRunner;
 import org.slf4j.Logger;
@@ -291,7 +292,6 @@ public class TaskManager extends GenericActor {
                         .returnCode(jobResult.returnCode)
                         .stderr(jobResult.stderr)
                         .stdout(jobResult.stdout);
-
                 /*
                 If this job was provided with a stateMap, see if we can map the exit code to a specific state.
                 In case the exit code is unknown, the state will be set to an error state "UNKNOWN".
@@ -306,7 +306,14 @@ public class TaskManager extends GenericActor {
                         resultBuilder.state(new Result.State(2, "UNKNOWN", "Received an unknown exit code."));
                     }
                 }
-                resultBuilder.build().save();
+                Result result = resultBuilder.build();
+                Instance origin = result.add(UUID.fromString(job.metadata.get("originUuid").asText()));
+                /*
+                result.add returns the origin instance, on which we want to save the result
+                We save the origin itself, which will cause the save to propagate to the result chain.
+                If we would just save the result, it won't update the head of the result list to the latest result.
+                 */
+                origin.save();
                 try {
                     log.info(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(task.toJson()));
                 } catch (JsonProcessingException e) {

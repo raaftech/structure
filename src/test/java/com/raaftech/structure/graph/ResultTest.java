@@ -2,6 +2,7 @@ package com.raaftech.structure.graph;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.raaftech.structure.base.Context;
+import com.raaftech.structure.exceptions.IllegalEntityType;
 import com.raaftech.structure.graph.repositories.InstanceRepository;
 import com.raaftech.structure.graph.repositories.ResultRepository;
 import com.raaftech.structure.graph.repositories.TypeRepository;
@@ -23,6 +24,7 @@ import static junit.framework.TestCase.assertFalse;
 import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 public class ResultTest {
 
@@ -242,5 +244,27 @@ public class ResultTest {
         assertEquals(0, state.getCode());
         assertEquals("OK", state.getInterpretation());
         assertEquals("Test", state.getDescription());
+    }
+
+    @Test
+    public void testAddResultToResult() throws Exception {
+        // Adding a result to a result shouldn't be allowed.
+        Result r1 = new Result.Builder()
+                .process("1")
+                .taskId(UUID.randomUUID().toString())
+                .stdout("1")
+                .stderr("1")
+                .returnCode(1)
+                .build();
+        Result r2 = new Result.Builder()
+                .process("2")
+                .taskId(UUID.randomUUID().toString())
+                .stdout("2")
+                .stderr("2")
+                .returnCode(2)
+                .build();
+
+        thrown.expect(IllegalEntityType.class);
+        r1.addResult(r2);
     }
 }

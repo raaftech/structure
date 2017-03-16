@@ -3,7 +3,9 @@ package com.raaftech.structure.graph;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.raaftech.structure.base.*;
+import com.raaftech.structure.exceptions.IllegalEntityType;
 import com.raaftech.structure.exceptions.ResultBuilderException;
+import com.raaftech.structure.graph.repositories.InstanceRepository;
 import com.raaftech.structure.graph.repositories.ResultRepository;
 import com.raaftech.structure.graph.repositories.TypeRepository;
 import org.apache.commons.lang3.Validate;
@@ -16,6 +18,7 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static io.vertx.core.json.Json.mapper;
 
@@ -48,6 +51,7 @@ public class Result extends Instance {
     Result previous;
 
     private static final TypeRepository typeRepository = Context.getTypeRepository();
+    private static final InstanceRepository instanceRepository = Context.getInstanceRepository();
 
     /**
      * A state is a simple object that allows us to express the "goodness" of a return value.
@@ -246,6 +250,43 @@ public class Result extends Instance {
         } while (head != null);
 
         return results;
+    }
+
+    /**
+     * Add this result to an instance.
+     * @param instance The instance this should be added to.
+     * @return The instance this result was added to. Make sure that that instance
+     * is saved, otherwise the relationship between the instance and this result won't
+     * persist.
+     */
+    public Instance add(Instance instance) {
+        instance.addResult(this);
+        return instance;
+    }
+
+    /**
+     * Add this result to an instance.
+     * @param instanceUuid The UUID of the instance this should be added to.
+     * @return The instance this result was added to. Make sure that that instance
+     * is saved, otherwise the relationship between the instance and this result won't
+     * persist.
+     */
+    public Instance add(UUID instanceUuid) {
+        Instance foundInstance = instanceRepository.findByUuid(instanceUuid.toString());
+        Validate.notNull(foundInstance);
+        return add(foundInstance);
+    }
+
+    /**
+     * We need to override this because our model views Results as instances as well,
+     * however, adding a result to a result doesn't make sense, so we throw an Exception
+     * when that happens.
+     * @param result A result.
+     * @return Nothing, this always throws an {@link IllegalEntityType}.
+     */
+    @Override
+    public Instance addResult(Result result) {
+        throw new IllegalEntityType("Cannot add a result to a result.");
     }
 
 }

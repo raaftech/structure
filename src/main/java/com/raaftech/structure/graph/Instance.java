@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.graph.repositories.InstanceRepository;
+import com.raaftech.structure.graph.repositories.ResultRepository;
 import com.raaftech.structure.graph.repositories.TypeRepository;
 import com.raaftech.structure.helper.InstrumentRunner;
 import com.raaftech.structure.helper.JsonHelper;
@@ -44,6 +45,14 @@ public abstract class Instance extends Node {
 
     @Transient
     protected static final TypeRepository TYPE_REPOSITORY = Context.getTypeRepository();
+
+    @Transient
+    private static final ResultRepository resultRepository = Context.getResultRepository();
+
+    @RelatedTo(type="RESULTS", direction = Direction.OUTGOING)
+    @Fetch
+    private Result startOfResultChain;
+
 
     @Transient
     JsonNode instanceData;
@@ -163,20 +172,38 @@ public abstract class Instance extends Node {
         return INSTANCE_REPOSITORY.isOfType(getUuid(), type) > 0;
     }
 
+    // Get all the startOfResultChain belonging to this Instance
+    public Result getStartOfResultChain() {
+        return startOfResultChain;
+    }
+
+    public Instance addResult(Result result) {
+        if (startOfResultChain != null) {
+            startOfResultChain.setNext(result);
+        }
+        startOfResultChain = result;
+
+        return this;
+    }
+
     public Instance save() {
         boolean newNode = getId() == null || getId() < 0;
         Transaction tx = Context.getGraphDatabase().beginTx();
-        if (getInstanceOf().getSchema().validateJson(instanceData)) {
-            getInstanceOf().getKv().asMap().entrySet().stream()
-                    .forEach(entry -> data.setProperty(entry.getKey(), entry.getValue()));
+        if (newNode) {
+            if (getInstanceOf().getSchema().validateJson(instanceData)) {
+                getInstanceOf().getKv().asMap().entrySet().stream()
+                        .forEach(entry -> data.setProperty(entry.getKey(), entry.getValue()));
+                INSTANCE_REPOSITORY.save(this);
+                tx.success();
+            } else {
+                tx.failure();
+                throw new RuntimeException("Can't create instanceNode, missing properties.");
+            }
+        } else {
             INSTANCE_REPOSITORY.save(this);
             tx.success();
-            tx.close();
-        } else {
-            tx.failure();
-            tx.close();
-            throw new RuntimeException("Can't create instanceNode, missing properties.");
         }
+        tx.close();
 
         if (newNode && Context.getVertx() != null) {
             Context.getVertx().deployVerticle(
