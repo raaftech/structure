@@ -267,19 +267,25 @@ public class InstrumentRunner {
      */
     private void createScriptWithoutTemplating(String script) throws IOException {
         // create script file, this will put the file metadata in our static arguments
-        final String scriptFilename = new StringBuilder()
-                .append(origin.getName())
-                .append("-")
-                .append(controller.getName())
-                .append("_")
-                .append(System.currentTimeMillis())
-                .append(".")
-                .append(controller.getExtension().orElse("out"))
-                .toString();
+        final String scriptFilename = constructScriptFilename(origin.getName(), controller.getName(),
+                controller.getExtension().orElse("out"));
         copyStringToFile(script, scriptFilename);
 
         arguments.put("payloadDirectory", workingDirectory);
         arguments.put("payloadFileName", scriptFilename);
+    }
+
+    private String constructScriptFilename(String originName, String controllerName,
+                                         String extension) {
+        return new StringBuilder()
+                .append(originName)
+                .append("-")
+                .append(controllerName)
+                .append("_")
+                .append(System.currentTimeMillis())
+                .append(".")
+                .append(extension)
+                .toString();
     }
 
     /**
@@ -540,8 +546,8 @@ public class InstrumentRunner {
         context = validateAndSelectArguments(invokableInterpreter);
         script = applyTemplate(interpreterTemplateContent.get(), context);
 
-        String scriptFilename = origin.getName() + "-" + controller.getName() + "_" + System.currentTimeMillis()
-                + invokableInterpreter.getExtension().orElse(".out");
+        final String scriptFilename = constructScriptFilename(origin.getName(), controller.getName(),
+                controller.getExtension().orElse("out"));
         copyStringToFile(script, scriptFilename);
 
         arguments.put("payloadDirectory", workingDirectory);
