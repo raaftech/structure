@@ -22,6 +22,7 @@ import com.raaftech.structure.helper.handlebars.ReachableAddress;
 import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.json.JsonObject;
 import joptsimple.internal.Strings;
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,9 +53,11 @@ public class InstrumentRunner {
     private final ObjectNode arguments;
 
     private final String workingDirectory = getCurrentWorkingDirectory() + "/generatedscripts/";
+    // Set timeout of transport to 10000ms
+    private static final Optional<Long> transportTimeout = Optional.of(10000L);
 
-    // jobs will contain the system commands eventually sent to the agent with the TaskManager.
-    private final ArrayList<String> jobList = new ArrayList<>();
+    // jobs will contain system commands, paired with timeouts, eventually sent to the agent with the TaskManager.
+    private final ArrayList<Pair<String, Optional<Long>>> jobList = new ArrayList<>();
     private final String taskManagerAddress = "com.raaftech.structure.manager.taskmanager";
 
     private final Logger log = LoggerFactory.getLogger(InstrumentRunner.class);
@@ -192,9 +195,9 @@ public class InstrumentRunner {
                     List<String> argumentsToScript = createArgumentList(controller, filteredContext);
                     log.debug("Found the following arguments: " + argumentsToScript);
                     // send file to subject (assumes sendFile + receiveFile)
-                    jobList.add(sendFile(heaviestSendFile));
+                    jobList.add(Pair.of(sendFile(heaviestSendFile), transportTimeout));
                     // send execution to subject (assumes sendString + receiveString)
-                    jobList.add(sendString(heaviestSendString) + " " + Strings.join(argumentsToScript, " "));
+                    jobList.add(Pair.of(sendString(heaviestSendString) + " " + Strings.join(argumentsToScript, " "), transportTimeout));
                 } catch (IOException e) {
                     log.error(e.getMessage());
 
@@ -221,9 +224,9 @@ public class InstrumentRunner {
                     // create script file, this will put the file metadata in our static arguments
                     createScript(controller, invokableInterpreter);
                     // send file to subject (assumes sendFile + receiveFile)
-                    jobList.add(sendFile(heaviestSendFile));
+                    jobList.add(Pair.of(sendFile(heaviestSendFile), transportTimeout));
                     // send execution to subject (assumes sendString + receiveString)
-                    jobList.add(sendString(heaviestSendString));
+                    jobList.add(Pair.of(sendString(heaviestSendString), transportTimeout));
 
                 } catch (Exception e) {
                     log.error(e.getMessage());
@@ -249,7 +252,7 @@ public class InstrumentRunner {
                 try {
                     // TODO: create method
                     ObjectNode args = validateAndSelectArguments(controller);
-                    jobList.add(applyTemplate(controller.getTemplateContent().get(), args));
+                    jobList.add(Pair.of(applyTemplate(controller.getTemplateContent().get(), args), controller.getTimeAllocated()));
                 } catch (IOException e) {
                     if (Configuration.isTraceModeOn()) {
                         e.printStackTrace();
@@ -651,7 +654,7 @@ public class InstrumentRunner {
         return appliedTemplate;
     }
 
-    public List<String> getJobs() {
+    public List<Pair<String, Optional<Long>>> getJobs() {
         return jobList;
     }
 
@@ -667,7 +670,7 @@ public class InstrumentRunner {
         args.put("sequential", true);
         ArrayNode jobs = args.putArray("jobs");
         jobList.stream()
-                .forEachOrdered(command -> {
+                .forEachOrdered(commandAndTimeout -> {
                     ObjectNode job = mapper.createObjectNode();
                     job.putObject("metadata")
                             .put("originName", origin.getName())
@@ -678,7 +681,11 @@ public class InstrumentRunner {
                     if (maybeStateMap.isPresent()) {
                         ((ObjectNode) job.get("metadata")).put("stateMap", maybeStateMap.get());
                     }
-                    job.put("command", command);
+                    Optional<Long> maybeTimeAllocated = commandAndTimeout.getRight();
+                    if (maybeTimeAllocated.isPresent()) {
+                        ((ObjectNode) job.get("metadata")).put("timeAllocated", maybeTimeAllocated.get());
+                    }
+                    job.put("command", commandAndTimeout.getLeft());
                     jobs.add(job);
                 });
 

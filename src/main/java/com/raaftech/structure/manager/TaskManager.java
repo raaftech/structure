@@ -59,18 +59,16 @@ public class TaskManager extends GenericActor {
         public ProcessRunner process;
         public ObjectNode metadata;
         public Long timeStarted;
-        public int timeAllocated;
+        public Long timeAllocated;
 
         public Job(ProcessRunner process, String taskId, ObjectNode metadata) {
             this.process = process;
             this.taskId = taskId;
             this.metadata = metadata;
-            this.timeAllocated = TaskManager.defaultJobTime;
-        }
 
-        public Job(ProcessRunner process, String taskId, ObjectNode metadata, int timeAllocated) {
-            this(process, taskId, metadata);
-            this.timeAllocated = timeAllocated;
+            this.timeAllocated = metadata.has("timeAllocated") ?
+                    metadata.get("timeAllocated").asLong(TaskManager.defaultJobTime) :
+                    TaskManager.defaultJobTime;
         }
 
         public ObjectNode toJson() {
@@ -139,7 +137,7 @@ public class TaskManager extends GenericActor {
     // The currently running jobs.
     private static List<Job> runningJobs = new ArrayList<>();
     // The default timeout for a job.
-    private final static int defaultJobTime = 3000;
+    private final static long defaultJobTime = 3000L;
 
     /**
      * The constructor creates a periodic task that polls the queue.
@@ -472,13 +470,7 @@ public class TaskManager extends GenericActor {
                     String command = jobData.get("command").asText();
                     ObjectNode metadata = (ObjectNode) jobData.get("metadata");
                     ProcessRunner processRunner = new ProcessRunner(command);
-                    Job job;
-                    if (jobData.has("timeAllocated")) {
-                        job = new Job(processRunner, task.id, metadata, jobData.get("timeAllocated").asInt());
-                    } else {
-                        job = new Job(processRunner, task.id, metadata);
-                    }
-                    task.jobs.add(job);
+                    task.jobs.add(new Job(processRunner, task.id, metadata));
                 }
                 task.jobs.stream().forEach(job -> queueJob(job));
                 taskMap.put(task.id, task);

@@ -11,6 +11,12 @@
       "type": "string",
       "description": "The parser able to convert the raw results of this instrument."
     },
+    "timeAllocated": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "The amount of time (in ms) allocated for the execution of this controller.",
+      "default": 3000
+    },
     "extension": {
       "type": "string",
       "pattern": "^\\.[a-zA-Z0-9]+$",

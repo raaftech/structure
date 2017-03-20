@@ -42,6 +42,7 @@ public class Controller extends Instrument {
     private static final String WEIGHT = "weight";
     private static final String INTERPRETER = "interpreter";
     private static final String STATEMAP = "stateMap";
+    private static final String TIMEALLOCATED = "timeAllocated";
 
     @RelatedTo(type="GIVES_CAPABILITY", direction=Direction.OUTGOING)
     private Type capability;
@@ -247,6 +248,18 @@ public class Controller extends Instrument {
         }
 
         return extension;
+    }
+
+    /**
+     * A controller may have an allocated time, which means its process will
+     * be killed when that time is exceeded.
+     * @return A long optional, containing the allocated time if it's available.
+     */
+    public Optional<Long> getTimeAllocated() {
+        return data.hasProperty(TIMEALLOCATED) ?
+            // numerical types are inserted as doubles, so round it to a long
+            Optional.of((Math.round((double) data.getProperty(TIMEALLOCATED)))) :
+            Optional.empty();
     }
 
     public boolean isSubjectIsLocal() {

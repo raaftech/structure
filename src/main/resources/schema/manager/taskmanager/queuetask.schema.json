@@ -30,6 +30,10 @@
               "originName": { "type": "string" },
               "originUuid": { "type": "string" },
               "capability": { "type": "string" },
+              "timeAllocated": {
+                "type": "integer",
+                "minimum": 0
+              },
               "stateMap": {
                 "type": "object",
                 "patternProperties": {
