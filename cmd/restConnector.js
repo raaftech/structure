@@ -1,65 +1,79 @@
 "use strict";
 
 const R = require('ramda');
-const agent = require('superagent');
+const fetch = require('node-fetch');
 const util = require('util');
-
-//Construct a default GET based return function for use by superagent
-const getReturnFunction = (resolve, reject) => {
-    return function(error, result) {
-        if(error) reject(error);
-        else resolve(R.path(['body', 'result'], result));
-    };
-};
-
-//Construct a new Promise based on a url
-const returnGetPromise = (url) => {
-    return new Promise((resolve, reject) => {
-        agent.get(url)
-            .end(getReturnFunction(resolve, reject));
-    });
-};
 
 const getBaseUrl = (host, port) => util.format('http://%s:%s/api',host, port);
 
 
 const getEntityByName = (host, port, name) => {
     let url = util.format('%s/Entities/name/%s', getBaseUrl(host,port),name);
-    return returnGetPromise(url);
+    return fetch(url).then(result => result.json());
 };
 
 const getEntityByUuid = (host, port, uuid) => {
     let url = util.format('%s/Entities/type/%s', getBaseUrl(host,port),uuid);
-    return returnGetPromise(url);
+    return fetch(url).then(result => result.json());
 };
 
 const getChildren = (host, port, uuid) => {
     let url = util.format('%s/Entities/children/%s', getBaseUrl(host,port),uuid);
-    return returnGetPromise(url);
+    return fetch(url).then(result => result.json());
 };
 
 const lastInstances = (host, port, quantity) => {
     let url = util.format('%s/Entities/last/%s', getBaseUrl(host,port),quantity);
-    return returnGetPromise(url);
+    return fetch(url).then(result => result.json());
 };
 
 const getInstanceByUuid = (host, port, uuid) => {
     let url = util.format('%s/Entities/instance/%s', getBaseUrl(host,port),uuid);
-    return returnGetPromise(url);
+    return fetch(url).then(result => result.json());
 };
 
-const createInstance = (host,port,options) => {
-    let url = util.format('%s/Entities/instance', getBaseUrl(host,port));
-	return new Promise((resolve, reject) => {
-		agent.post(url)
-			.send(options)
-			.end(getReturnFunction(resolve,reject));
-	});
+
+const createInstance = (host,port, token, options) => {
+    let url = util.format('%s/Entities/instance?access_token=%s', getBaseUrl(host,port), token);
+	return fetch(url,
+                {
+                    method: 'POST',
+                    body: 'args='+JSON.stringify(options),
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+                })
+                .then(result => result.json());
 };
 
-const discover = (host,port,uuid) => {
-    let url = util.format('%s/Tasks/discover/%s', getBaseUrl(host,port),uuid);
-	return returnGetPromise(url);	
+const runInstrument = (host, port, token, instrument, uuid) => {
+
+};
+
+const login = (host, port, email, password) => {
+    let url = util.format('%s/StructureUsers/login', getBaseUrl(host,port));
+    let credentials = JSON.stringify({email: email, password: password});
+    return fetch(url,
+        {
+            method: 'POST',
+            body: credentials,
+            headers: {'Content-Type': 'application/json'}
+        })
+        .then(result => result.json());
+};
+
+const logout = (host, port, token) => {
+    let url = util.format('%s/StructureUsers/logout', getBaseUrl(host,port));
+};
+
+const createUser = (host, port, email, password) => {
+    let url = util.format('%s/StructureUsers', getBaseUrl(host,port));
+    let credentials = JSON.stringify({email: email, password: password});
+    return fetch(url,
+        {
+            method: 'POST',
+            body: credentials,
+            headers: {'Content-Type': 'application/json'}
+        })
+        .then(result => result.json());
 };
 
 module.exports = {
@@ -69,5 +83,8 @@ module.exports = {
     lastInstances: lastInstances,
     getInstanceByUuid: getInstanceByUuid,
 	createInstance: createInstance,
-	discover: discover
+    runInstrument: runInstrument,
+    login: login,
+    logout: logout,
+    createUser: createUser
 };
