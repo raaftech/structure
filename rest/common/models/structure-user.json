@@ -1,0 +1,14 @@
+{
+  "name": "StructureUser",
+  "base": "User",
+  "idInjection": true,
+  "injectOptionsFromRemoteContext": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {},
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": {}
+}
