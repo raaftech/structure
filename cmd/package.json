@@ -17,9 +17,9 @@
   "dependencies": {
     "cli-color": "^1.1.0",
     "neo4j": "^2.0.0-RC2",
+    "node-fetch": "^1.6.3",
     "ramda": "^0.22.1",
     "sprintf-js": "^1.0.3",
-    "superagent": "^3.3.1",
     "treeify": "^1.0.1",
     "vertx3-eventbus-client": "^3.0.0",
     "vorpal": "^1.11.4"
