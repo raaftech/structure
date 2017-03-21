@@ -3,7 +3,7 @@
 const test = require('tape');
 const path = require('path');
 const R = require('ramda');
-const rest = require(path.join(__dirname, '..', 'restConnector'));
+const RestConnector = require(path.join(__dirname, '..', 'restConnector'));
 
 const notNil = R.compose(R.not, R.isNil);
 const HOST = 'localhost';
@@ -12,8 +12,10 @@ const EMAIL = 'orchid@blackorchid.nl';
 const PWD = 'test';
 
 test('getEntityByName test', function(tt) {
+    let rest = new RestConnector(HOST, PORT);
+
     tt.test('Get known entity by name', function(t) {
-        rest.getEntityByName(HOST, PORT, 'Computer')
+        rest.getEntityByName('Computer')
             .then(result => {
                 t.ok(notNil(result), 'there should be a result');
                 t.ok(R.is(Object, result), 'should be an object');
@@ -25,7 +27,7 @@ test('getEntityByName test', function(tt) {
     });
 
     tt.test('Get UNknown entity by name', function(t) {
-        rest.getEntityByName(HOST, PORT, 'FOOBAR')
+        rest.getEntityByName('FOOBAR')
             .then(result => {
                 t.ok(notNil(result), 'there should be a result');
                 t.ok(R.is(Object, result), 'should be an object');
@@ -38,8 +40,10 @@ test('getEntityByName test', function(tt) {
 });
 
 test('getEntityByUuid test', function(tt) {
+    let rest = new RestConnector(HOST, PORT);
+
     tt.test('Get known entity by uuid', function(t) {
-        rest.getEntityByUuid(HOST, PORT, 'ec11db91-6973-4285-b018-b461fbb432d7')
+        rest.getEntityByUuid('ec11db91-6973-4285-b018-b461fbb432d7')
             .then(result => {
                 t.ok(R.isArrayLike(result), 'Should be array type');
                 t.ok(notNil(R.head(result)), 'there should be a result');
@@ -52,7 +56,7 @@ test('getEntityByUuid test', function(tt) {
     });
 
     tt.test('Get UNknown entity by uuid', function(t) {
-        rest.getEntityByUuid(HOST, PORT, 'dd11db91-6973-4285-b018-b461fbb432d7')
+        rest.getEntityByUuid('dd11db91-6973-4285-b018-b461fbb432d7')
             .then(result => {
                 t.ok(notNil(result), 'there should be a result');
                 t.ok(R.is(Object, result), 'should be an object');
@@ -64,8 +68,10 @@ test('getEntityByUuid test', function(tt) {
 });
 
 test('getChildren test', function(tt) {
+    let rest = new RestConnector(HOST, PORT);
+
     tt.test('get children for valid entity uuid', function(t) {
-        rest.getChildren(HOST, PORT, 'ee92c308-80f4-40b2-af3a-77d26cd99517')
+        rest.getChildren('ee92c308-80f4-40b2-af3a-77d26cd99517')
             .then(children => {
                 t.ok(R.isArrayLike(children), 'Should be array type');
                 t.ok(notNil(R.head(children)), 'there should be a result');
@@ -78,7 +84,7 @@ test('getChildren test', function(tt) {
     });
 
     tt.test('get children for INvalid entity uuid', function(t) {
-        rest.getChildren(HOST, PORT, 'dd92c308-80f4-40b2-af3a-77d26cd99517')
+        rest.getChildren('dd92c308-80f4-40b2-af3a-77d26cd99517')
             .then(children => {
                 t.ok(R.is(Object, children), 'should be an object');
                 t.ok(R.has('error', children), 'Should have error property');
@@ -94,8 +100,10 @@ test('getChildren test', function(tt) {
 });
 
 test('lastInstances test', function(tt) {
+    let rest = new RestConnector(HOST, PORT);
+
     tt.test('get last 5 instances', function(t) {
-        rest.lastInstances(HOST, PORT, 5)
+        rest.lastInstances(5)
             .then(instances => {
                 t.ok(R.isArrayLike(instances), 'Should be array type');
                 t.equal(R.length(instances), 5, 'Should be five entries');
@@ -106,10 +114,12 @@ test('lastInstances test', function(tt) {
 });
 
 test('getInstanceByUuid test', function(tt) {
+    let rest = new RestConnector(HOST, PORT);
+
     tt.test('get an instance by uuid', function(t) {
-        rest.lastInstances(HOST, PORT, 1)
+        rest.lastInstances(1)
             .then(instances => R.pipe(R.head, R.path(['meta','uuid']))(instances))
-            .then(uuid => rest.getInstanceByUuid(HOST, PORT, uuid))
+            .then(uuid => rest.getInstanceByUuid(uuid))
             .then(instance => {
                 t.ok(notNil(instance), 'there should be a result');
                 t.ok(R.is(Object, instance), 'should be an object');
@@ -123,15 +133,16 @@ test('getInstanceByUuid test', function(tt) {
 
 test('createInstance test', function(tt) {
     tt.test('create instance with valid token', function(t) {
-        rest.login(HOST, PORT, EMAIL, PWD)
-            .then(user => user.id)
-            .then(token => {
+        let rest = new RestConnector(HOST, PORT);
+
+        rest.login(EMAIL, PWD)
+            .then(user => {
                 let options = {
                     name: 'discovery',
                     node: 'ec11db91-6973-4285-b018-b461fbb432d7',
                     desc: 'some description'
                 };
-                return rest.createInstance(HOST, PORT, token, options);
+                return rest.createInstance(options);
             })
             .then(result => {
                 t.ok(R.isEmpty(result), 'Should be empty object');
@@ -141,12 +152,14 @@ test('createInstance test', function(tt) {
     });
 
     tt.test('use invalid token', function(t) {
+        let rest = new RestConnector(HOST, PORT);
+
         let options = {
             name: 'discovery',
             node: 'ec11db91-6973-4285-b018-b461fbb432d7',
             desc: 'some description'
         };
-        rest.createInstance(HOST, PORT, 'invalid-token', options)
+        rest.createInstance(options)
             .then(result => {
                 t.ok(notNil(result), 'there should be a result');
                 t.ok(R.is(Object, result), 'should be an object');
@@ -167,14 +180,17 @@ test.skip('runInstrument test', function(tt) {
 
 });
 
-test.skip('login test', function(tt) {
+test('login test', function(tt) {
+    let rest = new RestConnector(HOST, PORT);
+
     tt.test('Login', function(t) {
-        rest.login(HOST, PORT, EMAIL, PWD)
+        rest.login(EMAIL, PWD)
             .then(user => {
                 t.ok(notNil(user), 'there should be a result');
                 t.ok(R.is(Object, user), 'should be an object');
                 let conditions = [R.has('id'), R.has('ttl'), R.has('created'), R.has('userId')];
                 t.ok(R.allPass(conditions)(user), 'Should have Login properties');
+                t.equal(user.id, rest.getToken(), 'Should be the right token');
                 t.end();
             })
             .catch(ex => t.end(ex));
@@ -185,8 +201,10 @@ test.skip('logout test', function(tt) {
 });
 
 test.skip('createUser test', function(tt) {
+    let rest = new RestConnector(HOST, PORT);
+
     tt.test('createUser test', function(t) {
-        rest.createUser(HOST, PORT, EMAIL, PWD)
+        rest.createUser(EMAIL, PWD)
             .then(user => {
                 t.ok(notNil(user), 'there should be a result');
                 t.ok(R.is(Object, user), 'should be an object');

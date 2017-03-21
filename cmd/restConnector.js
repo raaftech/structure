@@ -6,85 +6,89 @@ const util = require('util');
 
 const getBaseUrl = (host, port) => util.format('http://%s:%s/api',host, port);
 
+class RestConnector {
+    constructor(host, port) {
+        this.host = host;
+        this.port = port;
+        this.token = '';
+    }
 
-const getEntityByName = (host, port, name) => {
-    let url = util.format('%s/Entities/name/%s', getBaseUrl(host,port),name);
-    return fetch(url).then(result => result.json());
-};
+    getToken() {
+        return this.token;
+    }
 
-const getEntityByUuid = (host, port, uuid) => {
-    let url = util.format('%s/Entities/type/%s', getBaseUrl(host,port),uuid);
-    return fetch(url).then(result => result.json());
-};
+    getEntityByName(name) {
+        let url = util.format('%s/Entities/name/%s', getBaseUrl(this.host,this.port),name);
+        return fetch(url).then(result => result.json());
+    }
 
-const getChildren = (host, port, uuid) => {
-    let url = util.format('%s/Entities/children/%s', getBaseUrl(host,port),uuid);
-    return fetch(url).then(result => result.json());
-};
+    getEntityByUuid(uuid) {
+        let url = util.format('%s/Entities/type/%s', getBaseUrl(this.host,this.port),uuid);
+        return fetch(url).then(result => result.json());
+    }
 
-const lastInstances = (host, port, quantity) => {
-    let url = util.format('%s/Entities/last/%s', getBaseUrl(host,port),quantity);
-    return fetch(url).then(result => result.json());
-};
+    getChildren(uuid) {
+        let url = util.format('%s/Entities/children/%s', getBaseUrl(this.host,this.port),uuid);
+        return fetch(url).then(result => result.json());
+    }
 
-const getInstanceByUuid = (host, port, uuid) => {
-    let url = util.format('%s/Entities/instance/%s', getBaseUrl(host,port),uuid);
-    return fetch(url).then(result => result.json());
-};
+    lastInstances(quantity) {
+        let url = util.format('%s/Entities/last/%s', getBaseUrl(this.host,this.port),quantity);
+        return fetch(url).then(result => result.json());
+    }
 
+    getInstanceByUuid(uuid) {
+        let url = util.format('%s/Entities/instance/%s', getBaseUrl(this.host,this.port),uuid);
+        return fetch(url).then(result => result.json());
+    }
 
-const createInstance = (host,port, token, options) => {
-    let url = util.format('%s/Entities/instance?access_token=%s', getBaseUrl(host,port), token);
-	return fetch(url,
-                {
-                    method: 'POST',
-                    body: 'args='+JSON.stringify(options),
-                    headers: {'Content-Type': 'application/x-www-form-urlencoded'}
-                })
-                .then(result => result.json());
-};
+    createInstance(options) {
+        let url = util.format('%s/Entities/instance?access_token=%s', getBaseUrl(this.host,this.port), this.token);
+        return fetch(url,
+            {
+                method: 'POST',
+                body: 'args='+JSON.stringify(options),
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+            })
+            .then(result => result.json());
+    }
 
-const runInstrument = (host, port, token, instrument, uuid) => {
+    runInstrument(instrument, uuid) {
 
-};
+    }
 
-const login = (host, port, email, password) => {
-    let url = util.format('%s/StructureUsers/login', getBaseUrl(host,port));
-    let credentials = JSON.stringify({email: email, password: password});
-    return fetch(url,
-        {
-            method: 'POST',
-            body: credentials,
-            headers: {'Content-Type': 'application/json'}
-        })
-        .then(result => result.json());
-};
+    login(email,password) {
+        let self = this;
+        let url = util.format('%s/StructureUsers/login', getBaseUrl(this.host,this.port));
+        let credentials = JSON.stringify({email: email, password: password});
+        return fetch(url,
+            {
+                method: 'POST',
+                body: credentials,
+                headers: {'Content-Type': 'application/json'}
+            })
+            .then(result => result.json())
+            .then(creds => {
+                self.token = creds.id;
+                return creds;
+            });
+    }
 
-const logout = (host, port, token) => {
-    let url = util.format('%s/StructureUsers/logout', getBaseUrl(host,port));
-};
+    logout() {
+        let url = util.format('%s/StructureUsers/logout', getBaseUrl(this.host,this.port));
+    }
 
-const createUser = (host, port, email, password) => {
-    let url = util.format('%s/StructureUsers', getBaseUrl(host,port));
-    let credentials = JSON.stringify({email: email, password: password});
-    return fetch(url,
-        {
-            method: 'POST',
-            body: credentials,
-            headers: {'Content-Type': 'application/json'}
-        })
-        .then(result => result.json());
-};
+    createUser(email, password) {
+        let url = util.format('%s/StructureUsers', getBaseUrl(this.host,this.port));
+        let credentials = JSON.stringify({email: email, password: password});
+        return fetch(url,
+            {
+                method: 'POST',
+                body: credentials,
+                headers: {'Content-Type': 'application/json'}
+            })
+            .then(result => result.json());
+    }
+}
 
-module.exports = {
-    getEntityByName: getEntityByName,
-    getEntityByUuid: getEntityByUuid,
-    getChildren: getChildren,
-    lastInstances: lastInstances,
-    getInstanceByUuid: getInstanceByUuid,
-	createInstance: createInstance,
-    runInstrument: runInstrument,
-    login: login,
-    logout: logout,
-    createUser: createUser
-};
+module.exports = RestConnector;
