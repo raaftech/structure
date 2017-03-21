@@ -43,12 +43,11 @@ const main = (db) => {
     let client = new vClient();
 
     let network = helper.createNetwork();
-    //let networkRelation = network.relationCreate('HAS_COMPONENT', 'outgoing');
     let networkGroup = network.relationCreate('GROUPS', 'outgoing');
 
     nmapLib.nmapScan(cidr, args)
         .then((nmapResults) => {
-            const count = R.length(nmapResults);
+            //const count = R.length(nmapResults);
             async.eachOfSeries(nmapResults, function(item,index,done) {
                 console.log('calling ansible for %s [%s]', nmapResults[index].hostname, nmapResults[index].ip);
                 let doneCalled = false;
@@ -65,18 +64,6 @@ const main = (db) => {
                                                    getSshService(nmapResults[index]),
                                                    getHttpService(nmapResults[index]));
 
-                        //if(options.verbose) Helper.prettyPrint(subGraph);
-                        //if(options.verbose) console.log(JSON.stringify(subGraph.toList(),undefined,2));
-                        // client.createGraph({msgh: "create", args: {entities: subGraph.toList()}})
-                        //     .then((created) => {
-                        //         console.log('Processing result %s of %s for %s [%s]', index, count, nmapResults[index].hostname, nmapResults[index].ip);
-                        //         console.log('------CREATE result');
-                        //         console.log(created.body.result.data);
-                        //         console.log('------');
-                        //         doneCalled = true;
-                        //         done();
-                        //     });
-                        //networkRelation.addEntity(subGraph);
                         networkGroup.addEntity(subGraph);
                         doneCalled = true;
                         done();
@@ -87,14 +74,10 @@ const main = (db) => {
                 console.log('Done running discovery of %s', cidr);
 
                 let finalGraph = new Entity.SubGraph(network);
-                //console.log(JSON.stringify(finalGraph.toList(),undefined,2));
                 R.forEach(item => {
                     client.createGraph({msgh: "create", args: {entities: [item]}})
                         .then((created) => {
-                            //console.log('Processing result %s of %s for %s [%s]', index, count, nmapResults[index].hostname, nmapResults[index].ip);
-                            // console.log('------CREATE result');
                             // console.log(created.body.result.data);
-                            // console.log('------');
                         });
                 }, finalGraph.toList());
 

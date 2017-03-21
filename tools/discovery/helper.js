@@ -271,39 +271,6 @@ class Helper {
             R.defaultTo(null, R.clone(json.file))
         );
     }
-
-    static prettyPrint(graph) {
-        let list = graph.toList();
-        list = R.map(item => {
-            return {
-                type: item.type,
-                name: item.name,
-                desc: item.desc,
-                meta: R.clone(item.meta),
-                data: R.clone(item.data)
-            };
-        }, list);
-
-        let root = R.find(R.propEq('name','Computer'),list);
-        let components = [];
-        let configs = [];
-
-        R.forEach(uuid => {
-            let comp = R.find(R.pathEq(['meta','uuid'],uuid), list);
-            components.push(comp);
-        }, root.meta.relations['HAS_COMPONENT'].uuids);
-
-        R.forEach(uuid => {
-            let cfg = R.find(R.pathEq(['meta','uuid'],uuid), list);
-            configs.push(cfg);
-        }, root.meta.relations['HAS_CONFIGURATION'].uuids);
-
-        root.meta.relations['HAS_COMPONENT'] = components;
-        root.meta.relations['HAS_CONFIGURATION'] = configs;
-
-        let output = treeify.asTree(root, true);
-        console.log(output);
-    }
 }
 
 module.exports = Helper;
