@@ -40,5 +40,9 @@
   "Status": {
     "dataSource": "db",
     "public": true
+  },
+  "StructureUser": {
+    "dataSource": "db",
+    "public": true
   }
 }
