@@ -51,6 +51,7 @@ public class InstrumentRunner {
     private final Grouping subject;
     private final Grouping agent;
     private final ObjectNode arguments;
+    private long timeAllocated;
 
     private final String workingDirectory = getCurrentWorkingDirectory() + "/generatedscripts/";
     // Set timeout of transport to 10000ms
@@ -61,6 +62,12 @@ public class InstrumentRunner {
     private final String taskManagerAddress = "com.raaftech.structure.manager.taskmanager";
 
     private final Logger log = LoggerFactory.getLogger(InstrumentRunner.class);
+
+
+    public InstrumentRunner(Instance origin, Controller controller, ObjectNode arguments, String taskId, long timeAllocated) {
+        this(origin, controller, arguments, taskId);
+        this.timeAllocated = timeAllocated;
+    }
 
     /**
      * Construct the InstrumentRunner, do some checks, etc.
