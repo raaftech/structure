@@ -24,7 +24,9 @@ class RestConnector {
 
     getEntityByUuid(uuid) {
         let url = util.format('%s/Entities/type/%s', getBaseUrl(this.host,this.port),uuid);
-        return fetch(url).then(result => result.json());
+        return fetch(url)
+            .then(result => result.json())
+            .then(list => R.head(list));
     }
 
     getChildren(uuid) {

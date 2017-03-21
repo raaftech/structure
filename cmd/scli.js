@@ -10,7 +10,9 @@ const treeify = require('treeify');
 const neo = require('./extensions/neo');
 const fs = require('fs');
 const path = require('path');
+const RestConnector = require('./restConnector');
 
+let rest = new RestConnector('localhost', 3000);
 let eventBusUrl = '';
 let eb = null;
 init();
@@ -132,35 +134,47 @@ vorpal.command('disconnect', 'Disconnect from the EventBus')
     });
 
 vorpal.command('find <name>', 'Find a specified node in vertx')
-	.option('-f, --field <fieldName>', 'Select a specific field from the resultset',
-			helper.getCommonFields())
-	.option('-u, --uuid', 'Set search mode to uuid based search.')
-	.option('-i, --instance', 'Set search mode to instance based search')
-	.action(function(args, done) {
-		const self = this;
-		let act = args.options.uuid ? 'findOne' : 'findOneByName';
-		let pargs = args.options.uuid ? {'node': args.name} : {'name': args.name};
-		let addr = args.options.instance ? ['repository', 'instances'] : ['repository', 'types'];
-		sendEvent(helper.getEventBusAddress(addr), act, pargs)
-			.then((data) => {
-				if(args.options.field) {
-					let val = helper.stringify(helper.getResultData(data)[args.options.field]);
-					self.log(sprintf('%-16s: %s', args.options.field, val));
-					done();
-				} else {
-				    let databuf = helper.getResultData(data);
-				    let keys = R.pipe(R.keys, R.prepend('ALL'))(databuf);
-				    self.prompt(helper.generateQuestion('list', 'list', 'Choose a field', {choices: keys}), function(result) {
-				        if(result.list === 'ALL') self.log(helper.stringify(databuf));
-				        else {
-				            let prop = clc.green.bold(result.list);
-				            self.log(util.format('%s: %s',prop,helper.stringify(databuf[result.list])));
-				        }
-				        done();
-				    });
-				}
-			});
-	});
+    .option('-f, --field <fieldName>', 'Select a specific field from the resultset',
+        helper.getCommonFields())
+    .option('-u, --uuid', 'Set search mode to uuid based search.')
+    .action(function(args, done) {
+        const self = this;
+
+        let handler = (method, arg) => {
+            rest[method](arg)
+                .then(entity => {
+                    self.log(helper.stringify(entity));
+                    let meta = R.curry((ent,list) => {
+                        return R.pipe(
+                            R.prop('meta'),
+                            R.keys,
+                            R.map(item => 'meta.'+item),
+                            R.concat(list)
+                        )(ent);
+                    });
+                    let keys = R.pipe(R.keys, R.prepend('ALL'),meta(entity))(entity);
+                    self.prompt(helper.generateQuestion('list', 'list', 'Choose a field', {choices: keys}), function(result) {
+                        if(result.list === 'ALL') self.log(helper.stringify(entity));
+                        else {
+                            let pp = R.split('.',result.list);
+                            let prop = clc.green.bold(result.list);
+                            self.log(util.format('%s: %s',prop,helper.stringify(R.path(pp, entity))));
+                        }
+                        done();
+                    });
+                })
+                .catch(ex => {
+                    self.log(ex);
+                    done();
+                });
+        };
+
+        if(args.options.uuid) {
+            handler('getEntityByUuid', args.name);
+        } else {
+            handler('getEntityByName', args.name);
+        }
+    });
 
 vorpal.command('instance')
     .option('-l, --last <quantity>', 'Fetch the last (quantity) created instances')

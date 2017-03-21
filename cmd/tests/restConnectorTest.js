@@ -39,17 +39,16 @@ test('getEntityByName test', function(tt) {
     });
 });
 
-test('getEntityByUuid test', function(tt) {
+test.only('getEntityByUuid test', function(tt) {
     let rest = new RestConnector(HOST, PORT);
 
     tt.test('Get known entity by uuid', function(t) {
         rest.getEntityByUuid('ec11db91-6973-4285-b018-b461fbb432d7')
             .then(result => {
-                t.ok(R.isArrayLike(result), 'Should be array type');
-                t.ok(notNil(R.head(result)), 'there should be a result');
-                t.ok(R.is(Object, R.head(result)), 'should be an object');
+                t.ok(notNil(result), 'there should be a result');
+                t.ok(R.is(Object, result), 'should be an object');
                 let conditions = [R.has('name'), R.has('meta'), R.has('type')];
-                t.ok(R.allPass(conditions)(R.head(result)), 'Should have Entity properties');
+                t.ok(R.allPass(conditions)(result), 'Should have Entity properties');
                 t.end();
             })
             .catch(ex => t.end(ex));
@@ -58,9 +57,7 @@ test('getEntityByUuid test', function(tt) {
     tt.test('Get UNknown entity by uuid', function(t) {
         rest.getEntityByUuid('dd11db91-6973-4285-b018-b461fbb432d7')
             .then(result => {
-                t.ok(notNil(result), 'there should be a result');
-                t.ok(R.is(Object, result), 'should be an object');
-                t.ok(R.isEmpty(result), 'Should be empty object');
+                t.ok(R.isNil(result), 'Should be no result');
                 t.end();
             })
             .catch(ex => t.end(ex));
