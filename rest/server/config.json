@@ -17,7 +17,10 @@
       "limit": "100kb"
     },
     "cors": false,
-    "handleErrors": false
+    "handleErrors": false,
+    "errorHandler": {
+      "disableStackTrace": true
+    }
   },
   "legacyExplorer": false,
   "logoutSessionsOnSensitiveChanges": true
