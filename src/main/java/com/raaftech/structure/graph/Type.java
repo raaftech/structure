@@ -1,7 +1,6 @@
 package com.raaftech.structure.graph;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.fge.jsonschema.core.exceptions.ProcessingException;
@@ -9,6 +8,7 @@ import com.raaftech.structure.base.Configuration;
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.graph.repositories.TypeRepository;
 import com.raaftech.structure.helper.JsonSchemaBuilder;
+import org.apache.commons.lang.Validate;
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.Transaction;
 import org.slf4j.Logger;
@@ -17,6 +17,7 @@ import org.springframework.data.annotation.Transient;
 import org.springframework.data.neo4j.annotation.Fetch;
 import org.springframework.data.neo4j.annotation.NodeEntity;
 import org.springframework.data.neo4j.annotation.RelatedTo;
+import org.springframework.data.neo4j.annotation.RelatedToVia;
 import org.springframework.data.neo4j.core.GraphDatabase;
 import org.springframework.data.neo4j.fieldaccess.DynamicProperties;
 import org.springframework.data.neo4j.fieldaccess.DynamicPropertiesContainer;
@@ -59,6 +60,11 @@ public class Type extends Node {
     @RelatedTo(type="IMPLEMENTS", direction = Direction.OUTGOING)
     @Fetch
     private Set<Type> implementsProtocols;
+
+    @RelatedToVia(type="CONSTRAINTS", direction = Direction.OUTGOING)
+    private Set<Constraint> outgoingConstraints;
+    @RelatedToVia(type="CONSTRAINTS", direction = Direction.INCOMING)
+    private Set<Constraint> incomingConstraints;
 
     public DynamicProperties kv = new DynamicPropertiesContainer();
 
@@ -143,6 +149,27 @@ public class Type extends Node {
         tx.close();
         return childIsaSet;
     }
+
+    /**
+     * Add a constraint to this type. See {@link Constraint}.
+     * @param to Add a constraint to the given type.
+     * @param cardinality The cardinality of the constraint.
+     * @param relationshipName What relationship between this and <code>to</code> should be constrained?
+     * @return The type this method was called on.
+     */
+    public Type addConstraint(Type to, Constraint.Cardinality cardinality, String relationshipName) {
+        Validate.notNull(to, "Cannot create constraint to null type.");
+        Validate.notEmpty(relationshipName, "Cannot create constraint for empty relationship name.");
+
+        if (outgoingConstraints == null) {
+            outgoingConstraints = new HashSet<>();
+        }
+
+        outgoingConstraints.add(new Constraint(this, to, cardinality, relationshipName));
+
+        return this;
+    }
+
 
     public Type setDescriptor(String key, String valueType, boolean required, String description, String defaultValue,
                               String pattern) {
