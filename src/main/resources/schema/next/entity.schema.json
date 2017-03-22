@@ -55,7 +55,7 @@
                     }]
                 }
             },
-            "minProperties": 1
+            "minItems": 1
         },
         "meta": {
             "type": "object",
@@ -88,11 +88,11 @@
                             }
                         }
                     },
-                    "minProperties": 1
+                    "minItems": 1
                 },
                 "checksum": {
                     "type": "string",
-                    "pattern": "^[a-f0-9]{4
+                    "pattern": "^[a-f0-9]{40}$"
                 },
                 "bundle": {
                     "type": "string",
