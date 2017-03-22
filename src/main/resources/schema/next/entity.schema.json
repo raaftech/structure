@@ -87,8 +87,7 @@
                                 }
                             }
                         }
-                    },
-                    "minProperties": 1
+                    }
                 },
                 "checksum": {
                     "type": "string",
