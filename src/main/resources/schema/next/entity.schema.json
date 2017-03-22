@@ -92,7 +92,7 @@
                 },
                 "checksum": {
                     "type": "string",
-                    "pattern": "^[a-f0-9]{4
+                    "pattern": "^[a-f0-9]{40}$"
                 },
                 "bundle": {
                     "type": "string",
