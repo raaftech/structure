@@ -193,6 +193,7 @@ vorpal.command('instance')
         });
     });
 
+
 vorpal.command('dig <uuid>', 'Get the child elements for a node')
     .action(function(args, done) {
         const self = this;
@@ -203,32 +204,6 @@ vorpal.command('dig <uuid>', 'Get the child elements for a node')
                     self.log(sprintf('%-16s: %24s', item.name,item.uuid));
                 }, response);
                 done();
-            });
-    });
-
-
-vorpal.command('show <uuid>', 'Show a node by its uuid.')
-    .option('-f, --field <fieldName>', 'Select a specific field from the resultset',
-        ['getPath', 'help','version','uuid'])
-    .action(function(args, done) {
-        const self = this;
-        sendEvent(helper.getEventBusAddress(['node','type',args.uuid]), 'help', {})
-            .then((data) => {
-                if(args.options.field) {
-                    self.log(helper.stringify(data.body.result[args.options.field]));
-                    done();
-                } else {
-                    let databuf = data.body.result;
-                    let keys = R.pipe(R.keys, R.prepend('ALL'))(databuf);
-                    self.prompt(helper.generateQuestion('list', 'list', 'Choose a field', {choices: keys}), function(result) {
-                        if(result.list === 'ALL') self.log(helper.stringify(databuf));
-                        else {
-                            let prop = clc.green.bold(result.list);
-                            self.log(util.format('%s: %s',prop,helper.stringify(databuf[result.list])));
-                        }
-                        done();
-                    });
-                }
             });
     });
 
