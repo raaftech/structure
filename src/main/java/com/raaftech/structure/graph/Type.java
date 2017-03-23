@@ -171,14 +171,6 @@ public class Type extends Node {
         return this;
     }
 
-    /**
-     * Get an immutable <b>copy</b> of the constraints this type is the start for.
-     * @return An immutable copy of the outgoing constraints.
-     */
-    public Set<Constraint> getOutgoingConstraints() {
-        return ImmutableSet.copyOf(outgoingConstraints);
-    }
-
     public Type setDescriptor(String key, String valueType, boolean required, String description, String defaultValue,
                               String pattern) {
         Type parentNode = getIsa();
