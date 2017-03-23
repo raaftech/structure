@@ -18,7 +18,7 @@ let eventBusUrl = '';
 let eb = null;
 init();
 
-
+//TODO refactor to rest api
 function init() {
 	eventBusUrl = R.defaultTo('http://localhost:8080/eventbus', process.env.EVENTBUS);
 	eb = new EventBus(eventBusUrl);
@@ -44,6 +44,7 @@ function scli() {
 	vorpal.delimiter(clc.magenta.bold('structure$')).show();
 }
 
+//TODO refactor to rest api
 function setupStatusChannel() {
     eb.registerHandler('com.raaftech.structure.status',function(error, message) {
         if(error) {
@@ -79,7 +80,6 @@ function sendEvent(base, cmd, args) {
 	});
 }
 
-//refactored
 function getChildren(uuid) {
     return rest.getChildren(uuid)
         .then(children => {
@@ -89,7 +89,6 @@ function getChildren(uuid) {
         });
 }
 
-//refactored
 function toRoot(uuid, childNodes) {
     return new Promise((resolve, reject) => {
         rest.getEntityByUuid(uuid)
@@ -115,9 +114,6 @@ function getPayloadListing() {
 }
 
 
-//commands
-//TODO extract commands to extension sets
-
 //TODO check if obsolete (depends on status channel interface)
 vorpal.command('connect', 'Connect to the eventbus')
     .action(function(args, done) {
@@ -139,7 +135,6 @@ vorpal.command('disconnect', 'Disconnect from the EventBus')
         done();
     });
 
-//refactored
 vorpal.command('find <name>', 'Find a specified node in vertx')
     .option('-f, --field <fieldName>', 'Select a specific field from the resultset',
         helper.getCommonFields())
@@ -183,7 +178,6 @@ vorpal.command('find <name>', 'Find a specified node in vertx')
         }
     });
 
-//refactored
 vorpal.command('instance')
     .option('-l, --last <quantity>', 'Fetch the last (quantity) created instances')
     .option('-f, --find <name>', 'Find a specific instance by name')
@@ -197,7 +191,6 @@ vorpal.command('instance')
         });
     });
 
-//refactored
 vorpal.command('dig <uuid>', 'Get the child elements for a node')
     .action(function(args, done) {
         const self = this;
@@ -211,7 +204,6 @@ vorpal.command('dig <uuid>', 'Get the child elements for a node')
             });
     });
 
-//refactored
 vorpal.command('tree <name>', 'Show a relation tree for the requested node')
     .option('-u, --uuid', 'Make the search go by uuid instead of name')
     .action(function(args, done) {
@@ -249,7 +241,7 @@ vorpal.command('tree <name>', 'Show a relation tree for the requested node')
         }
     });
 
-
+//TODO refactor to rest api
 vorpal.command('discover <cidr>', 'Discover items in the network')
     .action(function(args, done) {
         const self = this;
@@ -275,6 +267,7 @@ vorpal.command('discover <cidr>', 'Discover items in the network')
             });
     });
 
+//TODO refactor to rest api
 vorpal.command('query', 'Place arbitrary requests on the event bus')
     .action(function(args,done) {
         const self = this;
