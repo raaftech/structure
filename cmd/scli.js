@@ -179,20 +179,18 @@ vorpal.command('find <name>', 'Find a specified node in vertx')
         }
     });
 
+//refactored
 vorpal.command('instance')
     .option('-l, --last <quantity>', 'Fetch the last (quantity) created instances')
     .option('-f, --find <name>', 'Find a specific instance by name')
     .action(function(args, done) {
         const self = this;
-        let act = args.options.last ? 'nLastCreated' : 'findOneByName';
-        let pargs = args.options.last ? {'amount': args.options.last} : {'name': args.options.find};
-        let addr = ['repository', 'instances'];
-        sendEvent(helper.getEventBusAddress(addr), act, pargs)
-            .then((data) => {
-                let databuf = helper.getResultData(data);
-                self.log(helper.stringify(databuf));
-                done();
-            });
+        let promise = args.options.last ? rest.lastInstances(args.options.last) : rest.getInstanceByUuid(args.options.find);
+
+        promise.then(instance => {
+            self.log(helper.stringify(instance));
+            done();
+        });
     });
 
 vorpal.command('dig <uuid>', 'Get the child elements for a node')
