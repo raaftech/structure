@@ -91,6 +91,17 @@ class RestConnector {
             })
             .then(result => result.json());
     }
+
+    query(address, command, payload) {
+        let url = util.format('%s/Entities/query?access_token=%s',getBaseUrl(this.host,this.port), this.token);
+        let data = util.format('address=%s&command=%s&payload=%s',encodeURIComponent(address),
+                                encodeURIComponent(command), encodeURIComponent(JSON.stringify(payload)));
+        return fetch(url, {
+            method: 'POST',
+            body: data,
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+        }).then(result => result.json());
+    }
 }
 
 module.exports = RestConnector;

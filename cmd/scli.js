@@ -3,7 +3,6 @@ const vorpal = require('vorpal')();
 const R = require('ramda');
 const util = require('util');
 const helper = require('./helper');
-const EventBus = require('vertx3-eventbus-client');
 const clc = require('cli-color');
 const sprintf = require('sprintf-js').sprintf;
 const treeify = require('treeify');
@@ -11,31 +10,17 @@ const neo = require('./extensions/neo');
 const fs = require('fs');
 const path = require('path');
 const RestConnector = require('./restConnector');
+const EventSource = require('eventsource');
 
 //TODO fetch these params from env or config
 let rest = new RestConnector('localhost', 3000);
-let eventBusUrl = '';
-let eb = null;
+
 init();
 
 //TODO refactor to rest api
 function init() {
-	eventBusUrl = R.defaultTo('http://localhost:8080/eventbus', process.env.EVENTBUS);
-	eb = new EventBus(eventBusUrl);
-	wrapper().then((res) => {
-		console.log(res);
-		setupStatusChannel();
-		scli();
-	});
-}
-
-//TODO check if obsolete (depends on status channel interface)
-function wrapper() {
-	return new Promise((resolve,reject) => {
-		eb.onopen = () => resolve(clc.green.bold(util.format('Connected to: %s', eventBusUrl)));
-
-		eb.onclose = (error) => resolve(clc.red.bold(util.format('Error while connecting to [%s]: %s', eventBusUrl, error.reason)));
-	});
+    setupStatusChannel();
+    scli();
 }
 
 function scli() {
@@ -44,40 +29,38 @@ function scli() {
 	vorpal.delimiter(clc.magenta.bold('structure$')).show();
 }
 
-//TODO refactor to rest api
+//TODO fetch params from env or config
 function setupStatusChannel() {
-    eb.registerHandler('com.raaftech.structure.status',function(error, message) {
-        if(error) {
-            console.log("ERROR: "+error);
-        } else {
-            let uuid = message.body.data.uuid;
-            if(!R.isNil(uuid)) {
-                sendEvent(helper.getEventBusAddress(['repository','types']),'findOne',{node: uuid})
-                    .then((data) => {
-                        console.log(helper.stringify(data));
-                        let comps = helper.getResultData(data)["components"];
-                        comps = helper.consolidateComponents(clc.green(uuid), comps);
-                        let name = helper.getResultData(data)['name'];
-                        if(name.indexOf('unknown-') !== -1) name = clc.red(name);
-                        else name = clc.green(name);
-                        let tree = {};
-                        tree[name] = comps;
-                        console.log(treeify.asTree(tree, true));
-                    });
-            }
-        }
+    const changeUrl = 'http://localhost:3000/api/Statuses/change-stream';
+    const es = new EventSource(changeUrl);
+    es.addEventListener('data', function(message) {
+        let data = JSON.parse(message.data);
+        console.log(JSON.stringify(data, undefined, 2));
     });
 }
 
-//TODO check if obsolete (depends on status channel interface)
-function sendEvent(base, cmd, args) {
-	let options = helper.createOptions(cmd,args);
-	return new Promise((resolve,reject) => {
-		eb.send(base, options, (error, result) => {
-			if(error) reject(error);
-			else resolve(result);
-		});
-	});
+function DEPRECATEDsetupStatusChannel() {
+    // eb.registerHandler('com.raaftech.structure.status',function(error, message) {
+    //     if(error) {
+    //         console.log("ERROR: "+error);
+    //     } else {
+    //         let uuid = message.body.data.uuid;
+    //         if(!R.isNil(uuid)) {
+    //             sendEvent(helper.getEventBusAddress(['repository','types']),'findOne',{node: uuid})
+    //                 .then((data) => {
+    //                     console.log(helper.stringify(data));
+    //                     let comps = helper.getResultData(data)["components"];
+    //                     comps = helper.consolidateComponents(clc.green(uuid), comps);
+    //                     let name = helper.getResultData(data)['name'];
+    //                     if(name.indexOf('unknown-') !== -1) name = clc.red(name);
+    //                     else name = clc.green(name);
+    //                     let tree = {};
+    //                     tree[name] = comps;
+    //                     console.log(treeify.asTree(tree, true));
+    //                 });
+    //         }
+    //     }
+    // });
 }
 
 function getChildren(uuid) {
@@ -112,28 +95,6 @@ function payloadDir() {
 function getPayloadListing() {
     return fs.readdirSync(payloadDir());
 }
-
-
-//TODO check if obsolete (depends on status channel interface)
-vorpal.command('connect', 'Connect to the eventbus')
-    .action(function(args, done) {
-        this.log('Connecting to '+clc.green.bold(eventBusUrl));
-        eventBusUrl = R.defaultTo('http://localhost:8080/eventbus', process.env.EVENTBUS);
-        eb = new EventBus(eventBusUrl);
-        wrapper().then((res) => {
-            console.log(res);
-            done();
-        });
-    });
-
-//TODO check if obsolete (depends on status channel interface)
-vorpal.command('disconnect', 'Disconnect from the EventBus')
-    .action(function(args, done) {
-        this.log(clc.red(util.format('Closing connection to EventBus (%s)', eventBusUrl)));
-        eb.close();
-        this.log(clc.red.bold('Connection closed.'));
-        done();
-    });
 
 vorpal.command('find <name>', 'Find a specified node in vertx')
     .option('-f, --field <fieldName>', 'Select a specific field from the resultset',
@@ -188,7 +149,10 @@ vorpal.command('instance')
         promise.then(instance => {
             self.log(helper.stringify(instance));
             done();
-        });
+        }).catch(ex => {
+                self.log(ex);
+                done();
+            });
     });
 
 vorpal.command('dig <uuid>', 'Get the child elements for a node')
@@ -201,7 +165,11 @@ vorpal.command('dig <uuid>', 'Get the child elements for a node')
                     self.log(sprintf('%-16s: %24s', R.prop('name', item),R.prop('uuid',item)));
                 }, children);
                 done();
-            });
+            })
+            .catch(ex => {
+                self.log(ex);
+                done();
+            })
     });
 
 vorpal.command('tree <name>', 'Show a relation tree for the requested node')
@@ -241,7 +209,7 @@ vorpal.command('tree <name>', 'Show a relation tree for the requested node')
         }
     });
 
-//TODO refactor to rest api
+//TODO finish refactor
 vorpal.command('discover <cidr>', 'Discover items in the network')
     .action(function(args, done) {
         const self = this;
@@ -253,17 +221,19 @@ vorpal.command('discover <cidr>', 'Discover items in the network')
             reachable: true,
             desc: 'Some cidr description.'
         };
-        sendEvent(helper.getEventBusAddress(['repository', 'instances']), 'putNode', pargs)
-            .then((data) => {
-                console.log(data);
-                let uuid = data.body.result.data;
-                self.log('instance uuid: '+uuid);
-                sendEvent(helper.getEventBusAddress(['node', 'component',uuid]), 'runInstrument', {
-                    instrument: 'IpAddressDiscover',
-                    timeAllocated: 600000
-                }).then((result) => {
-                    done();
-                });
+
+        rest.login('orchid@blackorchid.nl', 'test')
+            .then(user => {
+                return rest.createInstance(pargs);
+            })
+            .then(created => {
+                let instanceUuid = created.meta.uuid;
+                return rest.runInstrument('IpAddressDiscover', instanceUuid);
+            })
+            .then(result => done())
+            .catch(ex => {
+                self.log(ex);
+                done();
             });
     });
 
@@ -278,11 +248,15 @@ vorpal.command('query', 'Place arbitrary requests on the event bus')
 
         self.prompt(qs, function(res) {
             let json = helper.readJsonFile(payloadDir() + '/' + res.file);
-            sendEvent(res.address,res.cmd,json)
-                .then((data) => {
-                    console.log(helper.stringify(data));
+
+            rest.query(res.address, res.cmd, json)
+                .then(data => {
+                    console.log(data);
                     done();
                 })
-                .catch((ex) => {console.log(ex); done();});
+                .catch(ex => {
+                    console.log(ex);
+                    done();
+                });
         });
     });

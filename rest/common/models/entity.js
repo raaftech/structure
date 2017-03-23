@@ -11,6 +11,24 @@ eb.onclose = (error) => console.log('Eventbus connection closed: %s', stringify(
 
 module.exports = function (Entity) {
 
+//DEVELOPMENT endpoint
+
+  Entity.query = function(address, command, payload, callback) {
+  	sendEvent(address, command, payload)
+		.then(result => callback(null, getResultData(result)))
+		.catch(ex => callback(ex));
+  
+  };
+
+  Entity.remoteMethod('query', {
+    accepts: [{arg: 'address', type: 'string', required: true},
+			  {arg: 'command', type: 'string', required: true},
+			  {arg: 'payload', type: 'object', required: true}],
+    returns: {root: true, type: 'object'},
+    http: {verb: 'post', path: '/query'},
+    description: 'Request an action from structure'
+  });
+
 //TYPES
   Entity.fetchByUuid = function (uuid, callback) {
     sendEvent(getEventBusAddress(['manager', 'entitymanager']), 'read', {labels: ['type'], start: uuid, includeStart: true})
@@ -101,7 +119,6 @@ module.exports = function (Entity) {
   Entity.fetchInstance = function (uuid, callback) {
     sendEvent(getEventBusAddress(['repository', 'instances']), 'findOne', {node: uuid})
       .then((result) => {
-        console.log(result.body.result);
         sendEvent(getEventBusAddress(['manager', 'entitymanager']), 'read', {labels: ['instance'], start: result.body.result.data.uuid, includeStart: true})
                   .then((res) => callback(null, R.head(getResultData(res))));
       })

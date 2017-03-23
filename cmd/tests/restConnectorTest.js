@@ -39,7 +39,7 @@ test('getEntityByName test', function(tt) {
     });
 });
 
-test.only('getEntityByUuid test', function(tt) {
+test('getEntityByUuid test', function(tt) {
     let rest = new RestConnector(HOST, PORT);
 
     tt.test('Get known entity by uuid', function(t) {
@@ -128,20 +128,24 @@ test('getInstanceByUuid test', function(tt) {
     });
 });
 
-test('createInstance test', function(tt) {
+test.only('createInstance test', function(tt) {
     tt.test('create instance with valid token', function(t) {
         let rest = new RestConnector(HOST, PORT);
 
         rest.login(EMAIL, PWD)
             .then(user => {
                 let options = {
-                    name: 'discovery',
-                    node: 'ec11db91-6973-4285-b018-b461fbb432d7',
-                    desc: 'some description'
+                    node: '299001a6-1091-4c0d-87be-c512af03e179',
+                    name: 'testname',
+                    checksum: 'foobar',
+                    addr: '172.17.1.0/24',
+                    reachable: true,
+                    desc: 'Some cidr description.'
                 };
                 return rest.createInstance(options);
             })
             .then(result => {
+                console.log(result);
                 t.ok(R.isEmpty(result), 'Should be empty object');
                 t.end();
             })
