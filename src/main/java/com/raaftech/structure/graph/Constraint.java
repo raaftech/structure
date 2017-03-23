@@ -111,6 +111,11 @@ public class Constraint {
         // Check if the amount of found nodes is OK
         if (!requiredAmount(relatedNodes.size())) {
             return false;
+        } else {
+            // In case we have 0 related nodes and a 0..1 or 0..* cardinality, we can return
+            if (relatedNodes.isEmpty()) {
+                return true;
+            }
         }
 
         /*

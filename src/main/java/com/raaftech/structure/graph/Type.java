@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.fge.jsonschema.core.exceptions.ProcessingException;
+import com.google.common.collect.ImmutableSet;
 import com.raaftech.structure.base.Configuration;
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.graph.repositories.TypeRepository;
@@ -170,6 +171,13 @@ public class Type extends Node {
         return this;
     }
 
+    /**
+     * Get an immutable <b>copy</b> of the constraints this type is the start for.
+     * @return An immutable copy of the outgoing constraints.
+     */
+    public Set<Constraint> getOutgoingConstraints() {
+        return ImmutableSet.copyOf(outgoingConstraints);
+    }
 
     public Type setDescriptor(String key, String valueType, boolean required, String description, String defaultValue,
                               String pattern) {
