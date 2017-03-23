@@ -4,11 +4,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.fge.jsonschema.core.exceptions.ProcessingException;
-import com.google.common.collect.ImmutableSet;
 import com.raaftech.structure.base.Configuration;
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.graph.repositories.TypeRepository;
 import com.raaftech.structure.helper.JsonSchemaBuilder;
+import com.raaftech.structure.helper.Triple;
+import com.raaftech.structure.next.Entity;
 import org.apache.commons.lang.Validate;
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.Transaction;
@@ -26,7 +27,9 @@ import org.springframework.data.neo4j.fieldaccess.DynamicPropertiesContainer;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static io.vertx.core.json.Json.mapper;
@@ -169,6 +172,41 @@ public class Type extends Node {
         outgoingConstraints.add(new Constraint(this, to, cardinality, relationshipName));
 
         return this;
+    }
+
+    /**
+     * Given an entity, verify it satisfies every (outward) constraint applied to this
+     * type.
+     * @param entity The entity to verify.
+     * @return True when it satisfies every constraint, false if not.
+     */
+    public boolean verifyEntityToConstraints(Entity entity) {
+        if ("Type".equals(entity.getType())) {
+            throw new IllegalArgumentException("Constraints can only be validated for non-type entities.");
+        }
+
+        /*
+        The only (outgoing) relationship that can exist between an Instance and a Type
+        is "INSTANCE_OF", so we should filter that from the relationships we're about to verify.
+         */
+        Set<Triple<String, String, Set<String>>> relationsToTest = entity.getRelations().stream()
+                .filter(t -> !t.getLeft().equals("INSTANCE_OF"))
+                .collect(Collectors.toSet());
+
+        // Make sure there's a constraint for every relationship, fail if there isn't
+        Predicate<String> constraintExists = relName -> outgoingConstraints.stream()
+                .map(Constraint::getForRelationship)
+                .anyMatch(constraintRel -> Objects.equals(constraintRel, relName));
+
+        if (!relationsToTest.stream()
+                .map(Triple::getLeft)
+                .allMatch(constraintExists)) {
+            return false;
+        }
+
+        // Now we can check every constraint
+        return outgoingConstraints.stream()
+                .allMatch(constraint -> constraint.verifyConstraint(entity));
     }
 
     public Type setDescriptor(String key, String valueType, boolean required, String description, String defaultValue,

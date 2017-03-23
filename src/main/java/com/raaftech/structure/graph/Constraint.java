@@ -160,6 +160,14 @@ public class Constraint {
                 .allMatch(instance -> instance.isOfType(endOfConstraint));
     }
 
+    /**
+     * Return the relationships constrained by this constraint.
+     * @return The relationship name.
+     */
+    public String getForRelationship() {
+        return forRelationship;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
