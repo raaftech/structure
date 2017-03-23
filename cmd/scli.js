@@ -12,6 +12,7 @@ const fs = require('fs');
 const path = require('path');
 const RestConnector = require('./restConnector');
 
+//TODO fetch these params from env or config
 let rest = new RestConnector('localhost', 3000);
 let eventBusUrl = '';
 let eb = null;
@@ -76,29 +77,30 @@ function sendEvent(base, cmd, args) {
 	});
 }
 
+//refactored
 function getChildren(uuid) {
-    return new Promise((resolve, reject) => {
-        sendEvent(helper.getEventBusAddress(['node','type',uuid]),'getSubtypes',{})
-            .then((data) => {
-                let response = R.project(['name','uuid'], helper.getResultData(data));
-                resolve(response);
-            });
-    });
+    return rest.getChildren(uuid)
+        .then(children => {
+            return R.map((item) => {
+                    return R.zipObj(['name', 'uuid'],[R.prop('name',item), R.path(['meta','uuid'], item)]);
+                }, children);
+        });
 }
 
+//refactored
 function toRoot(uuid, childNodes) {
     return new Promise((resolve, reject) => {
-        sendEvent(helper.getEventBusAddress(['repository', 'nodes']), 'findOne', {'node': uuid})
-            .then((parent) => {
-                parent = helper.getResultData(parent);
+        rest.getEntityByUuid(uuid)
+            .then(parent => {
                 let tree = {};
                 tree[parent.name] = childNodes;
-                if(R.isNil(parent.isa)) {
+                if(R.isNil(R.path(['meta','relations','ISA'], parent))) {
                     resolve(tree);
                 } else {
-                    resolve(toRoot(parent.isa, tree));
+                    let getIsaParent = R.pipe(R.path(['meta','relations','ISA','uuids']), R.head);
+                    resolve(toRoot(getIsaParent(parent), tree));
                 }
-            });
+            })
     });
 }
 
@@ -133,6 +135,7 @@ vorpal.command('disconnect', 'Disconnect from the EventBus')
         done();
     });
 
+//refactored
 vorpal.command('find <name>', 'Find a specified node in vertx')
     .option('-f, --field <fieldName>', 'Select a specific field from the resultset',
         helper.getCommonFields())
@@ -231,30 +234,42 @@ vorpal.command('show <uuid>', 'Show a node by its uuid.')
             });
     });
 
-
+//refactored
 vorpal.command('tree <name>', 'Show a relation tree for the requested node')
     .option('-u, --uuid', 'Make the search go by uuid instead of name')
     .action(function(args, done) {
         const self = this;
-        let act = args.options.uuid ? 'findOne' : 'findOneByName';
-        let pargs = args.options.uuid ? {'node': args.name} : {'name': args.name};
-        sendEvent(helper.getEventBusAddress(['repository', 'types']), act, pargs)
-            .then((data) => {
-                let databuf = helper.getResultData(data);
-                let tree = {};
-                getChildren(databuf.uuid)
-                    .then((children) => {
-                        R.forEach((item) => {
-                            tree[item.name] = item.uuid;
-                        }, children);
+        let rootUuid = '';
+        let handler = (method, arg) => {
+            rest[method](arg)
+                .then(entity => { return R.path(['meta','uuid'], entity) })
+                .then(uuid => { rootUuid = uuid; return getChildren(uuid); })
+                .then(children => {
+                    let tree = {};
+                    R.forEach((item) => {
+                        tree[item.name] = item.uuid;
+                    }, children);
 
-                        toRoot(databuf.uuid, tree)
-                            .then((parents) => {
-                                self.log(treeify.asTree(parents,true));
-                                done();
-                            });
-                    });
-            });
+                    return tree;
+                })
+                .then(tree => {
+                    return toRoot(rootUuid, tree);
+                })
+                .then(parents => {
+                    self.log(treeify.asTree(parents,true));
+                    done();
+                })
+                .catch(ex => {
+                    self.log(ex);
+                    done();
+                });
+        };
+
+        if(args.options.uuid) {
+            handler('getEntityByUuid', args.name);
+        } else {
+            handler('getEntityByName', args.name);
+        }
     });
 
 
