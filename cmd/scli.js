@@ -17,7 +17,6 @@ let rest = new RestConnector('localhost', 3000);
 
 init();
 
-//TODO refactor to rest api
 function init() {
     setupStatusChannel();
     scli();
@@ -39,6 +38,7 @@ function setupStatusChannel() {
     });
 }
 
+//TODO remove this after the restful variant of this function is fully implemented
 function DEPRECATEDsetupStatusChannel() {
     // eb.registerHandler('com.raaftech.structure.status',function(error, message) {
     //     if(error) {
@@ -237,7 +237,6 @@ vorpal.command('discover <cidr>', 'Discover items in the network')
             });
     });
 
-//TODO refactor to rest api
 vorpal.command('query', 'Place arbitrary requests on the event bus')
     .action(function(args,done) {
         const self = this;
