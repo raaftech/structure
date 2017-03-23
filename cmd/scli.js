@@ -29,6 +29,7 @@ function init() {
 	});
 }
 
+//TODO check if obsolete (depends on status channel interface)
 function wrapper() {
 	return new Promise((resolve,reject) => {
 		eb.onopen = () => resolve(clc.green.bold(util.format('Connected to: %s', eventBusUrl)));
@@ -67,6 +68,7 @@ function setupStatusChannel() {
     });
 }
 
+//TODO check if obsolete (depends on status channel interface)
 function sendEvent(base, cmd, args) {
 	let options = helper.createOptions(cmd,args);
 	return new Promise((resolve,reject) => {
@@ -116,6 +118,7 @@ function getPayloadListing() {
 //commands
 //TODO extract commands to extension sets
 
+//TODO check if obsolete (depends on status channel interface)
 vorpal.command('connect', 'Connect to the eventbus')
     .action(function(args, done) {
         this.log('Connecting to '+clc.green.bold(eventBusUrl));
@@ -127,6 +130,7 @@ vorpal.command('connect', 'Connect to the eventbus')
         });
     });
 
+//TODO check if obsolete (depends on status channel interface)
 vorpal.command('disconnect', 'Disconnect from the EventBus')
     .action(function(args, done) {
         this.log(clc.red(util.format('Closing connection to EventBus (%s)', eventBusUrl)));
@@ -193,16 +197,16 @@ vorpal.command('instance')
         });
     });
 
-
+//refactored
 vorpal.command('dig <uuid>', 'Get the child elements for a node')
     .action(function(args, done) {
         const self = this;
-        sendEvent(helper.getEventBusAddress(['node','type',args.uuid]),'getSubtypes',{})
-            .then((data) => {
-                let response = R.project(['name','uuid'], helper.getResultData(data));
+
+        getChildren(args.uuid)
+            .then(children => {
                 R.forEach((item) => {
-                    self.log(sprintf('%-16s: %24s', item.name,item.uuid));
-                }, response);
+                    self.log(sprintf('%-16s: %24s', R.prop('name', item),R.prop('uuid',item)));
+                }, children);
                 done();
             });
     });
