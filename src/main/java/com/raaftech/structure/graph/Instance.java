@@ -168,6 +168,11 @@ public abstract class Instance extends Node {
         return this;
     }
 
+    public Instance runController(Controller controller, ObjectNode arguments, String taskId, long timeAllocated) {
+        new InstrumentRunner(this, controller, arguments, taskId, timeAllocated).startInstrument();
+        return this;
+    }
+
     public boolean isOfType(String type) {
         return INSTANCE_REPOSITORY.isOfType(getUuid(), type) > 0;
     }

@@ -51,7 +51,7 @@ public class InstrumentRunner {
     private final Grouping subject;
     private final Grouping agent;
     private final ObjectNode arguments;
-    private long timeAllocated;
+    private long timeAllocated = -1;
 
     private final String workingDirectory = getCurrentWorkingDirectory() + "/generatedscripts/";
     // Set timeout of transport to 10000ms
@@ -60,7 +60,6 @@ public class InstrumentRunner {
     // jobs will contain system commands, paired with timeouts, eventually sent to the agent with the TaskManager.
     private final ArrayList<Pair<String, Optional<Long>>> jobList = new ArrayList<>();
     private final String taskManagerAddress = "com.raaftech.structure.manager.taskmanager";
-
     private final Logger log = LoggerFactory.getLogger(InstrumentRunner.class);
 
 
@@ -204,7 +203,13 @@ public class InstrumentRunner {
                     // send file to subject (assumes sendFile + receiveFile)
                     jobList.add(Pair.of(sendFile(heaviestSendFile), transportTimeout));
                     // send execution to subject (assumes sendString + receiveString)
-                    jobList.add(Pair.of(sendString(heaviestSendString) + " " + Strings.join(argumentsToScript, " "), transportTimeout));
+
+                    // If timeAllocated has no value assigned, use getTimeAllocated, else use timeAllocated
+                    if (timeAllocated == -1){
+                        jobList.add(Pair.of(sendString(heaviestSendString) + " " + Strings.join(argumentsToScript, " "), controller.getTimeAllocated()));
+                    } else {
+                        jobList.add(Pair.of(sendString(heaviestSendString) + " " + Strings.join(argumentsToScript, ""), Optional.of(timeAllocated)));
+                    }
                 } catch (IOException e) {
                     log.error(e.getMessage());
 
@@ -233,8 +238,14 @@ public class InstrumentRunner {
                     // send file to subject (assumes sendFile + receiveFile)
                     jobList.add(Pair.of(sendFile(heaviestSendFile), transportTimeout));
                     // send execution to subject (assumes sendString + receiveString)
-                    jobList.add(Pair.of(sendString(heaviestSendString), transportTimeout));
 
+                    // If timeAllocated has no value assigned, use getTimeAllocated, else use timeAllocated
+                    if (timeAllocated == -1) {
+                        jobList.add(Pair.of(sendString(heaviestSendString), controller.getTimeAllocated()));
+                    } else {
+                        jobList.add(Pair.of(sendString(heaviestSendString), Optional.of(timeAllocated)));
+
+                    }
                 } catch (Exception e) {
                     log.error(e.getMessage());
 
@@ -259,7 +270,15 @@ public class InstrumentRunner {
                 try {
                     // TODO: create method
                     ObjectNode args = validateAndSelectArguments(controller);
-                    jobList.add(Pair.of(applyTemplate(controller.getTemplateContent().get(), args), controller.getTimeAllocated()));
+
+                    // If timeAllocated has no value assigned, use getTimeAllocated, else use timeAllocated
+                    if(timeAllocated == -1) {
+                        jobList.add(Pair.of(applyTemplate(controller.getTemplateContent().get(), args), controller.getTimeAllocated()));
+                    } else {
+                        jobList.add(Pair.of(applyTemplate(controller.getTemplateContent().get(), args), Optional.of(timeAllocated)));
+
+                    }
+
                 } catch (IOException e) {
                     if (Configuration.isTraceModeOn()) {
                         e.printStackTrace();
