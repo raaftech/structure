@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.fge.jsonschema.core.exceptions.ProcessingException;
+import com.google.common.collect.ImmutableSet;
 import com.raaftech.structure.base.Configuration;
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.graph.repositories.TypeRepository;
@@ -186,11 +187,21 @@ public class Type extends Node {
         }
 
         /*
+        We need to whitelist a few relationships. Constraints only work on relationships between instances or
+        its subtypes. This whitelist contains all relationships that don't belong to this category and should
+        be ignored during constraint checks.
+         */
+        final Set<String> whitelist = ImmutableSet.of(
+                "INSTANCE_OF",
+                "HAS_INSTRUMENT"
+        );
+
+        /*
         The only (outgoing) relationship that can exist between an Instance and a Type
         is "INSTANCE_OF", so we should filter that from the relationships we're about to verify.
          */
         Set<Triple<String, String, Set<String>>> relationsToTest = entity.getRelations().stream()
-                .filter(t -> !t.getLeft().equals("INSTANCE_OF"))
+                .filter(t -> !whitelist.contains(t.getLeft()))
                 .collect(Collectors.toSet());
 
         // Make sure there's a constraint for every relationship, fail if there isn't
