@@ -96,6 +96,45 @@ function getPayloadListing() {
     return fs.readdirSync(payloadDir());
 }
 
+vorpal.command('login', 'Get an access token for Structure')
+    .action(function(args, done) {
+        const self = this;
+        let qs = [];
+        qs.push(helper.generateQuestion('email', 'input', 'Username: '));
+        qs.push(helper.generateQuestion('password', 'password', 'Password: '));
+        self.prompt(qs, function(answers) {
+            rest.login(answers.email, answers.password)
+                .then(user => {
+                    if(R.has('error', user)) {
+                        self.log(util.format('%s (%s): %s',user.error.code,user.error.statusCode, user.error.message));
+                    } else {
+                        self.log('AccessToken: '+user.id);
+                    }
+                    done();
+                })
+                .catch(ex => {
+                    self.log(ex);
+                    done();
+                });
+        });
+    });
+
+vorpal.command('logout', 'Invalidate an access token for Structure')
+    .action(function(args, done) {
+        const self = this;
+        self.prompt(qs, function(answers) {
+            rest.logout()
+                .then(result => {
+                    self.log("Logged out");
+                    done();
+                })
+                .catch(ex => {
+                    self.log(ex);
+                    done();
+                });
+        });
+    });
+
 vorpal.command('find <name>', 'Find a specified node in vertx')
     .option('-f, --field <fieldName>', 'Select a specific field from the resultset',
         helper.getCommonFields())
@@ -222,10 +261,7 @@ vorpal.command('discover <cidr>', 'Discover items in the network')
             desc: 'Some cidr description.'
         };
 
-        rest.login('orchid@blackorchid.nl', 'test')
-            .then(user => {
-                return rest.createInstance(pargs);
-            })
+        rest.createInstance(pargs)
             .then(created => {
                 let instanceUuid = created.meta.uuid;
                 return rest.runInstrument('IpAddressDiscover', instanceUuid);
