@@ -152,6 +152,10 @@ public class TypeTest {
 
         // This shouldn't validate. Unknown outgoing relationship added.
         assertFalse(start.verifyEntityToConstraints(mapper.treeToValue(entityJson, Entity.class)));
+
+        // Just to go full circle, add a constraint for "NOT_CONSTRAINED" and see if it validates
+        start.addConstraint(end, Constraint.Cardinality.OPTIONAL_TO_ONE, "NOT_CONSTRAINED");
+        assertTrue(start.verifyEntityToConstraints(mapper.treeToValue(entityJson, Entity.class)));
     }
 
 }
