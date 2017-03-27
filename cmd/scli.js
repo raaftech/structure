@@ -176,7 +176,20 @@ vorpal.command('structure', 'Structure admin tools')
         let handler = (method) => {
             rest[method]()
                 .then(result => {
-                    self.log(result);
+                    self.log(clc.green.bold('[JVM info]'));
+                    self.log(util.format('  Version: %s', result.jvm.version));
+                    self.log(util.format('  Java version: %s',result.jvm.java_version));
+                    self.log(util.format('  Cpus: %s', result.jvm.available_processors));
+                    self.log(util.format(clc.green('  [Memory]')));
+                    self.log(util.format('    Used: %s\n    Free: %s',result.jvm.memory.used, result.jvm.memory.free));
+
+                    self.log(util.format(clc.green.bold('[Graph info]')));
+                    self.log(util.format('  Types: %s', result.graph.types));
+                    self.log(util.format('  Components: %s', result.graph.components));
+                    self.log(util.format('  Instruments: %s', result.graph.instruments));
+                    self.log(util.format('  Groupings: %s', result.graph.groupings));
+                    self.log(util.format('  Results: %s', result.graph.results));
+                    self.log(util.format('  Configurations: %s', result.graph.configurations));
                     done();
                 })
                 .catch(ex => {self.log(ex); done();})

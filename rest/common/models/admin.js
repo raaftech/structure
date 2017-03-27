@@ -24,12 +24,9 @@ module.exports = function(Admin) {
 
 
     Admin.structureStatus = function(callback) {
-        callback(null, {
-            message: 'DUMMY DATA',
-            nodes: 345,
-            uptime: '2 hours',
-            load: '64%'
-        });
+        sendEvent(getEventBusAddress(['manager', 'structuremanager']), 'status', {})
+                    .then((result) => callback(null, R.path(['body', 'result'])(result)))
+                    .catch((ex) => callback(ex));
     };
 
     Admin.remoteMethod('structureStatus', {
@@ -64,4 +61,16 @@ function sendEvent(base, cmd, args) {
       else resolve(result);
     });
   });
+}
+
+function createOptions(cmd, args) {
+  return R.zipObj(['msgh', 'args'], [R.defaultTo('help', cmd), R.defaultTo({}, args)]);
+}
+
+function getEventBusAddress(parts) {
+  return R.join('.', R.prepend('com.raaftech.structure', parts));
+}
+
+function getResultData(result) {
+  return R.path(['body', 'result', 'data'])(result);
 }
