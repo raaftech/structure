@@ -144,25 +144,22 @@ vorpal.command('adduser', 'Add a structure user')
         qs.push(helper.generateQuestion('password', 'password', 'Password: '));
         qs.push(helper.generateQuestion('confirm', 'password', 'Re-enter password: '));
         self.prompt(qs, function(answers) {
-            if(answers.password === answers.confirm) {
-                rest.createUser(answers.email, answers.password)
-                    .then(result => {
-                        let handler = R.ifElse(
-                            R.has('error'),
-                            error => self.log(util.format('status code: %s\n%s', clc.red.bold(error.error.statusCode), error.error.message)),
-                            user => self.log(util.format('User "%s" (userid: %s) %s', user.email, user.id, clc.green('created')))
-                        );
-                        handler(result);
-                        done();
-                    })
-                    .catch(ex => {
-                        self.log(ex);
-                        done();
-                    });
-            } else {
-                self.log('Passwords do not match.');
-                done();
-            }
+            let createUserHandler = R.ifElse(
+                R.has('error'),
+                error => self.log(util.format('status code: %s\n%s', clc.red.bold(error.error.statusCode), error.error.message)),
+                user => self.log(util.format('%s "%s" (userid: %s) %s', clc.green('User'), user.email, user.id, clc.green('created')))
+            );
+            let createUser = () => rest.createUser(answers.email, answers.password)
+                .then(result => {
+                    createUserHandler(result);
+                    done();
+                })
+                .catch(ex => {
+                    self.log(ex);
+                    done();
+                });
+            let pwdCheck = R.ifElse(R.equals, createUser, () => {self.log(clc.red('Passwords to not match')); done();});
+            pwdCheck(answers.password, answers.confirm);
         });
     });
 
@@ -172,11 +169,9 @@ vorpal.command('find <name>', 'Find a specified node in vertx')
     .option('-u, --uuid', 'Set search mode to uuid based search.')
     .action(function(args, done) {
         const self = this;
-
         let handler = (method, arg) => {
             rest[method](arg)
                 .then(entity => {
-                    self.log(helper.stringify(entity));
                     let meta = R.curry((ent,list) => {
                         return R.pipe(
                             R.prop('meta'),
@@ -187,12 +182,15 @@ vorpal.command('find <name>', 'Find a specified node in vertx')
                     });
                     let keys = R.pipe(R.keys, R.prepend('ALL'),meta(entity))(entity);
                     self.prompt(helper.generateQuestion('list', 'list', 'Choose a field', {choices: keys}), function(result) {
-                        if(result.list === 'ALL') self.log(helper.stringify(entity));
-                        else {
-                            let pp = R.split('.',result.list);
-                            let prop = clc.green.bold(result.list);
-                            self.log(util.format('%s: %s',prop,helper.stringify(R.path(pp, entity))));
-                        }
+                        let check = R.ifElse(R.propEq('list','ALL'),
+                                        () => self.log(helper.stringify(entity)),
+                                        () => {
+                                            let pp = R.split('.',result.list);
+                                            let prop = clc.green.bold(result.list);
+                                            self.log(util.format('%s: %s',prop,helper.stringify(R.path(pp, entity))));
+                                        }
+                                    );
+                        check(result);
                         done();
                     });
                 })
@@ -202,11 +200,10 @@ vorpal.command('find <name>', 'Find a specified node in vertx')
                 });
         };
 
-        if(args.options.uuid) {
-            handler('getEntityByUuid', args.name);
-        } else {
-            handler('getEntityByName', args.name);
-        }
+        let exec = R.ifElse(R.isNil,
+            () => handler('getEntityByName', args.name),
+            () => handler('getEntityByUuid', args.name));
+        exec(R.path(['options', 'uuid'], args));
     });
 
 vorpal.command('instance')
@@ -272,11 +269,10 @@ vorpal.command('tree <name>', 'Show a relation tree for the requested node')
                 });
         };
 
-        if(args.options.uuid) {
-            handler('getEntityByUuid', args.name);
-        } else {
-            handler('getEntityByName', args.name);
-        }
+        let exec = R.ifElse(R.isNil,
+            () => handler('getEntityByName', args.name),
+            () => handler('getEntityByUuid', args.name));
+        exec(R.path(['options', 'uuid'], args));
     });
 
 //TODO finish refactor
@@ -292,7 +288,7 @@ vorpal.command('discover <cidr>', 'Discover items in the network')
             desc: 'Some cidr description.'
         };
 
-        rest.createInstance(pargs)
+        let loggedIn = () => rest.createInstance(pargs)
             .then(created => {
                 let instanceUuid = created.meta.uuid;
                 return rest.runInstrument('IpAddressDiscover', instanceUuid);
@@ -302,6 +298,9 @@ vorpal.command('discover <cidr>', 'Discover items in the network')
                 self.log(ex);
                 done();
             });
+        let loggedOut = () => { console.log('Please login first.'); done()};
+        let handler = R.ifElse(R.isNil,loggedOut, loggedIn);
+        handler(rest.getToken());
     });
 
 vorpal.command('query', 'Place arbitrary requests on the event bus')

@@ -10,7 +10,7 @@ class RestConnector {
     constructor(host, port) {
         this.host = host;
         this.port = port;
-        this.token = '';
+        this.token;
     }
 
     getToken() {
