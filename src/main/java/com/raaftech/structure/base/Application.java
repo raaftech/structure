@@ -276,9 +276,9 @@ public class Application {
         }
 
         // Deploy our main actors.
-        vertx.deployVerticle("com.raaftech.structure.manager.BusManager", ar -> {
+        vertx.deployVerticle("com.raaftech.structure.manager.StructureManager", ar -> {
             if (ar.succeeded()) {
-                log.info("Deployed BusManager with id: {}", ar.result());
+                log.info("Deployed StructureManager with id: {}", ar.result());
             }
         });
         vertx.deployVerticle("com.raaftech.structure.manager.InstrumentManager", new DeploymentOptions().setWorker(false), ar -> {

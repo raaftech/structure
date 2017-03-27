@@ -67,4 +67,6 @@ public interface TypeRepository extends GenericRepository<Type> {
     @Query ("MATCH (n:Type) return n.glyphId")
     List<Integer> findAllTypeGlyphs();
 
+    @Query("MATCH (n:Type) RETURN count(n)")
+    long count();
 }

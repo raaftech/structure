@@ -108,4 +108,7 @@ public interface InstrumentRepository extends GenericRepository<Instrument> {
             "RETURN instrument")
     Set<Controller> findRemoteControllers(@Param("originUuid") String originUuid,
                                           @Param("structureUuid") String startOfGroupUuid);
+
+    @Query("MATCH (n:Instrument) RETURN count(n)")
+    long count();
 }
