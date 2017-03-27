@@ -51,7 +51,6 @@ public class InstrumentRunner {
     private final Grouping subject;
     private final Grouping agent;
     private final ObjectNode arguments;
-    private long timeAllocated = -1;
 
     private final String workingDirectory = getCurrentWorkingDirectory() + "/generatedscripts/";
     // Set timeout of transport to 10000ms
@@ -63,9 +62,8 @@ public class InstrumentRunner {
     private final Logger log = LoggerFactory.getLogger(InstrumentRunner.class);
 
 
-    public InstrumentRunner(Instance origin, Controller controller, ObjectNode arguments, String taskId, long timeAllocated) {
-        this(origin, controller, arguments, taskId);
-        this.timeAllocated = timeAllocated;
+    public InstrumentRunner(Instance origin, Controller controller, ObjectNode arguments, String taskId) {
+        this(origin, controller, arguments, taskId, -1);
     }
 
     /**
@@ -76,7 +74,7 @@ public class InstrumentRunner {
      * @param arguments  Given arguments, can be null.
      * @param taskId     The ID used to track progress of this action.
      */
-    public InstrumentRunner(Instance origin, Controller controller, ObjectNode arguments, String taskId) {
+    public InstrumentRunner(Instance origin, Controller controller, ObjectNode arguments, String taskId, long timeAllocated) {
         this.taskId = taskId;
         this.origin = origin;
         this.controller = controller;
