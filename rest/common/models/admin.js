@@ -24,7 +24,12 @@ module.exports = function(Admin) {
 
 
     Admin.structureStatus = function(callback) {
-        callback(null, {message: 'not implemented yet'});
+        callback(null, {
+            message: 'DUMMY DATA',
+            nodes: 345,
+            uptime: '2 hours',
+            load: '64%'
+        });
     };
 
     Admin.remoteMethod('structureStatus', {

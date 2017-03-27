@@ -96,6 +96,22 @@ class RestConnector {
             .then(result => result.json());
     }
 
+    getStructureStatusInfo() {
+        let url = util.format('%s/Admins/status', getBaseUrl(this.host, this.port));
+        return fetch(url).then(result => result.json());
+    }
+
+    purgeInit() {
+        let url = util.format('%s/Admins/init?access_token=%s', getBaseUrl(this.host,this.port), this.token);
+        return fetch(url,
+            {
+                method: 'POST',
+                body: '',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+            })
+            .then(result => result.json());
+    }
+
     query(address, command, payload) {
         let url = util.format('%s/Entities/query?access_token=%s',getBaseUrl(this.host,this.port), this.token);
         let data = util.format('address=%s&command=%s&payload=%s',encodeURIComponent(address),

@@ -165,6 +165,26 @@ vorpal.command('adduser', 'Add a structure user')
         });
     });
 
+vorpal.command('structure', 'Structure admin tools')
+    .option('-s, --status', 'Show structure status information')
+    .option('-i, --init', 'Purge-Init structure server')
+    .action(function(args, done) {
+        const self = this;
+        let handler = (method) => {
+            rest[method]()
+                .then(result => {
+                    self.log(result);
+                    done();
+                })
+                .catch(ex => {self.log(ex); done();})
+        }
+
+        let exec = R.ifElse(R.isNil,
+            () => handler('purgeInit'),
+            () => handler('getStructureStatusInfo'));
+        exec(R.path(['options', 'status'], args));
+    });
+
 vorpal.command('find <name>', 'Find a specified node in vertx')
     .option('-f, --field <fieldName>', 'Select a specific field from the resultset',
         helper.getCommonFields())
@@ -175,9 +195,7 @@ vorpal.command('find <name>', 'Find a specified node in vertx')
             rest[method](arg)
                 .then(entity => {
                     let meta = R.curry((ent,list) => {
-                        return R.pipe(
-                            R.prop('meta'),
-                            R.keys,
+                        return R.pipe(R.prop('meta'), R.keys,
                             R.map(item => 'meta.'+item),
                             R.concat(list)
                         )(ent);
