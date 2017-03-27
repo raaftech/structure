@@ -12,6 +12,8 @@ const path = require('path');
 const RestConnector = require('./restConnector');
 const EventSource = require('eventsource');
 
+const notNil = R.compose(R.not, R.isNil);
+
 let rest;
 
 init();
@@ -165,6 +167,7 @@ vorpal.command('adduser', 'Add a structure user')
         });
     });
 
+//todo extract to extension
 vorpal.command('structure', 'Structure admin tools')
     .option('-s, --status', 'Show structure status information')
     .option('-i, --init', 'Purge-Init structure server')
@@ -179,10 +182,13 @@ vorpal.command('structure', 'Structure admin tools')
                 .catch(ex => {self.log(ex); done();})
         }
 
-        let exec = R.ifElse(R.isNil,
-            () => handler('purgeInit'),
-            () => handler('getStructureStatusInfo'));
-        exec(R.path(['options', 'status'], args));
+        let pathNotNil = R.curry((prop, obj) => notNil(R.path(['options', prop], obj)));
+        let ex = R.cond([
+            [pathNotNil('status'), () => handler('getStructureStatusInfo')],
+            [pathNotNil('init'), () => handler('purgeInit')],
+            [R.T, done()]
+        ]);
+        ex(args);
     });
 
 vorpal.command('find <name>', 'Find a specified node in vertx')
