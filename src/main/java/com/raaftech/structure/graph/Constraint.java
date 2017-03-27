@@ -101,7 +101,7 @@ public class Constraint {
 
         Set<UUID> relatedNodes = entity.getRelations().stream()
                 .filter(triple -> Objects.equals(triple.getLeft(), forRelationship))
-                .filter(triple -> triple.getMiddle().equals(Direction.OUTGOING.name()))
+                .filter(triple -> triple.getMiddle().toLowerCase().equals(Direction.OUTGOING.name().toLowerCase()))
                 .flatMap(triple -> triple.getRight().stream())
                 .map(UUID::fromString)
                 .collect(Collectors.toSet());

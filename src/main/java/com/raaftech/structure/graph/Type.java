@@ -199,6 +199,7 @@ public class Type extends Node {
                 .anyMatch(constraintRel -> Objects.equals(constraintRel, relName));
 
         if (!relationsToTest.stream()
+                .filter(triple -> triple.getMiddle().toLowerCase().equals(Direction.OUTGOING.name().toLowerCase()))
                 .map(Triple::getLeft)
                 .allMatch(constraintExists)) {
             return false;
