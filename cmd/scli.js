@@ -100,16 +100,17 @@ vorpal.command('login', 'Get an access token for Structure')
     .action(function(args, done) {
         const self = this;
         let qs = [];
-        qs.push(helper.generateQuestion('email', 'input', 'Username: '));
+        qs.push(helper.generateQuestion('email', 'input', 'Email: '));
         qs.push(helper.generateQuestion('password', 'password', 'Password: '));
         self.prompt(qs, function(answers) {
             rest.login(answers.email, answers.password)
                 .then(user => {
-                    if(R.has('error', user)) {
-                        self.log(util.format('%s (%s): %s',user.error.code,user.error.statusCode, user.error.message));
-                    } else {
-                        self.log('AccessToken: '+user.id);
-                    }
+                    let handler = R.ifElse(
+                        R.has('error'),
+                        error => self.log(util.format('%s (%s): %s',clc.red.bold(error.error.code), clc.red(error.error.statusCode), error.error.message)),
+                        user => self.log(clc.green('AccessToken: ')+user.id)
+                    );
+                    handler(user);
                     done();
                 })
                 .catch(ex => {
@@ -132,6 +133,36 @@ vorpal.command('logout', 'Invalidate an access token for Structure')
                     self.log(ex);
                     done();
                 });
+        });
+    });
+
+vorpal.command('adduser', 'Add a structure user')
+    .action(function(args, done) {
+        const self = this;
+        let qs = [];
+        qs.push(helper.generateQuestion('email', 'input', 'Email: '));
+        qs.push(helper.generateQuestion('password', 'password', 'Password: '));
+        qs.push(helper.generateQuestion('confirm', 'password', 'Re-enter password: '));
+        self.prompt(qs, function(answers) {
+            if(answers.password === answers.confirm) {
+                rest.createUser(answers.email, answers.password)
+                    .then(result => {
+                        let handler = R.ifElse(
+                            R.has('error'),
+                            error => self.log(util.format('status code: %s\n%s', clc.red.bold(error.error.statusCode), error.error.message)),
+                            user => self.log(util.format('User "%s" (userid: %s) %s', user.email, user.id, clc.green('created')))
+                        );
+                        handler(result);
+                        done();
+                    })
+                    .catch(ex => {
+                        self.log(ex);
+                        done();
+                    });
+            } else {
+                self.log('Passwords do not match.');
+                done();
+            }
         });
     });
 
