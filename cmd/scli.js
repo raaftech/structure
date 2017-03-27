@@ -12,12 +12,15 @@ const path = require('path');
 const RestConnector = require('./restConnector');
 const EventSource = require('eventsource');
 
-//TODO fetch these params from env or config
-let rest = new RestConnector('localhost', 3000);
+let rest;
 
 init();
 
 function init() {
+    rest = new RestConnector(
+        R.defaultTo('localhost', process.env.RESTHOST),
+        R.defaultTo(3000, process.env.RESTPORT)
+    );
     setupStatusChannel();
     scli();
 }
@@ -28,9 +31,8 @@ function scli() {
 	vorpal.delimiter(clc.magenta.bold('structure$')).show();
 }
 
-//TODO fetch params from env or config
 function setupStatusChannel() {
-    const changeUrl = 'http://localhost:3000/api/Statuses/change-stream';
+    const changeUrl = rest.getChangeStreamUrl();
     const es = new EventSource(changeUrl);
     es.addEventListener('data', function(message) {
         let data = JSON.parse(message.data);
