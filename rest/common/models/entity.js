@@ -11,29 +11,54 @@ eb.onclose = (error) => console.log('Eventbus connection closed: %s', stringify(
 
 module.exports = function (Entity) {
 
+//DEVELOPMENT endpoint
+
+  Entity.query = function(address, command, payload, callback) {
+  	sendEvent(address, command, payload)
+		.then(result => callback(null, getResultData(result)))
+		.catch(ex => callback(ex));
+  
+  };
+
+  Entity.remoteMethod('query', {
+    accepts: [{arg: 'address', type: 'string', required: true},
+			  {arg: 'command', type: 'string', required: true},
+			  {arg: 'payload', type: 'object', required: true}],
+    returns: {root: true, type: 'object'},
+    http: {verb: 'post', path: '/query'},
+    description: 'Request an action from structure'
+  });
+
 //TYPES
   Entity.fetchByUuid = function (uuid, callback) {
-    sendEvent(getEventBusAddress(['repository', 'types']), 'findOne', {node: uuid})
+    sendEvent(getEventBusAddress(['manager', 'entitymanager']),
+              'read',
+              {labels: ['type'], start: uuid, includeStart: true})
       .then((result) => callback(null, getResultData(result)))
       .catch((ex) => callback(ex));
   };
 
   Entity.remoteMethod('fetchByUuid', {
     accepts: [{arg: 'uuid', type: 'string', required: true}],
-    returns: {arg: 'result', type: 'object'},
+    returns: {root: true, type: 'object'},
     http: {verb: 'get', path: '/type/:uuid'},
     description: 'Fetch a type entity by uuid'
   });
 
   Entity.fetchByName = function (name, callback) {
     sendEvent(getEventBusAddress(['repository', 'types']), 'findOneByName', {name: name})
-      .then((result) => callback(null, getResultData(result)))
+      .then((result) => {
+        sendEvent(getEventBusAddress(['manager', 'entitymanager']),
+                  'read',
+                  {labels: ['type'], start: result.body.result.data.uuid, includeStart: true})
+          .then((result) => callback(null, R.head(getResultData(result))));
+      })
       .catch((ex) => callback(ex));
   };
 
   Entity.remoteMethod('fetchByName', {
     accepts: [{arg: 'name', type: 'string', required: true}],
-    returns: {arg: 'result', type: 'object'},
+    returns: {root:true, type: 'object'},
     http: {verb: 'get', path: '/name/:name'},
     description: 'Fetch an entity by name'
   });
@@ -41,7 +66,7 @@ module.exports = function (Entity) {
   Entity.getChildren = function (uuid, callback) {
     let children = function (id) {
       return sendEvent(getEventBusAddress(['node', 'type', id]), 'getSubtypes', {})
-        .then((result) => getResultData(result))
+                .then((result) => getResultData(result));
     };
 
     children(uuid)
@@ -54,14 +79,23 @@ module.exports = function (Entity) {
             });
         }, kids);
         Promise.all(promises)
-          .then((ps) => callback(null, ps));
+          .then((ps) => {
+            let proms = R.map((item) => {
+                return sendEvent(getEventBusAddress(['manager', 'entitymanager']),
+                                 'read',
+                                 {labels: ['type'], start: item.uuid, includeStart: true})
+                            .then((result) => R.head(getResultData(result)));
+            }, ps);
+            Promise.all(proms)
+                .then(res => callback(null, res));
+          });
       })
       .catch((ex) => callback(ex));
   };
 
   Entity.remoteMethod('getChildren', {
     accepts: [{arg: 'uuid', type: 'string', required: true}],
-    returns: {arg: 'result', type: 'object'},
+    returns: {root:true, type: 'object'},
     http: {verb: 'get', path: '/children/:uuid'},
     description: 'Fetch subtypes for a given uuid'
   });
@@ -70,26 +104,40 @@ module.exports = function (Entity) {
 //INSTANCES
   Entity.lastCreated = function (quantity, callback) {
     sendEvent(getEventBusAddress(['repository', 'instances']), 'nLastCreated', {amount: quantity})
-      .then((result) => callback(null, getResultData(result)))
+      .then((result) => {
+        let promises = R.map((item) => {
+            return sendEvent(getEventBusAddress(['manager', 'entitymanager']),
+                             'read',
+                             {labels: ['type'], start: item.uuid, includeStart: true})
+                        .then((res) => R.head(getResultData(res)));
+        }, result.body.result.data);
+        Promise.all(promises)
+            .then(res => callback(null, res));
+      })
       .catch((ex) => callback(ex));
   };
 
   Entity.remoteMethod('lastCreated', {
     accepts: [{arg: 'quantity', type: 'integer', required: true}],
-    returns: {arg: 'result', type: 'object'},
+    returns: {root:true, type: 'object'},
     http: {verb: 'get', path: '/last/:quantity'},
     description: 'Fetch the last created instances'
   });
 
   Entity.fetchInstance = function (uuid, callback) {
     sendEvent(getEventBusAddress(['repository', 'instances']), 'findOne', {node: uuid})
-      .then((result) => callback(null, getResultData(result)))
+      .then((result) => {
+        sendEvent(getEventBusAddress(['manager', 'entitymanager']),
+                  'read',
+                  {labels: ['instance'], start: result.body.result.data.uuid, includeStart: true})
+              .then((res) => callback(null, R.head(getResultData(res))));
+      })
       .catch((ex) => callback(ex));
   };
 
   Entity.remoteMethod('fetchInstance', {
     accepts: [{arg: 'uuid', type: 'string', required: true}],
-    returns: {arg: 'result', type: 'object'},
+    returns: {root:true, type: 'object'},
     http: {verb: 'get', path: '/instance/:uuid'},
     description: 'Fetch an instance by uuid'
   });
@@ -102,7 +150,7 @@ module.exports = function (Entity) {
 
   Entity.remoteMethod('createInstance', {
     accepts: [{arg: 'args', type: 'object', required: true}],
-    returns: {arg: 'result', type: 'object'},
+    returns: {root:true, type: 'object'},
     http: {verb: 'post', path: '/instance'},
     description: 'create a new instance'
   });
@@ -116,7 +164,7 @@ module.exports = function (Entity) {
 
     Entity.remoteMethod('getInstruments', {
         accepts: [{arg: 'uuid', type: 'string', required: true}],
-        returns: {arg: 'result', type: 'object'},
+        returns: {root:true, type: 'object'},
         http: {verb: 'get', path: '/instrument/:uuid'},
         description: 'Fetch instruments list by uuid'
     });
@@ -136,7 +184,7 @@ module.exports = function (Entity) {
     Entity.remoteMethod('runInstrument', {
         accepts: [{arg: 'instrumentName', type: 'string', required: true},
             {arg: 'uuid', type: 'string', required: true}],
-        returns: {arg: 'result', type: 'object'},
+        returns: {root:true, type: 'object'},
         http: {verb: 'post', path: '/instrument'},
         description: 'run an instrument by uuid'
     });

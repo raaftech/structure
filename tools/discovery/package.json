@@ -14,8 +14,10 @@
     "async": "^2.1.4",
     "command-line-args": "^3.0.4",
     "command-line-usage": "^3.0.8",
+    "fuzzy-matching": "^0.4.3",
     "node-ansible": "^0.5.5",
     "node-nmap": "^3.0.3",
+    "ping": "^0.2.1",
     "ramda": "^0.22.1",
     "vertx3-eventbus-client": "^3.3.3"
   },

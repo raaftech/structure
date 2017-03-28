@@ -16,4 +16,7 @@ public interface GroupingRepository extends GenericRepository<Grouping> {
     @Query("MATCH (:Grouping{uuid:{uuid}})-[:GROUPS|HAS_COMPONENT*1..]->(m)-[:INSTANCE_OF|ISA*1..]->(:Type{name: {name}})" +
             "RETURN m")
     Set<Instance> getChildrenOfType(@Param("uuid") String groupUuid, @Param("name") String typeName);
+
+    @Query("MATCH (n:Grouping) RETURN count(n)")
+    long count();
 }

@@ -1,73 +1,127 @@
 "use strict";
 
 const R = require('ramda');
-const agent = require('superagent');
+const fetch = require('node-fetch');
 const util = require('util');
-
-//Construct a default GET based return function for use by superagent
-const getReturnFunction = (resolve, reject) => {
-    return function(error, result) {
-        if(error) reject(error);
-        else resolve(R.path(['body', 'result'], result));
-    };
-};
-
-//Construct a new Promise based on a url
-const returnGetPromise = (url) => {
-    return new Promise((resolve, reject) => {
-        agent.get(url)
-            .end(getReturnFunction(resolve, reject));
-    });
-};
 
 const getBaseUrl = (host, port) => util.format('http://%s:%s/api',host, port);
 
+class RestConnector {
+    constructor(host, port) {
+        this.host = host;
+        this.port = port;
+        this.token;
+    }
 
-const getEntityByName = (host, port, name) => {
-    let url = util.format('%s/Entities/name/%s', getBaseUrl(host,port),name);
-    return returnGetPromise(url);
-};
+    getToken() {
+        return this.token;
+    }
 
-const getEntityByUuid = (host, port, uuid) => {
-    let url = util.format('%s/Entities/type/%s', getBaseUrl(host,port),uuid);
-    return returnGetPromise(url);
-};
+    getChangeStreamUrl() {
+        return util.format('http://%s:%s/api/Statuses/change-stream',this.host,this.port);
+    }
 
-const getChildren = (host, port, uuid) => {
-    let url = util.format('%s/Entities/children/%s', getBaseUrl(host,port),uuid);
-    return returnGetPromise(url);
-};
+    getEntityByName(name) {
+        let url = util.format('%s/Entities/name/%s', getBaseUrl(this.host,this.port),name);
+        return fetch(url).then(result => result.json());
+    }
 
-const lastInstances = (host, port, quantity) => {
-    let url = util.format('%s/Entities/last/%s', getBaseUrl(host,port),quantity);
-    return returnGetPromise(url);
-};
+    getEntityByUuid(uuid) {
+        let url = util.format('%s/Entities/type/%s', getBaseUrl(this.host,this.port),uuid);
+        return fetch(url)
+            .then(result => result.json())
+            .then(list => R.head(list));
+    }
 
-const getInstanceByUuid = (host, port, uuid) => {
-    let url = util.format('%s/Entities/instance/%s', getBaseUrl(host,port),uuid);
-    return returnGetPromise(url);
-};
+    getChildren(uuid) {
+        let url = util.format('%s/Entities/children/%s', getBaseUrl(this.host,this.port),uuid);
+        return fetch(url).then(result => result.json());
+    }
 
-const createInstance = (host,port,options) => {
-    let url = util.format('%s/Entities/instance', getBaseUrl(host,port));
-	return new Promise((resolve, reject) => {
-		agent.post(url)
-			.send(options)
-			.end(getReturnFunction(resolve,reject));
-	});
-};
+    lastInstances(quantity) {
+        let url = util.format('%s/Entities/last/%s', getBaseUrl(this.host,this.port),quantity);
+        return fetch(url).then(result => result.json());
+    }
 
-const discover = (host,port,uuid) => {
-    let url = util.format('%s/Tasks/discover/%s', getBaseUrl(host,port),uuid);
-	return returnGetPromise(url);	
-};
+    getInstanceByUuid(uuid) {
+        let url = util.format('%s/Entities/instance/%s', getBaseUrl(this.host,this.port),uuid);
+        return fetch(url).then(result => result.json());
+    }
 
-module.exports = {
-    getEntityByName: getEntityByName,
-    getEntityByUuid: getEntityByUuid,
-    getChildren: getChildren,
-    lastInstances: lastInstances,
-    getInstanceByUuid: getInstanceByUuid,
-	createInstance: createInstance,
-	discover: discover
-};
+    createInstance(options) {
+        let url = util.format('%s/Entities/instance?access_token=%s', getBaseUrl(this.host,this.port), this.token);
+        return fetch(url,
+            {
+                method: 'POST',
+                body: 'args='+JSON.stringify(options),
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+            })
+            .then(result => result.json());
+    }
+
+    runInstrument(instrument, uuid) {
+
+    }
+
+    login(email,password) {
+        let self = this;
+        let url = util.format('%s/StructureUsers/login', getBaseUrl(this.host,this.port));
+        let credentials = JSON.stringify({email: email, password: password});
+        return fetch(url,
+            {
+                method: 'POST',
+                body: credentials,
+                headers: {'Content-Type': 'application/json'}
+            })
+            .then(result => result.json())
+            .then(creds => {
+                self.token = creds.id;
+                return creds;
+            });
+    }
+
+    logout() {
+        let url = util.format('%s/StructureUsers/logout', getBaseUrl(this.host,this.port));
+    }
+
+    createUser(email, password) {
+        let url = util.format('%s/StructureUsers', getBaseUrl(this.host,this.port));
+        let credentials = JSON.stringify({email: email, password: password});
+        return fetch(url,
+            {
+                method: 'POST',
+                body: credentials,
+                headers: {'Content-Type': 'application/json'}
+            })
+            .then(result => result.json());
+    }
+
+    getStructureStatusInfo() {
+        let url = util.format('%s/Admins/status', getBaseUrl(this.host, this.port));
+        return fetch(url).then(result => result.json());
+    }
+
+    purgeInit() {
+        let url = util.format('%s/Admins/init?access_token=%s', getBaseUrl(this.host,this.port), this.token);
+        return fetch(url,
+            {
+                method: 'POST',
+                body: '',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+            })
+            .then(result => result.json());
+    }
+
+    query(address, command, payload) {
+        let url = util.format('%s/Entities/query?access_token=%s',getBaseUrl(this.host,this.port), this.token);
+        let data = util.format('address=%s&command=%s&payload=%s',encodeURIComponent(address),
+                                encodeURIComponent(command), encodeURIComponent(JSON.stringify(payload)));
+        return fetch(url, {
+            method: 'POST',
+            body: data,
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+        }).then(result => result.json());
+    }
+}
+
+module.exports = RestConnector;
