@@ -31,7 +31,9 @@ module.exports = function (Entity) {
 
 //TYPES
   Entity.fetchByUuid = function (uuid, callback) {
-    sendEvent(getEventBusAddress(['manager', 'entitymanager']), 'read', {labels: ['type'], start: uuid, includeStart: true})
+    sendEvent(getEventBusAddress(['manager', 'entitymanager']),
+              'read',
+              {labels: ['type'], start: uuid, includeStart: true})
       .then((result) => callback(null, getResultData(result)))
       .catch((ex) => callback(ex));
   };
@@ -46,7 +48,9 @@ module.exports = function (Entity) {
   Entity.fetchByName = function (name, callback) {
     sendEvent(getEventBusAddress(['repository', 'types']), 'findOneByName', {name: name})
       .then((result) => {
-        sendEvent(getEventBusAddress(['manager', 'entitymanager']), 'read', {labels: ['type'], start: result.body.result.data.uuid, includeStart: true})
+        sendEvent(getEventBusAddress(['manager', 'entitymanager']),
+                  'read',
+                  {labels: ['type'], start: result.body.result.data.uuid, includeStart: true})
           .then((result) => callback(null, R.head(getResultData(result))));
       })
       .catch((ex) => callback(ex));
@@ -77,7 +81,9 @@ module.exports = function (Entity) {
         Promise.all(promises)
           .then((ps) => {
             let proms = R.map((item) => {
-                return sendEvent(getEventBusAddress(['manager', 'entitymanager']), 'read', {labels: ['type'], start: item.uuid, includeStart: true})
+                return sendEvent(getEventBusAddress(['manager', 'entitymanager']),
+                                 'read',
+                                 {labels: ['type'], start: item.uuid, includeStart: true})
                             .then((result) => R.head(getResultData(result)));
             }, ps);
             Promise.all(proms)
@@ -100,7 +106,9 @@ module.exports = function (Entity) {
     sendEvent(getEventBusAddress(['repository', 'instances']), 'nLastCreated', {amount: quantity})
       .then((result) => {
         let promises = R.map((item) => {
-            return sendEvent(getEventBusAddress(['manager', 'entitymanager']), 'read', {labels: ['type'], start: item.uuid, includeStart: true})
+            return sendEvent(getEventBusAddress(['manager', 'entitymanager']),
+                             'read',
+                             {labels: ['type'], start: item.uuid, includeStart: true})
                         .then((res) => R.head(getResultData(res)));
         }, result.body.result.data);
         Promise.all(promises)
@@ -119,8 +127,10 @@ module.exports = function (Entity) {
   Entity.fetchInstance = function (uuid, callback) {
     sendEvent(getEventBusAddress(['repository', 'instances']), 'findOne', {node: uuid})
       .then((result) => {
-        sendEvent(getEventBusAddress(['manager', 'entitymanager']), 'read', {labels: ['instance'], start: result.body.result.data.uuid, includeStart: true})
-                  .then((res) => callback(null, R.head(getResultData(res))));
+        sendEvent(getEventBusAddress(['manager', 'entitymanager']),
+                  'read',
+                  {labels: ['instance'], start: result.body.result.data.uuid, includeStart: true})
+              .then((res) => callback(null, R.head(getResultData(res))));
       })
       .catch((ex) => callback(ex));
   };

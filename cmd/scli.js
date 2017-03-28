@@ -42,31 +42,6 @@ function setupStatusChannel() {
     });
 }
 
-//TODO remove this after the restful variant of this function is fully implemented
-function DEPRECATEDsetupStatusChannel() {
-    // eb.registerHandler('com.raaftech.structure.status',function(error, message) {
-    //     if(error) {
-    //         console.log("ERROR: "+error);
-    //     } else {
-    //         let uuid = message.body.data.uuid;
-    //         if(!R.isNil(uuid)) {
-    //             sendEvent(helper.getEventBusAddress(['repository','types']),'findOne',{node: uuid})
-    //                 .then((data) => {
-    //                     console.log(helper.stringify(data));
-    //                     let comps = helper.getResultData(data)["components"];
-    //                     comps = helper.consolidateComponents(clc.green(uuid), comps);
-    //                     let name = helper.getResultData(data)['name'];
-    //                     if(name.indexOf('unknown-') !== -1) name = clc.red(name);
-    //                     else name = clc.green(name);
-    //                     let tree = {};
-    //                     tree[name] = comps;
-    //                     console.log(treeify.asTree(tree, true));
-    //                 });
-    //         }
-    //     }
-    // });
-}
-
 function getChildren(uuid) {
     return rest.getChildren(uuid)
         .then(children => {
@@ -85,6 +60,7 @@ function toRoot(uuid, childNodes) {
                 if(R.isNil(R.path(['meta','relations','ISA'], parent))) {
                     resolve(tree);
                 } else {
+                    //getIsaParent: small function to fetch the first of the ISA uuids for an entity
                     let getIsaParent = R.pipe(R.path(['meta','relations','ISA','uuids']), R.head);
                     resolve(toRoot(getIsaParent(parent), tree));
                 }
@@ -109,6 +85,8 @@ vorpal.command('login', 'Get an access token for Structure')
         self.prompt(qs, function(answers) {
             rest.login(answers.email, answers.password)
                 .then(user => {
+                    //function that handles the error or ok case of requesting a login
+                    //if the property error is present, print error message else show the acquired AccessToken
                     let handler = R.ifElse(
                         R.has('error'),
                         error => self.log(util.format('%s (%s): %s',clc.red.bold(error.error.code), clc.red(error.error.statusCode), error.error.message)),
@@ -148,11 +126,13 @@ vorpal.command('adduser', 'Add a structure user')
         qs.push(helper.generateQuestion('password', 'password', 'Password: '));
         qs.push(helper.generateQuestion('confirm', 'password', 'Re-enter password: '));
         self.prompt(qs, function(answers) {
+            //Function to determine the outcome of the createUser request
             let createUserHandler = R.ifElse(
                 R.has('error'),
                 error => self.log(util.format('status code: %s\n%s', clc.red.bold(error.error.statusCode), error.error.message)),
                 user => self.log(util.format('%s "%s" (userid: %s) %s', clc.green('User'), user.email, user.id, clc.green('created')))
             );
+            //Call to the createUser endpoint in the rest API
             let createUser = () => rest.createUser(answers.email, answers.password)
                 .then(result => {
                     createUserHandler(result);
@@ -162,6 +142,9 @@ vorpal.command('adduser', 'Add a structure user')
                     self.log(ex);
                     done();
                 });
+            //Function to check if the 1st and 2nd password entry are equal.
+            //if not equal prints an error message
+            //if equal calls the above createUser function.
             let pwdCheck = R.ifElse(R.equals, createUser, () => {self.log(clc.red('Passwords to not match')); done();});
             pwdCheck(answers.password, answers.confirm);
         });
@@ -173,8 +156,9 @@ vorpal.command('structure', 'Structure admin tools')
     .option('-i, --init', 'Purge-Init structure server')
     .action(function(args, done) {
         const self = this;
-        let handler = (method) => {
-            rest[method]()
+        //Function that calls a specific rest method, depending on the value of the method argument
+        let statusHandler = () => {
+            rest.getStructureStatusInfo()
                 .then(result => {
                     self.log(clc.green.bold('[JVM info]'));
                     self.log(util.format('  Version: %s', result.jvm.version));
@@ -195,13 +179,19 @@ vorpal.command('structure', 'Structure admin tools')
                 .catch(ex => {self.log(ex); done();})
         }
 
+        let initHandler = () => {
+            rest.purgeInit().then(result => {self.log(result); done();}).catch(ex => {self.log(ex); done();});
+        };
+
+        //Function to check if a 'path' to a property on an object is null/undefined or not.
         let pathNotNil = R.curry((prop, obj) => notNil(R.path(['options', prop], obj)));
-        let ex = R.cond([
-            [pathNotNil('status'), () => handler('getStructureStatusInfo')],
-            [pathNotNil('init'), () => handler('purgeInit')],
+        //Function to determine which rest call is required
+        let determineCall = R.cond([
+            [pathNotNil('status'), () => statusHandler()],
+            [pathNotNil('init'), () => initHandler()],
             [R.T, done()]
         ]);
-        ex(args);
+        determineCall(args);
     });
 
 vorpal.command('find <name>', 'Find a specified node in vertx')
@@ -210,15 +200,21 @@ vorpal.command('find <name>', 'Find a specified node in vertx')
     .option('-u, --uuid', 'Set search mode to uuid based search.')
     .action(function(args, done) {
         const self = this;
+        //Function that calls a specific rest method, depending on the value of the method argument
         let handler = (method, arg) => {
             rest[method](arg)
                 .then(entity => {
+                    //Function that fetches the property keys, present in the meta object in the entity
+                    //Then adds the property path, in dot notation, to the list (2nd arg)
+                    //Returns a list of possible property paths
                     let meta = R.curry((ent,list) => {
                         return R.pipe(R.prop('meta'), R.keys,
                             R.map(item => 'meta.'+item),
                             R.concat(list)
                         )(ent);
                     });
+                    //Function that gets all keys from an entity, prepends 'ALL' to the list
+                    //fetches the meta keys by using above function and appends them to the list
                     let keys = R.pipe(R.keys, R.prepend('ALL'),meta(entity))(entity);
                     self.prompt(helper.generateQuestion('list', 'list', 'Choose a field', {choices: keys}), function(result) {
                         let check = R.ifElse(R.propEq('list','ALL'),
@@ -239,6 +235,7 @@ vorpal.command('find <name>', 'Find a specified node in vertx')
                 });
         };
 
+        //Function that determines which rest call to use based on the given arguments and options
         let exec = R.ifElse(R.isNil,
             () => handler('getEntityByName', args.name),
             () => handler('getEntityByUuid', args.name));
@@ -283,6 +280,7 @@ vorpal.command('tree <name>', 'Show a relation tree for the requested node')
     .action(function(args, done) {
         const self = this;
         let rootUuid = '';
+        //Function that calls a specific rest method, depending on the value of the method argument
         let handler = (method, arg) => {
             rest[method](arg)
                 .then(entity => { return R.path(['meta','uuid'], entity) })
@@ -308,6 +306,7 @@ vorpal.command('tree <name>', 'Show a relation tree for the requested node')
                 });
         };
 
+        //Function that determines which rest call to use based on the given arguments and options
         let exec = R.ifElse(R.isNil,
             () => handler('getEntityByName', args.name),
             () => handler('getEntityByUuid', args.name));
@@ -326,7 +325,7 @@ vorpal.command('discover <cidr>', 'Discover items in the network')
             reachable: true,
             desc: 'Some cidr description.'
         };
-
+        //function to run if logged in
         let loggedIn = () => rest.createInstance(pargs)
             .then(created => {
                 let instanceUuid = created.meta.uuid;
@@ -337,7 +336,9 @@ vorpal.command('discover <cidr>', 'Discover items in the network')
                 self.log(ex);
                 done();
             });
+        //function to run if not logged in
         let loggedOut = () => { console.log('Please login first.'); done()};
+        //function to determine if there is a token (logged in) or not (not logged in)
         let handler = R.ifElse(R.isNil,loggedOut, loggedIn);
         handler(rest.getToken());
     });
