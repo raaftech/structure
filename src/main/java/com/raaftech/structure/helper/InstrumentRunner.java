@@ -62,17 +62,26 @@ public class InstrumentRunner {
     private final Logger log = LoggerFactory.getLogger(InstrumentRunner.class);
 
 
-    public InstrumentRunner(Instance origin, Controller controller, ObjectNode arguments, String taskId) {
-        this(origin, controller, arguments, taskId, -1);
-    }
-
     /**
-     * Construct the InstrumentRunner, do some checks, etc.
+     * Construct the InstrumentRunner with default allocated time, do some checks, etc.
      *
      * @param controller The controller to use on the origin.
      * @param origin     The object undergoing the action.
      * @param arguments  Given arguments, can be null.
      * @param taskId     The ID used to track progress of this action.
+     */
+    public InstrumentRunner(Instance origin, Controller controller, ObjectNode arguments, String taskId) {
+        this(origin, controller, arguments, taskId, -1);
+    }
+
+    /**
+     * Construct the InstrumentRunner with overridden time allocation, do some checks, etc.
+     *
+     * @param controller The controller to use on the origin.
+     * @param origin     The object undergoing the action.
+     * @param arguments  Given arguments, can be null.
+     * @param taskId     The ID used to track progress of this action.
+     * @param timeAllocated Override for default time allocation. Value of -1 means default will be used.
      */
     public InstrumentRunner(Instance origin, Controller controller, ObjectNode arguments, String taskId, long timeAllocated) {
         this.taskId = taskId;

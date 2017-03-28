@@ -184,6 +184,7 @@ public class InstanceActor extends NodeActor<Instance> {
                     try {
                         String taskId = UUID.randomUUID().toString();
 
+                        // Check if there is a timeAllocation field specified. If so, get the value there. Else the default value is used.
                         if (args.has("timeAllocated")) {
                             getNode().runController(instrument, (ObjectNode) args.get("arguments"), taskId, args.get("timeAllocated").asLong());
                         } else {

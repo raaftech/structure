@@ -162,12 +162,13 @@ public abstract class Instance extends Node {
         return this;
     }
 
-    // Run a controller on this instance
+    // Run a controller on this instance with default allocated time
     public Instance runController(Controller controller, ObjectNode arguments, String taskId) {
         new InstrumentRunner(this, controller, arguments, taskId).startInstrument();
         return this;
     }
 
+    // Run a controller on this instance with overridden allocated time
     public Instance runController(Controller controller, ObjectNode arguments, String taskId, long timeAllocated) {
         new InstrumentRunner(this, controller, arguments, taskId, timeAllocated).startInstrument();
         return this;
