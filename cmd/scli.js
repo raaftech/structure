@@ -78,81 +78,7 @@ function getPayloadListing() {
     return fs.readdirSync(payloadDir());
 }
 
-vorpal.command('login', 'Get an access token for Structure')
-    .action(function(args, done) {
-        const self = this;
-        let qs = [];
-        qs.push(helper.generateQuestion('email', 'input', 'Email: '));
-        qs.push(helper.generateQuestion('password', 'password', 'Password: '));
-        self.prompt(qs, function(answers) {
-            rest.login(answers.email, answers.password)
-                .then(user => {
-                    //function that handles the error or ok case of requesting a login
-                    //if the property error is present, print error message else show the acquired AccessToken
-                    let handler = R.ifElse(
-                        R.has('error'),
-                        error => self.log(util.format('%s (%s): %s',clc.red.bold(error.error.code), clc.red(error.error.statusCode), error.error.message)),
-                        user => self.log(clc.green('AccessToken: ')+user.id)
-                    );
-                    handler(user);
-                    done();
-                })
-                .catch(ex => {
-                    self.log(ex);
-                    done();
-                });
-        });
-    });
-
-vorpal.command('logout', 'Invalidate an access token for Structure')
-    .action(function(args, done) {
-        const self = this;
-        self.prompt(qs, function(answers) {
-            rest.logout()
-                .then(result => {
-                    self.log("Logged out");
-                    done();
-                })
-                .catch(ex => {
-                    self.log(ex);
-                    done();
-                });
-        });
-    });
-
-vorpal.command('adduser', 'Add a structure user')
-    .action(function(args, done) {
-        const self = this;
-        let qs = [];
-        qs.push(helper.generateQuestion('email', 'input', 'Email: '));
-        qs.push(helper.generateQuestion('password', 'password', 'Password: '));
-        qs.push(helper.generateQuestion('confirm', 'password', 'Re-enter password: '));
-        self.prompt(qs, function(answers) {
-            //Function to determine the outcome of the createUser request
-            let createUserHandler = R.ifElse(
-                R.has('error'),
-                error => self.log(util.format('status code: %s\n%s', clc.red.bold(error.error.statusCode), error.error.message)),
-                user => self.log(util.format('%s "%s" (userid: %s) %s', clc.green('User'), user.email, user.id, clc.green('created')))
-            );
-            //Call to the createUser endpoint in the rest API
-            let createUser = () => rest.createUser(answers.email, answers.password)
-                .then(result => {
-                    createUserHandler(result);
-                    done();
-                })
-                .catch(ex => {
-                    self.log(ex);
-                    done();
-                });
-            //Function to check if the 1st and 2nd password entry are equal.
-            //if not equal prints an error message
-            //if equal calls the above createUser function.
-            let pwdCheck = R.ifElse(R.equals, createUser, () => {self.log(clc.red('Passwords to not match')); done();});
-            pwdCheck(answers.password, answers.confirm);
-        });
-    });
-
-vorpal.command('find <name>', 'Find a specified node in vertx')
+vorpal.command('find <name>', 'Find a specified node in structure')
     .option('-f, --field <fieldName>', 'Select a specific field from the resultset',
         helper.getCommonFields())
     .option('-u, --uuid', 'Set search mode to uuid based search.')
@@ -176,11 +102,11 @@ vorpal.command('find <name>', 'Find a specified node in vertx')
                     let keys = R.pipe(R.keys, R.prepend('ALL'),meta(entity))(entity);
                     self.prompt(helper.generateQuestion('list', 'list', 'Choose a field', {choices: keys}), function(result) {
                         let check = R.ifElse(R.propEq('list','ALL'),
-                                        () => self.log(helper.stringify(entity)),
+                                        () => self.log(helper.treePrint(entity)),
                                         () => {
                                             let pp = R.split('.',result.list);
                                             let prop = clc.green.bold(result.list);
-                                            self.log(util.format('%s: %s',prop,helper.stringify(R.path(pp, entity))));
+                                            self.log(util.format('%s\n%s',prop,helper.treePrint(R.path(pp, entity))));
                                         }
                                     );
                         check(result);

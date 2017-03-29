@@ -4,6 +4,7 @@ const R = require('ramda');
 const util = require('util');
 const clc = require('cli-color');
 const fs = require('fs');
+const treeify = require('treeify');
 
 function generateQuestion(name, type, ask, options) {
 	return R.merge(R.zipObj(['name','type','message'],[name,type,ask]), options);
@@ -27,6 +28,10 @@ function getEventBusAddress(parts) {
 
 function getCommonFields() {
     return ['isa','schema','name','desc','uuid'];
+}
+
+function treePrint(entity) {
+    return treeify.asTree(entity, true);
 }
 
 function consolidateComponents(uuid, componentList) {
@@ -56,5 +61,6 @@ module.exports = {
 	getCommonFields: getCommonFields,
 	stringify: stringify,
 	consolidateComponents: consolidateComponents,
-	readJsonFile: readJsonFile
+	readJsonFile: readJsonFile,
+    treePrint: treePrint
 };
