@@ -156,6 +156,13 @@ vorpal.command('structure', 'Structure admin tools')
     .option('-i, --init', 'Purge-Init structure server')
     .action(function(args, done) {
         const self = this;
+
+        //Functions for usage percentage calculation
+        let div = R.flip(R.divide);
+        let calcUsedPercentage = (used, free) => R.pipe(R.add, div(used), R.divide(1000), Math.round, div(10))(used,free);
+        let printPercentage = R.ifElse(R.lt(80), (p) => util.format('(%s%)',clc.red.bold(p)), (p) => util.format('(%s%)',clc.red.green(p)));
+        let percentageFn = R.pipe(calcUsedPercentage, printPercentage);
+
         //Function that calls a specific rest method, depending on the value of the method argument
         let statusHandler = () => {
             rest.getStructureStatusInfo()
@@ -165,7 +172,7 @@ vorpal.command('structure', 'Structure admin tools')
                     self.log(util.format('  Java version: %s',result.jvm.java_version));
                     self.log(util.format('  Cpus: %s', result.jvm.available_processors));
                     self.log(util.format(clc.green('  [Memory]')));
-                    self.log(util.format('    Used: %s\n    Free: %s',result.jvm.memory.used, result.jvm.memory.free));
+                    self.log(util.format('    Used: %s %s\n    Free: %s',result.jvm.memory.used, percentageFn(result.jvm.memory.used, result.jvm.memory.free), result.jvm.memory.free));
 
                     self.log(util.format(clc.green.bold('[Graph info]')));
                     self.log(util.format('  Types: %s', result.graph.types));
