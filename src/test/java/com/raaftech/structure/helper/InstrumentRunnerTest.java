@@ -283,6 +283,9 @@ public class InstrumentRunnerTest {
 
             controller.getTemplateContent();
             result = Optional.of("ssh -ltoor someserver \"{{ payloadFileName }}\"");
+
+            controller.getTimeAllocated();
+            result = Optional.of(5000);
         }};
 
         InstrumentRunner instrumentRunner = new InstrumentRunner(

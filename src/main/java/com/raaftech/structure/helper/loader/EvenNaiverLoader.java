@@ -189,7 +189,7 @@ public class EvenNaiverLoader {
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
                     if (matcher.matches(file)) {
-                        log.debug("globFiles: matched file: " + file);
+                        //log.debug("globFiles: matched file: " + file);
                         matchingFiles.add(file);
                     }
                     return FileVisitResult.CONTINUE;
@@ -201,7 +201,7 @@ public class EvenNaiverLoader {
                 }
             });
         } catch (IOException e) {
-            log.debug(e.getMessage());
+            log.error(e.getMessage());
 
             if (Configuration.isTraceModeOn()) {
                 e.printStackTrace();
@@ -313,7 +313,6 @@ public class EvenNaiverLoader {
                     }
                 }
 
-                log.debug("{}.isArray()? {}", jsonFilePath.getFileName(), String.valueOf(jsonFile.isArray()));
                 // array of tokens
                 if (jsonFile.isArray()) {
                     for (JsonNode token : jsonFile) {
@@ -364,7 +363,6 @@ public class EvenNaiverLoader {
             for (JsonNode item : worklist) {
                 if (allDependenciesMet(item, sorted) && !sorted.contains(item)) {
                     sorted.add(item);
-                    log.debug("Sorted {} of {} items", sorted.size(), worklist.size());
                 }
 
                 // Set eject if sorted and worklist are equal.
@@ -435,8 +433,7 @@ public class EvenNaiverLoader {
                 .filter(n -> nodeRepository.findByUuid(n.get(META).get(UUID).asText()) == null)
                 .collect(Collectors.toList());
 
-        System.out.println("Size of update list: " + updateEntityList.size());
-        System.out.println("Size of new list: " + newEntityList.size());
+        log.debug("Update list: {} , new list: {}", updateEntityList.size(), newEntityList.size());
         // combine updateEntityList and newEntitylist, then return
         return Stream.concat(updateEntityList.stream(), newEntityList.stream())
                 .collect(Collectors.toList());

@@ -159,6 +159,7 @@ public class InstanceActor extends NodeActor<Instance> {
                 Controller instrument = null;
 
                 String instrumentId = args.get("instrument").asText();
+
                 if (isUuid(instrumentId)) {
                     instrument = (Controller)instrumentRepository.findByUuid(instrumentId);
                 } else {
@@ -182,7 +183,14 @@ public class InstanceActor extends NodeActor<Instance> {
                 if (instrument != null) {
                     try {
                         String taskId = UUID.randomUUID().toString();
-                        getNode().runController(instrument, (ObjectNode) args.get("arguments"), taskId);
+
+                        // Check if there is a timeAllocation field specified. If so, get the value there. Else the default value is used.
+                        if (args.has("timeAllocated")) {
+                            getNode().runController(instrument, (ObjectNode) args.get("arguments"), taskId, args.get("timeAllocated").asLong());
+                        } else {
+                            getNode().runController(instrument, (ObjectNode) args.get("arguments"), taskId);
+                        }
+
                         result.put("data", taskId);
                     } catch (RuntimeException e) {
                     	log.error(e.getMessage());

@@ -59,11 +59,11 @@ public class InstrumentRunner {
     // jobs will contain system commands, paired with timeouts, eventually sent to the agent with the TaskManager.
     private final ArrayList<Pair<String, Optional<Long>>> jobList = new ArrayList<>();
     private final String taskManagerAddress = "com.raaftech.structure.manager.taskmanager";
-
     private final Logger log = LoggerFactory.getLogger(InstrumentRunner.class);
 
+
     /**
-     * Construct the InstrumentRunner, do some checks, etc.
+     * Construct the InstrumentRunner with default allocated time, do some checks, etc.
      *
      * @param controller The controller to use on the origin.
      * @param origin     The object undergoing the action.
@@ -71,6 +71,19 @@ public class InstrumentRunner {
      * @param taskId     The ID used to track progress of this action.
      */
     public InstrumentRunner(Instance origin, Controller controller, ObjectNode arguments, String taskId) {
+        this(origin, controller, arguments, taskId, -1);
+    }
+
+    /**
+     * Construct the InstrumentRunner with overridden time allocation, do some checks, etc.
+     *
+     * @param controller The controller to use on the origin.
+     * @param origin     The object undergoing the action.
+     * @param arguments  Given arguments, can be null.
+     * @param taskId     The ID used to track progress of this action.
+     * @param timeAllocated Override for default time allocation. Value of -1 means default will be used.
+     */
+    public InstrumentRunner(Instance origin, Controller controller, ObjectNode arguments, String taskId, long timeAllocated) {
         this.taskId = taskId;
         this.origin = origin;
         this.controller = controller;
@@ -197,7 +210,13 @@ public class InstrumentRunner {
                     // send file to subject (assumes sendFile + receiveFile)
                     jobList.add(Pair.of(sendFile(heaviestSendFile), transportTimeout));
                     // send execution to subject (assumes sendString + receiveString)
-                    jobList.add(Pair.of(sendString(heaviestSendString) + " " + Strings.join(argumentsToScript, " "), transportTimeout));
+
+                    // If timeAllocated has no value assigned, use getTimeAllocated, else use timeAllocated
+                    if (timeAllocated == -1){
+                        jobList.add(Pair.of(sendString(heaviestSendString) + " " + Strings.join(argumentsToScript, " "), controller.getTimeAllocated()));
+                    } else {
+                        jobList.add(Pair.of(sendString(heaviestSendString) + " " + Strings.join(argumentsToScript, ""), Optional.of(timeAllocated)));
+                    }
                 } catch (IOException e) {
                     log.error(e.getMessage());
 
@@ -226,8 +245,14 @@ public class InstrumentRunner {
                     // send file to subject (assumes sendFile + receiveFile)
                     jobList.add(Pair.of(sendFile(heaviestSendFile), transportTimeout));
                     // send execution to subject (assumes sendString + receiveString)
-                    jobList.add(Pair.of(sendString(heaviestSendString), transportTimeout));
 
+                    // If timeAllocated has no value assigned, use getTimeAllocated, else use timeAllocated
+                    if (timeAllocated == -1) {
+                        jobList.add(Pair.of(sendString(heaviestSendString), controller.getTimeAllocated()));
+                    } else {
+                        jobList.add(Pair.of(sendString(heaviestSendString), Optional.of(timeAllocated)));
+
+                    }
                 } catch (Exception e) {
                     log.error(e.getMessage());
 
@@ -252,7 +277,15 @@ public class InstrumentRunner {
                 try {
                     // TODO: create method
                     ObjectNode args = validateAndSelectArguments(controller);
-                    jobList.add(Pair.of(applyTemplate(controller.getTemplateContent().get(), args), controller.getTimeAllocated()));
+
+                    // If timeAllocated has no value assigned, use getTimeAllocated, else use timeAllocated
+                    if(timeAllocated == -1) {
+                        jobList.add(Pair.of(applyTemplate(controller.getTemplateContent().get(), args), controller.getTimeAllocated()));
+                    } else {
+                        jobList.add(Pair.of(applyTemplate(controller.getTemplateContent().get(), args), Optional.of(timeAllocated)));
+
+                    }
+
                 } catch (IOException e) {
                     if (Configuration.isTraceModeOn()) {
                         e.printStackTrace();
