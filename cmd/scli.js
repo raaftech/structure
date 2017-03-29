@@ -5,7 +5,7 @@ const util = require('util');
 const helper = require('./helper');
 const clc = require('cli-color');
 const sprintf = require('sprintf-js').sprintf;
-const treeify = require('treeify');
+const treeify = require('./treeify');
 const neo = require('./extensions/neo');
 const structure = require('./extensions/structure');
 const fs = require('fs');
@@ -106,7 +106,10 @@ vorpal.command('find <name>', 'Find a specified node in structure')
                                         () => {
                                             let pp = R.split('.',result.list);
                                             let prop = clc.green.bold(result.list);
-                                            self.log(util.format('%s\n%s',prop,helper.treePrint(R.path(pp, entity))));
+                                            let outputTypeSelector = R.ifElse(R.is(Object),
+                                                x => self.log(util.format('%s\n%s', prop, helper.treePrint(R.path(pp, entity)))),
+                                                x => self.log(util.format('%s: %s', prop, helper.stringify(R.path(pp, entity)))));
+                                            outputTypeSelector(R.path(pp, entity));
                                         }
                                     );
                         check(result);
@@ -134,7 +137,7 @@ vorpal.command('instance')
         let promise = args.options.last ? rest.lastInstances(args.options.last) : rest.getInstanceByUuid(args.options.find);
 
         promise.then(instance => {
-            self.log(helper.stringify(instance));
+            self.log(helper.treePrint(instance));
             done();
         }).catch(ex => {
                 self.log(ex);

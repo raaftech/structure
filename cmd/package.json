@@ -21,7 +21,6 @@
     "node-fetch": "^1.6.3",
     "ramda": "^0.22.1",
     "sprintf-js": "^1.0.3",
-    "treeify": "^1.0.1",
     "vorpal": "^1.11.4"
   },
   "devDependencies": {

@@ -4,7 +4,7 @@ const R = require('ramda');
 const util = require('util');
 const clc = require('cli-color');
 const fs = require('fs');
-const treeify = require('treeify');
+const treeify = require('./treeify');
 
 function generateQuestion(name, type, ask, options) {
 	return R.merge(R.zipObj(['name','type','message'],[name,type,ask]), options);
