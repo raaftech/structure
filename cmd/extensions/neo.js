@@ -3,7 +3,8 @@
 const vorpal = require('vorpal')();
 const neo4j = require('neo4j');
 const R = require('ramda');
-const helper = require('../helper');
+const path = require('path');
+const helper = require(path.join(__dirname, '..','helper'));
 const util = require('util');
 const treeify = require('treeify');
 
