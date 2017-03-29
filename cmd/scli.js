@@ -137,8 +137,9 @@ vorpal.command('instance')
         let promise = args.options.last ? rest.lastInstances(args.options.last) : rest.getInstanceByUuid(args.options.find);
 
         promise.then(instance => {
-            self.log(helper.treePrint(instance));
-            done();
+            R.pipe(R.ifElse(R.is(Object), helper.treePrint, R.identity),
+                   x => console.log(x),
+                   x => done()) (instance);
         }).catch(ex => {
                 self.log(ex);
                 done();

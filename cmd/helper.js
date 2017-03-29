@@ -62,5 +62,5 @@ module.exports = {
 	stringify: stringify,
 	consolidateComponents: consolidateComponents,
 	readJsonFile: readJsonFile,
-    treePrint: treePrint
+    treePrint: R.curry(treePrint)
 };
