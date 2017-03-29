@@ -14,6 +14,15 @@ const RestConnector = require('./restConnector');
 const EventSource = require('eventsource');
 
 const notNil = R.compose(R.not, R.isNil);
+const genericAuthCommandHandler = R.curry((done, loggedInFn, token) => {
+    let loggedOut = () => { console.log('Please login first.'); done()};
+    let handler = R.ifElse(R.isNil,loggedOut, loggedInFn);
+    handler(token);
+});
+const genericCatchHandler = R.curry((done, error) => {
+    console.log(error);
+    done();
+});
 
 let rest;
 
@@ -116,10 +125,7 @@ vorpal.command('find <name>', 'Find a specified node in structure')
                         done();
                     });
                 })
-                .catch(ex => {
-                    self.log(ex);
-                    done();
-                });
+                .catch(genericCatchHandler(done));
         };
 
         //Function that determines which rest call to use based on the given arguments and options
@@ -140,10 +146,7 @@ vorpal.command('instance')
             R.pipe(R.ifElse(R.is(Object), helper.treePrint, R.identity),
                    x => console.log(x),
                    x => done()) (instance);
-        }).catch(ex => {
-                self.log(ex);
-                done();
-            });
+        }).catch(genericCatchHandler(done));
     });
 
 vorpal.command('dig <uuid>', 'Get the child elements for a node')
@@ -157,10 +160,7 @@ vorpal.command('dig <uuid>', 'Get the child elements for a node')
                 }, children);
                 done();
             })
-            .catch(ex => {
-                self.log(ex);
-                done();
-            })
+            .catch(genericCatchHandler(done))
     });
 
 vorpal.command('tree <name>', 'Show a relation tree for the requested node')
@@ -188,10 +188,7 @@ vorpal.command('tree <name>', 'Show a relation tree for the requested node')
                     self.log(treeify.asTree(parents,true));
                     done();
                 })
-                .catch(ex => {
-                    self.log(ex);
-                    done();
-                });
+                .catch(genericCatchHandler(done));
         };
 
         //Function that determines which rest call to use based on the given arguments and options
@@ -199,6 +196,23 @@ vorpal.command('tree <name>', 'Show a relation tree for the requested node')
             () => handler('getEntityByName', args.name),
             () => handler('getEntityByUuid', args.name));
         exec(R.path(['options', 'uuid'], args));
+    });
+
+vorpal.command('grouping <name>', 'Create a new Grouping')
+    .action(function(args, done) {
+        const self = this;
+        let payload = {
+            node: '5f1eb7c5-ec5e-4563-be6a-fc50774fc374',
+            name: args.name,
+            desc: 'A group of references to things'
+        };
+        let loggedIn = () => rest.createInstance(payload)
+            .then(created => {
+                console.log(created);
+                done();
+            })
+            .catch(genericCatchHandler(done));
+        genericAuthCommandHandler(done, loggedIn, rest.getToken());
     });
 
 //TODO finish refactor
@@ -220,15 +234,9 @@ vorpal.command('discover <cidr>', 'Discover items in the network')
                 return rest.runInstrument('IpAddressDiscover', instanceUuid);
             })
             .then(result => done())
-            .catch(ex => {
-                self.log(ex);
-                done();
-            });
-        //function to run if not logged in
-        let loggedOut = () => { console.log('Please login first.'); done()};
-        //function to determine if there is a token (logged in) or not (not logged in)
-        let handler = R.ifElse(R.isNil,loggedOut, loggedIn);
-        handler(rest.getToken());
+            .catch(genericCatchHandler(done));
+
+        genericAuthCommandHandler(done, loggedIn, rest.getToken());
     });
 
 vorpal.command('query', 'Place arbitrary requests on the event bus')
@@ -247,9 +255,6 @@ vorpal.command('query', 'Place arbitrary requests on the event bus')
                     console.log(data);
                     done();
                 })
-                .catch(ex => {
-                    console.log(ex);
-                    done();
-                });
+                .catch(genericCatchHandler(done));
         });
     });
