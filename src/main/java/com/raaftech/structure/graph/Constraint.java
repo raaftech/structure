@@ -108,14 +108,9 @@ public class Constraint {
 
         // Relationships now contains zero to many UUIDs, all of these should be validated against the constraint.
 
-        // Check if the amount of found nodes is OK
-        if (!requiredAmount(relatedNodes.size())) {
-            return false;
-        } else {
-            // In case we have 0 related nodes and a 0..1 or 0..* cardinality, we can return
-            if (relatedNodes.isEmpty()) {
-                return true;
-            }
+        // If we found 0 nodes we only need to check against cardinality
+        if (relatedNodes.isEmpty()) {
+            return requiredAmount(0);
         }
 
         /*
@@ -151,13 +146,16 @@ public class Constraint {
         Filter all the Instance nodes we found, cast them to Instance, and check whether they're of the expected
         types. Return this value, because if they all match the expected type the validation succeeds.
          */
-        return foundRelatedNodes.stream()
+        Set<Instance> validateAgainstConstraint = foundRelatedNodes.stream()
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .filter(node -> node instanceof Instance)
                 .map(node -> (Instance) node)
                 // now we need to check if we're an instance of the type allowed by this constraint
-                .allMatch(instance -> instance.isOfType(endOfConstraint));
+                .filter(instance -> instance.isOfType(endOfConstraint))
+                .collect(Collectors.toSet());
+
+        return requiredAmount(validateAgainstConstraint.size());
     }
 
     /**

@@ -5,23 +5,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.raaftech.structure.base.Context;
-import com.raaftech.structure.base.SpringTestConfig;
 import com.raaftech.structure.graph.repositories.InstanceRepository;
 import com.raaftech.structure.graph.repositories.NodeRepository;
-import com.raaftech.structure.graph.repositories.TypeRepository;
 import com.raaftech.structure.next.Entity;
 import mockit.Expectations;
 import mockit.Mocked;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.AnnotationConfigContextLoader;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
@@ -158,4 +149,201 @@ public class TypeTest {
         assertTrue(start.verifyEntityToConstraints(mapper.treeToValue(entityJson, Entity.class)));
     }
 
+    /**
+     * Test the case where we have two constraints with the same name and cardinality, but a different type.
+     */
+    @Test
+    public void testEntityValidation02(
+            @Mocked NodeRepository nodeRepository, @Mocked Instance instance) throws Exception {
+        Type start = new Type("Start", "test", UUID.randomUUID().toString());
+        Type end01 = new Type("End01", "test", UUID.randomUUID().toString());
+        Type end02 = new Type("End02", "test", UUID.randomUUID().toString());
+        start.addConstraint(end01, Constraint.Cardinality.REQUIRED_TO_ONE, "TEST");
+        start.addConstraint(end02, Constraint.Cardinality.REQUIRED_TO_ONE, "TEST");
+
+        /*
+        A simple entity, without any relations except for the INSTANCE_OF, which
+        is never validated against a constraint.
+         */
+        JsonNode entityJson = mapper.readTree("  {" +
+                "  \"type\": \"Component\"," +
+                "  \"name\": \"NVMe\"," +
+                "  \"desc\": \"An NVMe solid state disk.\"," +
+                "  \"meta\": {" +
+                "    \"uuid\": \"4f84bd11-e108-4d98-8f03-0c4c6855e692\"," +
+                "    \"relations\": {" +
+                "      \"INSTANCE_OF\": {" +
+                "        \"direction\": \"outgoing\"," +
+                "        \"uuids\": [" +
+                "          \"7a60ec32-0a9a-40b9-bf1f-d69674d4a233\"" +
+                "        ]" +
+                "      }" +
+                "    }" +
+                "  }," +
+                "  \"data\": {" +
+                "    \"memSizeKb\": 268435456" +
+                "  }" +
+                "}");
+
+        // Add an outgoing relationship that validates against one of the constraints
+        ObjectNode relations = (ObjectNode) entityJson.get("meta").get("relations");
+        ObjectNode testRel = relations.putObject("TEST");
+        testRel.put("direction", "outgoing");
+        ArrayNode uuidArray = testRel.putArray("uuids");
+        UUID testRelTo01 = UUID.randomUUID();
+        UUID testRelTo02 = UUID.randomUUID();
+        uuidArray.add(testRelTo01.toString());
+        uuidArray.add(testRelTo02.toString());
+
+        // The relationships we have validate against their constraints
+        new Expectations() {{
+            nodeRepository.findByUuid(testRelTo01.toString());
+            result = instance;
+
+            instance.isOfType(end01);
+            result = true;
+
+            nodeRepository.findByUuid(testRelTo02.toString());
+            result = instance;
+
+            instance.isOfType(end02);
+            result = true;
+        }};
+
+        // ... so this should be true
+        assertTrue(start.verifyEntityToConstraints(mapper.treeToValue(entityJson, Entity.class)));
+
+        // First rel is OK, second one isn't
+        new Expectations() {{
+            nodeRepository.findByUuid(testRelTo01.toString());
+            result = instance;
+
+            instance.isOfType(end01);
+            result = true;
+
+            nodeRepository.findByUuid(testRelTo02.toString());
+            result = instance;
+
+            instance.isOfType(end02);
+            result = false;
+        }};
+
+        // ... so this should be false
+        assertFalse(start.verifyEntityToConstraints(mapper.treeToValue(entityJson, Entity.class)));
+    }
+
+    /**
+     * Test the case where we have two constraints with the same name, but a different type and cardinality.
+     */
+    @Test
+    public void testEntityValidation03(
+            @Mocked NodeRepository nodeRepository, @Mocked Instance instance01,
+            @Mocked Instance instance02, @Mocked Instance instance03) throws Exception {
+        Type start = new Type("Start", "test", UUID.randomUUID().toString());
+        Type end01 = new Type("End01", "test", UUID.randomUUID().toString());
+        Type end02 = new Type("End02", "test", UUID.randomUUID().toString());
+        start.addConstraint(end01, Constraint.Cardinality.REQUIRED_TO_ONE, "TEST");
+        start.addConstraint(end02, Constraint.Cardinality.OPTIONAL_TO_ONE, "TEST");
+
+        /*
+        A simple entity, without any relations except for the INSTANCE_OF, which
+        is never validated against a constraint.
+         */
+        JsonNode entityJson = mapper.readTree("  {" +
+                "  \"type\": \"Component\"," +
+                "  \"name\": \"NVMe\"," +
+                "  \"desc\": \"An NVMe solid state disk.\"," +
+                "  \"meta\": {" +
+                "    \"uuid\": \"4f84bd11-e108-4d98-8f03-0c4c6855e692\"," +
+                "    \"relations\": {" +
+                "      \"INSTANCE_OF\": {" +
+                "        \"direction\": \"outgoing\"," +
+                "        \"uuids\": [" +
+                "          \"7a60ec32-0a9a-40b9-bf1f-d69674d4a233\"" +
+                "        ]" +
+                "      }" +
+                "    }" +
+                "  }," +
+                "  \"data\": {" +
+                "    \"memSizeKb\": 268435456" +
+                "  }" +
+                "}");
+
+        // Add an outgoing relationship that validates against one of the constraints
+        ObjectNode relations = (ObjectNode) entityJson.get("meta").get("relations");
+        ObjectNode testRel = relations.putObject("TEST");
+        testRel.put("direction", "outgoing");
+        ArrayNode uuidArray = testRel.putArray("uuids");
+        UUID testRelTo01 = UUID.randomUUID();
+        uuidArray.add(testRelTo01.toString());
+
+        // The relationships we have validate against their constraints
+        new Expectations() {{
+            nodeRepository.findByUuid(testRelTo01.toString());
+            result = instance01;
+
+            instance01.isOfType(end01);
+            result = true;
+        }};
+
+        // ... so this should be true
+        assertTrue(start.verifyEntityToConstraints(mapper.treeToValue(entityJson, Entity.class)));
+
+
+        // Now add the second relationship
+        UUID testRelTo02 = UUID.randomUUID();
+        uuidArray.add(testRelTo02.toString());
+
+        new Expectations() {{
+            // first constraint check
+            nodeRepository.findByUuid(testRelTo01.toString());
+            result = instance01;
+            nodeRepository.findByUuid(testRelTo02.toString());
+            result = instance02;
+
+            instance01.isOfType(end01);
+            result = true;
+            instance02.isOfType(end01);
+            result = false;
+
+            // second constraint check
+            nodeRepository.findByUuid(testRelTo01.toString());
+            result = instance01;
+            nodeRepository.findByUuid(testRelTo02.toString());
+            result = instance02;
+
+            instance01.isOfType(end02);
+            result = false;
+            instance02.isOfType(end02);
+            result = true;
+        }};
+
+        // ... so this should be true
+        assertTrue(start.verifyEntityToConstraints(mapper.treeToValue(entityJson, Entity.class)));
+
+
+        // Now add a third rel
+        UUID testRelTo03 = UUID.randomUUID();
+        uuidArray.add(testRelTo03.toString());
+
+        new Expectations() {{
+            // first constraint check should fail because cardinality is wrong
+            nodeRepository.findByUuid(testRelTo01.toString());
+            result = instance01;
+            nodeRepository.findByUuid(testRelTo02.toString());
+            result = instance02;
+            nodeRepository.findByUuid(testRelTo03.toString());
+            result = instance03;
+
+            instance01.isOfType(end01);
+            result = true;
+            instance02.isOfType(end01);
+            result = false;
+            instance03.isOfType(end01);
+            result = true;
+        }};
+
+        // ... so this should be false
+        assertFalse(start.verifyEntityToConstraints(mapper.treeToValue(entityJson, Entity.class)));
+    }
 }
