@@ -6,13 +6,15 @@ const helper = require('./helper');
 const clc = require('cli-color');
 const sprintf = require('sprintf-js').sprintf;
 const treeify = require('./treeify');
-const neo = require('./extensions/neo');
-const structure = require('./extensions/structure');
 const fs = require('fs');
 const path = require('path');
 const RestConnector = require('./restConnector');
 const EventSource = require('eventsource');
 const Structure = require('./subgraph');
+//extensions
+const neoExt = require('./extensions/neo');
+const structureExt = require('./extensions/structure');
+const groupExt = require('./extensions/groups');
 
 const notNil = R.compose(R.not, R.isNil);
 const genericAuthCommandHandler = R.curry((done, loggedInFn, token) => {
@@ -40,8 +42,9 @@ function init() {
 
 function scli() {
 	vorpal.history('structure-history');
-	vorpal.use(neo);
-	vorpal.use(structure, rest);
+	vorpal.use(neoExt);
+	vorpal.use(structureExt, rest);
+	vorpal.use(groupExt, rest);
 	vorpal.delimiter(clc.magenta.bold('structure$')).show();
 }
 
@@ -117,6 +120,7 @@ vorpal.command('find <name>', 'Find a specified node in structure')
                     });
                     //Function that gets all keys from an entity, prepends 'ALL' to the list
                     //fetches the meta keys by using above function and appends them to the list
+                    //This list is then prompted to the user to choose from.
                     let keys = R.pipe(R.keys, R.prepend('ALL'),meta(entity))(entity);
                     self.prompt(helper.generateQuestion('list', 'list', 'Choose a field', {choices: keys}), function(result) {
                         let check = R.ifElse(R.propEq('list','ALL'),
@@ -146,9 +150,8 @@ vorpal.command('find <name>', 'Find a specified node in structure')
 
 vorpal.command('instance')
     .option('-l, --last <quantity>', 'Fetch the last (quantity) created instances')
-    .option('-f, --find <name>', 'Find a specific instance by name')
+    .option('-f, --find <name>', 'Find a specific instance by uuid')
     .action(function(args, done) {
-        const self = this;
         let promise = args.options.last ? rest.lastInstances(args.options.last) : rest.getInstanceByUuid(args.options.find);
 
         promise.then(instance => {
@@ -205,31 +208,6 @@ vorpal.command('tree <name>', 'Show a relation tree for the requested node')
             () => handler('getEntityByName', args.name),
             () => handler('getEntityByUuid', args.name));
         exec(R.path(['options', 'uuid'], args));
-    });
-
-vorpal.command('grouping <name>', 'Create a new Grouping')
-    .action(function(args, done) {
-        let loggedIn = () => {
-            rest.getEntityByUuid('5f1eb7c5-ec5e-4563-be6a-fc50774fc374')
-                .then(entity => {
-                    let baseType = helper.json2Entity(false, entity);
-                    entity = R.pipe(
-                        R.assoc('type', 'Grouping'),
-                        R.assoc('name', args.name),
-                        R.dissocPath(['meta','checksum'])) (entity);
-
-                    let instance = createInstance(baseType, helper.json2Entity(true, entity));
-                    return new Structure.SubGraph(instance).toList();
-                })
-                .then(entityList => rest.createInstance({entities: entityList}))
-                .then(created => {
-                    console.log(created);
-                    done();
-                })
-                .catch(genericCatchHandler(done));
-        };
-
-        genericAuthCommandHandler(done, loggedIn, rest.getToken());
     });
 
 //TODO finish refactor
