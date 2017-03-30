@@ -3,6 +3,7 @@ package com.raaftech.structure.graph;
 import com.google.common.collect.ImmutableSet;
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.graph.repositories.NodeRepository;
+import com.raaftech.structure.graph.repositories.TypeRepository;
 import com.raaftech.structure.helper.Triple;
 import com.raaftech.structure.next.Entity;
 import mockit.Expectations;
@@ -196,6 +197,40 @@ public class ConstraintTest {
 
         // Because one node can't be found, the verification fails
         assertFalse(constraintRequiredToMany.verifyConstraint(entity));
+    }
+
+    // Test whether specialization method works
+    @Test
+    public void isSpecialization(
+            @Mocked Type start,
+            @Mocked Type end01,
+            @Mocked Type end02,
+            @Mocked TypeRepository typeRepository
+    ) throws Exception {
+        Constraint constraint1 = new Constraint(start, end01, Constraint.Cardinality.OPTIONAL_TO_MANY, "SOME_REL");
+        Constraint constraint2 = new Constraint(start, end02, Constraint.Cardinality.OPTIONAL_TO_MANY, "SOME_REL");
+
+        // end02 subtypes end01
+        new StrictExpectations() {{
+            end02.isOfType(anyString);
+            result = true;
+        }};
+        assertTrue(constraint1.isSpecialization(constraint2));
+
+        // end02 doesn't subtype end01
+        new StrictExpectations() {{
+            end02.isOfType(anyString);
+            result = false;
+        }};
+        assertFalse(constraint1.isSpecialization(constraint2));
+
+        // Check with a different cardinality. This fails before type checks, so no need for expectations
+        constraint1 = new Constraint(start, end01, Constraint.Cardinality.REQUIRED_TO_ONE, "SOME_REL");
+        assertFalse(constraint1.isSpecialization(constraint2));
+
+        // Check with a different rel name. This fails before type checks, so no need for expectations
+        constraint1 = new Constraint(start, end01, Constraint.Cardinality.OPTIONAL_TO_MANY, "OTHER_REL");
+        assertFalse(constraint1.isSpecialization(constraint2));
     }
 
     /*

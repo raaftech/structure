@@ -161,6 +161,19 @@ public class Constraint {
     }
 
     /**
+     * Check whether a given constraint specialized the constraint the method is called on.
+     * A constraint is a specialization of another constraint if it constraints the same relationship,
+     * has the same cardinality, and the type it points to a subtype of the other one.
+     * @param possibleSpecialization The constraint that might be a specialization.
+     * @return True when the given argument is indeed a specialization, false if not.
+     */
+    public boolean isSpecialization(Constraint possibleSpecialization) {
+        return Objects.equals(getForRelationship(), possibleSpecialization.getForRelationship()) &&
+                Objects.equals(cardinality, possibleSpecialization.cardinality) &&
+                possibleSpecialization.endOfConstraint.isOfType(endOfConstraint.getName());
+    }
+
+    /**
      * Return the relationships constrained by this constraint.
      * @return The relationship name.
      */
