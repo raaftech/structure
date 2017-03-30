@@ -88,6 +88,14 @@ function getPayloadListing() {
     return fs.readdirSync(payloadDir());
 }
 
+function createInstance(baseTypeEntity, instanceEntity) {
+    let rel = instanceEntity.relationCreate('INSTANCE_OF', 'outgoing');
+    rel.addEntity(baseTypeEntity);
+    let container = {};
+    container[instanceEntity.meta.uuid] = instanceEntity;
+    return container;
+}
+
 vorpal.command('find <name>', 'Find a specified node in structure')
     .option('-f, --field <fieldName>', 'Select a specific field from the resultset',
         helper.getCommonFields())
@@ -201,34 +209,27 @@ vorpal.command('tree <name>', 'Show a relation tree for the requested node')
 
 vorpal.command('grouping <name>', 'Create a new Grouping')
     .action(function(args, done) {
-        let fetchGrouping = () => {
+        let loggedIn = () => {
             rest.getEntityByUuid('5f1eb7c5-ec5e-4563-be6a-fc50774fc374')
                 .then(entity => {
-                    let groupingType = new Structure.SubGraph(entity);
+                    let baseType = helper.json2Entity(false, entity);
+                    entity = R.pipe(
+                        R.assoc('type', 'Grouping'),
+                        R.assoc('name', args.name),
+                        R.dissocPath(['meta','checksum'])) (entity);
 
-                    entity = R.assoc('type', 'Instance', entity);
-                    entity = R.assoc('name', args.name, entity);
-                    entity = R.dissocPath(['meta', 'uuid'], entity);
-                    entity = R.dissocPath(['meta', 'checksum'], entity);
-
-                    let subgraph = new Structure.SubGraph([]);
-
-                    return entity;
+                    let instance = createInstance(baseType, helper.json2Entity(true, entity));
+                    return new Structure.SubGraph(instance).toList();
                 })
-                .then(payload => rest.createInstance({entities: [payload]}))
+                .then(entityList => rest.createInstance({entities: entityList}))
                 .then(created => {
                     console.log(created);
                     done();
                 })
+                .catch(genericCatchHandler(done));
         };
 
-        let loggedIn = () => rest.createInstance(payload)
-            .then(created => {
-                console.log(created);
-                done();
-            })
-            .catch(genericCatchHandler(done));
-        genericAuthCommandHandler(done, fetchGrouping, rest.getToken());
+        genericAuthCommandHandler(done, loggedIn, rest.getToken());
     });
 
 //TODO finish refactor

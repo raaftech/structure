@@ -1,6 +1,6 @@
 "use strict";
 
-let Structure = (function() {
+module.exports = (function() {
 /**
  * This class is used to relate one entity to another.
  */
