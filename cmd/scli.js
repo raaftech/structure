@@ -10,13 +10,11 @@ const fs = require('fs');
 const path = require('path');
 const RestConnector = require('./restConnector');
 const EventSource = require('eventsource');
-const Structure = require('./subgraph');
 //extensions
 const neoExt = require('./extensions/neo');
 const structureExt = require('./extensions/structure');
 const groupExt = require('./extensions/groups');
 
-const notNil = R.compose(R.not, R.isNil);
 const genericAuthCommandHandler = R.curry((done, loggedInFn, token) => {
     let loggedOut = () => { console.log('Please login first.'); done()};
     let handler = R.ifElse(R.isNil,loggedOut, loggedInFn);
@@ -89,14 +87,6 @@ function payloadDir() {
 
 function getPayloadListing() {
     return fs.readdirSync(payloadDir());
-}
-
-function createInstance(baseTypeEntity, instanceEntity) {
-    let rel = instanceEntity.relationCreate('INSTANCE_OF', 'outgoing');
-    rel.addEntity(baseTypeEntity);
-    let container = {};
-    container[instanceEntity.meta.uuid] = instanceEntity;
-    return container;
 }
 
 vorpal.command('find <name>', 'Find a specified node in structure')

@@ -59,6 +59,17 @@ class RestConnector {
             .then(result => result.json());
     }
 
+    updateInstance(options) {
+        let url = util.format('%s/Entities/instance?access_token=%s', getBaseUrl(this.host,this.port), this.token);
+        return fetch(url,
+            {
+                method: 'PUT',
+                body: 'args='+JSON.stringify(options),
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+            })
+            .then(result => result.json());
+    }
+
     runInstrument(instrument, uuid) {
 
     }

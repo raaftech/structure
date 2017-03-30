@@ -154,6 +154,19 @@ module.exports = function (Entity) {
     http: {verb: 'post', path: '/instance'},
     description: 'create a new instance'
   });
+  
+  Entity.updateInstance = function (args, callback) {
+    sendEvent(getEventBusAddress(['manager', 'entitymanager']), 'update', args)
+      .then((result) => callback(null, getResultData(result)))
+      .catch((ex) => callback(ex));
+  };
+
+  Entity.remoteMethod('updateInstance', {
+    accepts: [{arg: 'args', type: 'object', required: true}],
+    returns: {root:true, type: 'object'},
+    http: {verb: 'put', path: '/instance'},
+    description: 'update an existing instance'
+  });
 
 //INSTRUMENTS
     Entity.getInstruments = function (uuid, callback) {
