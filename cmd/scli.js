@@ -12,6 +12,7 @@ const fs = require('fs');
 const path = require('path');
 const RestConnector = require('./restConnector');
 const EventSource = require('eventsource');
+const Structure = require('./subgraph');
 
 const notNil = R.compose(R.not, R.isNil);
 const genericAuthCommandHandler = R.curry((done, loggedInFn, token) => {
@@ -203,10 +204,15 @@ vorpal.command('grouping <name>', 'Create a new Grouping')
         let fetchGrouping = () => {
             rest.getEntityByUuid('5f1eb7c5-ec5e-4563-be6a-fc50774fc374')
                 .then(entity => {
+                    let groupingType = new Structure.SubGraph(entity);
+
                     entity = R.assoc('type', 'Instance', entity);
                     entity = R.assoc('name', args.name, entity);
                     entity = R.dissocPath(['meta', 'uuid'], entity);
                     entity = R.dissocPath(['meta', 'checksum'], entity);
+
+                    let subgraph = new Structure.SubGraph([]);
+
                     return entity;
                 })
                 .then(payload => rest.createInstance({entities: [payload]}))
