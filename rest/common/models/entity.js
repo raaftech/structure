@@ -143,7 +143,7 @@ module.exports = function (Entity) {
   });
 
   Entity.createInstance = function (args, callback) {
-    sendEvent(getEventBusAddress(['repository', 'instances']), 'putNode', args)
+    sendEvent(getEventBusAddress(['manager', 'entitymanager']), 'create', args)
       .then((result) => callback(null, getResultData(result)))
       .catch((ex) => callback(ex));
   };

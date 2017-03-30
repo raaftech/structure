@@ -200,19 +200,29 @@ vorpal.command('tree <name>', 'Show a relation tree for the requested node')
 
 vorpal.command('grouping <name>', 'Create a new Grouping')
     .action(function(args, done) {
-        const self = this;
-        let payload = {
-            node: '5f1eb7c5-ec5e-4563-be6a-fc50774fc374',
-            name: args.name,
-            desc: 'A group of references to things'
+        let fetchGrouping = () => {
+            rest.getEntityByUuid('5f1eb7c5-ec5e-4563-be6a-fc50774fc374')
+                .then(entity => {
+                    entity = R.assoc('type', 'Instance', entity);
+                    entity = R.assoc('name', args.name, entity);
+                    entity = R.dissocPath(['meta', 'uuid'], entity);
+                    entity = R.dissocPath(['meta', 'checksum'], entity);
+                    return entity;
+                })
+                .then(payload => rest.createInstance({entities: [payload]}))
+                .then(created => {
+                    console.log(created);
+                    done();
+                })
         };
+
         let loggedIn = () => rest.createInstance(payload)
             .then(created => {
                 console.log(created);
                 done();
             })
             .catch(genericCatchHandler(done));
-        genericAuthCommandHandler(done, loggedIn, rest.getToken());
+        genericAuthCommandHandler(done, fetchGrouping, rest.getToken());
     });
 
 //TODO finish refactor

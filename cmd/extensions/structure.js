@@ -87,7 +87,6 @@ module.exports = function(vorpal, options) {
     vorpal.command('structure status', 'Show structure status information')
         .action(function(args, done) {
             const self = this;
-            console.log(options);
             //Functions for usage percentage calculation
             let div = R.flip(R.divide);
             let calcUsedPercentage = (used, free) => R.pipe(R.add, div(used), R.divide(1000), Math.round, div(10))(used,free);
