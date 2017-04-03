@@ -224,13 +224,32 @@ public class ConstraintTest {
         }};
         assertFalse(constraint1.isSpecialization(constraint2));
 
-        // Check with a different cardinality. This fails before type checks, so no need for expectations
+        // Check with a stricter cardinality on constraint1. This fails before type checks, so no need for expectations
         constraint1 = new Constraint(start, end01, Constraint.Cardinality.REQUIRED_TO_ONE, "SOME_REL");
         assertFalse(constraint1.isSpecialization(constraint2));
 
         // Check with a different rel name. This fails before type checks, so no need for expectations
         constraint1 = new Constraint(start, end01, Constraint.Cardinality.OPTIONAL_TO_MANY, "OTHER_REL");
         assertFalse(constraint1.isSpecialization(constraint2));
+
+        // Make constraint2 the same, but with a stricter cardinality
+        constraint2 = new Constraint(start, end02, Constraint.Cardinality.REQUIRED_TO_MANY, "OTHER_REL");
+        // end02 does subtype end01
+        new StrictExpectations() {{
+            end02.isOfType(anyString);
+            result = true;
+        }};
+        assertTrue(constraint1.isSpecialization(constraint2));
+    }
+
+    /*
+     * Make sure cardinality enum is ordered properly
+     */
+    @Test
+    public void testCardinalityOrdering() throws Exception {
+        assertTrue(Constraint.Cardinality.OPTIONAL_TO_MANY.ordinal() < Constraint.Cardinality.OPTIONAL_TO_ONE.ordinal());
+        assertTrue(Constraint.Cardinality.OPTIONAL_TO_ONE.ordinal() < Constraint.Cardinality.REQUIRED_TO_MANY.ordinal());
+        assertTrue(Constraint.Cardinality.REQUIRED_TO_MANY.ordinal() < Constraint.Cardinality.REQUIRED_TO_ONE.ordinal());
     }
 
     /*

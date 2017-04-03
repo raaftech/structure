@@ -30,7 +30,8 @@ import java.util.stream.Collectors;
 @RelationshipEntity(type = "CONSTRAINTS")
 public class Constraint {
 
-    public enum Cardinality { REQUIRED_TO_ONE, OPTIONAL_TO_ONE, REQUIRED_TO_MANY, OPTIONAL_TO_MANY }
+    // The order in this enum matters. Cardinalities are placed loosest to strictest so we can compare them
+    public enum Cardinality { OPTIONAL_TO_MANY, OPTIONAL_TO_ONE, REQUIRED_TO_MANY, REQUIRED_TO_ONE }
 
     @GraphId
     private Long id;
@@ -161,13 +162,13 @@ public class Constraint {
     /**
      * Check whether a given constraint specialized the constraint the method is called on.
      * A constraint is a specialization of another constraint if it constraints the same relationship,
-     * has the same cardinality, and the type it points to a subtype of the other one.
+     * has the same or stricter cardinality, and the type it points to a subtype of the other one.
      * @param possibleSpecialization The constraint that might be a specialization.
      * @return True when the given argument is indeed a specialization, false if not.
      */
     public boolean isSpecialization(Constraint possibleSpecialization) {
         return Objects.equals(getForRelationship(), possibleSpecialization.getForRelationship()) &&
-                Objects.equals(cardinality, possibleSpecialization.cardinality) &&
+                cardinality.ordinal() <= possibleSpecialization.cardinality.ordinal() &&
                 possibleSpecialization.endOfConstraint.isOfType(endOfConstraint.getName());
     }
 
