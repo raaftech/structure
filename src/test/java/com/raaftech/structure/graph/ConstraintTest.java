@@ -9,7 +9,6 @@ import com.raaftech.structure.next.Entity;
 import mockit.Expectations;
 import mockit.Mocked;
 import mockit.StrictExpectations;
-import mockit.Verifications;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -38,7 +37,10 @@ public class ConstraintTest {
     public void testCardinalities(
             @Mocked Type start,
             @Mocked Type end,
-            @Mocked Entity entity
+            @Mocked Entity entity,
+            @Mocked Instance instance1,
+            @Mocked Instance instance2,
+            @Mocked NodeRepository nodeRepository
     ) throws Exception {
 
         final String relationshipName = "TEST_REL";
@@ -79,17 +81,51 @@ public class ConstraintTest {
         new Expectations() {{
             entity.getRelations();
             // This set represents one node related by the relationship under constraint
+            UUID uuid = UUID.randomUUID();
             result = ImmutableSet.of(
                     new Triple<String, String, Set<String>>(relationshipName, Direction.OUTGOING.toString(), ImmutableSet.of(
-                            UUID.randomUUID().toString()
+                            uuid.toString()
                     ))
             );
+
+            nodeRepository.findByUuid(uuid.toString());
+            result = instance1;
+            instance1.isOfType(end);
+            result = true;
         }};
 
         assertTrue(constraintOptionalToOne.verifyConstraint(entity));
-        assertFalse(constraintOptionalToMany.verifyConstraint(entity));
-        assertFalse(constraintRequiredToMany.verifyConstraint(entity));
+        assertTrue(constraintOptionalToMany.verifyConstraint(entity));
+        assertTrue(constraintRequiredToMany.verifyConstraint(entity));
         assertTrue(constraintRequiredToOne.verifyConstraint(entity));
+
+
+        // Now test the case where we only have two related nodes
+        new Expectations() {{
+            entity.getRelations();
+            // This set represents one node related by the relationship under constraint
+            UUID firstUuid = UUID.randomUUID();
+            UUID secondUuid = UUID.randomUUID();
+            result = ImmutableSet.of(
+                    new Triple<String, String, Set<String>>(relationshipName, Direction.OUTGOING.toString(), ImmutableSet.of(
+                            firstUuid.toString(), secondUuid.toString()
+                    ))
+            );
+
+            nodeRepository.findByUuid(firstUuid.toString());
+            result = instance1;
+            nodeRepository.findByUuid(secondUuid.toString());
+            result = instance2;
+            instance1.isOfType(end);
+            result = true;
+            instance2.isOfType(end);
+            result = true;
+        }};
+
+        assertFalse(constraintOptionalToOne.verifyConstraint(entity));
+        assertTrue(constraintOptionalToMany.verifyConstraint(entity));
+        assertTrue(constraintRequiredToMany.verifyConstraint(entity));
+        assertFalse(constraintRequiredToOne.verifyConstraint(entity));
     }
 
     /**
@@ -142,15 +178,6 @@ public class ConstraintTest {
 
         // Both related nodes are of the proper (sub)type, so verification is true
         assertTrue(constraintRequiredToMany.verifyConstraint(entity));
-
-
-        // Now the second node will be of the wrong type, which result in a false verification
-        new Expectations() {{
-            node2.isOfType(end);
-            result = false;
-        }};
-
-        assertFalse(constraintRequiredToMany.verifyConstraint(entity));
     }
 
     /*

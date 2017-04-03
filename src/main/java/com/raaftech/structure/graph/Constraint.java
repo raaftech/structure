@@ -82,7 +82,7 @@ public class Constraint {
         if (amount == 0) {
             return cardinality == Cardinality.OPTIONAL_TO_MANY || cardinality == Cardinality.OPTIONAL_TO_ONE;
         } else if (amount == 1) {
-            return cardinality == Cardinality.OPTIONAL_TO_ONE || cardinality == Cardinality.REQUIRED_TO_ONE;
+            return cardinality.ordinal() >= Cardinality.OPTIONAL_TO_MANY.ordinal();
         } else {
             return cardinality == Cardinality.OPTIONAL_TO_MANY || cardinality == Cardinality.REQUIRED_TO_MANY;
         }
