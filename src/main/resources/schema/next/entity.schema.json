@@ -94,11 +94,16 @@
           "minItems": 1
         },
         "constraints": {
-          "minProperties": 1,
           "type": "object",
+          "minProperties": 1,
+          "additionalProperties": false,
           "patternProperties": {
-            "^[a-zA-Z]+$": {
-              "$ref": "#/definitions/constraint"
+            "^[a-zA-Z_]+$": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/constraint"
+              },
+              "minItems": 1
             }
           }
         },
