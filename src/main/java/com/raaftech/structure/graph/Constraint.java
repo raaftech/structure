@@ -145,7 +145,7 @@ public class Constraint {
 
         /*
         Filter all the Instance nodes we found, cast them to Instance, and check whether they're of the expected
-        types. Return this value, because if they all match the expected type the validation succeeds.
+        types. This will return a set containing all the nodes that fall under this constraint.
          */
         Set<Instance> validateAgainstConstraint = foundRelatedNodes.stream()
                 .filter(Optional::isPresent)
@@ -156,6 +156,7 @@ public class Constraint {
                 .filter(instance -> instance.isOfType(endOfConstraint))
                 .collect(Collectors.toSet());
 
+        // Return whether the amount of nodes we found in the previous step is valid according to the cardinality.
         return requiredAmount(validateAgainstConstraint.size());
     }
 
