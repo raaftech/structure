@@ -143,6 +143,7 @@ vorpal.command('instance')
     .option('-l, --last <quantity>', 'Fetch the last (quantity) created instances')
     .option('-u, --uuid <uuid>', 'Find a specific instance by uuid')
     .option('-n, --name <name>', 'Find a specific instance by name')
+    .option('-v, --verbose', 'Be verbose in printing the results')
     .action(function(args, done) {
         let fn = (prop, obj) => R.pipe(R.path(['options', prop]), notNil);
         let predicate = R.cond([
@@ -154,9 +155,13 @@ vorpal.command('instance')
         let promise = predicate(args);
 
         promise.then(instance => {
+            if(!args.options.verbose) {
+                instance = R.assocPath(['file','dataSchema','content'],'...', instance);
+            }
+
             R.pipe(R.ifElse(R.is(Object), helper.treePrint, R.identity),
-                   x => console.log(x),
-                   x => done()) (instance);
+               x => console.log(x),
+               x => done()) (instance);
         }).catch(genericCatchHandler(done));
     });
 
