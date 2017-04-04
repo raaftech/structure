@@ -4,7 +4,7 @@ import com.raaftech.structure.base.Configuration;
 import com.raaftech.structure.base.SpringTestConfig;
 import com.raaftech.structure.graph.Component;
 import com.raaftech.structure.graph.Type;
-import com.raaftech.structure.helper.loader.EvenNaiverLoader;
+import com.raaftech.structure.helper.loader.EvenNaiverSorter;
 import com.raaftech.structure.next.Entity;
 import org.junit.Before;
 import org.junit.Test;
@@ -47,8 +47,8 @@ public class ComponentRepositoryTest {
             Transaction tx = graphDatabase.beginTx();
             final String testBundle = "src/test/resources/bundles/repositorytests/";
             Configuration.setSchemaNamespace(FileSystems.getDefault().getPath(testBundle).toUri().resolve("types/"));
-            EvenNaiverLoader evenNaiverLoader = new EvenNaiverLoader(testBundle);
-            evenNaiverLoader.getUpdateList(evenNaiverLoader.sortIt(evenNaiverLoader.readAllJson())).stream()
+            EvenNaiverSorter evenNaiverSorter = new EvenNaiverSorter(testBundle);
+            evenNaiverSorter.getUpdateList(evenNaiverSorter.sortIt(evenNaiverSorter.readAllJson())).stream()
                     .map(node -> {
                         try {
                             return mapper.readValue(node.toString(), Entity.class);

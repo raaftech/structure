@@ -12,7 +12,7 @@ import com.raaftech.structure.exceptions.EntityDeserializationException;
 import com.raaftech.structure.exceptions.JsonValidationException;
 import com.raaftech.structure.helper.JsonHelper;
 import com.raaftech.structure.helper.Triple;
-import com.raaftech.structure.helper.loader.EvenNaiverLoader;
+import com.raaftech.structure.helper.loader.EvenNaiverSorter;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
@@ -20,11 +20,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 
 import static io.vertx.core.json.Json.mapper;
@@ -162,7 +159,7 @@ public class EntityDeserializer extends StdDeserializer<Entity> {
             if (metaJson.has("checksum")) {
                 checksum = metaJson.get("checksum").asText();
             } else {
-                checksum = EvenNaiverLoader.calculateChecksum(entityJson, EvenNaiverLoader.ChecksumAlgorithm.SHA1);
+                checksum = EvenNaiverSorter.calculateChecksum(entityJson, EvenNaiverSorter.ChecksumAlgorithm.SHA1);
             }
             log.debug("Setting checksum to \"{}\"", checksum);
             entity.setChecksum(checksum);
@@ -358,7 +355,7 @@ public class EntityDeserializer extends StdDeserializer<Entity> {
 //                    break;
 //                }
 //            }
-            Path relativePathForSchema = EvenNaiverLoader.checksumToFiles.get(checksum);
+            Path relativePathForSchema = EvenNaiverSorter.checksumToFiles.get(checksum);
             if (relativePathForSchema != null) {
                 filePath = new File(relativePathForSchema.getParent().toString() + File.separator + givenFilePath);
             }

@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Maps;
 import com.raaftech.structure.base.Configuration;
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.exceptions.FileInjectionException;
@@ -20,7 +19,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.*;
@@ -32,15 +30,15 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 /**
- * EvenNaiverLoader handles loading all json from bundle locations do dependency
+ * EvenNaiverSorter handles loading all json from bundle locations do dependency
  * resolving on all the nodes
  *
  * @author Freek Alleman <freek.alleman@raaftech.com>
  * @since 2016-10-11
  */
-public class EvenNaiverLoader {
+public class EvenNaiverSorter {
 
-    private static final Logger log = LoggerFactory.getLogger(EvenNaiverLoader.class);
+    private static final Logger log = LoggerFactory.getLogger(EvenNaiverSorter.class);
     private final ObjectMapper mapper = new ObjectMapper();
     private final String bundlePath;
     public static final Map<String, Path> checksumToFiles = new HashMap<>();
@@ -56,11 +54,11 @@ public class EvenNaiverLoader {
 
     private String globPattern = "**/*.{type,inst}.json";
 
-    public EvenNaiverLoader() {
+    public EvenNaiverSorter() {
         bundlePath = Configuration.getBundlePath();
     }
 
-    public EvenNaiverLoader(String bundlePath) {
+    public EvenNaiverSorter(String bundlePath) {
         this.bundlePath = bundlePath;
     }
 
@@ -336,7 +334,7 @@ public class EvenNaiverLoader {
         return unsorted;
     }
 
-    public EvenNaiverLoader setGlobPattern(String globPattern) {
+    public EvenNaiverSorter setGlobPattern(String globPattern) {
         this.globPattern = globPattern;
         return this;
     }

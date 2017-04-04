@@ -6,7 +6,7 @@ import com.raaftech.structure.graph.repositories.InstanceRepository;
 import com.raaftech.structure.graph.repositories.InstrumentRepository;
 import com.raaftech.structure.graph.repositories.ProfileRepository;
 import com.raaftech.structure.graph.repositories.TypeRepository;
-import com.raaftech.structure.helper.loader.EvenNaiverLoader;
+import com.raaftech.structure.helper.loader.EvenNaiverSorter;
 import com.raaftech.structure.manager.SchemaManager;
 import com.raaftech.structure.manager.TaskManager;
 import com.raaftech.structure.next.Entity;
@@ -252,11 +252,11 @@ public class Application {
         /*
         * Instrument, Controller, Marker, Parser, Profile
          */
-        EvenNaiverLoader evenNaiverLoader = new EvenNaiverLoader();
+        EvenNaiverSorter evenNaiverSorter = new EvenNaiverSorter();
 
         Transaction tx = Context.getGraphDatabase().beginTx();
         try {
-            evenNaiverLoader.getUpdateList(evenNaiverLoader.sortIt(evenNaiverLoader.readAllJson())).stream()
+            evenNaiverSorter.getUpdateList(evenNaiverSorter.sortIt(evenNaiverSorter.readAllJson())).stream()
                     .map(node -> {
                         try {
                             return mapper.readValue(node.toString(), Entity.class);

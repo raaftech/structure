@@ -1,6 +1,5 @@
 package com.raaftech.structure.manager;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -17,7 +16,7 @@ import com.raaftech.structure.graph.repositories.NodeRepository;
 import com.raaftech.structure.helper.JsonHelper;
 import com.raaftech.structure.helper.LambdaHelper;
 import com.raaftech.structure.helper.Triple;
-import com.raaftech.structure.helper.loader.EvenNaiverLoader;
+import com.raaftech.structure.helper.loader.EvenNaiverSorter;
 import com.raaftech.structure.next.Entity;
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.Label;
@@ -230,7 +229,7 @@ public class EntityManager extends GenericActor {
                         .filter(isNewEntity.negate())
                         // calculate and inject checksum
                         .peek(entity -> ((ObjectNode) entity.get("meta"))
-                                .put("checksum", EvenNaiverLoader.calculateChecksum(entity, EvenNaiverLoader
+                                .put("checksum", EvenNaiverSorter.calculateChecksum(entity, EvenNaiverSorter
                                         .ChecksumAlgorithm.SHA1)))
                         // deserialize to Entity
                         .map(e -> LambdaHelper.wrapWithExceptionHandler(

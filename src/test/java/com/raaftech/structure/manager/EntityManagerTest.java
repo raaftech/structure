@@ -8,7 +8,7 @@ import com.raaftech.structure.base.Configuration;
 import com.raaftech.structure.base.SpringTestConfig;
 import com.raaftech.structure.graph.Node;
 import com.raaftech.structure.graph.repositories.NodeRepository;
-import com.raaftech.structure.helper.loader.EvenNaiverLoader;
+import com.raaftech.structure.helper.loader.EvenNaiverSorter;
 import com.raaftech.structure.next.Entity;
 import org.junit.Before;
 import org.junit.Test;
@@ -47,8 +47,8 @@ public class EntityManagerTest {
             Transaction tx = graphDatabase.beginTx();
             final String testBundle = "src/test/resources/bundles/core/";
             Configuration.setSchemaNamespace(FileSystems.getDefault().getPath(testBundle).toUri().resolve("types/"));
-            EvenNaiverLoader evenNaiverLoader = new EvenNaiverLoader(testBundle);
-            evenNaiverLoader.getUpdateList(evenNaiverLoader.sortIt(evenNaiverLoader.readAllJson())).stream()
+            EvenNaiverSorter evenNaiverSorter = new EvenNaiverSorter(testBundle);
+            evenNaiverSorter.getUpdateList(evenNaiverSorter.sortIt(evenNaiverSorter.readAllJson())).stream()
                     .map(node -> {
                         try {
                             return mapper.readValue(node.toString(), Entity.class);
@@ -253,8 +253,8 @@ public class EntityManagerTest {
         // now, edit the "Computer" entity outside of EntityManager and save it
         computerGrouping = nodeRepository.findByUuid("84b97c5c-5c5c-4654-b102-706e036f4374");
         computerGrouping.setDesc("Edited outside of EntityManager.");
-        computerGrouping.setChecksum(EvenNaiverLoader.calculateChecksum(mapper.valueToTree(computerGrouping),
-                EvenNaiverLoader.ChecksumAlgorithm.SHA1));
+        computerGrouping.setChecksum(EvenNaiverSorter.calculateChecksum(mapper.valueToTree(computerGrouping),
+                EvenNaiverSorter.ChecksumAlgorithm.SHA1));
         nodeRepository.save(computerGrouping);
 
         // send the message constructed above and get the result
