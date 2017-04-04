@@ -140,6 +140,47 @@ vorpal.command('find <name>', 'Find a specified node in structure')
         exec(R.path(['options', 'uuid'], args));
     });
 
+
+vorpal.command('edit <uuid>', 'Edit the properties of an instance')
+    .action(function(args,done) {
+        const self = this;
+        rest.getInstanceByUuid(args.uuid)
+            .then(instance => {
+                let getSchema = R.pipe(R.path(['file', 'dataSchema', 'content']),JSON.parse);
+                let getPropertyKeys = R.pipe(R.prop('properties'), R.keys);
+                let createQuestions = (schema) => {
+                    let keys = getPropertyKeys(schema);
+                    return R.map(prop => {
+                        let property = R.path(['properties', prop], schema);
+                        let pre = util.format('[%s]\n',clc.green(prop));
+                        if(notNil(property.type)) pre += util.format('\ttype: %s\n', clc.red(property.type));
+                        if(notNil(property.description)) pre += util.format('\tdescription: %s\n', property.description);
+                        pre += 'Value: '
+
+                        let valueFetcher = R.cond([
+                            [R.equals('name'), x => R.prop('name', instance)],
+                            [R.equals('desc'), x => R.prop('desc', instance)],
+                            [R.equals('checksum'), x => R.path(['meta','checksum'], instance)],
+                            [R.T, x => R.path(['data', x], instance)]
+                        ]);
+
+                        return helper.generateQuestion(prop, 'input', pre, {default: valueFetcher(prop)});
+                    }, keys);
+                };
+
+                self.prompt(createQuestions(getSchema(instance)), function(res) {
+                    console.log(res);
+                    //TODO write a sensible merger function
+                    if(R.isNil(instance.data)) instance.data = res;
+                    else instance.data = R.merge(instance.data,res);
+                    console.log(instance);
+
+                    done();
+                });
+            })
+            .catch(genericCatchHandler(done));
+    });
+
 vorpal.command('instance')
     .option('-l, --last <quantity>', 'Fetch the last (quantity) created instances')
     .option('-u, --uuid <uuid>', 'Find a specific instance by uuid')
