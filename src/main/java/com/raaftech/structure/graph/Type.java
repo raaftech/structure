@@ -26,10 +26,7 @@ import org.springframework.data.neo4j.fieldaccess.DynamicProperties;
 import org.springframework.data.neo4j.fieldaccess.DynamicPropertiesContainer;
 
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -167,7 +164,7 @@ public class Type extends Node {
         Validate.notEmpty(relationshipName, "Cannot create constraint for empty relationship name.");
 
         if (outgoingConstraints == null) {
-            outgoingConstraints = new HashSet<>();
+            outgoingConstraints = new LinkedHashSet<>();
         }
 
         outgoingConstraints.add(new Constraint(this, to, cardinality, relationshipName));
