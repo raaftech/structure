@@ -34,7 +34,10 @@ function getCommonFields() {
     return ['isa','schema','name','desc','uuid'];
 }
 
-function treePrint(entity) {
+function treePrint(verbose, entity) {
+    if(!verbose) {
+        entity = R.assocPath(['file','dataSchema','content'],'...', entity);
+    }
     return treeify.asTree(entity, true);
 }
 

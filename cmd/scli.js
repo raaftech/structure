@@ -94,6 +94,7 @@ vorpal.command('find <name>', 'Find a specified node in structure')
     .option('-f, --field <fieldName>', 'Select a specific field from the resultset',
         helper.getCommonFields())
     .option('-u, --uuid', 'Set search mode to uuid based search.')
+    .option('-v, --verbose', 'Be verbose with the result output')
     .action(function(args, done) {
         const self = this;
         //Function that calls a specific rest method, depending on the value of the method argument
@@ -115,12 +116,12 @@ vorpal.command('find <name>', 'Find a specified node in structure')
                     let keys = R.pipe(R.keys, R.prepend('ALL'),meta(entity))(entity);
                     self.prompt(helper.generateQuestion('list', 'list', 'Choose a field', {choices: keys}), function(result) {
                         let check = R.ifElse(R.propEq('list','ALL'),
-                                        () => self.log(helper.treePrint(entity)),
+                                        () => self.log(helper.treePrint(args.options.verbose, entity)),
                                         () => {
                                             let pp = R.split('.',result.list);
                                             let prop = clc.green.bold(result.list);
                                             let outputTypeSelector = R.ifElse(R.is(Object),
-                                                x => self.log(util.format('%s\n%s', prop, helper.treePrint(R.path(pp, entity)))),
+                                                x => self.log(util.format('%s\n%s', prop, helper.treePrint(args.options.verbose,R.path(pp, entity)))),
                                                 x => self.log(util.format('%s: %s', prop, helper.stringify(R.path(pp, entity)))));
                                             outputTypeSelector(R.path(pp, entity));
                                         }
@@ -155,11 +156,7 @@ vorpal.command('instance')
         let promise = predicate(args);
 
         promise.then(instance => {
-            if(!args.options.verbose) {
-                instance = R.assocPath(['file','dataSchema','content'],'...', instance);
-            }
-
-            R.pipe(R.ifElse(R.is(Object), helper.treePrint, R.identity),
+            R.pipe(R.ifElse(R.is(Object), helper.treePrint(args.options.verbose), R.identity),
                x => console.log(x),
                x => done()) (instance);
         }).catch(genericCatchHandler(done));
