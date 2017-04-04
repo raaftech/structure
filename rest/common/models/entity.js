@@ -125,22 +125,46 @@ module.exports = function (Entity) {
   });
 
   Entity.fetchInstance = function (uuid, callback) {
-    sendEvent(getEventBusAddress(['repository', 'instances']), 'findOne', {node: uuid})
-      .then((result) => {
-        sendEvent(getEventBusAddress(['manager', 'entitymanager']),
-                  'read',
-                  {labels: ['instance'], start: result.body.result.data.uuid, includeStart: true})
-              .then((res) => callback(null, R.head(getResultData(res))));
-      })
-      .catch((ex) => callback(ex));
+    sendEvent(getEventBusAddress(['manager', 'entitymanager']),
+              'read',
+              {labels: ['instance'], start: uuid, includeStart: true})
+          .then((res) => callback(null, R.head(getResultData(res))));
   };
 
   Entity.remoteMethod('fetchInstance', {
     accepts: [{arg: 'uuid', type: 'string', required: true}],
     returns: {root:true, type: 'object'},
-    http: {verb: 'get', path: '/instance/:uuid'},
+    http: {verb: 'get', path: '/instance/uuid/:uuid'},
     description: 'Fetch an instance by uuid'
   });
+
+  Entity.fetchInstanceByName = function(name, callback) {
+        sendEvent(getEventBusAddress(['repository', 'instances']), 'findByName', {name: name})
+              .then((result) => {
+                   let uuidList = result.body.result.data;
+                   uuidList = R.map(R.prop('uuid'), uuidList);
+
+                   let promises = [];
+                   R.forEach(uuid => {
+                        promises.push(sendEvent(getEventBusAddress(['manager', 'entitymanager']),
+                                 'read',
+                                 {labels: ['instance'], start: uuid, includeStart: true}));
+                   }, uuidList);
+                   Promise.all(promises)
+                        .then(res => {
+                            let result = R.map( R.pipe(getResultData, R.head), res);
+                            callback(null, result);
+                        });
+              })
+              .catch((ex) => callback(ex));
+  };
+
+  Entity.remoteMethod('fetchInstanceByName', {
+      accepts: [{arg: 'name', type: 'string', required: true}],
+      returns: {root:true, type: 'object'},
+      http: {verb: 'get', path: '/instance/name/:name'},
+      description: 'Fetch an instance by name'
+    });
 
   Entity.createInstance = function (args, callback) {
     sendEvent(getEventBusAddress(['manager', 'entitymanager']), 'create', args)

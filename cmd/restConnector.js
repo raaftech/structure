@@ -44,7 +44,12 @@ class RestConnector {
     }
 
     getInstanceByUuid(uuid) {
-        let url = util.format('%s/Entities/instance/%s', getBaseUrl(this.host,this.port),uuid);
+        let url = util.format('%s/Entities/instance/uuid/%s', getBaseUrl(this.host,this.port),uuid);
+        return fetch(url).then(result => result.json());
+    }
+
+    getInstanceByName(name) {
+        let url = util.format('%s/Entities/instance/name/%s', getBaseUrl(this.host,this.port),name);
         return fetch(url).then(result => result.json());
     }
 

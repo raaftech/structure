@@ -82,6 +82,7 @@ const getChildLayer = (parentName) => {
 module.exports = function(vorpal, options) {
     let rest = options;
 
+    //TODO add description question
     vorpal.command('group create <name>', 'Create a new Grouping')
         .action(function(args, done) {
             let loggedIn = () => {
@@ -127,7 +128,6 @@ module.exports = function(vorpal, options) {
                 })
                 .then(theGroup => {
                     selectedGroup = helper.json2Entity(false, theGroup);
-                    console.log(selectedGroup);
                     let q = helper.generateQuestion('uuid', 'input', 'Instance uuid: ');
                     return prompt(self, q);
                 })
@@ -151,8 +151,44 @@ module.exports = function(vorpal, options) {
                 .catch(genericCatchHandler(done));
         });
 
-    vorpal.command('group delete <uuid>', '')
+    vorpal.command('group delete <uuid>', 'Delete an existing group')
         .action(function(args, done) {
+            console.log('Not implemented yet');
             done();
+        });
+
+    vorpal.command('group view', 'View grouping details for a specific grouping')
+        .action(function(args, done) {
+            let self = this;
+            let allGroups;
+            //TODO cap on desc length.
+            let nodeLens = (node) => {
+                let mkView = R.pipe(
+                    R.assoc('name', node.children.properties.name),
+                    R.assoc('type', node.children.properties.type),
+                    R.assoc('desc', node.children.properties.desc),
+                    R.assoc('uuid', node.children.properties.uuid));
+                let ret = {};
+                ret[node.children.properties.name] = mkView({});
+                return ret;
+            };
+
+            getAllGroups()
+                .then(groups => {
+                    allGroups = groups;
+                    let q = helper.generateQuestion('groupName', 'list', 'Select group to view:', {choices: groups});
+                    return prompt(self, q);
+                })
+                .then(answer => {
+                    let group = R.find(R.propEq('name', answer.groupName), allGroups);
+                    let query = util.format('match (n:Grouping {name: "%s"})-[GROUPS]->(children:Instance) return children',answer.groupName);
+                    return cypher(query);
+                })
+                .then(result => {
+                    let mapped = R.map(nodeLens, result);
+                    console.log(helper.treePrint(mapped));
+                    done();
+                })
+                .catch(genericCatchHandler(done));
         });
 };

@@ -24,6 +24,7 @@ const genericCatchHandler = R.curry((done, error) => {
     console.log(error);
     done();
 });
+const notNil = R.compose(R.not, R.isNil);
 
 let rest;
 
@@ -140,9 +141,17 @@ vorpal.command('find <name>', 'Find a specified node in structure')
 
 vorpal.command('instance')
     .option('-l, --last <quantity>', 'Fetch the last (quantity) created instances')
-    .option('-f, --find <name>', 'Find a specific instance by uuid')
+    .option('-u, --uuid <uuid>', 'Find a specific instance by uuid')
+    .option('-n, --name <name>', 'Find a specific instance by name')
     .action(function(args, done) {
-        let promise = args.options.last ? rest.lastInstances(args.options.last) : rest.getInstanceByUuid(args.options.find);
+        let fn = (prop, obj) => R.pipe(R.path(['options', prop]), notNil);
+        let predicate = R.cond([
+            [fn('last'), (x) => rest.lastInstances(R.path(['options','last'], x))],
+            [fn('uuid'), (x) => rest.getInstanceByUuid(R.path(['options','uuid'], x))],
+            [fn('name'), (x) => rest.getInstanceByName(R.path(['options','name'], x))],
+            [R.T, () => Promise.resolve([])]
+        ]);
+        let promise = predicate(args);
 
         promise.then(instance => {
             R.pipe(R.ifElse(R.is(Object), helper.treePrint, R.identity),
