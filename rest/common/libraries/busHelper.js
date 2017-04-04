@@ -10,8 +10,8 @@ class BusHelper {
         this.eventBusUrl = R.defaultTo('http://localhost:8080/eventbus', ebUrl);
         this.eb = new EventBus(this.eventBusUrl);
 
-        this.eb.onopen = () => console.log('Connected to: %s', this.eventBusUrl);
-        this.eb.onclose = (error) => console.log('Eventbus connection closed: %s', JSON.stringify(error, undefined,2));
+        // this.eb.onopen = () => console.log('Connected to: %s', this.eventBusUrl);
+        // this.eb.onclose = (error) => console.log('Eventbus connection closed: %s', JSON.stringify(error, undefined,2));
     }
 
     sendEvent(base, cmd, args) {

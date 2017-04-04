@@ -5,7 +5,6 @@ const R = require('ramda');
 
 const eventBusUrl = R.defaultTo('http://localhost:8080/eventbus', process.env.EVENTBUS);
 const eb = new EventBus(eventBusUrl);
-const notNil = R.compose(R.not, R.isNil);
 
 module.exports = function(Admin) {
 
@@ -34,6 +33,22 @@ module.exports = function(Admin) {
         returns: {root: true, type: 'object'},
         http: {verb: 'get', path: '/status'},
         description: 'Request current structure status info.'
+    });
+
+    Admin.query = function (address, command, payload, callback) {
+        sendEvent(address, command, payload)
+            .then(result => callback(null, getResultData(result)))
+            .catch(ex => callback(ex));
+
+    };
+
+    Admin.remoteMethod('query', {
+        accepts: [{arg: 'address', type: 'string', required: true},
+            {arg: 'command', type: 'string', required: true},
+            {arg: 'payload', type: 'object', required: true}],
+        returns: {root: true, type: 'object'},
+        http: {verb: 'post', path: '/query'},
+        description: 'Request an action from structure'
     });
 
 

@@ -6,29 +6,10 @@ const R = require('ramda');
 const eventBusUrl = R.defaultTo('http://localhost:8080/eventbus', process.env.EVENTBUS);
 const eb = new EventBus(eventBusUrl);
 
-eb.onopen = () => console.log('Connected to: %s', eventBusUrl);
-eb.onclose = (error) => console.log('Eventbus connection closed: %s', stringify(error));
+// eb.onopen = () => console.log('Connected to: %s', eventBusUrl);
+// eb.onclose = (error) => console.log('Eventbus connection closed: %s', stringify(error));
 
 module.exports = function (Entity) {
-
-//DEVELOPMENT endpoint
-
-    Entity.query = function (address, command, payload, callback) {
-        sendEvent(address, command, payload)
-            .then(result => callback(null, getResultData(result)))
-            .catch(ex => callback(ex));
-
-    };
-
-    Entity.remoteMethod('query', {
-        accepts: [{arg: 'address', type: 'string', required: true},
-            {arg: 'command', type: 'string', required: true},
-            {arg: 'payload', type: 'object', required: true}],
-        returns: {root: true, type: 'object'},
-        http: {verb: 'post', path: '/query'},
-        description: 'Request an action from structure'
-    });
-
 //TYPES
     Entity.fetchByUuid = function (uuid, callback) {
         sendEvent(getEventBusAddress(['manager', 'entitymanager']),
