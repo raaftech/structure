@@ -186,7 +186,7 @@ module.exports = function(vorpal, options) {
                 })
                 .then(result => {
                     let mapped = R.map(nodeLens, result);
-                    console.log(helper.treePrint(mapped));
+                    console.log(helper.treePrint(false, mapped));
                     done();
                 })
                 .catch(genericCatchHandler(done));
