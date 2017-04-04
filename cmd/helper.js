@@ -35,9 +35,10 @@ function getCommonFields() {
 }
 
 function treePrint(verbose, entity) {
-    if(!verbose) {
-        entity = R.assocPath(['file','dataSchema','content'],'...', entity);
-    }
+    let shortener = R.assocPath(['file','dataSchema','content'],'.....');
+    let typecheck = R.ifElse(R.isArrayLike, R.map(shortener), shortener);
+
+    if(!verbose) entity = typecheck(entity);
     return treeify.asTree(entity, true);
 }
 
