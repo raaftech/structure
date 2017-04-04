@@ -50,7 +50,7 @@ module.exports = function (Entity) {
 
     Entity.getChildren = function (uuid, callback) {
         let children = function (id) {
-            return evBus.sendEvent(helper.getEventBusAddress(['node', 'type', id]), 'getSubtypes', {})
+            return evBus.sendEvent(baseAddress(['node', 'type', id]), 'getSubtypes', {})
                 .then((result) => getResultData(result));
         };
 
@@ -87,7 +87,7 @@ module.exports = function (Entity) {
 
 //INSTRUMENTS
     Entity.getInstruments = function (uuid, callback) {
-        evBus.sendEvent(helper.getEventBusAddress(['node', 'component', uuid]), 'getInstruments', {})
+        evBus.sendEvent(baseAddress(['node', 'component', uuid]), 'getInstruments', {})
             .then((result) => callback(null, getResultData(result)))
             .catch((ex) => callback(ex));
     };
@@ -106,7 +106,7 @@ module.exports = function (Entity) {
         //FIXME find a beter way to do this
         if (instrumentName === 'IpAddressDiscover') args.timeAllocated = 600000;
 
-        evBus.sendEvent(helper.getEventBusAddress(['node', 'component', uuid]), 'runInstrument', args)
+        evBus.sendEvent(baseAddress(['node', 'component', uuid]), 'runInstrument', args)
             .then((result) => callback(null, getResultData(result)))
             .catch((ex) => callback(ex));
     };

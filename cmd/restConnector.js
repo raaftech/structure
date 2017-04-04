@@ -39,22 +39,22 @@ class RestConnector {
     }
 
     lastInstances(quantity) {
-        let url = util.format('%s/Entities/last/%s', getBaseUrl(this.host,this.port),quantity);
+        let url = util.format('%s/Instances/last/%s', getBaseUrl(this.host,this.port),quantity);
         return fetch(url).then(result => result.json());
     }
 
     getInstanceByUuid(uuid) {
-        let url = util.format('%s/Entities/instance/uuid/%s', getBaseUrl(this.host,this.port),uuid);
+        let url = util.format('%s/Instances/uuid/%s', getBaseUrl(this.host,this.port),uuid);
         return fetch(url).then(result => result.json());
     }
 
     getInstanceByName(name) {
-        let url = util.format('%s/Entities/instance/name/%s', getBaseUrl(this.host,this.port),name);
+        let url = util.format('%s/Instances/name/%s', getBaseUrl(this.host,this.port),name);
         return fetch(url).then(result => result.json());
     }
 
     createInstance(options) {
-        let url = util.format('%s/Entities/instance?access_token=%s', getBaseUrl(this.host,this.port), this.token);
+        let url = util.format('%s/Instances?access_token=%s', getBaseUrl(this.host,this.port), this.token);
         return fetch(url,
             {
                 method: 'POST',
@@ -65,7 +65,7 @@ class RestConnector {
     }
 
     updateInstance(options) {
-        let url = util.format('%s/Entities/instance?access_token=%s', getBaseUrl(this.host,this.port), this.token);
+        let url = util.format('%s/Instances?access_token=%s', getBaseUrl(this.host,this.port), this.token);
         return fetch(url,
             {
                 method: 'PUT',
@@ -129,7 +129,7 @@ class RestConnector {
     }
 
     query(address, command, payload) {
-        let url = util.format('%s/Entities/query?access_token=%s',getBaseUrl(this.host,this.port), this.token);
+        let url = util.format('%s/admins/query?access_token=%s',getBaseUrl(this.host,this.port), this.token);
         let data = util.format('address=%s&command=%s&payload=%s',encodeURIComponent(address),
                                 encodeURIComponent(command), encodeURIComponent(JSON.stringify(payload)));
         return fetch(url, {
