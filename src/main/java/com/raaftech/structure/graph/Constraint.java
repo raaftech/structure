@@ -100,7 +100,7 @@ public class Constraint {
             throw new IllegalArgumentException("Constraints can only be validated for non-type entities.");
         }
 
-        Set<UUID> relatedNodes = entity.getRelations().stream()
+        final Set<UUID> relatedNodes = entity.getRelations().stream()
                 .filter(triple -> Objects.equals(triple.getLeft(), forRelationship))
                 .filter(triple -> triple.getMiddle().toLowerCase().equals(Direction.OUTGOING.name().toLowerCase()))
                 .flatMap(triple -> triple.getRight().stream())
@@ -123,7 +123,7 @@ public class Constraint {
          */
 
         // This function maps a UUID to an optional Node
-        Function<UUID, Optional<Node>> uuidToNode = uuid -> {
+        final Function<UUID, Optional<Node>> uuidToNode = uuid -> {
             Node maybeNode = nodeRepository.findByUuid(uuid.toString());
             if (maybeNode == null) {
                 log.error("Error while retrieving node with UUID \"{}\" from database, this fails " +
@@ -133,7 +133,7 @@ public class Constraint {
             return Optional.of(maybeNode);
         };
 
-        Set<Optional<Node>> foundRelatedNodes = relatedNodes.stream()
+        final Set<Optional<Node>> foundRelatedNodes = relatedNodes.stream()
                 .map(uuidToNode)
                 .collect(Collectors.toSet());
 
@@ -147,7 +147,7 @@ public class Constraint {
         Filter all the Instance nodes we found, cast them to Instance, and check whether they're of the expected
         types. This will return a set containing all the nodes that fall under this constraint.
          */
-        Set<Instance> validateAgainstConstraint = foundRelatedNodes.stream()
+        final Set<Instance> validateAgainstConstraint = foundRelatedNodes.stream()
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .filter(node -> node instanceof Instance)

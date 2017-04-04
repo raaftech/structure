@@ -200,12 +200,12 @@ public class Type extends Node {
         The only (outgoing) relationship that can exist between an Instance and a Type
         is "INSTANCE_OF", so we should filter that from the relationships we're about to verify.
          */
-        Set<Triple<String, String, Set<String>>> relationsToTest = entity.getRelations().stream()
+        final Set<Triple<String, String, Set<String>>> relationsToTest = entity.getRelations().stream()
                 .filter(t -> !whitelist.contains(t.getLeft()))
                 .collect(Collectors.toSet());
 
         // Make sure there's a constraint for every relationship, fail if there isn't
-        Predicate<String> constraintExists = relName -> outgoingConstraints.stream()
+        final Predicate<String> constraintExists = relName -> outgoingConstraints.stream()
                 .map(Constraint::getForRelationship)
                 .anyMatch(constraintRel -> Objects.equals(constraintRel, relName));
 
