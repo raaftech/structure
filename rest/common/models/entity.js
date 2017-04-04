@@ -50,7 +50,7 @@ module.exports = function (Entity) {
 
     Entity.getChildren = function (uuid, callback) {
         let children = function (id) {
-            return evBus.sendEvent(baseAddress(['node', 'type', id]), 'getSubtypes', {})
+            return evBus.sendEvent(baseAddress(['node', id]), 'getSubtypes', {})
                 .then((result) => getResultData(result));
         };
 
