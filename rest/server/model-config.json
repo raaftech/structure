@@ -48,5 +48,9 @@
   "admin": {
     "dataSource": "db",
     "public": true
+  },
+  "Instance": {
+    "dataSource": "db",
+    "public": true
   }
 }

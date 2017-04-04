@@ -20,14 +20,14 @@
       "principalType": "ROLE",
       "principalId": "$unauthenticated",
       "permission": "DENY",
-      "property": "createInstance"
+      "property": "runInstrument"
     },
     {
       "accessType": "EXECUTE",
       "principalType": "ROLE",
       "principalId": "$unauthenticated",
       "permission": "DENY",
-      "property": "runInstrument"
+      "property": "query"
     }
   ],
   "methods": {}
