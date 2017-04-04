@@ -175,8 +175,8 @@ public abstract class Instance extends Node {
     }
 
     /**
-     * Return whether this instance of an instance of <code>type</code>, or an instance
-     * if a subtype of <code>type</code>.
+     * Return whether this instance is an instance of <code>type</code> or
+     * a subtype of <code>type</code>.
      * @param type The name of the type we want to check.
      * @return Are we an instance of <code>type</code> or an instance of a subtype of <code>type</code>? Then true.
      */
@@ -185,8 +185,8 @@ public abstract class Instance extends Node {
     }
 
     /**
-     * Return whether this instance of an instance of <code>type</code>, or an instance
-     * if a subtype of <code>type</code>.
+     * Return whether this instance is an instance of <code>type</code> or
+     * a subtype of <code>type</code>.
      * @param type The type we want to check.
      * @return Are we an instance of <code>type</code> or an instance of a subtype of <code>type</code>? Then true.
      */
