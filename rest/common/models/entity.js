@@ -1,20 +1,25 @@
 'use strict';
 
-const EventBus = require('vertx3-eventbus-client');
 const R = require('ramda');
+const path = require('path');
+const helper = require(path.join(__dirname, '..','libraries','helper'));
+const BusHelper = require(path.join(__dirname, '..','libraries','busHelper'));
 
-const eventBusUrl = R.defaultTo('http://localhost:8080/eventbus', process.env.EVENTBUS);
-const eb = new EventBus(eventBusUrl);
+const evBus = new BusHelper(process.env.EVENTBUS);
+
+const baseAddress = helper.getEventBusAddress('com.raaftech.structure');
+const entityAddress = baseAddress(['manager', 'entitymanager']);
+const typesAddress = baseAddress(['repository', 'types']);
+
+const getResultData = helper.getResultData(['body','result','data']);
 
 // eb.onopen = () => console.log('Connected to: %s', eventBusUrl);
 // eb.onclose = (error) => console.log('Eventbus connection closed: %s', stringify(error));
 
 module.exports = function (Entity) {
-//TYPES
     Entity.fetchByUuid = function (uuid, callback) {
-        sendEvent(getEventBusAddress(['manager', 'entitymanager']),
-            'read',
-            {labels: ['type'], start: uuid, includeStart: true})
+        evBus.sendEvent(entityAddress, 'read',
+                {labels: ['type'], start: uuid, includeStart: true})
             .then((result) => callback(null, getResultData(result)))
             .catch((ex) => callback(ex));
     };
@@ -27,12 +32,11 @@ module.exports = function (Entity) {
     });
 
     Entity.fetchByName = function (name, callback) {
-        sendEvent(getEventBusAddress(['repository', 'types']), 'findOneByName', {name: name})
+        evBus.sendEvent(typesAddress, 'findOneByName', {name: name})
             .then((result) => {
-                sendEvent(getEventBusAddress(['manager', 'entitymanager']),
-                    'read',
-                    {labels: ['type'], start: result.body.result.data.uuid, includeStart: true})
-                    .then((result) => callback(null, R.head(getResultData(result))));
+                evBus.sendEvent(entityAddress, 'read',
+                    {labels: ['type'], start: getResultData(result).uuid, includeStart: true})
+                    .then((res) => callback(null, R.head(getResultData(res))));
             })
             .catch((ex) => callback(ex));
     };
@@ -46,7 +50,7 @@ module.exports = function (Entity) {
 
     Entity.getChildren = function (uuid, callback) {
         let children = function (id) {
-            return sendEvent(getEventBusAddress(['node', 'type', id]), 'getSubtypes', {})
+            return evBus.sendEvent(helper.getEventBusAddress(['node', 'type', id]), 'getSubtypes', {})
                 .then((result) => getResultData(result));
         };
 
@@ -62,8 +66,7 @@ module.exports = function (Entity) {
                 Promise.all(promises)
                     .then((ps) => {
                         let proms = R.map((item) => {
-                            return sendEvent(getEventBusAddress(['manager', 'entitymanager']),
-                                'read',
+                            return evBus.sendEvent(entityAddress, 'read',
                                 {labels: ['type'], start: item.uuid, includeStart: true})
                                 .then((result) => R.head(getResultData(result)));
                         }, ps);
@@ -84,7 +87,7 @@ module.exports = function (Entity) {
 
 //INSTRUMENTS
     Entity.getInstruments = function (uuid, callback) {
-        sendEvent(getEventBusAddress(['node', 'component', uuid]), 'getInstruments', {})
+        evBus.sendEvent(helper.getEventBusAddress(['node', 'component', uuid]), 'getInstruments', {})
             .then((result) => callback(null, getResultData(result)))
             .catch((ex) => callback(ex));
     };
@@ -103,7 +106,7 @@ module.exports = function (Entity) {
         //FIXME find a beter way to do this
         if (instrumentName === 'IpAddressDiscover') args.timeAllocated = 600000;
 
-        sendEvent(getEventBusAddress(['node', 'component', uuid]), 'runInstrument', args)
+        evBus.sendEvent(helper.getEventBusAddress(['node', 'component', uuid]), 'runInstrument', args)
             .then((result) => callback(null, getResultData(result)))
             .catch((ex) => callback(ex));
     };
@@ -116,29 +119,3 @@ module.exports = function (Entity) {
         description: 'run an instrument by uuid'
     });
 };
-
-
-function sendEvent(base, cmd, args) {
-    return new Promise((resolve, reject) => {
-        eb.send(base, createOptions(cmd, args), (error, result) => {
-            if (error) reject(error);
-            else resolve(result);
-        });
-    });
-}
-
-function createOptions(cmd, args) {
-    return R.zipObj(['msgh', 'args'], [R.defaultTo('help', cmd), R.defaultTo({}, args)]);
-}
-
-function getEventBusAddress(parts) {
-    return R.join('.', R.prepend('com.raaftech.structure', parts));
-}
-
-function getResultData(result) {
-    return R.path(['body', 'result', 'data'])(result);
-}
-
-function stringify(json) {
-    return JSON.stringify(json, undefined, 2);
-}
