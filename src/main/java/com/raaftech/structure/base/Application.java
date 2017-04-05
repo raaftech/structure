@@ -1,11 +1,14 @@
 package com.raaftech.structure.base;
 
 import ch.qos.logback.classic.Level;
+import com.raaftech.structure.graph.Constraint;
 import com.raaftech.structure.graph.Instance;
+import com.raaftech.structure.graph.Type;
 import com.raaftech.structure.graph.repositories.InstanceRepository;
 import com.raaftech.structure.graph.repositories.InstrumentRepository;
 import com.raaftech.structure.graph.repositories.ProfileRepository;
 import com.raaftech.structure.graph.repositories.TypeRepository;
+import com.raaftech.structure.helper.loader.BundleLoader;
 import com.raaftech.structure.helper.loader.EvenNaiverSorter;
 import com.raaftech.structure.manager.SchemaManager;
 import com.raaftech.structure.manager.TaskManager;
@@ -212,65 +215,16 @@ public class Application {
         // Initialize Configuration
         Configuration.init();
 
-        // loop over directories in bundlePath and search for *.json
-        final List<Path> matchingFiles = new ArrayList<>();
-        for (String location : Arrays.asList(System.getProperty("bundlePath").split(":"))) {
-
-            Path path = Paths.get(new File(location).getAbsolutePath());
-            String workingDirectory = path.getParent().toString().replace('\\', '/');
-            String syntaxAndPattern = "glob:" + workingDirectory + "/" + "**/bundle.json".replace('\\', '/');
-            PathMatcher matcher = FileSystems.getDefault().getPathMatcher(syntaxAndPattern);
-
-            try {
-                Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
-
-	                @Override
-	                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-	                    if (matcher.matches(file)) {
-                            log.debug("visitFile: matched file: {}", file);
-                            matchingFiles.add(file);
-	                    }
-	                    return FileVisitResult.CONTINUE;
-	                }
-	
-	                @Override
-	                public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
-	                    log.debug("visitFileFailed: failed to visit file: (file) {}", file);
-	                    return FileVisitResult.CONTINUE;
-	                }
-
-                });
-            } catch (IOException e){
-                log.error(e.getMessage());
-
-                if(Configuration.isTraceModeOn()){
-                    e.printStackTrace();
-                }
-            }
-        }
-
         /*
         * Instrument, Controller, Marker, Parser, Profile
          */
-        EvenNaiverSorter evenNaiverSorter = new EvenNaiverSorter();
-
         Transaction tx = Context.getGraphDatabase().beginTx();
         try {
-            evenNaiverSorter.getUpdateList(evenNaiverSorter.sortIt(evenNaiverSorter.readAllJson())).stream()
-                    .map(node -> {
-                        try {
-                            return mapper.readValue(node.toString(), Entity.class);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        return null;
-                    })
-                    .filter(node -> node != null)
-                    .forEach(Entity::toGraph);
+            BundleLoader bundleLoader = new BundleLoader();
+            bundleLoader.load();
             tx.success();
         } catch (Exception e) {
             e.printStackTrace();
-            tx.failure();
         } finally {
             tx.close();
         }

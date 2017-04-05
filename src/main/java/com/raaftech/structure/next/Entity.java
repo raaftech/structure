@@ -5,9 +5,11 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.raaftech.structure.base.Context;
+import com.raaftech.structure.graph.Constraint;
 import com.raaftech.structure.graph.repositories.NodeRepository;
 import com.raaftech.structure.graph.repositories.TypeRepository;
 import com.raaftech.structure.helper.Triple;
+import org.apache.commons.lang3.tuple.Pair;
 import org.neo4j.graphdb.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,6 +84,13 @@ public class Entity {
     @Transient
     private Set<Triple<String, String, Set<String>>> relations;
 
+    /* Constraints are temporarily stored in this field. The field is a map from a string
+     * to a list. The string of that map is the relation name that is constrainted. The list
+     * contains tuples of Cardinality + UUID.
+     */
+    @Transient
+    private Map<String, List<Pair<Constraint.Cardinality, UUID>>> constraints;
+
 
     /* Empty constructor for Spring Data Neo4j's purposes. */
     public Entity() {
@@ -143,6 +152,11 @@ public class Entity {
 		return relations;
 	}
 
+	public Optional<Map<String, List<Pair<Constraint.Cardinality, UUID>>>> getConstraints() {
+	    return constraints == null ?
+                Optional.empty() : Optional.of(constraints);
+    }
+
 
     /* Setters. */
     public void setBundle(String bundle) {
@@ -184,6 +198,22 @@ public class Entity {
 	public void setRelations(Set <Triple<String, String, Set<String>>> relations) {
 		this.relations = relations;
 	}
+
+	public void addConstraint(String relName, Constraint.Cardinality cardinality, UUID to) {
+	    if (constraints == null) {
+	        constraints = new HashMap<>();
+        }
+
+        final List<Pair<Constraint.Cardinality, UUID>> constraintList;
+        if (constraints.containsKey(relName)) {
+            constraintList = constraints.get(relName);
+        } else {
+            constraintList = new ArrayList<>();
+            constraints.put(relName, constraintList);
+        }
+
+        constraintList.add(Pair.of(cardinality, to));
+    }
 
 
     @Override

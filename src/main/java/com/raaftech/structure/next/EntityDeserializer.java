@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.raaftech.structure.base.Configuration;
 import com.raaftech.structure.exceptions.EntityDeserializationException;
 import com.raaftech.structure.exceptions.JsonValidationException;
+import com.raaftech.structure.graph.Constraint;
 import com.raaftech.structure.helper.JsonHelper;
 import com.raaftech.structure.helper.Triple;
 import com.raaftech.structure.helper.loader.EvenNaiverSorter;
@@ -120,6 +121,25 @@ public class EntityDeserializer extends StdDeserializer<Entity> {
             }
             
             entity.setRelations(relations);
+
+            // Handle constraints
+            if (metaJson.has("constraints")) {
+                final JsonNode constraintsJson = metaJson.get("constraints");
+                Iterator<Map.Entry<String, JsonNode>> iterConstraints = constraintsJson.fields();
+
+                while (iterConstraints.hasNext()) {
+                    Map.Entry<String, JsonNode> entry = iterConstraints.next();
+                    final String relName = entry.getKey();
+                    final ArrayNode constraints = (ArrayNode) entry.getValue();
+
+                    Iterator<JsonNode> iterConstraintData = constraints.elements();
+                    while (iterConstraintData.hasNext()) {
+                        JsonNode constraintData = iterConstraintData.next();
+                        entity.addConstraint(relName, Constraint.Cardinality.valueOf(constraintData.get("cardinality").asText()),
+                                UUID.fromString(constraintData.get("to").asText()));
+                    }
+                }
+            }
 
             /* Handle uuid within meta if existent, else generate. */
             if (metaJson.has("uuid")) {
