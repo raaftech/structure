@@ -1,14 +1,17 @@
 package com.raaftech.structure.graph;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.fge.jsonschema.core.exceptions.ProcessingException;
+import com.google.common.collect.ImmutableSet;
 import com.raaftech.structure.base.Configuration;
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.graph.repositories.TypeRepository;
 import com.raaftech.structure.helper.JsonSchemaBuilder;
+import com.raaftech.structure.helper.Triple;
+import com.raaftech.structure.next.Entity;
+import org.apache.commons.lang.Validate;
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.Transaction;
 import org.slf4j.Logger;
@@ -17,14 +20,14 @@ import org.springframework.data.annotation.Transient;
 import org.springframework.data.neo4j.annotation.Fetch;
 import org.springframework.data.neo4j.annotation.NodeEntity;
 import org.springframework.data.neo4j.annotation.RelatedTo;
+import org.springframework.data.neo4j.annotation.RelatedToVia;
 import org.springframework.data.neo4j.core.GraphDatabase;
 import org.springframework.data.neo4j.fieldaccess.DynamicProperties;
 import org.springframework.data.neo4j.fieldaccess.DynamicPropertiesContainer;
 
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static io.vertx.core.json.Json.mapper;
@@ -59,6 +62,11 @@ public class Type extends Node {
     @RelatedTo(type="IMPLEMENTS", direction = Direction.OUTGOING)
     @Fetch
     private Set<Type> implementsProtocols;
+
+    @RelatedToVia(type="CONSTRAINTS", direction = Direction.OUTGOING)
+    private Set<Constraint> outgoingConstraints;
+    @RelatedToVia(type="CONSTRAINTS", direction = Direction.INCOMING)
+    private Set<Constraint> incomingConstraints;
 
     public DynamicProperties kv = new DynamicPropertiesContainer();
 
@@ -142,6 +150,72 @@ public class Type extends Node {
         tx.success();
         tx.close();
         return childIsaSet;
+    }
+
+    /**
+     * Add a constraint to this type. See {@link Constraint}.
+     * @param to Add a constraint to the given type.
+     * @param cardinality The cardinality of the constraint.
+     * @param relationshipName What relationship between this and <code>to</code> should be constrained?
+     * @return The type this method was called on.
+     */
+    public Type addConstraint(Type to, Constraint.Cardinality cardinality, String relationshipName) {
+        Validate.notNull(to, "Cannot create constraint to null type.");
+        Validate.notEmpty(relationshipName, "Cannot create constraint for empty relationship name.");
+
+        if (outgoingConstraints == null) {
+            outgoingConstraints = new LinkedHashSet<>();
+        }
+
+        outgoingConstraints.add(new Constraint(this, to, cardinality, relationshipName));
+
+        return this;
+    }
+
+    /**
+     * Given an entity, verify it satisfies every (outward) constraint applied to this
+     * type.
+     * @param entity The entity to verify.
+     * @return True when it satisfies every constraint, false if not.
+     */
+    public boolean verifyEntityToConstraints(Entity entity) {
+        if ("Type".equals(entity.getType())) {
+            throw new IllegalArgumentException("Constraints can only be validated for non-type entities.");
+        }
+
+        /*
+        We need to whitelist a few relationships. Constraints only work on relationships between instances or
+        its subtypes. This whitelist contains all relationships that don't belong to this category and should
+        be ignored during constraint checks.
+         */
+        final Set<String> whitelist = ImmutableSet.of(
+                "INSTANCE_OF",
+                "HAS_INSTRUMENT"
+        );
+
+        /*
+        The only (outgoing) relationship that can exist between an Instance and a Type
+        is "INSTANCE_OF", so we should filter that from the relationships we're about to verify.
+         */
+        final Set<Triple<String, String, Set<String>>> relationsToTest = entity.getRelations().stream()
+                .filter(t -> !whitelist.contains(t.getLeft()))
+                .collect(Collectors.toSet());
+
+        // Make sure there's a constraint for every relationship, fail if there isn't
+        final Predicate<String> constraintExists = relName -> outgoingConstraints.stream()
+                .map(Constraint::getForRelationship)
+                .anyMatch(constraintRel -> Objects.equals(constraintRel, relName));
+
+        if (!relationsToTest.stream()
+                .filter(triple -> triple.getMiddle().toLowerCase().equals(Direction.OUTGOING.name().toLowerCase()))
+                .map(Triple::getLeft)
+                .allMatch(constraintExists)) {
+            return false;
+        }
+
+        // Now we can check every constraint
+        return outgoingConstraints.stream()
+                .allMatch(constraint -> constraint.verifyConstraint(entity));
     }
 
     public Type setDescriptor(String key, String valueType, boolean required, String description, String defaultValue,

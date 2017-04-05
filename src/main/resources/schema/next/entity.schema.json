@@ -1,5 +1,5 @@
 {
-  "id": "https://repo.raaftech.com/schema/next/entity.schema.json#",
+  "id": "#",
   "$schema": "http://json-schema.org/draft-04/schema#",
   "description": "Schema for Structure entities.",
   "type": "object",
@@ -12,26 +12,13 @@
   "additionalProperties": false,
   "properties": {
     "type": {
-      "type": "string",
-      "enum": [
-        "Type",
-        "Component",
-        "Marker",
-        "Controller",
-        "Parser",
-        "Grouping",
-        "Configuration",
-        "Profile",
-        "Actor",
-        "Result"
-      ]
+      "$ref": "#/definitions/type"
     },
     "name": {
       "type": "string"
     },
     "desc": {
-      "type": "string",
-      "pattern": "[A-Z][^.!?][^.!?]*(?:[.!?](?!['\\\"]?\\\\s|$)[^.!?]*)*[.!?]['\\\"]?(?=\\\\s|$)"
+      "$ref": "#/definitions/desc"
     },
     "data": {
       "type": "object"
@@ -54,23 +41,13 @@
               "type": "string"
             },
             "checksum": {
-              "type": "string",
-              "pattern": "^[a-f0-9]{40}$"
+              "$ref": "#/definitions/checksum"
             },
             "format": {
-              "type": "string",
-              "enum": [
-                "json",
-                "hbs",
-                "script"
-              ]
+              "$ref": "#/definitions/format"
             },
             "encoding": {
-              "type": "string",
-              "enum": [
-                "base64",
-                "text"
-              ]
+              "$ref": "#/definitions/encoding"
             }
           },
           "anyOf": [
@@ -97,8 +74,7 @@
       "additionalProperties": false,
       "properties": {
         "uuid": {
-          "type": "string",
-          "pattern": "^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89aAbB][a-f0-9]{3}-[a-f0-9]{12}$"
+          "$ref": "#/definitions/uuid"
         },
         "relations": {
           "type": "object",
@@ -107,29 +83,32 @@
               "additionalProperties": false,
               "properties": {
                 "direction": {
-                  "type": "string",
-                  "enum": [
-                    "incoming",
-                    "outgoing",
-                    "undirected"
-                  ]
+                  "$ref": "#/definitions/direction"
                 },
                 "uuids": {
-                  "type": "array",
-                  "items": {
-                    "type": "string",
-                    "pattern": "^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89aAbB][a-f0-9]{3}-[a-f0-9]{12}$"
-                  },
-                  "minItems": 1,
-                  "uniqueItems": true
+                  "$ref": "#/definitions/uuidList"
                 }
               }
+            }
+          },
+          "minProperties": 1
+        },
+        "constraints": {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": false,
+          "patternProperties": {
+            "^[a-zA-Z_]+$": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/constraint"
+              },
+              "minItems": 1
             }
           }
         },
         "checksum": {
-          "type": "string",
-          "pattern": "^[a-f0-9]{40}$"
+          "$ref": "#/definitions/checksum"
         },
         "bundle": {
           "type": "string",
@@ -178,5 +157,88 @@
         }
       }
     }
-  ]
+  ],
+  "definitions": {
+    "uuidList": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/uuid"
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "uuid": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89aAbB][a-f0-9]{3}-[a-f0-9]{12}$"
+    },
+    "direction": {
+      "type": "string",
+      "enum": [
+        "incoming",
+        "outgoing",
+        "undirected"
+      ]
+    },
+    "cardinality": {
+      "type": "string",
+      "enum": [
+        "OPTIONAL_TO_ONE",
+        "OPTIONAL_TO_MANY",
+        "REQUIRED_TO_ONE",
+        "REQUIRED_TO_MANY"
+      ]
+    },
+    "constraint": {
+      "required": [
+        "to",
+        "cardinality"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "to": {
+          "$ref": "#/definitions/uuid"
+        },
+        "cardinality": {
+          "$ref": "#/definitions/cardinality"
+        }
+      }
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "Type",
+        "Component",
+        "Marker",
+        "Controller",
+        "Parser",
+        "Grouping",
+        "Configuration",
+        "Profile",
+        "Actor",
+        "Result"
+      ]
+    },
+    "desc": {
+      "type": "string",
+      "pattern": "[A-Z][^.!?][^.!?]*(?:[.!?](?!['\\\"]?\\\\s|$)[^.!?]*)*[.!?]['\\\"]?(?=\\\\s|$)"
+    },
+    "checksum": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{40}$"
+    },
+    "format": {
+      "type": "string",
+      "enum": [
+        "json",
+        "hbs"
+      ]
+    },
+    "encoding": {
+      "type": "string",
+      "enum": [
+        "base64",
+        "text"
+      ]
+    }
+  }
 }

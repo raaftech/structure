@@ -174,8 +174,24 @@ public abstract class Instance extends Node {
         return this;
     }
 
+    /**
+     * Return whether this instance is an instance of <code>type</code> or
+     * a subtype of <code>type</code>.
+     * @param type The name of the type we want to check.
+     * @return Are we an instance of <code>type</code> or an instance of a subtype of <code>type</code>? Then true.
+     */
     public boolean isOfType(String type) {
         return INSTANCE_REPOSITORY.isOfType(getUuid(), type) > 0;
+    }
+
+    /**
+     * Return whether this instance is an instance of <code>type</code> or
+     * a subtype of <code>type</code>.
+     * @param type The type we want to check.
+     * @return Are we an instance of <code>type</code> or an instance of a subtype of <code>type</code>? Then true.
+     */
+    public boolean isOfType(Type type) {
+        return type != null && isOfType(type.getName());
     }
 
     // Get all the startOfResultChain belonging to this Instance
