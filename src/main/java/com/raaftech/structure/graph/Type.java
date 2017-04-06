@@ -196,7 +196,9 @@ public class Type extends Node {
          */
         final Set<String> whitelist = ImmutableSet.of(
                 "INSTANCE_OF",
-                "HAS_INSTRUMENT"
+                "HAS_INSTRUMENT",
+                "HANDLES",
+                "GIVES_CAPABILITY"
         );
 
         // We might inherit some constraints from our parents
@@ -215,7 +217,7 @@ public class Type extends Node {
                 .collect(Collectors.toSet());
 
         // Make sure there's a constraint for every relationship, fail if there isn't
-        final Predicate<String> constraintExists = relName -> outgoingConstraints.stream()
+        final Predicate<String> constraintExists = relName -> constraintsToValidateTo.stream()
                 .map(Constraint::getForRelationship)
                 .anyMatch(constraintRel -> Objects.equals(constraintRel, relName));
 

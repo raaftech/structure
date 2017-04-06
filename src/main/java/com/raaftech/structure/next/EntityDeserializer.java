@@ -78,7 +78,12 @@ public class EntityDeserializer extends StdDeserializer<Entity> {
          * responsibility to make sure the values are there and are correct!
          * Don't clutter the code with null checks and value mangling!
          */
-        if (JsonHelper.validateToSchema(entitySchema, entityJson)) {
+        final boolean isRootType = entityJson.has("type") &&
+                entityJson.has("name") &&
+                entityJson.get("type").asText().equals("Type") &&
+                entityJson.get("name").asText().equals("Type");
+
+        if (isRootType || JsonHelper.validateToSchema(entitySchema, entityJson)) {
 
             /* Set type. */
             type = entityJson.get("type").asText();

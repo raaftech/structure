@@ -96,9 +96,11 @@ public class EvenNaiverSorter {
     );
 
     private static ArrayNode prepareForHashing(ObjectNode input) {
-        if (!JsonHelper.validateToSchema(JsonHelper.jsonFromResource(ENTITYSCHEMA), input)) {
-            throw new JsonValidationException("Cannot calculate a checksum: JSON does not validate against " +
-                    "entity schema");
+        if (!input.get("type").asText().equals("Type") || !input.get("name").asText().equals("Type")) {
+            if (!JsonHelper.validateToSchema(JsonHelper.jsonFromResource(ENTITYSCHEMA), input)) {
+                throw new JsonValidationException("Cannot calculate a checksum: JSON does not validate against " +
+                        "entity schema");
+            }
         }
 
         final ArrayNode result = new ObjectMapper().createArrayNode();

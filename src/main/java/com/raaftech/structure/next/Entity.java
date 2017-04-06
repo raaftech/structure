@@ -5,10 +5,13 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.raaftech.structure.base.Context;
+import com.raaftech.structure.exceptions.IllegalEntityType;
 import com.raaftech.structure.graph.Constraint;
+import com.raaftech.structure.graph.Type;
 import com.raaftech.structure.graph.repositories.NodeRepository;
 import com.raaftech.structure.graph.repositories.TypeRepository;
 import com.raaftech.structure.helper.Triple;
+import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.tuple.Pair;
 import org.neo4j.graphdb.*;
 import org.slf4j.Logger;
@@ -242,6 +245,27 @@ public class Entity {
     }
 
     public void toGraph() {
+        if (!getType().equals("Type")) {
+            Optional<Set<String>> maybeInstanceOfUuids = getRelations().stream()
+                    .filter(triple -> triple.getLeft().equals("INSTANCE_OF"))
+                    .filter(triple -> triple.getMiddle().toLowerCase().equals("outgoing".toLowerCase()))
+                    .map(Triple::getRight).findFirst();
+
+            if (!maybeInstanceOfUuids.isPresent()) {
+                throw new IllegalArgumentException("Instance with UUID "
+                        + getUuid() + "doesn't have an INSTANCE_OF relation");
+            }
+            // Assume there's only one UUID, because an instance can only be INSTANCE_OF one type
+            String typeUuid = maybeInstanceOfUuids.get().iterator().next();
+            Type  instanceOf = typeRepository.findByUuid(typeUuid);
+
+            Validate.notNull(instanceOf, "No type with UUID " + typeUuid + ", exist in the graph.");
+
+            if (!instanceOf.verifyEntityToConstraints(this)) {
+                throw new IllegalEntityType("Entity with UUID " + getUuid() + " didn't adhere to its type constraints.");
+            }
+        }
+
         persist();
         Node node = getPersistentState();
         persistRelations(node);
