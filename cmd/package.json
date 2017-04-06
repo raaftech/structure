@@ -17,6 +17,7 @@
   "dependencies": {
     "cli-color": "^1.1.0",
     "eventsource": "^0.2.2",
+    "json-schema-validator": "^1.0.0",
     "neo4j": "^2.0.0-RC2",
     "node-fetch": "^1.6.3",
     "ramda": "^0.22.1",

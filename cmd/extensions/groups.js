@@ -12,15 +12,32 @@ const Structure = require(path.join(__dirname, '..', 'subgraph'));
 const neoUrl = R.defaultTo('http://localhost:7474', process.env.NEO4JURL);
 const db = new neo4j.GraphDatabase(neoUrl);
 
+/*
+    Wrapper function to handle calls to endpoints that have an ACL set.
+    @param done The done() function from vorpal
+    @param loggedInFn The function to run if logged in
+    @param token The token for the REST service
+ */
 const genericAuthCommandHandler = R.curry((done, loggedInFn, token) => {
     let loggedOut = () => { console.log('Please login first.'); done()};
     let handler = R.ifElse(R.isNil,loggedOut, loggedInFn);
     handler(token);
 });
+/*
+    Wrapper function to generically handle promise catch entries
+    @param done The done() function from vorpal
+    @param error The error object caught in the catch block
+ */
 const genericCatchHandler = R.curry((done, error) => {
     console.log(error);
     done();
 });
+/*
+    Factory function for creating an instance based on a type
+    @param baseTypeEntity The Entity object to base the instance on
+    @param instanceEntity The instance object to link to the baseTypeEntity
+    @returns A SubGraph compatible object representation of the new instance
+ */
 const createInstance = (baseTypeEntity, instanceEntity) => {
     let rel = instanceEntity.relationCreate('INSTANCE_OF', 'outgoing');
     rel.addEntity(baseTypeEntity);
@@ -28,7 +45,11 @@ const createInstance = (baseTypeEntity, instanceEntity) => {
     container[instanceEntity.meta.uuid] = instanceEntity;
     return container;
 };
-
+/*
+    Wrapper function that makes direct cypher queries to neo4j possible in a
+    Promise based way
+    @param query The cypher query
+ */
 const cypher = (query) => {
     return new Promise((resolve, reject) => {
         db.cypher({query: query}, function(error, queryResult) {
@@ -37,7 +58,11 @@ const cypher = (query) => {
         });
     });
 };
-
+/*
+    Wrapper function for vorpal.prompt, Promise based.
+    @param vorp The vorpal instance
+    @param question The question or list of questions vorpal should ask the user
+ */
 const prompt = (vorp, question) => {
     return new Promise((resolve, reject) => {
         vorp.prompt(question, function(result) {
@@ -45,7 +70,9 @@ const prompt = (vorp, question) => {
         });
     });
 };
-
+/*
+    Fetches all known Grouping instances from structure
+ */
 const getAllGroups = () => {
     return new Promise((resolve, reject) => {
         let q = 'match (n {type: "Grouping"}) return n';
@@ -64,7 +91,11 @@ const getAllGroups = () => {
         });
     });
 };
-
+/*
+    Fetches all Type nodes that are children of the requested parent
+    @param parentName The name of the parent type.
+    @returns A list of Entities
+ */
 const getChildLayer = (parentName) => {
     let q = util.format('match (n:Type)-[ISA]->(c {name: "%s"}) return n', parentName);
     return cypher(q)
@@ -86,6 +117,7 @@ module.exports = function(vorpal, options) {
     vorpal.command('group create <name>', 'Create a new Grouping')
         .action(function(args, done) {
             let loggedIn = () => {
+                //FIXME fetch true Grouping type from structure
                 rest.getEntityByUuid('5f1eb7c5-ec5e-4563-be6a-fc50774fc374')
                     .then(entity => {
                         let baseType = helper.json2Entity(false, entity);
@@ -161,7 +193,10 @@ module.exports = function(vorpal, options) {
         .action(function(args, done) {
             let self = this;
             let allGroups;
-            //TODO cap on desc length.
+            /*
+                Creates a view of a node as returned from a cypher query
+                @param node A node received from a cypher query
+             */
             let nodeLens = (node) => {
                 let mkView = R.pipe(
                     R.assoc('name', node.children.properties.name),

@@ -9,6 +9,8 @@ const treeify = require('./treeify');
 const fs = require('fs');
 const path = require('path');
 const RestConnector = require('./restConnector');
+const SchemaValidator = require('./SchemaValidator');
+const SimpleCache = require('./simpleCache');
 const EventSource = require('eventsource');
 //extensions
 const neoExt = require('./extensions/neo');
@@ -26,8 +28,11 @@ const genericCatchHandler = R.curry((done, error) => {
 });
 const notNil = R.compose(R.not, R.isNil);
 
+const answerCache = new SimpleCache();
 let rest;
+let validator;
 
+//Program entry point
 init();
 
 function init() {
@@ -35,13 +40,16 @@ function init() {
         R.defaultTo('localhost', process.env.RESTHOST),
         R.defaultTo(3000, process.env.RESTPORT)
     );
+    validator = new SchemaValidator(R.defaultTo('http://localhost:8080/schemas/', process.env.SCHEMAHOST));
+    answerCache.init();
+
     setupStatusChannel();
     scli();
 }
 
 function scli() {
 	vorpal.history('structure-history');
-	vorpal.use(neoExt);
+	vorpal.use(neoExt, answerCache);
 	vorpal.use(structureExt, rest);
 	vorpal.use(groupExt, rest);
 	vorpal.delimiter(clc.magenta.bold('structure$')).show();
@@ -140,12 +148,90 @@ vorpal.command('find <name>', 'Find a specified node in structure')
         exec(R.path(['options', 'uuid'], args));
     });
 
+
+vorpal.command('edit <uuid>', 'Edit the properties of an instance')
+    .action(function(args,done) {
+        const self = this;
+
+        console.log(clc.green('(Input a space if you wish to override default values)'));
+        rest.getInstanceByUuid(args.uuid)
+            .then(instance => {
+                validator.getSchema(instance.type)
+                    .then(typeSchema => {
+                        let getPropertyKeys = R.pipe(R.prop('properties'), R.keys);
+                        let createQuestions = (schema) => {
+                            let keys = getPropertyKeys(schema);
+                            return R.map(prop => {
+                                let property = R.path(['properties', prop], schema);
+                                let pre = util.format('[%s]\n',clc.green(prop));
+                                if(notNil(property.type)) pre += util.format('\ttype: %s\n', clc.red(property.type));
+                                if(notNil(property.description)) pre += util.format('\tdescription: %s\n', property.description);
+                                pre += 'Value: '
+
+                                let valueFetcher = R.cond([
+                                    [R.equals('name'), x => R.prop('name', instance)],
+                                    [R.equals('desc'), x => R.prop('desc', instance)],
+                                    [R.equals('checksum'), x => R.path(['meta','checksum'], instance)],
+                                    [R.T, x => R.path(['data', x], instance)]
+                                ]);
+
+                                return helper.generateQuestion(prop, 'input', pre, {default: valueFetcher(prop)});
+                            }, keys);
+                        };
+
+                        //remove if: (prop not in required list) AND (input-value for prop is null|undefined|empty)
+                        let sanitizeAnswer = (required, answer) => {
+                            let output = {};
+                            R.forEach(key => {
+                                if(R.contains(key, required)) {
+                                    output = R.assoc(key, answer[key], output);
+                                } else {
+                                    if(!R.or(R.isNil(answer[key]), R.isEmpty(R.trim(answer[key])))) {
+                                        output = R.assoc(key, answer[key], output);
+                                    } else {
+                                        console.log('Ignoring optional, empty property: %s', clc.green(key));
+                                    }
+                                }
+                            }, R.keys(answer));
+                            return output;
+                        };
+
+                        self.prompt(createQuestions(typeSchema), function(res) {
+                            res = sanitizeAnswer(typeSchema.required, res);
+                            if(R.isNil(instance.data)) instance.data = res;
+                            else instance.data = R.merge(instance.data,res);
+                            validator.validate(instance.type, instance.data)
+                                .then(vres => {
+                                    if(vres.valid) {
+                                        instance.data = R.merge(instance.data, vres.instance);
+                                        let loggedIn = () => {
+                                            rest.updateInstance({entities: [instance]})
+                                                .then(updated => {
+                                                    if(R.isEmpty(updated)) console.log('No changes were made');
+                                                    else console.log(updated);
+                                                    done();
+                                                })
+                                                .catch(ex => {console.log(ex); done();})
+                                        };
+                                        genericAuthCommandHandler(done, loggedIn, rest.getToken());
+                                    } else {
+                                        console.log(vres);
+                                        done();
+                                    }
+                                });
+                        });
+                    });
+            })
+            .catch(genericCatchHandler(done));
+    });
+
 vorpal.command('instance')
     .option('-l, --last <quantity>', 'Fetch the last (quantity) created instances')
     .option('-u, --uuid <uuid>', 'Find a specific instance by uuid')
     .option('-n, --name <name>', 'Find a specific instance by name')
     .option('-v, --verbose', 'Be verbose in printing the results')
     .action(function(args, done) {
+        //Function that checks if a property is not nil in the given object.options object
         let fn = (prop, obj) => R.pipe(R.path(['options', prop]), notNil);
         let predicate = R.cond([
             [fn('last'), (x) => rest.lastInstances(R.path(['options','last'], x))],
@@ -239,18 +325,24 @@ vorpal.command('query', 'Place arbitrary requests on the event bus')
     .action(function(args,done) {
         const self = this;
         let qs = [];
-        qs.push(helper.generateQuestion('address', 'input', 'Event bus address: '));
-        qs.push(helper.generateQuestion('cmd', 'input', 'Command (msgh): '));
+        qs.push(helper.generateQuestion('address', 'input', 'Event bus address: ', {default: answerCache.get('query', 'address')}));
+        qs.push(helper.generateQuestion('cmd', 'input', 'Command (msgh): ', {default: answerCache.get('query', 'cmd')}));
         qs.push(helper.generateQuestion('file','list','Select payload file: ',{choices: getPayloadListing()}));
 
         self.prompt(qs, function(res) {
             let json = helper.readJsonFile(payloadDir() + '/' + res.file);
+            answerCache.set('query', 'address', res.address);
+            answerCache.set('query', 'cmd', res.cmd);
+            answerCache.save();
+            let loggedIn = () => {
+                rest.query(res.address, res.cmd, json)
+                    .then(data => {
+                        console.log(JSON.stringify(data));
+                        done();
+                    })
+                    .catch(genericCatchHandler(done));
+            };
 
-            rest.query(res.address, res.cmd, json)
-                .then(data => {
-                    console.log(data);
-                    done();
-                })
-                .catch(genericCatchHandler(done));
+            genericAuthCommandHandler(done, loggedIn, rest.getToken());
         });
     });

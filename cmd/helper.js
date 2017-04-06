@@ -10,10 +10,19 @@ const Structure = require('./subgraph');
 
 const notNil = R.compose(R.not, R.isNil);
 
+/*
+    Generate a Inquirer compatible question to prompt the user with
+    @param name The name of the property to store the input in
+    @param type The type of question to ask
+    @param ask String offered to the user, explaining the details of the question
+    @param options Optional options to pass to the Inquirer prompt
+ */
 function generateQuestion(name, type, ask, options) {
 	return R.merge(R.zipObj(['name','type','message'],[name,type,ask]), options);
 }
-
+/*
+    Wrapper function to easily create a message as understood by structure
+ */
 function createOptions(cmd, args) {
 	return R.zipObj(['msgh','args'],[R.defaultTo('help',cmd), R.defaultTo({}, args)]);
 }
@@ -41,7 +50,7 @@ function treePrint(verbose, entity) {
     if(!verbose) entity = typecheck(entity);
     return treeify.asTree(entity, true);
 }
-
+//TODO remove, obsolete
 function consolidateComponents(uuid, componentList) {
     let result = {
         uuid: uuid
@@ -61,6 +70,11 @@ function readJsonFile(filePath) {
     return JSON.parse(fs.readFileSync(filePath, {encoding: 'utf8'}));
 }
 
+/*
+    Construct an Entity object from normal json
+    @param generateUuid Boolean, indicating if a new uuid should be generated
+    @param json The json to transform to an Entity object.
+ */
 function json2Entity(generateUuid, json) {
     if(R.isNil(json)) return null;
     let defaultUuid = R.ifElse(R.identity, x => uuidV4(), x => R.defaultTo(null, json.meta.uuid))(generateUuid);
@@ -79,7 +93,7 @@ function json2Entity(generateUuid, json) {
     );
 }
 
-module.exports = {
+module.exports =  {
 	generateQuestion: generateQuestion,
 	createOptions: createOptions,
 	getResultData: getResultData,

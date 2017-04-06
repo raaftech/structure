@@ -7,9 +7,7 @@ const path = require('path');
 const clc = require('cli-color');
 const helper = require(path.join(__dirname, '..','helper'));
 
-module.exports = function(vorpal, options) {
-    let rest = options;
-
+module.exports = function(vorpal, rest) {
     vorpal.command('structure login', 'Get an access token for Structure')
         .action(function(args, done) {
             const self = this;
