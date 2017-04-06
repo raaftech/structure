@@ -28,10 +28,11 @@ const genericCatchHandler = R.curry((done, error) => {
 });
 const notNil = R.compose(R.not, R.isNil);
 
+const answerCache = new SimpleCache();
 let rest;
 let validator;
-const answerCache = new SimpleCache();
 
+//Program entry point
 init();
 
 function init() {
@@ -230,6 +231,7 @@ vorpal.command('instance')
     .option('-n, --name <name>', 'Find a specific instance by name')
     .option('-v, --verbose', 'Be verbose in printing the results')
     .action(function(args, done) {
+        //Function that checks if a property is not nil in the given object.options object
         let fn = (prop, obj) => R.pipe(R.path(['options', prop]), notNil);
         let predicate = R.cond([
             [fn('last'), (x) => rest.lastInstances(R.path(['options','last'], x))],

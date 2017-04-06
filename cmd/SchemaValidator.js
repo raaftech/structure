@@ -12,20 +12,28 @@ const notNil = R.compose(R.not, R.isNil);
 const notEmpty = R.compose(R.not, R.isEmpty);
 const notEmptyOrNil = x => R.and(notNil(x), notEmpty(x));
 
+/*
+    Recursive helper function to correct schema type errors only. Input for vorpal always returns a string
+    representation of the entered data. To comply to the actual schema, this function tries to cast the input
+    to the type requested by the schema.
+    @param v An instance of the Validator class
+    @param u The uri for the schema to validate against
+    @param i The object instance to validate
+    @returns The corrected instance
+ */
 const correctTypeErrors = (v, u, i) => {
-    while(!v.validate(i, u).valid) {
-        let result = v.validate(i, u);
+    let result = v.validate(i, u);
+    if(!result.valid) {
         if(isTypeError(result.error)) {
             let field = R.pipe(R.split('/'), R.filter(notEmptyOrNil), R.head) (result.error.dataPath);
-            let value = cast(getExpectedType(result.error), i[field]);
-            i[field] = value;
+            i[field] = cast(getExpectedType(result.error), i[field]);
             return correctTypeErrors(v,u,i);
         } else {
             return i;
         }
+    } else {
+        return i;
     }
-
-    return i;
 };
 
 class SchemaValidator {
@@ -42,7 +50,9 @@ class SchemaValidator {
                 else {
                     instance = correctTypeErrors(validator, uri, instance);
                     let result = validator.validate(instance, uri);
+                    //Function to run if validation resulted in valid=true
                     let truthy = R.pipe(R.prop('valid'), R.objOf('valid'));
+                    //Function to run if validation resulted in valid=false
                     let falsey = R.pipe(R.prop('error'), R.flip(R.append)([]), R.project(['message', 'dataPath']), R.head, R.assoc('valid',false));
                     let output = R.ifElse(R.propEq('valid', true), truthy, falsey) (result);
                     output['instance'] = instance;
@@ -52,12 +62,21 @@ class SchemaValidator {
         });
     }
 
+    /*
+        Fetches a schema from the structure host for a specific type
+        @param typeName The name of the type to fetch a schema for.
+     */
     getSchema(typeName) {
         let url = util.format('%s%s.schema.json',this.baseUri, typeName);
         return fetch(url).then(result => result.json());
     }
 }
 
+/*
+    Simple/naive function to cast values from String to the requested type
+    @param type The name of the type to cast to. Supported: number, integer, boolean, object, array
+    @returns The value, cast to the requested type
+ */
 function cast(type, value) {
     const strToBoolean = R.cond([
         [R.equals('true'), R.T],
