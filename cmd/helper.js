@@ -79,7 +79,7 @@ function json2Entity(generateUuid, json) {
     );
 }
 
-module.exports = {
+module.exports =  {
 	generateQuestion: generateQuestion,
 	createOptions: createOptions,
 	getResultData: getResultData,

@@ -9,6 +9,8 @@ const treeify = require('./treeify');
 const fs = require('fs');
 const path = require('path');
 const RestConnector = require('./restConnector');
+const SchemaValidator = require('./SchemaValidator');
+const SimpleCache = require('./simpleCache');
 const EventSource = require('eventsource');
 //extensions
 const neoExt = require('./extensions/neo');
@@ -27,6 +29,8 @@ const genericCatchHandler = R.curry((done, error) => {
 const notNil = R.compose(R.not, R.isNil);
 
 let rest;
+let validator;
+let answerCache;
 
 init();
 
@@ -35,6 +39,10 @@ function init() {
         R.defaultTo('localhost', process.env.RESTHOST),
         R.defaultTo(3000, process.env.RESTPORT)
     );
+    validator = new SchemaValidator(R.defaultTo('http://localhost:8080/schemas/', process.env.SCHEMAHOST));
+    answerCache = new SimpleCache();
+    answerCache.init();
+
     setupStatusChannel();
     scli();
 }
@@ -144,6 +152,7 @@ vorpal.command('find <name>', 'Find a specified node in structure')
 vorpal.command('edit <uuid>', 'Edit the properties of an instance')
     .action(function(args,done) {
         const self = this;
+
         rest.getInstanceByUuid(args.uuid)
             .then(instance => {
                 let getSchema = R.pipe(R.path(['file', 'dataSchema', 'content']),JSON.parse);
@@ -169,13 +178,26 @@ vorpal.command('edit <uuid>', 'Edit the properties of an instance')
                 };
 
                 self.prompt(createQuestions(getSchema(instance)), function(res) {
-                    console.log(res);
-                    //TODO write a sensible merger function
                     if(R.isNil(instance.data)) instance.data = res;
                     else instance.data = R.merge(instance.data,res);
-                    console.log(instance);
-
-                    done();
+                    validator.validate(instance.type, instance.data)
+                        .then(vres => {
+                            if(vres.valid) {
+                                instance.data = R.merge(instance.data, vres.instance);
+                                let loggedIn = () => {
+                                    rest.updateInstance({entities: [instance]})
+                                        .then(updated => {
+                                            console.log(updated);
+                                            done();
+                                        })
+                                        .catch(ex => {console.log(ex); done();})
+                                };
+                                genericAuthCommandHandler(done, loggedIn, rest.getToken());
+                            } else {
+                                console.log(vres);
+                                done();
+                            }
+                        });
                 });
             })
             .catch(genericCatchHandler(done));
@@ -280,18 +302,24 @@ vorpal.command('query', 'Place arbitrary requests on the event bus')
     .action(function(args,done) {
         const self = this;
         let qs = [];
-        qs.push(helper.generateQuestion('address', 'input', 'Event bus address: '));
-        qs.push(helper.generateQuestion('cmd', 'input', 'Command (msgh): '));
+        qs.push(helper.generateQuestion('address', 'input', 'Event bus address: ', {default: answerCache.get('query', 'address')}));
+        qs.push(helper.generateQuestion('cmd', 'input', 'Command (msgh): ', {default: answerCache.get('query', 'cmd')}));
         qs.push(helper.generateQuestion('file','list','Select payload file: ',{choices: getPayloadListing()}));
 
         self.prompt(qs, function(res) {
             let json = helper.readJsonFile(payloadDir() + '/' + res.file);
+            answerCache.set('query', 'address', res.address);
+            answerCache.set('query', 'cmd', res.cmd);
+            answerCache.save();
+            let loggedIn = () => {
+                rest.query(res.address, res.cmd, json)
+                    .then(data => {
+                        console.log(JSON.stringify(data));
+                        done();
+                    })
+                    .catch(genericCatchHandler(done));
+            };
 
-            rest.query(res.address, res.cmd, json)
-                .then(data => {
-                    console.log(data);
-                    done();
-                })
-                .catch(genericCatchHandler(done));
+            genericAuthCommandHandler(done, loggedIn, rest.getToken());
         });
     });
