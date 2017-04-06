@@ -30,7 +30,7 @@ const notNil = R.compose(R.not, R.isNil);
 
 let rest;
 let validator;
-let answerCache;
+const answerCache = new SimpleCache();
 
 init();
 
@@ -40,7 +40,6 @@ function init() {
         R.defaultTo(3000, process.env.RESTPORT)
     );
     validator = new SchemaValidator(R.defaultTo('http://localhost:8080/schemas/', process.env.SCHEMAHOST));
-    answerCache = new SimpleCache();
     answerCache.init();
 
     setupStatusChannel();
@@ -49,7 +48,7 @@ function init() {
 
 function scli() {
 	vorpal.history('structure-history');
-	vorpal.use(neoExt);
+	vorpal.use(neoExt, answerCache);
 	vorpal.use(structureExt, rest);
 	vorpal.use(groupExt, rest);
 	vorpal.delimiter(clc.magenta.bold('structure$')).show();

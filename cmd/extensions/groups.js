@@ -86,6 +86,7 @@ module.exports = function(vorpal, options) {
     vorpal.command('group create <name>', 'Create a new Grouping')
         .action(function(args, done) {
             let loggedIn = () => {
+                //FIXME fetch true Grouping type from structure
                 rest.getEntityByUuid('5f1eb7c5-ec5e-4563-be6a-fc50774fc374')
                     .then(entity => {
                         let baseType = helper.json2Entity(false, entity);

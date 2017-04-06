@@ -9,6 +9,9 @@ class SimpleCache {
             query: {
                 address: '',
                 cmd: ''
+            },
+            neo: {
+                query: ''
             }
         };
     }
