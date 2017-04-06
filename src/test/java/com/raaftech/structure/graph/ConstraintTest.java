@@ -71,10 +71,10 @@ public class ConstraintTest {
             );
         }};
 
-        assertTrue(constraintOptionalToOne.verifyConstraint(entity));
-        assertTrue(constraintOptionalToMany.verifyConstraint(entity));
-        assertFalse(constraintRequiredToMany.verifyConstraint(entity));
-        assertFalse(constraintRequiredToOne.verifyConstraint(entity));
+        assertTrue(constraintOptionalToOne.verifyConstraint(entity).getLeft());
+        assertTrue(constraintOptionalToMany.verifyConstraint(entity).getLeft());
+        assertFalse(constraintRequiredToMany.verifyConstraint(entity).getLeft());
+        assertFalse(constraintRequiredToOne.verifyConstraint(entity).getLeft());
 
 
         // Now test the case where we only have one related node
@@ -94,10 +94,10 @@ public class ConstraintTest {
             result = true;
         }};
 
-        assertTrue(constraintOptionalToOne.verifyConstraint(entity));
-        assertTrue(constraintOptionalToMany.verifyConstraint(entity));
-        assertTrue(constraintRequiredToMany.verifyConstraint(entity));
-        assertTrue(constraintRequiredToOne.verifyConstraint(entity));
+        assertTrue(constraintOptionalToOne.verifyConstraint(entity).getLeft());
+        assertTrue(constraintOptionalToMany.verifyConstraint(entity).getLeft());
+        assertTrue(constraintRequiredToMany.verifyConstraint(entity).getLeft());
+        assertTrue(constraintRequiredToOne.verifyConstraint(entity).getLeft());
 
 
         // Now test the case where we only have two related nodes
@@ -120,12 +120,16 @@ public class ConstraintTest {
             result = true;
             instance2.isOfType(end);
             result = true;
+            instance1.getUuid();
+            result = firstUuid.toString();
+            instance2.getUuid();
+            result = secondUuid.toString();
         }};
 
-        assertFalse(constraintOptionalToOne.verifyConstraint(entity));
-        assertTrue(constraintOptionalToMany.verifyConstraint(entity));
-        assertTrue(constraintRequiredToMany.verifyConstraint(entity));
-        assertFalse(constraintRequiredToOne.verifyConstraint(entity));
+        assertFalse(constraintOptionalToOne.verifyConstraint(entity).getLeft());
+        assertTrue(constraintOptionalToMany.verifyConstraint(entity).getLeft());
+        assertTrue(constraintRequiredToMany.verifyConstraint(entity).getLeft());
+        assertFalse(constraintRequiredToOne.verifyConstraint(entity).getLeft());
     }
 
     /**
@@ -177,7 +181,7 @@ public class ConstraintTest {
         }};
 
         // Both related nodes are of the proper (sub)type, so verification is true
-        assertTrue(constraintRequiredToMany.verifyConstraint(entity));
+        assertTrue(constraintRequiredToMany.verifyConstraint(entity).getLeft());
     }
 
     /*
@@ -223,7 +227,7 @@ public class ConstraintTest {
         }};
 
         // Because one node can't be found, the verification fails
-        assertFalse(constraintRequiredToMany.verifyConstraint(entity));
+        assertFalse(constraintRequiredToMany.verifyConstraint(entity).getLeft());
     }
 
     // Test whether specialization method works

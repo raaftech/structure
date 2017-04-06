@@ -2,18 +2,17 @@ package com.raaftech.structure.graph;
 
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.graph.repositories.NodeRepository;
+import com.raaftech.structure.helper.Triple;
 import com.raaftech.structure.next.Entity;
 import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.tuple.Pair;
 import org.neo4j.graphdb.Direction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.neo4j.annotation.*;
 
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -95,7 +94,7 @@ public class Constraint {
      * @return Whether the entity validates against this constraint.
      * @throws IllegalArgumentException Thrown when we pass an entity that represents a {@link Type type}.
      */
-    public boolean verifyConstraint(Entity entity) {
+    public Pair<Boolean, Optional<Triple<String, String, Set<String>>>> verifyConstraint(Entity entity) {
         if (Objects.equals("Type", entity.getType())) {
             throw new IllegalArgumentException("Constraints can only be validated for non-type entities.");
         }
@@ -111,7 +110,7 @@ public class Constraint {
 
         // If we found 0 nodes we only need to check against cardinality
         if (relatedNodes.isEmpty()) {
-            return requiredAmount(0);
+            return Pair.of(requiredAmount(0), Optional.empty());
         }
 
         /*
@@ -140,24 +139,29 @@ public class Constraint {
         // Make sure there aren't any empty optionals in the set
         if (foundRelatedNodes.stream()
                 .anyMatch(maybeNode -> !maybeNode.isPresent())) {
-            return false;
+            return Pair.of(false, Optional.empty());
         }
 
         /*
         Filter all the Instance nodes we found, cast them to Instance, and check whether they're of the expected
         types. This will return a set containing all the nodes that fall under this constraint.
          */
-        final Set<Instance> validateAgainstConstraint = foundRelatedNodes.stream()
+        final Set<String> validateAgainstConstraint = foundRelatedNodes.stream()
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .filter(node -> node instanceof Instance)
                 .map(node -> (Instance) node)
                 // now we need to check if we're an instance of the type allowed by this constraint
                 .filter(instance -> instance.isOfType(endOfConstraint))
+                .map(Instance::getUuid)
                 .collect(Collectors.toSet());
 
         // Return whether the amount of nodes we found in the previous step is valid according to the cardinality.
-        return requiredAmount(validateAgainstConstraint.size());
+        Optional<Triple<String, String, Set<String>>> maybeValidatedRelations = validateAgainstConstraint.isEmpty() ?
+                Optional.empty() :
+                Optional.of(Triple.of(forRelationship, "outgoing", validateAgainstConstraint));
+        return Pair.of(requiredAmount(validateAgainstConstraint.size()),
+                maybeValidatedRelations);
     }
 
     /**
