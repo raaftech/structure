@@ -126,6 +126,7 @@ public class Type extends Node {
 
     /******************/
     /* Public Methods */
+    /******************/
 
     @Override
     public int hashCode() {
@@ -137,11 +138,13 @@ public class Type extends Node {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        return hashCode() == obj.hashCode();
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        return hashCode() == o.hashCode();
     }
 
-    /******************/
 
     public Set<Type> getChildIsaSet() {
         GraphDatabase graphDatabase = Context.getGraphDatabase();
