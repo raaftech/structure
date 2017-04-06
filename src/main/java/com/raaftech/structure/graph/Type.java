@@ -27,8 +27,11 @@ import org.springframework.data.neo4j.fieldaccess.DynamicPropertiesContainer;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import static io.vertx.core.json.Json.mapper;
 
@@ -196,6 +199,13 @@ public class Type extends Node {
                 "HAS_INSTRUMENT"
         );
 
+        // We might inherit some constraints from our parents
+        final Set<Constraint> inheritedConstraints = typeRepository.getInheritedConstraint(getUuid());
+
+        // Create a set containing all constraints
+        Set<Constraint> constraintsToValidateTo= Stream.concat(
+                outgoingConstraints.stream(), inheritedConstraints.stream()).collect(Collectors.toSet());
+
         /*
         The only (outgoing) relationship that can exist between an Instance and a Type
         is "INSTANCE_OF", so we should filter that from the relationships we're about to verify.
@@ -217,7 +227,7 @@ public class Type extends Node {
         }
 
         // Now we can check every constraint
-        return outgoingConstraints.stream()
+        return constraintsToValidateTo.stream()
                 .allMatch(constraint -> constraint.verifyConstraint(entity));
     }
 
