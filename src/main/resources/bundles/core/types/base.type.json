@@ -31,6 +31,14 @@
             "b1bc963a-19cc-4518-aecb-a35d028c49e3"
           ]
         }
+      },
+      "constraints": {
+        "HAS_COMPONENT": [
+          {
+            "cardinality": "OPTIONAL_TO_MANY",
+            "to": "a79ce509-a021-4177-ae61-73abd01fb479"
+          }
+        ]
       }
     },
     "data": {
@@ -1695,6 +1703,14 @@
             "b1bc963a-19cc-4518-aecb-a35d028c49e3"
           ]
         }
+      },
+      "constraints": {
+        "GROUPS": [
+          {
+            "cardinality": "OPTIONAL_TO_MANY",
+            "to": "b1bc963a-19cc-4518-aecb-a35d028c49e3"
+          }
+        ]
       }
     },
     "data": {
@@ -2967,6 +2983,20 @@
             "14dbfbfa-b50a-466f-8539-55d5d3f15e4a"
           ]
         }
+      },
+      "constraints": {
+        "HAS_PARSER": [
+          {
+            "cardinality": "OPTIONAL_TO_ONE",
+            "to": "b5fa636c-1067-45ac-b027-ade2797bef6f"
+          }
+        ],
+        "PRODUCED": [
+          {
+            "cardinality": "OPTIONAL_TO_MANY",
+            "to": "f3498c02-58c6-486b-87c6-9d54607fdb12"
+          }
+        ]
       }
     },
     "data": {},
