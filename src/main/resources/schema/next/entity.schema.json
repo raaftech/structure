@@ -64,7 +64,7 @@
           ]
         }
       },
-      "minItems": 1
+      "minProperties": 1
     },
     "meta": {
       "type": "object",
@@ -91,7 +91,7 @@
               }
             }
           },
-          "minItems": 1
+          "minProperties": 1
         },
         "constraints": {
           "type": "object",

@@ -63,7 +63,7 @@ public class Constraint {
     public Constraint(Type startOfConstraint, Type endOfConstraint, Cardinality cardinality, String forRelationship) {
         Validate.notNull(startOfConstraint, "A constraint cannot be created with null types.");
         Validate.notNull(endOfConstraint, "A constraint cannot be created with null types.");
-        Validate.notNull(cardinality, "A constraint cannot without a cardinality.");
+        Validate.notNull(cardinality, "A constraint cannot be created without a cardinality.");
         Validate.notEmpty(forRelationship, "A relationship name must be given when creating a constraint.");
 
         this.startOfConstraint = startOfConstraint;
@@ -76,7 +76,7 @@ public class Constraint {
      * Check if a particular amount is valid according to the cardinality of this constraint.
      * @param amount An amount. Usually the amount of nodes incident to relationships that are constrained by this
      *               Constraint.
-     * @return True when the amount if valid according to the cardinality, invalid if not.
+     * @return True when the amount is valid according to the cardinality, invalid if not.
      */
     private boolean requiredAmount(int amount) {
         if (amount == 0) {
@@ -161,9 +161,9 @@ public class Constraint {
     }
 
     /**
-     * Check whether a given constraint specialized the constraint the method is called on.
+     * Check whether a given constraint specializes the constraint the method is called on.
      * A constraint is a specialization of another constraint if it constraints the same relationship,
-     * has the same or stricter cardinality, and the type it points to a subtype of the other one.
+     * has the same or stricter cardinality, and the type it points to is a subtype of the other one.
      * @param possibleSpecialization The constraint that might be a specialization.
      * @return True when the given argument is indeed a specialization, false if not.
      */
