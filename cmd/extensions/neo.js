@@ -3,9 +3,10 @@
 const vorpal = require('vorpal')();
 const neo4j = require('neo4j');
 const R = require('ramda');
-const helper = require('../helper');
+const path = require('path');
+const helper = require(path.join(__dirname, '..','helper'));
 const util = require('util');
-const treeify = require('treeify');
+const treeify = require(path.join(__dirname, '..', 'treeify'));
 
 const neoUrl = R.defaultTo('http://localhost:7474', process.env.NEO4JURL);
 const db = new neo4j.GraphDatabase(neoUrl);
