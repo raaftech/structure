@@ -3,6 +3,7 @@
 const R = require('ramda');
 const Validator = require('json-schema-validator');
 const util = require('util');
+const fetch = require('node-fetch');
 
 const endsWith = R.curry((ch, str) => str.endsWith(ch));
 const isTypeError = (error) => error.message.startsWith('Invalid type:');
@@ -49,6 +50,11 @@ class SchemaValidator {
                 }
             });
         });
+    }
+
+    getSchema(typeName) {
+        let url = util.format('%s%s.schema.json',this.baseUri, typeName);
+        return fetch(url).then(result => result.json());
     }
 }
 

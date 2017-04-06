@@ -152,52 +152,74 @@ vorpal.command('edit <uuid>', 'Edit the properties of an instance')
     .action(function(args,done) {
         const self = this;
 
+        console.log(clc.green('(Input a space if you wish to override default values)'));
         rest.getInstanceByUuid(args.uuid)
             .then(instance => {
-                let getSchema = R.pipe(R.path(['file', 'dataSchema', 'content']),JSON.parse);
-                let getPropertyKeys = R.pipe(R.prop('properties'), R.keys);
-                let createQuestions = (schema) => {
-                    let keys = getPropertyKeys(schema);
-                    return R.map(prop => {
-                        let property = R.path(['properties', prop], schema);
-                        let pre = util.format('[%s]\n',clc.green(prop));
-                        if(notNil(property.type)) pre += util.format('\ttype: %s\n', clc.red(property.type));
-                        if(notNil(property.description)) pre += util.format('\tdescription: %s\n', property.description);
-                        pre += 'Value: '
+                validator.getSchema(instance.type)
+                    .then(typeSchema => {
+                        let getPropertyKeys = R.pipe(R.prop('properties'), R.keys);
+                        let createQuestions = (schema) => {
+                            let keys = getPropertyKeys(schema);
+                            return R.map(prop => {
+                                let property = R.path(['properties', prop], schema);
+                                let pre = util.format('[%s]\n',clc.green(prop));
+                                if(notNil(property.type)) pre += util.format('\ttype: %s\n', clc.red(property.type));
+                                if(notNil(property.description)) pre += util.format('\tdescription: %s\n', property.description);
+                                pre += 'Value: '
 
-                        let valueFetcher = R.cond([
-                            [R.equals('name'), x => R.prop('name', instance)],
-                            [R.equals('desc'), x => R.prop('desc', instance)],
-                            [R.equals('checksum'), x => R.path(['meta','checksum'], instance)],
-                            [R.T, x => R.path(['data', x], instance)]
-                        ]);
+                                let valueFetcher = R.cond([
+                                    [R.equals('name'), x => R.prop('name', instance)],
+                                    [R.equals('desc'), x => R.prop('desc', instance)],
+                                    [R.equals('checksum'), x => R.path(['meta','checksum'], instance)],
+                                    [R.T, x => R.path(['data', x], instance)]
+                                ]);
 
-                        return helper.generateQuestion(prop, 'input', pre, {default: valueFetcher(prop)});
-                    }, keys);
-                };
+                                return helper.generateQuestion(prop, 'input', pre, {default: valueFetcher(prop)});
+                            }, keys);
+                        };
 
-                self.prompt(createQuestions(getSchema(instance)), function(res) {
-                    if(R.isNil(instance.data)) instance.data = res;
-                    else instance.data = R.merge(instance.data,res);
-                    validator.validate(instance.type, instance.data)
-                        .then(vres => {
-                            if(vres.valid) {
-                                instance.data = R.merge(instance.data, vres.instance);
-                                let loggedIn = () => {
-                                    rest.updateInstance({entities: [instance]})
-                                        .then(updated => {
-                                            console.log(updated);
-                                            done();
-                                        })
-                                        .catch(ex => {console.log(ex); done();})
-                                };
-                                genericAuthCommandHandler(done, loggedIn, rest.getToken());
-                            } else {
-                                console.log(vres);
-                                done();
-                            }
+                        //remove if: (prop not in required list) AND (input-value for prop is null|undefined|empty)
+                        let sanitizeAnswer = (required, answer) => {
+                            let output = {};
+                            R.forEach(key => {
+                                if(R.contains(key, required)) {
+                                    output = R.assoc(key, answer[key], output);
+                                } else {
+                                    if(!R.or(R.isNil(answer[key]), R.isEmpty(R.trim(answer[key])))) {
+                                        output = R.assoc(key, answer[key], output);
+                                    } else {
+                                        console.log('Ignoring optional, empty property: %s', clc.green(key));
+                                    }
+                                }
+                            }, R.keys(answer));
+                            return output;
+                        };
+
+                        self.prompt(createQuestions(typeSchema), function(res) {
+                            res = sanitizeAnswer(typeSchema.required, res);
+                            if(R.isNil(instance.data)) instance.data = res;
+                            else instance.data = R.merge(instance.data,res);
+                            validator.validate(instance.type, instance.data)
+                                .then(vres => {
+                                    if(vres.valid) {
+                                        instance.data = R.merge(instance.data, vres.instance);
+                                        let loggedIn = () => {
+                                            rest.updateInstance({entities: [instance]})
+                                                .then(updated => {
+                                                    if(R.isEmpty(updated)) console.log('No changes were made');
+                                                    else console.log(updated);
+                                                    done();
+                                                })
+                                                .catch(ex => {console.log(ex); done();})
+                                        };
+                                        genericAuthCommandHandler(done, loggedIn, rest.getToken());
+                                    } else {
+                                        console.log(vres);
+                                        done();
+                                    }
+                                });
                         });
-                });
+                    });
             })
             .catch(genericCatchHandler(done));
     });
