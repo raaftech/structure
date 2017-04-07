@@ -159,7 +159,7 @@ public class Constraint {
                 .collect(Collectors.toSet());
 
         // Return whether the amount of nodes we found in the previous step is valid according to the cardinality.
-        Optional<Set<String>> maybeValidatedRelations = validateAgainstConstraint.isEmpty() ?
+        final Optional<Set<String>> maybeValidatedRelations = validateAgainstConstraint.isEmpty() ?
                 Optional.empty() :
                 Optional.of(validateAgainstConstraint);
         return Triple.of(requiredAmount(validateAgainstConstraint.size()), forRelationship,

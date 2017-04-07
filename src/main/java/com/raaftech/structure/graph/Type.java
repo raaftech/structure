@@ -253,7 +253,7 @@ public class Type extends Node {
         }
 
         // Now we can check every constraint
-        Set<Triple<Boolean, String, Optional<Set<String>>>> validationOutput =
+        final Set<Triple<Boolean, String, Optional<Set<String>>>> validationOutput =
                 constraintsToValidateTo.stream()
                 .map(constraint -> constraint.verifyConstraint(entity))
                 .collect(Collectors.toSet());
@@ -269,7 +269,7 @@ public class Type extends Node {
         Sometimes there may be multiple constraints for the same relation name so we
         need to take care not to overwrite the values belonging to such a relation name.
          */
-        Map<String, Set<String>> validatedRelationships = validationOutput.stream()
+        final Map<String, Set<String>> validatedRelationships = validationOutput.stream()
                 .filter(triple -> triple.getRight().isPresent())
                 .collect(Collectors.toMap(Triple::getMiddle, t -> t.getRight().get(),
                         (left, right) -> Stream.of(left, right).flatMap(Collection::stream).collect(Collectors.toSet())));
