@@ -201,7 +201,7 @@ test('login test', function(tt) {
 test.skip('logout test', function(tt) {
 });
 
-test.only('createUser test', function(tt) {
+test.skip('createUser test', function(tt) {
     let rest = new RestConnector(HOST, PORT);
 
     tt.test('createUser test', function(t) {

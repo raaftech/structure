@@ -3,19 +3,20 @@
 const vorpal = require('vorpal')();
 const neo4j = require('neo4j');
 const R = require('ramda');
-const helper = require('../helper');
+const path = require('path');
+const helper = require(path.join(__dirname, '..','helper'));
 const util = require('util');
-const treeify = require('treeify');
+const treeify = require(path.join(__dirname, '..', 'treeify'));
 
 const neoUrl = R.defaultTo('http://localhost:7474', process.env.NEO4JURL);
 const db = new neo4j.GraphDatabase(neoUrl);
 
 //match (n:Instance)-[:INSTANCE_OF|:ISA*1..]->(c {name:"Linux"}) match (n)-[:HAS_COMPONENT]->(dnsname)-[:INSTANCE_OF]->(t {name:"DnsName"}) return dnsname.`kv-dnsname`
-module.exports = function(vorpal, options) {
+module.exports = function(vorpal, answerCache) {
     vorpal.command('neo query', 'Directly query the neo4j graph database')
         .action(function(args, done) {
             const self = this;
-            let q = helper.generateQuestion('query', 'input', 'Cypher query: ');
+            let q = helper.generateQuestion('query', 'input', 'Cypher query: ', {default: answerCache.get('neo','query')});
             self.prompt(q, function(result) {
                 db.cypher({
                     query: result.query
@@ -25,6 +26,8 @@ module.exports = function(vorpal, options) {
                     } else {
                         self.log(helper.stringify(queryResult));
                     }
+                    answerCache.set('neo','query', result.query);
+                    answerCache.save();
                     done();
                 });
             });
