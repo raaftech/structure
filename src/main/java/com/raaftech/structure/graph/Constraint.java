@@ -89,12 +89,14 @@ public class Constraint {
 
     /**
      * Given a non-type entity that is about to be persisted return whether it validates against the constraints
-     * set on its type.
+     * set on its type, and the relationships this constraint validates.
      * @param entity The entity that needs to be checked against this constraint.
-     * @return Whether the entity validates against this constraint.
+     * @return A 3-tuple of which the first item is the validation value (true/false), the second is the
+     * relationship name validated by the constraint, and the third is the set of all relationships
+     * that fall under this constraint.
      * @throws IllegalArgumentException Thrown when we pass an entity that represents a {@link Type type}.
      */
-    public Pair<Boolean, Optional<Triple<String, String, Set<String>>>> verifyConstraint(Entity entity) {
+    public Triple<Boolean, String, Optional<Set<String>>> verifyConstraint(Entity entity) {
         if (Objects.equals("Type", entity.getType())) {
             throw new IllegalArgumentException("Constraints can only be validated for non-type entities.");
         }
@@ -110,7 +112,7 @@ public class Constraint {
 
         // If we found 0 nodes we only need to check against cardinality
         if (relatedNodes.isEmpty()) {
-            return Pair.of(requiredAmount(0), Optional.empty());
+            return Triple.of(requiredAmount(0), forRelationship, Optional.empty());
         }
 
         /*
@@ -139,7 +141,7 @@ public class Constraint {
         // Make sure there aren't any empty optionals in the set
         if (foundRelatedNodes.stream()
                 .anyMatch(maybeNode -> !maybeNode.isPresent())) {
-            return Pair.of(false, Optional.empty());
+            return Triple.of(false, forRelationship, Optional.empty());
         }
 
         /*
@@ -157,10 +159,10 @@ public class Constraint {
                 .collect(Collectors.toSet());
 
         // Return whether the amount of nodes we found in the previous step is valid according to the cardinality.
-        Optional<Triple<String, String, Set<String>>> maybeValidatedRelations = validateAgainstConstraint.isEmpty() ?
+        Optional<Set<String>> maybeValidatedRelations = validateAgainstConstraint.isEmpty() ?
                 Optional.empty() :
-                Optional.of(Triple.of(forRelationship, "outgoing", validateAgainstConstraint));
-        return Pair.of(requiredAmount(validateAgainstConstraint.size()),
+                Optional.of(validateAgainstConstraint);
+        return Triple.of(requiredAmount(validateAgainstConstraint.size()), forRelationship,
                 maybeValidatedRelations);
     }
 

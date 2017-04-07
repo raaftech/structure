@@ -180,6 +180,31 @@ public class Type extends Node {
     }
 
     /**
+     * Return the constraints an instance of this type should validate against.
+     * We might inherit some constraints which can be specialized deeper in the type tree
+     * by some other constraint. We want to keep the most specific constraints only.
+     * @param inheritedConstraints All the inherited constraints.
+     * @return A set containing constraints of which no generalization exists in the set.
+     */
+    private Set<Constraint> getApplicableConstraints(Set<Constraint> inheritedConstraints) {
+        // This predicate is used to remove constraints that are specialized by other constraints
+        BiPredicate<Set<Constraint>, Constraint> isNotSpecialized = (setToFilter, inheritedConstraint) -> setToFilter.stream()
+                .allMatch(ownConstraint -> !inheritedConstraint.isSpecialization(ownConstraint));
+
+        // First filter the inherited constraints so we only keep "specialized" constraints
+        final Set<Constraint> filteredInheritedConstraints = inheritedConstraints.stream()
+                .filter(inheritedConstraint -> isNotSpecialized.test(inheritedConstraints, inheritedConstraint))
+                .collect(Collectors.toSet());
+
+        // Return the constraints we should actually validate to
+        return Stream.concat(
+                outgoingConstraints.stream(),
+                filteredInheritedConstraints.stream()
+                        .filter(inheritedConstraint -> isNotSpecialized.test(outgoingConstraints, inheritedConstraint)))
+                .collect(Collectors.toSet());
+    }
+
+    /**
      * Given an entity, verify it satisfies every (outward) constraint applied to this
      * type.
      * @param entity The entity to verify.
@@ -202,94 +227,58 @@ public class Type extends Node {
                 "GIVES_CAPABILITY"
         );
 
-        // We might inherit some constraints from our parents
-        final Set<Constraint> inheritedConstraints = typeRepository.getInheritedConstraint(getUuid());
-
-        // This predicate is used to remove constraints that are specialized by other constraints
-        BiPredicate<Set<Constraint>, Constraint> isNotSpecialized = (setToFilter, inheritedConstraint) -> setToFilter.stream()
-                .allMatch(ownConstraint -> !inheritedConstraint.isSpecialization(ownConstraint));
-
-        // First filter the inherited constraints so we only keep "specialized" constraints
-        final Set<Constraint> filteredInheritedConstraints = inheritedConstraints.stream()
-                .filter(inheritedConstraint -> isNotSpecialized.test(inheritedConstraints, inheritedConstraint))
-                .collect(Collectors.toSet());
-
-        // These are the constraints we should actually validate to
-        Set<Constraint> constraintsToValidateTo = Stream.concat(
-                outgoingConstraints.stream(),
-                filteredInheritedConstraints.stream()
-                        .filter(inheritedConstraint -> isNotSpecialized.test(outgoingConstraints, inheritedConstraint)))
-                .collect(Collectors.toSet());
+        /*
+        The merged set of inherited constraints and outgoingConstraints might contain
+        generalizations of other constraints in the set, we don't want those so we remove them.
+         */
+        Set<Constraint> constraintsToValidateTo = getApplicableConstraints(typeRepository.getInheritedConstraint(getUuid()));
 
         /*
-        The only (outgoing) relationship that can exist between an Instance and a Type
-        is "INSTANCE_OF", so we should filter that from the relationships we're about to verify.
+        There are a few relationships that aren't inter-instance, but between instances and types.
+        These don't fall under any constraint, so we need to filter them using the whitelist.
          */
-        final Set<Triple<String, String, Set<String>>> relationsToTest = entity.getRelations().stream()
+        final Map<String, Set<String>> relationsToTest = entity.getRelations().stream()
                 .filter(t -> !whitelist.contains(t.getLeft()))
                 .filter(t -> t.getMiddle().toLowerCase().equals(Direction.OUTGOING.name().toLowerCase()))
-                .collect(Collectors.toSet());
+                .collect(Collectors.toMap(Triple::getLeft, Triple::getRight));
 
         // Make sure there's a constraint for every relationship, fail if there isn't
         final Predicate<String> constraintExists = relName -> constraintsToValidateTo.stream()
                 .map(Constraint::getForRelationship)
                 .anyMatch(constraintRel -> Objects.equals(constraintRel, relName));
 
-        if (!relationsToTest.stream()
-                .filter(triple -> triple.getMiddle().toLowerCase().equals(Direction.OUTGOING.name().toLowerCase()))
-                .map(Triple::getLeft)
+        if (!relationsToTest.keySet().stream()
                 .allMatch(constraintExists)) {
             return false;
         }
 
         // Now we can check every constraint
-        Set<Pair<Boolean, Optional<Triple<String, String, Set<String>>>>> validationOutput =
+        Set<Triple<Boolean, String, Optional<Set<String>>>> validationOutput =
                 constraintsToValidateTo.stream()
                 .map(constraint -> constraint.verifyConstraint(entity))
                 .collect(Collectors.toSet());
 
+        // Make sure all the booleans returned by the validation calls are true
         boolean allConstraintsValidated = validationOutput.stream()
-                .map(Pair::getLeft)
+                .map(Triple::getLeft)
                 .allMatch(bool -> bool);
 
-        Set<Triple<String, String, Set<String>>> validatedRelationships = validationOutput.stream()
-                .map(Pair::getRight)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .collect(Collectors.toSet());
+        /*
+        Create a map of every relation name verified by the constraints to the UUIDs
+        that were verified.
+        Sometimes there may be multiple constraints for the same relation name so we
+        need to take care not to overwrite the values belonging to such a relation name.
+         */
+        Map<String, Set<String>> validatedRelationships = validationOutput.stream()
+                .filter(triple -> triple.getRight().isPresent())
+                .collect(Collectors.toMap(Triple::getMiddle, t -> t.getRight().get(),
+                        (left, right) -> Stream.of(left, right).flatMap(Collection::stream).collect(Collectors.toSet())));
 
         /*
-        Alright, some funkiness is going on here. TODO: refactor this before merging, seriously
-        So the entity we're validating will have relationships, and those relationships will be
-        grouped by relationship name.
-
-        Say we have "HAS" relationships where some of the related nodes are of type "Component"
-        and the others of type "Configuration".
-        It is possible that these are two different constraints on the entity's type, one to "Component"
-        and one to "Configuration".
-        Now, because some of the relations will validate against one, and some against the other, the
-        validatedRelationships sets will have two "HAS_COMPONENT" triples, one containing the UUIDs
-        of the "Component" nodes, the other of the "Configuration" nodes.
-        So we need to merge these back to one Triple again so we can simple do an equality check
-        between the resulting set of triples and "relationsToTest".
-
-         So.. that's what it's supposed to do. Now, how it does that.. ugly, REFACTOR ON MONDAY!
+        All constraints validate when all validations return true, and every relationship the
+        given entity has been validated by at least one constraint.
          */
-        final Map<String, Set<String>> folded = new HashMap<>();
-        validatedRelationships.stream()
-                .forEach(triple -> {
-                    if (folded.containsKey(triple.getLeft())) {
-                        folded.get(triple.getLeft()).addAll(triple.getRight());
-                    } else {
-                        folded.put(triple.getLeft(), triple.getRight());
-                    }
-                });
-        Set<Triple<String, String, Set<String>>> foldedTriple = folded.entrySet().stream()
-                .map(entry -> Triple.of(entry.getKey(), "outgoing", entry.getValue()))
-                .collect(Collectors.toSet());
-
-
-        return allConstraintsValidated && foldedTriple.equals(relationsToTest);
+        return allConstraintsValidated && validatedRelationships.equals(relationsToTest);
     }
 
     public Type setDescriptor(String key, String valueType, boolean required, String description, String defaultValue,
