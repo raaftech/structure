@@ -75,6 +75,12 @@ class RestConnector {
             .then(result => result.json());
     }
 
+    removeInstance(uuid) {
+        let url = util.format('%s/Instances/%s?access_token=%s', getBaseUrl(this.host,this.port), uuid, this.token);
+        return fetch(url,{method: 'DELETE'})
+                    .then(result => result.json());
+    }
+
     runInstrument(instrument, uuid) {
 
     }

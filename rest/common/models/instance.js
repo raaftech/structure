@@ -12,6 +12,11 @@ const instanceAddress = baseAddress(['repository', 'instances']);
 const entityAddress = baseAddress(['manager', 'entitymanager']);
 
 const getResultData = helper.getResultData(['body','result','data']);
+const createError = (status, msg) => {
+    let error = new Error(msg);
+    error.status = status;
+    return error;
+};
 
 module.exports = function (Instance) {
     Instance.lastCreated = function (quantity, callback) {
@@ -37,10 +42,16 @@ module.exports = function (Instance) {
     });
 
     Instance.fetchInstance = function (uuid, callback) {
-        evBus.sendEvent(entityAddress,
-            'read',
-            {labels: ['instance'], start: uuid, includeStart: true})
-            .then((res) => callback(null, R.head(getResultData(res))));
+        let message = {labels: ['instance'], start: uuid, includeStart: true};
+        evBus.sendEvent(entityAddress, 'read', message)
+            .then((res) => {
+                let result = R.path(['body','result'], res);
+                if(R.has('data', result)) {
+                    callback(null, R.head(getResultData(res)))
+                } else {
+                    callback(createError(404, result.error));
+                }
+            });
     };
 
     Instance.remoteMethod('fetchInstance', {
@@ -102,5 +113,19 @@ module.exports = function (Instance) {
         returns: {root: true, type: 'object'},
         http: {verb: 'put', path: '/'},
         description: 'update an existing instance'
+    });
+
+    Instance.removeInstance = function (uuid, callback) {
+        let message = {labels: ['instance'], uuid: uuid, includeStart: true};
+        evBus.sendEvent(entityAddress, 'delete', message)
+            .then((result) => callback(null, getResultData(result)))
+            .catch((ex) => callback(ex));
+    };
+
+    Instance.remoteMethod('removeInstance', {
+        accepts: [{arg: 'uuid', type: 'string', required: true}],
+        returns: {root: true, type: 'object'},
+        http: {verb: 'delete', path: '/:uuid'},
+        description: 'remove an existing instance'
     });
 };
