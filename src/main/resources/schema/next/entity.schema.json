@@ -91,7 +91,7 @@
               }
             }
           },
-          "minProperties": 0
+          "minProperties": 1
         },
         "constraints": {
           "type": "object",
