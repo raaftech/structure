@@ -25,7 +25,7 @@ module.exports = function (Instance) {
                 let promises = R.map((item) => {
                     return evBus.sendEvent(entityAddress,
                         'read',
-                        {labels: ['type'], start: item.uuid, includeStart: true})
+                        {labels: ['Type'], start: item.uuid, includeStart: true})
                         .then((res) => R.head(getResultData(res)));
                 }, getResultData(result));
                 Promise.all(promises)
@@ -42,7 +42,7 @@ module.exports = function (Instance) {
     });
 
     Instance.fetchInstance = function (uuid, callback) {
-        let message = {labels: ['instance'], start: uuid, includeStart: true};
+        let message = {labels: ['Instance'], start: uuid, includeStart: true};
         evBus.sendEvent(entityAddress, 'read', message)
             .then((res) => {
                 let result = R.path(['body','result'], res);
@@ -73,7 +73,7 @@ module.exports = function (Instance) {
                 R.forEach(uuid => {
                     promises.push(evBus.sendEvent(entityAddress,
                         'read',
-                        {labels: ['instance'], start: uuid, includeStart: true}));
+                        {labels: ['Instance'], start: uuid, includeStart: true}));
                 }, uuidList);
                 Promise.all(promises)
                     .then(res => {
@@ -118,7 +118,7 @@ module.exports = function (Instance) {
     });
 
     Instance.removeInstance = function (uuid, callback) {
-        let message = {labels: ['instance'], uuid: uuid, includeStart: true};
+        let message = {labels: ['Instance'], uuid: uuid, includeStart: true};
         evBus.sendEvent(entityAddress, 'delete', message)
             .then((result) => callback(null, getResultData(result)))
             .catch((ex) => callback(ex));
