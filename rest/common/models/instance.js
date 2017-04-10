@@ -46,12 +46,14 @@ module.exports = function (Instance) {
         evBus.sendEvent(entityAddress, 'read', message)
             .then((res) => {
                 let result = R.path(['body','result'], res);
+                let getFirstResult = R.compose(R.head, R.prop('data'));
                 if(R.has('data', result)) {
-                    callback(null, R.head(getResultData(res)))
+                    callback(null, getFirstResult(result));
                 } else {
                     callback(createError(404, result.error));
                 }
-            });
+            })
+            .catch(ex => callback(ex));
     };
 
     Instance.remoteMethod('fetchInstance', {
