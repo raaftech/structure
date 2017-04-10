@@ -17,3 +17,4 @@ rest/node_modules/
 rest/client/js/vendors/
 tools/discovery/node_modules/
 cmd/payloads/
+cmd/tui.cache
