@@ -1,5 +1,6 @@
 package com.raaftech.structure.graph;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.collect.ImmutableSet;
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.graph.repositories.NodeRepository;
@@ -28,6 +29,7 @@ import java.util.stream.Collectors;
  *
  */
 @RelationshipEntity(type = "CONSTRAINTS")
+@JsonSerialize(using = ConstraintSerializer.class)
 public class Constraint {
 
     // The order in this enum matters. Cardinalities are placed loosest to strictest so we can compare them
@@ -244,6 +246,30 @@ public class Constraint {
      */
     public String getForRelationship() {
         return forRelationship;
+    }
+
+    /**
+     * The beginning of this constraint.
+     * @return The type this constraint points from.
+     */
+    public Type getStartOfConstraint() {
+        return startOfConstraint;
+    }
+
+    /**
+     * The end of this constraint.
+     * @return The type this constraints points to.
+     */
+    public Type getEndOfConstraint() {
+        return endOfConstraint;
+    }
+
+    /**
+     * The cardinality.
+     * @return See {@link Cardinality}
+     */
+    public Cardinality getCardinality() {
+        return cardinality;
     }
 
     @Override
