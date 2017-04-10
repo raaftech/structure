@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.fge.jsonschema.core.exceptions.ProcessingException;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.raaftech.structure.base.Configuration;
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.graph.repositories.TypeRepository;
@@ -32,7 +34,6 @@ import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 import static io.vertx.core.json.Json.mapper;
 
@@ -208,12 +209,16 @@ public class Type extends Node {
      * Given an entity, verify it satisfies every (outward) constraint applied to this
      * type.
      * @param entity The entity to verify.
-     * @return True when it satisfies every constraint, false if not.
+     * @return A tuple containing whether verification succeeded, and a set of that may
+     * contain errors encountered during validation.
      */
-    public boolean verifyEntityToConstraints(Entity entity) {
+    public Pair<Boolean, Set<String>> validateEntityToConstraints(Entity entity) {
         if ("Type".equals(entity.getType())) {
             throw new IllegalArgumentException("Constraints can only be validated for non-type entities.");
         }
+
+        Set<String> errors = new HashSet<>();
+        boolean validated = true;
 
         /*
         We need to whitelist a few relationships. Constraints only work on relationships between instances or
@@ -247,21 +252,33 @@ public class Type extends Node {
                 .map(Constraint::getForRelationship)
                 .anyMatch(constraintRel -> Objects.equals(constraintRel, relName));
 
-        if (!relationsToTest.keySet().stream()
-                .allMatch(constraintExists)) {
-            return false;
+        Set<String> relationsNotUnderConstraint = relationsToTest.keySet().stream()
+                .filter(relName -> !constraintExists.test(relName))
+                .collect(Collectors.toSet());
+        if (!relationsNotUnderConstraint.isEmpty()) {
+            validated = false;
+            errors.add("Found relationships that aren't under constraint while " +
+                    "instantiating " + getName() + ": " + relationsNotUnderConstraint.toString());
         }
 
         // Now we can check every constraint
-        final Set<Triple<Boolean, String, Optional<Set<String>>>> validationOutput =
+        final Set<Constraint.ValidationReport> validationOutput =
                 constraintsToValidateTo.stream()
-                .map(constraint -> constraint.verifyConstraint(entity))
+                .map(constraint -> constraint.validateConstraint(entity))
                 .collect(Collectors.toSet());
 
-        // Make sure all the booleans returned by the validation calls are true
-        boolean allConstraintsValidated = validationOutput.stream()
-                .map(Triple::getLeft)
-                .allMatch(bool -> bool);
+        // Get all the constraints that were violated
+        Set<Constraint.ValidationReport> violatedConstraints = validationOutput.stream()
+                .filter(report -> !report.isSuccess())
+                .collect(Collectors.toSet());
+
+        // Get the errors from the violated constraints
+        errors = Stream.concat(errors.stream(),
+                violatedConstraints.stream()
+                .map(Constraint.ValidationReport::getMessage)
+                .filter(Optional::isPresent)
+                .map(Optional::get)).collect(Collectors.toSet());
+
 
         /*
         Create a map of every relation name verified by the constraints to the UUIDs
@@ -270,15 +287,27 @@ public class Type extends Node {
         need to take care not to overwrite the values belonging to such a relation name.
          */
         final Map<String, Set<String>> validatedRelationships = validationOutput.stream()
-                .filter(triple -> triple.getRight().isPresent())
-                .collect(Collectors.toMap(Triple::getMiddle, t -> t.getRight().get(),
+                .collect(Collectors.toMap(Constraint.ValidationReport::getForRelationship, report -> report.getValidatedUuids(),
                         (left, right) -> Stream.of(left, right).flatMap(Collection::stream).collect(Collectors.toSet())));
+
+        // Get all the relations that weren't validated by any constraint
+        Set<UUID> missedRelations = Maps.difference(relationsToTest, validatedRelationships).entriesDiffering().keySet().stream()
+                .map(key -> Sets.difference(relationsToTest.get(key), validatedRelationships.get(key)))
+                .map(Sets.SetView::immutableCopy)
+                .flatMap(Set::stream)
+                .map(UUID::fromString)
+                .collect(Collectors.toSet());
+
+        if (!missedRelations.isEmpty()) {
+            validated = false;
+            errors.add("Found relationships that weren't validated by any constraint: " + missedRelations.toString());
+        }
 
         /*
         All constraints validate when all validations return true, and every relationship the
         given entity has been validated by at least one constraint.
          */
-        return allConstraintsValidated && validatedRelationships.equals(relationsToTest);
+        return Pair.of(validated && violatedConstraints.isEmpty() && missedRelations.isEmpty(), ImmutableSet.copyOf(errors));
     }
 
     public Type setDescriptor(String key, String valueType, boolean required, String description, String defaultValue,

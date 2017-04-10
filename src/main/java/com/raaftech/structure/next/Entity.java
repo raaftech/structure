@@ -261,8 +261,9 @@ public class Entity {
 
             Validate.notNull(instanceOf, "No type with UUID " + typeUuid + ", exist in the graph.");
 
-            if (!instanceOf.verifyEntityToConstraints(this)) {
-                throw new IllegalEntityType("Entity with UUID " + getUuid() + " didn't adhere to its type constraints.");
+            Pair<Boolean, Set<String>> validation = instanceOf.validateEntityToConstraints(this);
+            if (!validation.getLeft()) {
+                throw new IllegalEntityType("Entity with UUID " + getUuid() + " didn't adhere to its type constraints: " + validation.getRight());
             }
         }
 

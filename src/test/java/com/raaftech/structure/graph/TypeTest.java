@@ -124,7 +124,7 @@ public class TypeTest {
         }};
 
         // ... so this will be true
-        assertTrue(start.verifyEntityToConstraints(mapper.treeToValue(entityJson, Entity.class)));
+        assertTrue(start.validateEntityToConstraints(mapper.treeToValue(entityJson, Entity.class)).getLeft());
 
         // We'll add an __incoming__ relationship that doesn't have a constraint, this shouldn't invalidate anything
         ObjectNode incoming = relations.putObject("INCOMING_NOT_UNDER_CONSTRAINT");
@@ -134,7 +134,7 @@ public class TypeTest {
         uuidArray.add(incomingUuid.toString());
 
         // The new relationship is incoming, validation should be alright
-        assertTrue(start.verifyEntityToConstraints(mapper.treeToValue(entityJson, Entity.class)));
+        assertTrue(start.validateEntityToConstraints(mapper.treeToValue(entityJson, Entity.class)).getLeft());
 
         // Now we'll introduce a relationship that is not under a constraint
         ObjectNode notUnderConstraint = relations.putObject("NOT_CONSTRAINED");
@@ -153,11 +153,11 @@ public class TypeTest {
         }};
 
         // This shouldn't validate. Unknown outgoing relationship added.
-        assertFalse(start.verifyEntityToConstraints(mapper.treeToValue(entityJson, Entity.class)));
+        assertFalse(start.validateEntityToConstraints(mapper.treeToValue(entityJson, Entity.class)).getLeft());
 
         // Just to go full circle, add a constraint for "NOT_CONSTRAINED" and see if it validates
         start.addConstraint(end, Constraint.Cardinality.OPTIONAL_TO_ONE, "NOT_CONSTRAINED");
-        assertTrue(start.verifyEntityToConstraints(mapper.treeToValue(entityJson, Entity.class)));
+        assertTrue(start.validateEntityToConstraints(mapper.treeToValue(entityJson, Entity.class)).getLeft());
     }
 
     /**
@@ -228,7 +228,7 @@ public class TypeTest {
         }};
 
         // ... so this should be true
-        assertTrue(start.verifyEntityToConstraints(mapper.treeToValue(entityJson, Entity.class)));
+        assertTrue(start.validateEntityToConstraints(mapper.treeToValue(entityJson, Entity.class)).getLeft());
 
         // First rel is OK, second one isn't
         new Expectations() {{
@@ -249,7 +249,7 @@ public class TypeTest {
         }};
 
         // ... so this should be false
-        assertFalse(start.verifyEntityToConstraints(mapper.treeToValue(entityJson, Entity.class)));
+        assertFalse(start.validateEntityToConstraints(mapper.treeToValue(entityJson, Entity.class)).getLeft());
     }
 
     /**
@@ -310,7 +310,7 @@ public class TypeTest {
         }};
 
         // ... so this should be true
-        assertTrue(start.verifyEntityToConstraints(mapper.treeToValue(entityJson, Entity.class)));
+        assertTrue(start.validateEntityToConstraints(mapper.treeToValue(entityJson, Entity.class)).getLeft());
 
 
         // Now add the second relationship
@@ -350,7 +350,7 @@ public class TypeTest {
         }};
 
         // ... so this should be true
-        assertTrue(start.verifyEntityToConstraints(mapper.treeToValue(entityJson, Entity.class)));
+        assertTrue(start.validateEntityToConstraints(mapper.treeToValue(entityJson, Entity.class)).getLeft());
 
 
         // Now add a third rel
@@ -381,7 +381,7 @@ public class TypeTest {
         }};
 
         // ... so this should be false
-        assertFalse(start.verifyEntityToConstraints(mapper.treeToValue(entityJson, Entity.class)));
+        assertFalse(start.validateEntityToConstraints(mapper.treeToValue(entityJson, Entity.class)).getLeft());
     }
 
     /**
@@ -449,6 +449,6 @@ public class TypeTest {
         Because we have one outgoing rel that doesn't validate against the constraint
         it should either validate against another constraint, or the whole validation should fail.
          */
-        assertFalse(start.verifyEntityToConstraints(mapper.treeToValue(entityJson, Entity.class)));
+        assertFalse(start.validateEntityToConstraints(mapper.treeToValue(entityJson, Entity.class)).getLeft());
     }
 }
