@@ -37,8 +37,8 @@ public class BundleLoader {
      * because of cyclic dependencies.
      */
     public BundleLoader() throws Exception {
-        EvenNaiverSorter evenNaiverSorter = new EvenNaiverSorter();
-        sortedNodes = evenNaiverSorter.getUpdateList(evenNaiverSorter.sortIt(evenNaiverSorter.readAllJson()));
+        NaiveSorter naiveSorter = new NaiveSorter();
+        sortedNodes = naiveSorter.getUpdateList(naiveSorter.sortIt(naiveSorter.readAllJson()));
 
         // Find all the type entities
         typeEntities = getSortedTypes().stream()

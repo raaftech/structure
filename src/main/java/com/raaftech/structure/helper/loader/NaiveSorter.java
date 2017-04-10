@@ -30,15 +30,15 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 /**
- * EvenNaiverSorter handles loading all json from bundle locations do dependency
+ * NaiveSorter handles loading all json from bundle locations do dependency
  * resolving on all the nodes
  *
  * @author Freek Alleman <freek.alleman@raaftech.com>
  * @since 2016-10-11
  */
-public class EvenNaiverSorter {
+public class NaiveSorter {
 
-    private static final Logger log = LoggerFactory.getLogger(EvenNaiverSorter.class);
+    private static final Logger log = LoggerFactory.getLogger(NaiveSorter.class);
     private final ObjectMapper mapper = new ObjectMapper();
     private final String bundlePath;
     public static final Map<String, Path> checksumToFiles = new HashMap<>();
@@ -54,11 +54,11 @@ public class EvenNaiverSorter {
 
     private String globPattern = "**/*.{type,inst}.json";
 
-    public EvenNaiverSorter() {
+    public NaiveSorter() {
         bundlePath = Configuration.getBundlePath();
     }
 
-    public EvenNaiverSorter(String bundlePath) {
+    public NaiveSorter(String bundlePath) {
         this.bundlePath = bundlePath;
     }
 
@@ -336,7 +336,7 @@ public class EvenNaiverSorter {
         return unsorted;
     }
 
-    public EvenNaiverSorter setGlobPattern(String globPattern) {
+    public NaiveSorter setGlobPattern(String globPattern) {
         this.globPattern = globPattern;
         return this;
     }

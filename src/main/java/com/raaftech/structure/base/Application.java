@@ -1,18 +1,14 @@
 package com.raaftech.structure.base;
 
 import ch.qos.logback.classic.Level;
-import com.raaftech.structure.graph.Constraint;
 import com.raaftech.structure.graph.Instance;
-import com.raaftech.structure.graph.Type;
 import com.raaftech.structure.graph.repositories.InstanceRepository;
 import com.raaftech.structure.graph.repositories.InstrumentRepository;
 import com.raaftech.structure.graph.repositories.ProfileRepository;
 import com.raaftech.structure.graph.repositories.TypeRepository;
 import com.raaftech.structure.helper.loader.BundleLoader;
-import com.raaftech.structure.helper.loader.EvenNaiverSorter;
 import com.raaftech.structure.manager.SchemaManager;
 import com.raaftech.structure.manager.TaskManager;
-import com.raaftech.structure.next.Entity;
 import com.raaftech.structure.node.InstanceActor;
 import com.raaftech.structure.node.TypeActor;
 import com.raaftech.structure.repository.Instances;
@@ -35,19 +31,10 @@ import org.slf4j.bridge.SLF4JBridgeHandler;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.data.neo4j.support.query.CypherQueryExecutor;
 
-import java.io.File;
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.file.*;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 import java.util.stream.StreamSupport;
-
-import static io.vertx.core.json.Json.mapper;
 
 /**
  * The main application entry point.

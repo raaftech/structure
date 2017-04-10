@@ -13,7 +13,7 @@ import com.raaftech.structure.exceptions.JsonValidationException;
 import com.raaftech.structure.graph.Constraint;
 import com.raaftech.structure.helper.JsonHelper;
 import com.raaftech.structure.helper.Triple;
-import com.raaftech.structure.helper.loader.EvenNaiverSorter;
+import com.raaftech.structure.helper.loader.NaiveSorter;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
@@ -184,7 +184,7 @@ public class EntityDeserializer extends StdDeserializer<Entity> {
             if (metaJson.has("checksum")) {
                 checksum = metaJson.get("checksum").asText();
             } else {
-                checksum = EvenNaiverSorter.calculateChecksum(entityJson, EvenNaiverSorter.ChecksumAlgorithm.SHA1);
+                checksum = NaiveSorter.calculateChecksum(entityJson, NaiveSorter.ChecksumAlgorithm.SHA1);
             }
             log.debug("Setting checksum to \"{}\"", checksum);
             entity.setChecksum(checksum);
@@ -380,7 +380,7 @@ public class EntityDeserializer extends StdDeserializer<Entity> {
 //                    break;
 //                }
 //            }
-            Path relativePathForSchema = EvenNaiverSorter.checksumToFiles.get(checksum);
+            Path relativePathForSchema = NaiveSorter.checksumToFiles.get(checksum);
             if (relativePathForSchema != null) {
                 filePath = new File(relativePathForSchema.getParent().toString() + File.separator + givenFilePath);
             }
