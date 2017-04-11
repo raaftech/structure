@@ -3,7 +3,6 @@ package com.raaftech.structure.graph;
 import com.google.common.collect.ImmutableSet;
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.graph.repositories.NodeRepository;
-import com.raaftech.structure.helper.Triple;
 import com.raaftech.structure.next.Entity;
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang3.tuple.Pair;
@@ -13,7 +12,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.neo4j.annotation.*;
 
-import java.util.*;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -78,7 +80,7 @@ public class Constraint {
     public class ValidationReport {
         private boolean isSuccess;
         private final String forRelationship = Constraint.this.getForRelationship();
-        private Optional<String> message = Optional.empty();
+        private Optional<String> error = Optional.empty();
         private Set<String> validatedUuids;
 
         /**
@@ -101,8 +103,8 @@ public class Constraint {
          * We might have encountered some errors that stem from the validation.
          * @return An optional wrapping possible errors.
          */
-        public Optional<String> getMessage() {
-            return message;
+        public Optional<String> getError() {
+            return error;
         }
 
         /**
@@ -158,7 +160,7 @@ public class Constraint {
         if (relatedNodes.isEmpty()) {
             validationReport.isSuccess = requiredAmount(0);
             if (!validationReport.isSuccess) {
-                validationReport.message = Optional.of("Zero relationships found for " +
+                validationReport.error = Optional.of("Zero relationships found for " +
                         "constraint " + validationReport.forRelationship + " to " + endOfConstraint.getName() +
                         ", this violates cardinality " + cardinality.toString());
             }
@@ -193,7 +195,7 @@ public class Constraint {
                 .collect(Collectors.toSet());
         if (!nonexistantUuids.isEmpty()) {
             validationReport.isSuccess = false;
-            validationReport.message = Optional.of("Error while retrieving node with UUID(s) " +
+            validationReport.error = Optional.of("Error while retrieving node with UUID(s) " +
                     nonexistantUuids.toString() + " from database, this fails " +
                     "the constraint validation");
             return validationReport;
@@ -218,7 +220,7 @@ public class Constraint {
         validationReport.validatedUuids = validateAgainstConstraint;
         validationReport.isSuccess = requiredAmount(validateAgainstConstraint.size());
         if (!validationReport.isSuccess) {
-            validationReport.message = Optional.of(validateAgainstConstraint.size() + " UUIDs found for " +
+            validationReport.error = Optional.of(validateAgainstConstraint.size() + " UUIDs found for " +
                     "constraint " + validationReport.forRelationship + " to " + endOfConstraint.getName() +
                     ", this violates cardinality " + cardinality.toString());
         }

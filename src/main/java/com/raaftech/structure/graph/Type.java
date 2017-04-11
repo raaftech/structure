@@ -217,8 +217,8 @@ public class Type extends Node {
             throw new IllegalArgumentException("Constraints can only be validated for non-type entities.");
         }
 
+        // All errors that occur during validation are collected in `errors`
         Set<String> errors = new HashSet<>();
-        boolean validated = true;
 
         /*
         We need to whitelist a few relationships. Constraints only work on relationships between instances or
@@ -256,7 +256,6 @@ public class Type extends Node {
                 .filter(relName -> !constraintExists.test(relName))
                 .collect(Collectors.toSet());
         if (!relationsNotUnderConstraint.isEmpty()) {
-            validated = false;
             errors.add("Found relationships that aren't under constraint while " +
                     "instantiating " + getName() + ": " + relationsNotUnderConstraint.toString());
         }
@@ -275,7 +274,7 @@ public class Type extends Node {
         // Get the errors from the violated constraints
         errors = Stream.concat(errors.stream(),
                 violatedConstraints.stream()
-                .map(Constraint.ValidationReport::getMessage)
+                .map(Constraint.ValidationReport::getError)
                 .filter(Optional::isPresent)
                 .map(Optional::get)).collect(Collectors.toSet());
 
@@ -299,15 +298,15 @@ public class Type extends Node {
                 .collect(Collectors.toSet());
 
         if (!missedRelations.isEmpty()) {
-            validated = false;
             errors.add("Found relationships that weren't validated by any constraint: " + missedRelations.toString());
         }
 
         /*
-        All constraints validate when all validations return true, and every relationship the
-        given entity has been validated by at least one constraint.
+        Given that any error state of validation errors results in an error added to
+        the errors collection, it is safe to assume that when errors is empty, validation
+        was successful.
          */
-        return Pair.of(validated && violatedConstraints.isEmpty() && missedRelations.isEmpty(), ImmutableSet.copyOf(errors));
+        return Pair.of(errors.isEmpty(), ImmutableSet.copyOf(errors));
     }
 
     public Type setDescriptor(String key, String valueType, boolean required, String description, String defaultValue,

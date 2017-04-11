@@ -29,6 +29,16 @@ public class ConstraintTest {
     @Mocked
     NodeRepository nodeRepository;
 
+    // Every successful report should have isSuccess set to true and contain no error
+    private boolean successfulReport(Constraint.ValidationReport report) {
+        return report.isSuccess() && !report.getError().isPresent();
+    }
+
+    // Every unsuccessful report should have isSuccess set to false and contain errors
+    private boolean unsuccessfulReport(Constraint.ValidationReport report) {
+        return !report.isSuccess() && report.getError().isPresent();
+    }
+
     /*
      * Verify the cases where constraint verification fails or succeeds because of
      * the cardinality.
@@ -71,10 +81,10 @@ public class ConstraintTest {
             );
         }};
 
-        assertTrue(constraintOptionalToOne.validateConstraint(entity).isSuccess());
-        assertTrue(constraintOptionalToMany.validateConstraint(entity).isSuccess());
-        assertFalse(constraintRequiredToMany.validateConstraint(entity).isSuccess());
-        assertFalse(constraintRequiredToOne.validateConstraint(entity).isSuccess());
+        assertTrue(successfulReport(constraintOptionalToOne.validateConstraint(entity)));
+        assertTrue(successfulReport(constraintOptionalToMany.validateConstraint(entity)));
+        assertTrue(unsuccessfulReport(constraintRequiredToMany.validateConstraint(entity)));
+        assertTrue(unsuccessfulReport(constraintRequiredToOne.validateConstraint(entity)));
 
 
         // Now test the case where we only have one related node
@@ -94,10 +104,10 @@ public class ConstraintTest {
             result = true;
         }};
 
-        assertTrue(constraintOptionalToOne.validateConstraint(entity).isSuccess());
-        assertTrue(constraintOptionalToMany.validateConstraint(entity).isSuccess());
-        assertTrue(constraintRequiredToMany.validateConstraint(entity).isSuccess());
-        assertTrue(constraintRequiredToOne.validateConstraint(entity).isSuccess());
+        assertTrue(successfulReport(constraintOptionalToOne.validateConstraint(entity)));
+        assertTrue(successfulReport(constraintOptionalToMany.validateConstraint(entity)));
+        assertTrue(successfulReport(constraintRequiredToMany.validateConstraint(entity)));
+        assertTrue(successfulReport(constraintRequiredToOne.validateConstraint(entity)));
 
 
         // Now test the case where we only have two related nodes
@@ -126,10 +136,10 @@ public class ConstraintTest {
             result = secondUuid.toString();
         }};
 
-        assertFalse(constraintOptionalToOne.validateConstraint(entity).isSuccess());
-        assertTrue(constraintOptionalToMany.validateConstraint(entity).isSuccess());
-        assertTrue(constraintRequiredToMany.validateConstraint(entity).isSuccess());
-        assertFalse(constraintRequiredToOne.validateConstraint(entity).isSuccess());
+        assertTrue(unsuccessfulReport(constraintOptionalToOne.validateConstraint(entity)));
+        assertTrue(successfulReport(constraintOptionalToMany.validateConstraint(entity)));
+        assertTrue(successfulReport(constraintRequiredToMany.validateConstraint(entity)));
+        assertTrue(unsuccessfulReport(constraintRequiredToOne.validateConstraint(entity)));
     }
 
     /**
@@ -181,7 +191,7 @@ public class ConstraintTest {
         }};
 
         // Both related nodes are of the proper (sub)type, so verification is true
-        assertTrue(constraintRequiredToMany.validateConstraint(entity).isSuccess());
+        assertTrue(successfulReport(constraintRequiredToMany.validateConstraint(entity)));
     }
 
     /*
@@ -227,7 +237,7 @@ public class ConstraintTest {
         }};
 
         // Because one node can't be found, the verification fails
-        assertFalse(constraintRequiredToMany.validateConstraint(entity).isSuccess());
+        assertTrue(unsuccessfulReport(constraintRequiredToMany.validateConstraint(entity)));
     }
 
     // Test whether specialization method works
