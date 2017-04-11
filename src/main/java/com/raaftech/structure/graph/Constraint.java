@@ -1,9 +1,11 @@
 package com.raaftech.structure.graph;
 
+import com.google.common.collect.ImmutableSet;
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.graph.repositories.NodeRepository;
 import com.raaftech.structure.next.Entity;
 import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.tuple.Pair;
 import org.neo4j.graphdb.Direction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,6 +75,48 @@ public class Constraint {
     }
 
     /**
+     * This class holds the data that results from the validation of a constraint on an entity.
+     */
+    public class ValidationReport {
+        private boolean isSuccess;
+        private final String forRelationship = Constraint.this.getForRelationship();
+        private Optional<String> error = Optional.empty();
+        private Set<String> validatedUuids;
+
+        /**
+         * Did the validation succeed?
+         * @return True if it did, false if not.
+         */
+        public boolean isSuccess() {
+            return isSuccess;
+        }
+
+        /**
+         * The name of the relationship that was validated.
+         * @return
+         */
+        public String getForRelationship() {
+            return forRelationship;
+        }
+
+        /**
+         * We might have encountered some errors that stem from the validation.
+         * @return An optional wrapping possible errors.
+         */
+        public Optional<String> getError() {
+            return error;
+        }
+
+        /**
+         * The UUIDs that were validated.
+         * @return A set of UUIDs,
+         */
+        public Set<String> getValidatedUuids() {
+            return validatedUuids;
+        }
+    }
+
+    /**
      * Check if a particular amount is valid according to the cardinality of this constraint.
      * @param amount An amount. Usually the amount of nodes incident to relationships that are constrained by this
      *               Constraint.
@@ -90,15 +134,18 @@ public class Constraint {
 
     /**
      * Given a non-type entity that is about to be persisted return whether it validates against the constraints
-     * set on its type.
+     * set on its type, and the relationships this constraint validates.
      * @param entity The entity that needs to be checked against this constraint.
-     * @return Whether the entity validates against this constraint.
+     * @return An object containing all the data of the validation.
      * @throws IllegalArgumentException Thrown when we pass an entity that represents a {@link Type type}.
      */
-    public boolean verifyConstraint(Entity entity) {
+    public ValidationReport validateConstraint(Entity entity) {
         if (Objects.equals("Type", entity.getType())) {
             throw new IllegalArgumentException("Constraints can only be validated for non-type entities.");
         }
+
+        ValidationReport validationReport = new ValidationReport();
+        validationReport.validatedUuids = ImmutableSet.of();
 
         final Set<UUID> relatedNodes = entity.getRelations().stream()
                 .filter(triple -> Objects.equals(triple.getLeft(), forRelationship))
@@ -111,7 +158,13 @@ public class Constraint {
 
         // If we found 0 nodes we only need to check against cardinality
         if (relatedNodes.isEmpty()) {
-            return requiredAmount(0);
+            validationReport.isSuccess = requiredAmount(0);
+            if (!validationReport.isSuccess) {
+                validationReport.error = Optional.of("Zero relationships found for " +
+                        "constraint " + validationReport.forRelationship + " to " + endOfConstraint.getName() +
+                        ", this violates cardinality " + cardinality.toString());
+            }
+            return validationReport;
         }
 
         /*
@@ -123,41 +176,55 @@ public class Constraint {
          */
 
         // This function maps a UUID to an optional Node
-        final Function<UUID, Optional<Node>> uuidToNode = uuid -> {
+        final Function<UUID, Pair<UUID, Optional<Node>>> uuidToNode = uuid -> {
             Node maybeNode = nodeRepository.findByUuid(uuid.toString());
             if (maybeNode == null) {
-                log.error("Error while retrieving node with UUID \"{}\" from database, this fails " +
-                        "the constraint validation", uuid);
-                return Optional.empty();
+                return Pair.of(uuid, Optional.empty());
             }
-            return Optional.of(maybeNode);
+            return Pair.of(uuid, Optional.of(maybeNode));
         };
 
-        final Set<Optional<Node>> foundRelatedNodes = relatedNodes.stream()
+        final Set<Pair<UUID, Optional<Node>>> foundRelatedNodes = relatedNodes.stream()
                 .map(uuidToNode)
                 .collect(Collectors.toSet());
 
         // Make sure there aren't any empty optionals in the set
-        if (foundRelatedNodes.stream()
-                .anyMatch(maybeNode -> !maybeNode.isPresent())) {
-            return false;
+        final Set<UUID> nonexistantUuids = foundRelatedNodes.stream()
+                .filter(pair -> !pair.getRight().isPresent())
+                .map(Pair::getLeft)
+                .collect(Collectors.toSet());
+        if (!nonexistantUuids.isEmpty()) {
+            validationReport.isSuccess = false;
+            validationReport.error = Optional.of("Error while retrieving node with UUID(s) " +
+                    nonexistantUuids.toString() + " from database, this fails " +
+                    "the constraint validation");
+            return validationReport;
         }
 
         /*
         Filter all the Instance nodes we found, cast them to Instance, and check whether they're of the expected
         types. This will return a set containing all the nodes that fall under this constraint.
          */
-        final Set<Instance> validateAgainstConstraint = foundRelatedNodes.stream()
+        final Set<String> validateAgainstConstraint = foundRelatedNodes.stream()
+                .map(Pair::getRight)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .filter(node -> node instanceof Instance)
                 .map(node -> (Instance) node)
                 // now we need to check if we're an instance of the type allowed by this constraint
                 .filter(instance -> instance.isOfType(endOfConstraint))
+                .map(Instance::getUuid)
                 .collect(Collectors.toSet());
 
         // Return whether the amount of nodes we found in the previous step is valid according to the cardinality.
-        return requiredAmount(validateAgainstConstraint.size());
+        validationReport.validatedUuids = validateAgainstConstraint;
+        validationReport.isSuccess = requiredAmount(validateAgainstConstraint.size());
+        if (!validationReport.isSuccess) {
+            validationReport.error = Optional.of(validateAgainstConstraint.size() + " UUIDs found for " +
+                    "constraint " + validationReport.forRelationship + " to " + endOfConstraint.getName() +
+                    ", this violates cardinality " + cardinality.toString());
+        }
+        return validationReport;
     }
 
     /**

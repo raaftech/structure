@@ -1,5 +1,6 @@
 package com.raaftech.structure.graph.repositories;
 
+import com.raaftech.structure.graph.Constraint;
 import com.raaftech.structure.graph.Type;
 import org.springframework.data.neo4j.annotation.Query;
 import org.springframework.data.repository.query.Param;
@@ -66,6 +67,10 @@ public interface TypeRepository extends GenericRepository<Type> {
     // Query to get a list of all Type glyphs
     @Query ("MATCH (n:Type) return n.glyphId")
     List<Integer> findAllTypeGlyphs();
+
+    // Get a type's inherited constraints
+    @Query("MATCH (n:Type {uuid: {0}})-[:ISA*1..]->()-[r:CONSTRAINTS]->() return r")
+    Set<Constraint> getInheritedConstraint(String typeUuid);
 
     @Query("MATCH (n:Type) RETURN count(n)")
     long count();

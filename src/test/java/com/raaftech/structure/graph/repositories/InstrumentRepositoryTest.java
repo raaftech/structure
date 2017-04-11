@@ -3,7 +3,7 @@ package com.raaftech.structure.graph.repositories;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.raaftech.structure.base.SpringTestConfig;
 import com.raaftech.structure.graph.*;
-import com.raaftech.structure.helper.loader.EvenNaiverLoader;
+import com.raaftech.structure.helper.loader.NaiveSorter;
 import com.raaftech.structure.next.Entity;
 import org.junit.After;
 import org.junit.Before;
@@ -63,11 +63,11 @@ public class InstrumentRepositoryTest {
             final String testBundle = "src/test/resources/bundles/core";
             com.raaftech.structure.base.Configuration
                     .setSchemaNamespace(FileSystems.getDefault().getPath(testBundle).toUri().resolve("types/"));
-            EvenNaiverLoader evenNaiverLoader = new EvenNaiverLoader(testBundle);
+            NaiveSorter naiveSorter = new NaiveSorter(testBundle);
 
             Transaction tx = graphDatabase.beginTx();
             try {
-                evenNaiverLoader.getUpdateList(evenNaiverLoader.sortIt(evenNaiverLoader.readAllJson())).stream()
+                naiveSorter.getUpdateList(naiveSorter.sortIt(naiveSorter.readAllJson())).stream()
                         .map(node -> {
                             try {
                                 return mapper.readValue(node.toString(), Entity.class);

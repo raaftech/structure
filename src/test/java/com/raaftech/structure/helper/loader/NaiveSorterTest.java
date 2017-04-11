@@ -10,7 +10,7 @@ import java.util.Objects;
 
 import static org.junit.Assert.*;
 
-public class EvenNaiverLoaderTest {
+public class NaiveSorterTest {
 
     private final ObjectMapper mapper = new ObjectMapper();
 
@@ -45,24 +45,24 @@ public class EvenNaiverLoaderTest {
         assertFalse(Objects.equals(DigestUtils.sha1Hex(a.toString()), DigestUtils.sha1Hex(b.toString())));
 
         // the new way:
-        assertTrue(Objects.equals(EvenNaiverLoader.calculateChecksum(a, EvenNaiverLoader.ChecksumAlgorithm.MD5),
-                EvenNaiverLoader.calculateChecksum(b, EvenNaiverLoader.ChecksumAlgorithm.MD5)));
-        assertTrue(Objects.equals(EvenNaiverLoader.calculateChecksum(a, EvenNaiverLoader.ChecksumAlgorithm.SHA1),
-                EvenNaiverLoader.calculateChecksum(b, EvenNaiverLoader.ChecksumAlgorithm.SHA1)));
+        assertTrue(Objects.equals(NaiveSorter.calculateChecksum(a, NaiveSorter.ChecksumAlgorithm.MD5),
+                NaiveSorter.calculateChecksum(b, NaiveSorter.ChecksumAlgorithm.MD5)));
+        assertTrue(Objects.equals(NaiveSorter.calculateChecksum(a, NaiveSorter.ChecksumAlgorithm.SHA1),
+                NaiveSorter.calculateChecksum(b, NaiveSorter.ChecksumAlgorithm.SHA1)));
 
         // test the overloaded InputStream version as well
         assertTrue(Objects.equals(
-                EvenNaiverLoader.calculateChecksum(
-                        new ByteArrayInputStream(a.toString().getBytes()), EvenNaiverLoader.ChecksumAlgorithm.MD5),
-                EvenNaiverLoader.calculateChecksum(
-                        new ByteArrayInputStream(b.toString().getBytes()), EvenNaiverLoader.ChecksumAlgorithm.MD5)));
+                NaiveSorter.calculateChecksum(
+                        new ByteArrayInputStream(a.toString().getBytes()), NaiveSorter.ChecksumAlgorithm.MD5),
+                NaiveSorter.calculateChecksum(
+                        new ByteArrayInputStream(b.toString().getBytes()), NaiveSorter.ChecksumAlgorithm.MD5)));
 
 
         // add some properties that should be filtered from the JSON, see if the checksums still match
         meta.put("path", "foo");
         metb.put("path", "bar");
-        assertTrue(Objects.equals(EvenNaiverLoader.calculateChecksum(a, EvenNaiverLoader.ChecksumAlgorithm.SHA1),
-                EvenNaiverLoader.calculateChecksum(b, EvenNaiverLoader.ChecksumAlgorithm.SHA1)));
+        assertTrue(Objects.equals(NaiveSorter.calculateChecksum(a, NaiveSorter.ChecksumAlgorithm.SHA1),
+                NaiveSorter.calculateChecksum(b, NaiveSorter.ChecksumAlgorithm.SHA1)));
     }
 
 }

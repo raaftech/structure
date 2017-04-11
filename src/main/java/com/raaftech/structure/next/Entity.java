@@ -5,9 +5,14 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.raaftech.structure.base.Context;
+import com.raaftech.structure.exceptions.IllegalEntityType;
+import com.raaftech.structure.graph.Constraint;
+import com.raaftech.structure.graph.Type;
 import com.raaftech.structure.graph.repositories.NodeRepository;
 import com.raaftech.structure.graph.repositories.TypeRepository;
 import com.raaftech.structure.helper.Triple;
+import org.apache.commons.lang3.Validate;
+import org.apache.commons.lang3.tuple.Pair;
 import org.neo4j.graphdb.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,6 +87,13 @@ public class Entity {
     @Transient
     private Set<Triple<String, String, Set<String>>> relations;
 
+    /* Constraints are temporarily stored in this field. The field is a map from a string
+     * to a list. The string of that map is the relation name that is constrainted. The list
+     * contains tuples of Cardinality + UUID.
+     */
+    @Transient
+    private Map<String, List<Pair<Constraint.Cardinality, UUID>>> constraints;
+
 
     /* Empty constructor for Spring Data Neo4j's purposes. */
     public Entity() {
@@ -143,6 +155,11 @@ public class Entity {
 		return relations;
 	}
 
+	public Optional<Map<String, List<Pair<Constraint.Cardinality, UUID>>>> getConstraints() {
+	    return constraints == null ?
+                Optional.empty() : Optional.of(constraints);
+    }
+
 
     /* Setters. */
     public void setBundle(String bundle) {
@@ -185,6 +202,22 @@ public class Entity {
 		this.relations = relations;
 	}
 
+	public void addConstraint(String relName, Constraint.Cardinality cardinality, UUID to) {
+	    if (constraints == null) {
+	        constraints = new HashMap<>();
+        }
+
+        final List<Pair<Constraint.Cardinality, UUID>> constraintList;
+        if (constraints.containsKey(relName)) {
+            constraintList = constraints.get(relName);
+        } else {
+            constraintList = new ArrayList<>();
+            constraints.put(relName, constraintList);
+        }
+
+        constraintList.add(Pair.of(cardinality, to));
+    }
+
 
     @Override
     public boolean equals(Object other) {
@@ -212,6 +245,28 @@ public class Entity {
     }
 
     public void toGraph() {
+        if (!getType().equals("Type")) {
+            Optional<Set<String>> maybeInstanceOfUuids = getRelations().stream()
+                    .filter(triple -> triple.getLeft().equals("INSTANCE_OF"))
+                    .filter(triple -> triple.getMiddle().toLowerCase().equals("outgoing".toLowerCase()))
+                    .map(Triple::getRight).findFirst();
+
+            if (!maybeInstanceOfUuids.isPresent()) {
+                throw new IllegalArgumentException("Instance with UUID "
+                        + getUuid() + "doesn't have an INSTANCE_OF relation");
+            }
+            // Assume there's only one UUID, because an instance can only be INSTANCE_OF one type
+            String typeUuid = maybeInstanceOfUuids.get().iterator().next();
+            Type  instanceOf = typeRepository.findByUuid(typeUuid);
+
+            Validate.notNull(instanceOf, "No type with UUID " + typeUuid + ", exist in the graph.");
+
+            Pair<Boolean, Set<String>> validation = instanceOf.validateEntityToConstraints(this);
+            if (!validation.getLeft()) {
+                throw new IllegalEntityType("Entity with UUID " + getUuid() + " didn't adhere to its type constraints: " + validation.getRight());
+            }
+        }
+
         persist();
         Node node = getPersistentState();
         persistRelations(node);

@@ -2,7 +2,7 @@ package com.raaftech.structure.graph.repositories;
 
 import com.raaftech.structure.base.SpringTestConfig;
 import com.raaftech.structure.graph.Type;
-import com.raaftech.structure.helper.loader.EvenNaiverLoader;
+import com.raaftech.structure.helper.loader.NaiveSorter;
 import com.raaftech.structure.next.Entity;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,11 +36,11 @@ public class TypeRepositoryTest {
     public void setUpDatabase() throws Exception {
         if (!databaseCreated) {
             final String raafBundle = "src/test/resources/bundles/core";
-            EvenNaiverLoader evenNaiverLoader = new EvenNaiverLoader(raafBundle);
+            NaiveSorter naiveSorter = new NaiveSorter(raafBundle);
 
             Transaction tx = graphDatabase.beginTx();
             try {
-                evenNaiverLoader.getUpdateList(evenNaiverLoader.sortIt(evenNaiverLoader.readAllJson())).stream()
+                naiveSorter.getUpdateList(naiveSorter.sortIt(naiveSorter.readAllJson())).stream()
                         .map(node -> {
                             try {
                                 return mapper.readValue(node.toString(), Entity.class);
