@@ -19,7 +19,7 @@ const getResultData = helper.getResultData(['body','result','data']);
 module.exports = function (Entity) {
     Entity.fetchByUuid = function (uuid, callback) {
         evBus.sendEvent(entityAddress, 'read',
-                {labels: ['type'], start: uuid, includeStart: true})
+                {labels: ['Type'], start: uuid, includeStart: true})
             .then((result) => callback(null, getResultData(result)))
             .catch((ex) => callback(ex));
     };
@@ -35,7 +35,7 @@ module.exports = function (Entity) {
         evBus.sendEvent(typesAddress, 'findOneByName', {name: name})
             .then((result) => {
                 evBus.sendEvent(entityAddress, 'read',
-                    {labels: ['type'], start: getResultData(result).uuid, includeStart: true})
+                    {labels: ['Type'], start: getResultData(result).uuid, includeStart: true})
                     .then((res) => callback(null, R.head(getResultData(res))));
             })
             .catch((ex) => callback(ex));
@@ -67,7 +67,7 @@ module.exports = function (Entity) {
                     .then((ps) => {
                         let proms = R.map((item) => {
                             return evBus.sendEvent(entityAddress, 'read',
-                                {labels: ['type'], start: item.uuid, includeStart: true})
+                                {labels: ['Type'], start: item.uuid, includeStart: true})
                                 .then((result) => R.head(getResultData(result)));
                         }, ps);
                         Promise.all(proms)

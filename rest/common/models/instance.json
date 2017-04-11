@@ -28,6 +28,13 @@
       "principalId": "$unauthenticated",
       "permission": "DENY",
       "property": "updateInstance"
+    },
+    {
+      "accessType": "EXECUTE",
+      "principalType": "ROLE",
+      "principalId": "$unauthenticated",
+      "permission": "DENY",
+      "property": "removeInstance"
     }
   ],
   "methods": {}

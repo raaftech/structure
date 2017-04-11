@@ -11,7 +11,6 @@ const treeify = require(path.join(__dirname, '..', 'treeify'));
 const neoUrl = R.defaultTo('http://localhost:7474', process.env.NEO4JURL);
 const db = new neo4j.GraphDatabase(neoUrl);
 
-//match (n:Instance)-[:INSTANCE_OF|:ISA*1..]->(c {name:"Linux"}) match (n)-[:HAS_COMPONENT]->(dnsname)-[:INSTANCE_OF]->(t {name:"DnsName"}) return dnsname.`kv-dnsname`
 module.exports = function(vorpal, answerCache) {
     vorpal.command('neo query', 'Directly query the neo4j graph database')
         .action(function(args, done) {
@@ -38,7 +37,7 @@ module.exports = function(vorpal, answerCache) {
             const self = this;
             let q = helper.generateQuestion('query', 'input', 'Grouping predicate: ');
             self.prompt(q, function(result) {
-                let cq = util.format('match (n:Instance)-[:INSTANCE_OF|:ISA*1..]->(c {name:"%s"}) match (n)-[:HAS_COMPONENT]->(dnsname)-[:INSTANCE_OF]->(t {name:"DnsName"}) match (n)-[:HAS_COMPONENT]->(addr)-[:INSTANCE_OF]->(x {name:"Ipv4Address"}) return dnsname.`kv-dnsname`, addr.`kv-addr`',result.query);
+                let cq = util.format('match (n:Instance)-[:INSTANCE_OF|:ISA*1..]->(c {name:"%s"}) return n', result.query);
                 db.cypher({
                     query: cq
                 }, function(error, queryResult) {

@@ -12,6 +12,11 @@ const instanceAddress = baseAddress(['repository', 'instances']);
 const entityAddress = baseAddress(['manager', 'entitymanager']);
 
 const getResultData = helper.getResultData(['body','result','data']);
+const createError = (status, msg) => {
+    let error = new Error(msg);
+    error.status = status;
+    return error;
+};
 
 module.exports = function (Instance) {
     Instance.lastCreated = function (quantity, callback) {
@@ -20,7 +25,7 @@ module.exports = function (Instance) {
                 let promises = R.map((item) => {
                     return evBus.sendEvent(entityAddress,
                         'read',
-                        {labels: ['type'], start: item.uuid, includeStart: true})
+                        {labels: ['Type'], start: item.uuid, includeStart: true})
                         .then((res) => R.head(getResultData(res)));
                 }, getResultData(result));
                 Promise.all(promises)
@@ -37,10 +42,18 @@ module.exports = function (Instance) {
     });
 
     Instance.fetchInstance = function (uuid, callback) {
-        evBus.sendEvent(entityAddress,
-            'read',
-            {labels: ['instance'], start: uuid, includeStart: true})
-            .then((res) => callback(null, R.head(getResultData(res))));
+        let message = {labels: ['Instance'], start: uuid, includeStart: true};
+        evBus.sendEvent(entityAddress, 'read', message)
+            .then((res) => {
+                let result = R.path(['body','result'], res);
+                let getFirstResult = R.compose(R.head, R.prop('data'));
+                if(R.has('data', result)) {
+                    callback(null, getFirstResult(result));
+                } else {
+                    callback(createError(404, result.error));
+                }
+            })
+            .catch(ex => callback(ex));
     };
 
     Instance.remoteMethod('fetchInstance', {
@@ -60,7 +73,7 @@ module.exports = function (Instance) {
                 R.forEach(uuid => {
                     promises.push(evBus.sendEvent(entityAddress,
                         'read',
-                        {labels: ['instance'], start: uuid, includeStart: true}));
+                        {labels: ['Instance'], start: uuid, includeStart: true}));
                 }, uuidList);
                 Promise.all(promises)
                     .then(res => {
@@ -102,5 +115,19 @@ module.exports = function (Instance) {
         returns: {root: true, type: 'object'},
         http: {verb: 'put', path: '/'},
         description: 'update an existing instance'
+    });
+
+    Instance.removeInstance = function (uuid, callback) {
+        let message = {labels: ['Instance'], uuid: uuid, includeStart: true};
+        evBus.sendEvent(entityAddress, 'delete', message)
+            .then((result) => callback(null, getResultData(result)))
+            .catch((ex) => callback(ex));
+    };
+
+    Instance.remoteMethod('removeInstance', {
+        accepts: [{arg: 'uuid', type: 'string', required: true}],
+        returns: {root: true, type: 'object'},
+        http: {verb: 'delete', path: '/:uuid'},
+        description: 'remove an existing instance'
     });
 };

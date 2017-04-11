@@ -229,6 +229,7 @@ vorpal.command('instance')
     .option('-l, --last <quantity>', 'Fetch the last (quantity) created instances')
     .option('-u, --uuid <uuid>', 'Find a specific instance by uuid')
     .option('-n, --name <name>', 'Find a specific instance by name')
+    .option('-r, --remove <uuid>', 'Remove a specific instance')
     .option('-v, --verbose', 'Be verbose in printing the results')
     .action(function(args, done) {
         //Function that checks if a property is not nil in the given object.options object
@@ -237,6 +238,7 @@ vorpal.command('instance')
             [fn('last'), (x) => rest.lastInstances(R.path(['options','last'], x))],
             [fn('uuid'), (x) => rest.getInstanceByUuid(R.path(['options','uuid'], x))],
             [fn('name'), (x) => rest.getInstanceByName(R.path(['options','name'], x))],
+            [fn('remove'), (x) => rest.removeInstance(R.path(['options','remove'], x))],
             [R.T, () => Promise.resolve([])]
         ]);
         let promise = predicate(args);
@@ -248,7 +250,7 @@ vorpal.command('instance')
         }).catch(genericCatchHandler(done));
     });
 
-vorpal.command('dig <uuid>', 'Get the child elements for a node')
+vorpal.command('dig <uuid>', 'Get the child elements for a type-node')
     .action(function(args, done) {
         const self = this;
 
