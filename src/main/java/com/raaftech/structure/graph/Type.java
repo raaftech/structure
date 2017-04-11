@@ -184,10 +184,12 @@ public class Type extends Node {
      * Return the constraints an instance of this type should validate against.
      * We might inherit some constraints which can be specialized deeper in the type tree
      * by some other constraint. We want to keep the most specific constraints only.
-     * @param inheritedConstraints All the inherited constraints.
+     * @param ownConstraints This type's own incoming or outgoing constraints.
+     * @param inheritedConstraints All the incoming or outgoing inherited constraints.
      * @return A set containing constraints of which no generalization exists in the set.
      */
-    private Set<Constraint> getApplicableConstraints(Set<Constraint> inheritedConstraints) {
+    private Set<Constraint> getApplicableConstraints(Set<Constraint> inheritedConstraints,
+                                                     Set<Constraint> ownConstraints) {
         // This predicate is used to remove constraints that are specialized by other constraints
         BiPredicate<Set<Constraint>, Constraint> isNotSpecialized = (setToFilter, inheritedConstraint) -> setToFilter.stream()
                 .allMatch(ownConstraint -> !inheritedConstraint.isSpecialization(ownConstraint));
@@ -199,9 +201,9 @@ public class Type extends Node {
 
         // Return the constraints we should actually validate to
         return Stream.concat(
-                outgoingConstraints.stream(),
+                ownConstraints.stream(),
                 filteredInheritedConstraints.stream()
-                        .filter(inheritedConstraint -> isNotSpecialized.test(outgoingConstraints, inheritedConstraint)))
+                        .filter(inheritedConstraint -> isNotSpecialized.test(ownConstraints, inheritedConstraint)))
                 .collect(Collectors.toSet());
     }
 
@@ -236,7 +238,8 @@ public class Type extends Node {
         The merged set of inherited constraints and outgoingConstraints might contain
         generalizations of other constraints in the set, we don't want those so we remove them.
          */
-        Set<Constraint> constraintsToValidateTo = getApplicableConstraints(typeRepository.getInheritedConstraint(getUuid()));
+        Set<Constraint> constraintsToValidateTo = getApplicableConstraints(
+                typeRepository.getInheritedIncomingConstraints(getUuid()), outgoingConstraints);
 
         /*
         There are a few relationships that aren't inter-instance, but between instances and types.
@@ -338,6 +341,22 @@ public class Type extends Node {
         } else {
             return null;
         }
+    }
+
+    /**
+     * Get the applicable outgoing constraints of this type.
+     * @return The applicable outgoing constraints.
+     */
+    public Set<Constraint> getOutgoingConstraints() {
+        return getApplicableConstraints(typeRepository.getInheritedOutgoingConstraints(getUuid()), outgoingConstraints);
+    }
+
+    /**
+     * Get the applicable incoming constraints of this type.
+     * @return The applicable incoming constraints.
+     */
+    public Set<Constraint> getIncomingConstraints() {
+        return getApplicableConstraints(typeRepository.getInheritedIncomingConstraints(getUuid()), incomingConstraints);
     }
 
     public Type getIsa() {

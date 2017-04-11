@@ -68,9 +68,13 @@ public interface TypeRepository extends GenericRepository<Type> {
     @Query ("MATCH (n:Type) return n.glyphId")
     List<Integer> findAllTypeGlyphs();
 
-    // Get a type's inherited constraints
+    // Get a type's inherited outgoing constraints
     @Query("MATCH (n:Type {uuid: {0}})-[:ISA*1..]->()-[r:CONSTRAINTS]->() return r")
-    Set<Constraint> getInheritedConstraint(String typeUuid);
+    Set<Constraint> getInheritedOutgoingConstraints(String typeUuid);
+
+    // Get a type's inherited incoming constraints
+    @Query("MATCH (n:Type {uuid: {0}})-[:ISA*1..]->()<-[r:CONSTRAINTS]-() return r")
+    Set<Constraint> getInheritedIncomingConstraints(String typeUuid);
 
     @Query("MATCH (n:Type) RETURN count(n)")
     long count();
