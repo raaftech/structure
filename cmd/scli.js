@@ -250,18 +250,32 @@ vorpal.command('instance')
         }).catch(genericCatchHandler(done));
     });
 
-vorpal.command('dig <uuid>', 'Get the child elements for a type-node')
+vorpal.command('dig', 'Get the child elements for a type-node')
+    .option('-n, --name <name>', 'Identify the type-node by name')
+    .option('-u, --uuid <uuid>', 'Identify the type-node by uuid')
     .action(function(args, done) {
         const self = this;
 
-        getChildren(args.uuid)
-            .then(children => {
-                R.forEach((item) => {
-                    self.log(sprintf('%-16s: %24s', R.prop('name', item),R.prop('uuid',item)));
-                }, children);
-                done();
-            })
-            .catch(genericCatchHandler(done))
+        if(args.options.name) {
+            rest.getEntityByName(args.options.name)
+                .then(entity => getChildren(entity.meta.uuid))
+                .then(children => {
+                    R.forEach((item) => {
+                        self.log(sprintf('%-16s: %24s', R.prop('name', item),R.prop('uuid',item)));
+                    }, children);
+                    done();
+                })
+                .catch(genericCatchHandler(done));
+        } else {
+            getChildren(args.options.uuid)
+                .then(children => {
+                    R.forEach((item) => {
+                        self.log(sprintf('%-16s: %24s', R.prop('name', item),R.prop('uuid',item)));
+                    }, children);
+                    done();
+                })
+                .catch(genericCatchHandler(done))
+        }
     });
 
 vorpal.command('tree <name>', 'Show a relation tree for the requested node')
