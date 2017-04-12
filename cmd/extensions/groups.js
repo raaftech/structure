@@ -110,6 +110,28 @@ const getChildLayer = (parentName) => {
             });
 };
 
+/*
+    Creates a view of a node as returned from a cypher query
+    @param node A node received from a cypher query
+*/
+const nodeLens = (node) => {
+    let mkView = R.pipe(
+        R.assoc('name', node.children.properties.name),
+        R.assoc('type', node.children.properties.type),
+        R.assoc('desc', node.children.properties.desc),
+        R.assoc('uuid', node.children.properties.uuid));
+    let ret = {};
+    ret[node.children.properties.name] = mkView({});
+    return ret;
+};
+
+const entity2Graph = (entity) => {
+    let container = {};
+    container[entity.meta.uuid] = entity;
+    let graph = new Structure.SubGraph(container);
+    return graph;
+};
+
 module.exports = function(vorpal, options) {
     let rest = options;
 
@@ -142,7 +164,7 @@ module.exports = function(vorpal, options) {
         });
 
     //FIXME should be in ACL
-    vorpal.command('group instance', 'Add an existing instance to a group hierarchy')
+    vorpal.command('group add', 'Add an existing instance to a group hierarchy')
         .action(function(args, done) {
             let self = this;
             let allGroups;
@@ -150,6 +172,7 @@ module.exports = function(vorpal, options) {
 
             getAllGroups()
                 .then(groups => {
+                    if(R.length(groups) <= 0) throw new Error('No groups found');
                     allGroups = groups;
                     let q = helper.generateQuestion('group', 'list', 'Select container group: ',{choices: groups});
                     return prompt(self, q);
@@ -169,15 +192,65 @@ module.exports = function(vorpal, options) {
                 .then(instance => {
                     let rel = selectedGroup.relationCreate('GROUPS', 'outgoing');
                     rel.addEntity(helper.json2Entity(false, instance));
-                    let container = {};
-                    container[selectedGroup.meta.uuid] = selectedGroup;
-                    let graph = new Structure.SubGraph(container);
+                    let graph = entity2Graph(selectedGroup);
                     return graph.toList();
                 })
                 .then(entityList => rest.updateInstance({entities: entityList}))
                 .then(created => {
                     console.log(clc.green('Instance grouping result: '));
                     console.log(created);
+                    done();
+                })
+                .catch(genericCatchHandler(done));
+        });
+
+    //Note that this command is not working yet, since structure refuses to update relations
+    vorpal.command('group del', 'Remove and existing instance from the group')
+        .action(function(args, done) {
+            let self = this;
+            let selectedGroup;
+            let allGroups;
+            let allChildren;
+            let selectedChildUuid;
+
+            getAllGroups()
+                .then(groups => {
+                    if(R.length(groups) <= 0) throw new Error('No groups found');
+                    allGroups = groups;
+                    let q = helper.generateQuestion('groupName', 'list', 'Select container group: ',{choices: groups});
+                    return prompt(self, q);
+                })
+                .then(answer => {
+                    selectedGroup = R.find(R.propEq('name', answer.groupName), allGroups);
+                    let query = util.format('match (n:Grouping {name: "%s"})-[GROUPS]->(children:Instance) return children',answer.groupName);
+                    return cypher(query);
+                })
+                .then(children => {
+                    let mapped = R.map(nodeLens, children);
+                    let getFirstPropertyName = R.compose(R.head, R.keys);
+                    allChildren = R.map(item => R.prop(getFirstPropertyName(item), item), mapped);;
+                    let names = (x) => R.map(item => {return util.format('%s : %s',item.name, item.uuid)}, x);
+                    let q = helper.generateQuestion('item', 'list', 'Select instance to remove: ', {choices: names(allChildren)});
+                    return prompt(self, q);
+                })
+                .then(answer => {
+                    selectedChildUuid = R.compose(R.last, R.split(' : '))(answer.item);
+                    return rest.getEntityByUuid(selectedGroup.uuid);
+                })
+                .then(entity => {
+                    let removeGrouping = (ent, uuid) => {
+                        let updateList = R.pipe(R.path(['meta','relations','GROUPS','uuids']), R.reject(R.equals(uuid)));
+                        let glist = updateList(ent);
+                        if(R.length(glist) === 0) ent = R.dissocPath(['meta','relations','GROUPS'], ent);
+                        else ent = R.assocPath(['meta','relations','GROUPS','uuids'], glist, ent);
+                        return ent;
+                    };
+                    entity = removeGrouping(entity, selectedChildUuid);
+                    let graph = entity2Graph(entity);
+                    return rest.updateInstance({entities: graph.toList()});
+                })
+                .then(updated => {
+                    console.log(updated);
                     done();
                 })
                 .catch(genericCatchHandler(done));
@@ -193,29 +266,16 @@ module.exports = function(vorpal, options) {
         .action(function(args, done) {
             let self = this;
             let allGroups;
-            /*
-                Creates a view of a node as returned from a cypher query
-                @param node A node received from a cypher query
-             */
-            let nodeLens = (node) => {
-                let mkView = R.pipe(
-                    R.assoc('name', node.children.properties.name),
-                    R.assoc('type', node.children.properties.type),
-                    R.assoc('desc', node.children.properties.desc),
-                    R.assoc('uuid', node.children.properties.uuid));
-                let ret = {};
-                ret[node.children.properties.name] = mkView({});
-                return ret;
-            };
+
 
             getAllGroups()
                 .then(groups => {
+                    if(R.length(groups) <= 0) throw new Error('No groups found');
                     allGroups = groups;
                     let q = helper.generateQuestion('groupName', 'list', 'Select group to view:', {choices: groups});
                     return prompt(self, q);
                 })
                 .then(answer => {
-                    let group = R.find(R.propEq('name', answer.groupName), allGroups);
                     let query = util.format('match (n:Grouping {name: "%s"})-[GROUPS]->(children:Instance) return children',answer.groupName);
                     return cypher(query);
                 })
