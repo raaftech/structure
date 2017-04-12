@@ -1713,7 +1713,7 @@
       "constraints": {
         "GROUPS": [
           {
-            "cardinality": "REQUIRED_TO_MANY",
+            "cardinality": "OPTIONAL_TO_MANY",
             "to": "b1bc963a-19cc-4518-aecb-a35d028c49e3"
           }
         ]
@@ -1955,7 +1955,7 @@
       "constraints": {
         "GROUPS": [
           {
-            "cardinality": "REQUIRED_TO_MANY",
+            "cardinality": "OPTIONAL_TO_MANY",
             "to": "a79ce509-a021-4177-ae61-73abd01fb479"
           }
         ]
@@ -1989,11 +1989,11 @@
       "constraints": {
         "GROUPS": [
           {
-            "cardinality": "REQUIRED_TO_MANY",
+            "cardinality": "OPTIONAL_TO_MANY",
             "to": "ea6a7487-867c-4a74-8849-fb8539b8169f"
           },
           {
-            "cardinality": "REQUIRED_TO_MANY",
+            "cardinality": "OPTIONAL_TO_MANY",
             "to": "f05e325e-1aee-4892-96e4-8bcd6e97c528"
           }
         ]
