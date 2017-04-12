@@ -239,7 +239,7 @@ public class Type extends Node {
         generalizations of other constraints in the set, we don't want those so we remove them.
          */
         Set<Constraint> constraintsToValidateTo = getApplicableConstraints(
-                typeRepository.getInheritedIncomingConstraints(getUuid()), outgoingConstraints);
+                typeRepository.getInheritedOutgoingConstraints(getUuid()), outgoingConstraints);
 
         /*
         There are a few relationships that aren't inter-instance, but between instances and types.

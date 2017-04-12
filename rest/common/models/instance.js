@@ -12,6 +12,13 @@ const instanceAddress = baseAddress(['repository', 'instances']);
 const entityAddress = baseAddress(['manager', 'entitymanager']);
 
 const getResultData = helper.getResultData(['body','result','data']);
+const getErrorData = helper.getResultData(['body','result', 'error']);
+const resultFetcher = R.ifElse(
+        R.compose(R.not, R.isNil, getResultData),
+        getResultData,
+        getErrorData
+);
+
 const createError = (status, msg) => {
     let error = new Error(msg);
     error.status = status;
@@ -93,7 +100,7 @@ module.exports = function (Instance) {
 
     Instance.createInstance = function (args, callback) {
         evBus.sendEvent(entityAddress, 'create', args)
-            .then((result) => callback(null, getResultData(result)))
+            .then((result) => callback(null, resultFetcher(result)))
             .catch((ex) => callback(ex));
     };
 
@@ -106,7 +113,7 @@ module.exports = function (Instance) {
 
     Instance.updateInstance = function (args, callback) {
         evBus.sendEvent(entityAddress, 'update', args)
-            .then((result) => callback(null, getResultData(result)))
+            .then((result) => callback(null, resultFetcher(result)))
             .catch((ex) => callback(ex));
     };
 
@@ -120,7 +127,7 @@ module.exports = function (Instance) {
     Instance.removeInstance = function (uuid, callback) {
         let message = {labels: ['Instance'], uuid: uuid, includeStart: true};
         evBus.sendEvent(entityAddress, 'delete', message)
-            .then((result) => callback(null, getResultData(result)))
+            .then((result) => callback(null, resultFetcher(result)))
             .catch((ex) => callback(ex));
     };
 
