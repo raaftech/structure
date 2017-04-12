@@ -42,7 +42,7 @@
     "public": true
   },
   "StructureUser": {
-    "dataSource": "db",
+    "dataSource": "sqlite3",
     "public": true
   },
   "admin": {
