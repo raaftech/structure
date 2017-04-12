@@ -12,6 +12,12 @@ const entityAddress = baseAddress(['manager', 'entitymanager']);
 const typesAddress = baseAddress(['repository', 'types']);
 
 const getResultData = helper.getResultData(['body','result','data']);
+const getErrorData = helper.getResultData(['body','result', 'error']);
+const resultFetcher = R.ifElse(
+        R.compose(R.not, R.isNil, getResultData),
+        getResultData,
+        getErrorData
+);
 
 // eb.onopen = () => console.log('Connected to: %s', eventBusUrl);
 // eb.onclose = (error) => console.log('Eventbus connection closed: %s', stringify(error));
@@ -20,7 +26,7 @@ module.exports = function (Entity) {
     Entity.fetchByUuid = function (uuid, callback) {
         evBus.sendEvent(entityAddress, 'read',
                 {labels: ['Type'], start: uuid, includeStart: true})
-            .then((result) => callback(null, getResultData(result)))
+            .then((result) => callback(null, resultFetcher(result)))
             .catch((ex) => callback(ex));
     };
 
@@ -88,7 +94,7 @@ module.exports = function (Entity) {
 //INSTRUMENTS
     Entity.getInstruments = function (uuid, callback) {
         evBus.sendEvent(baseAddress(['node', 'component', uuid]), 'getInstruments', {})
-            .then((result) => callback(null, getResultData(result)))
+            .then((result) => callback(null, resultFetcher(result)))
             .catch((ex) => callback(ex));
     };
 
@@ -107,7 +113,7 @@ module.exports = function (Entity) {
         if (instrumentName === 'IpAddressDiscover') args.timeAllocated = 600000;
 
         evBus.sendEvent(baseAddress(['node', 'component', uuid]), 'runInstrument', args)
-            .then((result) => callback(null, getResultData(result)))
+            .then((result) => callback(null, resultFetcher(result)))
             .catch((ex) => callback(ex));
     };
 

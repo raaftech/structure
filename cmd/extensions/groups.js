@@ -124,7 +124,8 @@ module.exports = function(vorpal, options) {
                         entity = R.pipe(
                             R.assoc('type', 'Grouping'),
                             R.assoc('name', args.name),
-                            R.dissocPath(['meta','checksum'])) (entity);
+                            R.dissocPath(['meta','checksum']),
+                            R.dissocPath(['meta','relations'])) (entity);
 
                         let instance = createInstance(baseType, helper.json2Entity(true, entity));
                         return new Structure.SubGraph(instance).toList();
