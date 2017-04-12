@@ -81,6 +81,12 @@ class RestConnector {
                     .then(result => result.json());
     }
 
+    removeGroup(uuid) {
+        let url = util.format('%s/Groups/%s?access_token=%s', getBaseUrl(this.host,this.port), uuid, this.token);
+        return fetch(url,{method: 'DELETE'})
+                    .then(result => result.json());
+    }
+
     runInstrument(instrument, uuid) {
 
     }

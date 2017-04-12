@@ -52,5 +52,9 @@
   "Instance": {
     "dataSource": "db",
     "public": true
+  },
+  "group": {
+    "dataSource": "db",
+    "public": true
   }
 }

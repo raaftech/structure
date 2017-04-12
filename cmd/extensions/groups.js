@@ -163,45 +163,48 @@ module.exports = function(vorpal, options) {
             genericAuthCommandHandler(done, loggedIn, rest.getToken());
         });
 
-    //FIXME should be in ACL
     vorpal.command('group add', 'Add an existing instance to a group hierarchy')
         .action(function(args, done) {
             let self = this;
             let allGroups;
             let selectedGroup;
 
-            getAllGroups()
-                .then(groups => {
-                    if(R.length(groups) <= 0) throw new Error('No groups found');
-                    allGroups = groups;
-                    let q = helper.generateQuestion('group', 'list', 'Select container group: ',{choices: groups});
-                    return prompt(self, q);
-                })
-                .then(answer => {
-                    let e = R.find(R.propEq('name', answer.group),allGroups);
-                    return rest.getEntityByUuid(e.uuid);
-                })
-                .then(theGroup => {
-                    selectedGroup = helper.json2Entity(false, theGroup);
-                    let q = helper.generateQuestion('uuid', 'input', 'Instance uuid: ');
-                    return prompt(self, q);
-                })
-                .then(answer => {
-                    return rest.getEntityByUuid(answer.uuid);
-                })
-                .then(instance => {
-                    let rel = selectedGroup.relationCreate('GROUPS', 'outgoing');
-                    rel.addEntity(helper.json2Entity(false, instance));
-                    let graph = entity2Graph(selectedGroup);
-                    return graph.toList();
-                })
-                .then(entityList => rest.updateInstance({entities: entityList}))
-                .then(created => {
-                    console.log(clc.green('Instance grouping result: '));
-                    console.log(created);
-                    done();
-                })
-                .catch(genericCatchHandler(done));
+            let loggedIn = () =>  {
+                getAllGroups()
+                    .then(groups => {
+                        if(R.length(groups) <= 0) throw new Error('No groups found');
+                        allGroups = groups;
+                        let q = helper.generateQuestion('group', 'list', 'Select container group: ',{choices: groups});
+                        return prompt(self, q);
+                    })
+                    .then(answer => {
+                        let e = R.find(R.propEq('name', answer.group),allGroups);
+                        return rest.getEntityByUuid(e.uuid);
+                    })
+                    .then(theGroup => {
+                        selectedGroup = helper.json2Entity(false, theGroup);
+                        let q = helper.generateQuestion('uuid', 'input', 'Instance uuid: ');
+                        return prompt(self, q);
+                    })
+                    .then(answer => {
+                        return rest.getEntityByUuid(answer.uuid);
+                    })
+                    .then(instance => {
+                        let rel = selectedGroup.relationCreate('GROUPS', 'outgoing');
+                        rel.addEntity(helper.json2Entity(false, instance));
+                        let graph = entity2Graph(selectedGroup);
+                        return graph.toList();
+                    })
+                    .then(entityList => rest.updateInstance({entities: entityList}))
+                    .then(created => {
+                        console.log(clc.green('Instance grouping result: '));
+                        console.log(created);
+                        done();
+                    })
+                    .catch(genericCatchHandler(done));
+            };
+
+            genericAuthCommandHandler(done, loggedIn, rest.getToken());
         });
 
     //Note that this command is not working yet, since structure refuses to update relations
@@ -213,53 +216,78 @@ module.exports = function(vorpal, options) {
             let allChildren;
             let selectedChildUuid;
 
-            getAllGroups()
-                .then(groups => {
-                    if(R.length(groups) <= 0) throw new Error('No groups found');
-                    allGroups = groups;
-                    let q = helper.generateQuestion('groupName', 'list', 'Select container group: ',{choices: groups});
-                    return prompt(self, q);
-                })
-                .then(answer => {
-                    selectedGroup = R.find(R.propEq('name', answer.groupName), allGroups);
-                    let query = util.format('match (n:Grouping {name: "%s"})-[GROUPS]->(children:Instance) return children',answer.groupName);
-                    return cypher(query);
-                })
-                .then(children => {
-                    let mapped = R.map(nodeLens, children);
-                    let getFirstPropertyName = R.compose(R.head, R.keys);
-                    allChildren = R.map(item => R.prop(getFirstPropertyName(item), item), mapped);;
-                    let names = (x) => R.map(item => {return util.format('%s : %s',item.name, item.uuid)}, x);
-                    let q = helper.generateQuestion('item', 'list', 'Select instance to remove: ', {choices: names(allChildren)});
-                    return prompt(self, q);
-                })
-                .then(answer => {
-                    selectedChildUuid = R.compose(R.last, R.split(' : '))(answer.item);
-                    return rest.getEntityByUuid(selectedGroup.uuid);
-                })
-                .then(entity => {
-                    let removeGrouping = (ent, uuid) => {
-                        let updateList = R.pipe(R.path(['meta','relations','GROUPS','uuids']), R.reject(R.equals(uuid)));
-                        let glist = updateList(ent);
-                        if(R.length(glist) === 0) ent = R.dissocPath(['meta','relations','GROUPS'], ent);
-                        else ent = R.assocPath(['meta','relations','GROUPS','uuids'], glist, ent);
-                        return ent;
-                    };
-                    entity = removeGrouping(entity, selectedChildUuid);
-                    let graph = entity2Graph(entity);
-                    return rest.updateInstance({entities: graph.toList()});
-                })
-                .then(updated => {
-                    console.log(updated);
-                    done();
-                })
-                .catch(genericCatchHandler(done));
+            let loggedIn = () => {
+                getAllGroups()
+                    .then(groups => {
+                        if(R.length(groups) <= 0) throw new Error('No groups found');
+                        allGroups = groups;
+                        let q = helper.generateQuestion('groupName', 'list', 'Select container group: ',{choices: groups});
+                        return prompt(self, q);
+                    })
+                    .then(answer => {
+                        selectedGroup = R.find(R.propEq('name', answer.groupName), allGroups);
+                        let query = util.format('match (n:Grouping {name: "%s"})-[GROUPS]->(children:Instance) return children',answer.groupName);
+                        return cypher(query);
+                    })
+                    .then(children => {
+                        let mapped = R.map(nodeLens, children);
+                        let getFirstPropertyName = R.compose(R.head, R.keys);
+                        allChildren = R.map(item => R.prop(getFirstPropertyName(item), item), mapped);
+                        let names = (x) => R.map(item => {return util.format('%s : %s',item.name, item.uuid)}, x);
+                        let q = helper.generateQuestion('item', 'list', 'Select instance to remove: ', {choices: names(allChildren)});
+                        return prompt(self, q);
+                    })
+                    .then(answer => {
+                        selectedChildUuid = R.compose(R.last, R.split(' : '))(answer.item);
+                        return rest.getEntityByUuid(selectedGroup.uuid);
+                    })
+                    .then(entity => {
+                        let removeGrouping = (ent, uuid) => {
+                            let updateList = R.pipe(R.path(['meta','relations','GROUPS','uuids']), R.reject(R.equals(uuid)));
+                            let glist = updateList(ent);
+                            if(R.length(glist) === 0) ent = R.dissocPath(['meta','relations','GROUPS'], ent);
+                            else ent = R.assocPath(['meta','relations','GROUPS','uuids'], glist, ent);
+                            return ent;
+                        };
+                        entity = removeGrouping(entity, selectedChildUuid);
+                        let graph = entity2Graph(entity);
+                        return rest.updateInstance({entities: graph.toList()});
+                    })
+                    .then(updated => {
+                        console.log(updated);
+                        done();
+                    })
+                    .catch(genericCatchHandler(done));
+            };
+
+            genericAuthCommandHandler(done, loggedIn, rest.getToken());
         });
 
-    vorpal.command('group delete <uuid>', 'Delete an existing group')
+    vorpal.command('group remove', 'Delete an existing group')
         .action(function(args, done) {
-            console.log('Not implemented yet');
-            done();
+            let self = this;
+            let allGroups;
+
+            let loggedIn = () => {
+                getAllGroups()
+                    .then(groups => {
+                        if(R.length(groups) <= 0) throw new Error('No groups found');
+                        allGroups = groups;
+                        let q = helper.generateQuestion('group', 'list', 'Select container group: ',{choices: groups});
+                        return prompt(self, q);
+                    })
+                    .then(answer => {
+                        let e = R.find(R.propEq('name', answer.group),allGroups);
+                        return rest.removeGroup(e.uuid);
+                    })
+                    .then(result => {
+                        console.log(result);
+                        done();
+                    })
+                    .catch(genericCatchHandler(done));
+            };
+
+            genericAuthCommandHandler(done, loggedIn, rest.getToken());
         });
 
     vorpal.command('group view', 'View grouping details for a specific grouping')
