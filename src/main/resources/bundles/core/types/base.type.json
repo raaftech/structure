@@ -1713,7 +1713,7 @@
       "constraints": {
         "GROUPS": [
           {
-            "cardinality": "OPTIONAL_TO_MANY",
+            "cardinality": "REQUIRED_TO_MANY",
             "to": "b1bc963a-19cc-4518-aecb-a35d028c49e3"
           }
         ]
@@ -1951,6 +1951,14 @@
             "5f1eb7c5-ec5e-4563-be6a-fc50774fc374"
           ]
         }
+      },
+      "constraints": {
+        "GROUPS": [
+          {
+            "cardinality": "REQUIRED_TO_MANY",
+            "to": "a79ce509-a021-4177-ae61-73abd01fb479"
+          }
+        ]
       }
     },
     "data": {
@@ -1977,6 +1985,18 @@
             "ee92c308-80f4-40b2-af3a-77d26cd99517"
           ]
         }
+      },
+      "constraints": {
+        "GROUPS": [
+          {
+            "cardinality": "REQUIRED_TO_MANY",
+            "to": "ea6a7487-867c-4a74-8849-fb8539b8169f"
+          },
+          {
+            "cardinality": "REQUIRED_TO_MANY",
+            "to": "f05e325e-1aee-4892-96e4-8bcd6e97c528"
+          }
+        ]
       }
     },
     "data": {
