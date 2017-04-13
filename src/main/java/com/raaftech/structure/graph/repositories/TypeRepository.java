@@ -40,9 +40,9 @@ public interface TypeRepository extends GenericRepository<Type> {
 
     // This query finds common protocols between two (groups of) Instances.
     // This can be used to find ways to setup a connection between two computers.
-    @Query ("MATCH (commander {uuid:{commanderUuid}})-[:HAS_COMPONENT*0..]->()-[:INSTANCE_OF]->(client)-[:ISA*0..]->()-[:IMPLEMENTS]->" +
+    @Query ("MATCH (commander {uuid:{commanderUuid}})-[*0..]->(:Instance)-[:INSTANCE_OF]->(client)-[:ISA*0..]->()-[:IMPLEMENTS]->" +
             "protocol" +
-            "<-[:IMPLEMENTS]-()<-[:ISA*0..]-(server)<-[:INSTANCE_OF]-()<-[:HAS_COMPONENT*0..]-(subject{uuid:{subjectUuid}})," +
+            "<-[:IMPLEMENTS]-()<-[:ISA*0..]-(server)<-[:INSTANCE_OF]-(:Instance)<-[*0..]-(subject{uuid:{subjectUuid}})," +
             "(client)-[:ISA*0..]->({name:\"Client\"})," +
             "(server)-[:ISA*0..]->({name:\"Server\"})" +
             "RETURN protocol")

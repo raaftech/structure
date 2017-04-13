@@ -13,7 +13,7 @@ public interface GroupingRepository extends GenericRepository<Grouping> {
     @Query ("MATCH (grouping:Grouping {name:{0}}) RETURN grouping")
     Grouping findOneByName(String name);
 
-    @Query("MATCH (:Grouping{uuid:{uuid}})-[:GROUPS|HAS_COMPONENT*1..]->(m)-[:INSTANCE_OF|ISA*1..]->(:Type{name: {name}})" +
+    @Query("MATCH (:Grouping{uuid:{uuid}})-[*1..]->(m:Instance)-[:INSTANCE_OF|ISA*1..]->(:Type{name: {name}})" +
             "RETURN m")
     Set<Instance> getChildrenOfType(@Param("uuid") String groupUuid, @Param("name") String typeName);
 
