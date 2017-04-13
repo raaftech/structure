@@ -3,7 +3,7 @@
   "name": "stop",
   "desc": "BsdrcInitStop.",
   "meta": {
-    "uuid": "c74b253a-769a-4509-9cdb-697af99d27ec",
+    "uuid": "da028b9a-5c17-4377-8a24-30ece7a54a89",
     "relations": {
       "HAS_INSTRUMENT": {
         "direction": "incoming",

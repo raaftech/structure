@@ -3,6 +3,10 @@
   "$schema": "http://json-schema.org/schema#",
   "type": "object",
   "properties": {
+    "user": {
+      "type": "string",
+      "description": "The user that invoked the action leading to this result."
+    },
     "returnCode": {
       "type": "number",
       "description": "The returncode of a process"
@@ -35,6 +39,17 @@
     },
     "desc": {
       "$ref": "type.schema.json#/properties/desc"
+    },
+    "stateCode": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2
+    },
+    "stateInterpretation": {
+      "type": "string"
+    },
+    "stateDescription": {
+      "type": "string"
     }
   },
   "required": [

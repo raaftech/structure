@@ -1,0 +1,1 @@
+service {{ origin.shortName }} stop

@@ -3,7 +3,7 @@
   "name": "start",
   "desc": "LaunchdStart.",
   "meta": {
-    "uuid": "cdb4bc88-beaa-4f7b-ae27-f9265fdf878f",
+    "uuid": "539dccb8-a850-440c-9358-76f214a927c4",
     "relations": {
       "HAS_INSTRUMENT": {
         "direction": "incoming",
