@@ -50,21 +50,6 @@ function treePrint(verbose, entity) {
     if(!verbose) entity = typecheck(entity);
     return treeify.asTree(entity, true);
 }
-//TODO remove, obsolete
-function consolidateComponents(uuid, componentList) {
-    let result = {
-        uuid: uuid
-    };
-    R.forEach((elem) => {
-        if(elem.name === 'Ipv4Address') {
-            result[elem.name] = R.head(R.match(/([0-9]{1,3}\.?){4}/g, elem.desc));
-        } else {
-            if(elem.desc === 'unknown') result[elem.name] = clc.red(elem.desc);
-            else result[elem.name] = elem.desc;
-        }
-    }, componentList);
-    return result;
-}
 
 function readJsonFile(filePath) {
     return JSON.parse(fs.readFileSync(filePath, {encoding: 'utf8'}));
@@ -100,7 +85,6 @@ module.exports =  {
 	getEventBusAddress: getEventBusAddress,
 	getCommonFields: getCommonFields,
 	stringify: stringify,
-	consolidateComponents: consolidateComponents,
 	readJsonFile: readJsonFile,
     treePrint: R.curry(treePrint),
     json2Entity: R.curry(json2Entity)
