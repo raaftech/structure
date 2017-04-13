@@ -8,6 +8,7 @@ import com.raaftech.structure.base.Configuration;
 import com.raaftech.structure.base.SpringTestConfig;
 import com.raaftech.structure.graph.Node;
 import com.raaftech.structure.graph.repositories.NodeRepository;
+import com.raaftech.structure.helper.loader.BundleLoader;
 import com.raaftech.structure.helper.loader.NaiveSorter;
 import com.raaftech.structure.next.Entity;
 import org.junit.Before;
@@ -47,17 +48,8 @@ public class EntityManagerTest {
             Transaction tx = graphDatabase.beginTx();
             final String testBundle = "src/test/resources/bundles/core/";
             Configuration.setSchemaNamespace(FileSystems.getDefault().getPath(testBundle).toUri().resolve("types/"));
-            NaiveSorter naiveSorter = new NaiveSorter(testBundle);
-            naiveSorter.getUpdateList(naiveSorter.sortIt(naiveSorter.readAllJson())).stream()
-                    .map(node -> {
-                        try {
-                            return mapper.readValue(node.toString(), Entity.class);
-                        } catch (IOException e) {
-                            throw new RuntimeException("Error while creating types");
-                        }
-                    })
-                    .filter(node -> node != null)
-                    .forEach(Entity::toGraph);
+            BundleLoader bundleLoader = new BundleLoader(testBundle);
+            bundleLoader.load();
 
             tx.success();
             tx.close();
@@ -85,7 +77,7 @@ public class EntityManagerTest {
 
         Node linuxType = nodeRepository.findByUuid("a5613527-2f64-4481-83f2-80b0cb427e28");
         foundNodes = entityManager.labelBasedTraversal(ImmutableSet.of("Type"), linuxType, false);
-        assertEquals(5, foundNodes.size());
+        assertEquals(6, foundNodes.size());
     }
 
     @Test
@@ -300,18 +292,7 @@ public class EntityManagerTest {
         response = entityManager.delete().exec(message);
         result = (ObjectNode) response.get("result");
 
-        /*
-        Alright, so we shouldn't get an error normally, but I've been fighting spring's transaction management
-        for about four hours yesterday and today, and I cannot seem to get it working in any way. I tried a
-        @TransactionConfiguration with rollback off default, which didn't work, i tried manually creating a
-        transaction, which didn't work. I browsed google, browsed the spring forums, no luck with any of the things I
-        found. Frankly, I want to continue working on something else right now. So I'll do this:
-        If we have an error in the result, and the error message is about the transaction being marked for rollback, we
-        know it tried to call delete. It's ugly... I guess spring won again.
-         */
         // error should now be absent
-        assertTrue(result.has("error"));
-        assertEquals("Error while deleting node \"d182e241-af01-4837-9913-2e6c1afa047c\", exception: The transaction " +
-                "is marked for rollback only.", result.get("error").asText());
+        assertTrue(!result.has("error"));
     }
 }
