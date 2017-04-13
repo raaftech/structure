@@ -2,6 +2,7 @@ package com.raaftech.structure.graph;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.collect.ImmutableSet;
 import com.raaftech.structure.base.SpringTestConfig;
 import com.raaftech.structure.exceptions.EntityDeserializationException;
 import com.raaftech.structure.exceptions.JsonValidationException;
@@ -91,7 +92,7 @@ public class EntityTest {
     }
 
     private String createRelationSection() {
-        return "{}";
+        return "{\"INSTANCE_OF\":{\"direction\":\"outgoing\", \"uuids\": [ \"" + UUID.randomUUID().toString() + "\" ]}}";
     }
 
     @Test
@@ -100,14 +101,16 @@ public class EntityTest {
     public void testSimpleNodePersistence() {
         // create a new entity with name "generation 1" and labels Node and _Node
         Entity entity = new Entity();
-        entity.setName("generation 1");
+        entity.setName("generation_1");
         entity.setUuid(UUID.randomUUID().toString());
-        entity.setType("Component");
+        entity.setType("Type");
+        entity.setRelations(
+                ImmutableSet.of(Triple.of("ISA", "outgoing", ImmutableSet.of(entity.getUuid()))));
         entity.toGraph();
 
         // make sure we can retrieve the entity from the database, and it's
         // equal to 'entity'
-        Set<Node> set1 = nodeRepository.findByName("generation 1");
+        Set<Node> set1 = nodeRepository.findByName("generation_1");
         assertEquals(1, set1.size());
         Node retrievedNode = set1.iterator().next();
 //        assertEquals(entity, retrievedNode);
@@ -130,7 +133,7 @@ public class EntityTest {
 
         // make sure entity has only two labels, Node and _Node
         org.neo4j.graphdb.Node node = entity.getPersistentState();
-        assertTrue(allLabelsMatch(node.getLabels(), "Node", "Instance", "_Component", "Component"));
+        assertTrue(allLabelsMatch(node.getLabels(), "Node", "Type", "_Type", "type:generation_1"));
     }
 
     /**
