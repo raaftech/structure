@@ -3,7 +3,7 @@
   "name": "DosScriptable",
   "desc": "DosScriptable.",
   "meta": {
-    "uuid": "47761d12-8ad1-4be4-814f-d61b72f29aeb",
+    "uuid": "431d4fbc-4ff5-47ad-b0a0-eac927d84cc4",
     "relations": {
       "HAS_INSTRUMENT": {
         "direction": "incoming",

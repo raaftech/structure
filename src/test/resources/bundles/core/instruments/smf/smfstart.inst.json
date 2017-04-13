@@ -3,7 +3,7 @@
   "name": "start",
   "desc": "SmfStart.",
   "meta": {
-    "uuid": "4e53e969-431a-4551-a8f3-df5d471661ae",
+    "uuid": "9ee725b4-377b-4214-843a-65e3a838a5de",
     "relations": {
       "HAS_INSTRUMENT": {
         "direction": "incoming",

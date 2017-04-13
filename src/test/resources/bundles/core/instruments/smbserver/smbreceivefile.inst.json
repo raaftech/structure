@@ -3,7 +3,7 @@
   "name": "SmbReceiveFile",
   "desc": "A marker handler that marks SmbServer with ReceiveFile..",
   "meta": {
-    "uuid": "414c9c6a-7956-4b4f-9e7c-7dd23b3f342f",
+    "uuid": "66c3db12-f12e-40e8-bb21-348447fe856b",
     "relations": {
       "HAS_INSTRUMENT": {
         "direction": "incoming",

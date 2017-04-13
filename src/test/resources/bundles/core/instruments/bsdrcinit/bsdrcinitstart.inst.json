@@ -3,7 +3,7 @@
   "name": "start",
   "desc": "BsdrcInitStart.",
   "meta": {
-    "uuid": "8e2b761a-77d0-4546-9e3b-0ac7f1fa8cb3",
+    "uuid": "9e45d1c7-2a55-412e-a475-db6e5b18cff8",
     "relations": {
       "HAS_INSTRUMENT": {
         "direction": "incoming",

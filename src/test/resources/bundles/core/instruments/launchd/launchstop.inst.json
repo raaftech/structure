@@ -3,7 +3,7 @@
   "name": "stop",
   "desc": "LaunchdStop.",
   "meta": {
-    "uuid": "208b0f3a-361c-4d28-82ec-1a5bb1038817",
+    "uuid": "c0aa07d3-1e31-43d2-8933-62b19cd2c93b",
     "relations": {
       "HAS_INSTRUMENT": {
         "direction": "incoming",

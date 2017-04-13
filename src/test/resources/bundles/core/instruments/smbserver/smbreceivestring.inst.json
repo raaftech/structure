@@ -3,7 +3,7 @@
   "name": "SmbReceiveString",
   "desc": "A marker handler that marks SmbServer with ReceiveString..",
   "meta": {
-    "uuid": "ce990f02-66bd-4ca3-b8f6-a172430741e2",
+    "uuid": "47d23533-6385-4c6b-95f1-458eb7d4f093",
     "relations": {
       "HAS_INSTRUMENT": {
         "direction": "incoming",

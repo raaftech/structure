@@ -3,7 +3,7 @@
   "name": "OpenSshClientSendString",
   "desc": "The handler that provides the SendString capability to the OpenSSH client..",
   "meta": {
-    "uuid": "0a006f6c-f96f-4136-818f-cee4949e214d",
+    "uuid": "f3fdfd14-2486-41d8-9353-1a341d220e9c",
     "relations": {
       "HAS_INSTRUMENT": {
         "direction": "incoming",

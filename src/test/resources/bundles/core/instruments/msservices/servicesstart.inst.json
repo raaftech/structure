@@ -3,7 +3,7 @@
   "name": "start",
   "desc": "ServicesStart.",
   "meta": {
-    "uuid": "9e1c1bc5-aeea-4434-8ebc-270ed16f4dc8",
+    "uuid": "7e4ebe1a-c2ef-40c5-b866-734d8ffd164c",
     "relations": {
       "HAS_INSTRUMENT": {
         "direction": "incoming",

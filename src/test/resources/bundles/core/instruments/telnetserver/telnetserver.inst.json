@@ -3,7 +3,7 @@
   "name": "TelnetServerAccessible",
   "desc": "A marker handler that marks TelnetServer as accessable..",
   "meta": {
-    "uuid": "5caea092-db6c-44cd-884d-1bdba88f75cb",
+    "uuid": "874600a0-65c7-40a7-adcf-982e5469122d",
     "relations": {
       "HAS_INSTRUMENT": {
         "direction": "incoming",

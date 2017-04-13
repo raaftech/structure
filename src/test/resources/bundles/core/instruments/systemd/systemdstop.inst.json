@@ -3,7 +3,7 @@
   "name": "stop",
   "desc": "SystemdStop.",
   "meta": {
-    "uuid": "14944171-6b24-4fc3-91a0-3845bdba2233",
+    "uuid": "32c96242-0635-4a1e-a070-30aca7c5a53c",
     "relations": {
       "HAS_INSTRUMENT": {
         "direction": "incoming",
