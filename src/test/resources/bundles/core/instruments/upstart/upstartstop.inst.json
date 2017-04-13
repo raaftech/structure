@@ -3,7 +3,7 @@
   "name": "stop",
   "desc": "UpstartStop.",
   "meta": {
-    "uuid": "00ef3f8a-0075-4a6c-b95f-e192ba080122",
+    "uuid": "2b138899-51ed-4c72-bef8-c08aa5df8b12",
     "relations": {
       "HAS_INSTRUMENT": {
         "direction": "incoming",

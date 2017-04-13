@@ -3,6 +3,7 @@ package com.raaftech.structure.helper.loader;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
+import com.raaftech.structure.base.Configuration;
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.graph.Constraint;
 import com.raaftech.structure.graph.Type;
@@ -32,12 +33,21 @@ public class BundleLoader {
     private static final Neo4jTemplate neo4jTemplate = Context.getNeo4jTemplate();
 
     /**
-     * Create a new BundleLoader.
+     * Create a new BundleLoader using the configured bundle path.
      * @throws Exception Exceptions may occur when the list of entities is unsortable
      * because of cyclic dependencies.
      */
     public BundleLoader() throws Exception {
-        NaiveSorter naiveSorter = new NaiveSorter();
+        this(Configuration.getBundlePath());
+    }
+
+    /**
+     * Create a new BundleLoader.
+     * @throws Exception Exceptions may occur when the list of entities is unsortable
+     * because of cyclic dependencies.
+     */
+    public BundleLoader(String bundlePath) throws Exception {
+        NaiveSorter naiveSorter = new NaiveSorter(bundlePath);
         sortedNodes = naiveSorter.getUpdateList(naiveSorter.sortIt(naiveSorter.readAllJson()));
 
         // Find all the type entities

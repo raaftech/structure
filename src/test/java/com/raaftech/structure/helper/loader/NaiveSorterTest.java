@@ -7,6 +7,7 @@ import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
 import java.util.Objects;
+import java.util.UUID;
 
 import static org.junit.Assert.*;
 
@@ -21,6 +22,8 @@ public class NaiveSorterTest {
          calculation should return the same checksums for both objects.
           */
 
+        String instanceOf = UUID.randomUUID().toString();
+
         ObjectNode a = mapper.createObjectNode()
                 .put("name", "Foo")
                 .put("type", "Component")
@@ -28,7 +31,9 @@ public class NaiveSorterTest {
         ObjectNode meta = a
                 .putObject("meta")
                 .put("uuid", "abba2750-7e05-4e70-8b36-1a56665dccd6");
-        meta.putObject("relations");
+        ObjectNode rela = meta.putObject("relations").putObject("INSTANCE_OF");
+        rela.put("direction", "outgoing");
+        rela.putArray("uuids").add(instanceOf);
 
         ObjectNode b = mapper.createObjectNode()
                 .put("type", "Component")
@@ -37,7 +42,9 @@ public class NaiveSorterTest {
         ObjectNode metb = b
                 .putObject("meta")
                 .put("uuid", "abba2750-7e05-4e70-8b36-1a56665dccd6");
-        metb.putObject("relations");
+        ObjectNode relb = metb.putObject("relations").putObject("INSTANCE_OF");
+        relb.put("direction", "outgoing");
+        relb.putArray("uuids").add(instanceOf);
         System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(b));
 
         // our old way:

@@ -5,6 +5,7 @@ import com.raaftech.structure.base.SpringTestConfig;
 import com.raaftech.structure.graph.repositories.NodeRepository;
 import com.raaftech.structure.helper.JsonHelper;
 import com.raaftech.structure.helper.Triple;
+import com.raaftech.structure.helper.loader.BundleLoader;
 import com.raaftech.structure.helper.loader.NaiveSorter;
 import com.raaftech.structure.next.Entity;
 import org.junit.Before;
@@ -39,19 +40,8 @@ public class NodeSerializerTest {
     public void setUpDatabase() throws Exception {
         if (!databaseCreated) {
             final String raafBundle = "src/test/resources/bundles/core/";
-            NaiveSorter naiveSorter = new NaiveSorter(raafBundle);
-
-            naiveSorter.getUpdateList(naiveSorter.sortIt(naiveSorter.readAllJson())).stream()
-                    .map(node -> {
-                        try {
-                            return mapper.readValue(node.toString(), Entity.class);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        return null;
-                    })
-                    .filter(node -> node != null)
-                    .forEach(Entity::toGraph);
+            BundleLoader bundleLoader = new BundleLoader(raafBundle);
+            bundleLoader.load();
             databaseCreated = true;
         }
     }

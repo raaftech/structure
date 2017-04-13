@@ -3,7 +3,7 @@
   "name": "KshScriptable",
   "desc": "KshScriptable.",
   "meta": {
-    "uuid": "7482db3b-1772-4790-84fd-2861bb2c7020",
+    "uuid": "74a942c1-0f72-411f-99c4-04c3117a9e92",
     "relations": {
       "HAS_INSTRUMENT": {
         "direction": "incoming",

@@ -3,7 +3,7 @@
   "name": "WinexeSendString",
   "desc": "The handler that provides the SendString capability to winese..",
   "meta": {
-    "uuid": "09a2938e-380d-4b2b-b6f6-5378de74d3fd",
+    "uuid": "311a7965-6b3b-4753-ac35-fe9a5d715923",
     "relations": {
       "HAS_INSTRUMENT": {
         "direction": "incoming",
