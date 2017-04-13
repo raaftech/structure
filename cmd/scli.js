@@ -104,6 +104,17 @@ function toRoot(uuid, childNodes) {
     });
 }
 
+function getDomainClass(uuid) {
+    return new Promise((resolve, reject) => {
+        toRoot(uuid, {})
+            .then(parents => {
+                let fn = R.pipe(R.prop('Type'),R.keys,R.head);
+                resolve(fn(parents));
+            })
+            .catch(ex => reject(ex));
+    });
+}
+
 function payloadDir() {
     return path.join(__dirname, 'payloads');
 }
@@ -166,16 +177,22 @@ vorpal.command('instanceof <typeName>', 'Create an instance of a Type')
     .action(function(args, done) {
         const self = this;
         let baseType;
+        let buffer;
 
         rest.getEntityByName(args.typeName)
             .then(entity => {
                 baseType = helper.json2Entity(false, entity);
-                entity = R.pipe(
-                    R.assoc('type', 'Grouping'),
-                    R.assoc('name', entity.name),
+                buffer = entity;
+                return getDomainClass(baseType.meta.uuid);
+            })
+            .then(domainClass => {
+                console.log('Resolved domain class: '+domainClass);
+                buffer = R.pipe(
+                    R.assoc('type', domainClass),
+                    R.assoc('name', buffer.name),
                     R.dissocPath(['meta','checksum']),
-                    R.dissocPath(['meta','relations'])) (entity);
-                return entity;
+                    R.dissocPath(['meta','relations'])) (buffer);
+                return buffer;
             })
             .then(instance => {
                 validator.getSchema(args.typeName)
