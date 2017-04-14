@@ -8,12 +8,16 @@ import com.raaftech.structure.base.Context;
 import com.raaftech.structure.exceptions.IllegalEntityType;
 import com.raaftech.structure.graph.Constraint;
 import com.raaftech.structure.graph.Type;
+import com.raaftech.structure.graph.repositories.InstanceRepository;
 import com.raaftech.structure.graph.repositories.NodeRepository;
 import com.raaftech.structure.graph.repositories.TypeRepository;
 import com.raaftech.structure.helper.Triple;
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.tuple.Pair;
-import org.neo4j.graphdb.*;
+import org.neo4j.graphdb.Direction;
+import org.neo4j.graphdb.DynamicLabel;
+import org.neo4j.graphdb.Node;
+import org.neo4j.graphdb.RelationshipType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.annotation.Transient;
@@ -43,6 +47,7 @@ public class Entity {
 
 	/* Entity repository. Used for querying the graph. */
 	private NodeRepository nodeRepository = Context.getNodeRepository();
+    private InstanceRepository instanceRepository = Context.getInstanceRepository();
     private TypeRepository typeRepository = Context.getTypeRepository();
     private Neo4jTemplate neo4jTemplate;
 
@@ -339,14 +344,38 @@ public class Entity {
     private void persistTypeLabels(Node node) {
         /* Add labels as Neo4j labels. Node will be null if entity is not persisted. */
         if (node != null && type !=null && uuid != null) {
+            final Set<String> labels;
             if ("Type".equals(type)) {
-                nodeRepository.getTypeHierarchyForTypeUuid(uuid).stream()
-                        .map(s -> "type:".concat(s))
-                        .forEach(label -> node.addLabel(DynamicLabel.label(label)));
+                labels = nodeRepository.getTypeHierarchyForTypeUuid(uuid);
+            } else {
+                labels = nodeRepository.getTypeHierarchyForTypeUuid(getInstanceOf().getUuid());
             }
+            labels.stream()
+                    .map(s -> "type:".concat(s))
+                    .forEach(label -> node.addLabel(DynamicLabel.label(label)));
         } else {
             log.error("Failed to persist labels for entity \"{}\". Are you sure the entity is in a persisted state?", name);
         }
+    }
+
+    /**
+     * Called on instance entities to get the Type object the entity is an instance of.
+     * @return The found type.
+     */
+    private Type getInstanceOf() {
+        if ("Type".equals(type)) {
+            throw new IllegalArgumentException("Cannot get the type of a type entity.");
+        }
+        Optional<String> instanceOfUuid = getRelations().stream()
+                .filter(triple -> "INSTANCE_OF".equals(triple.getLeft()))
+                .map(Triple::getRight)
+                .flatMap(Set::stream)
+                .findFirst();
+        if (!instanceOfUuid.isPresent()) {
+            throw new IllegalStateException("Instance " + getUuid() + " has no INSTANCE_OF relationship");
+        }
+
+        return typeRepository.findByUuid(instanceOfUuid.get());
     }
 
     private void persistRelations(Node node) {
