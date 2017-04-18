@@ -127,6 +127,7 @@ module.exports = function(vorpal, options) {
                                 return output;
                             };
 
+                            console.log(clc.green('(Input a space if you wish to override default values)'));
                             self.prompt(createQuestions(typeSchema), function(res) {
                                 res = sanitizeAnswer(typeSchema.required, res);
                                 if(R.isNil(instance.data)) instance.data = res;
