@@ -8,7 +8,46 @@ const treeify = require('./treeify');
 const uuidV4 = require('uuid');
 const Structure = require('./subgraph');
 
+/*
+    Wrapper function to handle calls to endpoints that have an ACL set.
+    @param done The done() function from vorpal
+    @param loggedInFn The function to run if logged in
+    @param token The token for the REST service
+ */
+const genericAuthCommandHandler = R.curry((done, loggedInFn, token) => {
+    let loggedOut = () => { console.log('Please login first.'); done()};
+    let handler = R.ifElse(R.isNil,loggedOut, loggedInFn);
+    handler(token);
+});
+/*
+    Wrapper function to generically handle promise catch entries
+    @param done The done() function from vorpal
+    @param error The error object caught in the catch block
+ */
+const genericCatchHandler = R.curry((done, error) => {
+    console.log(error);
+    done();
+});
 const notNil = R.compose(R.not, R.isNil);
+const entity2Graph = (entity) => {
+    let container = {};
+    container[entity.meta.uuid] = entity;
+    let graph = new Structure.SubGraph(container);
+    return graph;
+};
+/*
+    Factory function for creating an instance based on a type
+    @param baseTypeEntity The Entity object to base the instance on
+    @param instanceEntity The instance object to link to the baseTypeEntity
+    @returns A SubGraph compatible object representation of the new instance
+ */
+const createInstance = (baseTypeEntity, instanceEntity) => {
+    let rel = instanceEntity.relationCreate('INSTANCE_OF', 'outgoing');
+    rel.addEntity(baseTypeEntity);
+    let container = {};
+    container[instanceEntity.meta.uuid] = instanceEntity;
+    return container;
+};
 
 /*
     Generate a Inquirer compatible question to prompt the user with
@@ -87,5 +126,10 @@ module.exports =  {
 	stringify: stringify,
 	readJsonFile: readJsonFile,
     treePrint: R.curry(treePrint),
-    json2Entity: R.curry(json2Entity)
+    json2Entity: R.curry(json2Entity),
+    genericAuthCommandHandler: genericAuthCommandHandler,
+    genericCatchHandler: genericCatchHandler,
+    notNil: notNil,
+    entity2Graph: entity2Graph,
+    createInstance: createInstance
 };

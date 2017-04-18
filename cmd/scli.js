@@ -19,30 +19,6 @@ const structureExt = require('./extensions/structure');
 const groupExt = require('./extensions/groups');
 const instanceExt = require('./extensions/instance');
 
-const genericAuthCommandHandler = R.curry((done, loggedInFn, token) => {
-    let loggedOut = () => { console.log('Please login first.'); done()};
-    let handler = R.ifElse(R.isNil,loggedOut, loggedInFn);
-    handler(token);
-});
-const genericCatchHandler = R.curry((done, error) => {
-    console.log(error);
-    done();
-});
-const notNil = R.compose(R.not, R.isNil);
-const entity2Graph = (entity) => {
-    let container = {};
-    container[entity.meta.uuid] = entity;
-    let graph = new Structure.SubGraph(container);
-    return graph;
-};
-const createInstance = (baseTypeEntity, instanceEntity) => {
-    let rel = instanceEntity.relationCreate('INSTANCE_OF', 'outgoing');
-    rel.addEntity(baseTypeEntity);
-    let container = {};
-    container[instanceEntity.meta.uuid] = instanceEntity;
-    return container;
-};
-
 const answerCache = new SimpleCache();
 let rest;
 let validator;
@@ -165,7 +141,7 @@ vorpal.command('find <name>', 'Find a specified node in structure')
                         done();
                     });
                 })
-                .catch(genericCatchHandler(done));
+                .catch(helper.genericCatchHandler(done));
         };
 
         //Function that determines which rest call to use based on the given arguments and options
@@ -190,7 +166,7 @@ vorpal.command('dig', 'Get the child elements for a type-node')
                     }, children);
                     done();
                 })
-                .catch(genericCatchHandler(done));
+                .catch(helper.genericCatchHandler(done));
         } else {
             getChildren(args.options.uuid)
                 .then(children => {
@@ -199,7 +175,7 @@ vorpal.command('dig', 'Get the child elements for a type-node')
                     }, children);
                     done();
                 })
-                .catch(genericCatchHandler(done))
+                .catch(helper.genericCatchHandler(done))
         }
     });
 
@@ -228,7 +204,7 @@ vorpal.command('tree <name>', 'Show a relation tree for the requested node')
                     self.log(treeify.asTree(parents,true));
                     done();
                 })
-                .catch(genericCatchHandler(done));
+                .catch(helper.genericCatchHandler(done));
         };
 
         //Function that determines which rest call to use based on the given arguments and options
@@ -257,9 +233,9 @@ vorpal.command('discover <cidr>', 'Discover items in the network')
                 return rest.runInstrument('IpAddressDiscover', instanceUuid);
             })
             .then(result => done())
-            .catch(genericCatchHandler(done));
+            .catch(helper.genericCatchHandler(done));
 
-        genericAuthCommandHandler(done, loggedIn, rest.getToken());
+        helper.genericAuthCommandHandler(done, loggedIn, rest.getToken());
     });
 
 vorpal.command('query', 'Place arbitrary requests on the event bus')
@@ -281,9 +257,9 @@ vorpal.command('query', 'Place arbitrary requests on the event bus')
                         console.log(JSON.stringify(data));
                         done();
                     })
-                    .catch(genericCatchHandler(done));
+                    .catch(helper.genericCatchHandler(done));
             };
 
-            genericAuthCommandHandler(done, loggedIn, rest.getToken());
+            helper.genericAuthCommandHandler(done, loggedIn, rest.getToken());
         });
     });
