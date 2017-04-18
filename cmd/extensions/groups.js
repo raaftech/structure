@@ -13,39 +13,6 @@ const neoUrl = R.defaultTo('http://localhost:7474', process.env.NEO4JURL);
 const db = new neo4j.GraphDatabase(neoUrl);
 
 /*
-    Wrapper function to handle calls to endpoints that have an ACL set.
-    @param done The done() function from vorpal
-    @param loggedInFn The function to run if logged in
-    @param token The token for the REST service
- */
-const genericAuthCommandHandler = R.curry((done, loggedInFn, token) => {
-    let loggedOut = () => { console.log('Please login first.'); done()};
-    let handler = R.ifElse(R.isNil,loggedOut, loggedInFn);
-    handler(token);
-});
-/*
-    Wrapper function to generically handle promise catch entries
-    @param done The done() function from vorpal
-    @param error The error object caught in the catch block
- */
-const genericCatchHandler = R.curry((done, error) => {
-    console.log(error);
-    done();
-});
-/*
-    Factory function for creating an instance based on a type
-    @param baseTypeEntity The Entity object to base the instance on
-    @param instanceEntity The instance object to link to the baseTypeEntity
-    @returns A SubGraph compatible object representation of the new instance
- */
-const createInstance = (baseTypeEntity, instanceEntity) => {
-    let rel = instanceEntity.relationCreate('INSTANCE_OF', 'outgoing');
-    rel.addEntity(baseTypeEntity);
-    let container = {};
-    container[instanceEntity.meta.uuid] = instanceEntity;
-    return container;
-};
-/*
     Wrapper function that makes direct cypher queries to neo4j possible in a
     Promise based way
     @param query The cypher query
@@ -125,13 +92,6 @@ const nodeLens = (node) => {
     return ret;
 };
 
-const entity2Graph = (entity) => {
-    let container = {};
-    container[entity.meta.uuid] = entity;
-    let graph = new Structure.SubGraph(container);
-    return graph;
-};
-
 module.exports = function(vorpal, options) {
     let rest = options;
 
@@ -149,7 +109,7 @@ module.exports = function(vorpal, options) {
                             R.dissocPath(['meta','checksum']),
                             R.dissocPath(['meta','relations'])) (entity);
 
-                        let instance = createInstance(baseType, helper.json2Entity(true, entity));
+                        let instance = helper.createInstance(baseType, helper.json2Entity(true, entity));
                         return new Structure.SubGraph(instance).toList();
                     })
                     .then(entityList => rest.createInstance({entities: entityList}))
@@ -158,10 +118,10 @@ module.exports = function(vorpal, options) {
                         console.log(created);
                         done();
                     })
-                    .catch(genericCatchHandler(done));
+                    .catch(helper.genericCatchHandler(done));
             };
 
-            genericAuthCommandHandler(done, loggedIn, rest.getToken());
+            helper.genericAuthCommandHandler(done, loggedIn, rest.getToken());
         });
 
     vorpal.command('group add', 'Add an existing instance to a group hierarchy')
@@ -193,7 +153,7 @@ module.exports = function(vorpal, options) {
                     .then(instance => {
                         let rel = selectedGroup.relationCreate('GROUPS', 'outgoing');
                         rel.addEntity(helper.json2Entity(false, instance));
-                        let graph = entity2Graph(selectedGroup);
+                        let graph = helper.entity2Graph(selectedGroup);
                         return graph.toList();
                     })
                     .then(entityList => rest.updateInstance({entities: entityList}))
@@ -202,10 +162,10 @@ module.exports = function(vorpal, options) {
                         console.log(created);
                         done();
                     })
-                    .catch(genericCatchHandler(done));
+                    .catch(helper.genericCatchHandler(done));
             };
 
-            genericAuthCommandHandler(done, loggedIn, rest.getToken());
+            helper.genericAuthCommandHandler(done, loggedIn, rest.getToken());
         });
 
     //Note that this command is not working yet, since structure refuses to update relations
@@ -231,6 +191,7 @@ module.exports = function(vorpal, options) {
                         return cypher(query);
                     })
                     .then(children => {
+                        if(R.length(children) <= 0) throw new Error('No child instances found');
                         let mapped = R.map(nodeLens, children);
                         let getFirstPropertyName = R.compose(R.head, R.keys);
                         allChildren = R.map(item => R.prop(getFirstPropertyName(item), item), mapped);
@@ -251,17 +212,17 @@ module.exports = function(vorpal, options) {
                             return ent;
                         };
                         entity = removeGrouping(entity, selectedChildUuid);
-                        let graph = entity2Graph(entity);
+                        let graph = helper.entity2Graph(entity);
                         return rest.updateInstance({entities: graph.toList()});
                     })
                     .then(updated => {
                         console.log(updated);
                         done();
                     })
-                    .catch(genericCatchHandler(done));
+                    .catch(helper.genericCatchHandler(done));
             };
 
-            genericAuthCommandHandler(done, loggedIn, rest.getToken());
+            helper.genericAuthCommandHandler(done, loggedIn, rest.getToken());
         });
 
     vorpal.command('group remove', 'Delete an existing group')
@@ -285,10 +246,10 @@ module.exports = function(vorpal, options) {
                         console.log(result);
                         done();
                     })
-                    .catch(genericCatchHandler(done));
+                    .catch(helper.genericCatchHandler(done));
             };
 
-            genericAuthCommandHandler(done, loggedIn, rest.getToken());
+            helper.genericAuthCommandHandler(done, loggedIn, rest.getToken());
         });
 
     vorpal.command('group view', 'View grouping details for a specific grouping')
@@ -313,6 +274,6 @@ module.exports = function(vorpal, options) {
                     console.log(helper.treePrint(false, mapped));
                     done();
                 })
-                .catch(genericCatchHandler(done));
+                .catch(helper.genericCatchHandler(done));
         });
 };

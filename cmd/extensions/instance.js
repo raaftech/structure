@@ -9,30 +9,6 @@ const clc = require('cli-color');
 const helper = require(path.join(__dirname, '..','helper'));
 const Structure = require(path.join(__dirname, '..', 'subgraph'));
 
-const genericAuthCommandHandler = R.curry((done, loggedInFn, token) => {
-    let loggedOut = () => { console.log('Please login first.'); done()};
-    let handler = R.ifElse(R.isNil,loggedOut, loggedInFn);
-    handler(token);
-});
-const genericCatchHandler = R.curry((done, error) => {
-    console.log(error);
-    done();
-});
-const notNil = R.compose(R.not, R.isNil);
-const entity2Graph = (entity) => {
-    let container = {};
-    container[entity.meta.uuid] = entity;
-    let graph = new Structure.SubGraph(container);
-    return graph;
-};
-const createInstance = (baseTypeEntity, instanceEntity) => {
-    let rel = instanceEntity.relationCreate('INSTANCE_OF', 'outgoing');
-    rel.addEntity(baseTypeEntity);
-    let container = {};
-    container[instanceEntity.meta.uuid] = instanceEntity;
-    return container;
-};
-
 module.exports = function(vorpal, options) {
     const toRoot = (uuid, childNodes) => {
          return new Promise((resolve, reject) => {
@@ -72,7 +48,7 @@ module.exports = function(vorpal, options) {
         .option('-v, --verbose', 'Be verbose in printing the results')
         .action(function(args, done) {
             //Function that checks if a property is not nil in the given object.options object
-            let fn = (prop, obj) => R.pipe(R.path(['options', prop]), notNil);
+            let fn = (prop, obj) => R.pipe(R.path(['options', prop]), helper.notNil);
             let predicate = R.cond([
                 [fn('last'), (x) => rest.lastInstances(R.path(['options','last'], x))],
                 [fn('uuid'), (x) => rest.getInstanceByUuid(R.path(['options','uuid'], x))],
@@ -86,7 +62,7 @@ module.exports = function(vorpal, options) {
                 R.pipe(R.ifElse(R.is(Object), helper.treePrint(args.options.verbose), R.identity),
                    x => console.log(x),
                    x => done()) (instance);
-            }).catch(genericCatchHandler(done));
+            }).catch(helper.genericCatchHandler(done));
         });
 
     vorpal.command('instanceof <typeName>', 'Create an instance of a Type')
@@ -119,8 +95,8 @@ module.exports = function(vorpal, options) {
                                 return R.map(prop => {
                                     let property = R.path(['properties', prop], schema);
                                     let pre = util.format('[%s]\n',clc.green(prop));
-                                    if(notNil(property.type)) pre += util.format('\ttype: %s\n', clc.red(property.type));
-                                    if(notNil(property.description)) pre += util.format('\tdescription: %s\n', property.description);
+                                    if(helper.notNil(property.type)) pre += util.format('\ttype: %s\n', clc.red(property.type));
+                                    if(helper.notNil(property.description)) pre += util.format('\tdescription: %s\n', property.description);
                                     pre += 'Value: '
 
                                     let valueFetcher = R.cond([
@@ -164,7 +140,7 @@ module.exports = function(vorpal, options) {
                                             instance.name = instance.data.name;
                                             instance.desc = instance.data.desc;
 
-                                            instance = createInstance(baseType, helper.json2Entity(true, instance));
+                                            instance = helper.createInstance(baseType, helper.json2Entity(true, instance));
                                             let graph = new Structure.SubGraph(instance).toList();
                                             console.log(JSON.stringify(graph, undefined, 2));
                                             let loggedIn = () => {
@@ -177,7 +153,7 @@ module.exports = function(vorpal, options) {
                                                     })
                                                     .catch(ex => {console.log(ex); done();})
                                             };
-                                            genericAuthCommandHandler(done, loggedIn, rest.getToken());
+                                            helper.genericAuthCommandHandler(done, loggedIn, rest.getToken());
                                         } else {
                                             console.log(vres);
                                             done();
@@ -186,7 +162,7 @@ module.exports = function(vorpal, options) {
                             });
                         });
                 })
-                .catch(genericCatchHandler(done));
+                .catch(helper.genericCatchHandler(done));
         })
 
     vorpal.command('edit <uuid>', 'Edit the properties of an instance')
@@ -204,8 +180,8 @@ module.exports = function(vorpal, options) {
                                 return R.map(prop => {
                                     let property = R.path(['properties', prop], schema);
                                     let pre = util.format('[%s]\n',clc.green(prop));
-                                    if(notNil(property.type)) pre += util.format('\ttype: %s\n', clc.red(property.type));
-                                    if(notNil(property.description)) pre += util.format('\tdescription: %s\n', property.description);
+                                    if(helper.notNil(property.type)) pre += util.format('\ttype: %s\n', clc.red(property.type));
+                                    if(helper.notNil(property.description)) pre += util.format('\tdescription: %s\n', property.description);
                                     pre += 'Value: '
 
                                     let valueFetcher = R.cond([
@@ -253,7 +229,7 @@ module.exports = function(vorpal, options) {
                                                     })
                                                     .catch(ex => {console.log(ex); done();})
                                             };
-                                            genericAuthCommandHandler(done, loggedIn, rest.getToken());
+                                            helper.genericAuthCommandHandler(done, loggedIn, rest.getToken());
                                         } else {
                                             console.log(vres);
                                             done();
@@ -262,6 +238,6 @@ module.exports = function(vorpal, options) {
                             });
                         });
                 })
-                .catch(genericCatchHandler(done));
+                .catch(helper.genericCatchHandler(done));
         });
 };
