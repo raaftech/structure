@@ -17,6 +17,7 @@ const Structure = require('./subgraph');
 const neoExt = require('./extensions/neo');
 const structureExt = require('./extensions/structure');
 const groupExt = require('./extensions/groups');
+const instanceExt = require('./extensions/instance');
 
 const genericAuthCommandHandler = R.curry((done, loggedInFn, token) => {
     let loggedOut = () => { console.log('Please login first.'); done()};
@@ -66,6 +67,7 @@ function scli() {
 	vorpal.use(neoExt, answerCache);
 	vorpal.use(structureExt, rest);
 	vorpal.use(groupExt, rest);
+	vorpal.use(instanceExt, {rest: rest, validator: validator});
 	vorpal.delimiter(clc.magenta.bold('structure$')).show();
 }
 
@@ -171,207 +173,6 @@ vorpal.command('find <name>', 'Find a specified node in structure')
             () => handler('getEntityByName', args.name),
             () => handler('getEntityByUuid', args.name));
         exec(R.path(['options', 'uuid'], args));
-    });
-
-vorpal.command('instanceof <typeName>', 'Create an instance of a Type')
-    .action(function(args, done) {
-        const self = this;
-        let baseType;
-        let buffer;
-
-        rest.getEntityByName(args.typeName)
-            .then(entity => {
-                baseType = helper.json2Entity(false, entity);
-                buffer = entity;
-                return getDomainClass(baseType.meta.uuid);
-            })
-            .then(domainClass => {
-                console.log('Resolved domain class: '+domainClass);
-                buffer = R.pipe(
-                    R.assoc('type', domainClass),
-                    R.assoc('name', buffer.name),
-                    R.dissocPath(['meta','checksum']),
-                    R.dissocPath(['meta','relations'])) (buffer);
-                return buffer;
-            })
-            .then(instance => {
-                validator.getSchema(args.typeName)
-                    .then(typeSchema => {
-                        let getPropertyKeys = R.pipe(R.prop('properties'), R.keys);
-                        let createQuestions = (schema) => {
-                            let keys = getPropertyKeys(schema);
-                            return R.map(prop => {
-                                let property = R.path(['properties', prop], schema);
-                                let pre = util.format('[%s]\n',clc.green(prop));
-                                if(notNil(property.type)) pre += util.format('\ttype: %s\n', clc.red(property.type));
-                                if(notNil(property.description)) pre += util.format('\tdescription: %s\n', property.description);
-                                pre += 'Value: '
-
-                                let valueFetcher = R.cond([
-                                    [R.equals('name'), x => R.prop('name', instance)],
-                                    [R.equals('desc'), x => R.prop('desc', instance)],
-                                    [R.equals('checksum'), x => R.path(['meta','checksum'], instance)],
-                                    [R.T, x => R.path(['data', x], instance)]
-                                ]);
-
-                                return helper.generateQuestion(prop, 'input', pre, {default: valueFetcher(prop)});
-                            }, keys);
-                        };
-
-                        //remove if: (prop not in required list) AND (input-value for prop is null|undefined|empty)
-                        let sanitizeAnswer = (required, answer) => {
-                            let output = {};
-                            R.forEach(key => {
-                                if(R.contains(key, required)) {
-                                    output = R.assoc(key, answer[key], output);
-                                } else {
-                                    if(!R.or(R.isNil(answer[key]), R.isEmpty(R.trim(answer[key])))) {
-                                        output = R.assoc(key, answer[key], output);
-                                    } else {
-                                        console.log('Ignoring optional, empty property: %s', clc.green(key));
-                                    }
-                                }
-                            }, R.keys(answer));
-                            return output;
-                        };
-
-                        self.prompt(createQuestions(typeSchema), function(res) {
-                            res = sanitizeAnswer(typeSchema.required, res);
-                            if(R.isNil(instance.data)) instance.data = res;
-                            else instance.data = R.merge(instance.data,res);
-
-                            validator.validate(args.typeName, instance.data)
-                                .then(vres => {
-                                    if(vres.valid) {
-                                        instance.data = R.merge(instance.data, vres.instance);
-                                        //TODO validate if this is feasible
-                                        instance.name = instance.data.name;
-                                        instance.desc = instance.data.desc;
-                                        
-                                        instance = createInstance(baseType, helper.json2Entity(true, instance));
-                                        let graph = new Structure.SubGraph(instance).toList();
-                                        console.log(JSON.stringify(graph, undefined, 2));
-                                        let loggedIn = () => {
-                                            console.log('creating instance');
-                                            rest.createInstance({entities: graph})
-                                                .then(updated => {
-                                                    if(R.isEmpty(updated)) console.log('No changes were made');
-                                                    else console.log(updated);
-                                                    done();
-                                                })
-                                                .catch(ex => {console.log(ex); done();})
-                                        };
-                                        genericAuthCommandHandler(done, loggedIn, rest.getToken());
-                                    } else {
-                                        console.log(vres);
-                                        done();
-                                    }
-                                });
-                        });
-                    });
-            })
-            .catch(genericCatchHandler(done));
-    })
-
-vorpal.command('edit <uuid>', 'Edit the properties of an instance')
-    .action(function(args,done) {
-        const self = this;
-
-        console.log(clc.green('(Input a space if you wish to override default values)'));
-        rest.getInstanceByUuid(args.uuid)
-            .then(instance => {
-                validator.getSchema(instance.type)
-                    .then(typeSchema => {
-                        let getPropertyKeys = R.pipe(R.prop('properties'), R.keys);
-                        let createQuestions = (schema) => {
-                            let keys = getPropertyKeys(schema);
-                            return R.map(prop => {
-                                let property = R.path(['properties', prop], schema);
-                                let pre = util.format('[%s]\n',clc.green(prop));
-                                if(notNil(property.type)) pre += util.format('\ttype: %s\n', clc.red(property.type));
-                                if(notNil(property.description)) pre += util.format('\tdescription: %s\n', property.description);
-                                pre += 'Value: '
-
-                                let valueFetcher = R.cond([
-                                    [R.equals('name'), x => R.prop('name', instance)],
-                                    [R.equals('desc'), x => R.prop('desc', instance)],
-                                    [R.equals('checksum'), x => R.path(['meta','checksum'], instance)],
-                                    [R.T, x => R.path(['data', x], instance)]
-                                ]);
-
-                                return helper.generateQuestion(prop, 'input', pre, {default: valueFetcher(prop)});
-                            }, keys);
-                        };
-
-                        //remove if: (prop not in required list) AND (input-value for prop is null|undefined|empty)
-                        let sanitizeAnswer = (required, answer) => {
-                            let output = {};
-                            R.forEach(key => {
-                                if(R.contains(key, required)) {
-                                    output = R.assoc(key, answer[key], output);
-                                } else {
-                                    if(!R.or(R.isNil(answer[key]), R.isEmpty(R.trim(answer[key])))) {
-                                        output = R.assoc(key, answer[key], output);
-                                    } else {
-                                        console.log('Ignoring optional, empty property: %s', clc.green(key));
-                                    }
-                                }
-                            }, R.keys(answer));
-                            return output;
-                        };
-
-                        self.prompt(createQuestions(typeSchema), function(res) {
-                            res = sanitizeAnswer(typeSchema.required, res);
-                            if(R.isNil(instance.data)) instance.data = res;
-                            else instance.data = R.merge(instance.data,res);
-                            validator.validate(instance.type, instance.data)
-                                .then(vres => {
-                                    if(vres.valid) {
-                                        instance.data = R.merge(instance.data, vres.instance);
-                                        let loggedIn = () => {
-                                            rest.updateInstance({entities: [instance]})
-                                                .then(updated => {
-                                                    if(R.isEmpty(updated)) console.log('No changes were made');
-                                                    else console.log(updated);
-                                                    done();
-                                                })
-                                                .catch(ex => {console.log(ex); done();})
-                                        };
-                                        genericAuthCommandHandler(done, loggedIn, rest.getToken());
-                                    } else {
-                                        console.log(vres);
-                                        done();
-                                    }
-                                });
-                        });
-                    });
-            })
-            .catch(genericCatchHandler(done));
-    });
-
-vorpal.command('instance')
-    .option('-l, --last <quantity>', 'Fetch the last (quantity) created instances')
-    .option('-u, --uuid <uuid>', 'Find a specific instance by uuid')
-    .option('-n, --name <name>', 'Find a specific instance by name')
-    .option('-r, --remove <uuid>', 'Remove a specific instance')
-    .option('-v, --verbose', 'Be verbose in printing the results')
-    .action(function(args, done) {
-        //Function that checks if a property is not nil in the given object.options object
-        let fn = (prop, obj) => R.pipe(R.path(['options', prop]), notNil);
-        let predicate = R.cond([
-            [fn('last'), (x) => rest.lastInstances(R.path(['options','last'], x))],
-            [fn('uuid'), (x) => rest.getInstanceByUuid(R.path(['options','uuid'], x))],
-            [fn('name'), (x) => rest.getInstanceByName(R.path(['options','name'], x))],
-            [fn('remove'), (x) => rest.removeInstance(R.path(['options','remove'], x))],
-            [R.T, () => Promise.resolve([])]
-        ]);
-        let promise = predicate(args);
-
-        promise.then(instance => {
-            R.pipe(R.ifElse(R.is(Object), helper.treePrint(args.options.verbose), R.identity),
-               x => console.log(x),
-               x => done()) (instance);
-        }).catch(genericCatchHandler(done));
     });
 
 vorpal.command('dig', 'Get the child elements for a type-node')
