@@ -82,17 +82,6 @@ function toRoot(uuid, childNodes) {
     });
 }
 
-function getDomainClass(uuid) {
-    return new Promise((resolve, reject) => {
-        toRoot(uuid, {})
-            .then(parents => {
-                let fn = R.pipe(R.prop('Type'),R.keys,R.head);
-                resolve(fn(parents));
-            })
-            .catch(ex => reject(ex));
-    });
-}
-
 function payloadDir() {
     return path.join(__dirname, 'payloads');
 }
