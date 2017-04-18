@@ -95,24 +95,16 @@ const nodeLens = (node) => {
 module.exports = function(vorpal, options) {
     let rest = options;
 
-    //TODO add description question
-    vorpal.command('group create <name>', 'Create a new Grouping')
+    vorpal.command('group create', 'Create a new Grouping')
         .action(function(args, done) {
-            let loggedIn = () => {
-                //FIXME fetch true Grouping type from structure
-                rest.getEntityByUuid('5f1eb7c5-ec5e-4563-be6a-fc50774fc374')
-                    .then(entity => {
-                        let baseType = helper.json2Entity(false, entity);
-                        entity = R.pipe(
-                            R.assoc('type', 'Grouping'),
-                            R.assoc('name', args.name),
-                            R.dissocPath(['meta','checksum']),
-                            R.dissocPath(['meta','relations'])) (entity);
+            const self = this;
+            let qs = [];
+            qs.push(helper.generateQuestion('name', 'input', 'Group name: '));
+            qs.push(helper.generateQuestion('desc', 'input', 'Group desc: '));
 
-                        let instance = helper.createInstance(baseType, helper.json2Entity(true, entity));
-                        return new Structure.SubGraph(instance).toList();
-                    })
-                    .then(entityList => rest.createInstance({entities: entityList}))
+            let loggedIn = () => {
+                prompt(self, qs)
+                    .then(answers => rest.createGroup(answers.name, answers.desc))
                     .then(created => {
                         console.log(clc.green('Group create result: '));
                         console.log(created);
@@ -126,7 +118,7 @@ module.exports = function(vorpal, options) {
 
     vorpal.command('group add', 'Add an existing instance to a group hierarchy')
         .action(function(args, done) {
-            let self = this;
+            const self = this;
             let allGroups;
             let selectedGroup;
 
