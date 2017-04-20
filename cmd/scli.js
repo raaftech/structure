@@ -90,6 +90,106 @@ function getPayloadListing() {
     return fs.readdirSync(payloadDir());
 }
 
+const prompt = (vorp, question) => {
+    return new Promise((resolve, reject) => {
+        vorp.prompt(question, function(result) {
+            resolve(result);
+        });
+    });
+};
+
+vorpal.command('relate <uuid>', 'Create a new relation for an instance')
+    .action(function(args, done) {
+        const self = this;
+        let selectedInstance;
+        let currentConstraints;
+
+        //TODO fetch instance by uuid
+        //TODO get instance_of type uuid
+        //TODO getConstraints for type
+        //TODO make user choose one of the allowed relations by direction
+        //TODO make user choose one of the allowed types
+        //TODO create relation or add uuid to existing relation
+        //TODO update instance in structure
+
+        let instanceOfType = R.compose(R.head, R.path(['meta', 'relations', 'INSTANCE_OF', 'uuids']));
+        let firstKey = R.compose(R.head, R.keys);
+        let listRelations = R.compose(R.uniq, R.map(firstKey));
+        let harvestEndpointUuids = (relName, list) => {
+            return R.pipe(
+                R.filter(R.has(relName)),
+                R.map(R.prop(relName)),
+                R.map(R.prop('to'))
+            )(list);
+        };
+
+        rest.getInstanceByUuid(args.uuid)
+            .then(instance => {
+                selectedInstance = instance;
+                return instanceOfType(instance);
+            })
+            .then(uuid => rest.getConstraints(uuid))
+            .then(constraints => {
+                currentConstraints = constraints;
+                let rels = listRelations(constraints.outgoing);
+                let q = helper.generateQuestion('relation', 'list', 'Select relation: ', {choices: rels});
+                return prompt(self, q);
+            })
+            .then(answer => {
+                console.log(JSON.stringify(currentConstraints, undefined, 2));
+                return harvestEndpointUuids(answer.relation, currentConstraints.outgoing);
+            })
+            .then(uuids => {
+                let promises = [];
+                R.forEach(uuid => promises.push(rest.getEntityByUuid(uuid)), uuids);
+                return Promise.all(promises);
+            })
+            .then(result => {
+                console.log(result);
+                done();
+            })
+            .catch(helper.genericCatchHandler(done));
+    });
+
+vorpal.command('specialize <uuid>', 'Specialize an instance')
+    .action(function(args, done) {
+        const self = this;
+
+        let selectedInstance;
+
+        let instanceOfType = R.compose(R.head, R.path(['meta', 'relations', 'INSTANCE_OF', 'uuids']));
+        let setInstanceOfType = (oldUuid, newUuid, instance) => {
+            let uuids = R.path(['meta', 'relations', 'INSTANCE_OF', 'uuids'], instance);
+            uuids = R.reject(R.equals(oldUuid), uuids);
+            uuids = R.prepend(newUuid, uuids);
+            instance = R.assocPath(['meta', 'relations', 'INSTANCE_OF', 'uuids'],uuids, instance);
+            return instance;
+        };
+
+        rest.getInstanceByUuid(args.uuid)
+            .then(instance => {
+                selectedInstance = instance;
+                return rest.getEntityByUuid(instanceOfType(instance));
+            })
+            .then(type => {
+                return rest.getChildren(type.meta.uuid);
+            })
+            .then(children => {
+                let q = helper.generateQuestion('child', 'list', 'Select specialisation: ', {choices: children});
+                self.prompt(q, function(answer) {
+                    let e = R.find(R.propEq('name', answer.child), children);
+                    selectedInstance = setInstanceOfType(instanceOfType(selectedInstance), e.meta.uuid, selectedInstance);
+                    rest.updateInstance({entities: [selectedInstance]})
+                        .then(updated => {
+                            if(R.isEmpty(updated)) console.log('No changes were made');
+                            else console.log(updated);
+                            done();
+                        });
+                });
+            })
+            .catch(helper.genericCatchHandler(done));
+    });
+
 vorpal.command('find <name>', 'Find a specified node in structure')
     .option('-f, --field <fieldName>', 'Select a specific field from the resultset',
         helper.getCommonFields())

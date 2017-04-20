@@ -38,6 +38,11 @@ class RestConnector {
         return fetch(url).then(result => result.json());
     }
 
+    getConstraints(uuid) {
+        let url = util.format('%s/Entities/constraints/%s', getBaseUrl(this.host,this.port),uuid);
+        return fetch(url).then(result => result.json());
+    }
+
     lastInstances(quantity) {
         let url = util.format('%s/Instances/last/%s', getBaseUrl(this.host,this.port),quantity);
         return fetch(url).then(result => result.json());
