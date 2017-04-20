@@ -42,7 +42,7 @@
     "public": true
   },
   "StructureUser": {
-    "dataSource": "db",
+    "dataSource": "sqlite3",
     "public": true
   },
   "admin": {
@@ -50,6 +50,10 @@
     "public": true
   },
   "Instance": {
+    "dataSource": "db",
+    "public": true
+  },
+  "group": {
     "dataSource": "db",
     "public": true
   }

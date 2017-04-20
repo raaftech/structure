@@ -12,21 +12,12 @@ const RestConnector = require('./restConnector');
 const SchemaValidator = require('./SchemaValidator');
 const SimpleCache = require('./simpleCache');
 const EventSource = require('eventsource');
+const Structure = require('./subgraph');
 //extensions
 const neoExt = require('./extensions/neo');
 const structureExt = require('./extensions/structure');
 const groupExt = require('./extensions/groups');
-
-const genericAuthCommandHandler = R.curry((done, loggedInFn, token) => {
-    let loggedOut = () => { console.log('Please login first.'); done()};
-    let handler = R.ifElse(R.isNil,loggedOut, loggedInFn);
-    handler(token);
-});
-const genericCatchHandler = R.curry((done, error) => {
-    console.log(error);
-    done();
-});
-const notNil = R.compose(R.not, R.isNil);
+const instanceExt = require('./extensions/instance');
 
 const answerCache = new SimpleCache();
 let rest;
@@ -52,6 +43,7 @@ function scli() {
 	vorpal.use(neoExt, answerCache);
 	vorpal.use(structureExt, rest);
 	vorpal.use(groupExt, rest);
+	vorpal.use(instanceExt, {rest: rest, validator: validator});
 	vorpal.delimiter(clc.magenta.bold('structure$')).show();
 }
 
@@ -138,7 +130,7 @@ vorpal.command('find <name>', 'Find a specified node in structure')
                         done();
                     });
                 })
-                .catch(genericCatchHandler(done));
+                .catch(helper.genericCatchHandler(done));
         };
 
         //Function that determines which rest call to use based on the given arguments and options
@@ -148,120 +140,32 @@ vorpal.command('find <name>', 'Find a specified node in structure')
         exec(R.path(['options', 'uuid'], args));
     });
 
-
-vorpal.command('edit <uuid>', 'Edit the properties of an instance')
-    .action(function(args,done) {
-        const self = this;
-
-        console.log(clc.green('(Input a space if you wish to override default values)'));
-        rest.getInstanceByUuid(args.uuid)
-            .then(instance => {
-                validator.getSchema(instance.type)
-                    .then(typeSchema => {
-                        let getPropertyKeys = R.pipe(R.prop('properties'), R.keys);
-                        let createQuestions = (schema) => {
-                            let keys = getPropertyKeys(schema);
-                            return R.map(prop => {
-                                let property = R.path(['properties', prop], schema);
-                                let pre = util.format('[%s]\n',clc.green(prop));
-                                if(notNil(property.type)) pre += util.format('\ttype: %s\n', clc.red(property.type));
-                                if(notNil(property.description)) pre += util.format('\tdescription: %s\n', property.description);
-                                pre += 'Value: '
-
-                                let valueFetcher = R.cond([
-                                    [R.equals('name'), x => R.prop('name', instance)],
-                                    [R.equals('desc'), x => R.prop('desc', instance)],
-                                    [R.equals('checksum'), x => R.path(['meta','checksum'], instance)],
-                                    [R.T, x => R.path(['data', x], instance)]
-                                ]);
-
-                                return helper.generateQuestion(prop, 'input', pre, {default: valueFetcher(prop)});
-                            }, keys);
-                        };
-
-                        //remove if: (prop not in required list) AND (input-value for prop is null|undefined|empty)
-                        let sanitizeAnswer = (required, answer) => {
-                            let output = {};
-                            R.forEach(key => {
-                                if(R.contains(key, required)) {
-                                    output = R.assoc(key, answer[key], output);
-                                } else {
-                                    if(!R.or(R.isNil(answer[key]), R.isEmpty(R.trim(answer[key])))) {
-                                        output = R.assoc(key, answer[key], output);
-                                    } else {
-                                        console.log('Ignoring optional, empty property: %s', clc.green(key));
-                                    }
-                                }
-                            }, R.keys(answer));
-                            return output;
-                        };
-
-                        self.prompt(createQuestions(typeSchema), function(res) {
-                            res = sanitizeAnswer(typeSchema.required, res);
-                            if(R.isNil(instance.data)) instance.data = res;
-                            else instance.data = R.merge(instance.data,res);
-                            validator.validate(instance.type, instance.data)
-                                .then(vres => {
-                                    if(vres.valid) {
-                                        instance.data = R.merge(instance.data, vres.instance);
-                                        let loggedIn = () => {
-                                            rest.updateInstance({entities: [instance]})
-                                                .then(updated => {
-                                                    if(R.isEmpty(updated)) console.log('No changes were made');
-                                                    else console.log(updated);
-                                                    done();
-                                                })
-                                                .catch(ex => {console.log(ex); done();})
-                                        };
-                                        genericAuthCommandHandler(done, loggedIn, rest.getToken());
-                                    } else {
-                                        console.log(vres);
-                                        done();
-                                    }
-                                });
-                        });
-                    });
-            })
-            .catch(genericCatchHandler(done));
-    });
-
-vorpal.command('instance')
-    .option('-l, --last <quantity>', 'Fetch the last (quantity) created instances')
-    .option('-u, --uuid <uuid>', 'Find a specific instance by uuid')
-    .option('-n, --name <name>', 'Find a specific instance by name')
-    .option('-r, --remove <uuid>', 'Remove a specific instance')
-    .option('-v, --verbose', 'Be verbose in printing the results')
-    .action(function(args, done) {
-        //Function that checks if a property is not nil in the given object.options object
-        let fn = (prop, obj) => R.pipe(R.path(['options', prop]), notNil);
-        let predicate = R.cond([
-            [fn('last'), (x) => rest.lastInstances(R.path(['options','last'], x))],
-            [fn('uuid'), (x) => rest.getInstanceByUuid(R.path(['options','uuid'], x))],
-            [fn('name'), (x) => rest.getInstanceByName(R.path(['options','name'], x))],
-            [fn('remove'), (x) => rest.removeInstance(R.path(['options','remove'], x))],
-            [R.T, () => Promise.resolve([])]
-        ]);
-        let promise = predicate(args);
-
-        promise.then(instance => {
-            R.pipe(R.ifElse(R.is(Object), helper.treePrint(args.options.verbose), R.identity),
-               x => console.log(x),
-               x => done()) (instance);
-        }).catch(genericCatchHandler(done));
-    });
-
-vorpal.command('dig <uuid>', 'Get the child elements for a type-node')
+vorpal.command('dig', 'Get the child elements for a type-node')
+    .option('-n, --name <name>', 'Identify the type-node by name')
+    .option('-u, --uuid <uuid>', 'Identify the type-node by uuid')
     .action(function(args, done) {
         const self = this;
 
-        getChildren(args.uuid)
-            .then(children => {
-                R.forEach((item) => {
-                    self.log(sprintf('%-16s: %24s', R.prop('name', item),R.prop('uuid',item)));
-                }, children);
-                done();
-            })
-            .catch(genericCatchHandler(done))
+        if(args.options.name) {
+            rest.getEntityByName(args.options.name)
+                .then(entity => getChildren(entity.meta.uuid))
+                .then(children => {
+                    R.forEach((item) => {
+                        self.log(sprintf('%-16s: %24s', R.prop('name', item),R.prop('uuid',item)));
+                    }, children);
+                    done();
+                })
+                .catch(helper.genericCatchHandler(done));
+        } else {
+            getChildren(args.options.uuid)
+                .then(children => {
+                    R.forEach((item) => {
+                        self.log(sprintf('%-16s: %24s', R.prop('name', item),R.prop('uuid',item)));
+                    }, children);
+                    done();
+                })
+                .catch(helper.genericCatchHandler(done))
+        }
     });
 
 vorpal.command('tree <name>', 'Show a relation tree for the requested node')
@@ -289,7 +193,7 @@ vorpal.command('tree <name>', 'Show a relation tree for the requested node')
                     self.log(treeify.asTree(parents,true));
                     done();
                 })
-                .catch(genericCatchHandler(done));
+                .catch(helper.genericCatchHandler(done));
         };
 
         //Function that determines which rest call to use based on the given arguments and options
@@ -318,9 +222,9 @@ vorpal.command('discover <cidr>', 'Discover items in the network')
                 return rest.runInstrument('IpAddressDiscover', instanceUuid);
             })
             .then(result => done())
-            .catch(genericCatchHandler(done));
+            .catch(helper.genericCatchHandler(done));
 
-        genericAuthCommandHandler(done, loggedIn, rest.getToken());
+        helper.genericAuthCommandHandler(done, loggedIn, rest.getToken());
     });
 
 vorpal.command('query', 'Place arbitrary requests on the event bus')
@@ -342,9 +246,9 @@ vorpal.command('query', 'Place arbitrary requests on the event bus')
                         console.log(JSON.stringify(data));
                         done();
                     })
-                    .catch(genericCatchHandler(done));
+                    .catch(helper.genericCatchHandler(done));
             };
 
-            genericAuthCommandHandler(done, loggedIn, rest.getToken());
+            helper.genericAuthCommandHandler(done, loggedIn, rest.getToken());
         });
     });
