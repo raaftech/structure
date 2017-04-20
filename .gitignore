@@ -19,3 +19,4 @@ tools/discovery/node_modules/
 cmd/payloads/
 cmd/tui.cache
 .DS_Store
+rest/credentials.sqlite
