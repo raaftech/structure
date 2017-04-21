@@ -457,10 +457,16 @@ public class TaskManager extends GenericActor {
                 ObjectNode result = mapper.createObjectNode();
                 ArrayNode jobs = (ArrayNode) args.get("jobs");
 
-                // Construct a new task
-                String taskId = args.get("taskId").asText();
-                boolean sequential = args.has("sequential") ? args.get("sequential").asBoolean() : false;
-                Task task = new Task(taskId, sequential);
+                final Task task;
+                final String taskId = args.get("taskId").asText();
+                if (taskMap.containsKey(taskId)) {
+                    log.info("Task with ID " + taskId + " already existed, adding jobs to it");
+                    task = taskMap.get(taskId);
+                } else {
+                    // Construct a new task
+                    boolean sequential = args.has("sequential") ? args.get("sequential").asBoolean() : false;
+                    task = new Task(taskId, sequential);
+                }
                 result.put("data", taskId);
 
                 // Add the given jobs to the task
@@ -473,9 +479,11 @@ public class TaskManager extends GenericActor {
                     task.jobs.add(new Job(processRunner, task.id, metadata));
                 }
                 task.jobs.stream().forEach(job -> queueJob(job));
-                taskMap.put(task.id, task);
-
-                log.info("Queued task with id " + task.id + ".");
+                // Queue the task if it didn't exist yet
+                if (!taskMap.containsKey(taskId)) {
+                    taskMap.put(task.id, task);
+                    log.info("Queued task with id " + task.id + ".");
+                }
 
                 // Notify interested parties
                 publishStatus("taskScheduled", task.toJson());

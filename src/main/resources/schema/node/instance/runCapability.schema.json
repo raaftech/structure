@@ -1,0 +1,32 @@
+{
+  "id": "runCapability.schema.json#",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Schema for every InstanceActor's runCapability method.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "capability": {
+      "type": "string"
+    },
+    "recurse": {
+      "type": "boolean"
+    },
+    "timeAllocated": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "arguments": {
+      "type": "object",
+      "properties": {
+        "/": {}
+      },
+      "patternProperties": {
+        "^\\w*$": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "required": [ "capability" ]
+}
