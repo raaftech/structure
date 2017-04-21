@@ -7,6 +7,7 @@ import com.raaftech.structure.annotations.SchemaPath;
 import com.raaftech.structure.base.Configuration;
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.base.NodeActor;
+import com.raaftech.structure.exceptions.InstrumentExecutionException;
 import com.raaftech.structure.graph.Component;
 import com.raaftech.structure.graph.Controller;
 import com.raaftech.structure.graph.Instance;
@@ -182,23 +183,14 @@ public class InstanceActor extends NodeActor<Instance> {
                 }
                 if (instrument != null) {
                     try {
-                        String taskId = UUID.randomUUID().toString();
-
-                        // Check if there is a timeAllocation field specified. If so, get the value there. Else the default value is used.
-                        if (args.has("timeAllocated")) {
-                            getNode().runController(instrument, (ObjectNode) args.get("arguments"), taskId, args.get("timeAllocated").asLong());
-                        } else {
-                            getNode().runController(instrument, (ObjectNode) args.get("arguments"), taskId);
-                        }
-
-                        result.put("data", taskId);
-                    } catch (RuntimeException e) {
+                        UUID taskId = UUID.randomUUID();
+                        runController(instrument, taskId, args);
+                        result.put("data", taskId.toString());
+                    } catch (InstrumentExecutionException e) {
                     	log.error(e.getMessage());
-
             			if (Configuration.isTraceModeOn()) {
             				e.printStackTrace();
             			}
-
             			result.put("error", e.getMessage());
                     }
                 } else {
@@ -213,5 +205,62 @@ public class InstanceActor extends NodeActor<Instance> {
                 return null;
             }
         };
+    }
+
+    @SchemaPath("resource:/schema/node/instance/runCapability.schema.json")
+    @SuppressWarnings("unused")
+    public MessageHandler runCapability() {
+        return new MessageHandler() {
+            @Override
+            public JsonNode exec(JsonNode request) {
+                final ObjectNode result = mapper.createObjectNode();
+                final JsonNode args = request.get("args");
+                final String capability = args.get("capability").asText();
+                final Set<Controller> controllersForCapability = instrumentRepository
+                        .findControllersPerCapability(getNode().getUuid(), capability);
+
+                Optional<Controller> maybeHeaviestController = controllersForCapability.stream()
+                        .max((controller1, controller2) -> Double.compare(controller1.getWeight(), controller2.getWeight()));
+
+                if (!maybeHeaviestController.isPresent()) {
+                    result.put("error", "Couldn't find heaviest controller for capability");
+                    return response(request, result);
+                }
+
+                try {
+                    result.put("data", runController(maybeHeaviestController.get(), UUID.randomUUID(), args).toString());
+                } catch (InstrumentExecutionException e) {
+                    log.error(e.getMessage());
+                    if (Configuration.isTraceModeOn()) {
+                        e.printStackTrace();
+                    }
+                    result.put("error", e.getMessage());
+                }
+                return response(request, result);
+            }
+
+            @Override
+            public JsonNode help(JsonNode request) {
+                return null;
+            }
+        };
+    }
+
+    private UUID runController(Controller controller, UUID taskId, JsonNode args) throws InstrumentExecutionException {
+        final ObjectNode arguments = (ObjectNode) args.get("arguments");
+        // Check if there is a timeAllocation field specified. If so, get the value there. Else the default value is used.
+        vertx.executeBlocking(future -> {
+            if (args.has("timeAllocated")) {
+                getNode().runController(controller, arguments, taskId.toString(), args.get("timeAllocated").asLong());
+            } else {
+                getNode().runController(controller, arguments, taskId.toString());
+            }
+            future.complete("Foobar");
+        }, res -> {
+            log.debug("RunController for " + controller.getName() + " and task ID " + taskId.toString() + " finished");
+            System.out.println("RESULT:" + res.result());
+        });
+
+        return taskId;
     }
 }

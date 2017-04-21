@@ -111,4 +111,8 @@ public interface InstrumentRepository extends GenericRepository<Instrument> {
 
     @Query("MATCH (n:Instrument) RETURN count(n)")
     long count();
+
+    // Find a node's callable controllers
+    @Query ("MATCH (:Instance {uuid: {0}})-[*0..]->(instrument:Controller)-[:GIVES_CAPABILITY]->(capability:Capability {name: {1}})")
+    Set<Controller> findControllersPerCapability(String uuid, String name);
 }
