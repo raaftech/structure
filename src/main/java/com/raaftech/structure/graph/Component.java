@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Sets;
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.exceptions.JsonValidationException;
 import com.raaftech.structure.graph.repositories.InstanceRepository;
@@ -15,11 +17,16 @@ import org.springframework.data.annotation.Transient;
 import org.springframework.data.neo4j.annotation.Fetch;
 import org.springframework.data.neo4j.annotation.RelatedTo;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @Deprecated We need to redesign the domain classes to use Entity.
@@ -105,6 +112,15 @@ public class Component extends Instance {
         return components;
     }
 
+    public Set<Configuration> getConfigurations() {
+        if (configurations == null || configurations.isEmpty()) {
+            Transaction tx = Context.getGraphDatabase().beginTx();
+            Context.getNeo4jTemplate().fetch(components);
+            tx.close();
+        }
+        return configurations;
+    }
+
     /**
      * Get all the startOfResultChain belonging to this Instance while filtering on the task ID.
      * @param task The ID of the task.
@@ -156,23 +172,36 @@ public class Component extends Instance {
         Set<JsonNode> arguments = new HashSet<>();
 
         arguments.add(super.toJson());
-        BiConsumer<BiConsumer, Component> consumeArgsHelper = (f, node) -> {
-            Set<Component> components = node.getComponents();
-            if (components.size() > 0) {
-                components.parallelStream().forEach(n -> f.accept(f, n));
+        BiFunction<BiFunction, Instance, Set<JsonNode>> consumeArgsHelper = (f, node) -> {
+            final Set<Component> components;
+            final Set<Configuration> configurations;
+            if (node instanceof Component) {
+                components = ((Component)node).getComponents();
+                configurations = ((Component)node).getConfigurations();
+            } else {
+                components = Collections.emptySet();
+                configurations = Collections.emptySet();
             }
-            arguments.add(node.toJson());
+            final Set<JsonNode> childSet;
+            if (!components.isEmpty() || !configurations.isEmpty()) {
+                childSet = Stream.concat(components.stream(), configurations.stream())
+                        .flatMap(instance -> ((Set<JsonNode>)f.apply(f, instance)).stream())
+                        .collect(Collectors.toSet());
+//                Stream.concat(components.stream(), configurations.stream()).forEach(n -> f.accept(f, n));
+            } else {
+                childSet = Collections.emptySet();
+            }
+            return Sets.union(childSet, ImmutableSet.of(node.toJson()));
         };
 
         // Lambda's can't refer to themselves using their variable name. That means consumeArgsHelper defined
         // above cannot refer to itself by name. This sucks, because it's a recursive function.
         // However, it can refer to itself if it's passed a reference to itself as an argument, so that's what's
         // happening in consumeArgs. After calling consumeArgsHelper below, consumeArgsHelper is bound to 'f' in the lambda.
-        Consumer<Component> consumeArgs = node -> consumeArgsHelper.accept(consumeArgsHelper, node);
+        Function<Instance, Set<JsonNode>> consumeArgs = node -> consumeArgsHelper.apply(consumeArgsHelper, node);
 
-        getComponents().stream().forEach(consumeArgs);
-
-        return arguments;
+        return Sets.union(getComponents().stream().map(consumeArgs).flatMap(Collection::stream).collect(Collectors.toSet()),
+                getConfigurations().stream().map(consumeArgs).flatMap(Collection::stream).collect(Collectors.toSet()));
     }
 
     public ObjectNode deepToJson(int dimension) {
