@@ -3,6 +3,7 @@ package com.raaftech.structure.manager;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.raaftech.structure.annotations.SchemaPath;
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.base.GenericActor;
 import com.raaftech.structure.graph.Grouping;
@@ -97,6 +98,8 @@ public class InstrumentManager extends GenericActor {
         };
     }
 
+    @SuppressWarnings("unused")
+    @SchemaPath("resource:/schema/manager/instrumentmanager/runCapability.schema.json")
     public MessageHandler runCapability() {
         return new MessageHandler() {
             @Override
@@ -124,6 +127,10 @@ public class InstrumentManager extends GenericActor {
                 if (args.has("arguments")) {
                     message.getJsonObject("args")
                             .put("arguments", new JsonObject(args.get("arguments").toString()));
+                }
+                if (args.has("timeAllocated")) {
+                    message.getJsonObject("args")
+                            .put("timeAllocated", args.get("timeAllocated").asInt());
                 }
 
                 for (final Iterator<JsonNode> iter = uuids.elements(); iter.hasNext();) {
