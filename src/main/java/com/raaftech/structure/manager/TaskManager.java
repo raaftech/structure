@@ -135,7 +135,7 @@ public class TaskManager extends GenericActor {
     // This is being polled by the periodic event defined after this.
     private static Map<String, Task> taskMap = new HashMap<>();
     // The currently running jobs.
-    private static List<Job> runningJobs = new ArrayList<>();
+    private static Vector<Job> runningJobs = new Vector<>();
     // The default timeout for a job.
     private final static long defaultJobTime = 3000L;
 
@@ -476,9 +476,11 @@ public class TaskManager extends GenericActor {
                     String command = jobData.get("command").asText();
                     ObjectNode metadata = (ObjectNode) jobData.get("metadata");
                     ProcessRunner processRunner = new ProcessRunner(command);
-                    task.jobs.add(new Job(processRunner, task.id, metadata));
+                    final Job job = new Job(processRunner, task.id, metadata);
+                    task.jobs.add(job);
+                    queueJob(job);
                 }
-                task.jobs.stream().forEach(job -> queueJob(job));
+//                task.jobs.stream().forEach(job -> queueJob(job));
                 // Queue the task if it didn't exist yet
                 if (!taskMap.containsKey(taskId)) {
                     taskMap.put(task.id, task);
