@@ -8,8 +8,11 @@
     "capability": {
       "type": "string"
     },
-    "recurse": {
-      "type": "boolean"
+    "grouping": {
+      "$ref": "#/definitions/uuid"
+    },
+    "taskId": {
+      "$ref": "#/definitions/uuid"
     },
     "timeAllocated": {
       "type": "integer",
@@ -28,5 +31,11 @@
       "additionalProperties": false
     }
   },
-  "required": [ "capability" ]
+  "required": [ "capability", "grouping" ],
+  "definitions": {
+    "uuid": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89aAbB][a-f0-9]{3}-[a-f0-9]{12}$"
+    }
+  }
 }
