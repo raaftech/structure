@@ -480,7 +480,6 @@ public class TaskManager extends GenericActor {
                     task.jobs.add(job);
                     queueJob(job);
                 }
-//                task.jobs.stream().forEach(job -> queueJob(job));
                 // Queue the task if it didn't exist yet
                 if (!taskMap.containsKey(taskId)) {
                     taskMap.put(task.id, task);
