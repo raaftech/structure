@@ -216,8 +216,10 @@ public class InstanceActor extends NodeActor<Instance> {
                 final ObjectNode result = mapper.createObjectNode();
                 final JsonNode args = request.get("args");
                 final String capability = args.get("capability").asText();
+                final String grouping = args.get("grouping").asText();
+                final UUID taskId = args.has("taskId") ? UUID.fromString(args.get("taskId").asText()) : UUID.randomUUID();
                 final Set<Controller> controllersForCapability = instrumentRepository
-                        .findControllersPerCapability(getNode().getUuid(), capability);
+                        .findControllersPerCapability(getNode().getUuid(), capability, grouping);
 
                 Optional<Controller> maybeHeaviestController = controllersForCapability.stream()
                         .max((controller1, controller2) -> Double.compare(controller1.getWeight(), controller2.getWeight()));
@@ -228,7 +230,7 @@ public class InstanceActor extends NodeActor<Instance> {
                 }
 
                 try {
-                    result.put("data", runController(maybeHeaviestController.get(), UUID.randomUUID(), args).toString());
+                    result.put("data", runController(maybeHeaviestController.get(), taskId, args).toString());
                 } catch (InstrumentExecutionException e) {
                     log.error(e.getMessage());
                     if (Configuration.isTraceModeOn()) {
