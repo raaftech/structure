@@ -19,7 +19,8 @@
         },
         "exit": {
             "type": "integer",
-            "pattern": "^[0-255]$"
+            "minimum": 0,
+            "maximum": 255
         }
     }
 }
