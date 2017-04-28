@@ -8,10 +8,7 @@ import com.raaftech.structure.base.Configuration;
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.base.NodeActor;
 import com.raaftech.structure.exceptions.InstrumentExecutionException;
-import com.raaftech.structure.graph.Component;
-import com.raaftech.structure.graph.Controller;
-import com.raaftech.structure.graph.Instance;
-import com.raaftech.structure.graph.Instrument;
+import com.raaftech.structure.graph.*;
 import com.raaftech.structure.graph.repositories.ComponentRepository;
 import com.raaftech.structure.graph.repositories.InstanceRepository;
 import com.raaftech.structure.graph.repositories.InstrumentRepository;
@@ -25,6 +22,7 @@ public class InstanceActor extends NodeActor<Instance> {
     private static final InstanceRepository INSTANCE_REPOSITORY = Context.getInstanceRepository();
     private static final ComponentRepository componentRepository = Context.getComponentRepository();
     private static final InstrumentRepository instrumentRepository = Context.getInstrumentRepository();
+    private static final InstanceRepository instanceRepository = Context.getInstanceRepository();
 
 
     private Logger log = LoggerFactory.getLogger(InstanceActor.class);
@@ -216,10 +214,29 @@ public class InstanceActor extends NodeActor<Instance> {
                 final ObjectNode result = mapper.createObjectNode();
                 final JsonNode args = request.get("args");
                 final String capability = args.get("capability").asText();
-                final String grouping = args.get("grouping").asText();
+                final Optional<String> maybeGrouping = args.has("groupingUuid") ?
+                        Optional.of(args.get("groupingUuid").asText()) :
+                        Optional.empty();
                 final UUID taskId = args.has("taskId") ? UUID.fromString(args.get("taskId").asText()) : UUID.randomUUID();
-                final Set<Controller> controllersForCapability = instrumentRepository
-                        .findControllersPerCapability(getNode().getUuid(), capability, grouping);
+
+                final Set<Controller> controllersForCapability;
+                final String groupingUuid;
+                // If we have a groupingUuid already; use it. Else determine the groupingUuid
+                if (maybeGrouping.isPresent()) {
+                    groupingUuid = maybeGrouping.get();
+                } else {
+                    final Grouping grouping = instanceRepository.getStartOfComponentGroup(getNode().getUuid());
+                    if (grouping == null) {
+                        // We cannot find the grouping this node belongs to so we can't run an instrument on it
+                        result.put("error", "We couldn't find the grouping to which node "
+                                + getNode().getUuid() + " belongs to.");
+                        return response(request, result);
+                    }
+                    groupingUuid = grouping.getUuid();
+                }
+
+                controllersForCapability = instrumentRepository
+                        .findControllersPerCapability(getNode().getUuid(), capability, groupingUuid);
 
                 Optional<Controller> maybeHeaviestController = controllersForCapability.stream()
                         .max((controller1, controller2) -> Double.compare(controller1.getWeight(), controller2.getWeight()));
