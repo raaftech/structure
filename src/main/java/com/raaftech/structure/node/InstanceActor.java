@@ -205,6 +205,13 @@ public class InstanceActor extends NodeActor<Instance> {
         };
     }
 
+    /*
+     * Given a capability try to run an implementation (controller) of that capability on this node.
+     * We can be passed a "grouping" as argument, which is needed to run a controller. If this is not provided we'll
+     * try to retrieve it when we need it.
+     * A "taskId" (UUID string) might be provided as well, in case it was pre-generated.
+     * Other arguments are the same as for "runInstrument", and they'll simply be passed along to the instrument runner.
+     */
     @SchemaPath("resource:/schema/node/instance/runCapability.schema.json")
     @SuppressWarnings("unused")
     public MessageHandler runCapability() {
@@ -238,6 +245,7 @@ public class InstanceActor extends NodeActor<Instance> {
                 controllersForCapability = instrumentRepository
                         .findControllersPerCapability(getNode().getUuid(), capability, groupingUuid);
 
+                // We might have multiple controllers for a given Capability, in that case use the heaviest
                 Optional<Controller> maybeHeaviestController = controllersForCapability.stream()
                         .max((controller1, controller2) -> Double.compare(controller1.getWeight(), controller2.getWeight()));
 
@@ -265,6 +273,14 @@ public class InstanceActor extends NodeActor<Instance> {
         };
     }
 
+    /**
+     * Run a controller on this node.
+     * @param controller The controller to run.
+     * @param taskId The task ID for the generated task.
+     * @param args The arguments passed to either "runController" or "runInstrument".
+     * @return The given taskId.
+     * @throws InstrumentExecutionException
+     */
     private UUID runController(Controller controller, UUID taskId, JsonNode args) throws InstrumentExecutionException {
         final ObjectNode arguments = (ObjectNode) args.get("arguments");
         // Check if there is a timeAllocation field specified. If so, get the value there. Else the default value is used.
@@ -274,10 +290,9 @@ public class InstanceActor extends NodeActor<Instance> {
             } else {
                 getNode().runController(controller, arguments, taskId.toString());
             }
-            future.complete("Foobar");
+            future.complete();
         }, res -> {
             log.debug("RunController for " + controller.getName() + " and task ID " + taskId.toString() + " finished");
-            System.out.println("RESULT:" + res.result());
         });
 
         return taskId;

@@ -98,8 +98,16 @@ public class InstrumentManager extends GenericActor {
         };
     }
 
-    @SuppressWarnings("unused")
+    /*
+     * This MessageHandler is used to dispatch the invocation of a capability on multiple instances.
+     * We'll simply get one of the UUIDs, determine the grouping it belongs to, assume all UUIDs that are passed
+     * belong to that grouping, create a taskId and then send a message containing the capability, the arguments and
+     * the taskId to those instances' "runCapability" handler.
+     *
+     * IMPORTANT: Take note that we assume all UUIDs belong to the same grouping.
+     */
     @SchemaPath("resource:/schema/manager/instrumentmanager/runCapability.schema.json")
+    @SuppressWarnings("unused")
     public MessageHandler runCapability() {
         return new MessageHandler() {
             @Override
@@ -118,6 +126,7 @@ public class InstrumentManager extends GenericActor {
                 final String groupingUuid = grouping.getUuid();
                 final UUID taskId = UUID.randomUUID();
 
+                // Construct the message to pass to the instances
                 final JsonObject message = new JsonObject()
                         .put("msgh", "runCapability")
                         .put("args", new JsonObject()
@@ -133,6 +142,7 @@ public class InstrumentManager extends GenericActor {
                             .put("timeAllocated", args.get("timeAllocated").asInt());
                 }
 
+                // For every UUID send the message to its address on the bus
                 for (final Iterator<JsonNode> iter = uuids.elements(); iter.hasNext();) {
                     final UUID uuid = UUID.fromString(iter.next().asText());
                     final String address = String.format(instanceActorFormat, uuid);
