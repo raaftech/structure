@@ -40,6 +40,7 @@ public class Result extends Instance {
     private static final String STATECODE = "stateCode";
     private static final String STATEINTERPRETATION = "stateInterpretation";
     private static final String STATEDESCRIPTION = "stateDescription";
+    private static final String ERROR = "error";
 
     public static final ResultRepository resultRepository = Context.getResultRepository();
 
@@ -84,12 +85,13 @@ public class Result extends Instance {
         // Required
         private String process;
         private String taskId;
+        // Optional
         private String stdout;
         private String stderr;
         private Integer returnCode;
-        // Optional
         private String user;
         private State state;
+        private String error;
 
 
         public Builder() {}
@@ -101,6 +103,8 @@ public class Result extends Instance {
             this.taskId = taskId;
             return this;
         }
+
+        // Optional fields
         public Builder stdout(String stdout) {
             this.stdout = stdout;
             return this;
@@ -113,7 +117,6 @@ public class Result extends Instance {
             this.returnCode = returnCode;
             return this;
         }
-        // Optional fields
         public Builder user(String user) {
             this.user = user;
             return this;
@@ -122,8 +125,13 @@ public class Result extends Instance {
             this.state = state;
             return this;
         }
+        public Builder error(String error) {
+            this.error = error;
+            return this;
+        }
+
         public Result build() {
-            if (process == null || taskId == null || stdout == null || stderr == null || returnCode == null) {
+            if (process == null || taskId == null) {
                 log.error("Error while building Result");
                 throw new ResultBuilderException("Not all required parameters were set.");
             }
@@ -133,13 +141,22 @@ public class Result extends Instance {
                     .put(DESC, "A result.")
                     .put(PROCESS, process)
                     .put(TASKID, taskId)
-                    .put(STDOUT, stdout)
-                    .put(STDERR, stderr)
-                    .put(RETURNCODE, returnCode)
                     .put(DATECREATED, System.currentTimeMillis());
 
+            if (stdout != null) {
+                json.put(STDOUT, stdout);
+            }
+            if (stderr != null) {
+                json.put(STDERR, stderr);
+            }
+            if (returnCode != null) {
+                json.put(RETURNCODE, returnCode);
+            }
             if (user != null) {
                 json.put(USER, user);
+            }
+            if (error != null) {
+                json.put(ERROR, error);
             }
             if (state != null) {
                 json.put(STATECODE, state.code);

@@ -187,6 +187,8 @@ public class TaskManager extends GenericActor {
                                                     e.printStackTrace();
                                                 }
                                                 job.status = JobStatus.ERROR;
+                                                job.metadata.put("exception", e.getMessage());
+                                                job.metadata.put("error", "Ran into an error: " + e.getMessage());
                                                 runningJobs.remove(job);
                                                 task.finishedOne();
                                                 // Notify interested parties
@@ -198,6 +200,12 @@ public class TaskManager extends GenericActor {
                                             // If this job is part of a sequential task and the previous job was cancelled
                                             // then we need to cancel every job in that task that comes after.
                                             job.status = JobStatus.CANCELLED;
+                                            String error = "Job belonged to a sequential task of which a step was " +
+                                                    "cancelled or erred.";
+                                            if (previousJob.isPresent() && previousJob.get().metadata.has("exception")) {
+                                                error += " Original exception: " + previousJob.get().metadata.get("exception").asText();
+                                            }
+                                            job.metadata.put("error", error);
                                             runningJobs.remove(job);
                                             task.finishedOne();
                                             // Notify
@@ -250,27 +258,46 @@ public class TaskManager extends GenericActor {
             publishStatus("taskFinished", mapper.createObjectNode()
                     .put("taskId", task.id)
                     .set("taskObj", task.toJson()));
-            // Save result
-            ProcessRunner.ProcessResult jobResult = job.process.finish();
-            Result.Builder resultBuilder = new Result.Builder()
+
+            final Result.Builder resultBuilder = new Result.Builder()
                     .taskId(job.taskId)
-                    .process(job.process.getCommand())
-                    .returnCode(jobResult.returnCode)
-                    .stderr(jobResult.stderr)
-                    .stdout(jobResult.stdout);
+                    .process(job.process.getCommand());
+            if (job.status == JobStatus.FINISHED) {
+                // Save result
+                ProcessRunner.ProcessResult jobResult = job.process.finish();
+                // We might have run into an error or a job might have been cancelled. Make sure we don't cause an NPE
+                if (jobResult.returnCode.isPresent()) {
+                    resultBuilder.returnCode(jobResult.returnCode.get());
+                } else {
+                    resultBuilder.error("Couldn't retrieve exit code, process was never run.");
+                }
+                if (jobResult.stdout.isPresent()) {
+                    resultBuilder.stderr(jobResult.stderr.get());
+                }
+                if (jobResult.stderr.isPresent()) {
+                    resultBuilder.stdout(jobResult.stdout.get());
+                }
                 /*
                 If this job was provided with a stateMap, see if we can map the exit code to a specific state.
                 In case the exit code is unknown, the state will be set to an error state "UNKNOWN".
                  */
-            if (job.metadata.has("stateMap")) {
-                JsonNode stateMap = job.metadata.get("stateMap");
-                if (stateMap.has(Integer.toString(jobResult.returnCode))) {
-                    JsonNode state = stateMap.get(Integer.toString(jobResult.returnCode));
-                    resultBuilder.state(new Result.State(state.get("code").asInt(),
-                            state.get("interpretation").asText(), state.get("description").asText()));
-                } else {
-                    resultBuilder.state(new Result.State(2, "UNKNOWN", "Received an unknown exit code."));
+                if (job.metadata.has("stateMap") && jobResult.returnCode.isPresent()) {
+                    JsonNode stateMap = job.metadata.get("stateMap");
+                    if (stateMap.has(Integer.toString(jobResult.returnCode.get()))) {
+                        JsonNode state = stateMap.get(Integer.toString(jobResult.returnCode.get()));
+                        resultBuilder.state(new Result.State(state.get("code").asInt(),
+                                state.get("interpretation").asText(), state.get("description").asText()));
+                    } else {
+                        resultBuilder.state(new Result.State(2, "UNKNOWN", "Received an unknown exit code."));
+                    }
                 }
+            } else if (job.status == JobStatus.ERROR) {
+                String reason = job.metadata.has("error") ? job.metadata.get("error").asText() : "Unknown error occurred.";
+                resultBuilder.error(reason);
+            }
+            else if (job.status == JobStatus.CANCELLED) {
+                String reason = job.metadata.has("error") ? job.metadata.get("error").asText() : "Job was cancelled for an unknown reason.";
+                resultBuilder.error(reason);
             }
             Result result = resultBuilder.build();
             Instance origin = result.add(UUID.fromString(job.metadata.get("originUuid").asText()));
