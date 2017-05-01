@@ -7,10 +7,8 @@ import com.raaftech.structure.annotations.SchemaPath;
 import com.raaftech.structure.base.Configuration;
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.base.NodeActor;
-import com.raaftech.structure.graph.Component;
-import com.raaftech.structure.graph.Controller;
-import com.raaftech.structure.graph.Instance;
-import com.raaftech.structure.graph.Instrument;
+import com.raaftech.structure.exceptions.InstrumentExecutionException;
+import com.raaftech.structure.graph.*;
 import com.raaftech.structure.graph.repositories.ComponentRepository;
 import com.raaftech.structure.graph.repositories.InstanceRepository;
 import com.raaftech.structure.graph.repositories.InstrumentRepository;
@@ -24,6 +22,7 @@ public class InstanceActor extends NodeActor<Instance> {
     private static final InstanceRepository INSTANCE_REPOSITORY = Context.getInstanceRepository();
     private static final ComponentRepository componentRepository = Context.getComponentRepository();
     private static final InstrumentRepository instrumentRepository = Context.getInstrumentRepository();
+    private static final InstanceRepository instanceRepository = Context.getInstanceRepository();
 
 
     private Logger log = LoggerFactory.getLogger(InstanceActor.class);
@@ -182,23 +181,14 @@ public class InstanceActor extends NodeActor<Instance> {
                 }
                 if (instrument != null) {
                     try {
-                        String taskId = UUID.randomUUID().toString();
-
-                        // Check if there is a timeAllocation field specified. If so, get the value there. Else the default value is used.
-                        if (args.has("timeAllocated")) {
-                            getNode().runController(instrument, (ObjectNode) args.get("arguments"), taskId, args.get("timeAllocated").asLong());
-                        } else {
-                            getNode().runController(instrument, (ObjectNode) args.get("arguments"), taskId);
-                        }
-
-                        result.put("data", taskId);
-                    } catch (RuntimeException e) {
+                        UUID taskId = UUID.randomUUID();
+                        runController(instrument, taskId, args);
+                        result.put("data", taskId.toString());
+                    } catch (InstrumentExecutionException e) {
                     	log.error(e.getMessage());
-
             			if (Configuration.isTraceModeOn()) {
             				e.printStackTrace();
             			}
-
             			result.put("error", e.getMessage());
                     }
                 } else {
@@ -213,5 +203,98 @@ public class InstanceActor extends NodeActor<Instance> {
                 return null;
             }
         };
+    }
+
+    /*
+     * Given a capability try to run an implementation (controller) of that capability on this node.
+     * We can be passed a "grouping" as argument, which is needed to run a controller. If this is not provided we'll
+     * try to retrieve it when we need it.
+     * A "taskId" (UUID string) might be provided as well, in case it was pre-generated.
+     * Other arguments are the same as for "runInstrument", and they'll simply be passed along to the instrument runner.
+     */
+    @SchemaPath("resource:/schema/node/instance/runCapability.schema.json")
+    @SuppressWarnings("unused")
+    public MessageHandler runCapability() {
+        return new MessageHandler() {
+            @Override
+            public JsonNode exec(JsonNode request) {
+                final ObjectNode result = mapper.createObjectNode();
+                final JsonNode args = request.get("args");
+                final String capability = args.get("capability").asText();
+                final Optional<String> maybeGrouping = args.has("groupingUuid") ?
+                        Optional.of(args.get("groupingUuid").asText()) :
+                        Optional.empty();
+                final UUID taskId = args.has("taskId") ? UUID.fromString(args.get("taskId").asText()) : UUID.randomUUID();
+
+                final Set<Controller> controllersForCapability;
+                final String groupingUuid;
+                // If we have a groupingUuid already; use it. Else determine the groupingUuid
+                if (maybeGrouping.isPresent()) {
+                    groupingUuid = maybeGrouping.get();
+                } else {
+                    final Grouping grouping = instanceRepository.getStartOfComponentGroup(getNode().getUuid());
+                    if (grouping == null) {
+                        // We cannot find the grouping this node belongs to so we can't run an instrument on it
+                        result.put("error", "We couldn't find the grouping to which node "
+                                + getNode().getUuid() + " belongs to.");
+                        return response(request, result);
+                    }
+                    groupingUuid = grouping.getUuid();
+                }
+
+                controllersForCapability = instrumentRepository
+                        .findControllersPerCapability(getNode().getUuid(), capability, groupingUuid);
+
+                // We might have multiple controllers for a given Capability, in that case use the heaviest
+                Optional<Controller> maybeHeaviestController = controllersForCapability.stream()
+                        .max((controller1, controller2) -> Double.compare(controller1.getWeight(), controller2.getWeight()));
+
+                if (!maybeHeaviestController.isPresent()) {
+                    result.put("error", "Couldn't find heaviest controller for capability");
+                    return response(request, result);
+                }
+
+                try {
+                    result.put("data", runController(maybeHeaviestController.get(), taskId, args).toString());
+                } catch (InstrumentExecutionException e) {
+                    log.error(e.getMessage());
+                    if (Configuration.isTraceModeOn()) {
+                        e.printStackTrace();
+                    }
+                    result.put("error", e.getMessage());
+                }
+                return response(request, result);
+            }
+
+            @Override
+            public JsonNode help(JsonNode request) {
+                return null;
+            }
+        };
+    }
+
+    /**
+     * Run a controller on this node.
+     * @param controller The controller to run.
+     * @param taskId The task ID for the generated task.
+     * @param args The arguments passed to either "runController" or "runInstrument".
+     * @return The given taskId.
+     * @throws InstrumentExecutionException
+     */
+    private UUID runController(Controller controller, UUID taskId, JsonNode args) throws InstrumentExecutionException {
+        final ObjectNode arguments = (ObjectNode) args.get("arguments");
+        // Check if there is a timeAllocation field specified. If so, get the value there. Else the default value is used.
+        vertx.executeBlocking(future -> {
+            if (args.has("timeAllocated")) {
+                getNode().runController(controller, arguments, taskId.toString(), args.get("timeAllocated").asLong());
+            } else {
+                getNode().runController(controller, arguments, taskId.toString());
+            }
+            future.complete();
+        }, res -> {
+            log.debug("RunController for " + controller.getName() + " and task ID " + taskId.toString() + " finished");
+        });
+
+        return taskId;
     }
 }
