@@ -3,8 +3,13 @@
 const R = require('ramda');
 const loopback = require('loopback');
 const boot = require('loopback-boot');
+const path = require('path');
+const BusHelper = require(path.join(__dirname, '..','common', 'libraries','busHelper'));
 
 const app = module.exports = loopback();
+
+const eventBusUrl = R.defaultTo('http://localhost:8080/eventbus', process.env.EVENTBUS);
+app.eventBus = new BusHelper(eventBusUrl);
 
 app.start = function () {
     // start the web server
@@ -14,7 +19,7 @@ app.start = function () {
         if(R.isNil(process.env.EVENTBUS)) {
             console.log('Environment variable EVENTBUS not set, using default...');
         }
-        console.log('Using eventbus url: %s', R.defaultTo('http://localhost:8080/eventbus', process.env.EVENTBUS));
+        console.log('Using eventbus url: %s', eventBusUrl);
         console.log('Web server listening at: %s', baseUrl);
         if (app.get('loopback-component-explorer')) {
             let explorerPath = app.get('loopback-component-explorer').mountPath;

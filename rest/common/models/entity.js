@@ -3,9 +3,8 @@
 const R = require('ramda');
 const path = require('path');
 const helper = require(path.join(__dirname, '..','libraries','helper'));
-const BusHelper = require(path.join(__dirname, '..','libraries','busHelper'));
 
-const evBus = new BusHelper(process.env.EVENTBUS);
+const evBus = require('../../server/server').eventBus;
 
 const baseAddress = helper.getEventBusAddress('com.raaftech.structure');
 const entityAddress = baseAddress(['manager', 'entitymanager']);
@@ -18,9 +17,6 @@ const resultFetcher = R.ifElse(
         getResultData,
         getErrorData
 );
-
-// eb.onopen = () => console.log('Connected to: %s', eventBusUrl);
-// eb.onclose = (error) => console.log('Eventbus connection closed: %s', stringify(error));
 
 module.exports = function (Entity) {
     Entity.fetchByUuid = function (uuid, callback) {
