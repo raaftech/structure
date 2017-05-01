@@ -3,9 +3,7 @@
 const R = require('ramda');
 const path = require('path');
 const helper = require(path.join(__dirname, '..','libraries','helper'));
-const BusHelper = require(path.join(__dirname, '..','libraries','busHelper'));
-
-const evBus = new BusHelper(process.env.EVENTBUS);
+const evBus = require('../../server/server').eventBus;
 
 const baseAddress = helper.getEventBusAddress('com.raaftech.structure');
 const instanceAddress = baseAddress(['repository', 'instances']);
