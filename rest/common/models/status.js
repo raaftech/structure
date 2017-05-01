@@ -4,14 +4,28 @@ const EventBus = require('vertx3-eventbus-client');
 const R = require('ramda');
 
 const eventBusUrl = R.defaultTo('http://localhost:8080/eventbus', process.env.EVENTBUS);
-const eb = new EventBus(eventBusUrl);
+let eb = new EventBus(eventBusUrl);
+let intervalId = 0;
 const notNil = R.compose(R.not, R.isNil);
 
 module.exports = function (Status) {
     function wrapper() {
         return new Promise((resolve, reject) => {
             eb.onopen = () => resolve('Connected to status channel');
-            eb.onclose = (error) => resolve('Error while connecting to status channel: '+error.reason);
+            //eb.onclose = (error) => resolve('Error while connecting to status channel: '+error.reason);
+            eb.onclose = (error) => {
+                console.log('Connection to Structure was closed. State: %s', eb.state);
+                intervalId = setInterval(function() {
+                    if(eb.state === 1) {
+                        clearInterval(intervalId);
+                        setupStatusChannel();
+                    } else {
+                        console.log('retrying status connection... %s', eb.state);
+                        eb = new EventBus(eventBusUrl);
+                        eb.onopen = () => console.log('Connected to: %s', eventBusUrl);
+                    }
+                }, 5000);
+            };
         });
     }
 
@@ -19,7 +33,6 @@ module.exports = function (Status) {
     //FIXME if not, we need a way to auto clean status message resources in memory db
     function setupStatusChannel() {
         eb.registerHandler('com.raaftech.structure.status', function(error, message) {
-			console.log('GOT A MESSAGE: ');
 			console.log(message);
             if(error) {
                 console.log("ERROR: "+error);
