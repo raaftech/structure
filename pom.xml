@@ -95,7 +95,7 @@
         <main.class>com.raaftech.structure.base.Application</main.class>
 
         <!-- Core component versions -->
-        <vertx.version>3.3.3</vertx.version>
+        <vertx.version>3.4.1</vertx.version>
         <spring-data-neo4j.version>3.2.1.RELEASE</spring-data-neo4j.version>
         <neo4j.version>2.1.8</neo4j.version>
         <jersey.version>1.9</jersey.version>
