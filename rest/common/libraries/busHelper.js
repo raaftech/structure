@@ -12,13 +12,13 @@ class BusHelper {
         this.intervalId = 0;
         const self = this;
 
-        this.eb.onopen = () => console.log('Connected to: %s', self.eventBusUrl);
-        // this.eb.onclose = (error) => console.log('Eventbus connection closed: %s', JSON.stringify(error, undefined,2));
-
-        this.eb.onclose = (error) => {
+        let closeRoutine = (error) => {
             console.log('Connection to Structure was closed. State: %s', self.eb.state);
             self.intervalId = setInterval(function() {
-                if(self.eb.state === 1) clearInterval(self.intervalId);
+                if(self.eb.state === 1) {
+                    clearInterval(self.intervalId);
+                    self.eb.onclose = closeRoutine;
+                }
                 else {
                     console.log('retrying connection... %s', self.eb.state);
                     self.eb = new EventBus(self.eventBusUrl);
@@ -26,6 +26,9 @@ class BusHelper {
                 }
             }, 5000);
         };
+
+        this.eb.onopen = () => console.log('Connected to: %s', self.eventBusUrl);
+        this.eb.onclose = closeRoutine;
     }
 
     sendEvent(base, cmd, args) {
