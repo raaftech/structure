@@ -46,17 +46,28 @@ public class StructureManager extends GenericActor {
         };
     }
 
+    /**
+     * Reinitialize the complete database. This means undeploying all NodeActor verticles,
+     * purging the database from all vertices and edges and then reloading the bundles.
+     * @return All the NodeActor addresses that are being undeployed.
+     */
+    @SuppressWarnings("unused")
     public MessageHandler reinitialize() {
         return new MessageHandler() {
             @Override
             public JsonNode exec(JsonNode request) {
+                ObjectNode result = mapper.createObjectNode();
+
                 log.info("Starting reinitialization of Structure");
                 publishStatus("structureReinitialization", mapper.createObjectNode().put("data", "started"));
                 // First undeploy all the NodeActors
                 final JsonObject message = new JsonObject().put("msgh", "undeploy");
                 LocalMap<String, String> nodeActors = vertx.sharedData().getLocalMap(NodeActor.SHAREDMAP_ID);
-                nodeActors.keySet().stream()
-                        .forEach(address -> vertx.eventBus().send(address, message));
+                nodeActors.keySet().forEach(address -> vertx.eventBus().send(address, message));
+                // Add the undeployed NodeActor addresses to the result
+                result.set("data", mapper.valueToTree(nodeActors.keySet()));
+                // Empty the map containing the loaded NodeActors
+                nodeActors.clear();
                 log.info("Undeployed all NodeActors");
 
                 // Then purge the database
@@ -73,8 +84,8 @@ public class StructureManager extends GenericActor {
                 });
                 log.info("Started database reinitialization");
 
-                return response(request, mapper.createObjectNode().set("data", mapper.valueToTree(nodeActors.keySet())));
-            };
+                return response(request, result);
+            }
 
             @Override
             public JsonNode help(JsonNode request) {
