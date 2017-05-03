@@ -77,6 +77,7 @@ public class InstanceActor extends NodeActor<Instance> {
      * child components of that Instance of a particular type.
      * @return An array containing the found components.
      */
+    @SchemaPath("resource:/schema/node/instance/getcomponentsbytype.schema.json")
     @SuppressWarnings("unused")
     public MessageHandler getComponentsByType() {
         return new MessageHandler() {
