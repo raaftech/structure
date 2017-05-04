@@ -1,5 +1,5 @@
 {
-  "id": "common.schema.json",
+  "id": "#",
   "$schema": "http://json-schema.org/draft-04/schema#",
   "title": "Common Definitions",
   "description": "Common definitions used in multiple schemas.",

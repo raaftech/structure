@@ -1,5 +1,5 @@
 {
-    "id": "request.schema.json#",
+    "id": "#",
     "$schema": "http://json-schema.org/draft-04/schema#",
     "description": "Schema for Structure request messages.",
     "type": "object",
