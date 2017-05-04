@@ -2,8 +2,6 @@ package schema;
 
 import com.google.common.collect.ImmutableSet;
 
-import java.net.URI;
-import java.util.Collections;
 import java.util.Set;
 
 public class EntityTest extends SchemaTest {
