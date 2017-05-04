@@ -1,0 +1,40 @@
+{
+  "type": "Type",
+  "name": "Component",
+  "desc": "An abstract base component.",
+  "meta": {
+    "uuid": "4be8c55c-1f9e-4b83-933b-26cd9dcee2be",
+    "relations": {
+      "ISA": {
+        "direction": "outgoing",
+        "uuids": [
+          "8c38b93a-1bd4-4f84-97f6-030da5de8cf1"
+        ]
+      }
+    },
+    "constraints": {
+      "HAS_COMPONENT": [
+        {
+          "cardinality": "OPTIONAL_TO_MANY",
+          "to": "47d4db47-662b-4305-908b-400a3126dc55"
+        }
+      ],
+      "HAS_CONFIGURATION": [
+        {
+          "cardinality": "OPTIONAL_TO_MANY",
+          "to": "95d6e424-d432-4da1-9f80-f07b0e0dd397"
+        }
+      ]
+    }
+  },
+  "data": {
+    "glyphId": 61
+  },
+  "file": {
+    "dataSchema": {
+      "encoding": "text",
+      "format": "json",
+      "path": "schemas/component.schema.json"
+    }
+  }
+}

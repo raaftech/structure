@@ -10,7 +10,7 @@ public class EntityTest extends SchemaTest {
     protected Set<String> good() {
         return ImmutableSet.of(
                 "schema/entityGood01.json",
-                "schema/entityBad01.json"
+                "schema/entityGood02.json"
         );
     }
 
