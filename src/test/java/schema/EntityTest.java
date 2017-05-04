@@ -1,7 +1,6 @@
 package schema;
 
 import com.google.common.collect.ImmutableSet;
-
 import java.util.Set;
 
 public class EntityTest extends SchemaTest {
@@ -10,14 +9,14 @@ public class EntityTest extends SchemaTest {
     @Override
     protected Set<String> good() {
         return ImmutableSet.of(
-                "schema/goodEntity01.json",
-                "schema/badEntity01.json"
+                "schema/entityGood01.json",
+                "schema/entityBad01.json"
         );
     }
 
     @Override
     protected Set<String> bad() {
-        return ImmutableSet.of("schema/badEntity01.json");
+        return ImmutableSet.of("schema/entityBad01.json");
     }
 
     @Override

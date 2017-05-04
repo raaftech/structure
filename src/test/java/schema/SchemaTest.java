@@ -1,7 +1,6 @@
 package schema;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.raaftech.structure.base.Configuration;
 import com.raaftech.structure.helper.JsonHelper;
 import org.junit.Before;
 import org.junit.Test;
