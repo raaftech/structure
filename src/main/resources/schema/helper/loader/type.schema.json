@@ -1,5 +1,4 @@
 {
-  "id": "https://repo.raaftech.com/schema/helper/loader/type.schema.json#",
   "$schema": "http://json-schema.org/draft-04/schema#",
   "description": "Schema for Structure types.",
   "type": "object",

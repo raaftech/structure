@@ -1,5 +1,4 @@
 {
-  "id": "https://repo.raaftech.com/schema/manager/entitymanager/read.schema.json#",
   "$schema": "http://json-schema.org/draft-04/schema#",
   "description": "Schema for EntityManager's read method.",
   "type": "object",

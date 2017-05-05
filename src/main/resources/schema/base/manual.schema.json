@@ -1,5 +1,4 @@
 {
-    "id": "#",
     "$schema": "http://json-schema.org/draft-04/schema#",
     "description": "Schema for Structure manual and/or documentation format.",
     "type": "object",

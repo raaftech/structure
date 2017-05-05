@@ -1,5 +1,4 @@
 {
-    "id": "https://repo.raaftech.com/schema/repository/templatenodes/createtemplatenode.json#",
     "$schema": "http://json-schema.org/draft-04/schema#",
     "description": "Schema for the TemplateNode repository's putNode method.",
     "type": "object",

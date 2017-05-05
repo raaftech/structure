@@ -1,5 +1,4 @@
 {
-  "id": "queuetask.schema.json#",
   "$schema": "http://json-schema.org/draft-04/schema#",
   "description": "Schema for TaskManager's queueTask method.",
   "type": "object",

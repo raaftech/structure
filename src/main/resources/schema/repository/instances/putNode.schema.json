@@ -1,5 +1,4 @@
 {
-    "id": "https://repo.raaftech.com/schema/repository/instancenodes/putNode.schema.json#",
     "$schema": "http://json-schema.org/draft-04/schema#",
     "description": "Schema for the Instance repository's putNode method.",
     "type": "object",

@@ -1,5 +1,4 @@
 {
-  "id": "https://repo.raaftech.com/schema/manager/taskmanager/task.schema.json#",
   "$schema": "http://json-schema.org/draft-04/schema#",
   "description": "Schema for TaskManager's cancelTask, taskStatus and toggleTaskPause method.",
   "type": "object",

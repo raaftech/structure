@@ -1,5 +1,4 @@
 {
-    "id": "https://repo.raaftech.com/schema/response.schema.json#",
     "$schema": "http://json-schema.org/draft-04/schema#",
     "description": "Schema for Structure responses to requests.",
     "type": "object",

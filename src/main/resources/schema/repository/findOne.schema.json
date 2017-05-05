@@ -1,5 +1,4 @@
 {
-    "id": "https://repo.raaftech.com/schema/repository/findOne.schema.json#",
     "$schema": "http://json-schema.org/draft-04/schema#",
     "description": "Schema for the findOne method every repository inherits.",
     "type": "object",

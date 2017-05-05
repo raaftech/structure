@@ -1,5 +1,4 @@
 {
-	"id": "https://repo.raaftech.com/schema/instrument.schema.json#",
 	"$schema": "http://json-schema.org/draft-04/schema#",
 	"description": "Schema for Structure map metadata.",
 	"type": "object",
