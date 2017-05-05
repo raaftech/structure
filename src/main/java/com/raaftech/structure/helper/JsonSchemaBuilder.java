@@ -531,7 +531,14 @@ public class JsonSchemaBuilder {
      * @return True when the JSON successfully validated, false if not.
      */
     public boolean validateJson(JsonNode data) {
-        return JsonHelper.validateToSchema(json, data);
+        JsonSchemaFactory jsonSchemaFactory = JsonSchemaFactory.byDefault();
+        try {
+            JsonSchema jsonSchema = jsonSchemaFactory.getJsonSchema(data);
+            return JsonHelper.validateToSchema(jsonSchema, data);
+        } catch (ProcessingException e) {
+            // JsonHelper#validateToSchema will already output the error
+            return false;
+        }
     }
 
     /**

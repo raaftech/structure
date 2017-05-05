@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.nio.file.Path;
 import java.util.*;
 
@@ -35,8 +36,8 @@ public class EntityDeserializer extends StdDeserializer<Entity> {
     /* Logging object. */
     private final static Logger log = LoggerFactory.getLogger(EntityDeserializer.class);
 
-    /* JSON Schema for Entity objects. */
-    private final JsonNode entitySchema = JsonHelper.jsonFromResource("schema/next/entity.schema.json");
+    /* URI of JSON Schema for Entity objects. */
+    private final URI entitySchema = URI.create("resource:/schema/next/entity.schema.json");
 
     /* key names for entity JSON */
     private static final String FILE_DATASCHEMA = "dataSchema";

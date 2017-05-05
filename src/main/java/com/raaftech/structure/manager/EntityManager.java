@@ -28,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.neo4j.support.Neo4jTemplate;
 
+import java.net.URI;
 import java.util.*;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
@@ -87,7 +88,7 @@ public class EntityManager extends GenericActor {
                             // If an object doesn't adhere to entity.schema.json, throw an exception
                             .peek(json -> {
                                 if (!JsonHelper.validateToSchema(
-                                        JsonHelper.jsonFromResource("schema/next/entity.schema.json"), json)) {
+                                        URI.create("schema/next/entity.schema.json"), json)) {
                                     throw new EntityDeserializationException("Received object does not validate against entity.schema.json");
                                 }
                             })
