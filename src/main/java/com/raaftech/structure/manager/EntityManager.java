@@ -88,7 +88,7 @@ public class EntityManager extends GenericActor {
                             // If an object doesn't adhere to entity.schema.json, throw an exception
                             .peek(json -> {
                                 if (!JsonHelper.validateToSchema(
-                                        URI.create("schema/next/entity.schema.json"), json)) {
+                                        URI.create("resource:/schema/next/entity.schema.json"), json)) {
                                     throw new EntityDeserializationException("Received object does not validate against entity.schema.json");
                                 }
                             })
