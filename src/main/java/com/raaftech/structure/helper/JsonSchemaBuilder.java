@@ -533,7 +533,7 @@ public class JsonSchemaBuilder {
     public boolean validateJson(JsonNode data) {
         JsonSchemaFactory jsonSchemaFactory = JsonSchemaFactory.byDefault();
         try {
-            JsonSchema jsonSchema = jsonSchemaFactory.getJsonSchema(data);
+            JsonSchema jsonSchema = jsonSchemaFactory.getJsonSchema(json);
             return JsonHelper.validateToSchema(jsonSchema, data);
         } catch (ProcessingException e) {
             // JsonHelper#validateToSchema will already output the error
