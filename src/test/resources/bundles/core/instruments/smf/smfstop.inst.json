@@ -3,7 +3,7 @@
   "name": "stop",
   "desc": "SmfStop.",
   "meta": {
-    "uuid": "464b21e7-e883-4e0c-969d-dbb00cade8c7",
+    "uuid": "fcd96134-e3cf-4869-9642-82d0f4350c28",
     "relations": {
       "HAS_INSTRUMENT": {
         "direction": "incoming",

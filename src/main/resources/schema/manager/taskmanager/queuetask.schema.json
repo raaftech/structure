@@ -1,5 +1,5 @@
 {
-  "id": "https://repo.raaftech.com/schema/manager/taskmanager/queuetask.schema.json#",
+  "id": "queuetask.schema.json#",
   "$schema": "http://json-schema.org/draft-04/schema#",
   "description": "Schema for TaskManager's queueTask method.",
   "type": "object",
@@ -29,7 +29,21 @@
               "instrument": { "type": "string" },
               "originName": { "type": "string" },
               "originUuid": { "type": "string" },
-              "capability": { "type": "string" }
+              "capability": { "type": "string" },
+              "timeAllocated": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "stateMap": {
+                "type": "object",
+                "patternProperties": {
+                  "^([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])$": {
+                    "$ref": "#/definitions/state"
+                  }
+                },
+                "minProperties": 1,
+                "additionalProperties": false
+              }
             },
             "required": [ "instrument", "originName", "originUuid", "capability" ]
           }
@@ -38,5 +52,27 @@
       }
     }
   },
-  "required": [ "jobs" ]
+  "required": [ "jobs" ],
+  "definitions": {
+    "state": {
+      "type": "object",
+      "required": [ "code", "interpretation", "description" ],
+      "properties": {
+        "code": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2,
+          "description": "A code representing the \"goodness\" of the result, 0 being \"good\", 2 being \"bad\"."
+        },
+        "interpretation": {
+          "type": "string",
+          "description": "A short word conveying the meaning of \"stateCode\", e.g. \"OK\", \"MAYBE\", \"NOK\""
+        },
+        "description": {
+          "type": "string",
+          "description": "A longer description of the reason for the status code."
+        }
+      }
+    }
+  }
 }

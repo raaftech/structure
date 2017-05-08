@@ -3,7 +3,7 @@
   "name": "start",
   "desc": "UpstartStart.",
   "meta": {
-    "uuid": "f95c2ad5-f12f-45a1-9065-d76984f59bfd",
+    "uuid": "92858950-d283-4e30-8966-b22dffe9e972",
     "relations": {
       "HAS_INSTRUMENT": {
         "direction": "incoming",

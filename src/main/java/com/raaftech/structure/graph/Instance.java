@@ -3,9 +3,11 @@ package com.raaftech.structure.graph;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.raaftech.structure.base.*;
+import com.raaftech.structure.base.Context;
 import com.raaftech.structure.graph.repositories.InstanceRepository;
+import com.raaftech.structure.graph.repositories.ResultRepository;
 import com.raaftech.structure.graph.repositories.TypeRepository;
+import com.raaftech.structure.helper.InstrumentRunner;
 import com.raaftech.structure.helper.JsonHelper;
 import com.raaftech.structure.node.InstanceActor;
 import org.neo4j.graphdb.Direction;
@@ -16,7 +18,6 @@ import org.springframework.data.annotation.Transient;
 import org.springframework.data.neo4j.annotation.Fetch;
 import org.springframework.data.neo4j.annotation.NodeEntity;
 import org.springframework.data.neo4j.annotation.RelatedTo;
-import org.springframework.data.neo4j.fieldaccess.DynamicProperties;
 import org.springframework.data.neo4j.fieldaccess.DynamicPropertiesContainer;
 
 import java.util.Iterator;
@@ -44,6 +45,14 @@ public abstract class Instance extends Node {
 
     @Transient
     protected static final TypeRepository TYPE_REPOSITORY = Context.getTypeRepository();
+
+    @Transient
+    private static final ResultRepository resultRepository = Context.getResultRepository();
+
+    @RelatedTo(type="RESULTS", direction = Direction.OUTGOING)
+    @Fetch
+    private Result startOfResultChain;
+
 
     @Transient
     JsonNode instanceData;
@@ -140,7 +149,11 @@ public abstract class Instance extends Node {
             Iterator<String> iter = properties.fieldNames();
             while (iter.hasNext()) {
                 String key = iter.next();
-                data.setProperty(key, properties.get(key).asText());
+                if (properties.get(key).isObject()) {
+                    data.setProperty(key, properties.get(key));
+                } else {
+                    data.setProperty(key, properties.get(key).asText());
+                }
             }
         } else {
             throw new RuntimeException("Supplied JSON did not match Type schema.");
@@ -149,24 +162,70 @@ public abstract class Instance extends Node {
         return this;
     }
 
+    // Run a controller on this instance with default allocated time
+    public Instance runController(Controller controller, ObjectNode arguments, String taskId) {
+        new InstrumentRunner(this, controller, arguments, taskId).startInstrument();
+        return this;
+    }
+
+    // Run a controller on this instance with overridden allocated time
+    public Instance runController(Controller controller, ObjectNode arguments, String taskId, long timeAllocated) {
+        new InstrumentRunner(this, controller, arguments, taskId, timeAllocated).startInstrument();
+        return this;
+    }
+
+    /**
+     * Return whether this instance is an instance of <code>type</code> or
+     * a subtype of <code>type</code>.
+     * @param type The name of the type we want to check.
+     * @return Are we an instance of <code>type</code> or an instance of a subtype of <code>type</code>? Then true.
+     */
     public boolean isOfType(String type) {
         return INSTANCE_REPOSITORY.isOfType(getUuid(), type) > 0;
+    }
+
+    /**
+     * Return whether this instance is an instance of <code>type</code> or
+     * a subtype of <code>type</code>.
+     * @param type The type we want to check.
+     * @return Are we an instance of <code>type</code> or an instance of a subtype of <code>type</code>? Then true.
+     */
+    public boolean isOfType(Type type) {
+        return type != null && isOfType(type.getName());
+    }
+
+    // Get all the startOfResultChain belonging to this Instance
+    public Result getStartOfResultChain() {
+        return startOfResultChain;
+    }
+
+    public Instance addResult(Result result) {
+        if (startOfResultChain != null) {
+            startOfResultChain.setNext(result);
+        }
+        startOfResultChain = result;
+
+        return this;
     }
 
     public Instance save() {
         boolean newNode = getId() == null || getId() < 0;
         Transaction tx = Context.getGraphDatabase().beginTx();
-        if (getInstanceOf().getSchema().validateJson(instanceData)) {
-            getInstanceOf().getKv().asMap().entrySet().stream()
-                    .forEach(entry -> data.setProperty(entry.getKey(), entry.getValue()));
+        if (newNode) {
+            if (getInstanceOf().getSchema().validateJson(instanceData)) {
+                getInstanceOf().getKv().asMap().entrySet().stream()
+                        .forEach(entry -> data.setProperty(entry.getKey(), entry.getValue()));
+                INSTANCE_REPOSITORY.save(this);
+                tx.success();
+            } else {
+                tx.failure();
+                throw new RuntimeException("Can't create instanceNode, missing properties.");
+            }
+        } else {
             INSTANCE_REPOSITORY.save(this);
             tx.success();
-            tx.close();
-        } else {
-            tx.failure();
-            tx.close();
-            throw new RuntimeException("Can't create instanceNode, missing properties.");
         }
+        tx.close();
 
         if (newNode && Context.getVertx() != null) {
             Context.getVertx().deployVerticle(

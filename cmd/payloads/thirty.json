@@ -82,13 +82,18 @@
         "HAS_COMPONENT": {
           "direction": "outgoing",
           "uuids": [
-            "2bdad7f8-bd9a-416b-9716-5d1af5d4ba9c",
-            "0105bffa-44e6-41d6-a57f-da56e9ffbd49",
-            "510045ca-84f0-4e23-a6de-19de87d2b81e",
             "036e2fba-611f-4363-b422-2de0ad331eed",
             "9dc49989-3c5c-427e-b3a5-bf181e119247",
             "14cec381-6bb4-4373-b2e0-458ab10dea41",
             "f8375ef6-aecd-4183-b454-974f37bf0f88"
+          ]
+        },
+        "HAS_CONFIGURATION": {
+          "direction": "outgoing",
+          "uuids": [
+            "2bdad7f8-bd9a-416b-9716-5d1af5d4ba9c",
+            "0105bffa-44e6-41d6-a57f-da56e9ffbd49",
+            "510045ca-84f0-4e23-a6de-19de87d2b81e"
           ]
         }
       }

@@ -87,4 +87,24 @@ public class TypeActor extends NodeActor<Type> {
             }
         };
     }
+
+     // Get all the incoming and outgoing constraints for a type.
+    public MessageHandler getConstraints() {
+        return new MessageHandler() {
+            @Override
+            public JsonNode exec(JsonNode request) {
+                ObjectNode result = mapper.createObjectNode();
+                ObjectNode data = result.putObject("data");
+                data.set("incoming", mapper.valueToTree(getNode().getIncomingConstraints()));
+                data.set("outgoing", mapper.valueToTree(getNode().getOutgoingConstraints()));
+
+                return response(request, result);
+            }
+
+            @Override
+            public JsonNode help(JsonNode request) {
+                return null;
+            }
+        };
+    }
 }

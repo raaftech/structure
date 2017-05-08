@@ -26,7 +26,7 @@ public abstract class NodeActor<T extends Node> extends GenericActor {
 
     public NodeActor(T node) {
         this.uuid = node.getUuid();
-        primaryConsumerAddress = startOfAddress + getActorName(node);
+        primaryConsumerAddress = startOfAddress + uuid;
     }
 
     private Logger log = LoggerFactory.getLogger(NodeActor.class);
@@ -46,18 +46,6 @@ public abstract class NodeActor<T extends Node> extends GenericActor {
         return (T) nodeRepository.findByUuid(uuid);
     }
 
-    // Used to register the handler address
-    protected String getActorName(T node) {
-        if (node != null) {
-            String[] fullClassName = node.getClass().getName().split("\\.");
-            String className = fullClassName[fullClassName.length - 1];
-            className = className.replace("Node", "");
-
-            return className.toLowerCase() + "." + uuid;
-        } else {
-            return null;
-        }
-    }
     // Used to register an optional second handler address
     protected abstract String getSecondaryAddress();
 

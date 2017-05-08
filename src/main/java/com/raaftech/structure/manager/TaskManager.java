@@ -8,6 +8,8 @@ import com.raaftech.structure.annotations.SchemaPath;
 import com.raaftech.structure.base.Configuration;
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.base.GenericActor;
+import com.raaftech.structure.graph.Instance;
+import com.raaftech.structure.graph.Result;
 import com.raaftech.structure.helper.ProcessRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,18 +59,16 @@ public class TaskManager extends GenericActor {
         public ProcessRunner process;
         public ObjectNode metadata;
         public Long timeStarted;
-        public int timeAllocated;
+        public Long timeAllocated;
 
         public Job(ProcessRunner process, String taskId, ObjectNode metadata) {
             this.process = process;
             this.taskId = taskId;
             this.metadata = metadata;
-            this.timeAllocated = TaskManager.defaultJobTime;
-        }
 
-        public Job(ProcessRunner process, String taskId, ObjectNode metadata, int timeAllocated) {
-            this(process, taskId, metadata);
-            this.timeAllocated = timeAllocated;
+            this.timeAllocated = metadata.has("timeAllocated") ?
+                    metadata.get("timeAllocated").asLong(TaskManager.defaultJobTime) :
+                    TaskManager.defaultJobTime;
         }
 
         public ObjectNode toJson() {
@@ -135,9 +135,9 @@ public class TaskManager extends GenericActor {
     // This is being polled by the periodic event defined after this.
     private static Map<String, Task> taskMap = new HashMap<>();
     // The currently running jobs.
-    private static List<Job> runningJobs = new ArrayList<>();
+    private static Vector<Job> runningJobs = new Vector<>();
     // The default timeout for a job.
-    private final static int defaultJobTime = 3000;
+    private final static long defaultJobTime = 3000L;
 
     /**
      * The constructor creates a periodic task that polls the queue.
@@ -162,21 +162,33 @@ public class TaskManager extends GenericActor {
                                 if (task.status == TaskStatus.SCHEDULED) {
                                     // If the job didn't get canceled while it was in the queue run it.
                                     if (job.status != JobStatus.CANCELLED) {
-                                        if ((task.sequential
-                                                && (jobId == 0
-                                                || (jobId > 0
-                                                        && ((task.jobs.get(jobId-1).status == JobStatus.FINISHED)
-                                                        // For now we won't cancel a whole task because a job failed
-                                                        || (task.jobs.get(jobId-1).status == JobStatus.CANCELLED)))))
-                                            || !task.sequential) {
+                                        final Optional<Job> previousJob = jobId == 0 ?
+                                                Optional.empty() : Optional.of(task.jobs.get(jobId-1));
+
+                                        // Is this the first job of a sequential task?
+                                        final boolean sequentialTaskFirstJob = task.sequential && jobId == 0;
+
+                                        // Is this the n-th job of a sequential task, but is the n-1-th job finished?
+                                        final boolean sequentialTaskPreviousJobFinished =
+                                                previousJob.isPresent() && task.sequential && previousJob.get().status == JobStatus.FINISHED;
+
+                                        // Is this the n-th job of a sequential task, but did the n-1-th job err or was it cancelled?
+                                        final boolean sequentialTaskPreviousJobErredOrCancelled =
+                                                previousJob.isPresent() && task.sequential &&
+                                                (previousJob.get().status == JobStatus.CANCELLED || previousJob.get().status == JobStatus.ERROR);
+
+                                        // If one of the first two cases hold, or the task can be run parallel we are ready to run the current job
+                                        if (sequentialTaskFirstJob || sequentialTaskPreviousJobFinished || !task.sequential) {
                                             try {
                                                 runJob(job);
-                                            } catch (InterruptedException | IOException e) {
+                                            } catch (UnsupportedOperationException | InterruptedException | IOException e) {
                                                 log.error("Ran into error while executing job " + task.id + "." + jobId);
                                                 if (Configuration.isTraceModeOn()) {
                                                     e.printStackTrace();
                                                 }
                                                 job.status = JobStatus.ERROR;
+                                                job.metadata.put("exception", e.getMessage());
+                                                job.metadata.put("error", "Ran into an error: " + e.getMessage());
                                                 runningJobs.remove(job);
                                                 task.finishedOne();
                                                 // Notify interested parties
@@ -184,6 +196,22 @@ public class TaskManager extends GenericActor {
                                                         .put("taskId", task.id)
                                                         .put("jobId", task.jobs.indexOf(job)));
                                             }
+                                        } else if (sequentialTaskPreviousJobErredOrCancelled) {
+                                            // If this job is part of a sequential task and the previous job was cancelled
+                                            // then we need to cancel every job in that task that comes after.
+                                            job.status = JobStatus.CANCELLED;
+                                            String error = "Job belonged to a sequential task of which a step was " +
+                                                    "cancelled or erred.";
+                                            if (previousJob.isPresent() && previousJob.get().metadata.has("exception")) {
+                                                error += " Original exception: " + previousJob.get().metadata.get("exception").asText();
+                                            }
+                                            job.metadata.put("error", error);
+                                            runningJobs.remove(job);
+                                            task.finishedOne();
+                                            // Notify
+                                            publishStatus("jobCancelled", mapper.createObjectNode()
+                                                    .put("taskId", task.id)
+                                                    .put("jobId", task.jobs.indexOf(job)));
                                         } else {
                                             jobQueue.offer(job);
                                         }
@@ -196,6 +224,8 @@ public class TaskManager extends GenericActor {
                                     // Requeue job, because the task is paused
                                     jobQueue.offer(job);
                                 }
+                                // Finish the task in case it's done
+                                finishTaskIfDone(task, job);
                             }
                         });
             }
@@ -209,6 +239,86 @@ public class TaskManager extends GenericActor {
     private void queueJob(Job job) {
         job.status = JobStatus.QUEUED;
         jobQueue.add(job);
+    }
+
+    /**
+     * Given a task and the latest job that belongs to that task, see if all the jobs in that task
+     * are finished. If they are, finish the task.
+     * Finishing the task means emitting a "taskFinished" event and saving the task result.
+     * @param task The task to finish if it's done.
+     * @param job The latest finished job of that task.
+     */
+    private void finishTaskIfDone(Task task, Job job) {
+        if (task.isFinished()) {
+            task.status = TaskStatus.FINISHED;
+            log.info("Task " + task.id + " is finished.");
+            // Remove task from taskMap.
+            taskMap.remove(task.id);
+            // Notify interested parties
+            publishStatus("taskFinished", mapper.createObjectNode()
+                    .put("taskId", task.id)
+                    .set("taskObj", task.toJson()));
+
+            final Result.Builder resultBuilder = new Result.Builder()
+                    .taskId(job.taskId)
+                    .process(job.process.getCommand());
+            if (job.status == JobStatus.FINISHED) {
+                // Save result
+                ProcessRunner.ProcessResult jobResult = job.process.finish();
+                // We might have run into an error or a job might have been cancelled. Make sure we don't cause an NPE
+                if (jobResult.returnCode.isPresent()) {
+                    resultBuilder.returnCode(jobResult.returnCode.get());
+                } else {
+                    resultBuilder.error("Couldn't retrieve exit code, process was never run.");
+                }
+                if (jobResult.stdout.isPresent()) {
+                    resultBuilder.stderr(jobResult.stderr.get());
+                }
+                if (jobResult.stderr.isPresent()) {
+                    resultBuilder.stdout(jobResult.stdout.get());
+                }
+                /*
+                If this job was provided with a stateMap, see if we can map the exit code to a specific state.
+                In case the exit code is unknown, the state will be set to an error state "UNKNOWN".
+                 */
+                if (job.metadata.has("stateMap") && jobResult.returnCode.isPresent()) {
+                    JsonNode stateMap = job.metadata.get("stateMap");
+                    if (stateMap.has(Integer.toString(jobResult.returnCode.get()))) {
+                        JsonNode state = stateMap.get(Integer.toString(jobResult.returnCode.get()));
+                        resultBuilder.state(new Result.State(state.get("code").asInt(),
+                                state.get("interpretation").asText(), state.get("description").asText()));
+                    } else {
+                        resultBuilder.state(new Result.State(2, "UNKNOWN", "Received an unknown exit code."));
+                    }
+                }
+            } else if (job.status == JobStatus.ERROR) {
+                String reason = job.metadata.has("error") ? job.metadata.get("error").asText() : "Unknown error occurred.";
+                resultBuilder.error(reason);
+            }
+            else if (job.status == JobStatus.CANCELLED) {
+                String reason = job.metadata.has("error") ? job.metadata.get("error").asText() : "Job was cancelled for an unknown reason.";
+                resultBuilder.error(reason);
+            }
+            Result result = resultBuilder.build();
+            Instance origin = result.add(UUID.fromString(job.metadata.get("originUuid").asText()));
+                /*
+                result.add returns the origin instance, on which we want to save the result
+                We save the origin itself, which will cause the save to propagate to the result chain.
+                If we would just save the result, it won't update the head of the result list to the latest result.
+                 */
+            origin.save();
+            try {
+                log.info(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(task.toJson()));
+            } catch (JsonProcessingException e) {
+                if (Configuration.isTraceModeOn()) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        // Check if the queue and the running process list are empty, meaning we've finished all the work.
+        if (jobQueue.size() == 0 && runningJobs.size() == 0) {
+            log.info("Completed all the work managed by TaskManager.");
+        }
     }
 
     /**
@@ -272,29 +382,8 @@ public class TaskManager extends GenericActor {
                 vertx.cancelTimer(id);
             }
 
-            if (task.isFinished()) {
-                task.status = TaskStatus.FINISHED;
-                log.info("Task " + job.taskId + " is finished.");
-                // Remove task from taskMap.
-                taskMap.remove(task.id);
-                // Notify interested parties
-                publishStatus("taskFinished", mapper.createObjectNode()
-                        .put("taskId", task.id)
-                        .set("taskObj", task.toJson()));
-                // TODO: save results
-                try {
-                    log.info(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(task.toJson()));
-                } catch (JsonProcessingException e) {
-                    if (Configuration.isTraceModeOn()) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-
-            // Check if the queue and the running process list are empty, meaning we've finished all the work.
-            if (jobQueue.size() == 0 && runningJobs.size() == 0) {
-                log.info("Completed all the work managed by TaskManager.");
-            }
+            // Finish the task in case it's done
+            finishTaskIfDone(task, job);
         });
     }
 
@@ -428,10 +517,16 @@ public class TaskManager extends GenericActor {
                 ObjectNode result = mapper.createObjectNode();
                 ArrayNode jobs = (ArrayNode) args.get("jobs");
 
-                // Construct a new task
-                String taskId = args.get("taskId").asText();
-                boolean sequential = args.has("sequential") ? args.get("sequential").asBoolean() : false;
-                Task task = new Task(taskId, sequential);
+                final Task task;
+                final String taskId = args.get("taskId").asText();
+                if (taskMap.containsKey(taskId)) {
+                    log.info("Task with ID " + taskId + " already existed, adding jobs to it");
+                    task = taskMap.get(taskId);
+                } else {
+                    // Construct a new task
+                    boolean sequential = args.has("sequential") ? args.get("sequential").asBoolean() : false;
+                    task = new Task(taskId, sequential);
+                }
                 result.put("data", taskId);
 
                 // Add the given jobs to the task
@@ -441,18 +536,15 @@ public class TaskManager extends GenericActor {
                     String command = jobData.get("command").asText();
                     ObjectNode metadata = (ObjectNode) jobData.get("metadata");
                     ProcessRunner processRunner = new ProcessRunner(command);
-                    Job job;
-                    if (jobData.has("timeAllocated")) {
-                        job = new Job(processRunner, task.id, metadata, jobData.get("timeAllocated").asInt());
-                    } else {
-                        job = new Job(processRunner, task.id, metadata);
-                    }
+                    final Job job = new Job(processRunner, task.id, metadata);
                     task.jobs.add(job);
+                    queueJob(job);
                 }
-                task.jobs.stream().forEach(job -> queueJob(job));
-                taskMap.put(task.id, task);
-
-                log.info("Queued task with id " + task.id + ".");
+                // Queue the task if it didn't exist yet
+                if (!taskMap.containsKey(taskId)) {
+                    taskMap.put(task.id, task);
+                    log.info("Queued task with id " + task.id + ".");
+                }
 
                 // Notify interested parties
                 publishStatus("taskScheduled", task.toJson());

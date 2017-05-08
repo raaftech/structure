@@ -10,9 +10,10 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.raaftech.structure.base.Configuration;
 import com.raaftech.structure.exceptions.EntityDeserializationException;
 import com.raaftech.structure.exceptions.JsonValidationException;
+import com.raaftech.structure.graph.Constraint;
 import com.raaftech.structure.helper.JsonHelper;
 import com.raaftech.structure.helper.Triple;
-import com.raaftech.structure.helper.loader.EvenNaiverLoader;
+import com.raaftech.structure.helper.loader.NaiveSorter;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
@@ -20,11 +21,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 
 import static io.vertx.core.json.Json.mapper;
@@ -80,7 +78,12 @@ public class EntityDeserializer extends StdDeserializer<Entity> {
          * responsibility to make sure the values are there and are correct!
          * Don't clutter the code with null checks and value mangling!
          */
-        if (JsonHelper.validateToSchema(entitySchema, entityJson)) {
+        final boolean isRootType = entityJson.has("type") &&
+                entityJson.has("name") &&
+                entityJson.get("type").asText().equals("Type") &&
+                entityJson.get("name").asText().equals("Type");
+
+        if (isRootType || JsonHelper.validateToSchema(entitySchema, entityJson)) {
 
             /* Set type. */
             type = entityJson.get("type").asText();
@@ -124,6 +127,25 @@ public class EntityDeserializer extends StdDeserializer<Entity> {
             
             entity.setRelations(relations);
 
+            // Handle constraints
+            if (metaJson.has("constraints")) {
+                final JsonNode constraintsJson = metaJson.get("constraints");
+                Iterator<Map.Entry<String, JsonNode>> iterConstraints = constraintsJson.fields();
+
+                while (iterConstraints.hasNext()) {
+                    Map.Entry<String, JsonNode> entry = iterConstraints.next();
+                    final String relName = entry.getKey();
+                    final ArrayNode constraints = (ArrayNode) entry.getValue();
+
+                    Iterator<JsonNode> iterConstraintData = constraints.elements();
+                    while (iterConstraintData.hasNext()) {
+                        JsonNode constraintData = iterConstraintData.next();
+                        entity.addConstraint(relName, Constraint.Cardinality.valueOf(constraintData.get("cardinality").asText()),
+                                UUID.fromString(constraintData.get("to").asText()));
+                    }
+                }
+            }
+
             /* Handle uuid within meta if existent, else generate. */
             if (metaJson.has("uuid")) {
                 uuid = metaJson.get("uuid").asText();
@@ -162,7 +184,7 @@ public class EntityDeserializer extends StdDeserializer<Entity> {
             if (metaJson.has("checksum")) {
                 checksum = metaJson.get("checksum").asText();
             } else {
-                checksum = EvenNaiverLoader.calculateChecksum(entityJson, EvenNaiverLoader.ChecksumAlgorithm.SHA1);
+                checksum = NaiveSorter.calculateChecksum(entityJson, NaiveSorter.ChecksumAlgorithm.SHA1);
             }
             log.debug("Setting checksum to \"{}\"", checksum);
             entity.setChecksum(checksum);
@@ -358,7 +380,7 @@ public class EntityDeserializer extends StdDeserializer<Entity> {
 //                    break;
 //                }
 //            }
-            Path relativePathForSchema = EvenNaiverLoader.checksumToFiles.get(checksum);
+            Path relativePathForSchema = NaiveSorter.checksumToFiles.get(checksum);
             if (relativePathForSchema != null) {
                 filePath = new File(relativePathForSchema.getParent().toString() + File.separator + givenFilePath);
             }

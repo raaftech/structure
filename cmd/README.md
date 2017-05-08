@@ -13,6 +13,8 @@ Environment variable:
 
 (these are the defaults):
 
+RESTHOST=localhost
+RESTPORT=3000
 EVENTBUS=http://localhost:8080/eventbus
 NEO4JURL=http://localhost:7474
 

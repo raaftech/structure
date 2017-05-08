@@ -1,0 +1,90 @@
+{
+  "type": "Controller",
+  "name": "echotest",
+  "desc": "Echo test controller, remove from production.",
+  "meta": {
+    "uuid": "ce9321c7-a373-4125-88c7-b34545dec6d9",
+    "relations": {
+      "HAS_INSTRUMENT": {
+        "direction": "incoming",
+        "uuids": [
+          "6d467b28-449f-498c-9ca5-8660f522897f"
+        ]
+      },
+      "HANDLES": {
+        "direction": "outgoing",
+        "uuids": [
+          "6d467b28-449f-498c-9ca5-8660f522897f"
+        ]
+      },
+      "GIVES_CAPABILITY": {
+        "direction": "outgoing",
+        "uuids": [
+          "347ca5da-db19-4d98-9fed-60e72d5d6bba"
+        ]
+      },
+      "INSTANCE_OF": {
+        "direction": "outgoing",
+        "uuids": [
+          "f482204e-7d63-45ca-96c9-10a7cc2783da"
+        ]
+      }
+    }
+  },
+  "data": {
+    "instrumentType": "controller",
+    "interpreter": "Bash",
+    "subjectIsLocal": true,
+    "arguments": {
+      "ipaddr": {
+        "value": {
+          "from": "subject",
+          "type": "type.configuration.ipaddress",
+          "strategy": "mustBeOne",
+          "onError": "fail"
+        },
+        "canBeUserSupplied": false,
+        "isOptional": false,
+        "pass": {
+          "option": "-i",
+          "key": "addr"
+        }
+      },
+      "httpd": {
+        "value": {
+          "from": "subject",
+          "type": "type.component.software.server.httpserver",
+          "strategy": "mustBeOne",
+          "onError": "fail"
+        },
+        "canBeUserSupplied": false,
+        "isOptional": false,
+        "pass": {
+          "index": 1,
+          "key": "shortName"
+        }
+      },
+      "port": {
+        "value": {
+          "from": "subject",
+          "type": "type.configuration.iplistener",
+          "strategy": "useFirst",
+          "onError": "fail"
+        },
+        "canBeUserSupplied": false,
+        "isOptional": false,
+        "pass": {
+          "index": 2,
+          "key": "port"
+        }
+      }
+    }
+  },
+  "file": {
+    "script": {
+      "encoding": "text",
+      "format": "script",
+      "path": "echoscript.sh"
+    }
+  }
+}

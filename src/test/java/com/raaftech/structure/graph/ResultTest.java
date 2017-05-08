@@ -1,97 +1,89 @@
 package com.raaftech.structure.graph;
 
-import com.raaftech.structure.base.ConverterConfig;
-import com.raaftech.structure.base.SpringTestConfig;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.raaftech.structure.base.Context;
+import com.raaftech.structure.exceptions.IllegalEntityType;
+import com.raaftech.structure.graph.repositories.InstanceRepository;
 import com.raaftech.structure.graph.repositories.ResultRepository;
-import com.raaftech.structure.helper.loader.EvenNaiverLoader;
-import com.raaftech.structure.next.Entity;
+import com.raaftech.structure.graph.repositories.TypeRepository;
+import com.raaftech.structure.helper.JsonHelper;
+import mockit.Expectations;
+import mockit.Mocked;
+import mockit.StrictExpectations;
+import mockit.Verifications;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
-import org.neo4j.graphdb.Transaction;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.neo4j.core.GraphDatabase;
-import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.AnnotationConfigContextLoader;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
-import java.nio.file.FileSystems;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.IntStream;
 
-import static io.vertx.core.json.Json.mapper;
+import static junit.framework.TestCase.assertFalse;
+import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(loader = AnnotationConfigContextLoader.class,
-        classes = {SpringTestConfig.class, ConverterConfig.class})
 public class ResultTest {
 
-    @Autowired
-    ResultRepository resultRepository;
-    @Autowired
-    GraphDatabase graphDatabase;
+    @Mocked
+    Context context;
+    @Mocked
+    JsonHelper jsonHelper;
+    @Mocked
+    InstanceRepository instanceRepository;
+    @Mocked
+    TypeRepository typeRepository;
+    @Mocked
+    Type resultType;
+
+    @Before
+    public void setUp() throws Exception {
+        new Expectations() {{
+            // Validation of generated JSON to Result type's schema is always true
+            JsonHelper.validateToSchema((JsonNode) any, (JsonNode) any);
+            result = true;
+
+            typeRepository.findOneByName("Result");
+            result = resultType;
+        }};
+
+    }
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
-    private static boolean databaseCreated = false;
-
-    @Before
-    @SuppressWarnings("Duplicates")
-    public void setUpDatabase() throws Exception {
-        if (!databaseCreated) {
-            final String testBundle = "src/test/resources/bundles/core";
-            com.raaftech.structure.base.Configuration
-                    .setSchemaNamespace(FileSystems.getDefault().getPath(testBundle).toUri().resolve("types/"));
-            EvenNaiverLoader evenNaiverLoader = new EvenNaiverLoader(testBundle);
-
-            Transaction tx = graphDatabase.beginTx();
-            try {
-                evenNaiverLoader.getUpdateList(evenNaiverLoader.sortIt(evenNaiverLoader.readAllJson())).stream()
-                        .map(node -> {
-                            try {
-                                return mapper.readValue(node.toString(), Entity.class);
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                            return null;
-                        })
-                        .filter(node -> node != null)
-                        .forEach(Entity::toGraph);
-                tx.success();
-                databaseCreated = true;
-            } catch (Exception e) {
-                tx.failure();
-                throw e;
-            } finally {
-                tx.close();
-            }
-        }
-    }
-
     @Test
-    @Transactional
-    @Rollback
-    public void save() throws Exception {
+    public void save(
+            @Mocked ResultRepository resultRepository,
+            @Mocked TypeRepository typeRepository,
+            @Mocked Type type) throws Exception {
         // save the thing
         String taskId = UUID.randomUUID().toString();
-        Result result = new Result.Builder().process("test.exe").taskId(taskId)
-                .stdout("stdout").stderr("stderr").returnCode(0).build();
-        result.save();
 
-        // retrieve the thing
-        Result retrieved = resultRepository.findByUuid(result.getUuid());
+        Result res = new Result.Builder().process("test.exe").taskId(taskId)
+                .stdout("stdout").stderr("stderr").returnCode(0).build();
+        res.save();
+
+        // Make sure the result was actually saved to the repository.
+        new Verifications() {{
+            resultRepository.save(res);
+        }};
+
+
+        // Return the created result from the repository.
+        new StrictExpectations() {{
+            resultRepository.findByUuid(res.getUuid());
+            result = res;
+        }};
+
+        // retrieve the result
+        Result retrieved = resultRepository.findByUuid(res.getUuid());
         assertNotNull(retrieved);
         assertEquals(taskId, retrieved.getTaskId());
-        assertEquals(result.getDate(), retrieved.getDate());
+        assertEquals(res.getDate(), retrieved.getDate());
     }
 
     @Test
@@ -218,5 +210,61 @@ public class ResultTest {
         r1.setNext(r2);
         thrown.expect(IllegalStateException.class);
         r1.setNext(r3);
+    }
+
+    @Test
+    public void testInvalidStateConstructions() throws Exception {
+        final String stateInterpretation = "OK";
+        final String stateDescription = "Test";
+        // 0, 1 and 2 should be fine, with non null strings
+        IntStream.of(0, 1, 2).forEach(i -> new Result.State(i, stateInterpretation, stateDescription));
+
+        // Anything else should result in an exception
+        thrown.expect(IllegalArgumentException.class);
+        new Result.State(-1, stateInterpretation, stateDescription);
+        new Result.State(0, null, stateDescription);
+        new Result.State(0, stateInterpretation, null);
+    }
+
+    @Test
+    public void testOptionals() throws Exception {
+        Result result = new Result.Builder()
+                .process("1")
+                .taskId(UUID.randomUUID().toString())
+                .stdout("1")
+                .stderr("1")
+                .returnCode(1)
+                .state(new Result.State(0, "OK", "Test"))
+                .build();
+
+        assertTrue(result.getState().isPresent());
+        assertFalse(result.getUser().isPresent());
+
+        final Result.State state = result.getState().get();
+        assertEquals(0, state.getCode());
+        assertEquals("OK", state.getInterpretation());
+        assertEquals("Test", state.getDescription());
+    }
+
+    @Test
+    public void testAddResultToResult() throws Exception {
+        // Adding a result to a result shouldn't be allowed.
+        Result r1 = new Result.Builder()
+                .process("1")
+                .taskId(UUID.randomUUID().toString())
+                .stdout("1")
+                .stderr("1")
+                .returnCode(1)
+                .build();
+        Result r2 = new Result.Builder()
+                .process("2")
+                .taskId(UUID.randomUUID().toString())
+                .stdout("2")
+                .stderr("2")
+                .returnCode(2)
+                .build();
+
+        thrown.expect(IllegalEntityType.class);
+        r1.addResult(r2);
     }
 }

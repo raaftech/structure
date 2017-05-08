@@ -1,126 +1,244 @@
 {
-    "id": "https://repo.raaftech.com/schema/next/entity.schema.json#",
-    "$schema": "http://json-schema.org/draft-04/schema#",
-    "description": "Schema for Structure entities.",
-    "type": "object",
-    "required": ["type", "name", "desc", "meta"],
-    "additionalProperties": false,
-    "properties": {
-        "type": {
-            "type": "string",
-            "enum": ["Type", "Component", "Marker", "Controller", "Parser", "Grouping", "Configuration",
-                "Profile", "Actor", "Result" ]
-        },
-        "name": {
-            "type": "string"
-        },
-        "desc": {
-            "type": "string",
-            "pattern": "[A-Z][^.!?][^.!?]*(?:[.!?](?!['\\\"]?\\\\s|$)[^.!?]*)*[.!?]['\\\"]?(?=\\\\s|$)"
-        },
-        "data": {
-            "type": "object"
-        },
-        "file": {
-            "type": "object",
-            "patternProperties": {
-                "^[a-zA-Z]+$": {
-                    "required": ["encoding", "format"],
-                    "additionalProperties": false,
-                    "properties": {
-                        "path": {
-                            "type": "string",
-                            "maxLength": 260
-                        },
-                        "content": {
-                            "type": "string"
-                        },
-                        "checksum": {
-                            "type": "string",
-                            "pattern": "^[a-f0-9]{40}$"
-                        },
-                        "format": {
-                            "type": "string",
-                            "enum": ["json", "hbs", "script"]
-                        },
-                        "encoding": {
-                            "type": "string",
-                            "enum": ["base64", "text"]
-                        }
-                    },
-                    "anyOf": [{
-                        "required": ["path"]
-                    }, {
-                        "required": ["content"]
-                    }]
-                }
-            },
-            "minItems": 1
-        },
-        "meta": {
-            "type": "object",
-            "required": ["relations"],
-            "additionalProperties": false,
-            "properties": {
-                "uuid": {
-                    "type": "string",
-                    "pattern": "^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89aAbB][a-f0-9]{3}-[a-f0-9]{12}$"
-                },
-                "relations": {
-                    "type": "object",
-                    "patternProperties": {
-                        "^[a-zA-Z]+$": {
-                            "additionalProperties": false,
-                            "properties": {
-                                "direction": {
-                                    "type": "string",
-                                    "enum": ["incoming", "outgoing", "undirected"]
-                                },
-                                "uuids": {
-                                    "type": "array",
-                                    "items": {
-                                        "type": "string",
-                                        "pattern": "^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89aAbB][a-f0-9]{3}-[a-f0-9]{12}$"
-                                    },
-                                    "minItems": 1,
-                                    "uniqueItems": true
-                                }
-                            }
-                        }
-                    },
-                    "minItems": 1
-                },
-                "checksum": {
-                    "type": "string",
-                    "pattern": "^[a-f0-9]{40}$"
-                },
-                "bundle": {
-                    "type": "string",
-                    "pattern": "^[a-z0-9]+$"
-                },
-                "path": {
-                    "type": "string",
-                    "maxLength": 260
-                }
-            }
-        }
+  "id": "#",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Schema for Structure entities.",
+  "type": "object",
+  "required": [
+    "type",
+    "name",
+    "desc",
+    "meta"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "type": {
+      "$ref": "#/definitions/type"
     },
-    "oneOf": [
-      {
-        "properties": {
-          "type": {"enum": ["Type"]},
-          "file": {
-            "type": "object",
-              "required": ["dataSchema"]
+    "name": {
+      "type": "string"
+    },
+    "desc": {
+      "$ref": "#/definitions/desc"
+    },
+    "data": {
+      "type": "object"
+    },
+    "file": {
+      "type": "object",
+      "patternProperties": {
+        "^[a-zA-Z]+$": {
+          "required": [
+            "encoding",
+            "format"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "path": {
+              "type": "string",
+              "maxLength": 260
+            },
+            "content": {
+              "type": "string"
+            },
+            "checksum": {
+              "$ref": "#/definitions/checksum"
+            },
+            "format": {
+              "$ref": "#/definitions/format"
+            },
+            "encoding": {
+              "$ref": "#/definitions/encoding"
+            }
+          },
+          "anyOf": [
+            {
+              "required": [
+                "path"
+              ]
+            },
+            {
+              "required": [
+                "content"
+              ]
+            }
+          ]
+        }
+      },
+      "minProperties": 1
+    },
+    "meta": {
+      "type": "object",
+      "required": [
+        "relations"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "uuid": {
+          "$ref": "#/definitions/uuid"
+        },
+        "relations": {
+          "type": "object",
+          "patternProperties": {
+            "^[a-zA-Z]+$": {
+              "additionalProperties": false,
+              "properties": {
+                "direction": {
+                  "$ref": "#/definitions/direction"
+                },
+                "uuids": {
+                  "$ref": "#/definitions/uuidList"
+                }
+              }
+            }
+          },
+          "minProperties": 1
+        },
+        "constraints": {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": false,
+          "patternProperties": {
+            "^[a-zA-Z_]+$": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/constraint"
+              },
+              "minItems": 1
+            }
           }
         },
-        "required": ["file"]
-      },
-      {
-        "properties": {
-          "type": {"enum": ["Component", "Marker", "Controller", "Parser", "Grouping", "Configuration",
-                "Profile", "Actor", "Result"]}
+        "checksum": {
+          "$ref": "#/definitions/checksum"
+        },
+        "bundle": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+$"
+        },
+        "path": {
+          "type": "string",
+          "maxLength": 260
         }
       }
-    ]
+    }
+  },
+  "oneOf": [
+    {
+      "properties": {
+        "type": {
+          "enum": [
+            "Type"
+          ]
+        },
+        "file": {
+          "type": "object",
+          "required": [
+            "dataSchema"
+          ]
+        }
+      },
+      "required": [
+        "file"
+      ]
+    },
+    {
+      "properties": {
+        "type": {
+          "enum": [
+            "Component",
+            "Marker",
+            "Controller",
+            "Parser",
+            "Grouping",
+            "Configuration",
+            "Profile",
+            "Actor",
+            "Result"
+          ]
+        }
+      }
+    }
+  ],
+  "definitions": {
+    "uuidList": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/uuid"
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "uuid": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89aAbB][a-f0-9]{3}-[a-f0-9]{12}$"
+    },
+    "direction": {
+      "type": "string",
+      "enum": [
+        "incoming",
+        "outgoing",
+        "undirected"
+      ]
+    },
+    "cardinality": {
+      "type": "string",
+      "enum": [
+        "OPTIONAL_TO_ONE",
+        "OPTIONAL_TO_MANY",
+        "REQUIRED_TO_ONE",
+        "REQUIRED_TO_MANY"
+      ]
+    },
+    "constraint": {
+      "required": [
+        "to",
+        "cardinality"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "to": {
+          "$ref": "#/definitions/uuid"
+        },
+        "cardinality": {
+          "$ref": "#/definitions/cardinality"
+        }
+      }
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "Type",
+        "Component",
+        "Marker",
+        "Controller",
+        "Parser",
+        "Grouping",
+        "Configuration",
+        "Profile",
+        "Actor",
+        "Result"
+      ]
+    },
+    "desc": {
+      "type": "string",
+      "pattern": "[A-Z][^.!?][^.!?]*(?:[.!?](?!['\\\"]?\\\\s|$)[^.!?]*)*[.!?]['\\\"]?(?=\\\\s|$)"
+    },
+    "checksum": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{40}$"
+    },
+    "format": {
+      "type": "string",
+      "enum": [
+        "json",
+        "hbs"
+      ]
+    },
+    "encoding": {
+      "type": "string",
+      "enum": [
+        "base64",
+        "text"
+      ]
+    }
+  }
 }

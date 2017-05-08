@@ -3,7 +3,7 @@
   "name": "stop",
   "desc": "ServicesStop.",
   "meta": {
-    "uuid": "24272225-cef0-46bf-b548-802626ee72db",
+    "uuid": "cdbb2079-26cc-4254-8237-5f42a16e1d26",
     "relations": {
       "HAS_INSTRUMENT": {
         "direction": "incoming",

@@ -3,7 +3,7 @@
   "name": "SshServerReceiveFile",
   "desc": "A marker handler that marks SshServer with ReceiveFile..",
   "meta": {
-    "uuid": "6601e769-7042-4ecd-817a-e9e1690bcd1c",
+    "uuid": "1ced5003-aa32-4a1d-98b4-4f168e59bc37",
     "relations": {
       "HAS_INSTRUMENT": {
         "direction": "incoming",

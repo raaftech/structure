@@ -3,100 +3,82 @@ const vorpal = require('vorpal')();
 const R = require('ramda');
 const util = require('util');
 const helper = require('./helper');
-const EventBus = require('vertx3-eventbus-client');
 const clc = require('cli-color');
 const sprintf = require('sprintf-js').sprintf;
-const treeify = require('treeify');
-const neo = require('./extensions/neo');
+const treeify = require('./treeify');
 const fs = require('fs');
 const path = require('path');
+const RestConnector = require('./restConnector');
+const SchemaValidator = require('./SchemaValidator');
+const SimpleCache = require('./simpleCache');
+const EventSource = require('eventsource');
+const Structure = require('./subgraph');
+//extensions
+const neoExt = require('./extensions/neo');
+const structureExt = require('./extensions/structure');
+const groupExt = require('./extensions/groups');
+const instanceExt = require('./extensions/instance');
 
-let eventBusUrl = '';
-let eb = null;
+const answerCache = new SimpleCache();
+let rest;
+let validator;
+
+//Program entry point
 init();
 
-
 function init() {
-	eventBusUrl = R.defaultTo('http://localhost:8080/eventbus', process.env.EVENTBUS);
-	eb = new EventBus(eventBusUrl);
-	wrapper().then((res) => {
-		console.log(res);
-		setupStatusChannel();
-		scli();
-	});
-}
+    rest = new RestConnector(
+        R.defaultTo('localhost', process.env.RESTHOST),
+        R.defaultTo(3000, process.env.RESTPORT)
+    );
+    validator = new SchemaValidator(R.defaultTo('http://localhost:8080/schemas/', process.env.SCHEMAHOST));
+    answerCache.init();
 
-function wrapper() {
-	return new Promise((resolve,reject) => {
-		eb.onopen = () => resolve(clc.green.bold(util.format('Connected to: %s', eventBusUrl)));
-
-		eb.onclose = (error) => resolve(clc.red.bold(util.format('Error while connecting to [%s]: %s', eventBusUrl, error.reason)));
-	});
+    setupStatusChannel();
+    scli();
 }
 
 function scli() {
 	vorpal.history('structure-history');
-	vorpal.use(neo);
+	vorpal.use(neoExt, answerCache);
+	vorpal.use(structureExt, rest);
+	vorpal.use(groupExt, rest);
+	vorpal.use(instanceExt, {rest: rest, validator: validator});
 	vorpal.delimiter(clc.magenta.bold('structure$')).show();
 }
 
 function setupStatusChannel() {
-    eb.registerHandler('com.raaftech.structure.status',function(error, message) {
-        if(error) {
-            console.log("ERROR: "+error);
-        } else {
-            let uuid = message.body.data.uuid;
-            if(!R.isNil(uuid)) {
-                sendEvent(helper.getEventBusAddress(['repository','types']),'findOne',{node: uuid})
-                    .then((data) => {
-                        console.log(helper.stringify(data));
-                        let comps = helper.getResultData(data)["components"];
-                        comps = helper.consolidateComponents(clc.green(uuid), comps);
-                        let name = helper.getResultData(data)['name'];
-                        if(name.indexOf('unknown-') !== -1) name = clc.red(name);
-                        else name = clc.green(name);
-                        let tree = {};
-                        tree[name] = comps;
-                        console.log(treeify.asTree(tree, true));
-                    });
-            }
-        }
+    const changeUrl = rest.getChangeStreamUrl();
+    const es = new EventSource(changeUrl);
+    es.addEventListener('data', function(message) {
+        let data = JSON.parse(message.data);
+        console.log(JSON.stringify(data, undefined, 2));
     });
-}
-
-function sendEvent(base, cmd, args) {
-	let options = helper.createOptions(cmd,args);
-	return new Promise((resolve,reject) => {
-		eb.send(base, options, (error, result) => {
-			if(error) reject(error);
-			else resolve(result);
-		});
-	});
 }
 
 function getChildren(uuid) {
-    return new Promise((resolve, reject) => {
-        sendEvent(helper.getEventBusAddress(['node','type',uuid]),'getSubtypes',{})
-            .then((data) => {
-                let response = R.project(['name','uuid'], helper.getResultData(data));
-                resolve(response);
-            });
-    });
+    return rest.getChildren(uuid)
+        .then(children => {
+            return R.map((item) => {
+                    return R.zipObj(['name', 'uuid'],[R.prop('name',item), R.path(['meta','uuid'], item)]);
+                }, children);
+        });
 }
 
 function toRoot(uuid, childNodes) {
     return new Promise((resolve, reject) => {
-        sendEvent(helper.getEventBusAddress(['repository', 'nodes']), 'findOne', {'node': uuid})
-            .then((parent) => {
-                parent = helper.getResultData(parent);
+        rest.getEntityByUuid(uuid)
+            .then(parent => {
                 let tree = {};
                 tree[parent.name] = childNodes;
-                if(R.isNil(parent.isa)) {
+                if(R.isNil(R.path(['meta','relations','ISA'], parent))) {
                     resolve(tree);
                 } else {
-                    resolve(toRoot(parent.isa, tree));
+                    //getIsaParent: small function to fetch the first of the ISA uuids for an entity
+                    let getIsaParent = R.pipe(R.path(['meta','relations','ISA','uuids']), R.head);
+                    resolve(toRoot(getIsaParent(parent), tree));
                 }
-            });
+            })
     });
 }
 
@@ -108,142 +90,120 @@ function getPayloadListing() {
     return fs.readdirSync(payloadDir());
 }
 
-
-//commands
-//TODO extract commands to extension sets
-
-vorpal.command('connect', 'Connect to the eventbus')
-    .action(function(args, done) {
-        this.log('Connecting to '+clc.green.bold(eventBusUrl));
-        eventBusUrl = R.defaultTo('http://localhost:8080/eventbus', process.env.EVENTBUS);
-        eb = new EventBus(eventBusUrl);
-        wrapper().then((res) => {
-            console.log(res);
-            done();
-        });
-    });
-
-vorpal.command('disconnect', 'Disconnect from the EventBus')
-    .action(function(args, done) {
-        this.log(clc.red(util.format('Closing connection to EventBus (%s)', eventBusUrl)));
-        eb.close();
-        this.log(clc.red.bold('Connection closed.'));
-        done();
-    });
-
-vorpal.command('find <name>', 'Find a specified node in vertx')
-	.option('-f, --field <fieldName>', 'Select a specific field from the resultset',
-			helper.getCommonFields())
-	.option('-u, --uuid', 'Set search mode to uuid based search.')
-	.option('-i, --instance', 'Set search mode to instance based search')
-	.action(function(args, done) {
-		const self = this;
-		let act = args.options.uuid ? 'findOne' : 'findOneByName';
-		let pargs = args.options.uuid ? {'node': args.name} : {'name': args.name};
-		let addr = args.options.instance ? ['repository', 'instances'] : ['repository', 'types'];
-		sendEvent(helper.getEventBusAddress(addr), act, pargs)
-			.then((data) => {
-				if(args.options.field) {
-					let val = helper.stringify(helper.getResultData(data)[args.options.field]);
-					self.log(sprintf('%-16s: %s', args.options.field, val));
-					done();
-				} else {
-				    let databuf = helper.getResultData(data);
-				    let keys = R.pipe(R.keys, R.prepend('ALL'))(databuf);
-				    self.prompt(helper.generateQuestion('list', 'list', 'Choose a field', {choices: keys}), function(result) {
-				        if(result.list === 'ALL') self.log(helper.stringify(databuf));
-				        else {
-				            let prop = clc.green.bold(result.list);
-				            self.log(util.format('%s: %s',prop,helper.stringify(databuf[result.list])));
-				        }
-				        done();
-				    });
-				}
-			});
-	});
-
-vorpal.command('instance')
-    .option('-l, --last <quantity>', 'Fetch the last (quantity) created instances')
-    .option('-f, --find <name>', 'Find a specific instance by name')
-    .action(function(args, done) {
-        const self = this;
-        let act = args.options.last ? 'nLastCreated' : 'findOneByName';
-        let pargs = args.options.last ? {'amount': args.options.last} : {'name': args.options.find};
-        let addr = ['repository', 'instances'];
-        sendEvent(helper.getEventBusAddress(addr), act, pargs)
-            .then((data) => {
-                let databuf = helper.getResultData(data);
-                self.log(helper.stringify(databuf));
-                done();
-            });
-    });
-
-vorpal.command('dig <uuid>', 'Get the child elements for a node')
-    .action(function(args, done) {
-        const self = this;
-        sendEvent(helper.getEventBusAddress(['node','type',args.uuid]),'getSubtypes',{})
-            .then((data) => {
-                let response = R.project(['name','uuid'], helper.getResultData(data));
-                R.forEach((item) => {
-                    self.log(sprintf('%-16s: %24s', item.name,item.uuid));
-                }, response);
-                done();
-            });
-    });
-
-
-vorpal.command('show <uuid>', 'Show a node by its uuid.')
+vorpal.command('find <name>', 'Find a specified node in structure')
     .option('-f, --field <fieldName>', 'Select a specific field from the resultset',
-        ['getPath', 'help','version','uuid'])
+        helper.getCommonFields())
+    .option('-u, --uuid', 'Set search mode to uuid based search.')
+    .option('-v, --verbose', 'Be verbose with the result output')
     .action(function(args, done) {
         const self = this;
-        sendEvent(helper.getEventBusAddress(['node','type',args.uuid]), 'help', {})
-            .then((data) => {
-                if(args.options.field) {
-                    self.log(helper.stringify(data.body.result[args.options.field]));
-                    done();
-                } else {
-                    let databuf = data.body.result;
-                    let keys = R.pipe(R.keys, R.prepend('ALL'))(databuf);
+        //Function that calls a specific rest method, depending on the value of the method argument
+        let handler = (method, arg) => {
+            rest[method](arg)
+                .then(entity => {
+                    //Function that fetches the property keys, present in the meta object in the entity
+                    //Then adds the property path, in dot notation, to the list (2nd arg)
+                    //Returns a list of possible property paths
+                    let meta = R.curry((ent,list) => {
+                        return R.pipe(R.prop('meta'), R.keys,
+                            R.map(item => 'meta.'+item),
+                            R.concat(list)
+                        )(ent);
+                    });
+                    //Function that gets all keys from an entity, prepends 'ALL' to the list
+                    //fetches the meta keys by using above function and appends them to the list
+                    //This list is then prompted to the user to choose from.
+                    let keys = R.pipe(R.keys, R.prepend('ALL'),meta(entity))(entity);
                     self.prompt(helper.generateQuestion('list', 'list', 'Choose a field', {choices: keys}), function(result) {
-                        if(result.list === 'ALL') self.log(helper.stringify(databuf));
-                        else {
-                            let prop = clc.green.bold(result.list);
-                            self.log(util.format('%s: %s',prop,helper.stringify(databuf[result.list])));
-                        }
+                        let check = R.ifElse(R.propEq('list','ALL'),
+                                        () => self.log(helper.treePrint(args.options.verbose, entity)),
+                                        () => {
+                                            let pp = R.split('.',result.list);
+                                            let prop = clc.green.bold(result.list);
+                                            let outputTypeSelector = R.ifElse(R.is(Object),
+                                                x => self.log(util.format('%s\n%s', prop, helper.treePrint(args.options.verbose,R.path(pp, entity)))),
+                                                x => self.log(util.format('%s: %s', prop, helper.stringify(R.path(pp, entity)))));
+                                            outputTypeSelector(R.path(pp, entity));
+                                        }
+                                    );
+                        check(result);
                         done();
                     });
-                }
-            });
+                })
+                .catch(helper.genericCatchHandler(done));
+        };
+
+        //Function that determines which rest call to use based on the given arguments and options
+        let exec = R.ifElse(R.isNil,
+            () => handler('getEntityByName', args.name),
+            () => handler('getEntityByUuid', args.name));
+        exec(R.path(['options', 'uuid'], args));
     });
 
+vorpal.command('dig', 'Get the child elements for a type-node')
+    .option('-n, --name <name>', 'Identify the type-node by name')
+    .option('-u, --uuid <uuid>', 'Identify the type-node by uuid')
+    .action(function(args, done) {
+        const self = this;
+
+        if(args.options.name) {
+            rest.getEntityByName(args.options.name)
+                .then(entity => getChildren(entity.meta.uuid))
+                .then(children => {
+                    R.forEach((item) => {
+                        self.log(sprintf('%-16s: %24s', R.prop('name', item),R.prop('uuid',item)));
+                    }, children);
+                    done();
+                })
+                .catch(helper.genericCatchHandler(done));
+        } else {
+            getChildren(args.options.uuid)
+                .then(children => {
+                    R.forEach((item) => {
+                        self.log(sprintf('%-16s: %24s', R.prop('name', item),R.prop('uuid',item)));
+                    }, children);
+                    done();
+                })
+                .catch(helper.genericCatchHandler(done))
+        }
+    });
 
 vorpal.command('tree <name>', 'Show a relation tree for the requested node')
     .option('-u, --uuid', 'Make the search go by uuid instead of name')
     .action(function(args, done) {
         const self = this;
-        let act = args.options.uuid ? 'findOne' : 'findOneByName';
-        let pargs = args.options.uuid ? {'node': args.name} : {'name': args.name};
-        sendEvent(helper.getEventBusAddress(['repository', 'types']), act, pargs)
-            .then((data) => {
-                let databuf = helper.getResultData(data);
-                let tree = {};
-                getChildren(databuf.uuid)
-                    .then((children) => {
-                        R.forEach((item) => {
-                            tree[item.name] = item.uuid;
-                        }, children);
+        let rootUuid = '';
+        //Function that calls a specific rest method, depending on the value of the method argument
+        let handler = (method, arg) => {
+            rest[method](arg)
+                .then(entity => { return R.path(['meta','uuid'], entity) })
+                .then(uuid => { rootUuid = uuid; return getChildren(uuid); })
+                .then(children => {
+                    let tree = {};
+                    R.forEach((item) => {
+                        tree[item.name] = item.uuid;
+                    }, children);
 
-                        toRoot(databuf.uuid, tree)
-                            .then((parents) => {
-                                self.log(treeify.asTree(parents,true));
-                                done();
-                            });
-                    });
-            });
+                    return tree;
+                })
+                .then(tree => {
+                    return toRoot(rootUuid, tree);
+                })
+                .then(parents => {
+                    self.log(treeify.asTree(parents,true));
+                    done();
+                })
+                .catch(helper.genericCatchHandler(done));
+        };
+
+        //Function that determines which rest call to use based on the given arguments and options
+        let exec = R.ifElse(R.isNil,
+            () => handler('getEntityByName', args.name),
+            () => handler('getEntityByUuid', args.name));
+        exec(R.path(['options', 'uuid'], args));
     });
 
-
+//TODO finish refactor
 vorpal.command('discover <cidr>', 'Discover items in the network')
     .action(function(args, done) {
         const self = this;
@@ -255,35 +215,40 @@ vorpal.command('discover <cidr>', 'Discover items in the network')
             reachable: true,
             desc: 'Some cidr description.'
         };
-        sendEvent(helper.getEventBusAddress(['repository', 'instances']), 'putNode', pargs)
-            .then((data) => {
-                console.log(data);
-                let uuid = data.body.result.data;
-                self.log('instance uuid: '+uuid);
-                sendEvent(helper.getEventBusAddress(['node', 'component',uuid]), 'runInstrument', {
-                    instrument: 'IpAddressDiscover',
-                    timeAllocated: 600000
-                }).then((result) => {
-                    done();
-                });
-            });
+        //function to run if logged in
+        let loggedIn = () => rest.createInstance(pargs)
+            .then(created => {
+                let instanceUuid = created.meta.uuid;
+                return rest.runInstrument('IpAddressDiscover', instanceUuid);
+            })
+            .then(result => done())
+            .catch(helper.genericCatchHandler(done));
+
+        helper.genericAuthCommandHandler(done, loggedIn, rest.getToken());
     });
 
 vorpal.command('query', 'Place arbitrary requests on the event bus')
     .action(function(args,done) {
         const self = this;
         let qs = [];
-        qs.push(helper.generateQuestion('address', 'input', 'Event bus address: '));
-        qs.push(helper.generateQuestion('cmd', 'input', 'Command (msgh): '));
+        qs.push(helper.generateQuestion('address', 'input', 'Event bus address: ', {default: answerCache.get('query', 'address')}));
+        qs.push(helper.generateQuestion('cmd', 'input', 'Command (msgh): ', {default: answerCache.get('query', 'cmd')}));
         qs.push(helper.generateQuestion('file','list','Select payload file: ',{choices: getPayloadListing()}));
 
         self.prompt(qs, function(res) {
             let json = helper.readJsonFile(payloadDir() + '/' + res.file);
-            sendEvent(res.address,res.cmd,json)
-                .then((data) => {
-                    console.log(helper.stringify(data));
-                    done();
-                })
-                .catch((ex) => {console.log(ex); done();});
+            answerCache.set('query', 'address', res.address);
+            answerCache.set('query', 'cmd', res.cmd);
+            answerCache.save();
+            let loggedIn = () => {
+                rest.query(res.address, res.cmd, json)
+                    .then(data => {
+                        console.log(JSON.stringify(data));
+                        done();
+                    })
+                    .catch(helper.genericCatchHandler(done));
+            };
+
+            helper.genericAuthCommandHandler(done, loggedIn, rest.getToken());
         });
     });

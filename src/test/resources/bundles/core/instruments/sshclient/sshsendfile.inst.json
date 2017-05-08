@@ -3,7 +3,7 @@
   "name": "OpenSshClientSendFile",
   "desc": "The handler that provides the SendFile capability to the OpenSSH client..",
   "meta": {
-    "uuid": "f75e52e2-f1bc-4198-bb9e-ebb3913375bf",
+    "uuid": "9d130117-9c36-4f02-9074-2f02a11b6b45",
     "relations": {
       "HAS_INSTRUMENT": {
         "direction": "incoming",

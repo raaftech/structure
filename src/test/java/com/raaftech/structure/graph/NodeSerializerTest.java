@@ -5,9 +5,9 @@ import com.raaftech.structure.base.SpringTestConfig;
 import com.raaftech.structure.graph.repositories.NodeRepository;
 import com.raaftech.structure.helper.JsonHelper;
 import com.raaftech.structure.helper.Triple;
-import com.raaftech.structure.helper.loader.EvenNaiverLoader;
+import com.raaftech.structure.helper.loader.BundleLoader;
+import com.raaftech.structure.helper.loader.NaiveSorter;
 import com.raaftech.structure.next.Entity;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,19 +40,8 @@ public class NodeSerializerTest {
     public void setUpDatabase() throws Exception {
         if (!databaseCreated) {
             final String raafBundle = "src/test/resources/bundles/core/";
-            EvenNaiverLoader evenNaiverLoader = new EvenNaiverLoader(raafBundle);
-
-            evenNaiverLoader.getUpdateList(evenNaiverLoader.sortIt(evenNaiverLoader.readAllJson())).stream()
-                    .map(node -> {
-                        try {
-                            return mapper.readValue(node.toString(), Entity.class);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        return null;
-                    })
-                    .filter(node -> node != null)
-                    .forEach(Entity::toGraph);
+            BundleLoader bundleLoader = new BundleLoader(raafBundle);
+            bundleLoader.load();
             databaseCreated = true;
         }
     }
@@ -98,7 +87,7 @@ public class NodeSerializerTest {
     public void testIncomingRelationshipSerialization() throws Exception {
         /*
         Bash and bashInvoke have outgoing relationships towards each other. This will
-        cause issues during loading with EvenNaiverLoader. For that reason we need to make sure
+        cause issues during loading with NaiveSorter. For that reason we need to make sure
         one of the relationships is serialized as an incoming relationship.
          */
         Node bash = nodeRepository.findOneByName("Bash");

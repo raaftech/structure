@@ -1,0 +1,63 @@
+{
+  "type": "Controller",
+  "name": "execute",
+  "desc": "This instrument executes an arbitrary command on Windows-like machines.",
+  "meta": {
+    "uuid": "15d782a7-c4f4-4ece-ab09-9ed7c3fa40ef",
+    "relations": {
+      "HAS_INSTRUMENT": {
+        "direction": "incoming",
+        "uuids": [
+          "bc101145-dde2-4363-a7ed-7091d2ff2621"
+        ]
+      },
+      "HANDLES": {
+        "direction": "outgoing",
+        "uuids": [
+          "bc101145-dde2-4363-a7ed-7091d2ff2621"
+        ]
+      },
+      "GIVES_CAPABILITY": {
+        "direction": "outgoing",
+        "uuids": [
+          "76fb3116-d4a8-459a-b62b-a2641bcb7e7d"
+        ]
+      },
+      "INSTANCE_OF": {
+        "direction": "outgoing",
+        "uuids": [
+          "f482204e-7d63-45ca-96c9-10a7cc2783da"
+        ]
+      }
+    }
+  },
+  "data": {
+    "instrumentType": "controller",
+    "subjectIsLocal": true,
+    "weight": 100,
+    "arguments": {
+      "command": {
+        "value": {
+          "from": "static",
+          "type": "string",
+          "strategy": "mustBeOne",
+          "onError": "fail"
+        },
+        "canBeUserSupplied": true,
+        "isOptional": false
+      }
+    }
+  },
+  "file": {
+    "dataSchema": {
+      "encoding": "text",
+      "format": "json",
+      "path": "../../types/schemas/controller.schema.json"
+    },
+    "templateFile": {
+      "encoding": "text",
+      "format": "hbs",
+      "path": "win_execute.hbs.bat"
+    }
+  }
+}

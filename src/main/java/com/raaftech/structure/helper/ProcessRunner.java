@@ -11,6 +11,7 @@ import java.nio.file.attribute.FileAttribute;
 import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.Set;
 
 import com.raaftech.structure.base.Configuration;
@@ -49,8 +50,18 @@ public class ProcessRunner {
 
     public ProcessResult finish() {
         try {
-            processResult.stderr = readFile(tempErr.getPath());
-            processResult.stdout = readFile(tempOut.getPath());
+            processResult.process = command;
+            processResult.stderr = tempErr != null ? Optional.of(readFile(tempErr.getPath())) : Optional.empty();
+            processResult.stdout = tempOut != null? Optional.of(readFile(tempOut.getPath())) : Optional.empty();
+            try {
+                processResult.returnCode = process != null ? Optional.of(process.exitValue()) : Optional.empty();
+            } catch (IllegalThreadStateException e) {
+                if (Configuration.isTraceModeOn()) {
+                    log.error(e.getMessage());
+                    e.printStackTrace();
+                }
+                processResult.returnCode = Optional.empty();
+            }
         } catch (IOException e) {
             if (Configuration.isTraceModeOn()) {
                 e.printStackTrace();
@@ -157,10 +168,10 @@ public class ProcessRunner {
     }
 
     public static class ProcessResult {
-        public int returnCode;
+        public Optional<Integer> returnCode;
         public String process;
-        public String stdout;
-        public String stderr;
+        public Optional<String> stdout;
+        public Optional<String> stderr;
 
         @Override
         public String toString() {
@@ -170,10 +181,18 @@ public class ProcessRunner {
         }
 
         public ObjectNode toJson() {
-            return mapper.createObjectNode()
-                    .put("returnCode", returnCode)
-                    .put("stdout", stdout)
-                    .put("stderr", stderr);
+            ObjectNode json = mapper.createObjectNode()
+                    .put("process", process);
+            if (returnCode.isPresent()) {
+                json.put("returnCode", returnCode.get());
+            }
+            if (stdout.isPresent()) {
+                json.put("stdout", stdout.get());
+            }
+            if (stderr.isPresent()) {
+                json.put("stderr", stderr.get());
+            }
+            return json;
         }
     }
 }

@@ -3,7 +3,7 @@
   "name": "BashInvoke",
   "desc": "BashInvoke.",
   "meta": {
-    "uuid": "cc45d9ae-c4a6-4214-b818-c824b3c527bd",
+    "uuid": "8cabd118-dcc2-4bc6-bf0e-11cecfce4a5b",
     "relations": {
       "HAS_INSTRUMENT": {
         "direction": "incoming",

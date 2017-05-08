@@ -40,5 +40,21 @@
   "Status": {
     "dataSource": "db",
     "public": true
+  },
+  "StructureUser": {
+    "dataSource": "sqlite3",
+    "public": true
+  },
+  "admin": {
+    "dataSource": "db",
+    "public": true
+  },
+  "Instance": {
+    "dataSource": "db",
+    "public": true
+  },
+  "group": {
+    "dataSource": "db",
+    "public": true
   }
 }

@@ -9,10 +9,12 @@ import com.raaftech.structure.graph.repositories.GroupingRepository;
 import com.raaftech.structure.graph.repositories.InstanceRepository;
 import com.raaftech.structure.graph.repositories.InstrumentRepository;
 import mockit.*;
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Test;
 
 import java.util.*;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -281,6 +283,9 @@ public class InstrumentRunnerTest {
 
             controller.getTemplateContent();
             result = Optional.of("ssh -ltoor someserver \"{{ payloadFileName }}\"");
+
+            controller.getTimeAllocated();
+            result = Optional.of(5000);
         }};
 
         InstrumentRunner instrumentRunner = new InstrumentRunner(
@@ -290,7 +295,7 @@ public class InstrumentRunnerTest {
                 "TASKID"
         );
 
-        List<String> jobs = instrumentRunner.getJobs();
+        List<String> jobs = instrumentRunner.getJobs().stream().map(Pair::getLeft).collect(Collectors.toList());
         assertNotNull(jobs);
         assertEquals(2, jobs.size());
         assertEquals("scp somedirectory", jobs.get(0));

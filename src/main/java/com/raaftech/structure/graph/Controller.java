@@ -1,11 +1,14 @@
 package com.raaftech.structure.graph;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.type.MapType;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.google.common.io.Files;
 import com.raaftech.structure.base.*;
+import com.raaftech.structure.base.Configuration;
 import com.raaftech.structure.exceptions.ComponentBuilderException;
 import com.raaftech.structure.graph.repositories.TypeRepository;
+import org.apache.commons.lang3.Validate;
 import org.neo4j.graphdb.Direction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,10 +17,7 @@ import org.springframework.data.neo4j.annotation.Fetch;
 import org.springframework.data.neo4j.annotation.RelatedTo;
 
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import static io.vertx.core.json.Json.mapper;
 
@@ -41,6 +41,8 @@ public class Controller extends Instrument {
     private static final String RESULTPARSER = "resultParser";
     private static final String WEIGHT = "weight";
     private static final String INTERPRETER = "interpreter";
+    private static final String STATEMAP = "stateMap";
+    private static final String TIMEALLOCATED = "timeAllocated";
 
     @RelatedTo(type="GIVES_CAPABILITY", direction=Direction.OUTGOING)
     private Type capability;
@@ -70,6 +72,7 @@ public class Controller extends Instrument {
         private Type capability;
         private Set<Type> appliesTo;
         private Type providedBy;
+        private Map<Integer, Result.State> exitCodeToState = new HashMap<>();
 
         ObjectNode json = mapper.createObjectNode();
 
@@ -145,12 +148,21 @@ public class Controller extends Instrument {
                 throw new IllegalArgumentException("Given type is not an interpreter.");
             }
         }
+        public Builder addExitCodeToState(int exitCode, Result.State state) {
+            Validate.inclusiveBetween(0, 255, exitCode);
+            Validate.notNull(state);
+            exitCodeToState.put(exitCode, state);
+            return this;
+        }
 
         public Controller build() {
             if (!json.has(NAME) || !json.has(DESC) || capability == null || !json.has(FILELOCATION)
                     || appliesTo == null || providedBy == null || !json.has(SUBJECTLOCAL) || !json.has(TEMPLATE)) {
                 log.error("Error while building Controller instrument.");
                 throw new ComponentBuilderException("Not all required parameters were set.");
+            }
+            if (!exitCodeToState.isEmpty()) {
+                json.put(STATEMAP, mapper.valueToTree(exitCodeToState));
             }
             Controller controller =  new Controller(json);
             controller.capability = capability;
@@ -238,6 +250,18 @@ public class Controller extends Instrument {
         return extension;
     }
 
+    /**
+     * A controller may have an allocated time, which means its process will
+     * be killed when that time is exceeded.
+     * @return A long optional, containing the allocated time if it's available.
+     */
+    public Optional<Long> getTimeAllocated() {
+        return data.hasProperty(TIMEALLOCATED) ?
+            // numerical types are inserted as doubles, so round it to a long
+            Optional.of((Math.round((double) data.getProperty(TIMEALLOCATED)))) :
+            Optional.empty();
+    }
+
     public boolean isSubjectIsLocal() {
         return  (boolean) data.getProperty(SUBJECTLOCAL);
     }
@@ -260,6 +284,44 @@ public class Controller extends Instrument {
         return getFileContent(TEMPLATEFILE);
     }
 
+    public Optional<ObjectNode> getStateMapAsJson() {
+        Optional<ObjectNode> maybeStateMap;
+        if (data.hasProperty(STATEMAP)) {
+            try {
+                maybeStateMap = Optional.of((ObjectNode) mapper.readTree((String) data.getProperty(STATEMAP)));
+            } catch (IOException e) {
+                maybeStateMap = Optional.empty();
+                log.error("Error while deserializing statusmap of controller " + getName());
+                if (Configuration.isTraceModeOn()) {
+                    e.printStackTrace();
+                }
+            }
+        } else {
+            maybeStateMap = Optional.empty();
+        }
+        return maybeStateMap;
+    }
+
+    public Optional<Map<Integer, Result.State>> getStateMap() {
+        Optional<Map<Integer, Result.State>> maybeStateMap;
+        if (data.hasProperty(STATEMAP)) {
+            TypeFactory typeFactory = mapper.getTypeFactory();
+            MapType mapType = typeFactory.constructMapType(HashMap.class, Integer.class, Result.State.class);
+            try {
+                maybeStateMap = Optional.of(mapper.readValue(data.getProperty(STATEMAP).toString(),
+                            mapType));
+            } catch (IOException e) {
+                maybeStateMap = Optional.empty();
+                if (Configuration.isTraceModeOn()) {
+                    e.printStackTrace();
+                }
+            }
+        } else {
+            maybeStateMap = Optional.empty();
+        }
+
+        return maybeStateMap;
+    }
 
     public ObjectNode toJson() {
         ObjectNode json = super.toJson();

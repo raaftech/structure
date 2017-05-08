@@ -1,0 +1,63 @@
+{
+  "type": "Controller",
+  "name": "execute",
+  "desc": "This instrument executes an arbitrary command on UNIX-like machines.",
+  "meta": {
+    "uuid": "bc384804-dccb-4c6e-94dc-e4200d49796e",
+    "relations": {
+      "HAS_INSTRUMENT": {
+        "direction": "incoming",
+        "uuids": [
+          "86168e4a-8c99-43c9-ad95-c8f88d96ac32"
+        ]
+      },
+      "HANDLES": {
+        "direction": "outgoing",
+        "uuids": [
+          "86168e4a-8c99-43c9-ad95-c8f88d96ac32"
+        ]
+      },
+      "GIVES_CAPABILITY": {
+        "direction": "outgoing",
+        "uuids": [
+          "76fb3116-d4a8-459a-b62b-a2641bcb7e7d"
+        ]
+      },
+      "INSTANCE_OF": {
+        "direction": "outgoing",
+        "uuids": [
+          "f482204e-7d63-45ca-96c9-10a7cc2783da"
+        ]
+      }
+    }
+  },
+  "data": {
+    "instrumentType": "controller",
+    "subjectIsLocal": true,
+    "weight": 100,
+    "arguments": {
+      "command": {
+        "value": {
+          "from": "static",
+          "type": "string",
+          "strategy": "mustBeOne",
+          "onError": "fail"
+        },
+        "canBeUserSupplied": true,
+        "isOptional": false
+      }
+    }
+  },
+  "file": {
+    "dataSchema": {
+      "encoding": "text",
+      "format": "json",
+      "path": "../../types/schemas/controller.schema.json"
+    },
+    "templateFile": {
+      "encoding": "text",
+      "format": "hbs",
+      "path": "unix_execute.hbs.sh"
+    }
+  }
+}

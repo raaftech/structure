@@ -3,7 +3,7 @@
   "name": "SshServerReceiveString",
   "desc": "A marker handler that marks SshServer with ReceiveString..",
   "meta": {
-    "uuid": "20279f02-fe44-4c75-b1d2-48edd4107728",
+    "uuid": "b6444b7c-3b52-4cac-a007-6c46a1e02e1c",
     "relations": {
       "HAS_INSTRUMENT": {
         "direction": "incoming",

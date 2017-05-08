@@ -8,7 +8,10 @@ import java.util.Set;
 
 public interface ComponentRepository extends GenericRepository<Component> {
 
-    @Query("MATCH (start {uuid:{uuid}})-[:HAS_COMPONENT*1..]->(n)-[:ISA|INSTANCE_OF*1..]->({name:{type}}) RETURN n")
+    @Query("MATCH (start {uuid:{uuid}})-[*1..]->(n:Instance)-[:ISA|INSTANCE_OF*1..]->({name:{type}}) RETURN n")
     Set<Component> findChildrenByType(@Param("uuid") String uuid, @Param("type") String type);
+
+    @Query("MATCH (n:Component) RETURN count(n)")
+    long count();
 
 }

@@ -3,7 +3,7 @@
   "name": "start",
   "desc": "SystemdStart.",
   "meta": {
-    "uuid": "5c082938-33d6-4dcf-a3eb-f120fb44aa17",
+    "uuid": "48c81a79-a9da-4312-8282-0c40e8d789d6",
     "relations": {
       "HAS_INSTRUMENT": {
         "direction": "incoming",

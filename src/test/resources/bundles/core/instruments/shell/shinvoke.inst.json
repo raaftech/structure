@@ -3,7 +3,7 @@
   "name": "ShInvoke",
   "desc": "ShInvoke.",
   "meta": {
-    "uuid": "07784a37-24b3-4e1c-be7b-fff02493135b",
+    "uuid": "8334550b-c1fd-44ee-a268-8158deccbf82",
     "relations": {
       "HAS_INSTRUMENT": {
         "direction": "incoming",

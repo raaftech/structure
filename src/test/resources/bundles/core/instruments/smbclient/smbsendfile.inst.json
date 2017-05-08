@@ -3,7 +3,7 @@
   "name": "SmbClientSendFile",
   "desc": "The handler that provides the SendFile capability to smbclient..",
   "meta": {
-    "uuid": "7f68a9d4-1662-41d1-902d-846238c0ea49",
+    "uuid": "320aa7ee-da10-46d6-9ed4-34cd8d43f088",
     "relations": {
       "HAS_INSTRUMENT": {
         "direction": "incoming",

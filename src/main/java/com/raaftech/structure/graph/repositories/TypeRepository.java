@@ -1,5 +1,6 @@
 package com.raaftech.structure.graph.repositories;
 
+import com.raaftech.structure.graph.Constraint;
 import com.raaftech.structure.graph.Type;
 import org.springframework.data.neo4j.annotation.Query;
 import org.springframework.data.repository.query.Param;
@@ -43,9 +44,9 @@ public interface TypeRepository extends GenericRepository<Type> {
 
     // This query finds common protocols between two (groups of) Instances.
     // This can be used to find ways to setup a connection between two computers.
-    @Query ("MATCH (commander {uuid:{commanderUuid}})-[:HAS_COMPONENT*0..]->()-[:INSTANCE_OF]->(client)-[:ISA*0..]->()-[:IMPLEMENTS]->" +
+    @Query ("MATCH (commander {uuid:{commanderUuid}})-[*0..]->(:Instance)-[:INSTANCE_OF]->(client)-[:ISA*0..]->()-[:IMPLEMENTS]->" +
             "protocol" +
-            "<-[:IMPLEMENTS]-()<-[:ISA*0..]-(server)<-[:INSTANCE_OF]-()<-[:HAS_COMPONENT*0..]-(subject{uuid:{subjectUuid}})," +
+            "<-[:IMPLEMENTS]-()<-[:ISA*0..]-(server)<-[:INSTANCE_OF]-(:Instance)<-[*0..]-(subject{uuid:{subjectUuid}})," +
             "(client)-[:ISA*0..]->({name:\"Client\"})," +
             "(server)-[:ISA*0..]->({name:\"Server\"})" +
             "RETURN protocol")
@@ -71,4 +72,14 @@ public interface TypeRepository extends GenericRepository<Type> {
     @Query ("MATCH (n:Type) return n.glyphId")
     List<Integer> findAllTypeGlyphs();
 
+    // Get a type's inherited outgoing constraints
+    @Query("MATCH (n:Type {uuid: {0}})-[:ISA*1..]->()-[r:CONSTRAINTS]->() return r")
+    Set<Constraint> getInheritedOutgoingConstraints(String typeUuid);
+
+    // Get a type's inherited incoming constraints
+    @Query("MATCH (n:Type {uuid: {0}})-[:ISA*1..]->()<-[r:CONSTRAINTS]-() return r")
+    Set<Constraint> getInheritedIncomingConstraints(String typeUuid);
+
+    @Query("MATCH (n:Type) RETURN count(n)")
+    long count();
 }

@@ -3,19 +3,19 @@
 const vorpal = require('vorpal')();
 const neo4j = require('neo4j');
 const R = require('ramda');
-const helper = require('../helper');
+const path = require('path');
+const helper = require(path.join(__dirname, '..','helper'));
 const util = require('util');
-const treeify = require('treeify');
+const treeify = require(path.join(__dirname, '..', 'treeify'));
 
 const neoUrl = R.defaultTo('http://localhost:7474', process.env.NEO4JURL);
 const db = new neo4j.GraphDatabase(neoUrl);
 
-//match (n:Instance)-[:INSTANCE_OF|:ISA*1..]->(c {name:"Linux"}) match (n)-[:HAS_COMPONENT]->(dnsname)-[:INSTANCE_OF]->(t {name:"DnsName"}) return dnsname.`kv-dnsname`
-module.exports = function(vorpal, options) {
+module.exports = function(vorpal, answerCache) {
     vorpal.command('neo query', 'Directly query the neo4j graph database')
         .action(function(args, done) {
             const self = this;
-            let q = helper.generateQuestion('query', 'input', 'Cypher query: ');
+            let q = helper.generateQuestion('query', 'input', 'Cypher query: ', {default: answerCache.get('neo','query')});
             self.prompt(q, function(result) {
                 db.cypher({
                     query: result.query
@@ -25,6 +25,8 @@ module.exports = function(vorpal, options) {
                     } else {
                         self.log(helper.stringify(queryResult));
                     }
+                    answerCache.set('neo','query', result.query);
+                    answerCache.save();
                     done();
                 });
             });
@@ -33,9 +35,10 @@ module.exports = function(vorpal, options) {
     vorpal.command('neo group', 'Query structure instances by predicate')
         .action(function(args, done) {
             const self = this;
-            let q = helper.generateQuestion('query', 'input', 'Grouping predicate: ');
+            let getProperty = (name,obj) => R.path(['n','properties',name],obj);
+            let q = helper.generateQuestion('query', 'input', 'Grouping predicate: ', {default: answerCache.get('neo','predicate')});
             self.prompt(q, function(result) {
-                let cq = util.format('match (n:Instance)-[:INSTANCE_OF|:ISA*1..]->(c {name:"%s"}) match (n)-[:HAS_COMPONENT]->(dnsname)-[:INSTANCE_OF]->(t {name:"DnsName"}) match (n)-[:HAS_COMPONENT]->(addr)-[:INSTANCE_OF]->(x {name:"Ipv4Address"}) return dnsname.`kv-dnsname`, addr.`kv-addr`',result.query);
+                let cq = util.format('match (n:Instance)-[:INSTANCE_OF]->(c:Type {name:"%s"}) return n', result.query);
                 db.cypher({
                     query: cq
                 }, function(error, queryResult) {
@@ -45,9 +48,13 @@ module.exports = function(vorpal, options) {
                         let tree = {};
                         tree[result.query] = {};
                         R.forEach((item) => {
-                            tree[result.query][item["dnsname.`kv-dnsname`"]] = item["addr.`kv-addr`"];
+                            console.log(getProperty("data-name",item));
+                            tree[result.query][getProperty("data-name",item)] = getProperty("data-desc",item);
                         }, queryResult);
                         self.log(treeify.asTree(tree,true));
+
+                        answerCache.set('neo','predicate', result.query);
+                        answerCache.save();
                     }
                     done();
                 });

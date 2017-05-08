@@ -31,6 +31,20 @@
             "b1bc963a-19cc-4518-aecb-a35d028c49e3"
           ]
         }
+      },
+      "constraints": {
+        "HAS_COMPONENT": [
+          {
+            "cardinality": "OPTIONAL_TO_MANY",
+            "to": "a79ce509-a021-4177-ae61-73abd01fb479"
+          }
+        ],
+        "HAS_CONFIGURATION": [
+          {
+            "cardinality": "OPTIONAL_TO_MANY",
+            "to": "3f4a43f7-b558-4bf0-ba7e-66b99cffaf16"
+          }
+        ]
       }
     },
     "data": {
@@ -1695,6 +1709,14 @@
             "b1bc963a-19cc-4518-aecb-a35d028c49e3"
           ]
         }
+      },
+      "constraints": {
+        "GROUPS": [
+          {
+            "cardinality": "OPTIONAL_TO_MANY",
+            "to": "b1bc963a-19cc-4518-aecb-a35d028c49e3"
+          }
+        ]
       }
     },
     "data": {
@@ -1929,6 +1951,14 @@
             "5f1eb7c5-ec5e-4563-be6a-fc50774fc374"
           ]
         }
+      },
+      "constraints": {
+        "GROUPS": [
+          {
+            "cardinality": "OPTIONAL_TO_MANY",
+            "to": "a79ce509-a021-4177-ae61-73abd01fb479"
+          }
+        ]
       }
     },
     "data": {
@@ -1955,6 +1985,18 @@
             "ee92c308-80f4-40b2-af3a-77d26cd99517"
           ]
         }
+      },
+      "constraints": {
+        "GROUPS": [
+          {
+            "cardinality": "OPTIONAL_TO_MANY",
+            "to": "ea6a7487-867c-4a74-8849-fb8539b8169f"
+          },
+          {
+            "cardinality": "OPTIONAL_TO_MANY",
+            "to": "f05e325e-1aee-4892-96e4-8bcd6e97c528"
+          }
+        ]
       }
     },
     "data": {
@@ -2967,6 +3009,20 @@
             "14dbfbfa-b50a-466f-8539-55d5d3f15e4a"
           ]
         }
+      },
+      "constraints": {
+        "HAS_PARSER": [
+          {
+            "cardinality": "OPTIONAL_TO_ONE",
+            "to": "b5fa636c-1067-45ac-b027-ade2797bef6f"
+          }
+        ],
+        "PRODUCED": [
+          {
+            "cardinality": "OPTIONAL_TO_MANY",
+            "to": "f3498c02-58c6-486b-87c6-9d54607fdb12"
+          }
+        ]
       }
     },
     "data": {},
