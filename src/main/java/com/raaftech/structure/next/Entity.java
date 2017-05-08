@@ -6,6 +6,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.exceptions.IllegalEntityType;
+import com.raaftech.structure.exceptions.TypeUnknownException;
 import com.raaftech.structure.graph.Constraint;
 import com.raaftech.structure.graph.Type;
 import com.raaftech.structure.graph.repositories.InstanceRepository;
@@ -262,24 +263,20 @@ public class Entity {
         return entityJson;
     }
 
+    private Pair<Boolean, Set<String>> validateAgainsConstraints() {
+        Optional<Type>  instanceOf = getInstanceOf();
+
+        if (!instanceOf.isPresent()) {
+            throw new TypeUnknownException("Type for entity \"" + uuid + "\" doesn't exist");
+        }
+
+        return instanceOf.get().validateEntityToConstraints(this);
+    }
+
     public void toGraph() {
         if (!getType().equals("Type")) {
-            Optional<Set<String>> maybeInstanceOfUuids = getRelations().stream()
-                    .filter(triple -> triple.getLeft().equals("INSTANCE_OF"))
-                    .filter(triple -> triple.getMiddle().toLowerCase().equals("outgoing".toLowerCase()))
-                    .map(Triple::getRight).findFirst();
-
-            if (!maybeInstanceOfUuids.isPresent()) {
-                throw new IllegalArgumentException("Instance with UUID "
-                        + getUuid() + "doesn't have an INSTANCE_OF relation");
-            }
-            // Assume there's only one UUID, because an instance can only be INSTANCE_OF one type
-            String typeUuid = maybeInstanceOfUuids.get().iterator().next();
-            Type  instanceOf = typeRepository.findByUuid(typeUuid);
-
-            Validate.notNull(instanceOf, "No type with UUID " + typeUuid + ", exist in the graph.");
-
-            Pair<Boolean, Set<String>> validation = instanceOf.validateEntityToConstraints(this);
+            // See if this instance validates against its type's constraints
+            final Pair<Boolean, Set<String>> validation = validateAgainsConstraints();
             if (!validation.getLeft()) {
                 throw new IllegalEntityType("Entity with UUID " + getUuid() + " didn't adhere to its type constraints: " + validation.getRight());
             }
@@ -364,7 +361,12 @@ public class Entity {
             if ("Type".equals(type)) {
                 labels = nodeRepository.getTypeHierarchyForTypeUuid(uuid);
             } else {
-                labels = nodeRepository.getTypeHierarchyForTypeUuid(getInstanceOf().getUuid());
+                Optional<Type> maybeType = getInstanceOf();
+                if (maybeType.isPresent()) {
+                    labels = nodeRepository.getTypeHierarchyForTypeUuid(maybeType.get().getUuid());
+                } else {
+                    throw new TypeUnknownException("Type for entity \"" + uuid + "\" doesn't exist");
+                }
             }
             labels.stream()
                     .map(s -> "type:".concat(s))
@@ -378,7 +380,7 @@ public class Entity {
      * Called on instance entities to get the Type object the entity is an instance of.
      * @return The found type.
      */
-    private Type getInstanceOf() {
+    private Optional<Type> getInstanceOf() {
         if ("Type".equals(type)) {
             throw new IllegalArgumentException("Cannot get the type of a type entity.");
         }
@@ -391,7 +393,13 @@ public class Entity {
             throw new IllegalStateException("Instance " + getUuid() + " has no INSTANCE_OF relationship");
         }
 
-        return typeRepository.findByUuid(instanceOfUuid.get());
+        Type instanceOf = typeRepository.findByUuid(instanceOfUuid.get());
+        if (instanceOf == null) {
+            log.error("No type with UUID " + instanceOfUuid.get() + " exists in the database");
+            return Optional.empty();
+        } else {
+            return Optional.of(instanceOf);
+        }
     }
 
     private void persistRelations(Node node) {
