@@ -152,9 +152,9 @@ public class BundleLoader {
      * @param entity A type entity.
      */
     private void createEntityIndex(Entity entity) {
-        final String indexFormat = ":`type:" + entity.getName() + "`(%s)";
+        final String indexFormat = ":`type:" + entity.getName() + "`(`data-%s`)";
         final String createIndexFormat = "CREATE INDEX ON %s";
-        final Pattern indexPattern = Pattern.compile("^:[`]?[A-za-z0-9]+[:]?[A-za-z0-9]+[`]?+\\([A-za-z0-9]+\\)$");
+        final Pattern indexPattern = Pattern.compile("^:`[A-za-z0-9]+[:]?[A-za-z0-9]+`\\(`data-[A-za-z0-9]+`\\)$");
 
         CypherQueryExecutor queryExecutor = Context.getNeo4jTemplate().getInfrastructure().getCypherQueryExecutor();
 
@@ -164,7 +164,8 @@ public class BundleLoader {
 
         if (!formatedIndices.stream().allMatch(indexPattern.asPredicate())) {
             throw new EntityDeserializationException("Label should match \"[A-Za-z0-9]+[:]?[A-Za-z0-9]+\" and is " + entity.getName()
-                    + " all properties should match \"[A-Za-z0-9]+\" and are " + entity.getIdentity() + "\". One of these is wrong.");
+                    + " all properties should match \"[A-Za-z0-9]+\" and are "
+                    + String.join(",", entity.getIdentity()) + "\". One of these is wrong.");
         }
 
         formatedIndices.stream()
