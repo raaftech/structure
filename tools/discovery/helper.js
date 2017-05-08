@@ -152,7 +152,11 @@ class Helper {
 
         console.log('ssh: %s , http: %s', sshd, httpd);
         let ssh = this.getInstance(sshd);
+        //ssh = Helper.json2Entity( R.dissocPath(['meta','relations','IMPLEMENTS'], ssh), false );
+        ssh = this.cleanEntity(ssh, ['IMPLEMENTS', 'CONSTRAINTS']);
         let http = this.getInstance(httpd);
+        //http = Helper.json2Entity( R.dissocPath(['meta','relations','IMPLEMENTS'], http), false );
+        http = this.cleanEntity(http, ['IMPLEMENTS', 'CONSTRAINTS']);
         let list = [];
 
         if(notNil(http) && httpd !== 'none') {
@@ -188,7 +192,7 @@ class Helper {
                 longName: ssh.name
             };
             list.push(this.createInstance(ssh, sshd));
-        }else if(R.isNil(ssh) && sshd !== 'none') {
+        } else if(R.isNil(ssh) && sshd !== 'none') {
             ssh = this.getInstance('SshServer');
             ssh.type = 'Component';
             ssh.data = {
@@ -234,6 +238,7 @@ class Helper {
         let i = this.getType(instanceName);
         let rel = entity.relationCreate('INSTANCE_OF', 'outgoing');
         rel.addEntity(i);
+        entity = this.cleanEntity(entity, ['IMPLEMENTS', 'CONSTRAINTS']);
         return entity;
     }
 
@@ -242,6 +247,7 @@ class Helper {
         computer.type = 'Grouping';
         let rel = computer.relationCreate('INSTANCE_OF', 'outgoing');
         rel.addEntity(this.getType('Computer'));
+        computer = this.cleanEntity(computer, ['IMPLEMENTS', 'CONSTRAINTS']);
         return computer;
     }
 
@@ -251,7 +257,17 @@ class Helper {
         network.type = 'Grouping';
         let rel = network.relationCreate('INSTANCE_OF', 'outgoing');
         rel.addEntity(this.getType('Ipv4Network'));
+        network = this.cleanEntity(network, ['IMPLEMENTS', 'CONSTRAINTS']);
         return network;
+    }
+
+    cleanEntity(entity,rels) {
+        if(R.isNil(entity)) return entity;
+
+        R.forEach(rel => {
+            entity = Helper.json2Entity( R.dissocPath(['meta','relations',rel], entity), false );
+        }, rels);
+        return entity;
     }
 
     static json2Entity(json, generateUuid) {

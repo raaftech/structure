@@ -6,10 +6,11 @@ const cmd = require('command-line-args');
 const getUsage = require('command-line-usage');
 const nmapLib = require('./nmapLib');
 const ansibleLib = require('./ansibleLib');
-const vClient = require('./vertxClient');
 const Helper = require('./helper');
 const serviceHelper = require('./serviceHelper');
 const Entity = require('./entity');
+const vClient = require('./vertxClient');
+const RestConnector = require('./restConnector');
 
 const optionDefs = [
     {name: 'cidr', alias: 'c', type: String},
@@ -40,6 +41,7 @@ const main = (db) => {
     const getSshService = serviceHelper.getService('ssh');
     const getHttpService = serviceHelper.getService('http');
     const helper = new Helper(db);
+    const rest = new RestConnector('localhost', 3000);
     let client = new vClient();
 
     let network = helper.createNetwork();
@@ -47,7 +49,7 @@ const main = (db) => {
 
     nmapLib.nmapScan(cidr, args)
         .then((nmapResults) => {
-            async.eachOfSeries(nmapResults, function(item,index,done) {
+                async.eachOfSeries(nmapResults, function(item,index,done) {
                 console.log('calling ansible for %s [%s]', nmapResults[index].hostname, nmapResults[index].ip);
                 let doneCalled = false;
                 setTimeout(() => {
@@ -73,15 +75,21 @@ const main = (db) => {
                 console.log('Done running discovery of %s', cidr);
 
                 let finalGraph = new Entity.SubGraph(network);
-                R.forEach(item => {
-                    client.createGraph({msgh: "create", args: {entities: [item]}})
-                        .then((created) => {
-                            // console.log(created.body.result.data);
-                        });
-                }, finalGraph.toList());
 
-                client.close();
-                process.exit(0);
+                rest.login('a@b.nl', 'test')
+                    .then(loggedIn => {
+                        let promises = [];
+                        R.forEach(item => {
+                            promises.push(rest.createInstance({entities: [item]}));
+                        }, finalGraph.toList());
+                        Promise.all(promises)
+                            .then(result => {
+                                console.log(result);
+                                client.close();
+                                process.exit(0);
+                            });
+                    })
+                    .catch(ex => {console.log(ex)});
             });
         });
 };
