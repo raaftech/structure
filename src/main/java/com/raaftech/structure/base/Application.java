@@ -205,15 +205,19 @@ public class Application {
         /*
         * Instrument, Controller, Marker, Parser, Profile
          */
-        Transaction tx = Context.getGraphDatabase().beginTx();
+        Transaction tx = null;
         try {
             BundleLoader bundleLoader = new BundleLoader();
+            bundleLoader.createIndices();
+            tx = Context.getGraphDatabase().beginTx();
             bundleLoader.load();
             tx.success();
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            tx.close();
+            if (tx != null) {
+                tx.close();
+            }
         }
 
         // Deploy our main actors.

@@ -3,8 +3,10 @@ package com.raaftech.structure.helper.loader;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Sets;
 import com.raaftech.structure.base.Configuration;
 import com.raaftech.structure.base.Context;
+import com.raaftech.structure.exceptions.EntityDeserializationException;
 import com.raaftech.structure.graph.Constraint;
 import com.raaftech.structure.graph.Type;
 import com.raaftech.structure.graph.repositories.TypeRepository;
@@ -13,10 +15,13 @@ import com.raaftech.structure.helper.Triple;
 import com.raaftech.structure.next.Entity;
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.tuple.Pair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.neo4j.support.Neo4jTemplate;
 import org.springframework.data.neo4j.support.query.CypherQueryExecutor;
 
 import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -31,6 +36,8 @@ public class BundleLoader {
     private static final ObjectMapper mapper = new ObjectMapper();
     private static final TypeRepository typeRepository = Context.getTypeRepository();
     private static final Neo4jTemplate neo4jTemplate = Context.getNeo4jTemplate();
+
+    private static final Logger log = LoggerFactory.getLogger(BundleLoader.class);
 
     /**
      * Create a new BundleLoader using the configured bundle path.
@@ -140,6 +147,33 @@ public class BundleLoader {
     }
 
     /**
+     * Create the identity indexes for a type entity. Identity field will only ever be set on entities
+     * of type "Type", so no check is needed.
+     * @param entity A type entity.
+     */
+    private void createEntityIndex(Entity entity) {
+        final String indexFormat = ":`type:" + entity.getName() + "`(%s)";
+        final String createIndexFormat = "CREATE INDEX ON %s";
+        final Pattern indexPattern = Pattern.compile("^:[`]?[A-za-z0-9]+[:]?[A-za-z0-9]+[`]?+\\([A-za-z0-9]+\\)$");
+
+        CypherQueryExecutor queryExecutor = Context.getNeo4jTemplate().getInfrastructure().getCypherQueryExecutor();
+
+        final Set<String> formatedIndices = Arrays.asList(entity.getIdentity()).stream()
+                .map(prop -> String.format(indexFormat, prop))
+                .collect(Collectors.toSet());
+
+        if (!formatedIndices.stream().allMatch(indexPattern.asPredicate())) {
+            throw new EntityDeserializationException("Label should match \"[A-Za-z0-9]+[:]?[A-Za-z0-9]+\" and is " + entity.getName()
+                    + " all properties should match \"[A-Za-z0-9]+\" and are " + entity.getIdentity() + "\". One of these is wrong.");
+        }
+
+        formatedIndices.stream()
+                .peek(index -> log.debug("Creating index {} ", index))
+                .map(index -> String.format(createIndexFormat, index))
+                .forEach(query -> queryExecutor.query(query, null, null));
+    }
+
+    /**
      * Load all the bundles and persist them to the graph.
      */
     public void load() {
@@ -154,5 +188,15 @@ public class BundleLoader {
 
         // And we can save the rest of the entities
         nonTypeEntities.forEach(Entity::toGraph);
+    }
+
+    /**
+     * Because you cannot do schema changes and updates in one transaction.
+     */
+    public void createIndices() {
+        // Create all the identity indices
+        typeEntities.stream()
+                .filter(entity -> entity.getIdentity() != null)
+                .forEach(this::createEntityIndex);
     }
 }

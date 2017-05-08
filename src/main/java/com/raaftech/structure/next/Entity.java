@@ -157,6 +157,10 @@ public class Entity {
         return file.asMap();
     }
 
+    public String[] getIdentity() {
+        return identity;
+    }
+
     /**
      * Get the triples describing this entity's relations.
      * @return A triple containing left to right: relation name, direction, related UUIDs.
