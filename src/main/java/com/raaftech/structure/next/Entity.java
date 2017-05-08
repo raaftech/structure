@@ -77,6 +77,11 @@ public class Entity {
     @Indexed(indexType = IndexType.FULLTEXT, indexName = "uuid")
     private String uuid;
 
+    /**
+     * See {@link Type#identity}
+     */
+    private String[] identity;
+
     /* Generated key/value pairs: checksum, path. */
     private String checksum;
     private String path;
@@ -207,7 +212,11 @@ public class Entity {
 		this.relations = relations;
 	}
 
-	public void addConstraint(String relName, Constraint.Cardinality cardinality, UUID to) {
+    public void setIdentity(String[] identity) {
+        this.identity = identity;
+    }
+
+    public void addConstraint(String relName, Constraint.Cardinality cardinality, UUID to) {
 	    if (constraints == null) {
 	        constraints = new HashMap<>();
         }
@@ -310,6 +319,9 @@ public class Entity {
         }
         if (path != null) {
             properties.put("path", path);
+        }
+        if (identity != null) {
+            properties.put("identity", identity);
         }
 
         /* we use neo4jTemplate.merge(...), which is basically getOrCreate(...). Now, if the entity

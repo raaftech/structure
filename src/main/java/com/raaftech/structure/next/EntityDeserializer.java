@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.collect.ImmutableSet;
 import com.raaftech.structure.base.Configuration;
 import com.raaftech.structure.exceptions.EntityDeserializationException;
 import com.raaftech.structure.exceptions.JsonValidationException;
@@ -144,6 +145,16 @@ public class EntityDeserializer extends StdDeserializer<Entity> {
                                 UUID.fromString(constraintData.get("to").asText()));
                     }
                 }
+            }
+
+            // Persist identity
+            final String identityKey = "identity";
+            if (metaJson.has(identityKey) && "Type".equals(type)) {
+                final JsonNode identityProperty = metaJson.get(identityKey);
+                final Set<String> identity = identityProperty.isArray() ?
+                        ImmutableSet.copyOf(mapper.convertValue(identityProperty, HashSet.class)) :
+                        ImmutableSet.of(identityProperty.asText());
+                entity.setIdentity(identity.toArray(new String[identity.size()]));
             }
 
             /* Handle uuid within meta if existent, else generate. */

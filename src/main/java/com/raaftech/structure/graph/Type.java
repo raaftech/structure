@@ -73,6 +73,15 @@ public class Type extends Node {
     @RelatedToVia(type="CONSTRAINTS", direction = Direction.INCOMING)
     private Set<Constraint> incomingConstraints;
 
+    /*
+    This field contains names of data properties that instances of this type can have.
+    When creating an instance of a type, we'll check if another instance of that type
+    already exists with the values for the properties that are stored in the `identity` field.
+    This way we can define what makes instances of a particular type unique.
+    An example would be the `addr` data property of an `IpAddress` type.
+     */
+    private Set<String> identity;
+
     public DynamicProperties kv = new DynamicPropertiesContainer();
 
     // isaUuid exists only to temporarily save a UUID of a Type's parent
