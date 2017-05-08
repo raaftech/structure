@@ -154,7 +154,6 @@ public class BundleLoader {
     private void createEntityIndex(Entity entity) {
         final String indexFormat = ":`type:" + entity.getName() + "`(`data-%s`)";
         final String createIndexFormat = "CREATE INDEX ON %s";
-        final Pattern indexPattern = Pattern.compile("^:`[A-za-z0-9]+[:]?[A-za-z0-9]+`\\(`data-[A-za-z0-9]+`\\)$");
 
         CypherQueryExecutor queryExecutor = Context.getNeo4jTemplate().getInfrastructure().getCypherQueryExecutor();
 
@@ -162,10 +161,9 @@ public class BundleLoader {
                 .map(prop -> String.format(indexFormat, prop))
                 .collect(Collectors.toSet());
 
-        if (!formatedIndices.stream().allMatch(indexPattern.asPredicate())) {
-            throw new EntityDeserializationException("Label should match \"[A-Za-z0-9]+[:]?[A-Za-z0-9]+\" and is " + entity.getName()
-                    + " all properties should match \"[A-Za-z0-9]+\" and are "
-                    + String.join(",", entity.getIdentity()) + "\". One of these is wrong.");
+        if (Arrays.asList(entity.getIdentity()).stream().anyMatch(index -> index.contains("`"))) {
+            throw new EntityDeserializationException("One of the identity properties " +
+                    "contain `, which is not allowed. Identity: " + String.join(",", entity.getIdentity()));
         }
 
         formatedIndices.stream()
