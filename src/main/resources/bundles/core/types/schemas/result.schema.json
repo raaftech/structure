@@ -37,6 +37,10 @@
       "type": "string",
       "description": "The stdout of a program."
     },
+    "error": {
+      "type": "string",
+      "description": "A field describing why the action resulted in an error. This implies the process couldn't run."
+    },
     "desc": {
       "$ref": "type.schema.json#/properties/desc"
     },
@@ -57,9 +61,6 @@
     "desc",
     "task",
     "process",
-    "returnCode",
-    "stdout",
-    "stderr",
     "dateCreated"
   ]
 }

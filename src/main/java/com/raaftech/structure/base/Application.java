@@ -150,12 +150,6 @@ public class Application {
             log.info("Database has gracefully shut down");
         }));
 
-        // Now that Spring's context is available, the repositories are autowired in Context
-        final InstanceRepository instanceRepository = Context.getInstanceRepository();
-        final TypeRepository typeRepository = Context.getTypeRepository();
-        final InstrumentRepository instrumentRepository = Context.getInstrumentRepository();
-        final ProfileRepository profileRepository = Context.getProfileRepository();
-
         // Setup vertx with a maxWorkerExecuteTime of 5 minutes, in ns.
         Long workerTimeout = Long.parseLong(getConfiguration("workertimeout").orElse("300000000000"));
         vertx = Vertx.vertx(new VertxOptions().setMaxWorkerExecuteTime(workerTimeout));
@@ -202,20 +196,6 @@ public class Application {
         // Initialize Configuration
         Configuration.init();
 
-        /*
-        * Instrument, Controller, Marker, Parser, Profile
-         */
-        Transaction tx = Context.getGraphDatabase().beginTx();
-        try {
-            BundleLoader bundleLoader = new BundleLoader();
-            bundleLoader.load();
-            tx.success();
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            tx.close();
-        }
-
         // Deploy our main actors.
         vertx.deployVerticle("com.raaftech.structure.manager.StructureManager", ar -> {
             if (ar.succeeded()) {
@@ -257,22 +237,7 @@ public class Application {
             }
         });
 
-        // Deploy TypeActors.
-        log.debug("Deploying TypeActors..");
-        tx = Context.getGraphDatabase().beginTx();
-        StreamSupport.stream(typeRepository.findAll().spliterator(), false)
-                .map(TypeActor::new)
-                .forEach(vertx::deployVerticle);
-        tx.close();
-
-        // Deploy InstanceActors.
-        log.debug("Deploying InstanceActors..");
-        tx = Context.getGraphDatabase().beginTx();
-        for (Instance instanceNode : instanceRepository.findAll()) {
-            InstanceActor instanceNodeActor = new InstanceActor(instanceNode);
-            vertx.deployVerticle(instanceNodeActor);
-        }
-        tx.close();
+        init(vertx);
 
         // Wait a second so debug messages are done
         try {
@@ -296,6 +261,39 @@ public class Application {
         }
         httpServer.requestHandler(router::accept).listen(webPort, webHost);
         log.info("Structure is running at {}", Configuration.getSchemaNamespace());
+    }
+
+    public static void init(Vertx vertx) {
+        final InstanceRepository instanceRepository = Context.getInstanceRepository();
+        final TypeRepository typeRepository = Context.getTypeRepository();
+
+        Transaction tx = Context.getGraphDatabase().beginTx();
+        try {
+            BundleLoader bundleLoader = new BundleLoader();
+            bundleLoader.load();
+            tx.success();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            tx.close();
+        }
+
+        // Deploy TypeActors.
+        log.debug("Deploying TypeActors..");
+        tx = Context.getGraphDatabase().beginTx();
+        StreamSupport.stream(typeRepository.findAll().spliterator(), false)
+                .map(TypeActor::new)
+                .forEach(vertx::deployVerticle);
+        tx.close();
+
+        // Deploy InstanceActors.
+        log.debug("Deploying InstanceActors..");
+        tx = Context.getGraphDatabase().beginTx();
+        for (Instance instanceNode : instanceRepository.findAll()) {
+            InstanceActor instanceNodeActor = new InstanceActor(instanceNode);
+            vertx.deployVerticle(instanceNodeActor);
+        }
+        tx.close();
     }
 
     /**

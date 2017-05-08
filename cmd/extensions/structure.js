@@ -116,10 +116,14 @@ module.exports = function(vorpal, rest) {
         .action(function(args, done) {
             const self = this;
 
-            rest.purgeInit()
-                .then(result => {
-                    self.log(result);
-                    done();})
-                .catch(ex => {self.log(ex); done();});
+            let loggedIn = () => {
+                rest.purgeInit()
+                    .then(result => {
+                        //self.log(result);
+                        done();})
+                    .catch(ex => {self.log(ex); done();});
+            };
+
+            helper.genericAuthCommandHandler(done, loggedIn, rest.getToken());
         });
 };

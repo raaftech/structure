@@ -1,0 +1,41 @@
+{
+  "id": "runCapability.schema.json#",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Schema for every InstanceActor's runCapability method.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "capability": {
+      "type": "string"
+    },
+    "grouping": {
+      "$ref": "#/definitions/uuid"
+    },
+    "taskId": {
+      "$ref": "#/definitions/uuid"
+    },
+    "timeAllocated": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "arguments": {
+      "type": "object",
+      "properties": {
+        "/": {}
+      },
+      "patternProperties": {
+        "^\\w*$": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "required": [ "capability" ],
+  "definitions": {
+    "uuid": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89aAbB][a-f0-9]{3}-[a-f0-9]{12}$"
+    }
+  }
+}
