@@ -5,12 +5,10 @@
     "additionalProperties": false,
     "properties": {
         "parent": {
-            "type": "string",
-            "pattern": "^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89aAbB][a-f0-9]{3}-[a-f0-9]{12}$"
+            "$ref": "../../common.schema.json#/definitions/uuid"
         },
-        "isa": {
-            "type": "string",
-            "pattern": "^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89aAbB][a-f0-9]{3}-[a-f0-9]{12}$"
+        "isa":{
+            "$ref": "../../common.schema.json#/definitions/uuid"
         },
         "name": {
             "type": "string"
