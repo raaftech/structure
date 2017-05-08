@@ -106,8 +106,8 @@ module.exports = function(vorpal, options) {
                 prompt(self, qs)
                     .then(answers => rest.createGroup(answers.name, answers.desc))
                     .then(created => {
-                        console.log(clc.green('Group create result: '));
-                        console.log(created);
+                        self.log(clc.green('Group create result: '));
+                        self.log(created);
                         done();
                     })
                     .catch(helper.genericCatchHandler(done));
@@ -150,8 +150,8 @@ module.exports = function(vorpal, options) {
                     })
                     .then(entityList => rest.updateInstance({entities: entityList}))
                     .then(created => {
-                        console.log(clc.green('Instance grouping result: '));
-                        console.log(created);
+                        self.log(clc.green('Instance grouping result: '));
+                        self.log(created);
                         done();
                     })
                     .catch(helper.genericCatchHandler(done));
@@ -163,7 +163,7 @@ module.exports = function(vorpal, options) {
     //Note that this command is not working yet, since structure refuses to update relations
     vorpal.command('group del', 'Remove and existing instance from the group')
         .action(function(args, done) {
-            let self = this;
+            const self = this;
             let selectedGroup;
             let allGroups;
             let allChildren;
@@ -208,7 +208,7 @@ module.exports = function(vorpal, options) {
                         return rest.updateInstance({entities: graph.toList()});
                     })
                     .then(updated => {
-                        console.log(updated);
+                        self.log(updated);
                         done();
                     })
                     .catch(helper.genericCatchHandler(done));
@@ -219,7 +219,7 @@ module.exports = function(vorpal, options) {
 
     vorpal.command('group remove', 'Delete an existing group')
         .action(function(args, done) {
-            let self = this;
+            const self = this;
             let allGroups;
 
             let loggedIn = () => {
@@ -235,7 +235,7 @@ module.exports = function(vorpal, options) {
                         return rest.removeGroup(e.uuid);
                     })
                     .then(result => {
-                        console.log(result);
+                        self.log(result);
                         done();
                     })
                     .catch(helper.genericCatchHandler(done));
@@ -246,7 +246,7 @@ module.exports = function(vorpal, options) {
 
     vorpal.command('group view', 'View grouping details for a specific grouping')
         .action(function(args, done) {
-            let self = this;
+            const self = this;
             let allGroups;
 
 
@@ -263,7 +263,7 @@ module.exports = function(vorpal, options) {
                 })
                 .then(result => {
                     let mapped = R.map(nodeLens, result);
-                    console.log(helper.treePrint(false, mapped));
+                    self.log(helper.treePrint(false, mapped));
                     done();
                 })
                 .catch(helper.genericCatchHandler(done));

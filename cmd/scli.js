@@ -67,7 +67,7 @@ function setupStatusChannel() {
                                  clc.green(R.path(['type'],data)),
                                  clc.green(R.path(['data','event'],data)),
                                  clc.green(R.path(['data','data','data'],data)));
-        console.log(output);
+        vorpal.log(output);
     });
 }
 
@@ -115,117 +115,115 @@ const prompt = (vorp, question) => {
 
 vorpal.command('mem <bank> <data>', 'Save data to memory bank a or b')
     .action(function(args, done) {
+        const self = this;
         if(args.bank !== 'a' && args.bank !== 'b') {
-            console.log('The value for <bank> needs to be "a" or "b"');
+            self.log('The value for <bank> needs to be "a" or "b"');
             done();
         } else {
             memoryBank[args.bank] = args.data;
-            console.log('Data saved to memory bank [%s]. Print it with ctrl-%s', args.bank, args.bank);
+            self.log('Data saved to memory bank [%s]. Print it with ctrl-%s', args.bank, args.bank);
             done();
         }
     });
 
 vorpal.command('relate <fromInstanceUuid> <toInstanceUuid>', 'Create a new relation between two instances')
-    .action(function(args, done) {
-        const self = this;
-        let fromInstance,toInstance;
-        let requestedRelation;
-        let currentConstraints;
+        .action(function(args, done) {
+            const self = this;
+            let fromInstance,toInstance;
+            let requestedRelation;
+            let currentConstraints;
 
-        let instanceOfType = R.compose(R.head, R.path(['meta', 'relations', 'INSTANCE_OF', 'uuids']));
-        let firstKey = R.compose(R.head, R.keys);
-        let listRelations = R.compose(R.uniq, R.map(firstKey));
-        let harvestEndpointUuids = (relName, list) => {
-            return R.pipe(
-                R.filter(R.has(relName)),
-                R.map(R.prop(relName)),
-                R.map(R.prop('to'))
-            )(list);
-        };
+            let instanceOfType = R.compose(R.head, R.path(['meta', 'relations', 'INSTANCE_OF', 'uuids']));
+            let firstKey = R.compose(R.head, R.keys);
+            let listRelations = R.compose(R.uniq, R.map(firstKey));
+            let harvestEndpointUuids = (relName, list) => {
+                return R.pipe(
+                    R.filter(R.has(relName)),
+                    R.map(R.prop(relName)),
+                    R.map(R.prop('to'))
+                )(list);
+            };
 
-        rest.getInstanceByUuid(args.fromInstanceUuid)
-            .then(instance => {
-                fromInstance = instance;
-                return rest.getInstanceByUuid(args.toInstanceUuid);
-            })
-            .then(instance => {
-                toInstance = instance;
-                return instanceOfType(fromInstance);
-            })
-            .then(uuid => rest.getConstraints(uuid))
-            .then(constraints => {
-                currentConstraints = constraints;
-                let rels = listRelations(constraints.outgoing);
-                let q = helper.generateQuestion('relation', 'list', 'Select relation: ', {choices: rels});
-                return prompt(self, q);
-            })
-            .then(answer => {
-                //console.log(JSON.stringify(currentConstraints, undefined, 2));
-                requestedRelation = answer.relation;
-                return harvestEndpointUuids(answer.relation, currentConstraints.outgoing);
-            })
-            .then(uuids => {
-                let promises = [];
-                R.forEach(uuid => promises.push(rest.getEntityByUuid(uuid)), uuids);
-                return Promise.all(promises);
-            })
-            .then(result => {
-                console.log('Allowed types: %s',R.map(R.prop('name'), result));
-                console.log('%s %s %s', fromInstance.meta.uuid, requestedRelation, toInstance.meta.uuid);
-                if(R.isNil(R.path(['meta','relations',requestedRelation], fromInstance))) {
-                    fromInstance.meta.relations[requestedRelation] = {direction: 'outgoing', uuids: [toInstance.meta.uuid]};
-                } else {
-                    fromInstance.meta.relations[requestedRelation].uuids.push(toInstance.meta.uuid);
-                }
-                return rest.updateInstance({entities: [fromInstance]});
-            })
-            .then(updated => {
-                console.log(updated);
-                done();
-            })
-            .catch(helper.genericCatchHandler(done));
-            //from: e97ddf3b-86b4-4047-8eea-a06d836de553
-            //to:   df763ed2-0f43-463f-bab7-08da16d7cc52
-    });
+            rest.getInstanceByUuid(args.fromInstanceUuid)
+                .then(instance => {
+                    fromInstance = instance;
+                    return rest.getInstanceByUuid(args.toInstanceUuid);
+                })
+                .then(instance => {
+                    toInstance = instance;
+                    return instanceOfType(fromInstance);
+                })
+                .then(uuid => rest.getConstraints(uuid))
+                .then(constraints => {
+                    currentConstraints = constraints;
+                    let rels = listRelations(constraints.outgoing);
+                    let q = helper.generateQuestion('relation', 'list', 'Select relation: ', {choices: rels});
+                    return prompt(self, q);
+                })
+                .then(answer => {
+                    requestedRelation = answer.relation;
+                    return harvestEndpointUuids(answer.relation, currentConstraints.outgoing);
+                })
+                .then(uuids => {
+                    let promises = [];
+                    R.forEach(uuid => promises.push(rest.getEntityByUuid(uuid)), uuids);
+                    return Promise.all(promises);
+                })
+                .then(result => {
+                    self.log('Allowed types: %s',R.map(R.prop('name'), result));
+                    self.log('%s %s %s', fromInstance.meta.uuid, requestedRelation, toInstance.meta.uuid);
+                    if(R.isNil(R.path(['meta','relations',requestedRelation], fromInstance))) {
+                        fromInstance.meta.relations[requestedRelation] = {direction: 'outgoing', uuids: [toInstance.meta.uuid]};
+                    } else {
+                        fromInstance.meta.relations[requestedRelation].uuids.push(toInstance.meta.uuid);
+                    }
+                    return rest.updateInstance({entities: [fromInstance]});
+                })
+                .then(updated => {
+                    self.log(updated);
+                    done();
+                })
+                .catch(helper.genericCatchHandler(done));
+        });
 
 vorpal.command('specialize <uuid>', 'Specialize an instance')
     .action(function(args, done) {
-        const self = this;
+            const self = this;
 
-        let selectedInstance;
+            let selectedInstance;
 
-        let instanceOfType = R.compose(R.head, R.path(['meta', 'relations', 'INSTANCE_OF', 'uuids']));
-        let setInstanceOfType = (oldUuid, newUuid, instance) => {
-            let uuids = R.path(['meta', 'relations', 'INSTANCE_OF', 'uuids'], instance);
-            uuids = R.reject(R.equals(oldUuid), uuids);
-            uuids = R.prepend(newUuid, uuids);
-            instance = R.assocPath(['meta', 'relations', 'INSTANCE_OF', 'uuids'],uuids, instance);
-            return instance;
-        };
+            let instanceOfType = R.compose(R.head, R.path(['meta', 'relations', 'INSTANCE_OF', 'uuids']));
+            let setInstanceOfType = (oldUuid, newUuid, instance) => {
+                let uuids = R.path(['meta', 'relations', 'INSTANCE_OF', 'uuids'], instance);
+                uuids = R.reject(R.equals(oldUuid), uuids);
+                uuids = R.prepend(newUuid, uuids);
+                instance = R.assocPath(['meta', 'relations', 'INSTANCE_OF', 'uuids'],uuids, instance);
+                return instance;
+            };
 
-        rest.getInstanceByUuid(args.uuid)
-            .then(instance => {
-                selectedInstance = instance;
-                return rest.getEntityByUuid(instanceOfType(instance));
-            })
-            .then(type => {
-                return rest.getChildren(type.meta.uuid);
-            })
-            .then(children => {
-                let q = helper.generateQuestion('child', 'list', 'Select specialisation: ', {choices: children});
-                self.prompt(q, function(answer) {
-                    let e = R.find(R.propEq('name', answer.child), children);
-                    selectedInstance = setInstanceOfType(instanceOfType(selectedInstance), e.meta.uuid, selectedInstance);
-                    rest.updateInstance({entities: [selectedInstance]})
-                        .then(updated => {
-                            if(R.isEmpty(updated)) console.log('No changes were made');
-                            else console.log(updated);
-                            done();
-                        });
-                });
-            })
-            .catch(helper.genericCatchHandler(done));
-    });
+            rest.getInstanceByUuid(args.uuid)
+                .then(instance => {
+                    selectedInstance = instance;
+                    return rest.getEntityByUuid(instanceOfType(instance));
+                })
+                .then(type => {
+                    return rest.getChildren(type.meta.uuid);
+                })
+                .then(children => {
+                    let q = helper.generateQuestion('child', 'list', 'Select specialisation: ', {choices: children});
+                    self.prompt(q, function(answer) {
+                        let e = R.find(R.propEq('name', answer.child), children);
+                        selectedInstance = setInstanceOfType(instanceOfType(selectedInstance), e.meta.uuid, selectedInstance);
+                        rest.updateInstance({entities: [selectedInstance]})
+                            .then(updated => {
+                                if(R.isEmpty(updated)) self.log('No changes were made');
+                                else self.log(updated);
+                                done();
+                            });
+                    });
+                })
+                .catch(helper.genericCatchHandler(done));
+        });
 
 vorpal.command('find <name>', 'Find a specified node in structure')
     .option('-f, --field <fieldName>', 'Select a specific field from the resultset',
@@ -380,7 +378,7 @@ vorpal.command('query', 'Place arbitrary requests on the event bus')
             let loggedIn = () => {
                 rest.query(res.address, res.cmd, json)
                     .then(data => {
-                        console.log(JSON.stringify(data));
+                        self.log(JSON.stringify(data));
                         done();
                     })
                     .catch(helper.genericCatchHandler(done));
