@@ -25,8 +25,8 @@ class Helper {
 
     transform(data, ip, sshd, httpd) {
         let root = this.createRootNode();
-        //TODO also create the GROUPS relation and add entities to it.
-        //let rootRelation = root.relationCreate('HAS_COMPONENT', 'outgoing');
+        root.desc = util.format('%s [%s]', data.nodename, ip);
+
         let groupsRelation = root.relationCreate('GROUPS', 'outgoing');
 
         //Operating System
