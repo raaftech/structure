@@ -144,46 +144,49 @@ vorpal.command('relate <fromInstanceUuid> <toInstanceUuid>', 'Create a new relat
                 )(list);
             };
 
-            rest.getInstanceByUuid(args.fromInstanceUuid)
-                .then(instance => {
-                    fromInstance = instance;
-                    return rest.getInstanceByUuid(args.toInstanceUuid);
-                })
-                .then(instance => {
-                    toInstance = instance;
-                    return instanceOfType(fromInstance);
-                })
-                .then(uuid => rest.getConstraints(uuid))
-                .then(constraints => {
-                    currentConstraints = constraints;
-                    let rels = listRelations(constraints.outgoing);
-                    let q = helper.generateQuestion('relation', 'list', 'Select relation: ', {choices: rels});
-                    return prompt(self, q);
-                })
-                .then(answer => {
-                    requestedRelation = answer.relation;
-                    return harvestEndpointUuids(answer.relation, currentConstraints.outgoing);
-                })
-                .then(uuids => {
-                    let promises = [];
-                    R.forEach(uuid => promises.push(rest.getEntityByUuid(uuid)), uuids);
-                    return Promise.all(promises);
-                })
-                .then(result => {
-                    self.log('Allowed types: %s',R.map(R.prop('name'), result));
-                    self.log('%s %s %s', fromInstance.meta.uuid, requestedRelation, toInstance.meta.uuid);
-                    if(R.isNil(R.path(['meta','relations',requestedRelation], fromInstance))) {
-                        fromInstance.meta.relations[requestedRelation] = {direction: 'outgoing', uuids: [toInstance.meta.uuid]};
-                    } else {
-                        fromInstance.meta.relations[requestedRelation].uuids.push(toInstance.meta.uuid);
-                    }
-                    return rest.updateInstance({entities: [fromInstance]});
-                })
-                .then(updated => {
-                    self.log(updated);
-                    done();
-                })
-                .catch(helper.genericCatchHandler(done));
+            let loggedIn = () => {
+                rest.getInstanceByUuid(args.fromInstanceUuid)
+                    .then(instance => {
+                        fromInstance = instance;
+                        return rest.getInstanceByUuid(args.toInstanceUuid);
+                    })
+                    .then(instance => {
+                        toInstance = instance;
+                        return instanceOfType(fromInstance);
+                    })
+                    .then(uuid => rest.getConstraints(uuid))
+                    .then(constraints => {
+                        currentConstraints = constraints;
+                        let rels = listRelations(constraints.outgoing);
+                        let q = helper.generateQuestion('relation', 'list', 'Select relation: ', {choices: rels});
+                        return prompt(self, q);
+                    })
+                    .then(answer => {
+                        requestedRelation = answer.relation;
+                        return harvestEndpointUuids(answer.relation, currentConstraints.outgoing);
+                    })
+                    .then(uuids => {
+                        let promises = [];
+                        R.forEach(uuid => promises.push(rest.getEntityByUuid(uuid)), uuids);
+                        return Promise.all(promises);
+                    })
+                    .then(result => {
+                        self.log('Allowed types: %s',R.map(R.prop('name'), result));
+                        self.log('%s %s %s', fromInstance.meta.uuid, requestedRelation, toInstance.meta.uuid);
+                        if(R.isNil(R.path(['meta','relations',requestedRelation], fromInstance))) {
+                            fromInstance.meta.relations[requestedRelation] = {direction: 'outgoing', uuids: [toInstance.meta.uuid]};
+                        } else {
+                            fromInstance.meta.relations[requestedRelation].uuids.push(toInstance.meta.uuid);
+                        }
+                        return rest.updateInstance({entities: [fromInstance]});
+                    })
+                    .then(updated => {
+                        self.log(updated);
+                        done();
+                    })
+                    .catch(helper.genericCatchHandler(done));
+                };
+            helper.genericAuthCommandHandler(done, loggedIn, rest.getToken());
         });
 
 vorpal.command('specialize <uuid>', 'Specialize an instance')
@@ -201,28 +204,32 @@ vorpal.command('specialize <uuid>', 'Specialize an instance')
                 return instance;
             };
 
-            rest.getInstanceByUuid(args.uuid)
-                .then(instance => {
-                    selectedInstance = instance;
-                    return rest.getEntityByUuid(instanceOfType(instance));
-                })
-                .then(type => {
-                    return rest.getChildren(type.meta.uuid);
-                })
-                .then(children => {
-                    let q = helper.generateQuestion('child', 'list', 'Select specialisation: ', {choices: children});
-                    self.prompt(q, function(answer) {
-                        let e = R.find(R.propEq('name', answer.child), children);
-                        selectedInstance = setInstanceOfType(instanceOfType(selectedInstance), e.meta.uuid, selectedInstance);
-                        rest.updateInstance({entities: [selectedInstance]})
-                            .then(updated => {
-                                if(R.isEmpty(updated)) self.log('No changes were made');
-                                else self.log(updated);
-                                done();
-                            });
-                    });
-                })
-                .catch(helper.genericCatchHandler(done));
+            let loggedIn = () => {
+                rest.getInstanceByUuid(args.uuid)
+                    .then(instance => {
+                        selectedInstance = instance;
+                        return rest.getEntityByUuid(instanceOfType(instance));
+                    })
+                    .then(type => {
+                        return rest.getChildren(type.meta.uuid);
+                    })
+                    .then(children => {
+                        let q = helper.generateQuestion('child', 'list', 'Select specialisation: ', {choices: children});
+                        self.prompt(q, function(answer) {
+                            let e = R.find(R.propEq('name', answer.child), children);
+                            selectedInstance = setInstanceOfType(instanceOfType(selectedInstance), e.meta.uuid, selectedInstance);
+                            rest.updateInstance({entities: [selectedInstance]})
+                                .then(updated => {
+                                    if(R.isEmpty(updated)) self.log('No changes were made');
+                                    else self.log(updated);
+                                    done();
+                                });
+                        });
+                    })
+                    .catch(helper.genericCatchHandler(done));
+            };
+
+            helper.genericAuthCommandHandler(done, loggedIn, rest.getToken());
         });
 
 vorpal.command('find <name>', 'Find a specified node in structure')
