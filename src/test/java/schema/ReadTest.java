@@ -1,12 +1,8 @@
 package schema;
 
 import com.google.common.collect.ImmutableSet;
-
 import java.util.Set;
 
-/**
- * Created by bardofrings on 08/05/2017.
- */
 public class ReadTest extends SchemaTest{
     @Override
     protected Set<String> good() {
@@ -18,7 +14,7 @@ public class ReadTest extends SchemaTest{
     @Override
     protected Set<String> bad() {
         return ImmutableSet.of(
-                "schema/readBad01.json"
+                "schema/readBad01.json" // testing with bad UUID
         );
     }
 

@@ -3,9 +3,6 @@ package schema;
 import com.google.common.collect.ImmutableSet;
 import java.util.Set;
 
-/**
- * Created by bardofrings on 04/05/2017.
- */
 public class ManualTest extends SchemaTest {
     @Override
     protected Set<String> good() {
@@ -17,7 +14,7 @@ public class ManualTest extends SchemaTest {
     @Override
     protected Set<String> bad() {
         return ImmutableSet.of(
-                "schema/manualBad01.json"
+                "schema/manualBad01.json" // testing with bad string pattern
         );
     }
 

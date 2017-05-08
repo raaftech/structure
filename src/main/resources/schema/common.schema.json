@@ -6,9 +6,36 @@
       "type": "string",
       "pattern": "^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89aAbB][a-f0-9]{3}-[a-f0-9]{12}$"
     },
-    "stringpattern": {
+    "uuidList": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/uuid"
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "caseInsensitiveAlphaNum": {
       "type": "string",
       "pattern": "^[a-zA-Z0-9]+$"
+    },
+    "caseInsensitiveAlphaNumWithDot": {
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9\\.]+$"
+    },
+    "caseInsensitiveAlphaNumWithDotArray": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/caseInsensitiveAlphaNumWithDot"
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "paths": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
     }
   }
 }

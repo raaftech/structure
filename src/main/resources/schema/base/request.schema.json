@@ -5,7 +5,7 @@
     "required": [ "msgh" ],
     "properties": {
         "msgh": {
-            "$ref": "../common.schema.json#/definitions/stringpattern"
+            "$ref": "../common.schema.json#/definitions/caseInsensitiveAlphaNum"
         },
         "args": {
             "type": "object"

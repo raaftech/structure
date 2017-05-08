@@ -5,7 +5,7 @@
     "required": [ "name", "synopsis", "description" ],
     "properties": {
         "name": {
-            "$ref": "../common.schema.json#/definitions/stringpattern"
+            "$ref": "../common.schema.json#/definitions/caseInsensitiveAlphaNum"
         },
         "synopsis": {
             "type": "object"

@@ -13,7 +13,7 @@ import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertFalse;
 
 /**
- * Test to check whether JSON schemas in Structure are correct.
+ * Tests to check whether JSON schemas in Structure are correct.
  */
 public abstract class SchemaTest {
 
