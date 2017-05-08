@@ -47,7 +47,6 @@ const main = (db) => {
 
     nmapLib.nmapScan(cidr, args)
         .then((nmapResults) => {
-            //const count = R.length(nmapResults);
             async.eachOfSeries(nmapResults, function(item,index,done) {
                 console.log('calling ansible for %s [%s]', nmapResults[index].hostname, nmapResults[index].ip);
                 let doneCalled = false;
