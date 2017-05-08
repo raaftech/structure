@@ -20,6 +20,7 @@ const groupExt = require('./extensions/groups');
 const instanceExt = require('./extensions/instance');
 
 const answerCache = new SimpleCache();
+const memoryBank = {a: '', b: ''};
 let rest;
 let validator;
 
@@ -45,6 +46,16 @@ function scli() {
 	vorpal.use(groupExt, rest);
 	vorpal.use(instanceExt, {rest: rest, validator: validator});
 	vorpal.delimiter(clc.magenta.bold('structure$')).show();
+
+	vorpal.on('keypress', function(key) {
+	    if(key.e.key.ctrl) {
+	        if(key.key === 'a') {
+	            vorpal.ui.input(vorpal.ui.input() + memoryBank.a);
+	        } else if(key.key === 'b') {
+	            vorpal.ui.input(vorpal.ui.input() + memoryBank.b);
+	        }
+	    }
+	});
 }
 
 function setupStatusChannel() {
@@ -102,19 +113,24 @@ const prompt = (vorp, question) => {
     });
 };
 
-vorpal.command('relate <uuid>', 'Create a new relation for an instance')
+vorpal.command('mem <bank> <data>', 'Save data to memory bank a or b')
+    .action(function(args, done) {
+        if(args.bank !== 'a' && args.bank !== 'b') {
+            console.log('The value for <bank> needs to be "a" or "b"');
+            done();
+        } else {
+            memoryBank[args.bank] = args.data;
+            console.log('Data saved to memory bank [%s]. Print it with ctrl-%s', args.bank, args.bank);
+            done();
+        }
+    });
+
+vorpal.command('relate <fromInstanceUuid> <toInstanceUuid>', 'Create a new relation between two instances')
     .action(function(args, done) {
         const self = this;
-        let selectedInstance;
+        let fromInstance,toInstance;
+        let requestedRelation;
         let currentConstraints;
-
-        //TODO fetch instance by uuid
-        //TODO get instance_of type uuid
-        //TODO getConstraints for type
-        //TODO make user choose one of the allowed relations by direction
-        //TODO make user choose one of the allowed types
-        //TODO create relation or add uuid to existing relation
-        //TODO update instance in structure
 
         let instanceOfType = R.compose(R.head, R.path(['meta', 'relations', 'INSTANCE_OF', 'uuids']));
         let firstKey = R.compose(R.head, R.keys);
@@ -127,10 +143,14 @@ vorpal.command('relate <uuid>', 'Create a new relation for an instance')
             )(list);
         };
 
-        rest.getInstanceByUuid(args.uuid)
+        rest.getInstanceByUuid(args.fromInstanceUuid)
             .then(instance => {
-                selectedInstance = instance;
-                return instanceOfType(instance);
+                fromInstance = instance;
+                return rest.getInstanceByUuid(args.toInstanceUuid);
+            })
+            .then(instance => {
+                toInstance = instance;
+                return instanceOfType(fromInstance);
             })
             .then(uuid => rest.getConstraints(uuid))
             .then(constraints => {
@@ -140,7 +160,8 @@ vorpal.command('relate <uuid>', 'Create a new relation for an instance')
                 return prompt(self, q);
             })
             .then(answer => {
-                console.log(JSON.stringify(currentConstraints, undefined, 2));
+                //console.log(JSON.stringify(currentConstraints, undefined, 2));
+                requestedRelation = answer.relation;
                 return harvestEndpointUuids(answer.relation, currentConstraints.outgoing);
             })
             .then(uuids => {
@@ -149,10 +170,22 @@ vorpal.command('relate <uuid>', 'Create a new relation for an instance')
                 return Promise.all(promises);
             })
             .then(result => {
-                console.log(result);
+                console.log('Allowed types: %s',R.map(R.prop('name'), result));
+                console.log('%s %s %s', fromInstance.meta.uuid, requestedRelation, toInstance.meta.uuid);
+                if(R.isNil(R.path(['meta','relations',requestedRelation], fromInstance))) {
+                    fromInstance.meta.relations[requestedRelation] = {direction: 'outgoing', uuids: [toInstance.meta.uuid]};
+                } else {
+                    fromInstance.meta.relations[requestedRelation].uuids.push(toInstance.meta.uuid);
+                }
+                return rest.updateInstance({entities: [fromInstance]});
+            })
+            .then(updated => {
+                console.log(updated);
                 done();
             })
             .catch(helper.genericCatchHandler(done));
+            //from: e97ddf3b-86b4-4047-8eea-a06d836de553
+            //to:   df763ed2-0f43-463f-bab7-08da16d7cc52
     });
 
 vorpal.command('specialize <uuid>', 'Specialize an instance')
