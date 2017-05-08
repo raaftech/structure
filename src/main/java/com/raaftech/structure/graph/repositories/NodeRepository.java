@@ -27,6 +27,9 @@ public interface NodeRepository extends GenericRepository<Node> {
     @Query("MATCH (node:Node {uuid:{uuid}}) return node")
     Node findByUuid(@Param("uuid") String uuid);
 
+    @Query("MATCH (n) OPTIONAL MATCH (n)-[r]->() DELETE r, n")
+    void purge();
+
     /**
      * Get all the ISA parents' names + a node's own name.
      * This is used to query all the names of a type so we know what it specializes.

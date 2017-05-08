@@ -1,185 +1,292 @@
 "use strict";
 
 const R = require('ramda');
-const fs = require('fs');
-const path = require('path');
 const util = require('util');
-const FuzzyMatching = require('fuzzy-matching');
 const Entity = require('./entity');
-
-const bundleData = JSON.parse(fs.readFileSync(path.join(__dirname, 'output.json')));
-const initMatcher = (types) => {
-    let concepts = R.map(R.prop('shortName'),types);
-    return new FuzzyMatching(concepts);
-};
-const fuzzyMatcher = initMatcher(bundleData);
-
-const getConcept = (name) => {
-    if(name === 'unknown') return null;
-
-    let match = fuzzyMatcher.get(name);
-    const f = R.ifElse(
-                R.pipe(R.prop('distance'), R.lte(0.5)),
-                R.prop('value'),
-                R.always(name)
-              );
-     //console.log('Requested: %s, Resolved: %s, Distance: %s',name, f(match), JSON.stringify(match));
-     let data = R.find(R.propEq('shortName', f(match)), bundleData);
-     return R.defaultTo(null, data);
-};
+const treeify = require('treeify');
+const uuidV4 = require('uuid');
 
 const notNil = R.compose(R.not, R.isNil);
 
-const createInstanceData = (instances, templateUuid) => {
-    return {
-        data: { instances: instances },
-        templateUuid: templateUuid
-    };
-};
-const createEventData = (dataList) => {
-    return {
-        args: {
-            instancedata: dataList
-        },
-        msgh: 'instantiateDiscoveredComputer'
-    };
-};
-const createData = (uuid, desc, longName, shortName, name, version) => {
-    return {
-        _typeUuid: uuid,
-        desc: desc,
-        longName: longName,
-        name: name,
-        shortName: shortName,
-        ver: version
-    };
-};
-
-const ipData = (ip,reachable) => {
-    let x = {
-        addr: ip,
-        desc: util.format('Reachable IPv4 address [%s]', ip),
-        name: 'Ipv4Address',
-        reachable: reachable
-    };
-    return createInstanceData([x], '0e843d97-c975-42ca-813c-c91f42a7d3cc');
-};
-
-const dnsData = (dns,ip) => {
-    let x = {
-        name: 'DnsName',
-        desc: R.defaultTo('unknown-'+ip, dns),
-        dnsname: R.defaultTo('unknown-'+ip, dns)
-    };
-    return createInstanceData([x], '94d10031-5246-4233-b25d-b5f8ef9d0b41');
-};
-
-const osData = (dist, version,hostname,ip) => {
-    hostname = R.defaultTo('unknown-'+ip, hostname);
-    let c = getConcept(dist);
-
-	if(R.isNil(c)) {
-	    //TODO handle relations
-	    return new Entity.Entity('Type', 'OperatingSystem', dist,
-	                                    'f05e325e-1aee-4892-96e4-8bcd6e97c528',
-	                                    {hostname: hostname,version: R.defaultTo('unknown', version)});
+class Helper {
+    constructor(db) {
+        this.db = db;
     }
 
-    //TODO insert relation to ISA parent
-    return new Entity.Entity('Type', c.name, dist, c._typeUuid,
-                             {hostname: hostname, version: R.defaultTo('unknown', version)});
-};
-
-const interpreterData = (interpreter,ip) => {
-    let fn = R.pipe(R.split('/'), R.last);
-    let c = getConcept(fn(interpreter));
-	if(R.isNil(c)) {
-	    //TODO handle relations
-        return new Entity.Entity('Type', 'Interpreter', R.defaultTo('A command or programming language interpreter.', interpreter),
-                                 'd047f415-734c-4bd3-92b9-d68d5521ce69');
+    getInstance(name) {
+        if(name === 'unknown') return null;
+        return R.defaultTo(null, Helper.json2Entity(this.db.match(name),true));
     }
 
-    //TODO insert relation to ISA parent
-    return new Entity.Entity('Type', c.name, interpreter, c._typeUuid);
-};
-
-const mgrData = (mgr,ip) => {
-    let c = getConcept(mgr);
-	if(R.isNil(c)) {
-        let generic = createData('c3008eec-b454-4ef6-bf7e-0bd92c13d3c3',R.defaultTo('An operating system initialization system.',mgr),
-                                 'ServiceManager','servicemanager', 'ServiceManager', '');
-        return createInstanceData([generic], '34bfe99f-1d62-48cb-a8a3-e913b69ef225');
-	}
-    let x = createData(c._typeUuid, mgr, c.longName, c.shortName, c.name, '');
-    return createInstanceData([x], '34bfe99f-1d62-48cb-a8a3-e913b69ef225');
-};
-
-const daemonData = (sshd, httpd,ip) => {
-    let ssh = createData('7db4a3ef-2d3c-4071-929b-e81505fbd5e2', R.defaultTo('An SSH server.',sshd),
-                         'SshServer', 'sshserver', 'SshServer', 'unknown');
-    let http = createData('b46cb520-caaf-4d26-b59d-58edca723b8d',R.defaultTo('HTTP daemon',httpd),
-                          'HTTPD', httpd, 'HTTPD', 'unknown');
-
-    let list = [];
-    if(notNil(httpd) && httpd !== 'none') list.push(http);
-
-    if(notNil(sshd) && sshd !== 'none') list.push(ssh);
-
-    return createInstanceData(list, '54126ca8-3a5e-43b9-a501-98c8d158049d');
-};
-
-const miscData = () => {
-    let result = [];
-    result.push(createInstanceData([],'39e12352-8305-4b5d-af60-f1725ec458b8'));
-    result.push(createInstanceData([],'e8e3c643-a520-4d63-9088-dd27086a1879'));
-    return result;
-};
-
-const transform2 = (data, ip, hostname, sshd, httpd) => {
-    let parentMap = {
-        os: 'f05e325e-1aee-4892-96e4-8bcd6e97c528',
-        interpreter: 'd047f415-734c-4bd3-92b9-d68d5521ce69',
-        manager: 'c3008eec-b454-4ef6-bf7e-0bd92c13d3c3',
-        ssh: '7db4a3ef-2d3c-4071-929b-e81505fbd5e2',
-        http: 'b46cb520-caaf-4d26-b59d-58edca723b8d'
-    };
-
-    //TODO create the combining instance
-
-    let os = osData(data.distribution, data.distribution_version,hostname,ip);
-    let interpreter = interpreterDataNEW(data.shell);
-    let manager = mgrDataNEW(data.service_manager, ip);
-    let ip = ipDataNEW(ip, true);
-    let dns = dnsDataNEW(data.nodename, ip);
-    let daemon = daemonData(sshd, httpd, ip);
-
-    return [os,interpreter,manager,ip,dns,daemon];
-};
-
-const transform = (data, ip, hostname,sshd, httpd) => {
-    if(notNil(data.error)) {
-        let r = [];
-        r.push(osData('unknown', '',hostname,ip));
-        r.push(interpreterData('unknown',ip));
-        r.push(mgrData('unknown',ip));
-        r.push(ipData(ip, true));
-        r.push(dnsData(hostname,ip));
-        r.push(daemonData(sshd, httpd,ip));
-
-        return createEventData(R.concat(r, miscData()));
+    getType(name) {
+        if(name === 'unknown') return null;
+        return R.defaultTo(null, Helper.json2Entity(this.db.match(name), false));
     }
 
-    let result = [];
-    result.push(osData(data.distribution, data.distribution_version,hostname,ip));
-    result.push(interpreterData(data.shell));
-    result.push(mgrData(data.service_manager,ip));
-    result.push(ipData(ip, true));
-    result.push(dnsData(data.nodename,ip));
-    result.push(daemonData(sshd, httpd, ip));
+    transform(data, ip, sshd, httpd) {
+        let root = this.createRootNode();
+        //TODO also create the GROUPS relation and add entities to it.
+        //let rootRelation = root.relationCreate('HAS_COMPONENT', 'outgoing');
+        let groupsRelation = root.relationCreate('GROUPS', 'outgoing');
 
-    return createEventData(R.concat(result, miscData()));
-};
+        //Operating System
+        let os = this.osData(data.distribution, data.distribution_version);
+        //rootRelation.addEntity(os);
+        groupsRelation.addEntity(os);
+        let osHasComponentRelation = os.relationCreate('HAS_COMPONENT', 'outgoing');
+        let osHasConfigurationRelation = os.relationCreate('HAS_CONFIGURATION', 'outgoing');
 
-module.exports = {
-    transform: transform2
-};
+        //Interpreter
+        let interpreter = this.interpreterData(data.shell);
+        osHasComponentRelation.addEntity(interpreter);
+        //ServiceManager
+        let manager = this.mgrData(data.service_manager);
+        osHasComponentRelation.addEntity(manager);
+        //Ip data
+        let ipd = this.ipData(ip, true);
+        osHasConfigurationRelation.addEntity(ipd);
+        //DNS
+        let dns = this.dnsData(data.nodename, ip);
+        osHasConfigurationRelation.addEntity(dns);
+        //Daemons (http, ssh only atm)
+        let daemonList = this.daemonData(sshd.service, httpd.service);
+        R.forEach(item => osHasComponentRelation.addEntity(item), daemonList);
+
+        return root;
+    }
+
+    osData(dist, version) {
+        let c = this.getInstance(dist);
+        if(R.isNil(c)) {
+            let gc = this.getInstance('OperatingSystem');
+            gc.type = 'Component';
+            gc.data = {
+                name: gc.name,
+                desc: gc.desc,
+                ver: '',
+                shortName: gc.name,
+                longName: gc.name
+            };
+            return this.createInstance(gc,'OperatingSystem');
+        }
+        c.type = 'Component';
+        c.data = {
+            name: c.name,
+            desc: c.desc,
+            ver: version,
+            shortName: c.name,
+            longName: c.name
+        };
+        return this.createInstance(c, dist);
+    }
+
+    interpreterData(interpreter) {
+        if(R.isNil(interpreter)) {
+            let gc = this.getInstance('Interpreter');
+            gc.type = 'Component';
+            gc.data = {
+                name: gc.name,
+                desc: gc.desc,
+                ver: '',
+                shortName: gc.name,
+                longName: gc.name
+            };
+            return this.createInstance(gc, 'Interpreter');
+        }
+        let fn = R.pipe(R.split('/'), R.last);
+        let c = this.getInstance(fn(interpreter));
+        if(R.isNil(c)) {
+            let gc = this.getInstance('Interpreter');
+            gc.type = 'Component';
+            gc.data = {
+                name: gc.name,
+                desc: gc.desc,
+                ver: '',
+                shortName: gc.name,
+                longName: gc.name
+            };
+            return this.createInstance(gc, 'Interpreter');
+        }
+        c.type = 'Component';
+        c.data = {
+            name: c.name,
+            desc: c.desc,
+            ver: '',
+            shortName: c.name,
+            longName: c.name
+        };
+        return this.createInstance(c,fn(interpreter))
+    }
+
+    mgrData(mgr) {
+        let c = this.getInstance(mgr);
+        if(R.isNil(c)) {
+            let gc = this.getInstance('ServiceManager');
+            gc.type = 'Component';
+            gc.data = {
+                name: gc.name,
+                desc: gc.desc,
+                ver: '',
+                shortName: gc.name,
+                longName: gc.name
+            };
+            return this.createInstance(gc, 'ServiceManager');
+        }
+        c.type = 'Component';
+        c.data = {
+            name: c.name,
+            desc: c.desc,
+            ver: '',
+            shortName: c.name,
+            longName: c.name
+        };
+        return this.createInstance(c, mgr);
+    }
+
+    daemonData(sshd, httpd) {
+        if(sshd === 'ssh') sshd = 'sshserver';
+        if(httpd === 'http') httpd = 'httpserver';
+
+        if(R.isNil(sshd)) sshd = 'none';
+        if(R.isNil(httpd)) httpd = 'none';
+
+        console.log('ssh: %s , http: %s', sshd, httpd);
+        let ssh = this.getInstance(sshd);
+        //ssh = Helper.json2Entity( R.dissocPath(['meta','relations','IMPLEMENTS'], ssh), false );
+        ssh = this.cleanEntity(ssh, ['IMPLEMENTS', 'CONSTRAINTS']);
+        let http = this.getInstance(httpd);
+        //http = Helper.json2Entity( R.dissocPath(['meta','relations','IMPLEMENTS'], http), false );
+        http = this.cleanEntity(http, ['IMPLEMENTS', 'CONSTRAINTS']);
+        let list = [];
+
+        if(notNil(http) && httpd !== 'none') {
+            http.type = 'Component';
+            http.data = {
+                name: http.name,
+                desc: http.desc,
+                ver: '',
+                shortName: http.name,
+                longName: http.name
+            };
+            list.push(this.createInstance(http, httpd));
+        } else if(R.isNil(http) && httpd !== 'none') {
+            http = this.getInstance('HttpServer');
+            http.type = 'Component';
+            http.data = {
+                name: httpd,
+                desc: http.desc,
+                ver: '',
+                shortName: http.name,
+                longName: http.name
+            };
+            list.push(this.createInstance(http, 'HttpServer'));
+        }
+
+        if(notNil(ssh) && sshd !== 'none') {
+            ssh.type = 'Component';
+            ssh.data = {
+                name: ssh.name,
+                desc: ssh.desc,
+                ver: '',
+                shortName: ssh.name,
+                longName: ssh.name
+            };
+            list.push(this.createInstance(ssh, sshd));
+        } else if(R.isNil(ssh) && sshd !== 'none') {
+            ssh = this.getInstance('SshServer');
+            ssh.type = 'Component';
+            ssh.data = {
+                name: sshd,
+                desc: ssh.desc,
+                ver: '',
+                shortName: ssh.name,
+                longName: ssh.name
+            };
+            list.push(this.createInstance(ssh, 'SshServer'));
+        }
+
+        return list;
+    }
+
+    //DnsName
+    dnsData(dns, ip) {
+        let dnsd = this.getInstance('DnsName');
+        dnsd.type = 'Configuration';
+        dnsd.data = {
+            name: dnsd.name,
+            desc: dnsd.desc,
+            dnsname: R.defaultTo(ip, dns)
+        };
+        return this.createInstance(dnsd, 'DnsName');
+    }
+
+    //Ipv4Address
+    ipData(ip, reachable) {
+        let ipd = this.getInstance('Ipv4Address');
+        ipd.data = {
+            name: ipd.name,
+            desc: ipd.desc,
+            addr: ip,
+            reachable: reachable
+        };
+        ipd.type = 'Configuration';
+        return this.createInstance(ipd,'Ipv4Address');
+    }
+
+
+    createInstance(entity, instanceName) {
+        let i = this.getType(instanceName);
+        let rel = entity.relationCreate('INSTANCE_OF', 'outgoing');
+        rel.addEntity(i);
+        entity = this.cleanEntity(entity, ['IMPLEMENTS', 'CONSTRAINTS']);
+        return entity;
+    }
+
+    createRootNode() {
+        let computer = this.getInstance('Computer');
+        computer.type = 'Grouping';
+        let rel = computer.relationCreate('INSTANCE_OF', 'outgoing');
+        rel.addEntity(this.getType('Computer'));
+        computer = this.cleanEntity(computer, ['IMPLEMENTS', 'CONSTRAINTS']);
+        return computer;
+    }
+
+    createNetwork() {
+        //TODO add properties of the network
+        let network = this.getInstance('Ipv4Network');
+        network.type = 'Grouping';
+        let rel = network.relationCreate('INSTANCE_OF', 'outgoing');
+        rel.addEntity(this.getType('Ipv4Network'));
+        network = this.cleanEntity(network, ['IMPLEMENTS', 'CONSTRAINTS']);
+        return network;
+    }
+
+    cleanEntity(entity,rels) {
+        if(R.isNil(entity)) return entity;
+
+        R.forEach(rel => {
+            entity = Helper.json2Entity( R.dissocPath(['meta','relations',rel], entity), false );
+        }, rels);
+        return entity;
+    }
+
+    static json2Entity(json, generateUuid) {
+        if(R.isNil(json)) return null;
+        let defaultUuid = R.ifElse(R.identity, x => uuidV4(), x => R.defaultTo(null, json.meta.uuid))(generateUuid);
+        let defaultRelations = R.ifElse(R.identity,
+                            x => R.ifElse(notNil, R.omit(['ISA']), R.identity)(R.defaultTo(null, R.clone(json.meta.relations))),
+                            x => R.defaultTo(null, R.clone(json.meta.relations)))(generateUuid);
+
+        return new Entity.Entity(
+            R.defaultTo(null, json.type),
+            R.defaultTo(null, json.name),
+            R.defaultTo(null, json.desc),
+            defaultUuid,
+            R.defaultTo(null, R.clone(json.data)),
+            defaultRelations,
+            R.defaultTo(null, R.clone(json.file))
+        );
+    }
+}
+
+module.exports = Helper;

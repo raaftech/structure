@@ -6,6 +6,7 @@ const notNil = R.compose(R.not, R.isNil);
 
 const getServiceProperty = (service) => R.pipe(
         R.prop('openPorts'),
+        R.filter(item => !R.isNil(item)),
         R.find(R.propEq('service',service))
     );
 
