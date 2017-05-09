@@ -76,6 +76,11 @@ public interface TypeRepository extends GenericRepository<Type> {
     @Query("MATCH (n:Type {uuid: {0}})-[:ISA*1..]->()<-[r:CONSTRAINTS]-() return r")
     Set<Constraint> getInheritedIncomingConstraints(String typeUuid);
 
+    // Check if one of the parents of a node has an identity property
+    @Query("MATCH ({uuid: {0}})-[:ISA*..]->(p) " +
+            "RETURN reduce(init = false, n IN COLLECT(p)| init OR HAS(n.identity)) AS hasIdentity")
+    boolean inheritsIdentity(String uuid);
+
     @Query("MATCH (n:Type) RETURN count(n)")
     long count();
 }
