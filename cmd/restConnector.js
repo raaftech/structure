@@ -17,6 +17,10 @@ class RestConnector {
         return this.token;
     }
 
+    setToken(token) {
+        this.token = token;
+    }
+
     getChangeStreamUrl() {
         return util.format('http://%s:%s/api/Statuses/change-stream',this.host,this.port);
     }
