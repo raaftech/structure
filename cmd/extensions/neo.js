@@ -38,7 +38,8 @@ module.exports = function(vorpal, answerCache) {
             let getProperty = (name,obj) => R.path(['n','properties',name],obj);
             let q = helper.generateQuestion('query', 'input', 'Grouping predicate: ', {default: answerCache.get('neo','predicate')});
             self.prompt(q, function(result) {
-                let cq = util.format('match (n:Instance)-[:INSTANCE_OF]->(c:Type {name:"%s"}) return n', result.query);
+
+                let cq = util.format('match (n:Instance)-[:INSTANCE_OF|ISA*0..]->(c:Type {name:"%s"}) return n', result.query);
                 db.cypher({
                     query: cq
                 }, function(error, queryResult) {
@@ -48,8 +49,9 @@ module.exports = function(vorpal, answerCache) {
                         let tree = {};
                         tree[result.query] = {};
                         R.forEach((item) => {
-                            console.log(getProperty("data-name",item));
-                            tree[result.query][getProperty("data-name",item)] = getProperty("data-desc",item);
+                            let n = R.defaultTo(getProperty("name",item), getProperty("data-name",item));
+                            let d = R.defaultTo(getProperty("desc",item), getProperty("data-desc",item));
+                            tree[result.query][n] = d;
                         }, queryResult);
                         self.log(treeify.asTree(tree,true));
 

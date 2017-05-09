@@ -4,9 +4,15 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
+import com.raaftech.structure.base.Application;
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.base.GenericActor;
+import com.raaftech.structure.base.NodeActor;
 import com.raaftech.structure.graph.repositories.*;
+import io.vertx.core.json.JsonObject;
+import io.vertx.core.shareddata.LocalMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,6 +20,7 @@ public class StructureManager extends GenericActor {
 
     private Logger log = LoggerFactory.getLogger(StructureManager.class);
 
+    NodeRepository nodeRepository = Context.getNodeRepository();
     TypeRepository typeRepository = Context.getTypeRepository();
     GroupingRepository groupingRepository = Context.getGroupingRepository();
     ResultRepository resultRepository = Context.getResultRepository();
@@ -35,6 +42,54 @@ public class StructureManager extends GenericActor {
 
             public JsonNode help(JsonNode request) {
                 return jsonFromResource("help/busmanager.list.json");
+            }
+        };
+    }
+
+    /**
+     * Reinitialize the complete database. This means undeploying all NodeActor verticles,
+     * purging the database from all vertices and edges and then reloading the bundles.
+     * @return All the NodeActor addresses that are being undeployed.
+     */
+    @SuppressWarnings("unused")
+    public MessageHandler reinitialize() {
+        return new MessageHandler() {
+            @Override
+            public JsonNode exec(JsonNode request) {
+                ObjectNode result = mapper.createObjectNode();
+
+                log.info("Starting reinitialization of Structure");
+                publishStatus("structureReinitialization", mapper.createObjectNode().put("data", "started"));
+                // First undeploy all the NodeActors
+                final JsonObject message = new JsonObject().put("msgh", "undeploy");
+                LocalMap<String, String> nodeActors = vertx.sharedData().getLocalMap(NodeActor.SHAREDMAP_ID);
+                nodeActors.keySet().forEach(address -> vertx.eventBus().send(address, message));
+                // Add the undeployed NodeActor addresses to the result
+                result.set("data", mapper.valueToTree(nodeActors.keySet()));
+                // Empty the map containing the loaded NodeActors
+                nodeActors.clear();
+                log.info("Undeployed all NodeActors");
+
+                // Then purge the database
+                nodeRepository.purge();
+                log.info("Purged database");
+
+                // Then reinit
+                vertx.executeBlocking(future -> {
+                    Application.init(vertx);
+                    future.complete();
+                }, res -> {
+                    publishStatus("structureReinitialization", mapper.createObjectNode().put("data", "finished"));
+                    log.info("Successfully reinitialized the database");
+                });
+                log.info("Started database reinitialization");
+
+                return response(request, result);
+            }
+
+            @Override
+            public JsonNode help(JsonNode request) {
+                return null;
             }
         };
     }

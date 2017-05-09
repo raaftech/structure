@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 public abstract class NodeActor<T extends Node> extends GenericActor {
 
     protected final String startOfAddress = "com.raaftech.structure.node.";
+    public static final String SHAREDMAP_ID = "nodeActors";
 
     // We keep a reference to the consumers in case we
     // need to reconfigure or close them later
@@ -34,6 +35,7 @@ public abstract class NodeActor<T extends Node> extends GenericActor {
     @Override
     public void start() {
         primaryConsumer = vertx.eventBus().consumer(primaryConsumerAddress, this::handleMessage);
+        vertx.sharedData().getLocalMap(SHAREDMAP_ID).put(primaryConsumerAddress, deploymentID());
         log.debug("Listen for {} on addr: {}", this.getClass().getSimpleName(), primaryConsumerAddress);
         if (getSecondaryAddress() != null) {
             String secondaryConsumerAddress = startOfAddress + getSecondaryAddress();
@@ -66,6 +68,27 @@ public abstract class NodeActor<T extends Node> extends GenericActor {
                 return null;
             }
 
+        };
+    }
+
+    public MessageHandler undeploy() {
+        return new MessageHandler() {
+            @Override
+            public JsonNode exec(JsonNode request) {
+                vertx.undeploy(deploymentID(), (result) -> {
+                    if (result.succeeded()) {
+                        log.info("Undeployed NodeActor \"" + primaryConsumerAddress + "\"");
+                    } else {
+                        log.error("Error while undeploying \"" + primaryConsumerAddress + "\": " + result.cause().getMessage());
+                    }
+                });
+                return response(request, mapper.createObjectNode().put("data", deploymentID()));
+            };
+
+            @Override
+            public JsonNode help(JsonNode request) {
+                return null;
+            }
         };
     }
 
