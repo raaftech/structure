@@ -17,6 +17,10 @@ class RestConnector {
         return this.token;
     }
 
+    setToken(token) {
+        this.token = token;
+    }
+
     getChangeStreamUrl() {
         return util.format('http://%s:%s/api/Statuses/change-stream',this.host,this.port);
     }
@@ -35,6 +39,11 @@ class RestConnector {
 
     getChildren(uuid) {
         let url = util.format('%s/Entities/children/%s', getBaseUrl(this.host,this.port),uuid);
+        return fetch(url).then(result => result.json());
+    }
+
+    getConstraints(uuid) {
+        let url = util.format('%s/Entities/constraints/%s', getBaseUrl(this.host,this.port),uuid);
         return fetch(url).then(result => result.json());
     }
 
@@ -78,6 +87,17 @@ class RestConnector {
     removeInstance(uuid) {
         let url = util.format('%s/Instances/%s?access_token=%s', getBaseUrl(this.host,this.port), uuid, this.token);
         return fetch(url,{method: 'DELETE'})
+                    .then(result => result.json());
+    }
+
+    specializeInstance(instanceUuid, isaUuid) {
+        let url = util.format('%s/Instances/specialize?access_token=%s', getBaseUrl(this.host,this.port), this.token);
+        return fetch(url,
+                    {
+                        method: 'PUT',
+                        body: 'instanceUuid='+instanceUuid+'&isaUuid='+isaUuid,
+                        headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+                    })
                     .then(result => result.json());
     }
 
