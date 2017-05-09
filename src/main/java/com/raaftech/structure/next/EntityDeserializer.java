@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.collect.ImmutableSet;
 import com.raaftech.structure.base.Configuration;
 import com.raaftech.structure.exceptions.EntityDeserializationException;
 import com.raaftech.structure.exceptions.JsonValidationException;
@@ -144,6 +145,16 @@ public class EntityDeserializer extends StdDeserializer<Entity> {
                                 UUID.fromString(constraintData.get("to").asText()));
                     }
                 }
+            }
+
+            // Persist identity
+            final String identityKey = "identity";
+            if (metaJson.has(identityKey) && "Type".equals(type)) {
+                final JsonNode identityProperty = metaJson.get(identityKey);
+                final Set<String> identity = identityProperty.isArray() ?
+                        ImmutableSet.copyOf(mapper.convertValue(identityProperty, HashSet.class)) :
+                        ImmutableSet.of(identityProperty.asText());
+                entity.setIdentity(identity.toArray(new String[identity.size()]));
             }
 
             /* Handle uuid within meta if existent, else generate. */
@@ -323,11 +334,17 @@ public class EntityDeserializer extends StdDeserializer<Entity> {
                         break;
                     case MISSING:
                         log.warn("Missing value for key \"{}\" in data object, not writing key", key);
+                        break;
                     case NULL:
                         log.warn("Null value for key \"{}\" in data object, not writing key", key);
+                        break;
                     case NUMBER:
                         log.debug("Writing key \"{}\" with NUMBER value \"{}\" in data object", key, value);
-                        data.put(key, value.asDouble());
+                        if (value.isInt()) {
+                            data.put(key, value.asInt());
+                        } else {
+                            data.put(key, value.asDouble());
+                        }
                         break;
                     case OBJECT:
                         log.debug("Writing key \"{}\" with OBJECT value \"{}\" in data object", key, value);

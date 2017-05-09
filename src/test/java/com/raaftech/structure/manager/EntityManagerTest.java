@@ -295,4 +295,26 @@ public class EntityManagerTest {
         // error should now be absent
         assertTrue(!result.has("error"));
     }
+
+    @Test
+    @Transactional
+    @Rollback
+    public void testSpecialize() throws Exception {
+        EntityManager entityManager = new EntityManager();
+//        Node linuxType = nodeRepository.findByUuid("a5613527-2f64-4481-83f2-80b0cb427e28");
+//        Node ubuntuType = nodeRepository.findByUuid("1e13acac-4efb-4e62-894d-812492f6c266");
+
+        ObjectNode message = mapper.createObjectNode();
+        message.put("msgh", "specialize");
+
+        ObjectNode args = message.putObject("args");
+        ObjectNode instance = args.put("instance", "a5613527-2f64-4481-83f2-80b0cb427e28");
+        ObjectNode isa = args.put("isa", "1e13acac-4efb-4e62-894d-812492f6c266");
+
+        System.out.println(message.toString());
+        JsonNode response = entityManager.specialize().exec(message);
+        ObjectNode result = (ObjectNode) response.get("result");
+        System.out.println(result.toString());
+        assertTrue(result.has("result"));
+    }
 }

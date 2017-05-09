@@ -47,6 +47,7 @@ module.exports = function(vorpal, options) {
         .option('-r, --remove <uuid>', 'Remove a specific instance')
         .option('-v, --verbose', 'Be verbose in printing the results')
         .action(function(args, done) {
+            const self = this;
             //Function that checks if a property is not nil in the given object.options object
             let fn = (prop, obj) => R.pipe(R.path(['options', prop]), helper.notNil);
             let predicate = R.cond([
@@ -60,7 +61,7 @@ module.exports = function(vorpal, options) {
 
             promise.then(instance => {
                 R.pipe(R.ifElse(R.is(Object), helper.treePrint(args.options.verbose), R.identity),
-                   x => console.log(x),
+                   x => self.log(x),
                    x => done()) (instance);
             }).catch(helper.genericCatchHandler(done));
         });
@@ -78,7 +79,7 @@ module.exports = function(vorpal, options) {
                     return getDomainClass(baseType.meta.uuid);
                 })
                 .then(domainClass => {
-                    console.log('Resolved domain class: '+domainClass);
+                    self.log('Resolved domain class: '+domainClass);
                     buffer = R.pipe(
                         R.assoc('type', domainClass),
                         R.assoc('name', buffer.name),
@@ -120,14 +121,14 @@ module.exports = function(vorpal, options) {
                                         if(!R.or(R.isNil(answer[key]), R.isEmpty(R.trim(answer[key])))) {
                                             output = R.assoc(key, answer[key], output);
                                         } else {
-                                            console.log('Ignoring optional, empty property: %s', clc.green(key));
+                                            self.log('Ignoring optional, empty property: %s', clc.green(key));
                                         }
                                     }
                                 }, R.keys(answer));
                                 return output;
                             };
 
-                            console.log(clc.green('(Input a space if you wish to override default values)'));
+                            self.log(clc.green('(Input a space if you wish to override default values)'));
                             self.prompt(createQuestions(typeSchema), function(res) {
                                 res = sanitizeAnswer(typeSchema.required, res);
                                 if(R.isNil(instance.data)) instance.data = res;
@@ -143,20 +144,20 @@ module.exports = function(vorpal, options) {
 
                                             instance = helper.createInstance(baseType, helper.json2Entity(true, instance));
                                             let graph = new Structure.SubGraph(instance).toList();
-                                            console.log(JSON.stringify(graph, undefined, 2));
+                                            self.log(JSON.stringify(graph, undefined, 2));
                                             let loggedIn = () => {
-                                                console.log('creating instance');
+                                                self.log('creating instance');
                                                 rest.createInstance({entities: graph})
                                                     .then(updated => {
-                                                        if(R.isEmpty(updated)) console.log('No changes were made');
-                                                        else console.log(updated);
+                                                        if(R.isEmpty(updated)) self.log('No changes were made');
+                                                        else self.log(updated);
                                                         done();
                                                     })
-                                                    .catch(ex => {console.log(ex); done();})
+                                                    .catch(ex => {self.log(ex); done();})
                                             };
                                             helper.genericAuthCommandHandler(done, loggedIn, rest.getToken());
                                         } else {
-                                            console.log(vres);
+                                            self.log(vres);
                                             done();
                                         }
                                     });
@@ -170,7 +171,7 @@ module.exports = function(vorpal, options) {
         .action(function(args,done) {
             const self = this;
 
-            console.log(clc.green('(Input a space if you wish to override default values)'));
+            self.log(clc.green('(Input a space if you wish to override default values)'));
             rest.getInstanceByUuid(args.uuid)
                 .then(instance => {
                     validator.getSchema(instance.type)
@@ -206,7 +207,7 @@ module.exports = function(vorpal, options) {
                                         if(!R.or(R.isNil(answer[key]), R.isEmpty(R.trim(answer[key])))) {
                                             output = R.assoc(key, answer[key], output);
                                         } else {
-                                            console.log('Ignoring optional, empty property: %s', clc.green(key));
+                                            self.log('Ignoring optional, empty property: %s', clc.green(key));
                                         }
                                     }
                                 }, R.keys(answer));
@@ -224,15 +225,15 @@ module.exports = function(vorpal, options) {
                                             let loggedIn = () => {
                                                 rest.updateInstance({entities: [instance]})
                                                     .then(updated => {
-                                                        if(R.isEmpty(updated)) console.log('No changes were made');
-                                                        else console.log(updated);
+                                                        if(R.isEmpty(updated)) self.log('No changes were made');
+                                                        else self.log(updated);
                                                         done();
                                                     })
-                                                    .catch(ex => {console.log(ex); done();})
+                                                    .catch(ex => {self.log(ex); done();})
                                             };
                                             helper.genericAuthCommandHandler(done, loggedIn, rest.getToken());
                                         } else {
-                                            console.log(vres);
+                                            self.log(vres);
                                             done();
                                         }
                                     });
@@ -241,4 +242,5 @@ module.exports = function(vorpal, options) {
                 })
                 .catch(helper.genericCatchHandler(done));
         });
+
 };

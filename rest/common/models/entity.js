@@ -86,6 +86,21 @@ module.exports = function (Entity) {
         description: 'Fetch subtypes for a given uuid'
     });
 
+    Entity.getConstraints = function(uuid, callback) {
+        const nodeAddress = baseAddress(['node', uuid]);
+
+        evBus.sendEvent(nodeAddress, 'getConstraints',{})
+            .then((result) => callback(null, resultFetcher(result)))
+            .catch((ex) => callback(ex));
+    }
+
+    Entity.remoteMethod('getConstraints', {
+            accepts: [{arg: 'uuid', type: 'string', required: true}],
+            returns: {root: true, type: 'object'},
+            http: {verb: 'get', path: '/constraints/:uuid'},
+            description: 'Fetch constraints for a type by uuid'
+        });
+
 
 //INSTRUMENTS
     Entity.getInstruments = function (uuid, callback) {

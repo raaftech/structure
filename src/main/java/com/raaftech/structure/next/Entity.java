@@ -6,13 +6,14 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.exceptions.IllegalEntityType;
+import com.raaftech.structure.exceptions.TypeUnknownException;
 import com.raaftech.structure.graph.Constraint;
 import com.raaftech.structure.graph.Type;
 import com.raaftech.structure.graph.repositories.InstanceRepository;
 import com.raaftech.structure.graph.repositories.NodeRepository;
 import com.raaftech.structure.graph.repositories.TypeRepository;
 import com.raaftech.structure.helper.Triple;
-import org.apache.commons.lang3.Validate;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.DynamicLabel;
@@ -27,6 +28,7 @@ import org.springframework.data.neo4j.fieldaccess.DynamicProperties;
 import org.springframework.data.neo4j.fieldaccess.DynamicPropertiesContainer;
 import org.springframework.data.neo4j.support.Neo4jTemplate;
 import org.springframework.data.neo4j.support.index.IndexType;
+import org.springframework.data.neo4j.support.query.CypherQueryExecutor;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -76,6 +78,11 @@ public class Entity {
 
     @Indexed(indexType = IndexType.FULLTEXT, indexName = "uuid")
     private String uuid;
+
+    /**
+     * See {@link Type#identity}
+     */
+    private String[] identity;
 
     /* Generated key/value pairs: checksum, path. */
     private String checksum;
@@ -152,6 +159,10 @@ public class Entity {
         return file.asMap();
     }
 
+    public String[] getIdentity() {
+        return identity;
+    }
+
     /**
      * Get the triples describing this entity's relations.
      * @return A triple containing left to right: relation name, direction, related UUIDs.
@@ -207,7 +218,11 @@ public class Entity {
 		this.relations = relations;
 	}
 
-	public void addConstraint(String relName, Constraint.Cardinality cardinality, UUID to) {
+    public void setIdentity(String[] identity) {
+        this.identity = identity;
+    }
+
+    public void addConstraint(String relName, Constraint.Cardinality cardinality, UUID to) {
 	    if (constraints == null) {
 	        constraints = new HashMap<>();
         }
@@ -249,26 +264,101 @@ public class Entity {
         return entityJson;
     }
 
+    private Pair<Boolean, Set<String>> validateAgainstConstraints() {
+        Optional<Type>  instanceOf = getInstanceOf();
+
+        if (!instanceOf.isPresent()) {
+            throw new TypeUnknownException("Type for entity \"" + uuid + "\" doesn't exist");
+        }
+
+        return instanceOf.get().validateEntityToConstraints(this);
+    }
+
+    /**
+     * Get the the identity properties for the type of an instance, and the name of the
+     * type these identity properties are defined on.
+     * @return Optionally the identity properties that must hold for an instance of a particular type,
+     * and the type name those properties are defined on.
+     */
+    private Optional<Pair<String, Set<String>>> getIdentityProperties() {
+        final Optional<Type> maybeInstanceOf = getInstanceOf();
+        if (!maybeInstanceOf.isPresent()) {
+            throw new TypeUnknownException("Type for entity \"" + uuid + "\" doesn't exist");
+        }
+
+        Type instanceOf = maybeInstanceOf.get();
+        if (identity == null) {
+            if (typeRepository.inheritsIdentity(instanceOf.getUuid())) {
+                /*
+                Retrieve first inherited identity. We already know the optional won't be empty
+                because of the typeRepository#inheritsIdentity query.
+                 */
+                return instanceOf.getFirstInheritedIdentity();
+            } else {
+                // No identity to adhere to, return true
+                return Optional.empty();
+            }
+        } else {
+            // Use identity field
+            return Optional.of(Pair.of(instanceOf.getName(), Arrays.stream(identity).collect(Collectors.toSet())));
+        }
+    }
+
+    /**
+     * Given a label and some identity properties, find duplicates.
+     * We do this by getting all available values for the identity properties, and returning
+     * node UUIDs of nodes with the given label and the given values for the properties in the
+     * graph.
+     * @param label The label to use in the query.
+     * @param identityProperties The properties that need to be used for the query.
+     * @return A set of UUIDs of nodes that have the given label and the same values
+     * for the given properties as this entity.
+     */
+    private Set<String> findDuplicates(String label, Set<String> identityProperties) {
+        final String propertyQueryPattern = "`data-%s`: %s";
+        final String completeQueryPattern = "MATCH (n:`type:%s` {%s}) RETURN n.uuid";
+        final String inQuotes = "\"%s\"";
+        final String properties = identityProperties.stream()
+                .filter(id -> data.hasProperty(id))
+                .map(id -> Pair.of(id, data.getProperty(id)))
+                .map(pair -> pair.getRight() instanceof String ?
+                        Pair.of(pair.getLeft(),
+                                /*
+                                We'll need to escape because we don't want to end up with
+                                `data-foo`:"b"ar", but with `data-foo`:"b\"ar"
+                                 */
+                                String.format(inQuotes,
+                                        StringEscapeUtils.escapeJava((String)pair.getRight()))) :
+                        pair)
+                // We don't have to check for backticks in the identity names, bundleloader does that for us
+                .map(pair -> String.format(propertyQueryPattern, pair.getLeft(), pair.getRight()))
+                .collect(Collectors.joining(", "));
+
+        final String completeQuery = String.format(completeQueryPattern, label, properties);
+        CypherQueryExecutor queryExecutor = Context.getNeo4jTemplate().getInfrastructure().getCypherQueryExecutor();
+        Iterable<String> results = queryExecutor.query(completeQuery, String.class, null);
+
+        return StreamSupport.stream(results.spliterator(), false).collect(Collectors.toSet());
+    }
+
     public void toGraph() {
         if (!getType().equals("Type")) {
-            Optional<Set<String>> maybeInstanceOfUuids = getRelations().stream()
-                    .filter(triple -> triple.getLeft().equals("INSTANCE_OF"))
-                    .filter(triple -> triple.getMiddle().toLowerCase().equals("outgoing".toLowerCase()))
-                    .map(Triple::getRight).findFirst();
-
-            if (!maybeInstanceOfUuids.isPresent()) {
-                throw new IllegalArgumentException("Instance with UUID "
-                        + getUuid() + "doesn't have an INSTANCE_OF relation");
-            }
-            // Assume there's only one UUID, because an instance can only be INSTANCE_OF one type
-            String typeUuid = maybeInstanceOfUuids.get().iterator().next();
-            Type  instanceOf = typeRepository.findByUuid(typeUuid);
-
-            Validate.notNull(instanceOf, "No type with UUID " + typeUuid + ", exist in the graph.");
-
-            Pair<Boolean, Set<String>> validation = instanceOf.validateEntityToConstraints(this);
+            // See if this instance validates against its type's constraints
+            final Pair<Boolean, Set<String>> validation = validateAgainstConstraints();
             if (!validation.getLeft()) {
                 throw new IllegalEntityType("Entity with UUID " + getUuid() + " didn't adhere to its type constraints: " + validation.getRight());
+            }
+
+            // Now check if this instance is unique per its type's identity array
+            Optional<Pair<String, Set<String>>> maybeLabelAndIdentityProperties = getIdentityProperties();
+            if (maybeLabelAndIdentityProperties.isPresent()) {
+                final String label = maybeLabelAndIdentityProperties.get().getLeft();
+                final Set<String> identityProperties = maybeLabelAndIdentityProperties.get().getRight();
+                Set<String> duplicates = findDuplicates(label, identityProperties);
+                if (duplicates.size() > 0) {
+                    throw new IllegalEntityType("Entity with UUID " + getUuid() + " couldn't be created. It is a duplicate " +
+                            "of " + duplicates + " based on the properties " + identityProperties + ", the data was " + data.asMap());
+                }
             }
         }
 
@@ -311,6 +401,9 @@ public class Entity {
         if (path != null) {
             properties.put("path", path);
         }
+        if (identity != null) {
+            properties.put("identity", identity);
+        }
 
         /* we use neo4jTemplate.merge(...), which is basically getOrCreate(...). Now, if the entity
         already existed, but has changed properties, we need to update them using Node.setProperty(...).
@@ -348,7 +441,12 @@ public class Entity {
             if ("Type".equals(type)) {
                 labels = nodeRepository.getTypeHierarchyForTypeUuid(uuid);
             } else {
-                labels = nodeRepository.getTypeHierarchyForTypeUuid(getInstanceOf().getUuid());
+                Optional<Type> maybeType = getInstanceOf();
+                if (maybeType.isPresent()) {
+                    labels = nodeRepository.getTypeHierarchyForTypeUuid(maybeType.get().getUuid());
+                } else {
+                    throw new TypeUnknownException("Type for entity \"" + uuid + "\" doesn't exist");
+                }
             }
             labels.stream()
                     .map(s -> "type:".concat(s))
@@ -362,7 +460,7 @@ public class Entity {
      * Called on instance entities to get the Type object the entity is an instance of.
      * @return The found type.
      */
-    private Type getInstanceOf() {
+    private Optional<Type> getInstanceOf() {
         if ("Type".equals(type)) {
             throw new IllegalArgumentException("Cannot get the type of a type entity.");
         }
@@ -375,7 +473,13 @@ public class Entity {
             throw new IllegalStateException("Instance " + getUuid() + " has no INSTANCE_OF relationship");
         }
 
-        return typeRepository.findByUuid(instanceOfUuid.get());
+        Type instanceOf = typeRepository.findByUuid(instanceOfUuid.get());
+        if (instanceOf == null) {
+            log.error("No type with UUID " + instanceOfUuid.get() + " exists in the database");
+            return Optional.empty();
+        } else {
+            return Optional.of(instanceOf);
+        }
     }
 
     private void persistRelations(Node node) {
