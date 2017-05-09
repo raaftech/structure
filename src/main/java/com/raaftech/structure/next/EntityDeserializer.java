@@ -334,11 +334,17 @@ public class EntityDeserializer extends StdDeserializer<Entity> {
                         break;
                     case MISSING:
                         log.warn("Missing value for key \"{}\" in data object, not writing key", key);
+                        break;
                     case NULL:
                         log.warn("Null value for key \"{}\" in data object, not writing key", key);
+                        break;
                     case NUMBER:
                         log.debug("Writing key \"{}\" with NUMBER value \"{}\" in data object", key, value);
-                        data.put(key, value.asDouble());
+                        if (value.isInt()) {
+                            data.put(key, value.asInt());
+                        } else {
+                            data.put(key, value.asDouble());
+                        }
                         break;
                     case OBJECT:
                         log.debug("Writing key \"{}\" with OBJECT value \"{}\" in data object", key, value);
