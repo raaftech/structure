@@ -464,6 +464,24 @@ public class Type extends Node {
         return this;
     }
 
+    /**
+     * Get the first identity set of a linked list of types.
+     * @return An optional of the first identity set found, or an empty optional.
+     */
+    public Optional<Pair<String, Set<String>>> getFirstInheritedIdentity() {
+        return getFirstInheritedIndentity(this);
+    }
+
+    private Optional<Pair<String, Set<String>>> getFirstInheritedIndentity(Type type) {
+        if (type.identity != null) {
+            return Optional.of(Pair.of(getName(), type.identity));
+        } else if (getIsa() == null) {
+            return Optional.empty();
+        } else {
+            return getFirstInheritedIndentity(type.getIsa());
+        }
+    }
+
     public boolean implementsProtocol(Type protocol) {
         return implementsProtocols == null ? false : implementsProtocols.contains(protocol);
     }
