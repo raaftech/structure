@@ -122,6 +122,23 @@ module.exports = function (Instance) {
         description: 'update an existing instance'
     });
 
+    Instance.specialize = function(instanceUuid, isaUuid, callback) {
+        evBus.sendEvent(entityAddress, 'specialize', {instance: instanceUuid, isa: isaUuid})
+            .then(result => callback(null, resultFetcher(result)))
+            .catch(ex => callback(ex));
+    };
+
+    Instance.remoteMethod('specialize', {
+        accepts: [
+            {arg: 'instanceUuid', type: 'string', required: true},
+            {arg: 'isaUuid', type: 'string', required: true}
+        ],
+        returns: {root: true, type: 'object'},
+        http: {verb: 'put', path: '/specialize'},
+        description: 'specialize an existing instance'
+    });
+
+
     Instance.removeInstance = function (uuid, callback) {
         let message = {labels: ['Instance'], uuid: uuid, includeStart: true};
         evBus.sendEvent(entityAddress, 'delete', message)
