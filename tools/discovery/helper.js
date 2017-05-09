@@ -52,6 +52,8 @@ class Helper {
         let daemonList = this.daemonData(sshd.service, httpd.service);
         R.forEach(item => osHasComponentRelation.addEntity(item), daemonList);
 
+        R.forEach(item => osHasComponentRelation.addEntity(item), this.defaultEntities());
+
         return root;
     }
 
@@ -231,6 +233,37 @@ class Helper {
         };
         ipd.type = 'Configuration';
         return this.createInstance(ipd,'Ipv4Address');
+    }
+
+    //Default assumed entities
+    defaultEntities() {
+        const mkData = (name,desc,ver,short, long) => {
+            return R.zipObj(['name','desc','ver','short','long'],
+                            [name,desc,ver,short,long]);
+        };
+
+        let iputils = this.getInstance('Iputils');
+        iputils.type = 'Component';
+        iputils.data = mkData(iputils.name, iputils.desc, 'x', 'iputils', 'IpUtils');
+
+        let sshClient = this.getInstance('OpenSshClient');
+        sshClient.type = 'Component';
+        sshClient.data = mkData(sshClient.name, sshClient.desc, 'x', 'sshclient', 'SshClient');
+
+        let winexe = this.getInstance('Winexe');
+        winexe.type = 'Component';
+        winexe.data = mkData(winexe.name, winexe.desc, 'x', 'winexe', 'WinExe');
+
+        let samba = this.getInstance('Samba');
+        samba.type = 'Component';
+        samba.data = mkData(samba.name, samba.desc, 'x', 'samba', 'Samba');
+
+        return [
+            this.createInstance(iputils, 'Iputils'),
+            this.createInstance(sshClient, 'OpenSshClient'),
+            this.createInstance(winexe, 'Winexe'),
+            this.createInstance(samba, 'Samba')
+        ];
     }
 
 
