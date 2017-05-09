@@ -175,7 +175,8 @@
             "3f4a43f7-b558-4bf0-ba7e-66b99cffaf16"
           ]
         }
-      }
+      },
+      "identity": "addr"
     },
     "data": {
       "glyphId": 114
