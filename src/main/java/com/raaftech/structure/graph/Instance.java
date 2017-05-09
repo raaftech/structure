@@ -123,6 +123,10 @@ public abstract class Instance extends Node {
         return instanceOf;
     }
 
+    public void setInstanceOf(Type type) {
+        this.instanceOf = type;
+    }
+
     public String getProperty(String key) {
         Object property = data.getProperty(key);
         if (property == null) {

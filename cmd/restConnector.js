@@ -86,6 +86,17 @@ class RestConnector {
                     .then(result => result.json());
     }
 
+    specializeInstance(instanceUuid, isaUuid) {
+        let url = util.format('%s/Instances/specialize?access_token=%s', getBaseUrl(this.host,this.port), this.token);
+        return fetch(url,
+                    {
+                        method: 'PUT',
+                        body: 'instanceUuid='+instanceUuid+'&isaUuid='+isaUuid,
+                        headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+                    })
+                    .then(result => result.json());
+    }
+
     createGroup(groupName, description) {
         let url = util.format('%s/Groups?access_token=%s', getBaseUrl(this.host,this.port), this.token);
         return fetch(url,

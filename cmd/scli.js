@@ -194,15 +194,7 @@ vorpal.command('specialize <uuid>', 'Specialize an instance')
             const self = this;
 
             let selectedInstance;
-
             let instanceOfType = R.compose(R.head, R.path(['meta', 'relations', 'INSTANCE_OF', 'uuids']));
-            let setInstanceOfType = (oldUuid, newUuid, instance) => {
-                let uuids = R.path(['meta', 'relations', 'INSTANCE_OF', 'uuids'], instance);
-                uuids = R.reject(R.equals(oldUuid), uuids);
-                uuids = R.prepend(newUuid, uuids);
-                instance = R.assocPath(['meta', 'relations', 'INSTANCE_OF', 'uuids'],uuids, instance);
-                return instance;
-            };
 
             let loggedIn = () => {
                 rest.getInstanceByUuid(args.uuid)
@@ -217,11 +209,9 @@ vorpal.command('specialize <uuid>', 'Specialize an instance')
                         let q = helper.generateQuestion('child', 'list', 'Select specialisation: ', {choices: children});
                         self.prompt(q, function(answer) {
                             let e = R.find(R.propEq('name', answer.child), children);
-                            selectedInstance = setInstanceOfType(instanceOfType(selectedInstance), e.meta.uuid, selectedInstance);
-                            rest.updateInstance({entities: [selectedInstance]})
+                            rest.specializeInstance(selectedInstance.meta.uuid, e.meta.uuid)
                                 .then(updated => {
-                                    if(R.isEmpty(updated)) self.log('No changes were made');
-                                    else self.log(updated);
+                                    self.log(updated);
                                     done();
                                 });
                         });
