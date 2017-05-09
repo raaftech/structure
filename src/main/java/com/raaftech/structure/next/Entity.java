@@ -32,7 +32,6 @@ import org.springframework.data.neo4j.support.query.CypherQueryExecutor;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 /**
@@ -265,7 +264,7 @@ public class Entity {
         return entityJson;
     }
 
-    private Pair<Boolean, Set<String>> validateAgainsConstraints() {
+    private Pair<Boolean, Set<String>> validateAgainstConstraints() {
         Optional<Type>  instanceOf = getInstanceOf();
 
         if (!instanceOf.isPresent()) {
@@ -345,7 +344,7 @@ public class Entity {
     public void toGraph() {
         if (!getType().equals("Type")) {
             // See if this instance validates against its type's constraints
-            final Pair<Boolean, Set<String>> validation = validateAgainsConstraints();
+            final Pair<Boolean, Set<String>> validation = validateAgainstConstraints();
             if (!validation.getLeft()) {
                 throw new IllegalEntityType("Entity with UUID " + getUuid() + " didn't adhere to its type constraints: " + validation.getRight());
             }
