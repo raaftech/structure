@@ -32,6 +32,10 @@ public interface TypeRepository extends GenericRepository<Type> {
     @Query ("MATCH (node:Type) WHERE LOWER(node.name) = LOWER({0}) RETURN node")
     Type findOneByCaseInsensitiveName(String name);
 
+    // Get all types
+    @Query ("MATCH (t:Type) return t")
+    Set<Type> getAll();
+
     // Workaround, returning count(n) > 0 returns null when n is NULL.
     // This returns 0 if we're not of queried type, >0 if we are.
     @Query ("MATCH (start {uuid:{uuid}})-[:ISA*1..]->(n{name:{type}}) " +

@@ -15,9 +15,9 @@ const getStatusData = helper.getResultData(['body','result']);
 module.exports = function(Admin) {
 
     Admin.structureInit = function(callback) {
-        //todo step 1 request a purge structure db
-        //todo step 2 request self init
-        callback(null, {message: 'not implemented yet'});
+        evBus.sendEvent(managerAddress, 'reinitialize', {})
+            .then(result => callback(null, getResultData(result)))
+            .catch((ex) => callback(ex));
     };
 
     Admin.remoteMethod('structureInit', {

@@ -52,7 +52,11 @@ function setupStatusChannel() {
     const es = new EventSource(changeUrl);
     es.addEventListener('data', function(message) {
         let data = JSON.parse(message.data);
-        console.log(JSON.stringify(data, undefined, 2));
+        let output = util.format('Type: %s\nEvent: %s\nData: %s',
+                                 clc.green(R.path(['type'],data)),
+                                 clc.green(R.path(['data','event'],data)),
+                                 clc.green(R.path(['data','data','data'],data)));
+        console.log(output);
     });
 }
 
