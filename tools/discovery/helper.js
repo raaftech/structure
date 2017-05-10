@@ -354,7 +354,7 @@ class Helper {
 
         //TODO find a better way to solve this
         if(fqdn === 'localhost') {
-            return hostname;
+            return nodename;
         }
 
         let fn = R.cond([
