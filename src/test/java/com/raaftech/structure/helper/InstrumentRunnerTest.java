@@ -73,7 +73,7 @@ public class InstrumentRunnerTest {
 
         new StrictExpectations() {{
             // Return a mocked grouping when querying the "structure" grouping
-            groupingRepository.findByUuid(Context.getSelfIdentifier());
+            groupingRepository.findByUuid(anyString);
             result = grouping;
 
             // Set the UUID of the origin to originUuid
