@@ -315,10 +315,20 @@ class Helper {
         return computer;
     }
 
-    createNetwork() {
-        //TODO add properties of the network
+    createNetwork(cidr, netName) {
         let network = this.getInstance('Ipv4Network');
         network.type = 'Grouping';
+
+        let ipTest = R.test(/^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/);
+        let isIp = R.compose(ipTest, R.trim);
+        if(isIp(cidr)) cidr = cidr + '/32';
+
+        network.name = R.defaultTo(network.name, netName);
+        network.data = {
+            name: R.defaultTo(network.name, netName),
+            desc: network.desc,
+            addr: cidr
+        };
         let rel = network.relationCreate('INSTANCE_OF', 'outgoing');
         rel.addEntity(this.getType('Ipv4Network'));
         network = this.cleanEntity(network, ['IMPLEMENTS', 'CONSTRAINTS']);

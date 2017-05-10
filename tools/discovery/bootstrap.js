@@ -15,6 +15,7 @@ const RestConnector = require('./restConnector');
 const optionDefs = [
     {name: 'cidr', alias: 'c', type: String},
     {name: 'token', alias: 't', type: String},
+    {name: 'net', alias: 'n', type: String},
     {name: 'args', alias: 'a', type: String},
     {name: 'verbose', alias: 'v', type: Boolean}
 ];
@@ -30,6 +31,7 @@ const sections = [
         optionList: [
             {name: 'cidr', alias: 'c', typeLabel: '[underline]{cidr}', description: 'required argument, cidr to scan'},
             {name: 'token', alias: 't', typeLabel: '[underline]{token}', description: 'REST api token'},
+            {name: 'net', alias: 'n', typeLabel: '[underline]{network name}]', description: 'Identifying network name in case of a network range'},
             {name: 'args', alias: 'a', typeLabel: '[underline]{nmap options}', description: 'arguments for the nmap command'},
             {name: 'verbose', alias: 'v', description: 'set verbose mode'}
         ]
@@ -48,7 +50,7 @@ const main = (db) => {
     rest.setToken(options.token);
     let client = new vClient();
 
-    let network = helper.createNetwork();
+    let network = helper.createNetwork(cidr, options.net);
     let networkGroup = network.relationCreate('GROUPS', 'outgoing');
 
     nmapLib.nmapScan(cidr, args)
