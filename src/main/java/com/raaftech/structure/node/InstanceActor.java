@@ -293,7 +293,14 @@ public class InstanceActor extends NodeActor<Instance> {
             }
             future.complete();
         }, res -> {
-            log.debug("RunController for " + controller.getName() + " and task ID " + taskId.toString() + " finished");
+            if (res.failed()) {
+                if (Configuration.isTraceModeOn()) {
+                    res.cause().printStackTrace();
+                }
+                log.error(res.cause().getMessage());
+            } else {
+                log.debug("RunController for " + controller.getName() + " and task ID " + taskId.toString() + " finished");
+            }
         });
 
         return taskId;

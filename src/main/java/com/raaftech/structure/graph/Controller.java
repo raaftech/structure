@@ -258,7 +258,7 @@ public class Controller extends Instrument {
     public Optional<Long> getTimeAllocated() {
         return data.hasProperty(TIMEALLOCATED) ?
             // numerical types are inserted as doubles, so round it to a long
-            Optional.of((Math.round((double) data.getProperty(TIMEALLOCATED)))) :
+            Optional.of(((Integer)data.getProperty(TIMEALLOCATED)).longValue()) :
             Optional.empty();
     }
 

@@ -469,7 +469,9 @@ public class InstrumentRunner {
             context.add(arg);
         };
         // convert (copies of) the origin, subject and agent trees and add them to the context
-        subject.toArguments().forEach(arg -> collect.accept(arg, "subject"));
+        if (subject != null) {
+            subject.toArguments().forEach(arg -> collect.accept(arg, "subject"));
+        }
         agent.toArguments().forEach(arg -> collect.accept(arg, "agent"));
         ObjectNode originCopy = (((Instance)origin).toJson().deepCopy()).put("_from", "origin");
         context.add(originCopy);
