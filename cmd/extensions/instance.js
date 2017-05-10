@@ -170,12 +170,21 @@ module.exports = function(vorpal, options) {
     vorpal.command('edit <uuid>', 'Edit the properties of an instance')
         .action(function(args,done) {
             const self = this;
+            let currentInstance;
+
+            let getInstanceOf = R.compose(R.head, R.path(['meta','relations','INSTANCE_OF','uuids']));
 
             self.log(clc.green('(Input a space if you wish to override default values)'));
             rest.getInstanceByUuid(args.uuid)
                 .then(instance => {
-                    validator.getSchema(instance.type)
+                    currentInstance = instance;
+                    console.log(getInstanceOf(instance));
+                    return rest.getEntityByUuid(getInstanceOf(instance));
+                })
+                .then(entity => {
+                    validator.getSchema(entity.name)
                         .then(typeSchema => {
+                            //console.log(JSON.stringify(typeSchema, undefined, 2));
                             let getPropertyKeys = R.pipe(R.prop('properties'), R.keys);
                             let createQuestions = (schema) => {
                                 let keys = getPropertyKeys(schema);
@@ -187,10 +196,10 @@ module.exports = function(vorpal, options) {
                                     pre += 'Value: '
 
                                     let valueFetcher = R.cond([
-                                        [R.equals('name'), x => R.prop('name', instance)],
-                                        [R.equals('desc'), x => R.prop('desc', instance)],
-                                        [R.equals('checksum'), x => R.path(['meta','checksum'], instance)],
-                                        [R.T, x => R.path(['data', x], instance)]
+                                        [R.equals('name'), x => R.prop('name', currentInstance)],
+                                        [R.equals('desc'), x => R.prop('desc', currentInstance)],
+                                        [R.equals('checksum'), x => R.path(['meta','checksum'], currentInstance)],
+                                        [R.T, x => R.path(['data', x], currentInstance)]
                                     ]);
 
                                     return helper.generateQuestion(prop, 'input', pre, {default: valueFetcher(prop)});
@@ -216,16 +225,16 @@ module.exports = function(vorpal, options) {
 
                             self.prompt(createQuestions(typeSchema), function(res) {
                                 res = sanitizeAnswer(typeSchema.required, res);
-                                if(R.isNil(instance.data)) instance.data = res;
-                                else instance.data = R.merge(instance.data,res);
-                                validator.validate(instance.type, instance.data)
+                                if(R.isNil(currentInstance.data)) currentInstance.data = res;
+                                else currentInstance.data = R.merge(currentInstance.data,res);
+                                validator.validate(entity.name, currentInstance.data)
                                     .then(vres => {
                                         if(vres.valid) {
-                                            instance.data = R.merge(instance.data, vres.instance);
-                                            instance.name = R.defaultTo(instance.name, instance.data.name);
-                                            instance.desc = R.defaultTo(instance.desc, instance.data.desc);
+                                            currentInstance.data = R.merge(currentInstance.data, vres.instance);
+                                            currentInstance.name = R.defaultTo(currentInstance.name, currentInstance.data.name);
+                                            currentInstance.desc = R.defaultTo(currentInstance.desc, currentInstance.data.desc);
                                             let loggedIn = () => {
-                                                rest.updateInstance({entities: [instance]})
+                                                rest.updateInstance({entities: [currentInstance]})
                                                     .then(updated => {
                                                         if(R.isEmpty(updated)) self.log('No changes were made');
                                                         else self.log(updated);
