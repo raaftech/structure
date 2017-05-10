@@ -3,10 +3,8 @@ package com.raaftech.structure.base;
 import ch.qos.logback.classic.Level;
 import com.raaftech.structure.graph.Instance;
 import com.raaftech.structure.graph.repositories.InstanceRepository;
-import com.raaftech.structure.graph.repositories.InstrumentRepository;
-import com.raaftech.structure.graph.repositories.ProfileRepository;
 import com.raaftech.structure.graph.repositories.TypeRepository;
-import com.raaftech.structure.helper.LambdaHelper;
+import com.raaftech.structure.helper.ProcessRunner;
 import com.raaftech.structure.helper.loader.BundleLoader;
 import com.raaftech.structure.manager.SchemaManager;
 import com.raaftech.structure.manager.TaskManager;
@@ -32,6 +30,7 @@ import org.slf4j.bridge.SLF4JBridgeHandler;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.data.neo4j.support.query.CypherQueryExecutor;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Optional;
@@ -270,7 +269,7 @@ public class Application {
             bundleLoader.load();
             tx.success();
         } catch (Exception e) {
-            handleUnrecoverableLoadingError(tx,e,1, "Unrecoverable error while loading types. Shutting down...");
+            handleUnrecoverableLoadingError(tx, e, 1, "Unrecoverable error while loading types. Shutting down...");
         } finally {
             tx.close();
         }
@@ -302,6 +301,43 @@ public class Application {
         } finally {
             tx.close();
         }
+
+        final Optional<String> maybeHostname = getHostname();
+        if (maybeHostname.isPresent()) {
+            Context.setHostname(maybeHostname.get());
+
+            com.raaftech.structure.graph.Configuration host = Context.getInstanceRepository().findDnsName(Context.getHostname());
+            if (host != null) {
+                Instance structureInstance = Context.getInstanceRepository().getStartOfComponentGroup(host.getUuid());
+                if (structureInstance != null) {
+                    Context.setSelfIdentifier(structureInstance.getUuid());
+                }
+            }
+        } else {
+            final String error = "Couldn't find own hostname";
+            handleUnrecoverableLoadingError(null, new IllegalStateException(error), 1, error);
+        }
+    }
+
+    private static Optional<String> getHostname() {
+        ProcessRunner hostnameProcess = new ProcessRunner("hostname");
+        Optional<String> stdout = Optional.empty();
+        try {
+            hostnameProcess.run();
+            int count = 0;
+            while (hostnameProcess.isRunning() && count < 10) {
+                Thread.sleep(1000);
+                count++;
+            }
+            ProcessRunner.ProcessResult result = hostnameProcess.finish();
+            stdout = result.stdout.isPresent() ? Optional.of(result.stdout.get().trim()) : result.stdout;
+        } catch (IOException | InterruptedException e) {
+            if (Configuration.isTraceModeOn()) {
+                e.printStackTrace();
+            }
+            log.trace(e.getMessage());
+        }
+        return stdout;
     }
 
     /**
