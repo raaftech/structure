@@ -1,5 +1,6 @@
 package com.raaftech.structure.graph.repositories;
 
+import com.raaftech.structure.graph.Configuration;
 import com.raaftech.structure.graph.Grouping;
 import com.raaftech.structure.graph.Instance;
 import org.springframework.data.neo4j.annotation.Query;
@@ -41,5 +42,8 @@ public interface InstanceRepository extends GenericRepository<Instance> {
 
     @Query ("MATCH (n:Instance) WHERE NOT (n)-[:INSTANCE_OF]->({name:\"Handler\"}) RETURN n ORDER BY id(n) DESC LIMIT {amount}")
     List<Instance> getNLastCreated(@Param("amount") int amount);
+
+    @Query ("MATCH (n:`type:DnsName` {`data-dnsname`: {0}}) RETURN n")
+    Configuration findDnsName(String hostname);
 
 }
