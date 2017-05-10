@@ -14,6 +14,19 @@ const getStatusData = helper.getResultData(['body','result']);
 
 module.exports = function(Admin) {
 
+    Admin.bootstrap = function(token, callback) {
+        evBus.sendEvent(managerAddress, 'bootstrap', {token: token})
+            .then(result => callback(null, getResultData(result)))
+            .catch(ex => callback(ex));
+    };
+
+    Admin.remoteMethod('bootstrap', {
+        accepts: [{arg: 'token', type: 'string', required: true}],
+        returns: {root: true, type: 'object'},
+        http: {verb: 'get', path: '/bootstrap/:token'},
+        description: 'Request an action from structure'
+    });
+
     Admin.structureInit = function(callback) {
         evBus.sendEvent(managerAddress, 'reinitialize', {})
             .then(result => callback(null, getResultData(result)))

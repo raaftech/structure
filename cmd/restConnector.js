@@ -122,8 +122,14 @@ class RestConnector {
 
     }
 
+    bootstrap() {
+        const self = this;
+        let url = util.format('%s/Admins/bootstrap/%s?access_token=%s', getBaseUrl(this.host, this.port), this.token, this.token);
+        return fetch(url).then(result => result.json());
+    }
+
     login(email,password) {
-        let self = this;
+        const self = this;
         let url = util.format('%s/StructureUsers/login', getBaseUrl(this.host,this.port));
         let credentials = JSON.stringify({email: email, password: password});
         return fetch(url,
