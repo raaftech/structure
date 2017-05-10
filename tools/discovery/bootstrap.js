@@ -14,6 +14,7 @@ const RestConnector = require('./restConnector');
 
 const optionDefs = [
     {name: 'cidr', alias: 'c', type: String},
+    {name: 'token', alias: 't', type: String},
     {name: 'args', alias: 'a', type: String},
     {name: 'verbose', alias: 'v', type: Boolean}
 ];
@@ -21,13 +22,14 @@ const options = cmd(optionDefs);
 
 const sections = [
     {
-        header: 'structure wrapper',
-        content: 'Wraps the nmap/ansible commands for json output for structure'
+        header: 'structure bootstrap',
+        content: 'Wraps the nmap/ansible commands for bootstrapping structure'
     },
     {
         header: 'Options',
         optionList: [
             {name: 'cidr', alias: 'c', typeLabel: '[underline]{cidr}', description: 'required argument, cidr to scan'},
+            {name: 'token', alias: 't', typeLabel: '[underline]{token}', description: 'REST api token'},
             {name: 'args', alias: 'a', typeLabel: '[underline]{nmap options}', description: 'arguments for the nmap command'},
             {name: 'verbose', alias: 'v', description: 'set verbose mode'}
         ]
@@ -38,10 +40,12 @@ const usage = getUsage(sections);
 const main = (db) => {
     let args = R.defaultTo('-p22,80', options.args);
     let cidr = R.defaultTo('localhost', options.cidr);
+
     const getSshService = serviceHelper.getService('ssh');
     const getHttpService = serviceHelper.getService('http');
     const helper = new Helper(db);
     const rest = new RestConnector('localhost', 3000);
+    rest.setToken(options.token);
     let client = new vClient();
 
     let network = helper.createNetwork();
@@ -76,23 +80,24 @@ const main = (db) => {
 
                 let finalGraph = new Entity.SubGraph(network);
 
-                rest.login('a@b.nl', 'test')
-                    .then(loggedIn => {
-                        let promises = [];
-                        R.forEach(item => {
-                            promises.push(rest.createInstance({entities: [item]}));
-                        }, finalGraph.toList());
-                        Promise.all(promises)
-                            .then(result => {
-                                console.log(result);
-                                client.close();
-                                process.exit(0);
-                            });
-                    })
-                    .catch(ex => {console.log(ex)});
+                let promises = [];
+                R.forEach(item => {
+                    promises.push(rest.createInstance({entities: [item]}));
+                }, finalGraph.toList());
+                Promise.all(promises)
+                    .then(result => {
+                        console.log(result);
+                        client.close();
+                        process.exit(0);
+                    });
             });
         });
 };
+
+if(R.isNil(options.token)) {
+    console.log('A token is required');
+    process.exit(1);
+}
 
 if(R.isNil(options.cidr)) {
     console.log(usage);

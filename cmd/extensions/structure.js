@@ -50,6 +50,22 @@ module.exports = function(vorpal, rest) {
             });
         });
 
+    vorpal.command('structure bootstrap', 'Initial structure bootstrap')
+        .action(function(args, done) {
+            const self = this;
+
+            let loggedIn = () => {
+                rest.bootstrap()
+                    .then(result => {
+                        self.log(result);
+                        done();
+                    })
+                    .catch(ex => {self.log(ex); done();})
+            };
+
+            helper.genericAuthCommandHandler(done, loggedIn, rest.getToken());
+        });
+
     vorpal.command('structure adduser', 'Add a structure user')
         .action(function(args, done) {
             const self = this;

@@ -28,6 +28,13 @@
       "principalId": "$unauthenticated",
       "permission": "DENY",
       "property": "query"
+    },
+    {
+      "accessType": "EXECUTE",
+      "principalType": "ROLE",
+      "principalId": "$unauthenticated",
+      "permission": "DENY",
+      "property": "bootstrap"
     }
   ],
   "methods": {}
