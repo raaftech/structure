@@ -165,7 +165,7 @@ public class StructureManager extends GenericActor {
                     log.error(e.getMessage());
                 }
                 host = host == null ? Context.getInstanceRepository().findDnsName(Context.getHostname()) : host;
-                structureInstance = structureInstance == null ?
+                structureInstance = structureInstance == null && host != null ?
                         Context.getInstanceRepository().getStartOfComponentGroup(host.getUuid()) : structureInstance;
             }
             if (host != null && structureInstance != null) {
