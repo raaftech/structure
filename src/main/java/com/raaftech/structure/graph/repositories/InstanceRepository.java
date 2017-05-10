@@ -36,8 +36,8 @@ public interface InstanceRepository extends GenericRepository<Instance> {
     int isOfType(@Param("uuid") String uuid, @Param("type") String type);
 
     // Get the root node of a componental group
-    @Query ("MATCH (instance:Instance {uuid:{instanceUuid}})<-[*0..]-()<-[:GROUPS]-(grouping) " +
-            "RETURN grouping")
+    @Query ("MATCH (instance:Instance {uuid:{instanceUuid}})<-[*0..]-(n)<-[:GROUPS]-(grouping) " +
+            "WHERE NOT n:Grouping RETURN grouping")
     Grouping getStartOfComponentGroup(@Param("instanceUuid") String instanceUuid);
 
     @Query ("MATCH (n:Instance) WHERE NOT (n)-[:INSTANCE_OF]->({name:\"Handler\"}) RETURN n ORDER BY id(n) DESC LIMIT {amount}")
