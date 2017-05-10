@@ -25,7 +25,8 @@ class Helper {
 
     transform(data, ip, sshd, httpd) {
         let root = this.createRootNode();
-        root.desc = util.format('%s [%s]', data.nodename, ip);
+        root.name = Helper.findFqdn(data);
+        root.desc = util.format('%s [%s]', Helper.findFqdn(data), ip);
 
         let groupsRelation = root.relationCreate('GROUPS', 'outgoing');
 
@@ -45,8 +46,9 @@ class Helper {
         //Ip data
         let ipd = this.ipData(ip, true);
         osHasConfigurationRelation.addEntity(ipd);
+        R.forEach(item => osHasConfigurationRelation.addEntity(item), this.harvestIps(data,ip));
         //DNS
-        let dns = this.dnsData(data.nodename, ip);
+        let dns = this.dnsData(Helper.findFqdn(data), ip);
         osHasConfigurationRelation.addEntity(dns);
         //Daemons (http, ssh only atm)
         let daemonList = this.daemonData(sshd.service, httpd.service);
@@ -235,6 +237,35 @@ class Helper {
         return this.createInstance(ipd,'Ipv4Address');
     }
 
+    harvestIps(ansibleData,initIp) {
+        let result = [];
+        if(notNil(ansibleData.ipv4_addresses)) {
+            R.forEach(ip => {
+                if(!R.equals(ip, initIp)) {
+                    result.push(this.ipData(ip, true));
+                }
+            }, ansibleData.ipv4_addresses);
+        }
+
+        if(notNil(ansibleData.ipv6_addresses)) {
+            R.forEach(ip => {
+                if(!R.equals(ip, initIp)) {
+                    let ipd = this.getInstance('Ipv6Address');
+                    ipd.data = {
+                        name: ipd.name,
+                        desc: ipd.desc,
+                        addr: ip,
+                        reachable: true
+                    };
+                    ipd.type = 'Configuration';
+                    result.push(this.createInstance(ipd,'Ipv6Address'));
+                }
+            }, ansibleData.ipv6_addresses);
+        }
+
+        return result;
+    }
+
     //Default assumed entities
     defaultEntities() {
         const mkData = (name,desc,ver,short, long) => {
@@ -284,10 +315,20 @@ class Helper {
         return computer;
     }
 
-    createNetwork() {
-        //TODO add properties of the network
+    createNetwork(cidr, netName) {
         let network = this.getInstance('Ipv4Network');
         network.type = 'Grouping';
+
+        let ipTest = R.test(/^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/);
+        let isIp = R.compose(ipTest, R.trim);
+        if(isIp(cidr)) cidr = cidr + '/32';
+
+        network.name = R.defaultTo(network.name, netName);
+        network.data = {
+            name: R.defaultTo(network.name, netName),
+            desc: network.desc,
+            addr: cidr
+        };
         let rel = network.relationCreate('INSTANCE_OF', 'outgoing');
         rel.addEntity(this.getType('Ipv4Network'));
         network = this.cleanEntity(network, ['IMPLEMENTS', 'CONSTRAINTS']);
@@ -301,6 +342,24 @@ class Helper {
             entity = Helper.json2Entity( R.dissocPath(['meta','relations',rel], entity), false );
         }, rels);
         return entity;
+    }
+
+    static findFqdn(ansibleData) {
+        let fqdn = R.prop('fqdn', ansibleData);
+        let hostname = R.prop('hostname', ansibleData);
+        let nodename = R.prop('nodename', ansibleData);
+
+        let emptyOrNil = (x) => R.or(R.isNil(x), R.isEmpty(x));
+        let isAvailable = R.compose(R.not, emptyOrNil);
+
+        let fn = R.cond([
+            [x => isAvailable(fqdn), x => R.identity(fqdn)],
+            [x => isAvailable(hostname), x => R.identity(hostname)],
+            [x => isAvailable(nodename), x => R.identity(nodename)],
+            [R.T, R.always('unknown')]
+        ]);
+
+        return fn();
     }
 
     static json2Entity(json, generateUuid) {
