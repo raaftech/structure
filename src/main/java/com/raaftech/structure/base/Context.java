@@ -51,10 +51,8 @@ public class Context implements ApplicationContextAware {
     }
 
     public static void setSelfIdentifier(String selfIdentifier) {
-        if (Context.selfIdentifier == null) {
-            log.info("Setting self identifier to {}", selfIdentifier);
-            Context.selfIdentifier = selfIdentifier;
-        }
+        log.info("Setting self identifier to {}", selfIdentifier);
+        Context.selfIdentifier = selfIdentifier;
     }
 
     public static String getHostname() {
