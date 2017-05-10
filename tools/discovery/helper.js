@@ -352,6 +352,11 @@ class Helper {
         let emptyOrNil = (x) => R.or(R.isNil(x), R.isEmpty(x));
         let isAvailable = R.compose(R.not, emptyOrNil);
 
+        //TODO find a better way to solve this
+        if(fqdn === 'localhost') {
+            return hostname;
+        }
+
         let fn = R.cond([
             [x => isAvailable(fqdn), x => R.identity(fqdn)],
             [x => isAvailable(hostname), x => R.identity(hostname)],

@@ -136,7 +136,7 @@ public class StructureManager extends GenericActor {
         com.raaftech.structure.graph.Configuration host = Context.getInstanceRepository().findDnsName(Context.getHostname());
         if (host == null) {
             log.info("Structure is not registered in the database, now discovering itself");
-            ProcessRunner runner = new ProcessRunner("node tools/discovery/bootstrap.js -c 127.0.0.1/32 -t " + token);
+            ProcessRunner runner = new ProcessRunner("node tools/discovery/bootstrap.js -c localhost -t " + token);
             try {
                 runner.run();
                 int scriptFinishedWaitCycles = 0;
