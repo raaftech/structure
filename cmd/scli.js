@@ -206,15 +206,20 @@ vorpal.command('specialize <uuid>', 'Specialize an instance')
                         return rest.getChildren(type.meta.uuid);
                     })
                     .then(children => {
-                        let q = helper.generateQuestion('child', 'list', 'Select specialisation: ', {choices: children});
-                        self.prompt(q, function(answer) {
-                            let e = R.find(R.propEq('name', answer.child), children);
-                            rest.specializeInstance(selectedInstance.meta.uuid, e.meta.uuid)
-                                .then(updated => {
-                                    self.log(updated);
-                                    done();
-                                });
-                        });
+                        if(children.length === 0) {
+                            self.log('No possible specializations found.');
+                            done();
+                        } else {
+                            let q = helper.generateQuestion('child', 'list', 'Select specialisation: ', {choices: children});
+                            self.prompt(q, function(answer) {
+                                let e = R.find(R.propEq('name', answer.child), children);
+                                rest.specializeInstance(selectedInstance.meta.uuid, e.meta.uuid)
+                                    .then(updated => {
+                                        self.log(updated);
+                                        done();
+                                    });
+                            });
+                        }
                     })
                     .catch(helper.genericCatchHandler(done));
             };
