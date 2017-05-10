@@ -56,7 +56,6 @@ module.exports = function(Admin) {
 
     Admin.query = function (address, command, payload, callback) {
         evBus.sendEvent(address, command, payload)
-            //.then(result => callback(null, result))
             .then(result => callback(null, R.path(['body','result'], result)))
             .catch(ex => callback(ex));
 

@@ -53,7 +53,7 @@ const main = (db) => {
 
     nmapLib.nmapScan(cidr, args)
         .then((nmapResults) => {
-                async.eachOfSeries(nmapResults, function(item,index,done) {
+            async.eachOfSeries(nmapResults, function(item,index,done) {
                 console.log('calling ansible for %s [%s]', nmapResults[index].hostname, nmapResults[index].ip);
                 let doneCalled = false;
                 setTimeout(() => {
@@ -65,6 +65,7 @@ const main = (db) => {
                 }, 15000);
                 ansibleLib.setup(item.ip)
                     .then((result) => {
+                        result.fqdn = nmapResults[index].hostname;
                         let subGraph = helper.transform(result, item.ip,
                                                    getSshService(nmapResults[index]),
                                                    getHttpService(nmapResults[index]));

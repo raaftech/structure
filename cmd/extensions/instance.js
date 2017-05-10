@@ -222,6 +222,8 @@ module.exports = function(vorpal, options) {
                                     .then(vres => {
                                         if(vres.valid) {
                                             instance.data = R.merge(instance.data, vres.instance);
+                                            instance.name = R.defaultTo(instance.name, instance.data.name);
+                                            instance.desc = R.defaultTo(instance.desc, instance.data.desc);
                                             let loggedIn = () => {
                                                 rest.updateInstance({entities: [instance]})
                                                     .then(updated => {
