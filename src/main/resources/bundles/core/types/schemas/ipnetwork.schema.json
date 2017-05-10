@@ -9,9 +9,9 @@
     "checksum": {
       "$ref": "type.schema.json#/properties/checksum"
     },
-    "addr": {
+    "cidr": {
       "type": "string",
-      "description": "IP networks should at least have the addr field."
+      "description": "The network CIDR."
     },
     "desc": {
       "$ref": "type.schema.json#/properties/desc"
@@ -20,6 +20,6 @@
   "required": [
     "name",
     "desc",
-    "addr"
+    "cidr"
   ]
 }

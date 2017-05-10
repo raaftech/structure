@@ -69,8 +69,8 @@ const main = (db) => {
                     .then((result) => {
                         result.fqdn = nmapResults[index].hostname;
                         let subGraph = helper.transform(result, item.ip,
-                                                   getSshService(nmapResults[index]),
-                                                   getHttpService(nmapResults[index]));
+                                           getSshService(nmapResults[index]),
+                                           getHttpService(nmapResults[index]));
 
                         networkGroup.addEntity(subGraph);
                         doneCalled = true;

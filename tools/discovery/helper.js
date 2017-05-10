@@ -289,11 +289,16 @@ class Helper {
         samba.type = 'Component';
         samba.data = mkData(samba.name, samba.desc, 'x', 'samba', 'Samba');
 
+        let structure = this.getInstance('Structure');
+        structure.type = 'Component';
+        structure.data = mkData(structure.name, structure.desc, '1.0', 'structure', 'Structure' );
+
         return [
             this.createInstance(iputils, 'Iputils'),
             this.createInstance(sshClient, 'OpenSshClient'),
             this.createInstance(winexe, 'Winexe'),
-            this.createInstance(samba, 'Samba')
+            this.createInstance(samba, 'Samba'),
+            this.createInstance(structure, 'Structure')
         ];
     }
 
@@ -327,7 +332,7 @@ class Helper {
         network.data = {
             name: R.defaultTo(network.name, netName),
             desc: network.desc,
-            addr: cidr
+            cidr: cidr
         };
         let rel = network.relationCreate('INSTANCE_OF', 'outgoing');
         rel.addEntity(this.getType('Ipv4Network'));
