@@ -24,9 +24,9 @@ public class Grouping extends Instance {
 
     @RelatedTo(type="GROUPS", direction= Direction.OUTGOING)
     @Fetch
-    private Set<Component> components;
+    private Set<Instance> components;
 
-    public Set<Component> getComponents() {
+    public Set<Instance> getComponents() {
         if (components == null) {
             components = new HashSet<>();
         }

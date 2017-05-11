@@ -218,6 +218,38 @@ public class Entity {
 		this.relations = relations;
 	}
 
+    /**
+     * Add a relation to or from a set of UUIDs to our relationships object. If the relationship
+     * already exists, it checks if the direction is the same and adds the UUIDs to the set. If the direction
+     * doesn't match, it throws an exception. If the relationship didn't exist yet, it'll just add it to the relations
+     * object.
+     * @param relationName The relationship name.
+     * @param direction The direction of the relationship.
+     * @param uuids The UUIDs to add to the relationship.
+     * @return Did the relations object change?
+     */
+	public boolean addRelations(String relationName, Direction direction, Set<UUID> uuids) {
+        final Set<Triple<String, String, Set<String>>> relevantTriples = relations.stream()
+                .filter(t -> t.getLeft().equals(relationName))
+                .collect(Collectors.toSet());
+
+        if (relevantTriples.size() > 1) {
+            throw new IllegalStateException("Multiple triples found for relationship \"" + relationName
+                    + "\" on node \"" + uuid + "\".");
+        }
+        Set<String> uuidsAsStrings = uuids.stream().map(UUID::toString).collect(Collectors.toSet());
+        final boolean changed;
+        if (relevantTriples.isEmpty()) {
+            relations.add(Triple.of(relationName, direction.toString().toLowerCase(), uuidsAsStrings));
+            changed = true;
+        } else {
+            // relevantTriples contains just a single triple
+            final Triple<String, String, Set<String>> relevantTriple = relevantTriples.stream().findFirst().get();
+            changed = relevantTriple.getRight().addAll(uuidsAsStrings);
+        }
+        return changed;
+    }
+
     public void setIdentity(String[] identity) {
         this.identity = identity;
     }
