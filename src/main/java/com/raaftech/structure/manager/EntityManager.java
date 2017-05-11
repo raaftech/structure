@@ -9,6 +9,7 @@ import com.raaftech.structure.annotations.SchemaPath;
 import com.raaftech.structure.base.Configuration;
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.base.GenericActor;
+import com.raaftech.structure.base.NodeActor;
 import com.raaftech.structure.exceptions.EntityDeserializationException;
 import com.raaftech.structure.exceptions.EntitySerializationException;
 import com.raaftech.structure.graph.Instance;
@@ -110,6 +111,8 @@ public class EntityManager extends GenericActor {
                     List<String> newUuids = sortForCreation(entities).stream()
                             // Persist them
                             .peek(Entity::toGraph)
+                            // Deploy them as actor
+                            .peek(NodeActor::deploy)
                             // Map to the new UUID's
                             .map(Entity::getUuid)
                             // Collect
