@@ -25,6 +25,10 @@ class Relation {
         this.entities.push(entity);
         return this;
     }
+
+    getUuids() {
+        return this.uuids;
+    }
 }
 
 /**

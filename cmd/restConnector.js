@@ -62,6 +62,17 @@ class RestConnector {
         return fetch(url).then(result => result.json());
     }
 
+    getInstanceByPredicate(property, value) {
+        let url = util.format('%s/Instances/predicate', getBaseUrl(this.host,this.port));
+        return fetch(url,
+            {
+                method: 'POST',
+                body: util.format('property=%s&value=%s', property, value),
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+            })
+            .then(result => result.json());
+    }
+
     createInstance(options) {
         let url = util.format('%s/Instances?access_token=%s', getBaseUrl(this.host,this.port), this.token);
         return fetch(url,

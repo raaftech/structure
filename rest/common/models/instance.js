@@ -2,7 +2,9 @@
 
 const R = require('ramda');
 const path = require('path');
+const util = require('util');
 const helper = require(path.join(__dirname, '..','libraries','helper'));
+const neoHelper = require(path.join(__dirname, '..','libraries','neoHelper'));
 const evBus = require('../../server/server').eventBus;
 
 const baseAddress = helper.getEventBusAddress('com.raaftech.structure');
@@ -182,5 +184,29 @@ module.exports = function (Instance) {
         returns: {root: true, type: 'object'},
         http: {verb: 'post', path: '/run/:instrument/on/:instanceUuid'},
         description: 'Run an instrument on an instance'
+    });
+
+    Instance.getInstanceByPredicate = function(property, value, callback) {
+        let query = util.format('match (n:Instance {`data-%s`: "%s"}) return n',property, value);
+        neoHelper.cypher(query)
+            .then(result => R.pipe(R.head, R.path(['n','properties','uuid'])) (result))
+            .then(uuid => {
+                if(R.isNil(uuid)) callback(null, {});
+                else {
+                    evBus.sendEvent(baseAddress(['node',uuid]), 'json', {})
+                        .then(result => callback(null, resultFetcher(result)));
+                }
+            })
+            .catch(ex => callback(ex));
+    };
+
+    Instance.remoteMethod('getInstanceByPredicate', {
+        accepts: [
+            {arg: 'property', type: 'string', required: true},
+            {arg: 'value', type: 'string', required: true}
+        ],
+        returns: {root: true, type: 'object'},
+        http: {verb: 'post', path: '/predicate'},
+        description: 'Fetch an instance by predicate'
     });
 };

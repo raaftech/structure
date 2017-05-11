@@ -80,6 +80,20 @@ module.exports = function(Group) {
 //    Group.getChildren = function(groupUuid, callback) {
 //    };
 //
-//    Group.addToGroup = function(groupUuid, instanceUuid, callback) {
-//    };
+    Group.addToGroup = function(groupUuid, instanceUuid, callback) {
+        let message = {grouping: groupUuid, groupee: instanceUuid};
+        evBus.sendEvent(entityAddress, 'group', message)
+            .then(result => callback(null, resultFetcher(result)))
+            .catch(ex => callback(ex));
+    };
+
+    Group.remoteMethod('addToGroup', {
+            accepts: [
+                {arg: 'groupUuid', type: 'string', required: true},
+                {arg: 'instanceUuid', type: 'string', required: true}
+            ],
+            returns: {root: true, type: 'object'},
+            http: {verb: 'put', path: '/add/:instanceUuid/to/:groupUuid'},
+            description: 'Add an instance to a grouping'
+        });
 };
