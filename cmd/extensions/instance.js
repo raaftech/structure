@@ -254,4 +254,53 @@ module.exports = function(vorpal, options) {
                 .catch(helper.genericCatchHandler(done));
         });
 
+
+    vorpal.command('run instrument <uuid>', 'Run an instrument against an instance')
+        .action(function(args, done) {
+            const self = this;
+            let availableInstruments;
+            let getUserSupplied = (obj) => {
+                obj = JSON.parse(obj);
+                let result = {};
+                R.forEachObjIndexed((val, key) => {
+                    if(val.value.from === 'static' && val.canBeUserSupplied) {
+                        result[key] = val;
+                    }
+                }, obj);
+                return result;
+            };
+            let createQuestions = (obj) => {
+                let keys = R.keys(obj);
+                return R.map(item => {
+                    let q = util.format('%s ::%s [%s]: ', item, obj[item].value.type, obj[item].isOptional ? 'optional' : 'required');
+                    return helper.generateQuestion(item, 'input', q);
+                }, keys);
+            };
+
+            let loggedIn = () => {
+                rest.getInstruments(args.uuid)
+                    .then(instruments => {
+                        self.log(instruments);
+                        availableInstruments = instruments;
+                        let q = helper.generateQuestion('instrument', 'list', 'Select instrument: ', {choices: R.keys(instruments)});
+                        self.prompt(q, function(result) {
+                            rest.getInstanceByUuid(availableInstruments[result.instrument])
+                                .then(instance => {
+                                    let argObj = getUserSupplied(instance.data.arguments);
+                                    let qs = createQuestions(argObj);
+                                    self.prompt(qs, function(res) {
+                                        rest.runInstrument(args.uuid, result.instrument, res)
+                                            .then(instResult => {
+                                                self.log(instResult);
+                                                done();
+                                            });
+                                    });
+                                })
+                        });
+                    })
+                    .catch(helper.genericCatchHandler(done));
+            };
+
+            helper.genericAuthCommandHandler(done, loggedIn, rest.getToken());
+        });
 };
