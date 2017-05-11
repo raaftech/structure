@@ -1,0 +1,21 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "description": "Schema for StructureManager's group method.",
+    "type": "object",
+    "properties": {
+        "grouping": {
+            "$ref": "#definitions/uuid"
+        },
+        "groupee": {
+            "$ref": "#definitions/uuid"
+        }
+    },
+    "additionalProperties": false,
+    "required": ["grouping", "groupee" ],
+    "definitions": {
+        "uuid": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89aAbB][a-f0-9]{3}-[a-f0-9]{12}$"
+        }
+    }
+}

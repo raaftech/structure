@@ -384,6 +384,7 @@ public class EntityManager extends GenericActor {
         };
     }
 
+    @SchemaPath("resource:/schema/manager/entitymanager/group.schema.json")
     public MessageHandler group() {
         return new MessageHandler() {
             @Override
