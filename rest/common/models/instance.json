@@ -42,6 +42,13 @@
       "principalId": "$unauthenticated",
       "permission": "DENY",
       "property": "specialize"
+    },
+    {
+      "accessType": "EXECUTE",
+      "principalType": "ROLE",
+      "principalId": "$unauthenticated",
+      "permission": "DENY",
+      "property": "runInstrument"
     }
   ],
   "methods": {}
