@@ -118,8 +118,25 @@ class RestConnector {
                     .then(result => result.json());
     }
 
-    runInstrument(instrument, uuid) {
+    getInstruments(uuid) {
+        let url = util.format('%s/Instances/instruments/%s', getBaseUrl(this.host,this.port),uuid);
+        return fetch(url).then(result => result.json());
+    }
 
+    runInstrument(uuid, instrument, options) {
+        let url = util.format('%s/Instances/run/%s/on/%s?access_token=%s', getBaseUrl(this.host,this.port), instrument, uuid, this.token);
+        let args = {
+            instrument: instrument,
+            arguments: options
+        };
+        console.log(args);
+        return fetch(url,
+            {
+                method: 'POST',
+                body: 'options='+JSON.stringify(args),
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+            })
+            .then(result => result.json());
     }
 
     bootstrap() {
