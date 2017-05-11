@@ -42,10 +42,7 @@ import static io.vertx.core.json.Json.mapper;
  *
  * @author Rubin Simons <rubin.simons@raaftech.com>
  * @since 2014-11-27
- *
- * @Deprecated We need to redesign the domain classes to use Entity.
  */
-@Deprecated
 @NodeEntity
 public class Type extends Node {
 

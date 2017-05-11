@@ -36,10 +36,7 @@ import java.util.stream.Collectors;
  *
  * @author Boy van Duuren <boy.van.duuren@raaftech.com>
  * @since 2015-03-09
- *
- * @Deprecated We need to redesign the domain classes to use Entity.
  */
-@Deprecated
 @NodeEntity
 public class Template extends Node {
 

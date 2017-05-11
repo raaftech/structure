@@ -5,10 +5,6 @@ import org.springframework.data.neo4j.annotation.RelatedTo;
 
 import java.util.Set;
 
-/**
- * @Deprecated We need to redesign the domain classes to use Entity.
- */
-@Deprecated
 public class Parser extends Instrument {
 
     @RelatedTo(type="PARSED", direction=Direction.OUTGOING)

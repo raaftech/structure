@@ -27,11 +27,8 @@ import java.util.Iterator;
  *
  * @author Rubin Simons <rubin.simons@raaftech.com>
  * @since 2014-11-27
- *
- * @Deprecated We need to redesign the domain classes to use Entity.
  */
 @NodeEntity
-@Deprecated
 public abstract class Instance extends Node {
 
     private Logger log = LoggerFactory.getLogger(Instance.class);

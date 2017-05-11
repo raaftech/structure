@@ -14,10 +14,6 @@ import java.util.Set;
 
 import static io.vertx.core.json.Json.mapper;
 
-/**
- * @Deprecated We need to redesign the domain classes to use Entity.
- */
-@Deprecated
 public class Marker extends Instrument {
 
     @RelatedTo(type="GIVES_CAPABILITY", direction = Direction.OUTGOING)

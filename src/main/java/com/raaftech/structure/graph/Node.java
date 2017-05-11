@@ -22,12 +22,9 @@ import static io.vertx.core.json.Json.mapper;
  *
  * @author Boy van Duuren <boy.van.duuren@raaftech.com>
  * @since 2014-11-26
- *
- * @Deprecated We need to redesign the domain classes to use Entity.
  */
 @NodeEntity
 @JsonSerialize(using = NodeSerializer.class)
-@Deprecated
 public abstract class Node {
 
     private static final Logger log = LoggerFactory.getLogger(Node.class);
