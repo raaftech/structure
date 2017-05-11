@@ -9,7 +9,6 @@ import com.raaftech.structure.helper.loader.BundleLoader;
 import com.raaftech.structure.manager.SchemaManager;
 import com.raaftech.structure.manager.TaskManager;
 import com.raaftech.structure.node.InstanceActor;
-import com.raaftech.structure.node.TypeActor;
 import com.raaftech.structure.repository.Instances;
 import com.raaftech.structure.repository.Nodes;
 import com.raaftech.structure.repository.Types;
@@ -280,8 +279,7 @@ public class Application {
 
         try {
             StreamSupport.stream(typeRepository.findAll().spliterator(), false)
-                    .map(TypeActor::new)
-                    .forEach(vertx::deployVerticle);
+                    .forEach(InstanceActor::deploy);
         } catch (Exception e) {
             handleUnrecoverableLoadingError(tx, e, 1, "Unrecoverable error while deploying TypeActors. Shutting down...");
         } finally {
@@ -294,8 +292,7 @@ public class Application {
 
         try {
             StreamSupport.stream(instanceRepository.findAll().spliterator(), false)
-                    .map(InstanceActor::new)
-                    .forEach(vertx::deployVerticle);
+                    .forEach(InstanceActor::deploy);
         } catch (Exception e) {
             handleUnrecoverableLoadingError(tx, e, 1, "Unrecoverable error while deploying InstanceActors. Shutting down...");
         } finally {

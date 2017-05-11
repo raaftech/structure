@@ -2,11 +2,20 @@ package com.raaftech.structure.base;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.raaftech.structure.graph.Instance;
 import com.raaftech.structure.graph.Node;
+import com.raaftech.structure.graph.Type;
 import com.raaftech.structure.graph.repositories.NodeRepository;
+import com.raaftech.structure.next.Entity;
+import com.raaftech.structure.node.InstanceActor;
+import com.raaftech.structure.node.TypeActor;
+import io.vertx.core.Verticle;
 import io.vertx.core.eventbus.MessageConsumer;
+import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.UUID;
 
 public abstract class NodeActor<T extends Node> extends GenericActor {
 
@@ -90,6 +99,38 @@ public abstract class NodeActor<T extends Node> extends GenericActor {
                 return null;
             }
         };
+    }
+
+    /**
+     * A helper method to deploy NodeActors. Given a type entity it will deploy
+     * a TypeActor, otherwise an InstanceActor.
+     * @param entity The entity to deploy an actor for.
+     */
+    public static void deploy(Entity entity) {
+        deploy(UUID.fromString(entity.getUuid()));
+    }
+
+    /**
+     * A helper method to deploy NodeActors. Given the UUID of a type it will deploy
+     * a TypeActor, otherwise an InstanceActor.
+     * @param uuid The UUID of the node to deploy an actor for.
+     */
+    public static void deploy(UUID uuid) {
+        final Node node = Context.getNodeRepository().findByUuid(uuid.toString());
+        Validate.notNull(node, "Couldn't retrieve node \"" + uuid + "\" from database.");
+        deploy(node);
+    }
+
+    /**
+     * A helper method to deploy NodeActors. Given a type it will deploy
+     * a TypeActor, otherwise an InstanceActor.
+     * @param node The node to deploy an actor for.
+     */
+    public static void deploy(Node node) {
+        final Verticle verticle = node instanceof Type ?
+                new TypeActor((Type) node) :
+                new InstanceActor((Instance) node);
+        Context.getVertx().deployVerticle(verticle);
     }
 
 }
