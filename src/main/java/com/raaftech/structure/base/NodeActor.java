@@ -12,6 +12,7 @@ import com.raaftech.structure.node.TypeActor;
 import io.vertx.core.Verticle;
 import io.vertx.core.eventbus.MessageConsumer;
 import org.apache.commons.lang3.Validate;
+import org.neo4j.graphdb.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,6 +78,27 @@ public abstract class NodeActor<T extends Node> extends GenericActor {
                 return null;
             }
 
+        };
+    }
+
+    /**
+     * Serialize node to entity JSON and return it to the caller.
+     * @return Serialized entity in the data property of the response.
+     */
+    public MessageHandler json() {
+        return new MessageHandler() {
+            @Override
+            public JsonNode exec(JsonNode request) {
+                Transaction tx = Context.getGraphDatabase().beginTx();
+                final JsonNode response = response(request, mapper.createObjectNode().set("data", mapper.valueToTree(getNode())));
+                tx.close();
+                return response;
+            }
+
+            @Override
+            public JsonNode help(JsonNode request) {
+                return null;
+            }
         };
     }
 
