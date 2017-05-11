@@ -47,6 +47,7 @@ module.exports = function(vorpal, options) {
         .option('-r, --remove <uuid>', 'Remove a specific instance')
         .option('-v, --verbose', 'Be verbose in printing the results')
         .action(function(args, done) {
+            const self = this;
             //Function that checks if a property is not nil in the given object.options object
             let fn = (prop, obj) => R.pipe(R.path(['options', prop]), helper.notNil);
             let predicate = R.cond([
@@ -60,7 +61,7 @@ module.exports = function(vorpal, options) {
 
             promise.then(instance => {
                 R.pipe(R.ifElse(R.is(Object), helper.treePrint(args.options.verbose), R.identity),
-                   x => console.log(x),
+                   x => self.log(x),
                    x => done()) (instance);
             }).catch(helper.genericCatchHandler(done));
         });
@@ -78,7 +79,7 @@ module.exports = function(vorpal, options) {
                     return getDomainClass(baseType.meta.uuid);
                 })
                 .then(domainClass => {
-                    console.log('Resolved domain class: '+domainClass);
+                    self.log('Resolved domain class: '+domainClass);
                     buffer = R.pipe(
                         R.assoc('type', domainClass),
                         R.assoc('name', buffer.name),
@@ -120,14 +121,14 @@ module.exports = function(vorpal, options) {
                                         if(!R.or(R.isNil(answer[key]), R.isEmpty(R.trim(answer[key])))) {
                                             output = R.assoc(key, answer[key], output);
                                         } else {
-                                            console.log('Ignoring optional, empty property: %s', clc.green(key));
+                                            self.log('Ignoring optional, empty property: %s', clc.green(key));
                                         }
                                     }
                                 }, R.keys(answer));
                                 return output;
                             };
 
-                            console.log(clc.green('(Input a space if you wish to override default values)'));
+                            self.log(clc.green('(Input a space if you wish to override default values)'));
                             self.prompt(createQuestions(typeSchema), function(res) {
                                 res = sanitizeAnswer(typeSchema.required, res);
                                 if(R.isNil(instance.data)) instance.data = res;
@@ -143,20 +144,20 @@ module.exports = function(vorpal, options) {
 
                                             instance = helper.createInstance(baseType, helper.json2Entity(true, instance));
                                             let graph = new Structure.SubGraph(instance).toList();
-                                            console.log(JSON.stringify(graph, undefined, 2));
+                                            self.log(JSON.stringify(graph, undefined, 2));
                                             let loggedIn = () => {
-                                                console.log('creating instance');
+                                                self.log('creating instance');
                                                 rest.createInstance({entities: graph})
                                                     .then(updated => {
-                                                        if(R.isEmpty(updated)) console.log('No changes were made');
-                                                        else console.log(updated);
+                                                        if(R.isEmpty(updated)) self.log('No changes were made');
+                                                        else self.log(updated);
                                                         done();
                                                     })
-                                                    .catch(ex => {console.log(ex); done();})
+                                                    .catch(ex => {self.log(ex); done();})
                                             };
                                             helper.genericAuthCommandHandler(done, loggedIn, rest.getToken());
                                         } else {
-                                            console.log(vres);
+                                            self.log(vres);
                                             done();
                                         }
                                     });
@@ -169,12 +170,21 @@ module.exports = function(vorpal, options) {
     vorpal.command('edit <uuid>', 'Edit the properties of an instance')
         .action(function(args,done) {
             const self = this;
+            let currentInstance;
 
-            console.log(clc.green('(Input a space if you wish to override default values)'));
+            let getInstanceOf = R.compose(R.head, R.path(['meta','relations','INSTANCE_OF','uuids']));
+
+            self.log(clc.green('(Input a space if you wish to override default values)'));
             rest.getInstanceByUuid(args.uuid)
                 .then(instance => {
-                    validator.getSchema(instance.type)
+                    currentInstance = instance;
+                    console.log(getInstanceOf(instance));
+                    return rest.getEntityByUuid(getInstanceOf(instance));
+                })
+                .then(entity => {
+                    validator.getSchema(entity.name)
                         .then(typeSchema => {
+                            //console.log(JSON.stringify(typeSchema, undefined, 2));
                             let getPropertyKeys = R.pipe(R.prop('properties'), R.keys);
                             let createQuestions = (schema) => {
                                 let keys = getPropertyKeys(schema);
@@ -186,10 +196,10 @@ module.exports = function(vorpal, options) {
                                     pre += 'Value: '
 
                                     let valueFetcher = R.cond([
-                                        [R.equals('name'), x => R.prop('name', instance)],
-                                        [R.equals('desc'), x => R.prop('desc', instance)],
-                                        [R.equals('checksum'), x => R.path(['meta','checksum'], instance)],
-                                        [R.T, x => R.path(['data', x], instance)]
+                                        [R.equals('name'), x => R.prop('name', currentInstance)],
+                                        [R.equals('desc'), x => R.prop('desc', currentInstance)],
+                                        [R.equals('checksum'), x => R.path(['meta','checksum'], currentInstance)],
+                                        [R.T, x => R.path(['data', x], currentInstance)]
                                     ]);
 
                                     return helper.generateQuestion(prop, 'input', pre, {default: valueFetcher(prop)});
@@ -206,7 +216,7 @@ module.exports = function(vorpal, options) {
                                         if(!R.or(R.isNil(answer[key]), R.isEmpty(R.trim(answer[key])))) {
                                             output = R.assoc(key, answer[key], output);
                                         } else {
-                                            console.log('Ignoring optional, empty property: %s', clc.green(key));
+                                            self.log('Ignoring optional, empty property: %s', clc.green(key));
                                         }
                                     }
                                 }, R.keys(answer));
@@ -215,24 +225,26 @@ module.exports = function(vorpal, options) {
 
                             self.prompt(createQuestions(typeSchema), function(res) {
                                 res = sanitizeAnswer(typeSchema.required, res);
-                                if(R.isNil(instance.data)) instance.data = res;
-                                else instance.data = R.merge(instance.data,res);
-                                validator.validate(instance.type, instance.data)
+                                if(R.isNil(currentInstance.data)) currentInstance.data = res;
+                                else currentInstance.data = R.merge(currentInstance.data,res);
+                                validator.validate(entity.name, currentInstance.data)
                                     .then(vres => {
                                         if(vres.valid) {
-                                            instance.data = R.merge(instance.data, vres.instance);
+                                            currentInstance.data = R.merge(currentInstance.data, vres.instance);
+                                            currentInstance.name = R.defaultTo(currentInstance.name, currentInstance.data.name);
+                                            currentInstance.desc = R.defaultTo(currentInstance.desc, currentInstance.data.desc);
                                             let loggedIn = () => {
-                                                rest.updateInstance({entities: [instance]})
+                                                rest.updateInstance({entities: [currentInstance]})
                                                     .then(updated => {
-                                                        if(R.isEmpty(updated)) console.log('No changes were made');
-                                                        else console.log(updated);
+                                                        if(R.isEmpty(updated)) self.log('No changes were made');
+                                                        else self.log(updated);
                                                         done();
                                                     })
-                                                    .catch(ex => {console.log(ex); done();})
+                                                    .catch(ex => {self.log(ex); done();})
                                             };
                                             helper.genericAuthCommandHandler(done, loggedIn, rest.getToken());
                                         } else {
-                                            console.log(vres);
+                                            self.log(vres);
                                             done();
                                         }
                                     });
@@ -240,5 +252,55 @@ module.exports = function(vorpal, options) {
                         });
                 })
                 .catch(helper.genericCatchHandler(done));
+        });
+
+
+    vorpal.command('run instrument <uuid>', 'Run an instrument against an instance')
+        .action(function(args, done) {
+            const self = this;
+            let availableInstruments;
+            let getUserSupplied = (obj) => {
+                obj = JSON.parse(obj);
+                let result = {};
+                R.forEachObjIndexed((val, key) => {
+                    if(val.value.from === 'static' && val.canBeUserSupplied) {
+                        result[key] = val;
+                    }
+                }, obj);
+                return result;
+            };
+            let createQuestions = (obj) => {
+                let keys = R.keys(obj);
+                return R.map(item => {
+                    let q = util.format('%s ::%s [%s]: ', item, obj[item].value.type, obj[item].isOptional ? 'optional' : 'required');
+                    return helper.generateQuestion(item, 'input', q);
+                }, keys);
+            };
+
+            let loggedIn = () => {
+                rest.getInstruments(args.uuid)
+                    .then(instruments => {
+                        self.log(instruments);
+                        availableInstruments = instruments;
+                        let q = helper.generateQuestion('instrument', 'list', 'Select instrument: ', {choices: R.keys(instruments)});
+                        self.prompt(q, function(result) {
+                            rest.getInstanceByUuid(availableInstruments[result.instrument])
+                                .then(instance => {
+                                    let argObj = getUserSupplied(instance.data.arguments);
+                                    let qs = createQuestions(argObj);
+                                    self.prompt(qs, function(res) {
+                                        rest.runInstrument(args.uuid, result.instrument, res)
+                                            .then(instResult => {
+                                                self.log(instResult);
+                                                done();
+                                            });
+                                    });
+                                })
+                        });
+                    })
+                    .catch(helper.genericCatchHandler(done));
+            };
+
+            helper.genericAuthCommandHandler(done, loggedIn, rest.getToken());
         });
 };

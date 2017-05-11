@@ -23,9 +23,10 @@ class Helper {
         return R.defaultTo(null, Helper.json2Entity(this.db.match(name), false));
     }
 
-    transform(data, ip, sshd, httpd) {
+    discoTransform(data, ip, sshd, httpd) {
         let root = this.createRootNode();
-        root.desc = util.format('%s [%s]', data.nodename, ip);
+        root.name = Helper.findFqdn(data);
+        root.desc = util.format('%s [%s]', Helper.findFqdn(data), ip);
 
         let groupsRelation = root.relationCreate('GROUPS', 'outgoing');
 
@@ -45,8 +46,9 @@ class Helper {
         //Ip data
         let ipd = this.ipData(ip, true);
         osHasConfigurationRelation.addEntity(ipd);
+        R.forEach(item => osHasConfigurationRelation.addEntity(item), this.harvestIps(data,ip));
         //DNS
-        let dns = this.dnsData(data.nodename, ip);
+        let dns = this.dnsData(Helper.findFqdn(data), ip);
         osHasConfigurationRelation.addEntity(dns);
         //Daemons (http, ssh only atm)
         let daemonList = this.daemonData(sshd.service, httpd.service);
@@ -54,6 +56,42 @@ class Helper {
 
         return root;
     }
+
+    bootstrapTransform(data, ip, sshd, httpd) {
+            let root = this.createRootNode();
+            root.name = Helper.findFqdn(data);
+            root.desc = util.format('%s [%s]', Helper.findFqdn(data), ip);
+
+            let groupsRelation = root.relationCreate('GROUPS', 'outgoing');
+
+            //Operating System
+            let os = this.osData(data.distribution, data.distribution_version);
+            //rootRelation.addEntity(os);
+            groupsRelation.addEntity(os);
+            let osHasComponentRelation = os.relationCreate('HAS_COMPONENT', 'outgoing');
+            let osHasConfigurationRelation = os.relationCreate('HAS_CONFIGURATION', 'outgoing');
+
+            //Interpreter
+            let interpreter = this.interpreterData(data.shell);
+            osHasComponentRelation.addEntity(interpreter);
+            //ServiceManager
+            let manager = this.mgrData(data.service_manager);
+            osHasComponentRelation.addEntity(manager);
+            //Ip data
+            let ipd = this.ipData(ip, true);
+            osHasConfigurationRelation.addEntity(ipd);
+            R.forEach(item => osHasConfigurationRelation.addEntity(item), this.harvestIps(data,ip));
+            //DNS
+            let dns = this.dnsData(Helper.findFqdn(data), ip);
+            osHasConfigurationRelation.addEntity(dns);
+            //Daemons (http, ssh only atm)
+            let daemonList = this.daemonData(sshd.service, httpd.service);
+            R.forEach(item => osHasComponentRelation.addEntity(item), daemonList);
+
+            R.forEach(item => osHasComponentRelation.addEntity(item), this.defaultEntities());
+
+            return root;
+        }
 
     osData(dist, version) {
         let c = this.getInstance(dist);
@@ -233,6 +271,71 @@ class Helper {
         return this.createInstance(ipd,'Ipv4Address');
     }
 
+    harvestIps(ansibleData,initIp) {
+        let result = [];
+        if(notNil(ansibleData.ipv4_addresses)) {
+            R.forEach(ip => {
+                if(!R.equals(ip, initIp)) {
+                    result.push(this.ipData(ip, true));
+                }
+            }, ansibleData.ipv4_addresses);
+        }
+
+        if(notNil(ansibleData.ipv6_addresses)) {
+            R.forEach(ip => {
+                if(!R.equals(ip, initIp)) {
+                    let ipd = this.getInstance('Ipv6Address');
+                    ipd.data = {
+                        name: ipd.name,
+                        desc: ipd.desc,
+                        addr: ip,
+                        reachable: true
+                    };
+                    ipd.type = 'Configuration';
+                    result.push(this.createInstance(ipd,'Ipv6Address'));
+                }
+            }, ansibleData.ipv6_addresses);
+        }
+
+        return result;
+    }
+
+    //Default assumed entities
+    defaultEntities() {
+        const mkData = (name,desc,ver,short, long) => {
+            return R.zipObj(['name','desc','ver','short','long'],
+                            [name,desc,ver,short,long]);
+        };
+
+        let iputils = this.getInstance('Iputils');
+        iputils.type = 'Component';
+        iputils.data = mkData(iputils.name, iputils.desc, 'x', 'iputils', 'IpUtils');
+
+        let sshClient = this.getInstance('OpenSshClient');
+        sshClient.type = 'Component';
+        sshClient.data = mkData(sshClient.name, sshClient.desc, 'x', 'sshclient', 'SshClient');
+
+        let winexe = this.getInstance('Winexe');
+        winexe.type = 'Component';
+        winexe.data = mkData(winexe.name, winexe.desc, 'x', 'winexe', 'WinExe');
+
+        let samba = this.getInstance('Samba');
+        samba.type = 'Component';
+        samba.data = mkData(samba.name, samba.desc, 'x', 'samba', 'Samba');
+
+        let structure = this.getInstance('Structure');
+        structure.type = 'Component';
+        structure.data = mkData(structure.name, structure.desc, '1.0', 'structure', 'Structure' );
+
+        return [
+            this.createInstance(iputils, 'Iputils'),
+            this.createInstance(sshClient, 'OpenSshClient'),
+            this.createInstance(winexe, 'Winexe'),
+            this.createInstance(samba, 'Samba'),
+            this.createInstance(structure, 'Structure')
+        ];
+    }
+
 
     createInstance(entity, instanceName) {
         let i = this.getType(instanceName);
@@ -251,10 +354,20 @@ class Helper {
         return computer;
     }
 
-    createNetwork() {
-        //TODO add properties of the network
+    createNetwork(cidr, netName) {
         let network = this.getInstance('Ipv4Network');
         network.type = 'Grouping';
+
+        let ipTest = R.test(/^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/);
+        let isIp = R.compose(ipTest, R.trim);
+        if(isIp(cidr)) cidr = cidr + '/32';
+
+        network.name = R.defaultTo(network.name, netName);
+        network.data = {
+            name: R.defaultTo(network.name, netName),
+            desc: network.desc,
+            cidr: cidr
+        };
         let rel = network.relationCreate('INSTANCE_OF', 'outgoing');
         rel.addEntity(this.getType('Ipv4Network'));
         network = this.cleanEntity(network, ['IMPLEMENTS', 'CONSTRAINTS']);
@@ -268,6 +381,29 @@ class Helper {
             entity = Helper.json2Entity( R.dissocPath(['meta','relations',rel], entity), false );
         }, rels);
         return entity;
+    }
+
+    static findFqdn(ansibleData) {
+        let fqdn = R.prop('fqdn', ansibleData);
+        let hostname = R.prop('hostname', ansibleData);
+        let nodename = R.prop('nodename', ansibleData);
+
+        let emptyOrNil = (x) => R.or(R.isNil(x), R.isEmpty(x));
+        let isAvailable = R.compose(R.not, emptyOrNil);
+
+        //TODO find a better way to solve this
+        if(fqdn === 'localhost') {
+            return nodename;
+        }
+
+        let fn = R.cond([
+            [x => isAvailable(fqdn), x => R.identity(fqdn)],
+            [x => isAvailable(hostname), x => R.identity(hostname)],
+            [x => isAvailable(nodename), x => R.identity(nodename)],
+            [R.T, R.always('unknown')]
+        ]);
+
+        return fn();
     }
 
     static json2Entity(json, generateUuid) {

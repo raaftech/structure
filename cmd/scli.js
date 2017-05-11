@@ -20,6 +20,7 @@ const groupExt = require('./extensions/groups');
 const instanceExt = require('./extensions/instance');
 
 const answerCache = new SimpleCache();
+const memoryBank = {a: '', b: ''};
 let rest;
 let validator;
 
@@ -45,6 +46,16 @@ function scli() {
 	vorpal.use(groupExt, rest);
 	vorpal.use(instanceExt, {rest: rest, validator: validator});
 	vorpal.delimiter(clc.magenta.bold('structure$')).show();
+
+	vorpal.on('keypress', function(key) {
+	    if(key.e.key.ctrl) {
+	        if(key.key === 'a') {
+	            vorpal.ui.input(vorpal.ui.input() + memoryBank.a);
+	        } else if(key.key === 'b') {
+	            vorpal.ui.input(vorpal.ui.input() + memoryBank.b);
+	        }
+	    }
+	});
 }
 
 function setupStatusChannel() {
@@ -55,8 +66,8 @@ function setupStatusChannel() {
         let output = util.format('Type: %s\nEvent: %s\nData: %s',
                                  clc.green(R.path(['type'],data)),
                                  clc.green(R.path(['data','event'],data)),
-                                 clc.green(R.path(['data','data','data'],data)));
-        console.log(output);
+                                 clc.green(JSON.stringify(R.path(['data','data'],data))));
+        vorpal.log(output);
     });
 }
 
@@ -93,6 +104,128 @@ function payloadDir() {
 function getPayloadListing() {
     return fs.readdirSync(payloadDir());
 }
+
+const prompt = (vorp, question) => {
+    return new Promise((resolve, reject) => {
+        vorp.prompt(question, function(result) {
+            resolve(result);
+        });
+    });
+};
+
+vorpal.command('mem <bank> <data>', 'Save data to memory bank a or b')
+    .action(function(args, done) {
+        const self = this;
+        if(args.bank !== 'a' && args.bank !== 'b') {
+            self.log('The value for <bank> needs to be "a" or "b"');
+            done();
+        } else {
+            memoryBank[args.bank] = args.data;
+            self.log('Data saved to memory bank [%s]. Print it with ctrl-%s', args.bank, args.bank);
+            done();
+        }
+    });
+
+vorpal.command('relate <fromInstanceUuid> <toInstanceUuid>', 'Create a new relation between two instances')
+        .action(function(args, done) {
+            const self = this;
+            let fromInstance,toInstance;
+            let requestedRelation;
+            let currentConstraints;
+
+            let instanceOfType = R.compose(R.head, R.path(['meta', 'relations', 'INSTANCE_OF', 'uuids']));
+            let firstKey = R.compose(R.head, R.keys);
+            let listRelations = R.compose(R.uniq, R.map(firstKey));
+            let harvestEndpointUuids = (relName, list) => {
+                return R.pipe(
+                    R.filter(R.has(relName)),
+                    R.map(R.prop(relName)),
+                    R.map(R.prop('to'))
+                )(list);
+            };
+
+            let loggedIn = () => {
+                rest.getInstanceByUuid(args.fromInstanceUuid)
+                    .then(instance => {
+                        fromInstance = instance;
+                        return rest.getInstanceByUuid(args.toInstanceUuid);
+                    })
+                    .then(instance => {
+                        toInstance = instance;
+                        return instanceOfType(fromInstance);
+                    })
+                    .then(uuid => rest.getConstraints(uuid))
+                    .then(constraints => {
+                        currentConstraints = constraints;
+                        let rels = listRelations(constraints.outgoing);
+                        let q = helper.generateQuestion('relation', 'list', 'Select relation: ', {choices: rels});
+                        return prompt(self, q);
+                    })
+                    .then(answer => {
+                        requestedRelation = answer.relation;
+                        return harvestEndpointUuids(answer.relation, currentConstraints.outgoing);
+                    })
+                    .then(uuids => {
+                        let promises = [];
+                        R.forEach(uuid => promises.push(rest.getEntityByUuid(uuid)), uuids);
+                        return Promise.all(promises);
+                    })
+                    .then(result => {
+                        self.log('Allowed types: %s',R.map(R.prop('name'), result));
+                        self.log('%s %s %s', fromInstance.meta.uuid, requestedRelation, toInstance.meta.uuid);
+                        if(R.isNil(R.path(['meta','relations',requestedRelation], fromInstance))) {
+                            fromInstance.meta.relations[requestedRelation] = {direction: 'outgoing', uuids: [toInstance.meta.uuid]};
+                        } else {
+                            fromInstance.meta.relations[requestedRelation].uuids.push(toInstance.meta.uuid);
+                        }
+                        return rest.updateInstance({entities: [fromInstance]});
+                    })
+                    .then(updated => {
+                        self.log(updated);
+                        done();
+                    })
+                    .catch(helper.genericCatchHandler(done));
+                };
+            helper.genericAuthCommandHandler(done, loggedIn, rest.getToken());
+        });
+
+vorpal.command('specialize <uuid>', 'Specialize an instance')
+    .action(function(args, done) {
+            const self = this;
+
+            let selectedInstance;
+            let instanceOfType = R.compose(R.head, R.path(['meta', 'relations', 'INSTANCE_OF', 'uuids']));
+
+            let loggedIn = () => {
+                rest.getInstanceByUuid(args.uuid)
+                    .then(instance => {
+                        selectedInstance = instance;
+                        return rest.getEntityByUuid(instanceOfType(instance));
+                    })
+                    .then(type => {
+                        return rest.getChildren(type.meta.uuid);
+                    })
+                    .then(children => {
+                        if(children.length === 0) {
+                            self.log('No possible specializations found.');
+                            done();
+                        } else {
+                            let q = helper.generateQuestion('child', 'list', 'Select specialisation: ', {choices: children});
+                            self.prompt(q, function(answer) {
+                                let e = R.find(R.propEq('name', answer.child), children);
+                                rest.specializeInstance(selectedInstance.meta.uuid, e.meta.uuid)
+                                    .then(updated => {
+                                        self.log(updated);
+                                        done();
+                                    });
+                            });
+                        }
+                    })
+                    .catch(helper.genericCatchHandler(done));
+            };
+
+            helper.genericAuthCommandHandler(done, loggedIn, rest.getToken());
+        });
 
 vorpal.command('find <name>', 'Find a specified node in structure')
     .option('-f, --field <fieldName>', 'Select a specific field from the resultset',
@@ -247,7 +380,7 @@ vorpal.command('query', 'Place arbitrary requests on the event bus')
             let loggedIn = () => {
                 rest.query(res.address, res.cmd, json)
                     .then(data => {
-                        console.log(JSON.stringify(data));
+                        self.log(JSON.stringify(data));
                         done();
                     })
                     .catch(helper.genericCatchHandler(done));

@@ -90,13 +90,13 @@ public class InstrumentRunner {
         this.arguments = arguments == null ? mapper.createObjectNode() : arguments;
 
         // TODO: Need a different way of finding the structure node.
-        this.agent = groupingRepository.findOneByName(Context.selfIdentifier);
+        this.agent = groupingRepository.findByUuid(Context.getSelfIdentifier());
         this.subject = instanceRepository.getStartOfComponentGroup(origin.getUuid());
 
         // Did we find the agent?
         if (agent == null) {
-            throw new IllegalArgumentException("Couldn't find node running Structure by name \""
-                    + Context.selfIdentifier + "\".");
+            throw new IllegalArgumentException("Couldn't find node running Structure by uuid \""
+                    + Context.getSelfIdentifier() + "\".");
         }
 
         // Does the controller even work on the given origin?
@@ -469,7 +469,9 @@ public class InstrumentRunner {
             context.add(arg);
         };
         // convert (copies of) the origin, subject and agent trees and add them to the context
-        subject.toArguments().forEach(arg -> collect.accept(arg, "subject"));
+        if (subject != null) {
+            subject.toArguments().forEach(arg -> collect.accept(arg, "subject"));
+        }
         agent.toArguments().forEach(arg -> collect.accept(arg, "agent"));
         ObjectNode originCopy = (((Instance)origin).toJson().deepCopy()).put("_from", "origin");
         context.add(originCopy);

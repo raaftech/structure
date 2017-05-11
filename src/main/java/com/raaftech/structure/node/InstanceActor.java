@@ -117,7 +117,7 @@ public class InstanceActor extends NodeActor<Instance> {
             public JsonNode exec(JsonNode request) {
                 ObjectNode result = mapper.createObjectNode();
 
-                Instance structure = INSTANCE_REPOSITORY.findOneByName(Context.selfIdentifier);
+                Instance structure = INSTANCE_REPOSITORY.findByUuid(Context.getSelfIdentifier());
                 String originUuid = getNode().getUuid();
                 Instance startOfComponentGroup = INSTANCE_REPOSITORY.getStartOfComponentGroup(originUuid);
 
@@ -293,7 +293,14 @@ public class InstanceActor extends NodeActor<Instance> {
             }
             future.complete();
         }, res -> {
-            log.debug("RunController for " + controller.getName() + " and task ID " + taskId.toString() + " finished");
+            if (res.failed()) {
+                if (Configuration.isTraceModeOn()) {
+                    res.cause().printStackTrace();
+                }
+                log.error(res.cause().getMessage());
+            } else {
+                log.debug("RunController for " + controller.getName() + " and task ID " + taskId.toString() + " finished");
+            }
         });
 
         return taskId;

@@ -1,6 +1,5 @@
 package com.raaftech.structure.graph;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.graph.repositories.TypeRepository;
@@ -10,10 +9,6 @@ import org.springframework.data.neo4j.annotation.RelatedTo;
 
 import java.util.Set;
 
-/**
- * @Deprecated We need to redesign the domain classes to use Entity.
- */
-@Deprecated
 public class Profile extends Instance {
 
     private static final TypeRepository typeRepository = Context.getTypeRepository();

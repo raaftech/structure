@@ -20,10 +20,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-/**
- * @Deprecated We need to redesign the domain classes to use Entity.
- */
-@Deprecated
 public class Grouping extends Instance {
 
     @RelatedTo(type="GROUPS", direction= Direction.OUTGOING)

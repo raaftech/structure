@@ -107,6 +107,9 @@
             }
           }
         },
+        "identity": {
+          "$ref": "#/definitions/stringOrStringArr"
+        },
         "checksum": {
           "$ref": "#/definitions/checksum"
         },
@@ -228,6 +231,13 @@
         "base64",
         "text"
       ]
+    },
+    "stringOrStringArr": {
+      "type": [ "string", "array" ],
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
     }
   }
 }

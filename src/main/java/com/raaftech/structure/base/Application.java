@@ -3,14 +3,12 @@ package com.raaftech.structure.base;
 import ch.qos.logback.classic.Level;
 import com.raaftech.structure.graph.Instance;
 import com.raaftech.structure.graph.repositories.InstanceRepository;
-import com.raaftech.structure.graph.repositories.InstrumentRepository;
-import com.raaftech.structure.graph.repositories.ProfileRepository;
 import com.raaftech.structure.graph.repositories.TypeRepository;
+import com.raaftech.structure.helper.ProcessRunner;
 import com.raaftech.structure.helper.loader.BundleLoader;
 import com.raaftech.structure.manager.SchemaManager;
 import com.raaftech.structure.manager.TaskManager;
 import com.raaftech.structure.node.InstanceActor;
-import com.raaftech.structure.node.TypeActor;
 import com.raaftech.structure.repository.Instances;
 import com.raaftech.structure.repository.Nodes;
 import com.raaftech.structure.repository.Types;
@@ -31,6 +29,7 @@ import org.slf4j.bridge.SLF4JBridgeHandler;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.data.neo4j.support.query.CypherQueryExecutor;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Optional;
@@ -253,11 +252,7 @@ public class Application {
         try {
             Configuration.setSchemaNamespace(new URI(String.format("http://%s:%s/", webHost, webPort)));
         } catch (URISyntaxException e) {
-            if (Configuration.isTraceModeOn()) {
-                e.printStackTrace();
-            }
-            log.error("Unrecoverable error while setting schema namespace");
-            System.exit(1);
+            handleUnrecoverableLoadingError(null, e, 1, "Unrecoverable error while setting schema namespace");
         }
         httpServer.requestHandler(router::accept).listen(webPort, webHost);
         log.info("Structure is running at {}", Configuration.getSchemaNamespace());
@@ -273,7 +268,7 @@ public class Application {
             bundleLoader.load();
             tx.success();
         } catch (Exception e) {
-            e.printStackTrace();
+            handleUnrecoverableLoadingError(tx, e, 1, "Unrecoverable error while loading types. Shutting down...");
         } finally {
             tx.close();
         }
@@ -281,19 +276,65 @@ public class Application {
         // Deploy TypeActors.
         log.debug("Deploying TypeActors..");
         tx = Context.getGraphDatabase().beginTx();
-        StreamSupport.stream(typeRepository.findAll().spliterator(), false)
-                .map(TypeActor::new)
-                .forEach(vertx::deployVerticle);
-        tx.close();
+
+        try {
+            StreamSupport.stream(typeRepository.findAll().spliterator(), false)
+                    .forEach(InstanceActor::deploy);
+        } catch (Exception e) {
+            handleUnrecoverableLoadingError(tx, e, 1, "Unrecoverable error while deploying TypeActors. Shutting down...");
+        } finally {
+            tx.close();
+        }
 
         // Deploy InstanceActors.
         log.debug("Deploying InstanceActors..");
         tx = Context.getGraphDatabase().beginTx();
-        for (Instance instanceNode : instanceRepository.findAll()) {
-            InstanceActor instanceNodeActor = new InstanceActor(instanceNode);
-            vertx.deployVerticle(instanceNodeActor);
+
+        try {
+            StreamSupport.stream(instanceRepository.findAll().spliterator(), false)
+                    .forEach(InstanceActor::deploy);
+        } catch (Exception e) {
+            handleUnrecoverableLoadingError(tx, e, 1, "Unrecoverable error while deploying InstanceActors. Shutting down...");
+        } finally {
+            tx.close();
         }
-        tx.close();
+
+        final Optional<String> maybeHostname = getHostname();
+        if (maybeHostname.isPresent()) {
+            Context.setHostname(maybeHostname.get());
+
+            com.raaftech.structure.graph.Configuration host = Context.getInstanceRepository().findDnsName(Context.getHostname());
+            if (host != null) {
+                Instance structureInstance = Context.getInstanceRepository().getStartOfComponentGroup(host.getUuid());
+                if (structureInstance != null) {
+                    Context.setSelfIdentifier(structureInstance.getUuid());
+                }
+            }
+        } else {
+            final String error = "Couldn't find own hostname";
+            handleUnrecoverableLoadingError(null, new IllegalStateException(error), 1, error);
+        }
+    }
+
+    private static Optional<String> getHostname() {
+        ProcessRunner hostnameProcess = new ProcessRunner("hostname");
+        Optional<String> stdout = Optional.empty();
+        try {
+            hostnameProcess.run();
+            int count = 0;
+            while (hostnameProcess.isRunning() && count < 10) {
+                Thread.sleep(1000);
+                count++;
+            }
+            ProcessRunner.ProcessResult result = hostnameProcess.finish();
+            stdout = result.stdout.isPresent() ? Optional.of(result.stdout.get().trim()) : result.stdout;
+        } catch (IOException | InterruptedException e) {
+            if (Configuration.isTraceModeOn()) {
+                e.printStackTrace();
+            }
+            log.trace(e.getMessage());
+        }
+        return stdout;
     }
 
     /**
@@ -309,5 +350,19 @@ public class Application {
         } else {
             return Optional.empty();
         }
+    }
+
+    /**
+     *
+     * @param tx The graphdb transaction context if available, otherwise set to null
+     * @param e The exception object that was thrown
+     * @param exitCode The System.exit code to terminate the Application with
+     * @param message Extra message to print before shutting down
+     */
+    private static void handleUnrecoverableLoadingError(Transaction tx, Exception e, int exitCode, String message) {
+        if(Configuration.isTraceModeOn()) e.printStackTrace();
+        if(tx != null) tx.close();
+        log.error(message);
+        System.exit(exitCode);
     }
 }

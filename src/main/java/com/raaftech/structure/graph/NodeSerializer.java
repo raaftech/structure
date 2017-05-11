@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import com.google.common.collect.ImmutableSet;
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.graph.repositories.NodeRepository;
+import com.raaftech.structure.helper.LambdaHelper;
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.RelationshipType;
@@ -143,8 +144,18 @@ public class NodeSerializer extends StdSerializer<Node> {
         // end meta object
         gen.writeEndObject();
 
+        // if we have data, start a data object
+        if (value.getData() != null && value.getData().size() > 0) {
+            gen.writeFieldName("data");
+            gen.writeStartObject();
+
+            value.getData().entrySet().stream()
+                    .forEach(entry -> LambdaHelper.wrapWithExceptionPropagation(() -> {
+                        gen.writeObjectField(entry.getKey(), entry.getValue()); return true;}).get());
+        }
+
         // if we have files, start a file object
-        if (value.getFiles().size() > 0) {
+        if (value.getFiles() != null && value.getFiles().size() > 0) {
             gen.writeFieldName("file");
             gen.writeStartObject();
 

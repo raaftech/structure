@@ -3,10 +3,6 @@ package com.raaftech.structure.graph;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.raaftech.structure.base.Context;
 
-/**
- * @Deprecated We need to redesign the domain classes to use Entity.
- */
-@Deprecated
 public abstract class Instrument extends Instance {
 
     private static  final String WEIGHT = "weight";

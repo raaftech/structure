@@ -20,7 +20,7 @@
     "json-schema-validator": "^1.0.0",
     "neo4j": "^2.0.0-RC2",
     "node-fetch": "^1.6.3",
-    "ramda": "^0.22.1",
+    "ramda": "^0.23.0",
     "sprintf-js": "^1.0.3",
     "uuid": "^3.0.1",
     "vorpal": "^1.11.4"

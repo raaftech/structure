@@ -122,6 +122,22 @@ module.exports = function (Instance) {
         description: 'update an existing instance'
     });
 
+    Instance.specialize = function(instanceUuid, isaUuid, callback) {
+        evBus.sendEvent(entityAddress, 'specialize', {instance: instanceUuid, isa: isaUuid})
+            .then(result => callback(null, resultFetcher(result)))
+            .catch(ex => callback(ex));
+    };
+
+    Instance.remoteMethod('specialize', {
+        accepts: [
+            {arg: 'instanceUuid', type: 'string', required: true},
+            {arg: 'isaUuid', type: 'string', required: true}
+        ],
+        returns: {root: true, type: 'object'},
+        http: {verb: 'put', path: '/specialize'},
+        description: 'specialize an existing instance'
+    });
+
     Instance.removeInstance = function (uuid, callback) {
         let message = {labels: ['Instance'], uuid: uuid, includeStart: true};
         evBus.sendEvent(entityAddress, 'delete', message)
@@ -134,5 +150,37 @@ module.exports = function (Instance) {
         returns: {root: true, type: 'object'},
         http: {verb: 'delete', path: '/:uuid'},
         description: 'remove an existing instance'
+    });
+
+
+    Instance.getInstruments = function(instanceUuid, callback) {
+        const nodeAddress = baseAddress(['node',instanceUuid]);
+        evBus.sendEvent(nodeAddress, 'getInstruments', {})
+            .then(result => callback(null, resultFetcher(result)))
+            .catch(ex => callback(ex));
+    };
+
+    Instance.remoteMethod('getInstruments',{
+        accepts: [{arg: 'instanceUuid', type: 'string', required: true}],
+        returns: {root: true, type: 'object'},
+        http: {verb: 'get', path: '/instruments/:instanceUuid'},
+        description: 'Fetch instrument list for an instance'
+    });
+
+    Instance.runInstrument = function(instanceUuid, options, callback) {
+        const nodeAddress = baseAddress(['node',instanceUuid]);
+        evBus.sendEvent(nodeAddress, 'runInstrument', options)
+                .then(result => callback(null, resultFetcher(result)))
+                .catch(ex => callback(ex));
+    };
+
+    Instance.remoteMethod('runInstrument',{
+        accepts: [
+            {arg: 'instanceUuid', type: 'string', required: true},
+            {arg: 'options', type: 'object', required: true}
+        ],
+        returns: {root: true, type: 'object'},
+        http: {verb: 'post', path: '/run/:instrument/on/:instanceUuid'},
+        description: 'Run an instrument on an instance'
     });
 };

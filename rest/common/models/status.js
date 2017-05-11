@@ -45,7 +45,7 @@ module.exports = function (Status) {
                         if (e) {
                             console.log('error while creating resource: ' + e);
                         } else {
-                            console.log('resource created: ' + stringify(r));
+                            //console.log('resource created: ' + stringify(r));
                         }
                     });
                 } else {

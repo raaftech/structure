@@ -10,6 +10,10 @@ import java.util.Set;
 public interface GroupingRepository extends GenericRepository<Grouping> {
 
     @Override
+    @Query("MATCH (grouping:Grouping {uuid:{0}}) RETURN grouping")
+    Grouping findByUuid(String uuid);
+
+    @Override
     @Query ("MATCH (grouping:Grouping {name:{0}}) RETURN grouping")
     Grouping findOneByName(String name);
 

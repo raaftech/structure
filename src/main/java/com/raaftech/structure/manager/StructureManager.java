@@ -4,17 +4,17 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
-import com.raaftech.structure.base.Application;
-import com.raaftech.structure.base.Context;
-import com.raaftech.structure.base.GenericActor;
-import com.raaftech.structure.base.NodeActor;
+import com.raaftech.structure.annotations.SchemaPath;
+import com.raaftech.structure.base.*;
+import com.raaftech.structure.graph.Instance;
 import com.raaftech.structure.graph.repositories.*;
+import com.raaftech.structure.helper.ProcessRunner;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.shareddata.LocalMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
 
 public class StructureManager extends GenericActor {
 
@@ -92,6 +92,90 @@ public class StructureManager extends GenericActor {
                 return null;
             }
         };
+    }
+
+    @SuppressWarnings("unused")
+    @SchemaPath("resource:/schema/manager/structuremanager/selfdiscovery.schema.json")
+    public MessageHandler selfDiscovery() {
+        return new MessageHandler() {
+            @Override
+            public JsonNode exec(JsonNode request) {
+                JsonNode args = request.get("args");
+                final ObjectNode result = mapper.createObjectNode();
+                final String token = args.get("token").asText();
+
+                vertx.executeBlocking(
+                        future -> {
+                            selfDiscovery(token);
+                            future.complete();
+                },
+                        resultHandler -> {
+                            if (resultHandler.failed()) {
+                                resultHandler.cause().printStackTrace();
+                                log.error(resultHandler.cause().getMessage());
+                                publishStatus("selfDiscovery",
+                                        mapper.createObjectNode().put("error", resultHandler.cause().getMessage()));
+                            } else {
+                                publishStatus("selfDiscovery", mapper.createObjectNode().put("status", "done"));
+                            }
+                        });
+
+                return response(request, result.put("data", token));
+            }
+
+            @Override
+            public JsonNode help(JsonNode request) {
+                return null;
+            }
+        };
+    }
+
+    private void selfDiscovery(String token) {
+        // TODO: refactor, ugly as hell, but i had it ready so i'll reuse it.
+        log.debug("Hostname is \"{}\"", Context.getHostname());
+        com.raaftech.structure.graph.Configuration host = Context.getInstanceRepository().findDnsName(Context.getHostname());
+        if (host == null) {
+            log.info("Structure is not registered in the database, now discovering itself");
+            ProcessRunner runner = new ProcessRunner("node tools/discovery/bootstrap.js -b -c localhost -t " + token);
+            try {
+                runner.run();
+                int scriptFinishedWaitCycles = 0;
+                while (runner.isRunning() && scriptFinishedWaitCycles < 10) {
+                    Thread.sleep(1000);
+                    scriptFinishedWaitCycles++;
+                }
+                ProcessRunner.ProcessResult result = runner.finish();
+                System.out.println(result.stdout.get());
+            } catch (IOException | InterruptedException e) {
+                e.printStackTrace();
+            }
+            // Wait a second so debug messages are done
+            int newNodesWaitCycles = 0;
+            Instance structureInstance = null;
+            while (host == null && structureInstance == null && newNodesWaitCycles < 5) {
+                if (newNodesWaitCycles == 0) {
+                    log.info("Waiting for registration...");
+                } else {
+                    log.info("...");
+                }
+                newNodesWaitCycles++;
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    log.error(e.getMessage());
+                }
+                host = host == null ? Context.getInstanceRepository().findDnsName(Context.getHostname()) : host;
+                structureInstance = structureInstance == null && host != null ?
+                        Context.getInstanceRepository().getStartOfComponentGroup(host.getUuid()) : structureInstance;
+            }
+            if (host != null && structureInstance != null) {
+                Context.setSelfIdentifier(structureInstance.getUuid());
+            } else {
+                throw new RuntimeException("Self discovery script didn't create any new nodes.");
+            }
+        } else {
+            log.info("Structure was already registered in the database");
+        }
     }
 
     public MessageHandler status() {

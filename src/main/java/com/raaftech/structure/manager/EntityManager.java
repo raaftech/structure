@@ -9,10 +9,15 @@ import com.raaftech.structure.annotations.SchemaPath;
 import com.raaftech.structure.base.Configuration;
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.base.GenericActor;
+import com.raaftech.structure.base.NodeActor;
 import com.raaftech.structure.exceptions.EntityDeserializationException;
 import com.raaftech.structure.exceptions.EntitySerializationException;
+import com.raaftech.structure.graph.Instance;
 import com.raaftech.structure.graph.Node;
+import com.raaftech.structure.graph.Type;
+import com.raaftech.structure.graph.repositories.InstanceRepository;
 import com.raaftech.structure.graph.repositories.NodeRepository;
+import com.raaftech.structure.graph.repositories.TypeRepository;
 import com.raaftech.structure.helper.JsonHelper;
 import com.raaftech.structure.helper.LambdaHelper;
 import com.raaftech.structure.helper.Triple;
@@ -42,6 +47,8 @@ public class EntityManager extends GenericActor {
     private static final Logger log = LoggerFactory.getLogger(EntityManager.class);
     private static final Neo4jTemplate neo4jTemplate = Context.getNeo4jTemplate();
     private static final NodeRepository nodeRepository = Context.getNodeRepository();
+    private static final InstanceRepository instanceRepository = Context.getInstanceRepository();
+    private static final TypeRepository typeRepository = Context.getTypeRepository();
 
     private static final String META = "meta";
     private static final String UUID = "uuid";
@@ -70,6 +77,7 @@ public class EntityManager extends GenericActor {
      * Create takes an array containing entities as input. It'll check which of them
      * are new, and insert the new ones in the database in the proper order.
      * An entity is new when it has no UUID defined, or its UUID doesn't exist in the database.
+     *
      * @return A list containing the UUIDs of the created entities, in the order they were persisted.
      */
     @SchemaPath("resource:/schema/manager/entitymanager/create.schema.json")
@@ -84,7 +92,7 @@ public class EntityManager extends GenericActor {
                 // Transform the received array to a stream
                 Transaction tx = Context.getGraphDatabase().beginTx();
                 try {
-                     List<Entity> entities = StreamSupport.stream(data.spliterator(), false)
+                    List<Entity> entities = StreamSupport.stream(data.spliterator(), false)
                             // If an object doesn't adhere to entity.schema.json, throw an exception
                             .peek(json -> {
                                 if (!JsonHelper.validateToSchema(
@@ -97,13 +105,15 @@ public class EntityManager extends GenericActor {
                             // Remove all the objects whose UUID already exist in the database
                             .filter(isNewEntity)
                             // Map those objects to an Entity instance
-                             .map(json -> LambdaHelper.wrapWithExceptionPropagation(
-                                     () -> mapper.treeToValue(json, Entity.class)).get())
+                            .map(json -> LambdaHelper.wrapWithExceptionPropagation(
+                                    () -> mapper.treeToValue(json, Entity.class)).get())
                             .collect(Collectors.toList());
 
                     List<String> newUuids = sortForCreation(entities).stream()
                             // Persist them
                             .peek(Entity::toGraph)
+                            // Deploy them as actor
+                            .peek(NodeActor::deploy)
                             // Map to the new UUID's
                             .map(Entity::getUuid)
                             // Collect
@@ -133,6 +143,7 @@ public class EntityManager extends GenericActor {
      * {@link #labelBasedTraversal(Set, Node, boolean) labelBasedTraversal} for more information.
      * Read takes an array of labels, a UUID for the start node and a boolean whether the start node should
      * be included in the result as arguments.
+     *
      * @return An array containing the vertices that could be reached with the traversal.
      */
     @SchemaPath("resource:/schema/manager/entitymanager/read.schema.json")
@@ -148,8 +159,8 @@ public class EntityManager extends GenericActor {
                 final boolean includeStart = args.has(INCLUDESTART) ? args.get(INCLUDESTART).asBoolean() : true;
                 final Set<String> labels = ImmutableSet.copyOf(
                         StreamSupport.stream(args.get(LABELS).spliterator(), false)
-                        .map(JsonNode::asText)
-                        .collect(Collectors.toList())
+                                .map(JsonNode::asText)
+                                .collect(Collectors.toList())
                 );
 
                 Transaction tx = Context.getGraphDatabase().beginTx();
@@ -161,7 +172,7 @@ public class EntityManager extends GenericActor {
                         ArrayNode data = result.putArray("data");
                         labelBasedTraversal(labels, start, includeStart).stream()
                                 .map(mapper::valueToTree)
-                                .forEach(t -> data.add((JsonNode)t));
+                                .forEach(t -> data.add((JsonNode) t));
                     } catch (EntitySerializationException e) {
                         result.put(ERROR, e.getMessage());
                     }
@@ -187,6 +198,7 @@ public class EntityManager extends GenericActor {
      * An entity is updated when it has a UUID that is known in the graph, and its checksum is changed.
      * Optionally, {@code update} can be provided with an {@code oldEntities} array that contains
      * the entities in their original state, used to see if entities were updated while we were editing them.
+     *
      * @return A list containing the UUIDs of the updated entities, in the order they were persisted.
      */
     @SchemaPath("resource:/schema/manager/entitymanager/update.schema.json")
@@ -211,7 +223,7 @@ public class EntityManager extends GenericActor {
                     if (!result.has(ERROR)) {
                         result.putArray(ERROR);
                     }
-                    ((ArrayNode)result.get(ERROR)).add(e.getMessage());
+                    ((ArrayNode) result.get(ERROR)).add(e.getMessage());
                 };
 
                 /*
@@ -286,6 +298,7 @@ public class EntityManager extends GenericActor {
     /**
      * Given a UUID of an entity and an array of labels, check if we can safely delete it, and act accordingly.
      * For a description of what "safe deletion" means, see {@link #safeDeleteTraversal(List, Node)}.
+     *
      * @return Returns the UUID of the entity in case of deletion, an empty result otherwise.
      */
     @SchemaPath("resource:/schema/manager/entitymanager/delete.schema.json")
@@ -328,12 +341,55 @@ public class EntityManager extends GenericActor {
         };
     }
 
+    @SchemaPath("resource:/schema/manager/entitymanager/specialize.schema.json")
+    public MessageHandler specialize() {
+        return new MessageHandler() {
+            @Override
+            public JsonNode exec(JsonNode request) {
+                ObjectNode args = (ObjectNode) request.get("args");
+                ObjectNode result = mapper.createObjectNode();
+                final String instanceUuid = args.get("instance").asText();
+                final String isaUuid = args.get("isa").asText();
+
+                Transaction tx = Context.getGraphDatabase().beginTx();
+
+                Instance instance = instanceRepository.findByUuid(instanceUuid);
+                if(instance == null) {
+                    result.put(ERROR, "fucked");
+                    return response(request, result);
+                }
+                Type instanceType = instance.getInstanceOf();
+                Type isa = typeRepository.findByUuid(isaUuid);
+
+                boolean isValidSubType = instanceType.getChildIsaSet().contains(isa);
+                if (!isValidSubType) {
+                    result.put(ERROR, "Invalid specialization requested. Type [" + isa.getName() + "] is not in the specialization set of: [" + instanceType.getName() + "]");
+                } else {
+                    instance.setInstanceOf(isa);
+                    instance.save();
+                    tx.success();
+                    result.put("data", "Instance ["+instanceType.getName()+"] specialized to ["+isa.getName()+"]");
+                }
+
+                tx.close();
+
+                return response(request, result);
+            }
+
+            @Override
+            public JsonNode help(JsonNode request) {
+                return null;
+            }
+        };
+    }
+
     /**
      * Given a starting point v_s, find collect every vertex v_e that where the path from v_s to v_e contains
      * only vertices that have at least one of the labels in {@code labels}.
-     * @param labels If a traversal encounters a vertex that does not have at least one label included in this parameter
-     *               the traversal will be pruned.
-     * @param start The start node v_s.
+     *
+     * @param labels       If a traversal encounters a vertex that does not have at least one label included in this parameter
+     *                     the traversal will be pruned.
+     * @param start        The start node v_s.
      * @param includeStart Should we include v_s in the resulting list?
      * @return A list containing every vertex that can be found by the traversal and, optionally, v_s.
      */
@@ -370,8 +426,9 @@ public class EntityManager extends GenericActor {
      * and v_n contains a label that is also in {@code labels}, deletion is unsafe.
      * If v_s is a <a href="https://en.wikipedia.org/wiki/Glossary_of_graph_theory_terms#successor">successor</a> of v_n
      * , and v_n does not contains a label that is also in {@code labels}, deletion is unsafe.
+     *
      * @param labels The list of labels that dictate whether deletion is safe or not.
-     * @param start The start node v_s.
+     * @param start  The start node v_s.
      * @return True if we can safely delete v_s, false otherwise.
      */
     private boolean safeDeleteTraversal(List<String> labels, Node start) {
@@ -412,6 +469,7 @@ public class EntityManager extends GenericActor {
     /**
      * This method takes a list of entities, and sorts them. Entities that are leafs in the
      * resulting graph are at the start of the list, their parents after that, etc.
+     *
      * @param entities A list of entities.
      * @return A list of entities that can persisted to the graph in that order.
      */

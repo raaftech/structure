@@ -7,6 +7,7 @@ import com.raaftech.structure.annotations.SchemaPath;
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.base.GenericActor;
 import com.raaftech.structure.graph.Grouping;
+import com.raaftech.structure.graph.Instance;
 import com.raaftech.structure.graph.repositories.InstanceRepository;
 import com.raaftech.structure.graph.repositories.InstrumentRepository;
 import io.vertx.core.json.JsonObject;
@@ -26,7 +27,7 @@ import java.util.*;
 
 public class InstrumentManager extends GenericActor {
 
-    private final static Logger log = LoggerFactory.getLogger(TaskManager.class);
+    private final static Logger log = LoggerFactory.getLogger(InstrumentManager.class);
     private final InstrumentRepository instrumentRepository = Context.getInstrumentRepository();
     private final InstanceRepository instanceRepository = Context.getInstanceRepository();
 

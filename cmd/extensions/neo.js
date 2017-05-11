@@ -46,11 +46,19 @@ module.exports = function(vorpal, answerCache) {
                     if(error) {
                         self.log(error);
                     } else {
+                        let foundNames = [];
+                        let postName = 2;
                         let tree = {};
                         tree[result.query] = {};
                         R.forEach((item) => {
                             let n = R.defaultTo(getProperty("name",item), getProperty("data-name",item));
                             let d = R.defaultTo(getProperty("desc",item), getProperty("data-desc",item));
+                            if(R.contains(n, foundNames)) {
+                                n = n+"-"+postName;
+                                postName++;
+                            } else {
+                                foundNames = R.append(n, foundNames);
+                            }
                             tree[result.query][n] = d;
                         }, queryResult);
                         self.log(treeify.asTree(tree,true));

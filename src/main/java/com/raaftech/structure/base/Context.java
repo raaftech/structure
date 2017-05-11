@@ -6,6 +6,8 @@ package com.raaftech.structure.base;
 
 import com.raaftech.structure.graph.repositories.*;
 import io.vertx.core.Vertx;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -32,11 +34,34 @@ public class Context implements ApplicationContextAware {
     private static Vertx vertx = null;
     private static Set<String> registeredPlugins = new HashSet<>();
     private static AtomicBoolean instrumentsLoaded = new AtomicBoolean();
+    private static final Logger log = LoggerFactory.getLogger(Context.class);
 
 
 
+    // The hostname of the machine structure runs on
+    private static String hostname = null;
     // The identifier used to identify this structure instance in the database.
-    public final static String selfIdentifier = "structure";
+    private static String selfIdentifier = null;
+
+    public static void setHostname(String hostname) {
+        if (Context.hostname == null) {
+            log.info("Setting hostname to {}", hostname);
+            Context.hostname = hostname;
+        }
+    }
+
+    public static void setSelfIdentifier(String selfIdentifier) {
+        log.info("Setting self identifier to {}", selfIdentifier);
+        Context.selfIdentifier = selfIdentifier;
+    }
+
+    public static String getHostname() {
+        return hostname;
+    }
+
+    public static String getSelfIdentifier() {
+        return selfIdentifier;
+    }
 
     public static NodeRepository getNodeRepository() {
         return (NodeRepository)context.getBean("nodeRepository");

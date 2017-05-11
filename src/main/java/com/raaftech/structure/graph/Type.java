@@ -42,10 +42,7 @@ import static io.vertx.core.json.Json.mapper;
  *
  * @author Rubin Simons <rubin.simons@raaftech.com>
  * @since 2014-11-27
- *
- * @Deprecated We need to redesign the domain classes to use Entity.
  */
-@Deprecated
 @NodeEntity
 public class Type extends Node {
 
@@ -72,6 +69,15 @@ public class Type extends Node {
     private Set<Constraint> outgoingConstraints;
     @RelatedToVia(type="CONSTRAINTS", direction = Direction.INCOMING)
     private Set<Constraint> incomingConstraints;
+
+    /*
+    This field contains names of data properties that instances of this type can have.
+    When creating an instance of a type, we'll check if another instance of that type
+    already exists with the values for the properties that are stored in the `identity` field.
+    This way we can define what makes instances of a particular type unique.
+    An example would be the `addr` data property of an `IpAddress` type.
+     */
+    private Set<String> identity;
 
     public DynamicProperties kv = new DynamicPropertiesContainer();
 
@@ -453,6 +459,24 @@ public class Type extends Node {
         implementsProtocols.add(protocol);
 
         return this;
+    }
+
+    /**
+     * Get the first identity set of a linked list of types.
+     * @return An optional of the first identity set found, or an empty optional.
+     */
+    public Optional<Pair<String, Set<String>>> getFirstInheritedIdentity() {
+        return getFirstInheritedIndentity(this);
+    }
+
+    private Optional<Pair<String, Set<String>>> getFirstInheritedIndentity(Type type) {
+        if (type.identity != null) {
+            return Optional.of(Pair.of(getName(), type.identity));
+        } else if (getIsa() == null) {
+            return Optional.empty();
+        } else {
+            return getFirstInheritedIndentity(type.getIsa());
+        }
     }
 
     public boolean implementsProtocol(Type protocol) {
