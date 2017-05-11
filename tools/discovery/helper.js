@@ -23,7 +23,7 @@ class Helper {
         return R.defaultTo(null, Helper.json2Entity(this.db.match(name), false));
     }
 
-    transform(data, ip, sshd, httpd) {
+    discoTransform(data, ip, sshd, httpd) {
         let root = this.createRootNode();
         root.name = Helper.findFqdn(data);
         root.desc = util.format('%s [%s]', Helper.findFqdn(data), ip);
@@ -54,10 +54,44 @@ class Helper {
         let daemonList = this.daemonData(sshd.service, httpd.service);
         R.forEach(item => osHasComponentRelation.addEntity(item), daemonList);
 
-        R.forEach(item => osHasComponentRelation.addEntity(item), this.defaultEntities());
-
         return root;
     }
+
+    bootstrapTransform(data, ip, sshd, httpd) {
+            let root = this.createRootNode();
+            root.name = Helper.findFqdn(data);
+            root.desc = util.format('%s [%s]', Helper.findFqdn(data), ip);
+
+            let groupsRelation = root.relationCreate('GROUPS', 'outgoing');
+
+            //Operating System
+            let os = this.osData(data.distribution, data.distribution_version);
+            //rootRelation.addEntity(os);
+            groupsRelation.addEntity(os);
+            let osHasComponentRelation = os.relationCreate('HAS_COMPONENT', 'outgoing');
+            let osHasConfigurationRelation = os.relationCreate('HAS_CONFIGURATION', 'outgoing');
+
+            //Interpreter
+            let interpreter = this.interpreterData(data.shell);
+            osHasComponentRelation.addEntity(interpreter);
+            //ServiceManager
+            let manager = this.mgrData(data.service_manager);
+            osHasComponentRelation.addEntity(manager);
+            //Ip data
+            let ipd = this.ipData(ip, true);
+            osHasConfigurationRelation.addEntity(ipd);
+            R.forEach(item => osHasConfigurationRelation.addEntity(item), this.harvestIps(data,ip));
+            //DNS
+            let dns = this.dnsData(Helper.findFqdn(data), ip);
+            osHasConfigurationRelation.addEntity(dns);
+            //Daemons (http, ssh only atm)
+            let daemonList = this.daemonData(sshd.service, httpd.service);
+            R.forEach(item => osHasComponentRelation.addEntity(item), daemonList);
+
+            R.forEach(item => osHasComponentRelation.addEntity(item), this.defaultEntities());
+
+            return root;
+        }
 
     osData(dist, version) {
         let c = this.getInstance(dist);

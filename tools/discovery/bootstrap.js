@@ -17,6 +17,7 @@ const optionDefs = [
     {name: 'token', alias: 't', type: String},
     {name: 'net', alias: 'n', type: String},
     {name: 'args', alias: 'a', type: String},
+    {name: 'bootstrap', alias: 'b', type: Boolean},
     {name: 'verbose', alias: 'v', type: Boolean}
 ];
 const options = cmd(optionDefs);
@@ -33,6 +34,7 @@ const sections = [
             {name: 'token', alias: 't', typeLabel: '[underline]{token}', description: 'REST api token'},
             {name: 'net', alias: 'n', typeLabel: '[underline]{network name}]', description: 'Identifying network name in case of a network range'},
             {name: 'args', alias: 'a', typeLabel: '[underline]{nmap options}', description: 'arguments for the nmap command'},
+            {name: 'bootstrap', alias: 'b', typeLabel: '[underline]{bootstrap}', description: 'Start a structure boostrap self discovery'},
             {name: 'verbose', alias: 'v', description: 'set verbose mode'}
         ]
     }
@@ -68,9 +70,16 @@ const main = (db) => {
                 ansibleLib.setup(item.ip)
                     .then((result) => {
                         result.fqdn = nmapResults[index].hostname;
-                        let subGraph = helper.transform(result, item.ip,
-                                           getSshService(nmapResults[index]),
-                                           getHttpService(nmapResults[index]));
+                        let subGraph;
+                        if(options.bootstrap) {
+                            subGraph = helper.bootstrapTransform(result, item.ip,
+                                               getSshService(nmapResults[index]),
+                                               getHttpService(nmapResults[index]));
+                        } else {
+                            subGraph = helper.discoTransform(result, item.ip,
+                                               getSshService(nmapResults[index]),
+                                               getHttpService(nmapResults[index]));
+                        }
 
                         networkGroup.addEntity(subGraph);
                         doneCalled = true;
