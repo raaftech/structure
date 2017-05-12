@@ -152,6 +152,9 @@ public class NodeSerializer extends StdSerializer<Node> {
             value.getData().entrySet().stream()
                     .forEach(entry -> LambdaHelper.wrapWithExceptionPropagation(() -> {
                         gen.writeObjectField(entry.getKey(), entry.getValue()); return true;}).get());
+
+            // end the data object
+            gen.writeEndObject();
         }
 
         // if we have files, start a file object
