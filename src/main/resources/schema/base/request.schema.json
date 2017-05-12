@@ -1,13 +1,11 @@
 {
-    "id": "https://repo.raaftech.com/schema/request.schema.json#",
     "$schema": "http://json-schema.org/draft-04/schema#",
     "description": "Schema for Structure request messages.",
     "type": "object",
     "required": [ "msgh" ],
     "properties": {
         "msgh": {
-            "type": "string",
-            "pattern": "^[a-zA-Z0-9]*$"
+            "$ref": "../common.schema.json#/definitions/caseInsensitiveAlphaNum"
         },
         "args": {
             "type": "object"

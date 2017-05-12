@@ -1,5 +1,4 @@
 {
-	"id": "https://repo.raaftech.com/schema/instrument.schema.json#",
 	"$schema": "http://json-schema.org/draft-04/schema#",
 	"description": "Schema for Structure map metadata.",
 	"type": "object",
@@ -13,35 +12,16 @@
 			"type": "string"
 		},
 		"providedBy": {
-			"type": "string",
-			"pattern": "^[a-zA-Z0-9]+$"
+			"$ref": "../../common.schema.json#/definitions/caseInsensitiveAlphaNum"
 		},
 		"appliesTo": {
-			"type": "array",
-			"items": {
-				"type": "string",
-				"pattern": "^[a-zA-Z0-9\\.]+$"
-			},
-			"minItems": 1,
-			"uniqueItems": true
+			"$ref": "../../common.schema.json#/definitions/caseInsensitiveAlphaNumWithDotArray"
 		},
 		"packageNames": {
-			"type": "array",
-			"items": {
-				"type": "string",
-				"pattern": "^[a-zA-Z0-9\\.]+$"
-			},
-			"minItems": 1,
-			"uniqueItems": true
+			"$ref": "../../common.schema.json#/definitions/caseInsensitiveAlphaNumWithDotArray"
 		},
 		"serviceNames": {
-			"type": "array",
-			"items": {
-				"type": "string",
-				"pattern": "^[a-zA-Z0-9\\.]+$"
-			},
-			"minItems": 1,
-			"uniqueItems": true
+			"$ref": "../../common.schema.json#/definitions/caseInsensitiveAlphaNumWithDotArray"
 		},
 		"commands": {
 			"type": "object",
@@ -76,39 +56,19 @@
 			"additionalProperties": false,
 			"properties": {
 				"logDirectories": {
-					"type": "array",
-					"minItems": 1,
-					"items": {
-						"type": "string"
-					}
+					"$ref": "../../common.schema.json#/definitions/paths"
 				},
 				"dataDirectories": {
-					"type": "array",
-					"minItems": 1,
-					"items": {
-						"type": "string"
-					}
+					"$ref": "../../common.schema.json#/definitions/paths"
 				},
 				"binaryDirectories": {
-					"type": "array",
-					"minItems": 1,
-					"items": {
-						"type": "string"
-					}
+					"$ref": "../../common.schema.json#/definitions/paths"
 				},
 				"libraryDirectories": {
-					"type": "array",
-					"minItems": 1,
-					"items": {
-						"type": "string"
-					}
+					"$ref": "../../common.schema.json#/definitions/paths"
 				},
 				"configurationDirectories": {
-					"type": "array",
-					"minItems": 1,
-					"items": {
-						"type": "string"
-					}
+					"$ref": "../../common.schema.json#/definitions/paths"
 				}
 			}
 		},
@@ -124,39 +84,19 @@
 			"additionalProperties": false,
 			"properties": {
 				"logFiles": {
-					"type": "array",
-					"minItems": 1,
-					"items": {
-						"type": "string"
-					}
+					"$ref": "../../common.schema.json#/definitions/paths"
 				},
 				"dataFiles": {
-					"type": "array",
-					"minItems": 1,
-					"items": {
-						"type": "string"
-					}
+					"$ref": "../../common.schema.json#/definitions/paths"
 				},
 				"binaryFiles": {
-					"type": "array",
-					"minItems": 1,
-					"items": {
-						"type": "string"
-					}
+					"$ref": "../../common.schema.json#/definitions/paths"
 				},
 				"libraryFiles": {
-					"type": "array",
-					"minItems": 1,
-					"items": {
-						"type": "string"
-					}
+					"$ref": "../../common.schema.json#/definitions/paths"
 				},
 				"configurationFiles": {
-					"type": "array",
-					"minItems": 1,
-					"items": {
-						"type": "string"
-					}
+					"$ref": "../../common.schema.json#/definitions/paths"
 				}
 			}
 		}

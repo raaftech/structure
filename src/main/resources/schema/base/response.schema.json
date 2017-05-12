@@ -1,5 +1,4 @@
 {
-    "id": "https://repo.raaftech.com/schema/response.schema.json#",
     "$schema": "http://json-schema.org/draft-04/schema#",
     "description": "Schema for Structure responses to requests.",
     "type": "object",
@@ -19,7 +18,8 @@
         },
         "exit": {
             "type": "integer",
-            "pattern": "^[0-255]$"
+            "minimum": 0,
+            "maximum": 255
         }
     }
 }

@@ -1,5 +1,4 @@
 {
-  "id": "runCapability.schema.json#",
   "$schema": "http://json-schema.org/draft-04/schema#",
   "description": "Schema for every InstanceActor's runCapability method.",
   "type": "object",

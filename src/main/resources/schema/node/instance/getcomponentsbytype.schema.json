@@ -1,5 +1,4 @@
 {
-    "id": "https://repo.raaftech.com/schema/node/instancenode/getcomponentsbytype.schema.json#",
     "$schema": "http://json-schema.org/draft-04/schema#",
     "description": "Schema for every InstanceActor's getComponentsByType method.",
     "type": "object",

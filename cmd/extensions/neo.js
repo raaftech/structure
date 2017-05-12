@@ -38,6 +38,7 @@ module.exports = function(vorpal, answerCache) {
             let getProperty = (name,obj) => R.path(['n','properties',name],obj);
             let q = helper.generateQuestion('query', 'input', 'Grouping predicate: ', {default: answerCache.get('neo','predicate')});
             self.prompt(q, function(result) {
+
                 let cq = util.format('match (n:Instance)-[:INSTANCE_OF|ISA*0..]->(c:Type {name:"%s"}) return n', result.query);
                 db.cypher({
                     query: cq

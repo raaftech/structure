@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
@@ -45,7 +46,7 @@ public class NaiveSorter {
     public static final Map<String, String> checksumToUuid = new HashMap<>();
     private final NodeRepository nodeRepository = Context.getNodeRepository();
 
-    private static final String ENTITYSCHEMA = "schema/next/entity.schema.json";
+    private static final URI ENTITYSCHEMA = URI.create("resource:/schema/next/entity.schema.json");
     private static final String META = "meta";
     private static final String FILE = "file";
     private static final String CONTENT = "content";
@@ -97,7 +98,7 @@ public class NaiveSorter {
 
     private static ArrayNode prepareForHashing(ObjectNode input) {
         if (!input.get("type").asText().equals("Type") || !input.get("name").asText().equals("Type")) {
-            if (!JsonHelper.validateToSchema(JsonHelper.jsonFromResource(ENTITYSCHEMA), input)) {
+            if (!JsonHelper.validateToSchema(ENTITYSCHEMA, input)) {
                 throw new JsonValidationException("Cannot calculate a checksum for type ["+ input.get("name").asText() +"]: JSON does not validate against " +
                         "entity schema");
             }

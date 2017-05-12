@@ -1,5 +1,4 @@
 {
-  "id": "#",
   "$schema": "http://json-schema.org/draft-04/schema#",
   "description": "Schema for Structure entities.",
   "type": "object",
@@ -74,19 +73,20 @@
       "additionalProperties": false,
       "properties": {
         "uuid": {
-          "$ref": "#/definitions/uuid"
+          "$ref": "../common.schema.json#/definitions/uuid"
         },
         "relations": {
           "type": "object",
           "patternProperties": {
             "^[a-zA-Z]+$": {
+              "required": ["direction", "uuids"],
               "additionalProperties": false,
               "properties": {
                 "direction": {
                   "$ref": "#/definitions/direction"
                 },
                 "uuids": {
-                  "$ref": "#/definitions/uuidList"
+                  "$ref": "../common.schema.json#/definitions/uuidList"
                 }
               }
             }
@@ -162,18 +162,6 @@
     }
   ],
   "definitions": {
-    "uuidList": {
-      "type": "array",
-      "items": {
-        "$ref": "#/definitions/uuid"
-      },
-      "minItems": 1,
-      "uniqueItems": true
-    },
-    "uuid": {
-      "type": "string",
-      "pattern": "^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89aAbB][a-f0-9]{3}-[a-f0-9]{12}$"
-    },
     "direction": {
       "type": "string",
       "enum": [
@@ -199,7 +187,7 @@
       "additionalProperties": false,
       "properties": {
         "to": {
-          "$ref": "#/definitions/uuid"
+          "$ref": "../common.schema.json#/definitions/uuid"
         },
         "cardinality": {
           "$ref": "#/definitions/cardinality"

@@ -18,6 +18,7 @@ import org.springframework.test.context.support.AnnotationConfigContextLoader;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.Set;
 
 import static io.vertx.core.json.Json.mapper;
@@ -56,7 +57,7 @@ public class NodeSerializerTest {
         assertNotNull(componentNode);
 
         String serializedJson = mapper.writeValueAsString(componentNode);
-        assertTrue(JsonHelper.validateToSchema(JsonHelper.jsonFromResource("schema/next/entity.schema.json"),
+        assertTrue(JsonHelper.validateToSchema(URI.create("resource:/schema/next/entity.schema.json"),
                 mapper.readTree(serializedJson)));
         Entity entity = mapper.readValue(serializedJson, Entity.class);
         assertNotNull(entity);

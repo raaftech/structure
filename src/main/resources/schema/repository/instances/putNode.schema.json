@@ -1,13 +1,11 @@
 {
-    "id": "https://repo.raaftech.com/schema/repository/instancenodes/putNode.schema.json#",
     "$schema": "http://json-schema.org/draft-04/schema#",
     "description": "Schema for the Instance repository's putNode method.",
     "type": "object",
     "additionalProperties": true,
     "properties": {
-        "node": {
-            "type": "string",
-            "pattern": "^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89aAbB][a-f0-9]{3}-[a-f0-9]{12}$"
+        "node":  {
+            "$ref": "../../common.schema.json#/definitions/uuid"
         },
         "name": {
             "type": "string"

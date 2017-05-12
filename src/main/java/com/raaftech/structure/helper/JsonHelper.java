@@ -110,7 +110,7 @@ public class JsonHelper {
 		return result;
 	}
 
-	private static boolean validateToSchema(JsonSchema schema, JsonNode object) {
+	public static boolean validateToSchema(JsonSchema schema, JsonNode object) {
         Boolean validationState = false;
 
         try {
@@ -159,25 +159,19 @@ public class JsonHelper {
         return validationState;
     }
 
-	/**
-	 * See if a JSON object validates against a given schema.
-	 * This version of validateSchema(...) is mainly used for schema's that are retrieved from the database.
-	 * Because we can't natively expose the graph as a namespace for schema's, we need to provide a proxy to
-	 * these schema's. That is {@link com.raaftech.structure.manager.SchemaManager SchemaManager}'s job,
-	 * and this method sets the namespace to {@link com.raaftech.structure.manager.SchemaManager SchemaManager}'s
-	 * location on the webserver.
-	 * @param schema The URI of the schema to use for validation.
-	 * @param object The object to validate.
-	 * @return Does object validate against schema?
-	 */
-	public static boolean validateToSchema(JsonNode schema, JsonNode object) {
-		Boolean validationState = false;
+    public static boolean validateToSchema(JsonNode schema, JsonNode object, URI customNamespace) {
+        Boolean validationState = false;
 
 		try {
             JsonSchemaFactory jsonSchemaFactory;
 
             if (Configuration.getSchemaNamespace() != null) {
-                final URI nameSpaceURI = Configuration.getSchemaNamespace().resolve("schemas/");
+                final URI nameSpaceURI;
+                if (customNamespace == null) {
+					nameSpaceURI = Configuration.getSchemaNamespace().resolve("schemas/");
+				} else {
+					nameSpaceURI = customNamespace;
+				}
                 final URITranslatorConfiguration uriTranslatorConfiguration = URITranslatorConfiguration.newBuilder()
                         .setNamespace(nameSpaceURI)
                         .freeze();
@@ -211,5 +205,19 @@ public class JsonHelper {
         }
 
         return validationState;
+	}
+	/**
+	 * See if a JSON object validates against a given schema.
+	 * This version of validateSchema(...) is mainly used for schema's that are retrieved from the database.
+	 * Because we can't natively expose the graph as a namespace for schema's, we need to provide a proxy to
+	 * these schema's. That is {@link com.raaftech.structure.manager.SchemaManager SchemaManager}'s job,
+	 * and this method sets the namespace to {@link com.raaftech.structure.manager.SchemaManager SchemaManager}'s
+	 * location on the webserver.
+	 * @param schema The URI of the schema to use for validation.
+	 * @param object The object to validate.
+	 * @return Does object validate against schema?
+	 */
+	public static boolean validateToSchema(JsonNode schema, JsonNode object) {
+		return validateToSchema(schema, object, null);
     }
 }

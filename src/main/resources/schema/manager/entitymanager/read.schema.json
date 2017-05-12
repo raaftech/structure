@@ -1,5 +1,4 @@
 {
-  "id": "https://repo.raaftech.com/schema/manager/entitymanager/read.schema.json#",
   "$schema": "http://json-schema.org/draft-04/schema#",
   "description": "Schema for EntityManager's read method.",
   "type": "object",
@@ -12,8 +11,7 @@
       }
     },
     "start": {
-      "type": "string",
-      "pattern": "^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89aAbB][a-f0-9]{3}-[a-f0-9]{12}$"
+      "$ref": "../../common.schema.json#/definitions/uuid"
     },
     "includeStart": {
       "type": "boolean"

@@ -10,6 +10,7 @@ import com.raaftech.structure.helper.classification.tree.RootNode;
 import com.raaftech.structure.helper.classification.tree.Terminal;
 import com.raaftech.structure.helper.classification.tree.implementation.BranchNodeJson;
 
+import java.net.URI;
 import java.util.*;
 import java.util.function.Function;
 
@@ -20,9 +21,12 @@ import static io.vertx.core.json.Json.mapper;
  */
 public class ArgumentsToClassificationTreeParser {
 
-    private static final String INSTRUMENTSCHEMA = "schema/helper/loader/instrument.schema.json";
+    private static final String RESOURCE_SCHEME = "resource:/";
+    private static final String INSTRUMENT_SCHEMA_PATH = "schema/helper/loader/";
+    private static final URI INSTRUMENT_SCHEMA_NS = URI.create(RESOURCE_SCHEME + INSTRUMENT_SCHEMA_PATH);
+    private static final String INSTRUMENT_SCHEMA_FILE = "instrument.schema.json";
 
-    private static JsonNode argumentsSchema = JsonHelper.jsonFromResource(INSTRUMENTSCHEMA)
+    private static JsonNode argumentsSchema = JsonHelper.jsonFromResource(INSTRUMENT_SCHEMA_PATH + INSTRUMENT_SCHEMA_FILE)
             .get("properties")
             .get("arguments");
     private static String typeKey = "_hierarchyPath";
@@ -59,14 +63,14 @@ public class ArgumentsToClassificationTreeParser {
     }
 
     public static ClassificationTreeObjects asTree(ObjectNode arguments) {
-        if (!JsonHelper.validateToSchema(argumentsSchema, arguments)) {
+        if (!JsonHelper.validateToSchema(argumentsSchema, arguments, INSTRUMENT_SCHEMA_NS)) {
             throw new IllegalArgumentException("Provided arguments did not conform to arguments schema.");
         }
 
         ClassificationTreeObjects returnObject = new ClassificationTreeObjects();
 
         // Get defaults from the instrument schema. This is not very pretty.
-        JsonNode argumentsKeySchema = JsonHelper.jsonFromResource(INSTRUMENTSCHEMA)
+        JsonNode argumentsKeySchema = JsonHelper.jsonFromResource(INSTRUMENT_SCHEMA_PATH + INSTRUMENT_SCHEMA_FILE)
                 .get("properties")
                 .get("arguments")
                 .get("patternProperties")
