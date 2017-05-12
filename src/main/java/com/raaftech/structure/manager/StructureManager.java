@@ -9,6 +9,7 @@ import com.raaftech.structure.base.*;
 import com.raaftech.structure.graph.Instance;
 import com.raaftech.structure.graph.repositories.*;
 import com.raaftech.structure.helper.ProcessRunner;
+import com.raaftech.structure.helper.loader.BundleLoader;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.shareddata.LocalMap;
 import org.slf4j.Logger;
@@ -121,6 +122,33 @@ public class StructureManager extends GenericActor {
                         });
 
                 return response(request, result.put("data", token));
+            }
+
+            @Override
+            public JsonNode help(JsonNode request) {
+                return null;
+            }
+        };
+    }
+
+    @SuppressWarnings("unused")
+    public MessageHandler reload() {
+        return new MessageHandler() {
+            @Override
+            public JsonNode exec(JsonNode request) {
+                ObjectNode result = mapper.createObjectNode();
+                log.info("Reloading Type entities of Structure");
+
+                try {
+                    BundleLoader loader = new BundleLoader();
+                    loader.load();
+                    result.put("data", "Structure reloaded");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    result.put("error", e.getMessage());
+                }
+
+                return response(request, result);
             }
 
             @Override

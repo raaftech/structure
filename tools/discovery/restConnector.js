@@ -129,17 +129,6 @@ class RestConnector {
                     .then(result => result.json());
     }
 
-    addToGroup(groupUuid, instanceUuid) {
-        let url = util.format('%s/Groups/add/%s/to/%s?access_token=%s', getBaseUrl(this.host,this.port), instanceUuid, groupUuid, this.token);
-        return fetch(url,
-            {
-                method: 'PUT',
-                body: '',
-                headers: {'Content-Type': 'application/x-www-form-urlencoded'}
-            })
-            .then(result => result.json());
-    }
-
     getInstruments(uuid) {
         let url = util.format('%s/Instances/instruments/%s', getBaseUrl(this.host,this.port),uuid);
         return fetch(url).then(result => result.json());
@@ -210,6 +199,17 @@ class RestConnector {
         return fetch(url,
             {
                 method: 'POST',
+                body: '',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+            })
+            .then(result => result.json());
+    }
+
+    reloadTypes() {
+        let url = util.format('%s/Admins/reload?access_token=%s', getBaseUrl(this.host,this.port), this.token);
+        return fetch(url,
+            {
+                method: 'PUT',
                 body: '',
                 headers: {'Content-Type': 'application/x-www-form-urlencoded'}
             })
