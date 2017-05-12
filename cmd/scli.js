@@ -115,7 +115,7 @@ const prompt = (vorp, question) => {
     });
 };
 
-vorpal.command('mem <bank> <data>', 'Save data to memory bank a or b')
+vorpal.command('mem <bank> <data>', 'Save data to memory bank a or b. bank t automatically holds your token after login')
     .action(function(args, done) {
         const self = this;
         if(args.bank !== 'a' && args.bank !== 'b') {

@@ -18,7 +18,7 @@
     "loopback-connector-sqlite": "^1.4.5",
     "loopback-datasource-juggler": "^2.39.0",
     "neo4j": "^2.0.0-RC2",
-    "ramda": "^0.22.1",
+    "ramda": "^0.23.0",
     "serve-favicon": "^2.0.1",
     "strong-error-handler": "^1.0.1",
     "vertx3-eventbus-client": "^3.3.3"
