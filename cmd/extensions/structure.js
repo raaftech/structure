@@ -7,7 +7,9 @@ const path = require('path');
 const clc = require('cli-color');
 const helper = require(path.join(__dirname, '..','helper'));
 
-module.exports = function(vorpal, rest) {
+module.exports = function(vorpal, opts) {
+    const rest = opts.rest;
+
     vorpal.command('structure login', 'Get an access token for Structure')
         .action(function(args, done) {
             const self = this;
@@ -22,7 +24,7 @@ module.exports = function(vorpal, rest) {
                         let handler = R.ifElse(
                             R.has('error'),
                             error => self.log(util.format('%s (%s): %s',clc.red.bold(error.error.code), clc.red(error.error.statusCode), error.error.message)),
-                            user => self.log(clc.green('AccessToken: ')+user.id)
+                            user => {opts.memoryBank.token = user.id; self.log(clc.green('AccessToken: ')+user.id)}
                         );
                         handler(user);
                         done();

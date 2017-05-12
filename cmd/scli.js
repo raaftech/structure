@@ -20,7 +20,7 @@ const groupExt = require('./extensions/groups');
 const instanceExt = require('./extensions/instance');
 
 const answerCache = new SimpleCache();
-const memoryBank = {a: '', b: ''};
+const memoryBank = {a: '', b: '',token: ''};
 let rest;
 let validator;
 
@@ -42,7 +42,7 @@ function init() {
 function scli() {
 	vorpal.history('structure-history');
 	vorpal.use(neoExt, answerCache);
-	vorpal.use(structureExt, rest);
+	vorpal.use(structureExt, {rest: rest, memoryBank: memoryBank});
 	vorpal.use(groupExt, rest);
 	vorpal.use(instanceExt, {rest: rest, validator: validator});
 	vorpal.delimiter(clc.magenta.bold('structure$')).show();
@@ -53,6 +53,8 @@ function scli() {
 	            vorpal.ui.input(vorpal.ui.input() + memoryBank.a);
 	        } else if(key.key === 'b') {
 	            vorpal.ui.input(vorpal.ui.input() + memoryBank.b);
+	        } else if(key.key === 't') {
+	            vorpal.ui.input(vorpal.ui.input() + memoryBank.token);
 	        }
 	    }
 	});
