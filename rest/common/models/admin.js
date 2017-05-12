@@ -40,6 +40,18 @@ module.exports = function(Admin) {
         description: 'Request structure bootstrap init'
     });
 
+    Admin.reloadTypes = function(callback) {
+        evBus.sendEvent(managerAddress, 'reload', {})
+            .then(result => callback(null, getResultData(result)))
+            .catch((ex) => callback(ex));
+    };
+
+    Admin.remoteMethod('reloadTypes', {
+        accepts: [],
+        returns: {root: true, type: 'object'},
+        http: {verb: 'put', path: '/reload'},
+        description: 'Reload structure types'
+    });
 
     Admin.structureStatus = function(callback) {
         evBus.sendEvent(managerAddress, 'status', {})

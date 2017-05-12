@@ -144,4 +144,19 @@ module.exports = function(vorpal, opts) {
 
             helper.genericAuthCommandHandler(done, loggedIn, rest.getToken());
         });
+
+    vorpal.command('structure reload', 'Reload types on the structure server')
+        .action(function(args, done) {
+            const self = this;
+
+            let loggedIn = () => {
+                rest.reloadTypes()
+                    .then(result => {
+                        self.log(result);
+                        done();})
+                    .catch(ex => {self.log(ex); done();});
+            };
+
+            helper.genericAuthCommandHandler(done, loggedIn, rest.getToken());
+        });
 };
