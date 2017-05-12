@@ -6,6 +6,7 @@ import com.raaftech.structure.graph.Instance;
 import com.raaftech.structure.graph.Node;
 import com.raaftech.structure.graph.Type;
 import com.raaftech.structure.graph.repositories.NodeRepository;
+import com.raaftech.structure.manager.StructureManager;
 import com.raaftech.structure.next.Entity;
 import com.raaftech.structure.node.InstanceActor;
 import com.raaftech.structure.node.TypeActor;
@@ -20,7 +21,7 @@ import java.util.UUID;
 
 public abstract class NodeActor<T extends Node> extends GenericActor {
 
-    protected final String startOfAddress = "com.raaftech.structure.node.";
+    protected static final String startOfAddress = "com.raaftech.structure.node.";
     public static final String SHAREDMAP_ID = "nodeActors";
 
     // We keep a reference to the consumers in case we
@@ -149,10 +150,14 @@ public abstract class NodeActor<T extends Node> extends GenericActor {
      * @param node The node to deploy an actor for.
      */
     public static void deploy(Node node) {
-        final Verticle verticle = node instanceof Type ?
-                new TypeActor((Type) node) :
-                new InstanceActor((Instance) node);
-        Context.getVertx().deployVerticle(verticle);
+        final String address = startOfAddress + node.getUuid();
+        // Make sure we deploy only once
+        if (Context.getVertx().sharedData().getLocalMap(SHAREDMAP_ID).get(address) == null) {
+            final Verticle verticle = node instanceof Type ?
+                    new TypeActor((Type) node) :
+                    new InstanceActor((Instance) node);
+            Context.getVertx().deployVerticle(verticle);
+        }
     }
 
 }

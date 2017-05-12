@@ -51,59 +51,103 @@ const main = (db) => {
     const rest = new RestConnector('localhost', 3000);
     rest.setToken(options.token);
     let client = new vClient();
+    let network;
+    let reuseId = '';
 
-    let network = helper.createNetwork(cidr, options.net);
-    let networkGroup = network.relationCreate('GROUPS', 'outgoing');
+    rest.getInstanceByPredicate('cidr', cidr)
+        .then(cidrInstance => {
+            if(R.isEmpty(cidrInstance)) {
+                console.log('CREATING A NEW NETWORK BASED ON: '+cidr);
+                network = helper.createNetwork(cidr, options.net);
+            } else {
+                console.log('REUSING NETWORK BASED ON: '+cidr);
+                network = Helper.json2Entity(cidrInstance, false);
+                reuseId = network.meta.uuid;
+            }
 
-    nmapLib.nmapScan(cidr, args)
-        .then((nmapResults) => {
-            async.eachOfSeries(nmapResults, function(item,index,done) {
-                console.log('calling ansible for %s [%s]', nmapResults[index].hostname, nmapResults[index].ip);
-                let doneCalled = false;
-                setTimeout(() => {
-                    if(!doneCalled) {
-                        console.log('Ansible query timed out for %s [%s]', nmapResults[index].hostname, nmapResults[index].ip);
-                        console.log('------');
-                        done();
-                    }
-                }, 15000);
-                ansibleLib.setup(item.ip)
-                    .then((result) => {
-                        result.fqdn = nmapResults[index].hostname;
-                        let subGraph;
-                        if(options.bootstrap) {
-                            subGraph = helper.bootstrapTransform(result, item.ip,
-                                               getSshService(nmapResults[index]),
-                                               getHttpService(nmapResults[index]));
+            let networkGroup = network.relationCreate('GROUPS', 'outgoing');
+
+            nmapLib.nmapScan(cidr, args)
+                .then((nmapResults) => {
+                    async.eachOfSeries(nmapResults, function(item,index,done) {
+                        console.log('calling ansible for %s [%s]', nmapResults[index].hostname, nmapResults[index].ip);
+                        let doneCalled = false;
+                        setTimeout(() => {
+                            if(!doneCalled) {
+                                console.log('Ansible query timed out for %s [%s]', nmapResults[index].hostname, nmapResults[index].ip);
+                                console.log('------');
+                                done();
+                            }
+                        }, 15000);
+                        ansibleLib.setup(item.ip)
+                            .then((result) => {
+                                result.fqdn = nmapResults[index].hostname;
+                                let subGraph;
+                                if(options.bootstrap) {
+                                    subGraph = helper.bootstrapTransform(result, item.ip,
+                                                       getSshService(nmapResults[index]),
+                                                       getHttpService(nmapResults[index]));
+                                } else {
+                                    subGraph = helper.discoTransform(result, item.ip,
+                                                       getSshService(nmapResults[index]),
+                                                       getHttpService(nmapResults[index]));
+                                }
+
+                                networkGroup.addEntity(subGraph);
+                                doneCalled = true;
+                                done();
+                            })
+                            .catch(ex => console.log(ex));
+                    }, function(err) {
+                        if(err) console.log('Ended with an error: '+err);
+                        console.log('Done running discovery of %s', cidr);
+
+                        let finalGraph = new Entity.SubGraph(network);
+
+                        if(reuseId === '') {
+                            let promises = [];
+                            R.forEach(item => {
+                                promises.push(rest.createInstance({entities: [item]}));
+                            }, finalGraph.toList());
+                            Promise.all(promises)
+                                .then(result => {
+                                    console.log(result);
+                                    client.close();
+                                    process.exit(0);
+                                });
                         } else {
-                            subGraph = helper.discoTransform(result, item.ip,
-                                               getSshService(nmapResults[index]),
-                                               getHttpService(nmapResults[index]));
+                            let promises = [];
+                            R.forEach(item => {
+                                if(item.meta.uuid === reuseId) {
+                                    console.log('====================LEAVING OUT REUSED network================');
+                                    //promises.push(rest.updateInstance({entities: [item]}));
+                                } else {
+                                    promises.push(rest.createInstance({entities: [item]}));
+                                }
+                            }, finalGraph.toList());
+                            Promise.all(promises)
+                                .then(result => {
+                                    console.log(result);
+
+                                    let ps = [];
+                                    R.forEach(item => {
+                                        if(item.type === 'Grouping' && item.meta.uuid !== reuseId) {
+                                            ps.push(rest.addToGroup(reuseId, item.meta.uuid));
+                                        }
+                                    }, finalGraph.toList());
+
+                                    Promise.all(ps)
+                                        .then(grouped => {
+                                            console.log(grouped);
+                                            client.close();
+                                            process.exit(0);
+                                        });
+                                });
                         }
-
-                        networkGroup.addEntity(subGraph);
-                        doneCalled = true;
-                        done();
-                    })
-                    .catch(ex => console.log(ex));
-            }, function(err) {
-                if(err) console.log('Ended with an error: '+err);
-                console.log('Done running discovery of %s', cidr);
-
-                let finalGraph = new Entity.SubGraph(network);
-
-                let promises = [];
-                R.forEach(item => {
-                    promises.push(rest.createInstance({entities: [item]}));
-                }, finalGraph.toList());
-                Promise.all(promises)
-                    .then(result => {
-                        console.log(result);
-                        client.close();
-                        process.exit(0);
                     });
-            });
-        });
+                });
+        })
+        .catch(ex => console.log(ex));
 };
 
 if(R.isNil(options.token)) {
