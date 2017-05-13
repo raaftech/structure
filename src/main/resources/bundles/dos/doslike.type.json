@@ -1,0 +1,26 @@
+{
+  "type": "Type",
+  "name": "DosLike",
+  "desc": "A DOS-like operating system.",
+  "meta": {
+    "uuid": "e181e9e8-7f30-42a3-b87f-b8e183ddfd6f",
+    "relations": {
+      "ISA": {
+        "direction": "outgoing",
+        "uuids": [
+          "f05e325e-1aee-4892-96e4-8bcd6e97c528"
+        ]
+      }
+    }
+  },
+  "data": {
+    "glyphId": 75
+  },
+  "file": {
+    "dataSchema": {
+      "encoding": "text",
+      "format": "json",
+      "path": "doslike.schema.json"
+    }
+  }
+}
