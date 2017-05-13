@@ -68,7 +68,7 @@ function setupStatusChannel() {
         let output = util.format('Type: %s\nEvent: %s\nData: %s',
                                  clc.green(R.path(['type'],data)),
                                  clc.green(R.path(['data','event'],data)),
-                                 clc.green(JSON.stringify(R.path(['data','data'],data))));
+                                 clc.green(JSON.stringify(R.path(['data','data'],data),undefined,2)));
         vorpal.log(output);
     });
 }

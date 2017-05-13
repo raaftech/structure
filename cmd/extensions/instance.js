@@ -309,7 +309,7 @@ module.exports = function(vorpal, options) {
         .action(function(args, done) {
             const self = this;
             const capabilityList = [
-                'Show','List','Identify','Detect', 'Verify', 'Create', 'Destroy','Execute', 'Guess'
+                'Show','State', 'List','Identify','Detect', 'Verify', 'Create', 'Destroy','Execute', 'Guess'
             ];
 
             let createQuestions = (obj) => {
