@@ -22,7 +22,7 @@
 			"$ref": "#/definitions/caseInsensitiveAlphaNum"
 		},
 		"appliesTo": {
-			"$ref": "#/definitions/caseInsensitiveAlphaNum"
+			"$ref": "#/definitions/strictStringOrStringArray"
 		},
 		"packageNames": {
 			"$ref": "#/definitions/stringOrStringArray"
@@ -167,6 +167,17 @@
 			"minItems": 1,
 			"items": {
 				"type": "string"
+			}
+		},
+		"strictStringOrStringArray": {
+			"type": [
+				"string",
+				"array"
+			],
+			"minItems": 1,
+			"items": {
+				"type": "string",
+				"pattern": "^[a-zA-Z0-9]+$"
 			}
 		}
 	}
