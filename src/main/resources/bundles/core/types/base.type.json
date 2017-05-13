@@ -2624,7 +2624,7 @@
       }
     },
     "data": {
-      "glyphId": 33
+      "glyphId": 0
     },
     "file": {
       "dataSchema": {
@@ -2650,7 +2650,7 @@
       }
     },
     "data": {
-      "glyphId": 33
+      "glyphId": 0
     },
     "file": {
       "dataSchema": {
@@ -2660,7 +2660,58 @@
       }
     }
   },
-
+  {
+    "type": "Type",
+    "name": "Update",
+    "desc": "This capability gathers the verify routine of the current Type and all ancestor types of that Type and runs them; for the ones that return true, select the most-specialized Type and run Identify.  Use that data to Update the current entity. Update in this case means: adjust instanceOf Type relation and update Node properties with identified data.",
+    "meta": {
+      "uuid": "f66d5a2d-5697-4f9f-8e35-2417668ba773",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "916e04a9-c773-4eaf-9c08-450016426e5a"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 0
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/update.schema.json"
+      }
+    }
+  },
+    {
+    "type": "Type",
+    "name": "Guess",
+    "desc": "Sometimes you cannot actually detect a thing from where you are. Let's take for example an Ipv4Address type. An Ipv4Address might have constraints that say: \"has, outgoing, to Ipv4Listener\" and \"has, incoming, from OperatingSystem\". The listeners you can actually detect, but the operating system you cannot, but you can guess! A guess is the same as a detect but it returns a much more abstract instance of something. In our case, we would return an instance of OperatingSystem and relate it according to the constraints rules. The neat thing is that that instance actually becomes a new path to traverse to further discover the topology of the system (probably you would recurse to that instance of a very abstract operating system and ask it to verify and update itself, thus providing you with the more correct truth. See verify, show and update capabilities for more details).",
+    "meta": {
+      "uuid": "2d427cde-5fcd-425e-91ef-b660f009581f",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "916e04a9-c773-4eaf-9c08-450016426e5a"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 0
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/guess.schema.json"
+      }
+    }
+  },
   {
     "type": "Type",
     "name": "Protocol",
