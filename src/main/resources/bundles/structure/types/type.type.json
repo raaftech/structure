@@ -1,0 +1,19 @@
+  {
+    "type": "Type",
+    "name": "Type",
+    "desc": "The root type.",
+    "meta": {
+      "uuid": "b1bc963a-19cc-4518-aecb-a35d028c49e3",
+      "relations": {}
+    },
+    "data": {
+      "glyphId": 247
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "../schema/type.schema.json"
+      }
+    }
+  }
