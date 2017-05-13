@@ -32,7 +32,7 @@ public interface InstrumentRepository extends GenericRepository<Instrument> {
             "<-[:IMPLEMENTS]-()<-[:ISA*0..]-(server)<-[:INSTANCE_OF]-(:Instance)<-[*..]-(subject{uuid:{subjectUuid}})," +
             "(client)-[:ISA*0..]->({name:\"Client\"})," +
             "(server)-[:ISA*0..]->({name:\"Server\"})," +
-            "(client)-[:ISA*0..]->()-[:HAS_INSTRUMENT]->(instrument)-[:GIVES_CAPABILITY]->({name:\"SendString\"})" +
+            "(client)-[:ISA*0..]->()<-[:PROVIDED_BY]-(instrument)-[:GIVES_CAPABILITY]->({name:\"SendString\"})" +
             "RETURN DISTINCT instrument")
     Set<Controller> getCompatibleSendString(@Param("structureUuid") String structure, @Param("subjectUuid") String subject);
 
@@ -42,25 +42,25 @@ public interface InstrumentRepository extends GenericRepository<Instrument> {
             "<-[:IMPLEMENTS]-(:Type)<-[:ISA*0..]-(server:Type)<-[:INSTANCE_OF]-(:Instance)<-[*..]-(subject:Grouping {uuid:{subjectUuid}})," +
             "(client)-[:ISA*0..]->({name:\"Client\"})," +
             "(server)-[:ISA*0..]->({name:\"Server\"})," +
-            "(client)-[:ISA*0..]->()-[:HAS_INSTRUMENT]->(instrument)-[:GIVES_CAPABILITY]->({name:\"SendFile\"})" +
+            "(client)-[:ISA*0..]->()<-[:PROVIDED_BY]-(instrument)-[:GIVES_CAPABILITY]->({name:\"SendFile\"})" +
             "RETURN DISTINCT instrument")
     Set<Controller> getCompatibleSendFile(@Param("structureUuid") String structure, @Param("subjectUuid") String subject);
 
-    @Query ("MATCH (sendString {uuid:{sendStringInstrument}})<-[:HAS_INSTRUMENT]-(clientType),\n" +
+    @Query ("MATCH (sendString {uuid:{sendStringInstrument}})-[:PROVIDED_BY]->(clientType),\n" +
             "(clientType)-[:ISA*0..]->(clientParent)-[:IMPLEMENTS]->(protocol)<-[:IMPLEMENTS]-(serverParent)<-[:ISA*0..]-(serverType),\n" +
-            "(serverType)-[:HAS_INSTRUMENT]->(receiveString)-[:GIVES_CAPABILITY]->({name:\"ReceiveString\"})\n" +
+            "(serverType)<-[:PROVIDED_BY]-(receiveString)-[:GIVES_CAPABILITY]->({name:\"ReceiveString\"})\n" +
             "RETURN DISTINCT receiveString")
     Marker getMatchingReceiveString(@Param("sendStringInstrument") String sendStringInstrumentUuid);
 
-    @Query ("MATCH (sendFile {uuid:{sendFileInstrument}})<-[:HAS_INSTRUMENT]-(clientType),\n" +
+    @Query ("MATCH (sendFile {uuid:{sendFileInstrument}})-[:PROVIDED_BY]->(clientType),\n" +
             "(clientType)-[:ISA*0..]->(clientParent)-[:IMPLEMENTS]->(protocol)<-[:IMPLEMENTS]-(serverParent)<-[:ISA*0..]-(serverType),\n" +
-            "(serverType)-[:HAS_INSTRUMENT]->(receiveFile)-[:GIVES_CAPABILITY]->({name:\"ReceiveFile\"})\n" +
+            "(serverType)<-[:PROVIDED_BY]-(receiveFile)-[:GIVES_CAPABILITY]->({name:\"ReceiveFile\"})\n" +
             "RETURN DISTINCT receiveFile")
     Marker getMatchingReceiveFile(@Param("sendFileInstrument") String sendFileInstrumentUuid);
 
     // Get an invokable interpreter controller
     @Query ("MATCH (instance:Instance {uuid:{instanceUuid}})-[*0..]->(component:Instance)-[:ISA|INSTANCE_OF*..]->({name:\"Interpreter\"})," +
-            "p=(component)-[:ISA|INSTANCE_OF*..]->(t)-[:HAS_INSTRUMENT]->(instrument)-[:GIVES_CAPABILITY]->({name:\"Invoke\"})" +
+            "p=(component)-[:ISA|INSTANCE_OF*..]->(t)<-[:PROVIDED_BY]-(instrument)-[:GIVES_CAPABILITY]->({name:\"Invoke\"})" +
             "RETURN instrument ORDER BY length(p) ASC LIMIT 1")
     Controller getInvokableInterpreter(@Param("instanceUuid") String instanceUuid);
 
@@ -73,20 +73,20 @@ public interface InstrumentRepository extends GenericRepository<Instrument> {
     // This query checks if we can execute something about a patient, on the structure node.
     // A good example would be a ping check. Structure needs a particular tool (ping), that can do something (ICMP echo request)
     // which is about something that doesn't belong to its tree (the IP address of the patient).
-    @Query ("MATCH (structure:Grouping {uuid:{structureUuid}})-[*..]->(:Instance)-[:INSTANCE_OF|ISA*..]->()-[:HAS_INSTRUMENT]->(instrument {uuid:{instrumentUuid}})," +
+    @Query ("MATCH (structure:Grouping {uuid:{structureUuid}})-[*..]->(:Instance)-[:INSTANCE_OF|ISA*..]->()<-[:PROVIDED_BY]-(instrument {uuid:{instrumentUuid}})," +
         "(instrument)-[:HANDLES]->(patientType)<-[:INSTANCE_OF|ISA*..]-(patient {uuid:{patientUuid}})" +
             "RETURN instrument")
     Instrument validateNonLocalInstrument(@Param("instrumentUuid") String instrumentUuid, @Param("structureUuid") String structureUuid,
                                             @Param("patientUuid") String patientUuid);
 
-    // Get the Type that is related to an instrument via HAS_INSTRUMENT
-    @Query ("MATCH (instrument {uuid:{instrumentUuid}})<-[:HAS_INSTRUMENT]-(instrumentOwner) " +
+    // Get the Type that is related to an instrument via PROVIDED_BY
+    @Query ("MATCH (instrument {uuid:{instrumentUuid}})-[:PROVIDED_BY]->(instrumentOwner) " +
             "RETURN instrumentOwner.name")
     String findInstrumentOwner(@Param("instrumentUuid") String instrumentUuid);
 
     // When there are multiple hits for a controller name, we want to retrieve
     // the one that matches the origin.
-    @Query ("MATCH (origin {uuid:{originUuid}})-[:INSTANCE_OF|ISA*1..]->(handled)<-[:HANDLES]-(instrument{name:{instrumentName}})<-[:HAS_INSTRUMENT]-(provider), " +
+    @Query ("MATCH (origin {uuid:{originUuid}})-[:INSTANCE_OF|ISA*1..]->(handled)<-[:HANDLES]-(instrument{name:{instrumentName}})-[:PROVIDED_BY]->(provider), " +
             "       (startOfGroup {uuid:{startOfGroupUuid}})-[*..]->(:Instance)-[:INSTANCE_OF|ISA*1..]->(provider) " +
             "RETURN instrument")
     Controller findMatchingLocalController(@Param("originUuid") String originUuid,
@@ -95,15 +95,15 @@ public interface InstrumentRepository extends GenericRepository<Instrument> {
 
     // Find all the locally run controllers that apply to a given origin
     @Query ("MATCH (origin{uuid:{originUuid}})-[:INSTANCE_OF|ISA*..]->(handled)" +
-                    "<-[:HANDLES]-(instrument)<-[:HAS_INSTRUMENT]-(enabler)" +
+                    "<-[:HANDLES]-(instrument)-[:PROVIDED_BY]->(enabler)" +
                 "MATCH (origin:Instance)<-[*0..]-()<-[:GROUPS]-(grouping)" +
                 "MATCH (grouping)-[*1..]->(instance_of_enabler:Instance)-[:INSTANCE_OF|ISA*0..]->(enabler)" +
-                    "-[:HAS_INSTRUMENT]->(instrument)" +
+                    "<-[:PROVIDED_BY]-(instrument)" +
                 "RETURN instrument")
     Set<Controller> findLocalControllers(@Param("originUuid") String originUuid);
 
     // Find all the remotely run controllers that apply to a given origin
-    @Query ("MATCH (origin {uuid:{originUuid}})-[:INSTANCE_OF|ISA*1..]->(handled)<-[:HANDLES]-(instrument)<-[:HAS_INSTRUMENT]-(provider), " +
+    @Query ("MATCH (origin {uuid:{originUuid}})-[:INSTANCE_OF|ISA*1..]->(handled)<-[:HANDLES]-(instrument)-[:PROVIDED_BY]->(provider), " +
             "       (structure {uuid:{structureUuid}})-[*..]->(:Instance)-[:INSTANCE_OF|ISA*1..]->(provider) " +
             "RETURN instrument")
     Set<Controller> findRemoteControllers(@Param("originUuid") String originUuid,
@@ -114,7 +114,7 @@ public interface InstrumentRepository extends GenericRepository<Instrument> {
 
     // Find a node's callable controllers
     @Query ("MATCH (:Instance {uuid: {0}})-[*0..]->()<-[:HANDLES]-(controller:Controller)-[:GIVES_CAPABILITY]->(capability:`type:Capability` {name: {1}}) " +
-            "MATCH (group:Grouping{uuid:{2}})-[*1..]->(:Instance)-[:INSTANCE_OF|ISA*1..]->()-[:HAS_INSTRUMENT]->(controller)" +
+            "MATCH (group:Grouping{uuid:{2}})-[*1..]->(:Instance)-[:INSTANCE_OF|ISA*1..]->()<-[:PROVIDED_BY]-(controller)" +
             "RETURN controller")
     Set<Controller> findControllersPerCapability(String uuid, String name, String groupingUuid);
 }
