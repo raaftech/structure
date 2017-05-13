@@ -21,9 +21,6 @@
     "name": {
       "$ref": "type.schema.json#/properties/name"
     },
-    "checksum": {
-      "$ref": "type.schema.json#/properties/checksum"
-    },
     "bits": {
       "type": "number",
       "description": "Number of bit width supported."

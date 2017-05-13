@@ -6,9 +6,6 @@
     "name": {
       "$ref": "type.schema.json#/properties/name"
     },
-    "checksum": {
-      "$ref": "type.schema.json#/properties/checksum"
-    },
     "weight": {
       "type": "number",
       "description": "The weight of a instrument, used choose between instruments."

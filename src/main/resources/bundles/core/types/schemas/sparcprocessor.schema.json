@@ -18,9 +18,6 @@
     "name": {
       "$ref": "type.schema.json#/properties/name"
     },
-    "checksum": {
-      "$ref": "type.schema.json#/properties/checksum"
-    },
     "bits": {
       "$ref": "processingunit.schema.json#/properties/bits"
     },
