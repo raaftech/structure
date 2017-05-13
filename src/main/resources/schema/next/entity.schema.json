@@ -108,7 +108,7 @@
           }
         },
         "identity": {
-          "$ref": "../common.schema.json#/stringOrStringArray"
+          "$ref": "../common.schema.json#/definitions/stringOrStringArray"
         },
         "checksum": {
           "$ref": "#/definitions/checksum"
