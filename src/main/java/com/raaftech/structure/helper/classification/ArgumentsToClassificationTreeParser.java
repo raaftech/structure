@@ -22,12 +22,11 @@ import static io.vertx.core.json.Json.mapper;
 public class ArgumentsToClassificationTreeParser {
 
     private static final String RESOURCE_SCHEME = "resource:/";
-    private static final String INSTRUMENT_SCHEMA_PATH = "schema/helper/loader/";
+    private static final String INSTRUMENT_SCHEMA_PATH = "bundles/core/types/schemas/";
     private static final URI INSTRUMENT_SCHEMA_NS = URI.create(RESOURCE_SCHEME + INSTRUMENT_SCHEMA_PATH);
     private static final String INSTRUMENT_SCHEMA_FILE = "instrument.schema.json";
 
     private static JsonNode argumentsSchema = JsonHelper.jsonFromResource(INSTRUMENT_SCHEMA_PATH + INSTRUMENT_SCHEMA_FILE)
-            .get("properties")
             .get("arguments");
     private static String typeKey = "_hierarchyPath";
 
@@ -70,9 +69,7 @@ public class ArgumentsToClassificationTreeParser {
         ClassificationTreeObjects returnObject = new ClassificationTreeObjects();
 
         // Get defaults from the instrument schema. This is not very pretty.
-        JsonNode argumentsKeySchema = JsonHelper.jsonFromResource(INSTRUMENT_SCHEMA_PATH + INSTRUMENT_SCHEMA_FILE)
-                .get("properties")
-                .get("arguments")
+        JsonNode argumentsKeySchema = argumentsSchema
                 .get("patternProperties")
                 .get("^[a-zA-Z0-9]+$")
                 .get("properties");
