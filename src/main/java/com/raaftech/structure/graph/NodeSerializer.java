@@ -32,14 +32,6 @@ public class NodeSerializer extends StdSerializer<Node> {
     private final NodeRepository nodeRepository;
     private final Logger log = LoggerFactory.getLogger(NodeSerializer.class);
 
-    /*
-    Because some Entities can have relationships to each other we need to make exceptions for some relationships.
-    Default is to only save the outgoing relationships, but in some cases we need the incoming rel so we dont
-    get an unsortable bundle. See #40 for more details.
-    TODO: Implement this in a more appropriate spot. The loader itself is a good candidate imo (bcd).
-     */
-    private final Set<String> incomingRelationships = ImmutableSet.of("HAS_INSTRUMENT");
-
     public NodeSerializer() {
         super(Node.class);
         nodeRepository = Context.getNodeRepository();
@@ -75,12 +67,9 @@ public class NodeSerializer extends StdSerializer<Node> {
         gen.writeFieldName("relations");
         gen.writeStartObject();
         // find all our outgoing relationships that aren't contained in our incomingRelationships exception list
-        Stream<Relationship> outgoingRelationshipsStream = StreamSupport.stream(graphNode.getRelationships(Direction.OUTGOING).spliterator(), false)
-                .filter(rel -> !incomingRelationships.contains(rel.getType().name()));
-        // find all the incoming relationships we actually are interested in
-        Stream<Relationship> incomingRelationshipsStream = StreamSupport.stream(graphNode.getRelationships(Direction.INCOMING).spliterator(), false)
-                .filter(rel -> incomingRelationships.contains(rel.getType().name()));
-        Map<RelationshipType, List<Relationship>> relMap = Stream.concat(outgoingRelationshipsStream, incomingRelationshipsStream)
+        Stream<Relationship> outgoingRelationshipsStream = StreamSupport.stream(
+                graphNode.getRelationships(Direction.OUTGOING).spliterator(), false);
+        Map<RelationshipType, List<Relationship>> relMap = outgoingRelationshipsStream
                 .sorted((a, b) -> {
                     // sort this stream based on the graphId of the relationships (ascending)
                     // we do this to ensure the serialized relationship order is the same as in the source of the entity
@@ -95,8 +84,7 @@ public class NodeSerializer extends StdSerializer<Node> {
                         final String name = entry.getKey().name();
                         // because our lists only contain relationships with the same direction, we can safely
                         // determine the direction of the first relationship and assume the others are directed the same
-                        final String direction = incomingRelationships.contains(name) ?
-                                "incoming" : "outgoing";
+                        final String direction = "outgoing";
                         // start an object with the relationship name
                         gen.writeFieldName(name);
                         gen.writeStartObject();
@@ -109,17 +97,7 @@ public class NodeSerializer extends StdSerializer<Node> {
                         gen.writeStartArray();
                         List<Relationship> uuids = entry.getValue();
                         uuids.stream()
-                                .map(rel -> {
-                                    /*
-                                     if we are an outgoing relationship, the "other" node is the end node,
-                                     in case of an incoming relationships, the "other" node is the start node
-                                      */
-                                    if (!incomingRelationships.contains(name)) {
-                                        return (String) rel.getEndNode().getProperty("uuid");
-                                    } else {
-                                        return (String) rel.getStartNode().getProperty("uuid");
-                                    }
-                                })
+                                .map(rel -> (String) rel.getEndNode().getProperty("uuid"))
                                 .forEach(uuid -> {
                                     try {
                                         gen.writeString(uuid);
