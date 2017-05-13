@@ -186,6 +186,23 @@ module.exports = function (Instance) {
         description: 'Run an instrument on an instance'
     });
 
+    Instance.runCapability = function(instanceUuid, capability, callback) {
+        const nodeAddress = baseAddress(['node',instanceUuid]);
+        evBus.sendEvent(nodeAddress, 'runCapability', {capability: capability})
+                .then(result => callback(null, resultFetcher(result)))
+                .catch(ex => callback(ex));
+    };
+
+    Instance.remoteMethod('runCapability',{
+        accepts: [
+            {arg: 'instanceUuid', type: 'string', required: true},
+            {arg: 'capability', type: 'string', required: true}
+        ],
+        returns: {root: true, type: 'object'},
+        http: {verb: 'post', path: '/exec/:capability/on/:instanceUuid'},
+        description: 'Execute a capability on an instance'
+    });
+
     Instance.getInstanceByPredicate = function(property, value, callback) {
         let query = util.format('match (n:Instance {`data-%s`: "%s"}) return n',property, value);
         neoHelper.cypher(query)

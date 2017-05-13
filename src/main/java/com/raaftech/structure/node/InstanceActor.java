@@ -236,7 +236,7 @@ public class InstanceActor extends NodeActor<Instance> {
                     final Grouping grouping = instanceRepository.getStartOfComponentGroup(getNode().getUuid());
                     if (grouping == null) {
                         // We cannot find the grouping this node belongs to so we can't run an instrument on it
-                        result.put("error", "We couldn't find the grouping to which node "
+                        result.put("error", "We couldn't find the grouping which node "
                                 + getNode().getUuid() + " belongs to.");
                         return response(request, result);
                     }
