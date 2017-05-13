@@ -42,9 +42,6 @@
     "name": {
       "$ref": "type.schema.json#/properties/name"
     },
-    "checksum": {
-      "$ref": "type.schema.json#/properties/checksum"
-    },
     "maxVerticalRefreshHz": {
       "$ref": "graphicshardware.schema.json#/properties/maxVerticalRefreshHz"
     },

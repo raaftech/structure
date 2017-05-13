@@ -104,8 +104,8 @@ public class NodeSerializerTest {
         Bash has an outgoing "HAS_INSTRUMENT" relationship to BashInvoke, but we persist that
         as an incoming "HAS_INSTRUMENT" on BashInvoke.
          */
-        assertTrue(!bashObj.get("meta").get("relations").has("HAS_INSTRUMENT"));
-        assertTrue(bashInvokeObj.get("meta").get("relations").has("HAS_INSTRUMENT"));
-        assertEquals("incoming", bashInvokeObj.get("meta").get("relations").get("HAS_INSTRUMENT").get("direction").asText());
+        assertTrue(!bashObj.get("meta").get("relations").has("PROVIDED_BY"));
+        assertTrue(bashInvokeObj.get("meta").get("relations").has("PROVIDED_BY"));
+        assertEquals("outgoing", bashInvokeObj.get("meta").get("relations").get("PROVIDED_BY").get("direction").asText());
     }
 }

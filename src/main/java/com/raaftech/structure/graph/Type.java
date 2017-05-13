@@ -57,7 +57,7 @@ public class Type extends Node {
 
     private int glyphId;
 
-    @RelatedTo(type="HAS_INSTRUMENT", direction = Direction.OUTGOING)
+    @RelatedTo(type="PROVIDED_BY", direction = Direction.INCOMING)
     @Fetch
     private Set<Instrument> instruments;
 
@@ -235,7 +235,7 @@ public class Type extends Node {
          */
         final Set<String> whitelist = ImmutableSet.of(
                 "INSTANCE_OF",
-                "HAS_INSTRUMENT",
+                "PROVIDED_BY",
                 "HANDLES",
                 "GIVES_CAPABILITY"
         );

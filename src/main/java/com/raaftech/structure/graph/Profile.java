@@ -17,7 +17,7 @@ public class Profile extends Instance {
     @Fetch
     private Set<Type> appliesTo;
 
-    @RelatedTo(type="PROVIDES", direction=Direction.INCOMING)
+    @RelatedTo(type="PROVIDED_BY", direction=Direction.OUTGOING)
     @Fetch
     private Type providedBy;
 

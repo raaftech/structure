@@ -163,19 +163,14 @@
             "42a991a2-2f25-479a-a21d-7a7e07f691cf"
           ]
         },
-        "HAS_COMPONENT": {
+        "HAS": {
           "direction": "outgoing",
           "uuids": [
             "a6fcc89c-0804-449b-9eb8-ffacbf465930",
             "b6714386-63c8-441e-94fe-247afb6fab3b",
             "931b50c2-3f83-4f37-9f94-648d29d401a4",
             "a45410ad-4f03-4180-9e8a-47e2a2225595",
-            "695d4dcb-ead2-480c-a0a8-c3df1fed978e"
-          ]
-        },
-        "HAS_CONFIGURATION": {
-          "direction": "outgoing",
-          "uuids": [
+            "695d4dcb-ead2-480c-a0a8-c3df1fed978e",
             "7e91e877-3acf-4d6c-b36a-2d7f547c17c8",
             "d182e241-af01-4837-9913-2e6c1afa047c"
           ]

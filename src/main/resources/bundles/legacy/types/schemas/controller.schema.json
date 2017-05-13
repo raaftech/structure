@@ -32,9 +32,6 @@
     "name": {
       "$ref": "type.schema.json#/properties/name"
     },
-    "checksum": {
-      "$ref": "type.schema.json#/properties/checksum"
-    },
     "weight": {
       "$ref": "instrument.schema.json#/properties/weight"
     },
@@ -66,7 +63,11 @@
   "definitions": {
     "state": {
       "type": "object",
-      "required": [ "code", "interpretation", "description" ],
+      "required": [
+        "code",
+        "interpretation",
+        "description"
+      ],
       "properties": {
         "code": {
           "type": "integer",

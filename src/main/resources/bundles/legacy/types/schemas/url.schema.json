@@ -6,9 +6,6 @@
     "name": {
       "$ref": "type.schema.json#/properties/name"
     },
-    "checksum": {
-      "$ref": "type.schema.json#/properties/checksum"
-    },
     "url": {
       "type": "string",
       "description": "scheme://domain:port/path?query_string#fragment_id"
