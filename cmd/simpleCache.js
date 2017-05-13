@@ -12,6 +12,9 @@ class SimpleCache {
             },
             neo: {
                 query: ''
+            },
+            structure: {
+                token: ''
             }
         };
     }

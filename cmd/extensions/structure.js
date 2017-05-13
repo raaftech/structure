@@ -24,7 +24,12 @@ module.exports = function(vorpal, opts) {
                         let handler = R.ifElse(
                             R.has('error'),
                             error => self.log(util.format('%s (%s): %s',clc.red.bold(error.error.code), clc.red(error.error.statusCode), error.error.message)),
-                            user => {opts.memoryBank.token = user.id; self.log(clc.green('AccessToken: ')+user.id)}
+                            user => {
+                                opts.memoryBank.token = user.id;
+                                opts.cache.set('structure', 'token',user.id);
+                                opts.cache.save();
+                                self.log(clc.green('AccessToken: ')+user.id)
+                            }
                         );
                         handler(user);
                         done();
