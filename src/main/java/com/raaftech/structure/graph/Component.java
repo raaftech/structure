@@ -30,22 +30,31 @@ import java.util.stream.Stream;
 
 public class Component extends Instance {
 
-    @RelatedTo(type="HAS_COMPONENT", direction = Direction.OUTGOING)
+    @RelatedTo(
+            type="HAS",
+            direction = Direction.OUTGOING,
+            elementClass = Component.class,
+            enforceTargetType = true
+    )
     private Set<Component> components;
 
-    @RelatedTo(type="HAS_COMPONENT", direction = Direction.INCOMING)
+    @RelatedTo(
+            type="HAS",
+            direction = Direction.INCOMING,
+            elementClass = Component.class,
+            enforceTargetType = true
+    )
     @Fetch
     private Component inComponent;
 
-    @RelatedTo(type="HAS_CONFIGURATION", direction = Direction.OUTGOING)
+    @RelatedTo(
+            type="HAS",
+            direction = Direction.OUTGOING,
+            elementClass = Configuration.class,
+            enforceTargetType = true
+    )
     @Fetch
     Set<Configuration> configurations;
-
-    @RelatedTo(type="BELONGS_TO", direction = Direction.OUTGOING)
-    private Grouping componentalGroup;
-
-    @RelatedTo(type="HAS_ACTOR", direction = Direction.OUTGOING)
-    private Set<Instance> actors = new HashSet<>();
 
     @Transient
     private static final InstanceRepository instanceRepository = Context.getInstanceRepository();

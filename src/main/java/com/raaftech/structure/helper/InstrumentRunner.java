@@ -267,7 +267,7 @@ public class InstrumentRunner {
 
 
         } else {
-            // Check if the controller is connected to structure via HAS_INSTRUMENT
+            // Check if the controller is connected to structure via PROVIDED_BY
             if (instrumentRepository.validateNonLocalInstrument(controller.getUuid(), agent.getUuid(), origin.getUuid()) == null) {
                 log.error("We can't run controller \"" + controller.getName() + "\", because \"" + agent.getName() + "\" [" + agent.getUuid() + "] " +
                         "doesn't have \"" + instrumentRepository.findInstrumentOwner(controller.getUuid()) + "\".");

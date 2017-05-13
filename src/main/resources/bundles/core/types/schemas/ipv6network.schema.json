@@ -6,9 +6,6 @@
     "name": {
       "$ref": "type.schema.json#/properties/name"
     },
-    "checksum": {
-      "$ref": "type.schema.json#/properties/checksum"
-    },
     "addr": {
       "$ref": "ipaddress.schema.json#/properties/addr"
     },

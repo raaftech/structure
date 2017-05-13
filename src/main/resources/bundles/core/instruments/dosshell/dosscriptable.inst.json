@@ -5,8 +5,8 @@
   "meta": {
     "uuid": "431d4fbc-4ff5-47ad-b0a0-eac927d84cc4",
     "relations": {
-      "HAS_INSTRUMENT": {
-        "direction": "incoming",
+      "PROVIDED_BY": {
+        "direction": "outgoing",
         "uuids": [
           "bc101145-dde2-4363-a7ed-7091d2ff2621"
         ]
