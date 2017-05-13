@@ -11,7 +11,7 @@
           "b4c067de-e3cf-4b5b-90ca-588725d1b6c4"
         ]
       },
-      "HANDLES": {
+      "APPLIES_TO": {
         "direction": "outgoing",
         "uuids": [
           "3fb4603b-281e-47c0-b338-768ea05d4660"

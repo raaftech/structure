@@ -43,7 +43,7 @@ public class Controller extends Instrument {
     @RelatedTo(type="GIVES_CAPABILITY", direction=Direction.OUTGOING)
     private Type capability;
 
-    @RelatedTo(type="HANDLES", direction=Direction.OUTGOING)
+    @RelatedTo(type="APPLIES_TO", direction=Direction.OUTGOING)
     @Fetch
     private Set<Type> appliesTo;
 

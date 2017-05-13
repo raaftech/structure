@@ -34,6 +34,9 @@ function init() {
     );
     validator = new SchemaValidator(R.defaultTo('http://localhost:8080/schemas/', process.env.SCHEMAHOST));
     answerCache.init();
+    if(answerCache.get('structure','token') !== '') {
+        rest.setToken(answerCache.get('structure','token'));
+    }
 
     setupStatusChannel();
     scli();
@@ -42,7 +45,7 @@ function init() {
 function scli() {
 	vorpal.history('structure-history');
 	vorpal.use(neoExt, answerCache);
-	vorpal.use(structureExt, {rest: rest, memoryBank: memoryBank});
+	vorpal.use(structureExt, {rest: rest, memoryBank: memoryBank, cache: answerCache});
 	vorpal.use(groupExt, rest);
 	vorpal.use(instanceExt, {rest: rest, validator: validator});
 	vorpal.delimiter(clc.magenta.bold('structure$')).show();
@@ -68,7 +71,7 @@ function setupStatusChannel() {
         let output = util.format('Type: %s\nEvent: %s\nData: %s',
                                  clc.green(R.path(['type'],data)),
                                  clc.green(R.path(['data','event'],data)),
-                                 clc.green(JSON.stringify(R.path(['data','data'],data))));
+                                 clc.green(JSON.stringify(R.path(['data','data'],data),undefined,2)));
         vorpal.log(output);
     });
 }
