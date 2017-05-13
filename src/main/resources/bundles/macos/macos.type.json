@@ -1,6 +1,6 @@
 {
   "type": "Type",
-  "name": "MacOS",
+  "name": "MacOs",
   "desc": "The Apple Macintosh Operating System.",
   "meta": {
     "uuid": "0f81d6dc-d221-464a-ab85-1e3e5d98c3f0",
@@ -20,7 +20,7 @@
     "dataSchema": {
       "encoding": "text",
       "format": "json",
-      "path": "maclike.schema.json"
+      "path": "macos.schema.json"
     }
   }
 }
