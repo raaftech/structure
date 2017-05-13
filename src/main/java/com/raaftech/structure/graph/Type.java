@@ -236,7 +236,7 @@ public class Type extends Node {
         final Set<String> whitelist = ImmutableSet.of(
                 "INSTANCE_OF",
                 "PROVIDED_BY",
-                "HANDLES",
+                "APPLIES_TO",
                 "GIVES_CAPABILITY"
         );
 
