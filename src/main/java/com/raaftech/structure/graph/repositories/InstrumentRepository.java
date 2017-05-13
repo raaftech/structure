@@ -117,4 +117,7 @@ public interface InstrumentRepository extends GenericRepository<Instrument> {
             "MATCH (group:Grouping{uuid:{2}})-[*1..]->(:Instance)-[:INSTANCE_OF|ISA*1..]->()<-[:PROVIDED_BY]-(controller)" +
             "RETURN controller")
     Set<Controller> findControllersPerCapability(String uuid, String name, String groupingUuid);
+
+    @Query ("match (n{uuid:{0}})-[:INSTANCE_OF|ISA*..]->()<-[:APPLIES_TO]-()-[:GIVES_CAPABILITY]->(capability) return capability")
+    Set<Type> findCapabilities(String uuid);
 }
