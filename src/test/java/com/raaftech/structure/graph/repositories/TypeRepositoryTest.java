@@ -36,7 +36,7 @@ public class TypeRepositoryTest {
     @SuppressWarnings("Duplicates")
     public void setUpDatabase() throws Exception {
         if (!databaseCreated) {
-            final String raafBundle = "src/main/resources/bundles/core/";
+            final String raafBundle = "src/main/resources/bundles/";
             Transaction tx = graphDatabase.beginTx();
             BundleLoader bundleLoader = new BundleLoader(raafBundle);
             bundleLoader.load();

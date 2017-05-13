@@ -40,7 +40,7 @@ public class NodeSerializerTest {
     @SuppressWarnings("Duplicates")
     public void setUpDatabase() throws Exception {
         if (!databaseCreated) {
-            final String raafBundle = "src/main/resources/bundles/core/";
+            final String raafBundle = "src/main/resources/bundles/";
             BundleLoader bundleLoader = new BundleLoader(raafBundle);
             bundleLoader.load();
             databaseCreated = true;
@@ -80,7 +80,7 @@ public class NodeSerializerTest {
         assertNotNull(dataSchema);
         assertEquals("text", dataSchema.get("encoding").asText());
         assertEquals("json", dataSchema.get("format").asText());
-        assertEquals("schemas/linux.schema.json", dataSchema.get("path").asText());
+        assertEquals("linux.schema.json", dataSchema.get("path").asText());
     }
 
     @Test

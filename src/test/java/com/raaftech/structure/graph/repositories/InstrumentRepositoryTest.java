@@ -61,9 +61,9 @@ public class InstrumentRepositoryTest {
     @SuppressWarnings("Duplicates")
     public void setUpDatabase() throws Exception {
         if (!databaseCreated) {
-            final String testBundle = "src/main/resources/bundles/core/";
+            final String testBundle = "src/main/resources/bundles/";
             com.raaftech.structure.base.Configuration
-                    .setSchemaNamespace(FileSystems.getDefault().getPath(testBundle).toUri().resolve("types/"));
+                    .setSchemaNamespace(FileSystems.getDefault().getPath(testBundle).toUri().resolve("legacy/types/"));
             Transaction tx = graphDatabase.beginTx();
             BundleLoader bundleLoader = new BundleLoader(testBundle);
             bundleLoader.load();
