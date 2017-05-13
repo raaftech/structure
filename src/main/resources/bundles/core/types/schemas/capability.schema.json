@@ -6,9 +6,6 @@
     "name": {
       "$ref": "type.schema.json#/properties/name"
     },
-    "checksum": {
-      "$ref": "type.schema.json#/properties/checksum"
-    },
     "system": {
       "type": "boolean",
       "description": "Is this capability for internal use?"

@@ -6,9 +6,6 @@
     "name": {
       "$ref": "type.schema.json#/properties/name"
     },
-    "checksum": {
-      "$ref": "type.schema.json#/properties/checksum"
-    },
     "addr": {
       "type": "string",
       "description": "IP listeners should at least have the addr and port fields."

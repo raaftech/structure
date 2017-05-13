@@ -53,9 +53,6 @@
     "name": {
       "$ref": "type.schema.json#/properties/name"
     },
-    "checksum": {
-      "$ref": "type.schema.json#/properties/checksum"
-    },
     "maxVerticalRefreshHz": {
       "type": "number",
       "description": "Max"
