@@ -2634,7 +2634,32 @@
       }
     }
   },
-
+  {
+    "type": "Type",
+    "name": "Show",
+    "desc": "A capability that prints a (entity.schema.json compliant) representation of itself. The data returned is exactly what is currently in the graph, not neccessarily what is true out there.",
+    "meta": {
+      "uuid": "09cc6320-8565-41f7-bdc4-f1950d649be6",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "916e04a9-c773-4eaf-9c08-450016426e5a"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 33
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/show.schema.json"
+      }
+    }
+  },
 
   {
     "type": "Type",
