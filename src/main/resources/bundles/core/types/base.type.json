@@ -2404,8 +2404,8 @@
   },
   {
     "type": "Type",
-    "name": "Query",
-    "desc": "A capability that makes it possible to query components that are managed by the querying component.",
+    "name": "List",
+    "desc": "A capability that makes it possible to list adjacent entities that are children of the current entity.",
     "meta": {
       "uuid": "61cde9d0-3aa2-4951-aaa8-79e5656dac41",
       "relations": {
@@ -2422,7 +2422,7 @@
       "dataSchema": {
         "encoding": "text",
         "format": "json",
-        "path": "schemas/query.schema.json"
+        "path": "schemas/list.schema.json"
       }
     }
   },
