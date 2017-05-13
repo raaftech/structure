@@ -1,6 +1,13 @@
 {
   "additionalProperties": false,
   "$schema": "http://json-schema.org/schema#",
+  "description": "Schema for Structure instruments.",
+  "required": [
+    "name",
+    "desc",
+    "instrumentType",
+    "subjectIsLocal"
+  ],
   "type": "object",
   "properties": {
     "name": {
@@ -21,9 +28,105 @@
       "description": "The filesystem location of the instrument."
     }
   },
-  "required": [
-    "name",
-    "desc",
-    "filePath"
-  ]
+  "instrumentType": {
+    "type": "string",
+    "pattern": "^controller|marker|parser$"
+  },
+  "interpreter": {
+    "type": "string"
+  },
+  "subjectIsLocal": {
+    "type": "boolean"
+  },
+  "weight": {
+    "type": "number"
+  },
+  "extension": {
+    "type": "string",
+    "pattern": "^\\.[A-Za-z0-9]+$"
+  },
+  "arguments": {
+    "type": "object",
+    "patternProperties": {
+      "^[a-zA-Z0-9]+$": {
+        "additionalProperties": false,
+        "required": [
+          "value"
+        ],
+        "properties": {
+          "canBeUserSupplied": {
+            "type": "boolean",
+            "default": "false"
+          },
+          "isOptional": {
+            "type": "boolean",
+            "default": "false"
+          },
+          "pass": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "index": {
+                "type": "number"
+              },
+              "option": {
+                "type": "string"
+              },
+              "key": {
+                "type": "string"
+              }
+            },
+            "oneOf": [
+              {
+                "required": [
+                  "option"
+                ]
+              },
+              {
+                "required": [
+                  "index"
+                ]
+              }
+            ]
+          },
+          "value": {
+            "type": "object",
+            "properties": {
+              "from": {
+                "type": "string",
+                "pattern": "^subject|origin|agent|static$"
+              },
+              "type": {
+                "type": "string",
+                "pattern": "^\\w+(\\.\\w+)+|string$"
+              },
+              "matches": {
+                "type": [
+                  "object",
+                  "string"
+                ]
+              },
+              "defaultValue": {
+                "type": "string"
+              },
+              "strategy": {
+                "type": "string",
+                "pattern": "^useFirst|useLast|mustBeOne|mustBeMany$",
+                "default": "mustBeOne"
+              },
+              "onError": {
+                "type": "string",
+                "pattern": "^fail|askUser|ignore$",
+                "default": "fail"
+              }
+            },
+            "required": [
+              "from",
+              "type"
+            ]
+          }
+        }
+      }
+    }
+  }
 }
