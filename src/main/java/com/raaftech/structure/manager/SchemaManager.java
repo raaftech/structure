@@ -30,7 +30,7 @@ public class SchemaManager {
         final String typeName = schemaName.split("\\.")[0];
         final JsonNode schema;
         if (Objects.equals(commonSchema, schemaName)) {
-            log.debug("Schema \"{}\" requested, retrieving it from the resources.");
+            log.debug("Schema \"{}\" requested, retrieving it from the resources.", commonSchema);
             schema =  JsonHelper.jsonFromResource("schema/common.schema.json");
         } else {
             log.debug("Schema \"{}\" requested, querying for type \"{}\".", schemaName, typeName);
