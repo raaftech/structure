@@ -2300,8 +2300,8 @@
   },
   {
     "type": "Type",
-    "name": "CreateVm",
-    "desc": "A capability that makes it possible to create a virtual machine.",
+    "name": "Create",
+    "desc": "Create a (selection of) adjacent entities. Can create children or parents.",
     "meta": {
       "uuid": "b0995f9f-90af-4066-9d00-6b7b33f9a19b",
       "relations": {
@@ -2320,14 +2320,14 @@
       "dataSchema": {
         "encoding": "text",
         "format": "json",
-        "path": "schemas/createvm.schema.json"
+        "path": "schemas/create.schema.json"
       }
     }
   },
   {
     "type": "Type",
-    "name": "DestroyVm",
-    "desc": "A capability that makes it possible to destroy a virtual machine.",
+    "name": "Destroy",
+    "desc": "Destroy self or (selection of) adjacent entities (recursively). Can only destroy children, not parents.",
     "meta": {
       "uuid": "cdb08b91-5998-4f7c-9b82-b345b8052ecd",
       "relations": {
@@ -2346,7 +2346,7 @@
       "dataSchema": {
         "encoding": "text",
         "format": "json",
-        "path": "schemas/destroyvm.schema.json"
+        "path": "schemas/destroy.schema.json"
       }
     }
   },
