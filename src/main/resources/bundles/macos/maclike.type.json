@@ -1,0 +1,26 @@
+{
+  "type": "Type",
+  "name": "MacLike",
+  "desc": "The Apple Macintosh family of operating systems.",
+  "meta": {
+    "uuid": "b07f1e04-4987-4af5-931c-24da2acd84f1",
+    "relations": {
+      "ISA": {
+        "direction": "outgoing",
+        "uuids": [
+          "f05e325e-1aee-4892-96e4-8bcd6e97c528"
+        ]
+      }
+    }
+  },
+  "data": {
+    "glyphId": 162
+  },
+  "file": {
+    "dataSchema": {
+      "encoding": "text",
+      "format": "json",
+      "path": "maclike.schema.json"
+    }
+  }
+}
