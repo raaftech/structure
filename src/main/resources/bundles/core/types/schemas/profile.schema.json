@@ -2,44 +2,105 @@
   "additionalProperties": false,
   "$schema": "http://json-schema.org/schema#",
   "type": "object",
+  "required": ["name","desc","appliesTo","providedBy"],
   "properties": {
-    "packageNames": {
-      "type": "string",
-      "description": "A JSON array containing known package names for the software."
-    },
     "name": {
       "$ref": "type.schema.json#/properties/name"
     },
     "checksum": {
       "$ref": "type.schema.json#/properties/checksum"
     },
-    "files": {
-      "type": "string",
-      "description": "A JSON object containing known logFiles/dataFiles/binaryFiles/libraryFiles/configurationFiles arrays for the software."
-    },
-    "directories": {
-      "type": "string",
-      "description": "A JSON object containing known logDirectories/dataDirectories/binaryDirectories/libraryDirectories/configurationDirectories arrays for the software."
-    },
-    "serviceNames": {
-      "type": "string",
-      "description": "A JSON array containing known service names for the software."
-    },
-    "commands": {
-      "type": "string",
-      "description": "A JSON object containing commands and their regular expression format matching rules"
-    },
     "desc": {
       "$ref": "type.schema.json#/properties/desc"
-    }
-  },
-  "required": [
-    "name",
-    "desc",
-    "serviceNames",
-    "packageNames",
-    "files",
-    "directories",
-    "commands"
-  ]
+    },
+		"providedBy": {
+			"$ref": "common.schema.json#/definitions/caseInsensitiveAlphaNum"
+		},
+		"appliesTo": {
+			"$ref": "common.schema.json#/definitions/caseInsensitiveAlphaNum"
+		},
+		"packageNames": {
+			"$ref": "common.schema.json#/definitions/stringOrStringArray"
+		},
+		"serviceNames": {
+			"$ref": "common.schema.json#/definitions/stringOrStringArray"
+		},
+		"commands": {
+			"type": "object",
+			"patternProperties": {
+				"^[a-zA-Z0-9]+$": {
+					"required": ["command","matches"],
+					"additionalProperties": false,
+					"properties": {
+						"command": {
+							"type": "array",
+							"minItems": 1,
+							"items": {
+								"type": "string"
+							}
+						},
+						"matches": {
+							"type": "string"
+						}
+					}
+				}
+			}
+		},
+		"directories": {
+			"type": "object",
+			"anyOf": [
+			    {"required": ["logDirectories"]},
+			    {"required": ["dataDirectories"]},
+			    {"required": ["binaryDirectories"]},
+			    {"required": ["libraryDirectories"]},
+			    {"required": ["configurationDirectories"]}
+			],
+			"additionalProperties": false,
+			"properties": {
+				"logDirectories": {
+					"$ref": "common.schema.json#/definitions/paths"
+				},
+				"dataDirectories": {
+					"$ref": "common.schema.json#/definitions/paths"
+				},
+				"binaryDirectories": {
+					"$ref": "common.schema.json#/definitions/paths"
+				},
+				"libraryDirectories": {
+					"$ref": "common.schema.json#/definitions/paths"
+				},
+				"configurationDirectories": {
+					"$ref": "common.schema.json#/definitions/paths"
+				}
+			}
+		},
+		"files": {
+			"type": "object",
+			"anyOf": [
+			    {"required": ["logFiles"]},
+			    {"required": ["dataFiles"]},
+			    {"required": ["binaryFiles"]},
+			    {"required": ["libraryFiles"]},
+			    {"required": ["configurationFiles"]}
+			],
+			"additionalProperties": false,
+			"properties": {
+				"logFiles": {
+					"$ref": "common.schema.json#/definitions/paths"
+				},
+				"dataFiles": {
+					"$ref": "common.schema.json#/definitions/paths"
+				},
+				"binaryFiles": {
+					"$ref": "common.schema.json#/definitions/paths"
+				},
+				"libraryFiles": {
+					"$ref": "common.schema.json#/definitions/paths"
+				},
+				"configurationFiles": {
+					"$ref": "common.schema.json#/definitions/paths"
+				}
+			}
+		}
+	}
 }
