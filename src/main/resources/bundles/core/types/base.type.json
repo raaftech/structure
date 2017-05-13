@@ -2610,6 +2610,34 @@
   },
   {
     "type": "Type",
+    "name": "Verify",
+    "desc": "A capability that verifies if the current type of the entity is correct. Should return true or false.",
+    "meta": {
+      "uuid": "0a76202b-a6dc-4fe0-91b6-02953c5b7536",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "916e04a9-c773-4eaf-9c08-450016426e5a"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 33
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/verify.schema.json"
+      }
+    }
+  },
+
+
+  {
+    "type": "Type",
     "name": "Protocol",
     "desc": "A protocol.",
     "meta": {
