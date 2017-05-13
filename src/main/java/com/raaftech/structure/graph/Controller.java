@@ -47,14 +47,11 @@ public class Controller extends Instrument {
     @Fetch
     private Set<Type> appliesTo;
 
-    @RelatedTo(type="HAS_PARSER", direction=Direction.OUTGOING)
-    private Parser parser;
-
     @RelatedTo(type="PRODUCED", direction=Direction.OUTGOING)
     @Fetch
     private Set<Result> results;
 
-    @RelatedTo(type="HAS_INSTRUMENT", direction=Direction.INCOMING)
+    @RelatedTo(type="PROVIDED_BY", direction=Direction.OUTGOING)
     @Fetch
     private Type providedBy;
 

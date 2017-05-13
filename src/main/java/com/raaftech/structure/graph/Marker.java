@@ -23,7 +23,7 @@ public class Marker extends Instrument {
     @Fetch
     private Set<Type> appliesTo;
 
-    @RelatedTo(type="HAS_INSTRUMENT", direction=Direction.INCOMING)
+    @RelatedTo(type="PROVIDED_BY", direction=Direction.OUTGOING)
     private Type providedBy;
 
     final static Logger log = LoggerFactory.getLogger(Marker.class);

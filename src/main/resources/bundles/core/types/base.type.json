@@ -33,13 +33,11 @@
         }
       },
       "constraints": {
-        "HAS_COMPONENT": [
+        "HAS": [
           {
             "cardinality": "OPTIONAL_TO_MANY",
             "to": "a79ce509-a021-4177-ae61-73abd01fb479"
-          }
-        ],
-        "HAS_CONFIGURATION": [
+          },
           {
             "cardinality": "OPTIONAL_TO_MANY",
             "to": "3f4a43f7-b558-4bf0-ba7e-66b99cffaf16"
@@ -3117,12 +3115,6 @@
         }
       },
       "constraints": {
-        "HAS_PARSER": [
-          {
-            "cardinality": "OPTIONAL_TO_ONE",
-            "to": "b5fa636c-1067-45ac-b027-ade2797bef6f"
-          }
-        ],
         "PRODUCED": [
           {
             "cardinality": "OPTIONAL_TO_MANY",
