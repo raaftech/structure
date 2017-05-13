@@ -14,13 +14,11 @@
       }
     },
     "constraints": {
-      "HAS_COMPONENT": [
+      "HAS": [
         {
           "cardinality": "OPTIONAL_TO_MANY",
           "to": "47d4db47-662b-4305-908b-400a3126dc55"
-        }
-      ],
-      "HAS_CONFIGURATION": [
+        },
         {
           "cardinality": "OPTIONAL_TO_MANY",
           "to": "95d6e424-d432-4da1-9f80-f07b0e0dd397"
