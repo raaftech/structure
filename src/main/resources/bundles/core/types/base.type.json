@@ -2300,8 +2300,8 @@
   },
   {
     "type": "Type",
-    "name": "CreateVm",
-    "desc": "A capability that makes it possible to create a virtual machine.",
+    "name": "Create",
+    "desc": "Create a (selection of) adjacent entities. Can create children or parents.",
     "meta": {
       "uuid": "b0995f9f-90af-4066-9d00-6b7b33f9a19b",
       "relations": {
@@ -2320,14 +2320,14 @@
       "dataSchema": {
         "encoding": "text",
         "format": "json",
-        "path": "schemas/createvm.schema.json"
+        "path": "schemas/create.schema.json"
       }
     }
   },
   {
     "type": "Type",
-    "name": "DestroyVm",
-    "desc": "A capability that makes it possible to destroy a virtual machine.",
+    "name": "Destroy",
+    "desc": "Destroy self or (selection of) adjacent entities (recursively). Can only destroy children, not parents.",
     "meta": {
       "uuid": "cdb08b91-5998-4f7c-9b82-b345b8052ecd",
       "relations": {
@@ -2346,7 +2346,7 @@
       "dataSchema": {
         "encoding": "text",
         "format": "json",
-        "path": "schemas/destroyvm.schema.json"
+        "path": "schemas/destroy.schema.json"
       }
     }
   },
@@ -2404,8 +2404,8 @@
   },
   {
     "type": "Type",
-    "name": "Query",
-    "desc": "A capability that makes it possible to query components that are managed by the querying component.",
+    "name": "List",
+    "desc": "A capability that makes it possible to list adjacent entities that are children of the current entity.",
     "meta": {
       "uuid": "61cde9d0-3aa2-4951-aaa8-79e5656dac41",
       "relations": {
@@ -2422,7 +2422,7 @@
       "dataSchema": {
         "encoding": "text",
         "format": "json",
-        "path": "schemas/query.schema.json"
+        "path": "schemas/list.schema.json"
       }
     }
   },
@@ -2605,6 +2605,110 @@
         "encoding": "text",
         "format": "json",
         "path": "schemas/access.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Verify",
+    "desc": "A capability that verifies if the current type of the entity is correct. Should return true or false.",
+    "meta": {
+      "uuid": "0a76202b-a6dc-4fe0-91b6-02953c5b7536",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "916e04a9-c773-4eaf-9c08-450016426e5a"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 0
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/verify.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Show",
+    "desc": "A capability that prints a (entity.schema.json compliant) representation of itself. The data returned is exactly what is currently in the graph, not neccessarily what is true out there.",
+    "meta": {
+      "uuid": "09cc6320-8565-41f7-bdc4-f1950d649be6",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "916e04a9-c773-4eaf-9c08-450016426e5a"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 0
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/show.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Update",
+    "desc": "This capability gathers the verify routine of the current Type and all ancestor types of that Type and runs them; for the ones that return true, select the most-specialized Type and run Identify.  Use that data to Update the current entity. Update in this case means: adjust instanceOf Type relation and update Node properties with identified data.",
+    "meta": {
+      "uuid": "f66d5a2d-5697-4f9f-8e35-2417668ba773",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "916e04a9-c773-4eaf-9c08-450016426e5a"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 0
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/update.schema.json"
+      }
+    }
+  },
+    {
+    "type": "Type",
+    "name": "Guess",
+    "desc": "Sometimes you cannot actually detect a thing from where you are. Let's take for example an Ipv4Address type. An Ipv4Address might have constraints that say: \"has, outgoing, to Ipv4Listener\" and \"has, incoming, from OperatingSystem\". The listeners you can actually detect, but the operating system you cannot, but you can guess! A guess is the same as a detect but it returns a much more abstract instance of something. In our case, we would return an instance of OperatingSystem and relate it according to the constraints rules. The neat thing is that that instance actually becomes a new path to traverse to further discover the topology of the system (probably you would recurse to that instance of a very abstract operating system and ask it to verify and update itself, thus providing you with the more correct truth. See verify, show and update capabilities for more details).",
+    "meta": {
+      "uuid": "2d427cde-5fcd-425e-91ef-b660f009581f",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "916e04a9-c773-4eaf-9c08-450016426e5a"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 0
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/guess.schema.json"
       }
     }
   },
