@@ -312,14 +312,19 @@ module.exports = function(vorpal, options) {
             let loggedIn = () => {
                 rest.getCapabilities(args.uuid)
                     .then(capabilities => {
-                        let q = helper.generateQuestion('capability', 'list', 'Select capability to run: ', {choices: R.keys(capabilities)});
-                        self.prompt(q, function(answer) {
-                            rest.runCapability(args.uuid, answer.capability)
-                                .then(result => {
-                                    console.log(result);
-                                    done();
-                                });
-                        });
+                        if(R.pipe(R.keys,R.length,R.equals(0))(capabilities)) {
+                            self.log('No capabilities found for this instance.');
+                            done();
+                        } else {
+                            let q = helper.generateQuestion('capability', 'list', 'Select capability to run: ', {choices: R.keys(capabilities)});
+                            self.prompt(q, function(answer) {
+                                rest.runCapability(args.uuid, answer.capability)
+                                    .then(result => {
+                                        console.log(result);
+                                        done();
+                                    });
+                            });
+                        }
                     })
                     .catch(helper.genericCatchHandler(done));
             };
