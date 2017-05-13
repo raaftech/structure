@@ -74,7 +74,7 @@ public interface InstrumentRepository extends GenericRepository<Instrument> {
     // A good example would be a ping check. Structure needs a particular tool (ping), that can do something (ICMP echo request)
     // which is about something that doesn't belong to its tree (the IP address of the patient).
     @Query ("MATCH (structure:Grouping {uuid:{structureUuid}})-[*..]->(:Instance)-[:INSTANCE_OF|ISA*..]->()<-[:PROVIDED_BY]-(instrument {uuid:{instrumentUuid}})," +
-        "(instrument)-[:HANDLES]->(patientType)<-[:INSTANCE_OF|ISA*..]-(patient {uuid:{patientUuid}})" +
+        "(instrument)-[:APPLIES_TO]->(patientType)<-[:INSTANCE_OF|ISA*..]-(patient {uuid:{patientUuid}})" +
             "RETURN instrument")
     Instrument validateNonLocalInstrument(@Param("instrumentUuid") String instrumentUuid, @Param("structureUuid") String structureUuid,
                                             @Param("patientUuid") String patientUuid);
@@ -86,7 +86,7 @@ public interface InstrumentRepository extends GenericRepository<Instrument> {
 
     // When there are multiple hits for a controller name, we want to retrieve
     // the one that matches the origin.
-    @Query ("MATCH (origin {uuid:{originUuid}})-[:INSTANCE_OF|ISA*1..]->(handled)<-[:HANDLES]-(instrument{name:{instrumentName}})-[:PROVIDED_BY]->(provider), " +
+    @Query ("MATCH (origin {uuid:{originUuid}})-[:INSTANCE_OF|ISA*1..]->(handled)<-[:APPLIES_TO]-(instrument{name:{instrumentName}})-[:PROVIDED_BY]->(provider), " +
             "       (startOfGroup {uuid:{startOfGroupUuid}})-[*..]->(:Instance)-[:INSTANCE_OF|ISA*1..]->(provider) " +
             "RETURN instrument")
     Controller findMatchingLocalController(@Param("originUuid") String originUuid,
@@ -95,7 +95,7 @@ public interface InstrumentRepository extends GenericRepository<Instrument> {
 
     // Find all the locally run controllers that apply to a given origin
     @Query ("MATCH (origin{uuid:{originUuid}})-[:INSTANCE_OF|ISA*..]->(handled)" +
-                    "<-[:HANDLES]-(instrument)-[:PROVIDED_BY]->(enabler)" +
+                    "<-[:APPLIES_TO]-(instrument)-[:PROVIDED_BY]->(enabler)" +
                 "MATCH (origin:Instance)<-[*0..]-()<-[:GROUPS]-(grouping)" +
                 "MATCH (grouping)-[*1..]->(instance_of_enabler:Instance)-[:INSTANCE_OF|ISA*0..]->(enabler)" +
                     "<-[:PROVIDED_BY]-(instrument)" +
@@ -103,7 +103,7 @@ public interface InstrumentRepository extends GenericRepository<Instrument> {
     Set<Controller> findLocalControllers(@Param("originUuid") String originUuid);
 
     // Find all the remotely run controllers that apply to a given origin
-    @Query ("MATCH (origin {uuid:{originUuid}})-[:INSTANCE_OF|ISA*1..]->(handled)<-[:HANDLES]-(instrument)-[:PROVIDED_BY]->(provider), " +
+    @Query ("MATCH (origin {uuid:{originUuid}})-[:INSTANCE_OF|ISA*1..]->(handled)<-[:APPLIES_TO]-(instrument)-[:PROVIDED_BY]->(provider), " +
             "       (structure {uuid:{structureUuid}})-[*..]->(:Instance)-[:INSTANCE_OF|ISA*1..]->(provider) " +
             "RETURN instrument")
     Set<Controller> findRemoteControllers(@Param("originUuid") String originUuid,
@@ -113,7 +113,7 @@ public interface InstrumentRepository extends GenericRepository<Instrument> {
     long count();
 
     // Find a node's callable controllers
-    @Query ("MATCH (:Instance {uuid: {0}})-[*0..]->()<-[:HANDLES]-(controller:Controller)-[:GIVES_CAPABILITY]->(capability:`type:Capability` {name: {1}}) " +
+    @Query ("MATCH (:Instance {uuid: {0}})-[*0..]->()<-[:APPLIES_TO]-(controller:Controller)-[:GIVES_CAPABILITY]->(capability:`type:Capability` {name: {1}}) " +
             "MATCH (group:Grouping{uuid:{2}})-[*1..]->(:Instance)-[:INSTANCE_OF|ISA*1..]->()<-[:PROVIDED_BY]-(controller)" +
             "RETURN controller")
     Set<Controller> findControllersPerCapability(String uuid, String name, String groupingUuid);

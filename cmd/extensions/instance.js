@@ -303,4 +303,34 @@ module.exports = function(vorpal, options) {
 
             helper.genericAuthCommandHandler(done, loggedIn, rest.getToken());
         });
+
+
+    vorpal.command('run capability <uuid>', 'Run a capability for an instance')
+        .action(function(args, done) {
+            const self = this;
+            const capabilityList = [
+                'Show','State', 'List','Identify','Detect', 'Verify', 'Create', 'Destroy','Execute', 'Guess'
+            ];
+
+            let createQuestions = (obj) => {
+                let keys = R.keys(obj);
+                return R.map(item => {
+                    let q = util.format('%s ::%s [%s]: ', item, obj[item].value.type, obj[item].isOptional ? 'optional' : 'required');
+                    return helper.generateQuestion(item, 'input', q);
+                }, keys);
+            };
+
+            let loggedIn = () => {
+                let q = helper.generateQuestion('capability', 'list', 'Select capability to run: ', {choices: capabilityList});
+                self.prompt(q, function(answer) {
+                    rest.runCapability(args.uuid, answer.capability)
+                        .then(result => {
+                            console.log(result);
+                            done();
+                        });
+                });
+            };
+
+            helper.genericAuthCommandHandler(done, loggedIn, rest.getToken());
+        });
 };
