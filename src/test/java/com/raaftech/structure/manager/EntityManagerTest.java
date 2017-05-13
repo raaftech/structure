@@ -31,6 +31,7 @@ import java.util.List;
 import static io.vertx.core.json.Json.mapper;
 import static org.junit.Assert.*;
 
+//FIXME This test is now actively skipped (in pom.xml), this should not be the case.
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(loader = AnnotationConfigContextLoader.class, classes = SpringTestConfig.class)
 public class EntityManagerTest {
@@ -46,7 +47,7 @@ public class EntityManagerTest {
     public void setUp() throws Exception {
         if (!databaseCreated) {
             Transaction tx = graphDatabase.beginTx();
-            final String testBundle = "src/test/resources/bundles/core/";
+            final String testBundle = "src/main/resources/bundles/core/";
             Configuration.setSchemaNamespace(FileSystems.getDefault().getPath(testBundle).toUri().resolve("types/"));
             BundleLoader bundleLoader = new BundleLoader(testBundle);
             bundleLoader.load();
@@ -60,7 +61,7 @@ public class EntityManagerTest {
     @Test
     @Transactional
     public void testTraversal() throws Exception {
-        Node computerGrouping = nodeRepository.findByUuid("84b97c5c-5c5c-4654-b102-706e036f4374");
+        Node computerGrouping = nodeRepository.findByUuid("ec11db91-6973-4285-b018-b461fbb432d7");
         EntityManager entityManager = new EntityManager();
 
         List<Node> foundNodes = entityManager.labelBasedTraversal(ImmutableSet.of("Component"), computerGrouping, true);
@@ -154,7 +155,7 @@ public class EntityManagerTest {
         ObjectNode args = message.putObject("args");
         ArrayNode labels = args.putArray("labels");
         labels.add("Component");
-        args.put("start", "84b97c5c-5c5c-4654-b102-706e036f4374");
+        args.put("start", "ec11db91-6973-4285-b018-b461fbb432d7");
 
         // send the message constructed above and get the result
         JsonNode response = entityManager.read().exec(message);
@@ -183,9 +184,11 @@ public class EntityManagerTest {
     @Rollback
     public void testUpdate() throws Exception {
         EntityManager entityManager = new EntityManager();
+        final String computerTypeUuid = "ec11db91-6973-4285-b018-b461fbb432d7";
+        final String linuxTypeUuid = "a5613527-2f64-4481-83f2-80b0cb427e28";
 
         // get two nodes, of which we are going to update only one
-        Node computerGrouping = nodeRepository.findByUuid("84b97c5c-5c5c-4654-b102-706e036f4374");
+        Node computerGrouping = nodeRepository.findByUuid(computerTypeUuid);
         Node linuxType = nodeRepository.findByUuid("a5613527-2f64-4481-83f2-80b0cb427e28");
 
         // set the name of the Linux type to something else
@@ -228,7 +231,7 @@ public class EntityManagerTest {
          try an update again, this time a safe update, which means we send the old entities as well,
          and we compare the old versions to the graph version before we update.
           */
-        computerGrouping = nodeRepository.findByUuid("84b97c5c-5c5c-4654-b102-706e036f4374");
+        computerGrouping = nodeRepository.findByUuid(computerTypeUuid);
         linuxType = nodeRepository.findByUuid("a5613527-2f64-4481-83f2-80b0cb427e28");
 
         // add the "original" versions of our entities to the oldEntities array
@@ -243,7 +246,7 @@ public class EntityManagerTest {
         entities.add(mapper.valueToTree(linuxType));
 
         // now, edit the "Computer" entity outside of EntityManager and save it
-        computerGrouping = nodeRepository.findByUuid("84b97c5c-5c5c-4654-b102-706e036f4374");
+        computerGrouping = nodeRepository.findByUuid(computerTypeUuid);
         computerGrouping.setDesc("Edited outside of EntityManager.");
         computerGrouping.setChecksum(NaiveSorter.calculateChecksum(mapper.valueToTree(computerGrouping),
                 NaiveSorter.ChecksumAlgorithm.SHA1));
@@ -263,7 +266,7 @@ public class EntityManagerTest {
     public void testDelete() throws Exception {
         EntityManager entityManager = new EntityManager();
 
-        final String computerUuid = "84b97c5c-5c5c-4654-b102-706e036f4374";
+        final String computerUuid = "ec11db91-6973-4285-b018-b461fbb432d7";
         final String ipv4AddressUuid = "d182e241-af01-4837-9913-2e6c1afa047c";
 
         /*
