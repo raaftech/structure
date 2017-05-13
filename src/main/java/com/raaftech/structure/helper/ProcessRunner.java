@@ -6,10 +6,12 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.nio.file.FileSystems;
 import java.nio.file.Paths;
 import java.nio.file.attribute.FileAttribute;
 import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.PosixFilePermissions;
+
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.Set;
@@ -52,7 +54,7 @@ public class ProcessRunner {
         try {
             processResult.process = command;
             processResult.stderr = tempErr != null ? Optional.of(readFile(tempErr.getPath())) : Optional.empty();
-            processResult.stdout = tempOut != null? Optional.of(readFile(tempOut.getPath())) : Optional.empty();
+            processResult.stdout = tempOut != null ? Optional.of(readFile(tempOut.getPath())) : Optional.empty();
             try {
                 processResult.returnCode = process != null ? Optional.of(process.exitValue()) : Optional.empty();
             } catch (IllegalThreadStateException e) {
@@ -93,22 +95,36 @@ public class ProcessRunner {
         // We use a TempFiles so we don't have to deal with
         // consuming buffers to avoid deadlocking. Most OS-es buffer new files in memory
         // first anyway, so reading these TempFiles should happen from memory.
-        // TODO: This is probably not portable, need to test on windows
-        FileAttribute<Set<PosixFilePermission>> attrs = PosixFilePermissions.asFileAttribute(
-                PosixFilePermissions.fromString("rw-------"));
-        tempOut = Files.createTempFile("out", null, attrs).toFile();
-        tempErr = Files.createTempFile("out", null, attrs).toFile();
+        tempOut = createTempFile("out");
+        tempErr = createTempFile("out");
 
         // Clean up our TempFiles
         tempOut.deleteOnExit();
         tempErr.deleteOnExit();
 
         // Setup our ProcessBuilder, redirecting stdout and stderr to our TempFiles
-        processBuilder.command(tokenizeCommand(command))
-                .redirectOutput(tempOut)
-                .redirectError(tempErr);
+        processBuilder.command(tokenizeCommand(command)).redirectOutput(tempOut).redirectError(tempErr);
         process = processBuilder.start();
+
     }
+
+    private static File createTempFile(String name) {
+        try {
+            if (isPosix) {
+                final Set<PosixFilePermission> perms = PosixFilePermissions.fromString("rw-------");
+                final FileAttribute<Set<PosixFilePermission>> attr = PosixFilePermissions.asFileAttribute(perms);
+                return Files.createTempFile(name, null, attr).toFile();
+            } else {
+                return Files.createTempFile(name, null).toFile();
+            }
+        } catch (final IOException e) {
+            log.error(String.format("Cannot create temporary file %s: ", name), e);
+            return null;
+        }
+    }
+
+    private static final boolean isPosix =
+    FileSystems.getDefault().supportedFileAttributeViews().contains("posix");
 
     private static String[] tokenizeCommand(String commandLine) {
         String[] tokens = commandLine.split("\\s");
@@ -116,43 +132,43 @@ public class ProcessRunner {
         State state = State.NORMAL;
         String currentNewToken = null;
 
-        for (String token: tokens) {
+        for (String token : tokens) {
             switch (state) {
-                case NORMAL:
-                    if (token.contains("\"")) {
-                        state = State.IN_DOUBLEQUOTES;
-                        currentNewToken = token.replace("\"", "");
-                        if ((token.length() - currentNewToken.length()) % 2 == 0) {
-                            process.add(currentNewToken);
-                            state = State.NORMAL;
-                        }
-                    } else if (token.contains("'")) {
-                        state = State.IN_QUOTES;
-                        currentNewToken = token.replace("'", "");
-                        if ((token.length() - currentNewToken.length()) % 2 == 0) {
-                            process.add(currentNewToken);
-                            state = State.NORMAL;
-                        }
-                    } else {
-                        process.add(token);
-                    }
-                    break;
-
-                case IN_DOUBLEQUOTES:
-                    currentNewToken = currentNewToken.concat(" " + token.replace("\"", ""));
-                    if (token.contains("\"")) {
+            case NORMAL:
+                if (token.contains("\"")) {
+                    state = State.IN_DOUBLEQUOTES;
+                    currentNewToken = token.replace("\"", "");
+                    if ((token.length() - currentNewToken.length()) % 2 == 0) {
                         process.add(currentNewToken);
                         state = State.NORMAL;
                     }
-                    break;
-
-                case IN_QUOTES:
-                    currentNewToken = currentNewToken.concat(" " + token.replace("'", ""));
-                    if (token.contains("'")) {
+                } else if (token.contains("'")) {
+                    state = State.IN_QUOTES;
+                    currentNewToken = token.replace("'", "");
+                    if ((token.length() - currentNewToken.length()) % 2 == 0) {
                         process.add(currentNewToken);
                         state = State.NORMAL;
                     }
-                    break;
+                } else {
+                    process.add(token);
+                }
+                break;
+
+            case IN_DOUBLEQUOTES:
+                currentNewToken = currentNewToken.concat(" " + token.replace("\"", ""));
+                if (token.contains("\"")) {
+                    process.add(currentNewToken);
+                    state = State.NORMAL;
+                }
+                break;
+
+            case IN_QUOTES:
+                currentNewToken = currentNewToken.concat(" " + token.replace("'", ""));
+                if (token.contains("'")) {
+                    process.add(currentNewToken);
+                    state = State.NORMAL;
+                }
+                break;
             }
         }
 
@@ -175,14 +191,11 @@ public class ProcessRunner {
 
         @Override
         public String toString() {
-            return "return code: " + returnCode + "\n" +
-                    "stdout: " + stdout + "\n" +
-                    "stderr: " + stderr;
+            return "return code: " + returnCode + "\n" + "stdout: " + stdout + "\n" + "stderr: " + stderr;
         }
 
         public ObjectNode toJson() {
-            ObjectNode json = mapper.createObjectNode()
-                    .put("process", process);
+            ObjectNode json = mapper.createObjectNode().put("process", process);
             if (returnCode.isPresent()) {
                 json.put("returnCode", returnCode.get());
             }

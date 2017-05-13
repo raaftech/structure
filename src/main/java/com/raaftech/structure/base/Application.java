@@ -177,7 +177,7 @@ public class Application {
         router.route("/schemas/:schema").handler(schemaManager::getSchema);
         router.route("/*").handler(StaticHandler.create().setWebRoot("src/main/resources/webroot/"));
 
-        
+
         // If we're in unsafe mode allow direct access to everything
         // on the eventbus and serve the debug page.
         if (Configuration.isUnsafeModeOn()) {
@@ -332,7 +332,7 @@ public class Application {
             if (Configuration.isTraceModeOn()) {
                 e.printStackTrace();
             }
-            log.trace(e.getMessage());
+            log.error("Failed to execute getHostName: " +  e.getMessage());
         }
         return stdout;
     }
