@@ -366,7 +366,7 @@
                     <target>${java.source-target.version}</target>
                     <useIncrementalCompilation>false</useIncrementalCompilation>
                     <compilerArgs>
-                        <arg>-Xlint:deprecation</arg>
+                        <arg>-Xlint:all</arg>
                     </compilerArgs>
                 </configuration>
             </plugin>

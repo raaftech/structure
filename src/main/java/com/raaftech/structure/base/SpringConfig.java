@@ -35,7 +35,6 @@ import org.springframework.data.neo4j.support.Neo4jTemplate;
 @ComponentScan(basePackages = "com.raaftech.structure",
         excludeFilters = {@ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = SpringTestConfig.class)})
 @EnableNeo4jRepositories("com.raaftech.structure.graph.repositories")
-@SuppressWarnings("deprecation")
 public class SpringConfig extends Neo4jConfiguration {
 
     private static final Logger log = LoggerFactory.getLogger(SpringConfig.class);
