@@ -1,0 +1,132 @@
+[
+    {
+        "type": "Type",
+        "name": "SMB",
+        "desc": "The server message block protocol.",
+        "meta": {
+            "uuid": "0771de77-c3d8-4db1-92fa-7ac96205f9bb",
+            "relations": {
+                "ISA": {
+                    "direction": "outgoing",
+                    "uuids": [
+                        "db0c3c65-52fd-4dec-907c-6c8a669e88f3"
+                    ]
+                }
+            }
+        },
+        "data": {
+            "glyphId": 210
+        },
+        "file": {
+            "dataSchema": {
+                "encoding": "text",
+                "format": "json",
+                "path": "../schema/smb.schema.json"
+            }
+        }
+    },
+    {
+        "type": "Type",
+        "name": "SMB10",
+        "desc": "The server message block protocol, version 1.0.",
+        "meta": {
+            "uuid": "70960db9-f085-499d-9d22-2569badc41c7",
+            "relations": {
+                "ISA": {
+                    "direction": "outgoing",
+                    "uuids": [
+                        "0771de77-c3d8-4db1-92fa-7ac96205f9bb"
+                    ]
+                }
+            }
+        },
+        "data": {
+            "glyphId": 210
+        },
+        "file": {
+            "dataSchema": {
+                "encoding": "text",
+                "format": "json",
+                "path": "../schema/smb10.schema.json"
+            }
+        }
+    },
+    {
+        "type": "Type",
+        "name": "SMB20",
+        "desc": "The server message block protocol, version 2.0.",
+        "meta": {
+            "uuid": "aeefff52-0300-4611-be60-e745bfbd3d37",
+            "relations": {
+                "ISA": {
+                    "direction": "outgoing",
+                    "uuids": [
+                        "0771de77-c3d8-4db1-92fa-7ac96205f9bb"
+                    ]
+                }
+            }
+        },
+        "data": {
+            "glyphId": 210
+        },
+        "file": {
+            "dataSchema": {
+                "encoding": "text",
+                "format": "json",
+                "path": "../schema/smb20.schema.json"
+            }
+        }
+    },
+    {
+        "type": "Type",
+        "name": "SMB21",
+        "desc": "The server message block protocol, version 2.1.",
+        "meta": {
+            "uuid": "5c7b0507-dfd9-4617-a45f-3d617cd61e68",
+            "relations": {
+                "ISA": {
+                    "direction": "outgoing",
+                    "uuids": [
+                        "0771de77-c3d8-4db1-92fa-7ac96205f9bb"
+                    ]
+                }
+            }
+        },
+        "data": {
+            "glyphId": 210
+        },
+        "file": {
+            "dataSchema": {
+                "encoding": "text",
+                "format": "json",
+                "path": "../schema/smb21.schema.json"
+            }
+        }
+    },
+    {
+        "type": "Type",
+        "name": "SMB30",
+        "desc": "The server message block protocol, version 3.0.",
+        "meta": {
+            "uuid": "dbfb220e-b22c-460e-b27d-65de22501618",
+            "relations": {
+                "ISA": {
+                    "direction": "outgoing",
+                    "uuids": [
+                        "0771de77-c3d8-4db1-92fa-7ac96205f9bb"
+                    ]
+                }
+            }
+        },
+        "data": {
+            "glyphId": 210
+        },
+        "file": {
+            "dataSchema": {
+                "encoding": "text",
+                "format": "json",
+                "path": "../schema/smb30.schema.json"
+            }
+        }
+    }
+]

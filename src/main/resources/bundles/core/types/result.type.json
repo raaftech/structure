@@ -1,0 +1,26 @@
+{
+    "type": "Type",
+    "name": "Result",
+    "desc": "A result from an operation.",
+    "meta": {
+        "uuid": "f3498c02-58c6-486b-87c6-9d54607fdb12",
+        "relations": {
+            "ISA": {
+                "direction": "outgoing",
+                "uuids": [
+                    "b1bc963a-19cc-4518-aecb-a35d028c49e3"
+                ]
+            }
+        }
+    },
+    "data": {
+        "glyphId": 207
+    },
+    "file": {
+        "dataSchema": {
+            "encoding": "text",
+            "format": "json",
+            "path": "../schema/result.schema.json"
+        }
+    }
+}

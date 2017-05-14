@@ -1,0 +1,32 @@
+{
+    "type": "Type",
+    "name": "SmbClient",
+    "desc": "A generic SMB/CIFS Client.",
+    "meta": {
+        "uuid": "7d1c7242-2403-4578-b6c4-789573ea3c45",
+        "relations": {
+            "ISA": {
+                "direction": "outgoing",
+                "uuids": [
+                    "bf1826d4-cff3-4b76-8cc9-cc752560a4bb"
+                ]
+            },
+            "IMPLEMENTS": {
+                "direction": "outgoing",
+                "uuids": [
+                    "0771de77-c3d8-4db1-92fa-7ac96205f9bb"
+                ]
+            }
+        }
+    },
+    "data": {
+        "glyphId": 223
+    },
+    "file": {
+        "dataSchema": {
+            "encoding": "text",
+            "format": "json",
+            "path": "../schema/smbclient.schema.json"
+        }
+    }
+}

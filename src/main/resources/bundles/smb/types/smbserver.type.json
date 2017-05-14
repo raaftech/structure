@@ -1,0 +1,32 @@
+{
+    "type": "Type",
+    "name": "SmbServer",
+    "desc": "A generic SMB/CIFS Server.",
+    "meta": {
+        "uuid": "65af133b-1a2c-4faa-8d2a-a288eaa4f412",
+        "relations": {
+            "ISA": {
+                "direction": "outgoing",
+                "uuids": [
+                    "3fb4603b-281e-47c0-b338-768ea05d4660"
+                ]
+            },
+            "IMPLEMENTS": {
+                "direction": "outgoing",
+                "uuids": [
+                    "0771de77-c3d8-4db1-92fa-7ac96205f9bb"
+                ]
+            }
+        }
+    },
+    "data": {
+        "glyphId": 224
+    },
+    "file": {
+        "dataSchema": {
+            "encoding": "text",
+            "format": "json",
+            "path": "../schema/smbserver.schema.json"
+        }
+    }
+}

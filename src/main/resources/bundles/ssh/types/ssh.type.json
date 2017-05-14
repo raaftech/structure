@@ -1,0 +1,80 @@
+[
+    {
+        "type": "Type",
+        "name": "SSH",
+        "desc": "The secure shell protocol.",
+        "meta": {
+            "uuid": "008b9566-6317-4ddd-977c-9ddca00b79b8",
+            "relations": {
+                "ISA": {
+                    "direction": "outgoing",
+                    "uuids": [
+                        "db0c3c65-52fd-4dec-907c-6c8a669e88f3"
+                    ]
+                }
+            }
+        },
+        "data": {
+            "glyphId": 211
+        },
+        "file": {
+            "dataSchema": {
+                "encoding": "text",
+                "format": "json",
+                "path": "../schema/ssh.schema.json"
+            }
+        }
+    },
+    {
+        "type": "Type",
+        "name": "SSH10",
+        "desc": "The secure shell protocol, version 1.0.",
+        "meta": {
+            "uuid": "000b0fd3-a121-4194-a441-0857abca490d",
+            "relations": {
+                "ISA": {
+                    "direction": "outgoing",
+                    "uuids": [
+                        "008b9566-6317-4ddd-977c-9ddca00b79b8"
+                    ]
+                }
+            }
+        },
+        "data": {
+            "glyphId": 211
+        },
+        "file": {
+            "dataSchema": {
+                "encoding": "text",
+                "format": "json",
+                "path": "../schema/ssh10.schema.json"
+            }
+        }
+    },
+    {
+        "type": "Type",
+        "name": "SSH20",
+        "desc": "The secure shell protocol, version 2.0.",
+        "meta": {
+            "uuid": "07b23795-140f-4a72-9c86-e1d3b86cd149",
+            "relations": {
+                "ISA": {
+                    "direction": "outgoing",
+                    "uuids": [
+                        "008b9566-6317-4ddd-977c-9ddca00b79b8"
+                    ]
+                }
+            }
+        },
+        "data": {
+            "glyphId": 211
+        },
+        "file": {
+            "dataSchema": {
+                "encoding": "text",
+                "format": "json",
+                "path": "../schema/ssh20.schema.json"
+            }
+        }
+    }
+]

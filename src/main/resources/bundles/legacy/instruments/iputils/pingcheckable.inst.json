@@ -100,7 +100,7 @@
     "dataSchema": {
       "encoding": "text",
       "format": "json",
-      "path": "../../types/schemas/controller.schema.json"
+      "path": "../../../core/schema/controller.schema.json"
     },
     "templateFile": {
       "encoding": "text",
