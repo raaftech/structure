@@ -212,6 +212,39 @@ public class InstanceActor extends NodeActor<Instance> {
      * A "taskId" (UUID string) might be provided as well, in case it was pre-generated.
      * Other arguments are the same as for "runInstrument", and they'll simply be passed along to the instrument runner.
      */
+
+    public MessageHandler getCapabilities() {
+        return new MessageHandler() {
+            @Override
+            public JsonNode exec(JsonNode request) {
+                ObjectNode result = mapper.createObjectNode();
+
+                Instance structure = INSTANCE_REPOSITORY.findByUuid(Context.getSelfIdentifier());
+                String originUuid = getNode().getUuid();
+
+                if (structure == null) {
+                    result.put("error", "Couldn't find structure node.");
+                    return response(request, result);
+                }
+
+                Set<Type> capabilities = instrumentRepository.findCapabilities(originUuid);
+
+                ObjectNode data = result.putObject("data");
+
+                capabilities.stream()
+                        .forEach(capability -> data.put(capability.getName(), capability.getUuid()));
+
+                return response(request, result);
+            }
+
+            @Override
+            public JsonNode help(JsonNode request) {
+                return null;
+            }
+        };
+    }
+
+
     @SchemaPath("resource:/schema/node/instance/runCapability.schema.json")
     @SuppressWarnings("unused")
     public MessageHandler runCapability() {

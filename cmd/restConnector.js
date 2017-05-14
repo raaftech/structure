@@ -161,6 +161,11 @@ class RestConnector {
             .then(result => result.json());
     }
 
+    getCapabilities(uuid) {
+        let url = util.format('%s/Instances/capabilities/%s', getBaseUrl(this.host,this.port),uuid);
+        return fetch(url).then(result => result.json());
+    }
+
     runCapability(uuid, capability) {
         let url = util.format('%s/Instances/exec/%s/on/%s?access_token=%s', getBaseUrl(this.host,this.port), capability, uuid, this.token);
         let args = {

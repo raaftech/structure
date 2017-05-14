@@ -280,7 +280,7 @@ module.exports = function(vorpal, options) {
             let loggedIn = () => {
                 rest.getInstruments(args.uuid)
                     .then(instruments => {
-                        self.log(instruments);
+                        //self.log(instruments);
                         availableInstruments = instruments;
                         let q = helper.generateQuestion('instrument', 'list', 'Select instrument: ', {choices: R.keys(instruments)});
                         self.prompt(q, function(result) {
@@ -308,27 +308,25 @@ module.exports = function(vorpal, options) {
     vorpal.command('run capability <uuid>', 'Run a capability for an instance')
         .action(function(args, done) {
             const self = this;
-            const capabilityList = [
-                'Show','State', 'List','Identify','Detect', 'Verify', 'Create', 'Destroy','Execute', 'Guess'
-            ];
-
-            let createQuestions = (obj) => {
-                let keys = R.keys(obj);
-                return R.map(item => {
-                    let q = util.format('%s ::%s [%s]: ', item, obj[item].value.type, obj[item].isOptional ? 'optional' : 'required');
-                    return helper.generateQuestion(item, 'input', q);
-                }, keys);
-            };
 
             let loggedIn = () => {
-                let q = helper.generateQuestion('capability', 'list', 'Select capability to run: ', {choices: capabilityList});
-                self.prompt(q, function(answer) {
-                    rest.runCapability(args.uuid, answer.capability)
-                        .then(result => {
-                            console.log(result);
+                rest.getCapabilities(args.uuid)
+                    .then(capabilities => {
+                        if(R.pipe(R.keys,R.length,R.equals(0))(capabilities)) {
+                            self.log('No capabilities found for this instance.');
                             done();
-                        });
-                });
+                        } else {
+                            let q = helper.generateQuestion('capability', 'list', 'Select capability to run: ', {choices: R.keys(capabilities)});
+                            self.prompt(q, function(answer) {
+                                rest.runCapability(args.uuid, answer.capability)
+                                    .then(result => {
+                                        console.log(result);
+                                        done();
+                                    });
+                            });
+                        }
+                    })
+                    .catch(helper.genericCatchHandler(done));
             };
 
             helper.genericAuthCommandHandler(done, loggedIn, rest.getToken());

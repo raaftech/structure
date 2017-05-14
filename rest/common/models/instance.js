@@ -186,6 +186,22 @@ module.exports = function (Instance) {
         description: 'Run an instrument on an instance'
     });
 
+
+    Instance.getCapabilities = function(instanceUuid, callback) {
+        const nodeAddress = baseAddress(['node',instanceUuid]);
+        evBus.sendEvent(nodeAddress, 'getCapabilities', {})
+            .then(result => callback(null, resultFetcher(result)))
+            .catch(ex => callback(ex));
+    };
+
+    Instance.remoteMethod('getCapabilities',{
+        accepts: [{arg: 'instanceUuid', type: 'string', required: true}],
+        returns: {root: true, type: 'object'},
+        http: {verb: 'get', path: '/capabilities/:instanceUuid'},
+        description: 'Fetch capability list for an instance'
+    });
+
+
     Instance.runCapability = function(instanceUuid, capability, callback) {
         const nodeAddress = baseAddress(['node',instanceUuid]);
         evBus.sendEvent(nodeAddress, 'runCapability', {capability: capability})
