@@ -455,7 +455,6 @@ public class Entity {
                 .put("Marker", ImmutableList.of("_Marker", "Marker", "Instrument", "Instance", "Node"))
                 .put("Parser", ImmutableList.of("_Parser", "Parser", "Instrument", "Instance", "Node"))
                 .put("Component", ImmutableList.of("_Component", "Component", "Instance", "Node"))
-                .put("Configuration", ImmutableList.of("_Configuration", "Configuration", "Instance", "Node"))
                 .put("Profile", ImmutableList.of("_Profile", "Profile", "Instance", "Node"))
                 .put("Actor", ImmutableList.of("_Actor", "Actor", "Instance", "Node"))
                 .put("Result", ImmutableList.of("_Result", "Result", "Instance", "Node"))

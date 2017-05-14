@@ -1,6 +1,6 @@
 package com.raaftech.structure.graph.repositories;
 
-import com.raaftech.structure.graph.Configuration;
+import com.raaftech.structure.graph.Component;
 import com.raaftech.structure.graph.Grouping;
 import com.raaftech.structure.graph.Instance;
 import org.springframework.data.neo4j.annotation.Query;
@@ -44,6 +44,6 @@ public interface InstanceRepository extends GenericRepository<Instance> {
     List<Instance> getNLastCreated(@Param("amount") int amount);
 
     @Query ("MATCH (n:`type:DnsName` {`data-dnsname`: {0}}) RETURN n")
-    Configuration findDnsName(String hostname);
+    Component findDnsName(String hostname);
 
 }

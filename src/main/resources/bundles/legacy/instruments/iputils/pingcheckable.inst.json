@@ -56,7 +56,7 @@
       "ipv4address": {
         "value": {
           "from": "origin",
-          "type": "type.configuration.ipaddress.ipv4address",
+          "type": "type.component.configuration.ipaddress.ipv4address",
           "strategy": "useFirst",
           "onError": "fail"
         },

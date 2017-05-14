@@ -152,7 +152,6 @@
             "Controller",
             "Parser",
             "Grouping",
-            "Configuration",
             "Profile",
             "Actor",
             "Result"
@@ -203,7 +202,6 @@
         "Controller",
         "Parser",
         "Grouping",
-        "Configuration",
         "Profile",
         "Actor",
         "Result"

@@ -95,10 +95,6 @@ public class Context implements ApplicationContextAware {
         return (GroupingRepository) context.getBean("groupingRepository");
     }
 
-    public static ConfigurationRepository getConfigurationRepository() {
-        return (ConfigurationRepository) context.getBean("configurationRepository");
-    }
-
     public static GraphDatabase getGraphDatabase() {
         return (GraphDatabase)context.getBean("graphDatabase");
     }

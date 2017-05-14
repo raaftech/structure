@@ -47,15 +47,6 @@ public class Component extends Instance {
     @Fetch
     private Component inComponent;
 
-    @RelatedTo(
-            type="HAS",
-            direction = Direction.OUTGOING,
-            elementClass = Configuration.class,
-            enforceTargetType = true
-    )
-    @Fetch
-    Set<Configuration> configurations;
-
     @Transient
     private static final InstanceRepository instanceRepository = Context.getInstanceRepository();
 
@@ -117,15 +108,6 @@ public class Component extends Instance {
         return components;
     }
 
-    public Set<Configuration> getConfigurations() {
-        if (configurations == null || configurations.isEmpty()) {
-            Transaction tx = Context.getGraphDatabase().beginTx();
-            Context.getNeo4jTemplate().fetch(components);
-            tx.close();
-        }
-        return configurations;
-    }
-
     /**
      * Get all the startOfResultChain belonging to this Instance while filtering on the task ID.
      * @param task The ID of the task.
@@ -179,17 +161,14 @@ public class Component extends Instance {
         arguments.add(super.toJson());
         BiFunction<BiFunction, Instance, Set<JsonNode>> consumeArgsHelper = (f, node) -> {
             final Set<Component> components;
-            final Set<Configuration> configurations;
             if (node instanceof Component) {
                 components = ((Component)node).getComponents();
-                configurations = ((Component)node).getConfigurations();
             } else {
                 components = Collections.emptySet();
-                configurations = Collections.emptySet();
             }
             final Set<JsonNode> childSet;
-            if (!components.isEmpty() || !configurations.isEmpty()) {
-                childSet = Stream.concat(components.stream(), configurations.stream())
+            if (!components.isEmpty()) {
+                childSet = components.stream()
                         .flatMap(instance -> ((Set<JsonNode>)f.apply(f, instance)).stream())
                         .collect(Collectors.toSet());
 //                Stream.concat(components.stream(), configurations.stream()).forEach(n -> f.accept(f, n));
@@ -205,8 +184,7 @@ public class Component extends Instance {
         // happening in consumeArgs. After calling consumeArgsHelper below, consumeArgsHelper is bound to 'f' in the lambda.
         Function<Instance, Set<JsonNode>> consumeArgs = node -> consumeArgsHelper.apply(consumeArgsHelper, node);
 
-        return Sets.union(getComponents().stream().map(consumeArgs).flatMap(Collection::stream).collect(Collectors.toSet()),
-                getConfigurations().stream().map(consumeArgs).flatMap(Collection::stream).collect(Collectors.toSet()));
+        return getComponents().stream().map(consumeArgs).flatMap(Collection::stream).collect(Collectors.toSet());
     }
 
     public ObjectNode deepToJson(int dimension) {

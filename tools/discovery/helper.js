@@ -247,7 +247,7 @@ class Helper {
     //DnsName
     dnsData(dns, ip) {
         let dnsd = this.getInstance('DnsName');
-        dnsd.type = 'Configuration';
+        dnsd.type = 'Component';
         dnsd.data = {
             name: dnsd.name,
             desc: dnsd.desc,
@@ -265,7 +265,7 @@ class Helper {
             addr: ip,
             reachable: reachable
         };
-        ipd.type = 'Configuration';
+        ipd.type = 'Component';
         return this.createInstance(ipd,'Ipv4Address');
     }
 
@@ -289,7 +289,7 @@ class Helper {
                         addr: ip,
                         reachable: true
                     };
-                    ipd.type = 'Configuration';
+                    ipd.type = 'Component';
                     result.push(this.createInstance(ipd,'Ipv6Address'));
                 }
             }, ansibleData.ipv6_addresses);

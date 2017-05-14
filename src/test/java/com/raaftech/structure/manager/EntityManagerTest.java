@@ -73,7 +73,7 @@ public class EntityManagerTest {
         assertTrue(!foundNodes.contains(computerGrouping));
 
         Node operatingSystem = nodeRepository.findByUuid("73eacb63-0c2c-4632-9b37-ee9e4d2bef75");
-        foundNodes = entityManager.labelBasedTraversal(ImmutableSet.of("Configuration"), operatingSystem, false);
+        foundNodes = entityManager.labelBasedTraversal(ImmutableSet.of("`type:Configuration`"), operatingSystem, false);
         assertEquals(2, foundNodes.size());
 
         Node linuxType = nodeRepository.findByUuid("a5613527-2f64-4481-83f2-80b0cb427e28");

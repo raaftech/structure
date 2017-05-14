@@ -5,7 +5,11 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.raaftech.structure.annotations.SchemaPath;
-import com.raaftech.structure.base.*;
+import com.raaftech.structure.base.Application;
+import com.raaftech.structure.base.Context;
+import com.raaftech.structure.base.GenericActor;
+import com.raaftech.structure.base.NodeActor;
+import com.raaftech.structure.graph.Component;
 import com.raaftech.structure.graph.Instance;
 import com.raaftech.structure.graph.repositories.*;
 import com.raaftech.structure.helper.ProcessRunner;
@@ -25,7 +29,6 @@ public class StructureManager extends GenericActor {
     TypeRepository typeRepository = Context.getTypeRepository();
     GroupingRepository groupingRepository = Context.getGroupingRepository();
     ResultRepository resultRepository = Context.getResultRepository();
-    ConfigurationRepository configurationRepository = Context.getConfigurationRepository();
     ComponentRepository componentRepository = Context.getComponentRepository();
     InstrumentRepository instrumentRepository = Context.getInstrumentRepository();
 
@@ -161,7 +164,7 @@ public class StructureManager extends GenericActor {
     private void selfDiscovery(String token) {
         // TODO: refactor, ugly as hell, but i had it ready so i'll reuse it.
         log.debug("Hostname is \"{}\"", Context.getHostname());
-        com.raaftech.structure.graph.Configuration host = Context.getInstanceRepository().findDnsName(Context.getHostname());
+        Component host = Context.getInstanceRepository().findDnsName(Context.getHostname());
         if (host == null) {
             log.info("Structure is not registered in the database, now discovering itself");
             ProcessRunner runner = new ProcessRunner("node tools/discovery/bootstrap.js -b -c localhost -t " + token);
@@ -215,7 +218,6 @@ public class StructureManager extends GenericActor {
                 graph.put("types", typeRepository.count());
                 graph.put("groupings", groupingRepository.count());
                 graph.put("results", resultRepository.count());
-                graph.put("configurations", configurationRepository.count());
                 graph.put("components", componentRepository.count());
                 graph.put("instruments", instrumentRepository.count());
 

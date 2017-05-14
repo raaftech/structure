@@ -184,7 +184,7 @@
     }
   },
   {
-    "type": "Configuration",
+    "type": "Component",
     "name": "Ipv4Listener",
     "desc": "An IPv4 listener (address and port, can be assigned to a network service).",
     "meta": {
@@ -204,7 +204,7 @@
     }
   },
   {
-    "type": "Configuration",
+    "type": "Component",
     "name": "Ipv4Listener",
     "desc": "An IPv4 listener (address and port, can be assigned to a network service).",
     "meta": {
@@ -224,7 +224,7 @@
     }
   },
   {
-    "type": "Configuration",
+    "type": "Component",
     "name": "Ipv4Address",
     "desc": "An IPv4 address (address only, can be assigned to a network interface).",
     "meta": {

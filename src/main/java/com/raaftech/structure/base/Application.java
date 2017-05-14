@@ -1,6 +1,7 @@
 package com.raaftech.structure.base;
 
 import ch.qos.logback.classic.Level;
+import com.raaftech.structure.graph.Component;
 import com.raaftech.structure.graph.Instance;
 import com.raaftech.structure.graph.repositories.InstanceRepository;
 import com.raaftech.structure.graph.repositories.TypeRepository;
@@ -303,7 +304,7 @@ public class Application {
         if (maybeHostname.isPresent()) {
             Context.setHostname(maybeHostname.get());
 
-            com.raaftech.structure.graph.Configuration host = Context.getInstanceRepository().findDnsName(Context.getHostname());
+            Component host = Context.getInstanceRepository().findDnsName(Context.getHostname());
             if (host != null) {
                 Instance structureInstance = Context.getInstanceRepository().getStartOfComponentGroup(host.getUuid());
                 if (structureInstance != null) {

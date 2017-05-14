@@ -98,17 +98,14 @@ public class Grouping extends Instance {
         arguments.add(super.toJson());
         BiFunction<BiFunction, Instance, Set<JsonNode>> consumeArgsHelper = (f, node) -> {
             final Set<Component> components;
-            final Set<Configuration> configurations;
             if (node instanceof Component) {
                 components = ((Component)node).getComponents();
-                configurations = ((Component)node).getConfigurations();
             } else {
                 components = Collections.emptySet();
-                configurations = Collections.emptySet();
             }
             final Set<JsonNode> childSet;
-            if (!components.isEmpty() || !configurations.isEmpty()) {
-                childSet = Stream.concat(components.stream(), configurations.stream())
+            if (!components.isEmpty()) {
+                childSet = components.stream()
                         .flatMap(instance -> ((Set<JsonNode>)f.apply(f, instance)).stream())
                         .collect(Collectors.toSet());
 //                Stream.concat(components.stream(), configurations.stream()).forEach(n -> f.accept(f, n));
