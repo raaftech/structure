@@ -1,0 +1,26 @@
+{
+    "type": "Type",
+    "name": "Interpreter",
+    "desc": "A command or programming language interpreter.",
+    "meta": {
+        "uuid": "d047f415-734c-4bd3-92b9-d68d5521ce69",
+        "relations": {
+            "ISA": {
+                "direction": "outgoing",
+                "uuids": [
+                    "8db2b492-9a4a-41fe-97a5-bc625da042ea"
+                ]
+            }
+        }
+    },
+    "data": {
+        "glyphId": 112
+    },
+    "file": {
+        "dataSchema": {
+            "encoding": "text",
+            "format": "json",
+            "path": "interpreter.schema.json"
+        }
+    }
+}

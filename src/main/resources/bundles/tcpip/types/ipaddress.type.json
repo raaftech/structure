@@ -51,31 +51,5 @@
                 "path": "../schema/ipv4address.schema.json"
             }
         }
-    },
-    {
-        "type": "Type",
-        "name": "Ipv6Address",
-        "desc": "An IPv6 address (address only, can be assigned to a network interface).",
-        "meta": {
-            "uuid": "47b5804d-5f5d-4bf8-89f6-a189c29b05ae",
-            "relations": {
-                "ISA": {
-                    "direction": "outgoing",
-                    "uuids": [
-                        "299001a6-1091-4c0d-87be-c512af03e179"
-                    ]
-                }
-            }
-        },
-        "data": {
-            "glyphId": 118
-        },
-        "file": {
-            "dataSchema": {
-                "encoding": "text",
-                "format": "json",
-                "path": "../schema/ipv6address.schema.json"
-            }
-        }
     }
 ]

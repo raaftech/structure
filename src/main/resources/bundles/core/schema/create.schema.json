@@ -7,11 +7,13 @@
       "$ref": "type.schema.json#/properties/name"
     },
     "system": {
-      "type": "boolean",
-      "description": "Is this capability for internal use?"
+      "$ref": "capability.schema.json#/properties/system"
     },
     "desc": {
       "$ref": "type.schema.json#/properties/desc"
+    },
+    "signature": {
+      "$ref": "capability.schema.json#/properties/signature"
     }
   },
   "required": [

@@ -1,6 +1,84 @@
 [
   {
     "type": "Type",
+    "name": "Ipv6Network",
+    "desc": "An IPv6 network.",
+    "meta": {
+      "uuid": "d5bb0276-fac4-46f8-b513-5f1c8142fa9b",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "ca419a9e-f71f-4bae-a948-f964a523336b"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 283
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/ipv6network.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Ipv6Address",
+    "desc": "An IPv6 address (address only, can be assigned to a network interface).",
+    "meta": {
+      "uuid": "47b5804d-5f5d-4bf8-89f6-a189c29b05ae",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "299001a6-1091-4c0d-87be-c512af03e179"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 118
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/ipv6address.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Ipv6Listener",
+    "desc": "An IPv6 listener (address and port, can be assigned to a network service).",
+    "meta": {
+      "uuid": "6a79b4e9-13ce-4a09-bc5b-b429d23b34d7",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "91c999a0-33ec-42ee-bae0-6f8adae42535"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 115
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/ipv6listener.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
     "name": "Url",
     "desc": "A uniform resource locator.",
     "meta": {
@@ -22,33 +100,6 @@
         "encoding": "text",
         "format": "json",
         "path": "schemas/url.schema.json"
-      }
-    }
-  },
-  {
-    "type": "Type",
-    "name": "DnsName",
-    "desc": "Either a short name or a fully-qualified domain name.",
-    "meta": {
-      "uuid": "99c0da37-3599-418d-8ecc-de36d37ae9f4",
-      "relations": {
-        "ISA": {
-          "direction": "outgoing",
-          "uuids": [
-            "3f4a43f7-b558-4bf0-ba7e-66b99cffaf16"
-          ]
-        }
-      },
-      "identity": "dnsname"
-    },
-    "data": {
-      "glyphId": 73
-    },
-    "file": {
-      "dataSchema": {
-        "encoding": "text",
-        "format": "json",
-        "path": "schemas/dnsname.schema.json"
       }
     }
   },
@@ -1042,32 +1093,6 @@
   },
   {
     "type": "Type",
-    "name": "Software",
-    "desc": "An abstract software component.",
-    "meta": {
-      "uuid": "8db2b492-9a4a-41fe-97a5-bc625da042ea",
-      "relations": {
-        "ISA": {
-          "direction": "outgoing",
-          "uuids": [
-            "a79ce509-a021-4177-ae61-73abd01fb479"
-          ]
-        }
-      }
-    },
-    "data": {
-      "glyphId": 226
-    },
-    "file": {
-      "dataSchema": {
-        "encoding": "text",
-        "format": "json",
-        "path": "schemas/software.schema.json"
-      }
-    }
-  },
-  {
-    "type": "Type",
     "name": "CloudSystem",
     "desc": "A cloud (operating) system and/or environment.",
     "meta": {
@@ -1089,58 +1114,6 @@
         "encoding": "text",
         "format": "json",
         "path": "schemas/cloudsystem.schema.json"
-      }
-    }
-  },
-  {
-    "type": "Type",
-    "name": "OperatingSystem",
-    "desc": "An operating system.",
-    "meta": {
-      "uuid": "f05e325e-1aee-4892-96e4-8bcd6e97c528",
-      "relations": {
-        "ISA": {
-          "direction": "outgoing",
-          "uuids": [
-            "8db2b492-9a4a-41fe-97a5-bc625da042ea"
-          ]
-        }
-      }
-    },
-    "data": {
-      "glyphId": 187
-    },
-    "file": {
-      "dataSchema": {
-        "encoding": "text",
-        "format": "json",
-        "path": "schemas/operatingsystem.schema.json"
-      }
-    }
-  },
-  {
-    "type": "Type",
-    "name": "ServiceManager",
-    "desc": "An operating system initialization system.",
-    "meta": {
-      "uuid": "c3008eec-b454-4ef6-bf7e-0bd92c13d3c3",
-      "relations": {
-        "ISA": {
-          "direction": "outgoing",
-          "uuids": [
-            "8db2b492-9a4a-41fe-97a5-bc625da042ea"
-          ]
-        }
-      }
-    },
-    "data": {
-      "glyphId": 218
-    },
-    "file": {
-      "dataSchema": {
-        "encoding": "text",
-        "format": "json",
-        "path": "schemas/servicemanager.schema.json"
       }
     }
   },
@@ -1198,7 +1171,7 @@
   },
   {
     "type": "Type",
-    "name": "Services",
+    "name": "SrvMan",
     "desc": "Windows Service Manager.",
     "meta": {
       "uuid": "21b82fbf-803c-4056-b914-502e2ff9952d",
@@ -1218,59 +1191,7 @@
       "dataSchema": {
         "encoding": "text",
         "format": "json",
-        "path": "schemas/services.schema.json"
-      }
-    }
-  },
-  {
-    "type": "Type",
-    "name": "PackageManager",
-    "desc": "A package manager.",
-    "meta": {
-      "uuid": "e2b8b9ee-b66f-4252-8fba-4fb172f741bc",
-      "relations": {
-        "ISA": {
-          "direction": "outgoing",
-          "uuids": [
-            "8db2b492-9a4a-41fe-97a5-bc625da042ea"
-          ]
-        }
-      }
-    },
-    "data": {
-      "glyphId": 193
-    },
-    "file": {
-      "dataSchema": {
-        "encoding": "text",
-        "format": "json",
-        "path": "schemas/packagemanager.schema.json"
-      }
-    }
-  },
-  {
-    "type": "Type",
-    "name": "Interpreter",
-    "desc": "A command or programming language interpreter.",
-    "meta": {
-      "uuid": "d047f415-734c-4bd3-92b9-d68d5521ce69",
-      "relations": {
-        "ISA": {
-          "direction": "outgoing",
-          "uuids": [
-            "8db2b492-9a4a-41fe-97a5-bc625da042ea"
-          ]
-        }
-      }
-    },
-    "data": {
-      "glyphId": 112
-    },
-    "file": {
-      "dataSchema": {
-        "encoding": "text",
-        "format": "json",
-        "path": "schemas/interpreter.schema.json"
+        "path": "schemas/srvman.schema.json"
       }
     }
   },
@@ -1323,92 +1244,6 @@
         "encoding": "text",
         "format": "json",
         "path": "schemas/emulator.schema.json"
-      }
-    }
-  },
-  {
-    "type": "Type",
-    "name": "Server",
-    "desc": "A generic local/networked/daemonized server.",
-    "meta": {
-      "uuid": "3fb4603b-281e-47c0-b338-768ea05d4660",
-      "relations": {
-        "ISA": {
-          "direction": "outgoing",
-          "uuids": [
-            "8db2b492-9a4a-41fe-97a5-bc625da042ea"
-          ]
-        }
-      }
-    },
-    "data": {
-      "glyphId": 217
-    },
-    "file": {
-      "dataSchema": {
-        "encoding": "text",
-        "format": "json",
-        "path": "schemas/server.schema.json"
-      }
-    }
-  },
-  {
-    "type": "Type",
-    "name": "Client",
-    "desc": "A generic client.",
-    "meta": {
-      "uuid": "8f371b1b-52a3-4409-be70-9cd947bec8dd",
-      "relations": {
-        "ISA": {
-          "direction": "outgoing",
-          "uuids": [
-            "8db2b492-9a4a-41fe-97a5-bc625da042ea"
-          ]
-        }
-      }
-    },
-    "data": {
-      "glyphId": 58
-    },
-    "file": {
-      "dataSchema": {
-        "encoding": "text",
-        "format": "json",
-        "path": "schemas/client.schema.json"
-      }
-    }
-  },
-  {
-    "type": "Type",
-    "name": "Grouping",
-    "desc": "A group of references to things.",
-    "meta": {
-      "uuid": "5f1eb7c5-ec5e-4563-be6a-fc50774fc374",
-      "relations": {
-        "ISA": {
-          "direction": "outgoing",
-          "uuids": [
-            "b1bc963a-19cc-4518-aecb-a35d028c49e3"
-          ]
-        }
-      },
-      "constraints": {
-        "GROUPS": [
-          {
-            "cardinality": "OPTIONAL_TO_MANY",
-            "to": "b1bc963a-19cc-4518-aecb-a35d028c49e3"
-          }
-        ]
-      }
-    },
-    "data": {
-      "glyphId": 95
-    },
-    "file": {
-      "dataSchema": {
-        "encoding": "text",
-        "format": "json",
-        "path": "schemas/grouping.schema.json"
       }
     }
   },
@@ -1622,78 +1457,6 @@
   },
   {
     "type": "Type",
-    "name": "Componental",
-    "desc": "A group for organizing references to components.",
-    "meta": {
-      "uuid": "ee92c308-80f4-40b2-af3a-77d26cd99517",
-      "relations": {
-        "ISA": {
-          "direction": "outgoing",
-          "uuids": [
-            "5f1eb7c5-ec5e-4563-be6a-fc50774fc374"
-          ]
-        }
-      },
-      "constraints": {
-        "GROUPS": [
-          {
-            "cardinality": "OPTIONAL_TO_MANY",
-            "to": "a79ce509-a021-4177-ae61-73abd01fb479"
-          }
-        ]
-      }
-    },
-    "data": {
-      "glyphId": 62
-    },
-    "file": {
-      "dataSchema": {
-        "encoding": "text",
-        "format": "json",
-        "path": "schemas/componental.schema.json"
-      }
-    }
-  },
-  {
-    "type": "Type",
-    "name": "Computer",
-    "desc": "An assembled computer device.",
-    "meta": {
-      "uuid": "ec11db91-6973-4285-b018-b461fbb432d7",
-      "relations": {
-        "ISA": {
-          "direction": "outgoing",
-          "uuids": [
-            "ee92c308-80f4-40b2-af3a-77d26cd99517"
-          ]
-        }
-      },
-      "constraints": {
-        "GROUPS": [
-          {
-            "cardinality": "OPTIONAL_TO_MANY",
-            "to": "ea6a7487-867c-4a74-8849-fb8539b8169f"
-          },
-          {
-            "cardinality": "OPTIONAL_TO_MANY",
-            "to": "f05e325e-1aee-4892-96e4-8bcd6e97c528"
-          }
-        ]
-      }
-    },
-    "data": {
-      "glyphId": 63
-    },
-    "file": {
-      "dataSchema": {
-        "encoding": "text",
-        "format": "json",
-        "path": "schemas/computer.schema.json"
-      }
-    }
-  },
-  {
-    "type": "Type",
     "name": "Actor",
     "desc": "Something or someone that interacts/starts/acts within the system.",
     "meta": {
@@ -1772,36 +1535,10 @@
   },
   {
     "type": "Type",
-    "name": "Capability",
-    "desc": "A software component gives capabilities to its parent or to siblings.",
+    "name": "Access",
+    "desc": "A capability that makes it possible to access a textual or graphical console.",
     "meta": {
-      "uuid": "916e04a9-c773-4eaf-9c08-450016426e5a",
-      "relations": {
-        "ISA": {
-          "direction": "outgoing",
-          "uuids": [
-            "b1bc963a-19cc-4518-aecb-a35d028c49e3"
-          ]
-        }
-      }
-    },
-    "data": {
-      "glyphId": 54
-    },
-    "file": {
-      "dataSchema": {
-        "encoding": "text",
-        "format": "json",
-        "path": "schemas/capability.schema.json"
-      }
-    }
-  },
-  {
-    "type": "Type",
-    "name": "State",
-    "desc": "A capability that makes it possible to state-check.",
-    "meta": {
-      "uuid": "b3cfd296-1090-43c0-ac2e-00e5d7fe7779",
+      "uuid": "20d9b0db-92b2-42a7-93d9-f86e00312fef",
       "relations": {
         "ISA": {
           "direction": "outgoing",
@@ -1812,117 +1549,13 @@
       }
     },
     "data": {
-      "glyphId": 235
+      "glyphId": 33
     },
     "file": {
       "dataSchema": {
         "encoding": "text",
         "format": "json",
-        "path": "schemas/state.schema.json"
-      }
-    }
-  },
-  {
-    "type": "Type",
-    "name": "Stop",
-    "desc": "A capability that makes it possible to stop something.",
-    "meta": {
-      "uuid": "632ca701-2648-4df5-87ee-a41d3d1ef3da",
-      "relations": {
-        "ISA": {
-          "direction": "outgoing",
-          "uuids": [
-            "916e04a9-c773-4eaf-9c08-450016426e5a"
-          ]
-        }
-      }
-    },
-    "data": {
-      "glyphId": 236
-    },
-    "file": {
-      "dataSchema": {
-        "encoding": "text",
-        "format": "json",
-        "path": "schemas/stop.schema.json"
-      }
-    }
-  },
-  {
-    "type": "Type",
-    "name": "Start",
-    "desc": "A capability that makes it possible to stop something.",
-    "meta": {
-      "uuid": "347ca5da-db19-4d98-9fed-60e72d5d6bba",
-      "relations": {
-        "ISA": {
-          "direction": "outgoing",
-          "uuids": [
-            "916e04a9-c773-4eaf-9c08-450016426e5a"
-          ]
-        }
-      }
-    },
-    "data": {
-      "glyphId": 234
-    },
-    "file": {
-      "dataSchema": {
-        "encoding": "text",
-        "format": "json",
-        "path": "schemas/start.schema.json"
-      }
-    }
-  },
-  {
-    "type": "Type",
-    "name": "Restart",
-    "desc": "A capability that makes it possible to restart something.",
-    "meta": {
-      "uuid": "cc558715-63dc-4162-95a4-9c51792c7953",
-      "relations": {
-        "ISA": {
-          "direction": "outgoing",
-          "uuids": [
-            "916e04a9-c773-4eaf-9c08-450016426e5a"
-          ]
-        }
-      }
-    },
-    "data": {
-      "glyphId": 206
-    },
-    "file": {
-      "dataSchema": {
-        "encoding": "text",
-        "format": "json",
-        "path": "schemas/restart.schema.json"
-      }
-    }
-  },
-  {
-    "type": "Type",
-    "name": "Install",
-    "desc": "A capability that makes it possible to install something.",
-    "meta": {
-      "uuid": "3c077211-0ffa-452f-8d84-5bd5be5598f5",
-      "relations": {
-        "ISA": {
-          "direction": "outgoing",
-          "uuids": [
-            "916e04a9-c773-4eaf-9c08-450016426e5a"
-          ]
-        }
-      }
-    },
-    "data": {
-      "glyphId": 110
-    },
-    "file": {
-      "dataSchema": {
-        "encoding": "text",
-        "format": "json",
-        "path": "schemas/install.schema.json"
+        "path": "schemas/access.schema.json"
       }
     }
   },
@@ -1954,6 +1587,32 @@
   },
   {
     "type": "Type",
+    "name": "Install",
+    "desc": "A capability that makes it possible to install something.",
+    "meta": {
+      "uuid": "3c077211-0ffa-452f-8d84-5bd5be5598f5",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "916e04a9-c773-4eaf-9c08-450016426e5a"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 110
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/install.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
     "name": "Uninstall",
     "desc": "A capability that makes it possible to uninstall something.",
     "meta": {
@@ -1975,420 +1634,6 @@
         "encoding": "text",
         "format": "json",
         "path": "schemas/uninstall.schema.json"
-      }
-    }
-  },
-  {
-    "type": "Type",
-    "name": "Create",
-    "desc": "Create a (selection of) adjacent entities. Can create children or parents.",
-    "meta": {
-      "uuid": "b0995f9f-90af-4066-9d00-6b7b33f9a19b",
-      "relations": {
-        "ISA": {
-          "direction": "outgoing",
-          "uuids": [
-            "916e04a9-c773-4eaf-9c08-450016426e5a"
-          ]
-        }
-      }
-    },
-    "data": {
-      "glyphId": 67
-    },
-    "file": {
-      "dataSchema": {
-        "encoding": "text",
-        "format": "json",
-        "path": "schemas/create.schema.json"
-      }
-    }
-  },
-  {
-    "type": "Type",
-    "name": "Destroy",
-    "desc": "Destroy self or (selection of) adjacent entities (recursively). Can only destroy children, not parents.",
-    "meta": {
-      "uuid": "cdb08b91-5998-4f7c-9b82-b345b8052ecd",
-      "relations": {
-        "ISA": {
-          "direction": "outgoing",
-          "uuids": [
-            "916e04a9-c773-4eaf-9c08-450016426e5a"
-          ]
-        }
-      }
-    },
-    "data": {
-      "glyphId": 71
-    },
-    "file": {
-      "dataSchema": {
-        "encoding": "text",
-        "format": "json",
-        "path": "schemas/destroy.schema.json"
-      }
-    }
-  },
-  {
-    "type": "Type",
-    "name": "Execute",
-    "desc": "A capability that makes it possible to run commands.",
-    "meta": {
-      "uuid": "76fb3116-d4a8-459a-b62b-a2641bcb7e7d",
-      "relations": {
-        "ISA": {
-          "direction": "outgoing",
-          "uuids": [
-            "916e04a9-c773-4eaf-9c08-450016426e5a"
-          ]
-        }
-      }
-    },
-    "data": {
-      "glyphId": 84
-    },
-    "file": {
-      "dataSchema": {
-        "encoding": "text",
-        "format": "json",
-        "path": "schemas/execute.schema.json"
-      }
-    }
-  },
-  {
-    "type": "Type",
-    "name": "Detect",
-    "desc": "A capability that makes it possible for a component to detect itself.",
-    "meta": {
-      "uuid": "3c170a27-05ee-4999-97d4-e7cc9135cb96",
-      "relations": {
-        "ISA": {
-          "direction": "outgoing",
-          "uuids": [
-            "916e04a9-c773-4eaf-9c08-450016426e5a"
-          ]
-        }
-      }
-    },
-    "data": {
-      "glyphId": 73
-    },
-    "file": {
-      "dataSchema": {
-        "encoding": "text",
-        "format": "json",
-        "path": "schemas/detect.schema.json"
-      }
-    }
-  },
-  {
-    "type": "Type",
-    "name": "List",
-    "desc": "A capability that makes it possible to list adjacent entities that are children of the current entity.",
-    "meta": {
-      "uuid": "61cde9d0-3aa2-4951-aaa8-79e5656dac41",
-      "relations": {
-        "ISA": {
-          "direction": "outgoing",
-          "uuids": [
-            "916e04a9-c773-4eaf-9c08-450016426e5a"
-          ]
-        }
-      }
-    },
-    "data": {},
-    "file": {
-      "dataSchema": {
-        "encoding": "text",
-        "format": "json",
-        "path": "schemas/list.schema.json"
-      }
-    }
-  },
-  {
-    "type": "Type",
-    "name": "Identify",
-    "desc": "A capability that makes it possible to identify (version, name, etc) something.",
-    "meta": {
-      "uuid": "ca49051c-d7d1-45fa-b327-0f4dca810897",
-      "relations": {
-        "ISA": {
-          "direction": "outgoing",
-          "uuids": [
-            "916e04a9-c773-4eaf-9c08-450016426e5a"
-          ]
-        }
-      }
-    },
-    "data": {
-      "glyphId": 108
-    },
-    "file": {
-      "dataSchema": {
-        "encoding": "text",
-        "format": "json",
-        "path": "schemas/identify.schema.json"
-      }
-    }
-  },
-  {
-    "type": "Type",
-    "name": "SendString",
-    "desc": "A capability that makes it possible to send a string over a protocol.",
-    "meta": {
-      "uuid": "64ca8ff9-8071-4933-95d0-bbacb97bd4a8",
-      "relations": {
-        "ISA": {
-          "direction": "outgoing",
-          "uuids": [
-            "916e04a9-c773-4eaf-9c08-450016426e5a"
-          ]
-        }
-      }
-    },
-    "data": {
-      "glyphId": 216
-    },
-    "file": {
-      "dataSchema": {
-        "encoding": "text",
-        "format": "json",
-        "path": "schemas/sendstring.schema.json"
-      }
-    }
-  },
-  {
-    "type": "Type",
-    "name": "ReceiveString",
-    "desc": "A capability that makes it possible to receive a string over a protocol.",
-    "meta": {
-      "uuid": "8292da1f-75de-41d6-a8fb-cdcca6700ad9",
-      "relations": {
-        "ISA": {
-          "direction": "outgoing",
-          "uuids": [
-            "916e04a9-c773-4eaf-9c08-450016426e5a"
-          ]
-        }
-      }
-    },
-    "data": {
-      "glyphId": 204
-    },
-    "file": {
-      "dataSchema": {
-        "encoding": "text",
-        "format": "json",
-        "path": "schemas/receivestring.schema.json"
-      }
-    }
-  },
-  {
-    "type": "Type",
-    "name": "SendFile",
-    "desc": "A capability that makes it possible to send a file over a protocol.",
-    "meta": {
-      "uuid": "371d336a-d328-4468-9b0f-40877bb5b646",
-      "relations": {
-        "ISA": {
-          "direction": "outgoing",
-          "uuids": [
-            "916e04a9-c773-4eaf-9c08-450016426e5a"
-          ]
-        }
-      }
-    },
-    "data": {
-      "glyphId": 215
-    },
-    "file": {
-      "dataSchema": {
-        "encoding": "text",
-        "format": "json",
-        "path": "schemas/sendfile.schema.json"
-      }
-    }
-  },
-  {
-    "type": "Type",
-    "name": "ReceiveFile",
-    "desc": "A capability that makes it possible to receive a file over a protocol.",
-    "meta": {
-      "uuid": "f2ba58a6-0934-4f0e-b9cf-1a7430a3fa7a",
-      "relations": {
-        "ISA": {
-          "direction": "outgoing",
-          "uuids": [
-            "916e04a9-c773-4eaf-9c08-450016426e5a"
-          ]
-        }
-      }
-    },
-    "data": {
-      "glyphId": 203
-    },
-    "file": {
-      "dataSchema": {
-        "encoding": "text",
-        "format": "json",
-        "path": "schemas/receivefile.schema.json"
-      }
-    }
-  },
-  {
-    "type": "Type",
-    "name": "Invoke",
-    "desc": "A capability that makes it possible to invoke a command to execute.",
-    "meta": {
-      "uuid": "4251040d-f05c-4711-8094-59ce773a8c35",
-      "relations": {
-        "ISA": {
-          "direction": "outgoing",
-          "uuids": [
-            "916e04a9-c773-4eaf-9c08-450016426e5a"
-          ]
-        }
-      }
-    },
-    "data": {
-      "glyphId": 113
-    },
-    "file": {
-      "dataSchema": {
-        "encoding": "text",
-        "format": "json",
-        "path": "schemas/invoke.schema.json"
-      }
-    }
-  },
-  {
-    "type": "Type",
-    "name": "Access",
-    "desc": "A capability that makes it possible to access a textual or graphical console.",
-    "meta": {
-      "uuid": "20d9b0db-92b2-42a7-93d9-f86e00312fef",
-      "relations": {
-        "ISA": {
-          "direction": "outgoing",
-          "uuids": [
-            "916e04a9-c773-4eaf-9c08-450016426e5a"
-          ]
-        }
-      }
-    },
-    "data": {
-      "glyphId": 33
-    },
-    "file": {
-      "dataSchema": {
-        "encoding": "text",
-        "format": "json",
-        "path": "schemas/access.schema.json"
-      }
-    }
-  },
-  {
-    "type": "Type",
-    "name": "Verify",
-    "desc": "A capability that verifies if the current type of the entity is correct. Should return true or false.",
-    "meta": {
-      "uuid": "0a76202b-a6dc-4fe0-91b6-02953c5b7536",
-      "relations": {
-        "ISA": {
-          "direction": "outgoing",
-          "uuids": [
-            "916e04a9-c773-4eaf-9c08-450016426e5a"
-          ]
-        }
-      }
-    },
-    "data": {
-      "glyphId": 0
-    },
-    "file": {
-      "dataSchema": {
-        "encoding": "text",
-        "format": "json",
-        "path": "schemas/verify.schema.json"
-      }
-    }
-  },
-  {
-    "type": "Type",
-    "name": "Show",
-    "desc": "A capability that prints a (entity.schema.json compliant) representation of itself. The data returned is exactly what is currently in the graph, not neccessarily what is true out there.",
-    "meta": {
-      "uuid": "09cc6320-8565-41f7-bdc4-f1950d649be6",
-      "relations": {
-        "ISA": {
-          "direction": "outgoing",
-          "uuids": [
-            "916e04a9-c773-4eaf-9c08-450016426e5a"
-          ]
-        }
-      }
-    },
-    "data": {
-      "glyphId": 0
-    },
-    "file": {
-      "dataSchema": {
-        "encoding": "text",
-        "format": "json",
-        "path": "schemas/show.schema.json"
-      }
-    }
-  },
-  {
-    "type": "Type",
-    "name": "Update",
-    "desc": "This capability gathers the verify routine of the current Type and all ancestor types of that Type and runs them; for the ones that return true, select the most-specialized Type and run Identify.  Use that data to Update the current entity. Update in this case means: adjust instanceOf Type relation and update Node properties with identified data.",
-    "meta": {
-      "uuid": "f66d5a2d-5697-4f9f-8e35-2417668ba773",
-      "relations": {
-        "ISA": {
-          "direction": "outgoing",
-          "uuids": [
-            "916e04a9-c773-4eaf-9c08-450016426e5a"
-          ]
-        }
-      }
-    },
-    "data": {
-      "glyphId": 0
-    },
-    "file": {
-      "dataSchema": {
-        "encoding": "text",
-        "format": "json",
-        "path": "schemas/update.schema.json"
-      }
-    }
-  },
-  {
-    "type": "Type",
-    "name": "Guess",
-    "desc": "Sometimes you cannot actually detect a thing from where you are. Let's take for example an Ipv4Address type. An Ipv4Address might have constraints that say: \"has, outgoing, to Ipv4Listener\" and \"has, incoming, from OperatingSystem\". The listeners you can actually detect, but the operating system you cannot, but you can guess! A guess is the same as a detect but it returns a much more abstract instance of something. In our case, we would return an instance of OperatingSystem and relate it according to the constraints rules. The neat thing is that that instance actually becomes a new path to traverse to further discover the topology of the system (probably you would recurse to that instance of a very abstract operating system and ask it to verify and update itself, thus providing you with the more correct truth. See verify, show and update capabilities for more details).",
-    "meta": {
-      "uuid": "2d427cde-5fcd-425e-91ef-b660f009581f",
-      "relations": {
-        "ISA": {
-          "direction": "outgoing",
-          "uuids": [
-            "916e04a9-c773-4eaf-9c08-450016426e5a"
-          ]
-        }
-      }
-    },
-    "data": {
-      "glyphId": 0
-    },
-    "file": {
-      "dataSchema": {
-        "encoding": "text",
-        "format": "json",
-        "path": "schemas/guess.schema.json"
       }
     }
   },

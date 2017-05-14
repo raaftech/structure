@@ -1,0 +1,26 @@
+  {
+    "type": "Type",
+    "name": "Service",
+    "desc": "A generic local/networked/daemonized service.",
+    "meta": {
+      "uuid": "3fb4603b-281e-47c0-b338-768ea05d4660",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "8db2b492-9a4a-41fe-97a5-bc625da042ea"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 217
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "../schema/service.schema.json"
+      }
+    }
+  }

@@ -211,7 +211,7 @@ questions that need answers:
 // Company - A company can contain references to departments, teams, users.
 // Department - A department can contain references to teams, users.
 // Team - A team can contain references to users.
-// Componental - A convenience group for organizing references to components.
+// Component - A convenience group for organizing references to components.
 
 // Actor - Something or someone that interacts/starts/acts.
 // User - Users. Interact with the system.

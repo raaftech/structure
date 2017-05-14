@@ -11,6 +11,9 @@
     },
     "desc": {
       "$ref": "type.schema.json#/properties/desc"
+    },
+    "signature": {
+      "$ref": "capability.schema.json#/properties/signature"
     }
   },
   "required": [

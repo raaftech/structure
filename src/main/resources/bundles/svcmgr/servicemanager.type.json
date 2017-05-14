@@ -1,0 +1,26 @@
+{
+    "type": "Type",
+    "name": "ServiceManager",
+    "desc": "An operating system initialization system.",
+    "meta": {
+        "uuid": "c3008eec-b454-4ef6-bf7e-0bd92c13d3c3",
+        "relations": {
+            "ISA": {
+                "direction": "outgoing",
+                "uuids": [
+                    "8db2b492-9a4a-41fe-97a5-bc625da042ea"
+                ]
+            }
+        }
+    },
+    "data": {
+        "glyphId": 218
+    },
+    "file": {
+        "dataSchema": {
+            "encoding": "text",
+            "format": "json",
+            "path": "servicemanager.schema.json"
+        }
+    }
+}

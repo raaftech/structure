@@ -50,31 +50,5 @@
                 "path": "../schema/ipv4listener.schema.json"
             }
         }
-    },
-    {
-        "type": "Type",
-        "name": "Ipv6Listener",
-        "desc": "An IPv6 listener (address and port, can be assigned to a network service).",
-        "meta": {
-            "uuid": "6a79b4e9-13ce-4a09-bc5b-b429d23b34d7",
-            "relations": {
-                "ISA": {
-                    "direction": "outgoing",
-                    "uuids": [
-                        "91c999a0-33ec-42ee-bae0-6f8adae42535"
-                    ]
-                }
-            }
-        },
-        "data": {
-            "glyphId": 115
-        },
-        "file": {
-            "dataSchema": {
-                "encoding": "text",
-                "format": "json",
-                "path": "../schema/ipv6listener.schema.json"
-            }
-        }
     }
 ]

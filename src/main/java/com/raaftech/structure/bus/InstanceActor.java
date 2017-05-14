@@ -169,7 +169,7 @@ public class InstanceActor extends NodeActor<Instance> {
                     if (foundInstruments.size() == 1) {
                         instrument = (Controller)foundInstruments.iterator().next();
                     } else {
-                        // get the one that applies to this componental group
+                        // get the one that applies to this component group
                         String originUuid = getNode().getUuid();
                         Instance startOfComponentGroup = INSTANCE_REPOSITORY
                                 .getStartOfComponentGroup(originUuid);
