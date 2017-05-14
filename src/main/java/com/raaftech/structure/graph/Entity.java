@@ -1,4 +1,4 @@
-package com.raaftech.structure.next;
+package com.raaftech.structure.graph;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -7,8 +7,6 @@ import com.google.common.collect.ImmutableMap;
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.exceptions.IllegalEntityType;
 import com.raaftech.structure.exceptions.TypeUnknownException;
-import com.raaftech.structure.graph.Constraint;
-import com.raaftech.structure.graph.Type;
 import com.raaftech.structure.graph.repositories.InstanceRepository;
 import com.raaftech.structure.graph.repositories.NodeRepository;
 import com.raaftech.structure.graph.repositories.TypeRepository;

@@ -1,4 +1,4 @@
-package com.raaftech.structure.manager;
+package com.raaftech.structure.actor.manager;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -10,7 +10,7 @@ import com.raaftech.structure.graph.Node;
 import com.raaftech.structure.graph.repositories.NodeRepository;
 import com.raaftech.structure.helper.loader.BundleLoader;
 import com.raaftech.structure.helper.loader.NaiveSorter;
-import com.raaftech.structure.next.Entity;
+import com.raaftech.structure.graph.Entity;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,7 +23,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.util.Iterator;
 import java.util.List;

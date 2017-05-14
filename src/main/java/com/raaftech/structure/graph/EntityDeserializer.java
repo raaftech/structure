@@ -1,4 +1,4 @@
-package com.raaftech.structure.next;
+package com.raaftech.structure.graph;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
@@ -11,7 +11,6 @@ import com.google.common.collect.ImmutableSet;
 import com.raaftech.structure.base.Configuration;
 import com.raaftech.structure.exceptions.EntityDeserializationException;
 import com.raaftech.structure.exceptions.JsonValidationException;
-import com.raaftech.structure.graph.Constraint;
 import com.raaftech.structure.helper.JsonHelper;
 import com.raaftech.structure.helper.Triple;
 import com.raaftech.structure.helper.loader.NaiveSorter;

@@ -6,8 +6,6 @@ import com.raaftech.structure.graph.repositories.NodeRepository;
 import com.raaftech.structure.helper.JsonHelper;
 import com.raaftech.structure.helper.Triple;
 import com.raaftech.structure.helper.loader.BundleLoader;
-import com.raaftech.structure.helper.loader.NaiveSorter;
-import com.raaftech.structure.next.Entity;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,7 +15,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
 import java.net.URI;
 import java.util.Set;
 

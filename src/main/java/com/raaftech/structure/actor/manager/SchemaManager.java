@@ -1,4 +1,4 @@
-package com.raaftech.structure.manager;
+package com.raaftech.structure.actor.manager;
 
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.graph.Type;

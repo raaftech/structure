@@ -1,4 +1,4 @@
-package com.raaftech.structure.node;
+package com.raaftech.structure.actor;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.raaftech.structure.annotations.SchemaPath;
 import com.raaftech.structure.base.Configuration;
 import com.raaftech.structure.base.Context;
-import com.raaftech.structure.base.NodeActor;
 import com.raaftech.structure.exceptions.InstrumentExecutionException;
 import com.raaftech.structure.graph.*;
 import com.raaftech.structure.graph.repositories.ComponentRepository;

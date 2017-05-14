@@ -1,6 +1,6 @@
 // Copyright © 2008-2014 RAAF Technology bv
 
-package com.raaftech.structure.base;
+package com.raaftech.structure.actor;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -11,6 +11,7 @@ import com.github.fge.jsonschema.core.report.ProcessingReport;
 import com.github.fge.jsonschema.main.JsonSchema;
 import com.github.fge.jsonschema.main.JsonSchemaFactory;
 import com.raaftech.structure.annotations.SchemaPath;
+import com.raaftech.structure.base.Configuration;
 import com.raaftech.structure.helper.JsonHelper;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.eventbus.EventBus;
@@ -21,7 +22,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.annotation.Transient;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URI;

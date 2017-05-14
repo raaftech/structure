@@ -1,4 +1,4 @@
-package com.raaftech.structure.repository;
+package com.raaftech.structure.actor.repository;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;

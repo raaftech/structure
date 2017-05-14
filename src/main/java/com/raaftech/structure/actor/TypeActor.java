@@ -1,9 +1,8 @@
-package com.raaftech.structure.node;
+package com.raaftech.structure.actor;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.raaftech.structure.base.NodeActor;
 import com.raaftech.structure.graph.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

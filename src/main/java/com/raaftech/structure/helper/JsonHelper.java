@@ -210,8 +210,8 @@ public class JsonHelper {
 	 * See if a JSON object validates against a given schema.
 	 * This version of validateSchema(...) is mainly used for schema's that are retrieved from the database.
 	 * Because we can't natively expose the graph as a namespace for schema's, we need to provide a proxy to
-	 * these schema's. That is {@link com.raaftech.structure.manager.SchemaManager SchemaManager}'s job,
-	 * and this method sets the namespace to {@link com.raaftech.structure.manager.SchemaManager SchemaManager}'s
+	 * these schema's. That is {@link com.raaftech.structure.actor.manager.SchemaManager SchemaManager}'s job,
+	 * and this method sets the namespace to {@link com.raaftech.structure.actor.manager.SchemaManager SchemaManager}'s
 	 * location on the webserver.
 	 * @param schema The URI of the schema to use for validation.
 	 * @param object The object to validate.

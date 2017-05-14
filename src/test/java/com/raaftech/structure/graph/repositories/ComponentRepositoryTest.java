@@ -5,7 +5,7 @@ import com.raaftech.structure.base.SpringTestConfig;
 import com.raaftech.structure.graph.Component;
 import com.raaftech.structure.graph.Type;
 import com.raaftech.structure.helper.loader.NaiveSorter;
-import com.raaftech.structure.next.Entity;
+import com.raaftech.structure.graph.Entity;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

@@ -1,15 +1,13 @@
-package com.raaftech.structure.base;
+package com.raaftech.structure.actor;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.raaftech.structure.base.Context;
 import com.raaftech.structure.graph.Instance;
 import com.raaftech.structure.graph.Node;
 import com.raaftech.structure.graph.Type;
 import com.raaftech.structure.graph.repositories.NodeRepository;
-import com.raaftech.structure.manager.StructureManager;
-import com.raaftech.structure.next.Entity;
-import com.raaftech.structure.node.InstanceActor;
-import com.raaftech.structure.node.TypeActor;
+import com.raaftech.structure.graph.Entity;
 import io.vertx.core.Verticle;
 import io.vertx.core.eventbus.MessageConsumer;
 import org.apache.commons.lang3.Validate;

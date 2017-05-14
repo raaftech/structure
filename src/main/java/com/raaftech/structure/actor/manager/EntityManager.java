@@ -1,4 +1,4 @@
-package com.raaftech.structure.manager;
+package com.raaftech.structure.actor.manager;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -9,8 +9,8 @@ import com.google.common.collect.ImmutableSet;
 import com.raaftech.structure.annotations.SchemaPath;
 import com.raaftech.structure.base.Configuration;
 import com.raaftech.structure.base.Context;
-import com.raaftech.structure.base.GenericActor;
-import com.raaftech.structure.base.NodeActor;
+import com.raaftech.structure.actor.GenericActor;
+import com.raaftech.structure.actor.NodeActor;
 import com.raaftech.structure.exceptions.EntityDeserializationException;
 import com.raaftech.structure.exceptions.EntitySerializationException;
 import com.raaftech.structure.graph.Grouping;
@@ -24,7 +24,7 @@ import com.raaftech.structure.helper.JsonHelper;
 import com.raaftech.structure.helper.LambdaHelper;
 import com.raaftech.structure.helper.Triple;
 import com.raaftech.structure.helper.loader.NaiveSorter;
-import com.raaftech.structure.next.Entity;
+import com.raaftech.structure.graph.Entity;
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.Label;
 import org.neo4j.graphdb.PathExpanders;

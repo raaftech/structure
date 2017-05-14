@@ -1,18 +1,18 @@
 package com.raaftech.structure.base;
 
 import ch.qos.logback.classic.Level;
+import com.raaftech.structure.actor.InstanceActor;
 import com.raaftech.structure.graph.Component;
 import com.raaftech.structure.graph.Instance;
 import com.raaftech.structure.graph.repositories.InstanceRepository;
 import com.raaftech.structure.graph.repositories.TypeRepository;
 import com.raaftech.structure.helper.ProcessRunner;
 import com.raaftech.structure.helper.loader.BundleLoader;
-import com.raaftech.structure.manager.SchemaManager;
-import com.raaftech.structure.manager.TaskManager;
-import com.raaftech.structure.node.InstanceActor;
-import com.raaftech.structure.repository.Instances;
-import com.raaftech.structure.repository.Nodes;
-import com.raaftech.structure.repository.Types;
+import com.raaftech.structure.actor.manager.SchemaManager;
+import com.raaftech.structure.actor.manager.TaskManager;
+import com.raaftech.structure.actor.repository.Instances;
+import com.raaftech.structure.actor.repository.Nodes;
+import com.raaftech.structure.actor.repository.Types;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
@@ -159,11 +159,8 @@ public class Application {
 
         // Enable bridging on /eventbus, and add some in- and outbound permissions.
         BridgeOptions bridgeOptions = new BridgeOptions()
-                .addInboundPermitted(new PermittedOptions().setAddress("com.raaftech.structure.manager.schemamanager"))
-                .addInboundPermitted(new PermittedOptions().setAddress("com.raaftech.structure.manager.taskmanager"))
-                .addInboundPermitted(new PermittedOptions().setAddressRegex("com\\.raaftech\\.structure\\.repository\\..*"))
-                .addInboundPermitted(new PermittedOptions().setAddressRegex("com\\.raaftech\\.structure\\.node\\..*"))
-                .addOutboundPermitted(new PermittedOptions().setAddress("com.raaftech.structure.status"));
+                .addInboundPermitted(new PermittedOptions().setAddressRegex("com\\.raaftech\\.structure\\..*"))
+                .addOutboundPermitted(new PermittedOptions().setAddressRegex("com\\.raaftech\\.structure\\..*"));
 
         // Setup httpServer, router and sockJs.
         httpServer = vertx.createHttpServer();
@@ -197,17 +194,17 @@ public class Application {
         Configuration.init();
 
         // Deploy our main actors.
-        vertx.deployVerticle("com.raaftech.structure.manager.StructureManager", ar -> {
+        vertx.deployVerticle("com.raaftech.structure.actor.manager.StructureManager", ar -> {
             if (ar.succeeded()) {
                 log.info("Deployed StructureManager with id: {}", ar.result());
             }
         });
-        vertx.deployVerticle("com.raaftech.structure.manager.InstrumentManager", new DeploymentOptions().setWorker(false), ar -> {
+        vertx.deployVerticle("com.raaftech.structure.actor.manager.InstrumentManager", new DeploymentOptions().setWorker(false), ar -> {
             if (ar.succeeded()) {
                 log.info("Deployed InstrumentManager with id: {}", ar.result());
             }
         });
-        vertx.deployVerticle("com.raaftech.structure.manager.EntityManager", ar -> {
+        vertx.deployVerticle("com.raaftech.structure.actor.manager.EntityManager", ar -> {
             if (ar.succeeded()) {
                 log.info("Deployed EntityManager with id: {}", ar.result());
             }

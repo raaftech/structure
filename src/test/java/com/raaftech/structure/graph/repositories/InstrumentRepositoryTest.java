@@ -4,8 +4,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.raaftech.structure.base.SpringTestConfig;
 import com.raaftech.structure.graph.*;
 import com.raaftech.structure.helper.loader.BundleLoader;
-import com.raaftech.structure.helper.loader.NaiveSorter;
-import com.raaftech.structure.next.Entity;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

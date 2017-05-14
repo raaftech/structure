@@ -45,7 +45,7 @@ angular.module("structureApp")
         // Initialize the database
         $scope.databaseInit = function() {
                 // Send the db-init message over the eventbus
-                vertxEventBusService.send('com.raaftech.structure.manager.schemamanager',
+                vertxEventBusService.send('com.raaftech.structure.actor.manager.schemamanager',
                     {'msgh':'update', 'args':{}}, 20000)
                     .then(function(reply) {
                         // If everything went as expected clear the error flag
