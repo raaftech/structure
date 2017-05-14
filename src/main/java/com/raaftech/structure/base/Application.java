@@ -236,8 +236,6 @@ public class Application {
             }
         });
 
-        init(vertx);
-
         // Wait a second so debug messages are done
         try {
             Thread.sleep(1000);
@@ -255,6 +253,8 @@ public class Application {
             handleUnrecoverableLoadingError(null, e, 1, "Unrecoverable error while setting schema namespace");
         }
         httpServer.requestHandler(router::accept).listen(webPort, webHost);
+
+        init(vertx);
         log.info("Structure is running at {}", Configuration.getSchemaNamespace());
     }
 
@@ -265,10 +265,15 @@ public class Application {
         Transaction tx = Context.getGraphDatabase().beginTx();
         try {
             BundleLoader bundleLoader = new BundleLoader();
-            bundleLoader.load();
+            bundleLoader.loadTypes();
+            tx.success();
+            tx.close();
+
+            tx = Context.getGraphDatabase().beginTx();
+            bundleLoader.loadInstances();
             tx.success();
         } catch (Exception e) {
-            handleUnrecoverableLoadingError(tx, e, 1, "Unrecoverable error while loading types. Shutting down...");
+            handleUnrecoverableLoadingError(tx, e, 1, "Unrecoverable error while loading bundles. Shutting down...");
         } finally {
             tx.close();
         }

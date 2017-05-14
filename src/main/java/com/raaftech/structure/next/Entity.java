@@ -12,6 +12,7 @@ import com.raaftech.structure.graph.Type;
 import com.raaftech.structure.graph.repositories.InstanceRepository;
 import com.raaftech.structure.graph.repositories.NodeRepository;
 import com.raaftech.structure.graph.repositories.TypeRepository;
+import com.raaftech.structure.helper.JsonHelper;
 import com.raaftech.structure.helper.Triple;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -30,9 +31,12 @@ import org.springframework.data.neo4j.support.Neo4jTemplate;
 import org.springframework.data.neo4j.support.index.IndexType;
 import org.springframework.data.neo4j.support.query.CypherQueryExecutor;
 
+import java.net.URI;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
+
+import static io.vertx.core.json.Json.mapper;
 
 /**
  * A new root entity node with heavily simplified and structured construction.
@@ -392,6 +396,23 @@ public class Entity {
                             "of " + duplicates + " based on the properties " + identityProperties + ", the data was " + data.asMap());
                 }
             }
+
+            // Only other case is an instance entity, in which case we need to validate against its Type schema
+            final Optional<Type> maybeInstanceOf = getInstanceOf();
+            if (!maybeInstanceOf.isPresent()) {
+                throw new IllegalEntityType("Entity with UUID " + getUuid() + " couldn't be created. It's an instance,"
+                        + "but it's type couldn't be retrieved from the graph.");
+            }
+
+            final Type instanceOf = maybeInstanceOf.get();
+            // todo: use actual schema, address and port
+            final String schemaUriPattern = "http://localhost:8080/schemas/%s.schema.json";
+            final Map<String, Object> data = new HashMap(getData());
+            data.put("name", getName());
+            data.put("desc", getDesc());
+            final boolean validated = JsonHelper.validateToSchema(URI.create(String.format(schemaUriPattern, instanceOf.getType().toLowerCase())),
+                    mapper.valueToTree(data));
+            System.out.println(validated);
         }
 
         persist();
@@ -404,7 +425,7 @@ public class Entity {
         return persistedState;
     }
 
-    public void persist() {
+    private void persist() {
         Map<String, Object> properties = new HashMap<>();
         properties.putAll(data.asMap().entrySet().stream()
                 .map(entry -> new AbstractMap.SimpleEntry<>("data-".concat(entry.getKey()), entry.getValue()))

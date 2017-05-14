@@ -173,9 +173,9 @@ public class BundleLoader {
     }
 
     /**
-     * Load all the bundles and persist them to the graph.
+     * Load all types and persist them to the graph.
      */
-    public void load() {
+    public void loadTypes() {
         // Persist the types first
         typeEntities.forEach(Entity::toGraph);
 
@@ -184,9 +184,21 @@ public class BundleLoader {
         so they're actual instances of Type on which we can create constraints.
          */
         typeEntities.forEach(this::persistTypeConstraints);
+    }
 
-        // And we can save the rest of the entities
+    /**
+     * Load all the instance entities and persist them.
+     * You'll want to call this after the types have been persisted to the graph,
+     * because schema references are resolved via the schemas web endpoint, which
+     * queries the types from the graph.
+     */
+    public void loadInstances() {
         nonTypeEntities.forEach(Entity::toGraph);
+    }
+
+    public void load() {
+        loadTypes();
+        loadInstances();
     }
 
     /**

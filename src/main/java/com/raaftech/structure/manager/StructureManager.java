@@ -141,7 +141,8 @@ public class StructureManager extends GenericActor {
 
                 try {
                     BundleLoader loader = new BundleLoader();
-                    loader.load();
+                    loader.loadTypes();
+                    loader.loadInstances();
                     result.put("data", "Structure reloaded");
                 } catch (Exception e) {
                     e.printStackTrace();
