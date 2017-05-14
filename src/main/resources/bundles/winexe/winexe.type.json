@@ -1,0 +1,32 @@
+{
+    "type": "Type",
+    "name": "Winexe",
+    "desc": "A *nix smb client.",
+    "meta": {
+        "uuid": "2f207919-c852-4177-9b8f-e4a368026ca6",
+        "relations": {
+            "ISA": {
+                "direction": "outgoing",
+                "uuids": [
+                    "7d1c7242-2403-4578-b6c4-789573ea3c45"
+                ]
+            },
+            "IMPLEMENTS": {
+                "direction": "outgoing",
+                "uuids": [
+                    "0771de77-c3d8-4db1-92fa-7ac96205f9bb"
+                ]
+            }
+        }
+    },
+    "data": {
+        "glyphId": 271
+    },
+    "file": {
+        "dataSchema": {
+            "encoding": "text",
+            "format": "json",
+            "path": "winexe.schema.json"
+        }
+    }
+}

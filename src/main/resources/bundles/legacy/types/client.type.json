@@ -62,7 +62,7 @@
         "ISA": {
           "direction": "outgoing",
           "uuids": [
-            "bf1826d4-cff3-4b76-8cc9-cc752560a4bb"
+            "8f371b1b-52a3-4409-be70-9cd947bec8dd"
           ]
         },
         "IMPLEMENTS": {
@@ -94,7 +94,7 @@
         "ISA": {
           "direction": "outgoing",
           "uuids": [
-            "bf1826d4-cff3-4b76-8cc9-cc752560a4bb"
+            "442f0c59-c264-4227-9b50-2ef2b90af968"
           ]
         },
         "IMPLEMENTS": {
@@ -115,122 +115,6 @@
         "path": "schemas/gnutelnetclient.schema.json"
       }
     }
-  },
-
-  {
-    "type": "Type",
-    "name": "OpenSshClient",
-    "desc": "The OpenSSH client.",
-    "meta": {
-      "uuid": "9e977808-78fd-4eb6-95e0-ff7c7011caa5",
-      "relations": {
-        "ISA": {
-          "direction": "outgoing",
-          "uuids": [
-            "dce98afb-1a42-48af-8b4b-ab9d08b3b5dc"
-          ]
-        }
-      }
-    },
-    "data": {
-      "glyphId": 183
-    },
-    "file": {
-      "dataSchema": {
-        "encoding": "text",
-        "format": "json",
-        "path": "schemas/opensshclient.schema.json"
-      }
-    }
-  },
-  {
-    "type": "Type",
-    "name": "Winexe",
-    "desc": "A *nix smb client.",
-    "meta": {
-      "uuid": "2f207919-c852-4177-9b8f-e4a368026ca6",
-      "relations": {
-        "ISA": {
-          "direction": "outgoing",
-          "uuids": [
-            "7d1c7242-2403-4578-b6c4-789573ea3c45"
-          ]
-        },
-        "IMPLEMENTS": {
-          "direction": "outgoing",
-          "uuids": [
-            "0771de77-c3d8-4db1-92fa-7ac96205f9bb"
-          ]
-        }
-      }
-    },
-    "data": {
-      "glyphId": 271
-    },
-    "file": {
-      "dataSchema": {
-        "encoding": "text",
-        "format": "json",
-        "path": "schemas/winexe.schema.json"
-      }
-    }
-  },
-  {
-    "type": "Type",
-    "name": "Samba",
-    "desc": "A *nix smb toolchain.",
-    "meta": {
-      "uuid": "f513ddfc-e50b-49b4-9bd8-64afc61ff7a5",
-      "relations": {
-        "ISA": {
-          "direction": "outgoing",
-          "uuids": [
-            "7d1c7242-2403-4578-b6c4-789573ea3c45"
-          ]
-        },
-        "IMPLEMENTS": {
-          "direction": "outgoing",
-          "uuids": [
-            "0771de77-c3d8-4db1-92fa-7ac96205f9bb"
-          ]
-        }
-      }
-    },
-    "data": {
-      "glyphId": 212
-    },
-    "file": {
-      "dataSchema": {
-        "encoding": "text",
-        "format": "json",
-        "path": "schemas/samba.schema.json"
-      }
-    }
-  },
-  {
-    "type": "Type",
-    "name": "Iputils",
-    "desc": "Network monitoring tools, including ping.",
-    "meta": {
-      "uuid": "6619adef-3bcb-4e32-bfec-d235a7bf3e29",
-      "relations": {
-        "ISA": {
-          "direction": "outgoing",
-          "uuids": [
-            "8f371b1b-52a3-4409-be70-9cd947bec8dd"
-          ]
-        }
-      }
-    },
-    "data": {
-      "glyphId": 116
-    },
-    "file": {
-      "dataSchema": {
-        "encoding": "text",
-        "format": "json",
-        "path": "schemas/iputils.schema.json"
-      }
-    }
   }
+
 ]
