@@ -1,0 +1,26 @@
+ {
+    "type": "Type",
+    "name": "Upstart",
+    "desc": "Upstart Service Manager.",
+    "meta": {
+      "uuid": "3aac3563-a493-4efa-a31b-e751ee7d0a6f",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "c3008eec-b454-4ef6-bf7e-0bd92c13d3c3"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 253
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "upstart.schema.json"
+      }
+    }
+  }

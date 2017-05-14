@@ -143,22 +143,22 @@
   },
   {
     "type": "Component",
-    "name": "Rc",
-    "desc": "The rc service manager.",
+    "name": "BsdRc",
+    "desc": "The BSD RC service manager.",
     "meta": {
       "uuid": "14cec381-6bb4-4373-b2e0-458ab10dea41",
       "relations": {
         "INSTANCE_OF": {
           "direction": "outgoing",
           "uuids": [
-            "67d7aa27-e0d9-458c-89fb-82734a8def95"
+            "b4c067de-e3cf-4b5b-90ca-588725d1b6c4"
           ]
         }
       }
     },
     "data": {
-      "shortName": "rc",
-      "longName": "Rc Service Manager",
+      "shortName": "bsdrc",
+      "longName": "BSD RC Service Manager",
       "ver": "unknown"
     }
   },

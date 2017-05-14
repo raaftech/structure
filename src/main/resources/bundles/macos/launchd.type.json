@@ -1,0 +1,26 @@
+{
+    "type": "Type",
+    "name": "Launchd",
+    "desc": "Mac OS X Launchd.",
+    "meta": {
+        "uuid": "7b0bfefb-2212-4c58-a7c5-46ff66f0166a",
+        "relations": {
+            "ISA": {
+                "direction": "outgoing",
+                "uuids": [
+                    "c3008eec-b454-4ef6-bf7e-0bd92c13d3c3"
+                ]
+            }
+        }
+    },
+    "data": {
+        "glyphId": 124
+    },
+    "file": {
+        "dataSchema": {
+            "encoding": "text",
+            "format": "json",
+            "path": "launchd.schema.json"
+        }
+    }
+}

@@ -1,0 +1,26 @@
+{
+    "type": "Type",
+    "name": "Scm",
+    "desc": "The Windows Service Control Manager.",
+    "meta": {
+        "uuid": "198435e1-cf1d-4d0a-9fb8-c760b5e8ac2b",
+        "relations": {
+            "ISA": {
+                "direction": "outgoing",
+                "uuids": [
+                    "c3008eec-b454-4ef6-bf7e-0bd92c13d3c3"
+                ]
+            }
+        }
+    },
+    "data": {
+        "glyphId": 213
+    },
+    "file": {
+        "dataSchema": {
+            "encoding": "text",
+            "format": "json",
+            "path": "scm.schema.json"
+        }
+    }
+}
