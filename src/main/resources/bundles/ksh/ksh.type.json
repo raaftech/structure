@@ -1,0 +1,26 @@
+{
+    "type": "Type",
+    "name": "Ksh",
+    "desc": "The Korn Shell.",
+    "meta": {
+        "uuid": "fd95e858-c788-4578-9223-122eceb2e6c6",
+        "relations": {
+            "ISA": {
+                "direction": "outgoing",
+                "uuids": [
+                    "86168e4a-8c99-43c9-ad95-c8f88d96ac32"
+                ]
+            }
+        }
+    },
+    "data": {
+        "glyphId": 122
+    },
+    "file": {
+        "dataSchema": {
+            "encoding": "text",
+            "format": "json",
+            "path": "ksh.schema.json"
+        }
+    }
+}

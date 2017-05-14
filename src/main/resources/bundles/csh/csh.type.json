@@ -1,0 +1,26 @@
+{
+    "type": "Type",
+    "name": "Csh",
+    "desc": "The C Shell.",
+    "meta": {
+        "uuid": "608c9a23-a194-49b0-a986-c34bd52bf691",
+        "relations": {
+            "ISA": {
+                "direction": "outgoing",
+                "uuids": [
+                    "86168e4a-8c99-43c9-ad95-c8f88d96ac32"
+                ]
+            }
+        }
+    },
+    "data": {
+        "glyphId": 68
+    },
+    "file": {
+        "dataSchema": {
+            "encoding": "text",
+            "format": "json",
+            "path": "csh.schema.json"
+        }
+    }
+}

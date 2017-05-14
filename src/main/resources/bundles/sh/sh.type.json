@@ -1,0 +1,26 @@
+{
+    "type": "Type",
+    "name": "Sh",
+    "desc": "The Bourne Shell.",
+    "meta": {
+        "uuid": "7c1c3278-6eb4-4be5-8b8d-94204bfd2223",
+        "relations": {
+            "ISA": {
+                "direction": "outgoing",
+                "uuids": [
+                    "86168e4a-8c99-43c9-ad95-c8f88d96ac32"
+                ]
+            }
+        }
+    },
+    "data": {
+        "glyphId": 220
+    },
+    "file": {
+        "dataSchema": {
+            "encoding": "text",
+            "format": "json",
+            "path": "sh.schema.json"
+        }
+    }
+}
