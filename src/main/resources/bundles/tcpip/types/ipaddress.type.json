@@ -1,0 +1,81 @@
+[
+    {
+        "type": "Type",
+        "name": "IpAddress",
+        "desc": "An IP address (address only, can be assigned to a network interface).",
+        "meta": {
+            "uuid": "299001a6-1091-4c0d-87be-c512af03e179",
+            "relations": {
+                "ISA": {
+                    "direction": "outgoing",
+                    "uuids": [
+                        "3f4a43f7-b558-4bf0-ba7e-66b99cffaf16"
+                    ]
+                }
+            },
+            "identity": "addr"
+        },
+        "data": {
+            "glyphId": 114
+        },
+        "file": {
+            "dataSchema": {
+                "encoding": "text",
+                "format": "json",
+                "path": "schemas/ipaddress.schema.json"
+            }
+        }
+    },
+    {
+        "type": "Type",
+        "name": "Ipv4Address",
+        "desc": "An IPv4 address (address only, can be assigned to a network interface).",
+        "meta": {
+            "uuid": "f7fbe917-9d49-4df5-95f6-6e132067a424",
+            "relations": {
+                "ISA": {
+                    "direction": "outgoing",
+                    "uuids": [
+                        "299001a6-1091-4c0d-87be-c512af03e179"
+                    ]
+                }
+            }
+        },
+        "data": {
+            "glyphId": 117
+        },
+        "file": {
+            "dataSchema": {
+                "encoding": "text",
+                "format": "json",
+                "path": "schemas/ipv4address.schema.json"
+            }
+        }
+    },
+    {
+        "type": "Type",
+        "name": "Ipv6Address",
+        "desc": "An IPv6 address (address only, can be assigned to a network interface).",
+        "meta": {
+            "uuid": "47b5804d-5f5d-4bf8-89f6-a189c29b05ae",
+            "relations": {
+                "ISA": {
+                    "direction": "outgoing",
+                    "uuids": [
+                        "299001a6-1091-4c0d-87be-c512af03e179"
+                    ]
+                }
+            }
+        },
+        "data": {
+            "glyphId": 118
+        },
+        "file": {
+            "dataSchema": {
+                "encoding": "text",
+                "format": "json",
+                "path": "schemas/ipv6address.schema.json"
+            }
+        }
+    }
+]
