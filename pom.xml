@@ -404,6 +404,7 @@
                         <argument>--loglevel=DEBUG</argument>
                         <argument>--foreground</argument>
                         <argument>--unsafe</argument>
+                        <argument>--trace</argument>
                     </arguments>
                 </configuration>
             </plugin>

@@ -21,7 +21,7 @@
             "dataSchema": {
                 "encoding": "text",
                 "format": "json",
-                "path": "schemas/ipnetwork.schema.json"
+                "path": "../schema/ipnetwork.schema.json"
             }
         }
     },
@@ -47,7 +47,7 @@
             "dataSchema": {
                 "encoding": "text",
                 "format": "json",
-                "path": "schemas/ipv4network.schema.json"
+                "path": "../schema/ipv4network.schema.json"
             }
         }
     },
@@ -73,7 +73,7 @@
             "dataSchema": {
                 "encoding": "text",
                 "format": "json",
-                "path": "schemas/ipv6network.schema.json"
+                "path": "../schema/ipv6network.schema.json"
             }
         }
     }
