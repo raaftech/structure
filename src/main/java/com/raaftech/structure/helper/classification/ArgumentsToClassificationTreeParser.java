@@ -27,6 +27,7 @@ public class ArgumentsToClassificationTreeParser {
     private static final String INSTRUMENT_SCHEMA_FILE = "instrument.schema.json";
 
     private static JsonNode argumentsSchema = JsonHelper.jsonFromResource(INSTRUMENT_SCHEMA_PATH + INSTRUMENT_SCHEMA_FILE)
+            .get("properties")
             .get("arguments");
     private static String typeKey = "_hierarchyPath";
 
