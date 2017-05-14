@@ -1,4 +1,4 @@
-package com.raaftech.structure.actor.manager;
+package com.raaftech.structure.bus.manager;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -9,8 +9,8 @@ import com.google.common.collect.ImmutableSet;
 import com.raaftech.structure.annotations.SchemaPath;
 import com.raaftech.structure.base.Configuration;
 import com.raaftech.structure.base.Context;
-import com.raaftech.structure.actor.GenericActor;
-import com.raaftech.structure.actor.NodeActor;
+import com.raaftech.structure.bus.GenericActor;
+import com.raaftech.structure.bus.NodeActor;
 import com.raaftech.structure.exceptions.EntityDeserializationException;
 import com.raaftech.structure.exceptions.EntitySerializationException;
 import com.raaftech.structure.graph.Grouping;
@@ -114,7 +114,7 @@ public class EntityManager extends GenericActor {
                     List<String> newUuids = sortForCreation(entities).stream()
                             // Persist them
                             .peek(Entity::toGraph)
-                            // Deploy them as actor
+                            // Deploy them as bus
                             .peek(NodeActor::deploy)
                             // Map to the new UUlD's
                             .map(Entity::getUuid)

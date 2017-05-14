@@ -58,7 +58,7 @@ public class InstrumentRunner {
 
     // jobs will contain system commands, paired with timeouts, eventually sent to the agent with the TaskManager.
     private final ArrayList<Pair<String, Optional<Long>>> jobList = new ArrayList<>();
-    private final String taskManagerAddress = "com.raaftech.structure.actor.manager.taskmanager";
+    private final String taskManagerAddress = "com.raaftech.structure.bus.manager.taskmanager";
     private final Logger log = LoggerFactory.getLogger(InstrumentRunner.class);
 
 

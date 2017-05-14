@@ -1,4 +1,4 @@
-package com.raaftech.structure.actor.manager;
+package com.raaftech.structure.bus.manager;
 
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.graph.Type;

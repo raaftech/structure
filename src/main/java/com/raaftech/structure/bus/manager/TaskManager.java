@@ -1,4 +1,4 @@
-package com.raaftech.structure.actor.manager;
+package com.raaftech.structure.bus.manager;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.raaftech.structure.annotations.SchemaPath;
 import com.raaftech.structure.base.Configuration;
 import com.raaftech.structure.base.Context;
-import com.raaftech.structure.actor.GenericActor;
+import com.raaftech.structure.bus.GenericActor;
 import com.raaftech.structure.graph.Instance;
 import com.raaftech.structure.graph.Result;
 import com.raaftech.structure.helper.ProcessRunner;

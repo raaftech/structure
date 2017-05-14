@@ -1,11 +1,11 @@
-package com.raaftech.structure.actor.manager;
+package com.raaftech.structure.bus.manager;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.raaftech.structure.annotations.SchemaPath;
 import com.raaftech.structure.base.Context;
-import com.raaftech.structure.actor.GenericActor;
+import com.raaftech.structure.bus.GenericActor;
 import com.raaftech.structure.graph.Grouping;
 import com.raaftech.structure.graph.repositories.InstanceRepository;
 import com.raaftech.structure.graph.repositories.InstrumentRepository;
@@ -110,7 +110,7 @@ public class InstrumentManager extends GenericActor {
         return new MessageHandler() {
             @Override
             public JsonNode exec(JsonNode request) {
-                final String instanceActorFormat = "com.raaftech.structure.node.%s";
+                final String instanceActorFormat = "com.raaftech.structure.bus.node.%s";
                 final JsonNode args = request.get("args");
                 final ObjectNode result = mapper.createObjectNode();
                 final ArrayNode uuids = (ArrayNode) args.get("uuids");

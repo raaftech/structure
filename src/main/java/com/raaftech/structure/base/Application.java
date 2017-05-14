@@ -1,18 +1,18 @@
 package com.raaftech.structure.base;
 
 import ch.qos.logback.classic.Level;
-import com.raaftech.structure.actor.InstanceActor;
+import com.raaftech.structure.bus.InstanceActor;
 import com.raaftech.structure.graph.Component;
 import com.raaftech.structure.graph.Instance;
 import com.raaftech.structure.graph.repositories.InstanceRepository;
 import com.raaftech.structure.graph.repositories.TypeRepository;
 import com.raaftech.structure.helper.ProcessRunner;
 import com.raaftech.structure.helper.loader.BundleLoader;
-import com.raaftech.structure.actor.manager.SchemaManager;
-import com.raaftech.structure.actor.manager.TaskManager;
-import com.raaftech.structure.actor.repository.Instances;
-import com.raaftech.structure.actor.repository.Nodes;
-import com.raaftech.structure.actor.repository.Types;
+import com.raaftech.structure.bus.manager.SchemaManager;
+import com.raaftech.structure.bus.manager.TaskManager;
+import com.raaftech.structure.bus.repository.Instances;
+import com.raaftech.structure.bus.repository.Nodes;
+import com.raaftech.structure.bus.repository.Types;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
@@ -194,17 +194,17 @@ public class Application {
         Configuration.init();
 
         // Deploy our main actors.
-        vertx.deployVerticle("com.raaftech.structure.actor.manager.StructureManager", ar -> {
+        vertx.deployVerticle("com.raaftech.structure.bus.manager.StructureManager", ar -> {
             if (ar.succeeded()) {
                 log.info("Deployed StructureManager with id: {}", ar.result());
             }
         });
-        vertx.deployVerticle("com.raaftech.structure.actor.manager.InstrumentManager", new DeploymentOptions().setWorker(false), ar -> {
+        vertx.deployVerticle("com.raaftech.structure.bus.manager.InstrumentManager", new DeploymentOptions().setWorker(false), ar -> {
             if (ar.succeeded()) {
                 log.info("Deployed InstrumentManager with id: {}", ar.result());
             }
         });
-        vertx.deployVerticle("com.raaftech.structure.actor.manager.EntityManager", ar -> {
+        vertx.deployVerticle("com.raaftech.structure.bus.manager.EntityManager", ar -> {
             if (ar.succeeded()) {
                 log.info("Deployed EntityManager with id: {}", ar.result());
             }

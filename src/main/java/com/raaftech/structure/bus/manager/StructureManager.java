@@ -1,4 +1,4 @@
-package com.raaftech.structure.actor.manager;
+package com.raaftech.structure.bus.manager;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -7,8 +7,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.raaftech.structure.annotations.SchemaPath;
 import com.raaftech.structure.base.Application;
 import com.raaftech.structure.base.Context;
-import com.raaftech.structure.actor.GenericActor;
-import com.raaftech.structure.actor.NodeActor;
+import com.raaftech.structure.bus.GenericActor;
+import com.raaftech.structure.bus.NodeActor;
 import com.raaftech.structure.graph.Component;
 import com.raaftech.structure.graph.Instance;
 import com.raaftech.structure.graph.repositories.*;

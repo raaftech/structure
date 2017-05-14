@@ -1,4 +1,4 @@
-package com.raaftech.structure.actor;
+package com.raaftech.structure.bus;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -19,7 +19,7 @@ import java.util.UUID;
 
 public abstract class NodeActor<T extends Node> extends GenericActor {
 
-    protected static final String startOfAddress = "com.raaftech.structure.node.";
+    protected static final String startOfAddress = "com.raaftech.structure.bus.node.";
     public static final String SHAREDMAP_ID = "nodeActors";
 
     // We keep a reference to the consumers in case we
@@ -125,7 +125,7 @@ public abstract class NodeActor<T extends Node> extends GenericActor {
     /**
      * A helper method to deploy NodeActors. Given a type entity it will deploy
      * a TypeActor, otherwise an InstanceActor.
-     * @param entity The entity to deploy an actor for.
+     * @param entity The entity to deploy an bus for.
      */
     public static void deploy(Entity entity) {
         deploy(UUID.fromString(entity.getUuid()));
@@ -134,7 +134,7 @@ public abstract class NodeActor<T extends Node> extends GenericActor {
     /**
      * A helper method to deploy NodeActors. Given the UUID of a type it will deploy
      * a TypeActor, otherwise an InstanceActor.
-     * @param uuid The UUID of the node to deploy an actor for.
+     * @param uuid The UUID of the node to deploy an bus for.
      */
     public static void deploy(UUID uuid) {
         final Node node = Context.getNodeRepository().findByUuid(uuid.toString());
@@ -145,7 +145,7 @@ public abstract class NodeActor<T extends Node> extends GenericActor {
     /**
      * A helper method to deploy NodeActors. Given a type it will deploy
      * a TypeActor, otherwise an InstanceActor.
-     * @param node The node to deploy an actor for.
+     * @param node The node to deploy an bus for.
      */
     public static void deploy(Node node) {
         final String address = startOfAddress + node.getUuid();

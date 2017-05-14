@@ -1,6 +1,6 @@
 // Copyright © 2008-2014 RAAF Technology bv
 
-package com.raaftech.structure.actor;
+package com.raaftech.structure.bus;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -58,7 +58,7 @@ public abstract class GenericActor extends AbstractVerticle {
 
     // statusAddress is used to push notifications of events within Structure
     // that the GUI may be interested about.
-    private static final String statusAddress = "com.raaftech.structure.status";
+    private static final String statusAddress = "com.raaftech.structure.bus.status";
 
     class HandlerSchema {
         URI schemaPath;
@@ -137,7 +137,7 @@ public abstract class GenericActor extends AbstractVerticle {
         return jsonNode;
     }
 
-    // Get the name of the actor (used with registerHandler).
+    // Get the name of the bus (used with registerHandler).
     public String getActorName() {
         return this.getClass().getName().toLowerCase();
     }
