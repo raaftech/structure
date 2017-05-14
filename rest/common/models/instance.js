@@ -7,7 +7,7 @@ const helper = require(path.join(__dirname, '..','libraries','helper'));
 const neoHelper = require(path.join(__dirname, '..','libraries','neoHelper'));
 const evBus = require('../../server/server').eventBus;
 
-const baseAddress = helper.getEventBusAddress('com.raaftech.structure');
+const baseAddress = helper.getEventBusAddress('com.raaftech.structure.bus');
 const instanceAddress = baseAddress(['repository', 'instances']);
 const entityAddress = baseAddress(['manager', 'entitymanager']);
 

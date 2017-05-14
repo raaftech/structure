@@ -4,7 +4,7 @@ angular.module("structureApp")
         return {
 
             getNInstances: function(n) {
-                return vertxEventBusService.send("com.raaftech.structure.repository.instances",
+                return vertxEventBusService.send("com.raaftech.structure.bus.repository.instances",
                     {
                         "msgh": "nLastCreated",
                         "args": {
@@ -17,7 +17,7 @@ angular.module("structureApp")
             },
 
             getInstance: function(uuid) {
-                return vertxEventBusService.send("com.raaftech.structure.repository.instances", {
+                return vertxEventBusService.send("com.raaftech.structure.bus.repository.instances", {
                     "msgh": "findOne",
                     "args": {
                         "node": uuid
@@ -29,7 +29,7 @@ angular.module("structureApp")
             },
 
             putNode: function(args) {
-                return vertxEventBusService.send("com.raaftech.structure.repository.instances", {
+                return vertxEventBusService.send("com.raaftech.structure.bus.repository.instances", {
                         "msgh": "putNode",
                         "args": args
                     })

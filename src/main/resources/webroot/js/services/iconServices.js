@@ -4,7 +4,7 @@ angular.module("structureApp")
         return {
 
             getNamesAndGlyphs: function() {
-                return vertxEventBusService.send('com.raaftech.structure.repository.types',
+                return vertxEventBusService.send('com.raaftech.structure.bus.repository.types',
                     {
                         'msgh': 'getNamesAndGlyphs',
                         'args': {}

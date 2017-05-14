@@ -6,7 +6,7 @@ const helper = require(path.join(__dirname, '..','libraries','helper'));
 
 const evBus = require('../../server/server').eventBus;
 
-const baseAddress = helper.getEventBusAddress('com.raaftech.structure');
+const baseAddress = helper.getEventBusAddress('com.raaftech.structure.bus');
 const managerAddress = baseAddress(['manager', 'structuremanager']);
 
 const getResultData = helper.getResultData(['body','result','data']);

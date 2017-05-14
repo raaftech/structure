@@ -7,7 +7,7 @@ const Structure = require(path.join(__dirname, '..','libraries','subgraph'));
 
 const evBus = require('../../server/server').eventBus;
 
-const baseAddress = helper.getEventBusAddress('com.raaftech.structure');
+const baseAddress = helper.getEventBusAddress('com.raaftech.structure.bus');
 const instanceAddress = baseAddress(['repository', 'instances']);
 const entityAddress = baseAddress(['manager', 'entitymanager']);
 const typesAddress = baseAddress(['repository', 'types']);
