@@ -105,32 +105,6 @@
   },
   {
     "type": "Type",
-    "name": "Hardware",
-    "desc": "A hardware component.",
-    "meta": {
-      "uuid": "ea6a7487-867c-4a74-8849-fb8539b8169f",
-      "relations": {
-        "ISA": {
-          "direction": "outgoing",
-          "uuids": [
-            "a79ce509-a021-4177-ae61-73abd01fb479"
-          ]
-        }
-      }
-    },
-    "data": {
-      "glyphId": 98
-    },
-    "file": {
-      "dataSchema": {
-        "encoding": "text",
-        "format": "json",
-        "path": "schemas/hardware.schema.json"
-      }
-    }
-  },
-  {
-    "type": "Type",
     "name": "ConsoleHardware",
     "desc": "A console device.",
     "meta": {

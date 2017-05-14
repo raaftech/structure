@@ -131,7 +131,10 @@ public class BundleLoader {
 
             entry.getValue().stream()
                     .filter(constraintData -> !Objects.equals(type.getUuid(), constraintData.getRight().toString()))
-                    .forEach(constraintData -> type.addConstraint(typeRepository.findByUuid(constraintData.getRight().toString()), constraintData.getLeft(), relName));
+                    .forEach(constraintData -> {
+                            log.debug("This is the uuid: " + type.getUuid());
+                            type.addConstraint(typeRepository.findByUuid(constraintData.getRight().toString()), constraintData.getLeft(), relName);
+                    });
         }
         /*
         Persist the type. If we do this after we added the reflexive relationships, only
