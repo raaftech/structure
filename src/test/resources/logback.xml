@@ -5,6 +5,9 @@
         <resetJUL>true</resetJUL>
     </contextListener>
 
+    <!-- Disables logback status message at start of application -->
+    <statusListener class="ch.qos.logback.core.status.NopStatusListener" />
+
 	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
 		<target>System.out</target>
 		<encoder>
@@ -12,7 +15,7 @@
 		</encoder>
 	</appender>
 
-	<root level="DEBUG">
+	<root level="WARN">
 		<appender-ref ref="STDOUT" />
 	</root>
 

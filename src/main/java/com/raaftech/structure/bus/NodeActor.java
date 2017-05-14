@@ -53,6 +53,7 @@ public abstract class NodeActor<T extends Node> extends GenericActor {
         }
     }
 
+    @SuppressWarnings("unchecked")
     protected T getNode() {
         return (T) nodeRepository.findByUuid(uuid);
     }

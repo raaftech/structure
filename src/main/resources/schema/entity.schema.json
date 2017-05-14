@@ -73,7 +73,7 @@
       "additionalProperties": false,
       "properties": {
         "uuid": {
-          "$ref": "../common.schema.json#/definitions/uuid"
+          "$ref": "common.schema.json#/definitions/uuid"
         },
         "relations": {
           "type": "object",
@@ -86,7 +86,7 @@
                   "$ref": "#/definitions/direction"
                 },
                 "uuids": {
-                  "$ref": "../common.schema.json#/definitions/uuidList"
+                  "$ref": "common.schema.json#/definitions/uuidList"
                 }
               }
             }
@@ -108,7 +108,7 @@
           }
         },
         "identity": {
-          "$ref": "../common.schema.json#/definitions/stringOrStringArray"
+          "$ref": "common.schema.json#/definitions/stringOrStringArray"
         },
         "checksum": {
           "$ref": "#/definitions/checksum"
@@ -186,7 +186,7 @@
       "additionalProperties": false,
       "properties": {
         "to": {
-          "$ref": "../common.schema.json#/definitions/uuid"
+          "$ref": "common.schema.json#/definitions/uuid"
         },
         "cardinality": {
           "$ref": "#/definitions/cardinality"

@@ -11,7 +11,6 @@ import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 import org.neo4j.kernel.GraphDatabaseAPI;
 import org.neo4j.server.Bootstrapper;
 import org.neo4j.server.WrappingNeoServerBootstrapper;
-import org.neo4j.server.configuration.Configurator;
 import org.neo4j.server.configuration.ServerConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +35,7 @@ import org.springframework.data.neo4j.support.Neo4jTemplate;
 @ComponentScan(basePackages = "com.raaftech.structure",
         excludeFilters = {@ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = SpringTestConfig.class)})
 @EnableNeo4jRepositories("com.raaftech.structure.graph.repositories")
+@SuppressWarnings("deprecation")
 public class SpringConfig extends Neo4jConfiguration {
 
     private static final Logger log = LoggerFactory.getLogger(SpringConfig.class);
@@ -45,16 +45,14 @@ public class SpringConfig extends Neo4jConfiguration {
     }
 
     @Bean
-    @SuppressWarnings("deprecation")
     GraphDatabaseService graphDatabaseService() {
-        // TODO: make path configurable
         Bootstrapper bootStrapper;
 
-        GraphDatabaseBuilder graphDatabaseBuilder = new GraphDatabaseFactory().newEmbeddedDatabaseBuilder("structure.db");
+        GraphDatabaseBuilder graphDatabaseBuilder = new GraphDatabaseFactory().newEmbeddedDatabaseBuilder("target/structure.db");
         GraphDatabaseService graphDatabaseService;
         if (com.raaftech.structure.base.Configuration.isUnsafeModeOn()) {
             log.info("Unsafe mode: Enabling graph database remote shell");
-        	graphDatabaseBuilder.setConfig("remote_shell_enabled", "true");
+            graphDatabaseBuilder.setConfig("remote_shell_enabled", "true");
 
             graphDatabaseService = graphDatabaseBuilder.newGraphDatabase();
 

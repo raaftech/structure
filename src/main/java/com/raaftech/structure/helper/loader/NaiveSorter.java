@@ -46,7 +46,7 @@ public class NaiveSorter {
     public static final Map<String, String> checksumToUuid = new HashMap<>();
     private final NodeRepository nodeRepository = Context.getNodeRepository();
 
-    private static final URI ENTITYSCHEMA = URI.create("resource:/schema/next/entity.schema.json");
+    private static final URI ENTITYSCHEMA = URI.create("resource:/schema/entity.schema.json");
     private static final String META = "meta";
     private static final String FILE = "file";
     private static final String CONTENT = "content";

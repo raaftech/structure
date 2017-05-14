@@ -37,7 +37,7 @@ public class EntityDeserializer extends StdDeserializer<Entity> {
     private final static Logger log = LoggerFactory.getLogger(EntityDeserializer.class);
 
     /* URI of JSON Schema for Entity objects. */
-    private final URI entitySchema = URI.create("resource:/schema/next/entity.schema.json");
+    private final URI entitySchema = URI.create("resource:/schema/entity.schema.json");
 
     /* key names for entity JSON */
     private static final String FILE_DATASCHEMA = "dataSchema";
@@ -56,18 +56,19 @@ public class EntityDeserializer extends StdDeserializer<Entity> {
     private String checksum;
 
     private Set<Triple<String, String, Set<String>>> relations;
-    
+
     private JsonNode fileJson;
     private Map<String, Object> file;
 
     private JsonNode dataJson;
     private Map<String, Object> data;
-    
+
     public EntityDeserializer() {
         super(Entity.class);
     }
 
 	@Override
+    @SuppressWarnings("unchecked")
     public Entity deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
         log.info("Creating entity from JSON data");
         Entity entity = new Entity();
@@ -106,26 +107,26 @@ public class EntityDeserializer extends StdDeserializer<Entity> {
 
             /* Handle relations within meta. */
             relationsJson = metaJson.get("relations");
-            relations = new HashSet<Triple<String, String, Set<String>>>(); 
-            		
+            relations = new HashSet<Triple<String, String, Set<String>>>();
+
             Iterator<Map.Entry<String, JsonNode>> relationsIterator = relationsJson.fields();
             while (relationsIterator.hasNext()) {
                 Map.Entry<String, JsonNode> entry = relationsIterator.next();
                 String key = entry.getKey();
                 JsonNode value = entry.getValue();
-                
+
                 String rname = key;
                 String direction = value.get("direction").asText();
                 ArrayNode peersJson = (ArrayNode) value.get("uuids");
                 Set<String> peers = new HashSet<String>();
                 peersJson.forEach(peer->peers.add(peer.asText()));
-                
+
                 log.debug("Adding {} relation triple for entity \"{}\" named \"{}\"", direction, name, rname);
                 Triple<String, String, Set<String>> relation = new Triple<String,String,Set<String>>(rname, direction, peers);
-                
+
                 relations.add(relation);
             }
-            
+
             entity.setRelations(relations);
 
             // Handle constraints
@@ -220,7 +221,7 @@ public class EntityDeserializer extends StdDeserializer<Entity> {
                         file.put(key, value.toString());
                     } else if (value.has("path")) {
                     	File filePath = pathHelper(new File(value.get("path").asText()));
-                    	          
+
                         if (filePath.exists() && !filePath.isDirectory()) {
                             switch (encoding) {
                             case "base64":
@@ -313,12 +314,12 @@ public class EntityDeserializer extends StdDeserializer<Entity> {
 //                    }
 //                }
                 Iterator<Map.Entry<String, JsonNode>> dataIterator = dataJson.fields();
-                
+
                 while (dataIterator.hasNext()) {
                     Map.Entry<String, JsonNode> next = dataIterator.next();
                     final String key = next.getKey();
                     log.debug("Found \"{}\" in data object, starting work..", key);
-                    
+
                     final JsonNode value = next.getValue();
                     switch (value.getNodeType()) {
                     case ARRAY:

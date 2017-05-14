@@ -54,7 +54,7 @@ public class NodeSerializerTest {
         assertNotNull(componentNode);
 
         String serializedJson = mapper.writeValueAsString(componentNode);
-        assertTrue(JsonHelper.validateToSchema(URI.create("resource:/schema/next/entity.schema.json"),
+        assertTrue(JsonHelper.validateToSchema(URI.create("resource:/schema/entity.schema.json"),
                 mapper.readTree(serializedJson)));
         Entity entity = mapper.readValue(serializedJson, Entity.class);
         assertNotNull(entity);

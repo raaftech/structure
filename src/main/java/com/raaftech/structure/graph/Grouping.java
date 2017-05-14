@@ -92,6 +92,7 @@ public class Grouping extends Instance {
      * can be used to as an argument for an instrument.
      * @return JSON representation that can be used as an argument for a instrument.
      */
+    @SuppressWarnings("unchecked")
     public Set<JsonNode> toArguments() {
         Set<JsonNode> arguments = new HashSet<>();
 

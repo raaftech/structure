@@ -62,6 +62,7 @@ public class ArgumentsToClassificationTreeParser {
         public Set<JsonNode> askUser = new HashSet<>();
     }
 
+    @SuppressWarnings("unchecked")
     public static ClassificationTreeObjects asTree(ObjectNode arguments) {
         if (!JsonHelper.validateToSchema(argumentsSchema, arguments, INSTRUMENT_SCHEMA_NS)) {
             throw new IllegalArgumentException("Provided arguments did not conform to arguments schema.");
