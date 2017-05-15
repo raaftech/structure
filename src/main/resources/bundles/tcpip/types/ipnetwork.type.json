@@ -14,13 +14,14 @@
                 }
             },
             "constraints": {
-            "HAS": [
-                {
-                    "cardinality": "OPTIONAL_TO_MANY",
-                    "to": "299001a6-1091-4c0d-87be-c512af03e179"
-                }
-            ]
-        }
+                "HAS": [
+                    {
+                        "cardinality": "OPTIONAL_TO_MANY",
+                        "to": "299001a6-1091-4c0d-87be-c512af03e179"
+                    }
+                ]
+            },
+            "identity": "cidr"
         },
         "data": {
             "glyphId": 283
