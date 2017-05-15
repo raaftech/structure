@@ -11,6 +11,14 @@
                     "b1bc963a-19cc-4518-aecb-a35d028c49e3"
                 ]
             }
+        },
+        "constraints": {
+            "NEXT_RESULT": [
+                {
+                    "cardinality": "OPTIONAL_TO_ONE",
+                    "to": "f3498c02-58c6-486b-87c6-9d54607fdb12"
+                }
+            ]
         }
     },
     "data": {

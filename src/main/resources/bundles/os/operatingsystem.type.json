@@ -11,6 +11,34 @@
                     "8db2b492-9a4a-41fe-97a5-bc625da042ea"
                 ]
             }
+        },
+        "constraints": {
+            "HAS": [
+                 {
+                    "cardinality": "OPTIONAL_TO_MANY",
+                    "to": "d047f415-734c-4bd3-92b9-d68d5521ce69"
+                },
+                 {
+                    "cardinality": "OPTIONAL_TO_MANY",
+                    "to": "8f371b1b-52a3-4409-be70-9cd947bec8dd"
+                },
+                {
+                    "cardinality": "OPTIONAL_TO_MANY",
+                    "to": "3fb4603b-281e-47c0-b338-768ea05d4660"
+                },
+                {
+                    "cardinality": "OPTIONAL_TO_ONE",
+                    "to": "c3008eec-b454-4ef6-bf7e-0bd92c13d3c3"
+                },
+                {
+                    "cardinality": "OPTIONAL_TO_MANY",
+                    "to": "e2b8b9ee-b66f-4252-8fba-4fb172f741bc"
+                },
+                {
+                    "cardinality": "OPTIONAL_TO_MANY",
+                    "to": "299001a6-1091-4c0d-87be-c512af03e179"
+                }
+            ]
         }
     },
     "data": {
@@ -24,3 +52,4 @@
         }
     }
 }
+

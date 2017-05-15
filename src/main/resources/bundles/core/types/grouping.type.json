@@ -13,14 +13,7 @@
                     ]
                 }
             },
-            "constraints": {
-                "GROUPS": [
-                    {
-                        "cardinality": "OPTIONAL_TO_MANY",
-                        "to": "b1bc963a-19cc-4518-aecb-a35d028c49e3"
-                    }
-                ]
-            }
+            "identity" : "name"
         },
         "data": {
             "glyphId": 95
@@ -52,7 +45,12 @@
                     {
                         "cardinality": "OPTIONAL_TO_MANY",
                         "to": "a79ce509-a021-4177-ae61-73abd01fb479"
+                    },
+                    {
+                        "cardinality": "OPTIONAL_TO_MANY",
+                        "to": "ee92c308-80f4-40b2-af3a-77d26cd99517"
                     }
+
                 ]
             }
         },
@@ -64,44 +62,6 @@
                 "encoding": "text",
                 "format": "json",
                 "path": "../schema/componentgroup.schema.json"
-            }
-        }
-    },
-    {
-        "type": "Type",
-        "name": "Computer",
-        "desc": "An assembled computer device.",
-        "meta": {
-            "uuid": "ec11db91-6973-4285-b018-b461fbb432d7",
-            "relations": {
-                "ISA": {
-                    "direction": "outgoing",
-                    "uuids": [
-                        "ee92c308-80f4-40b2-af3a-77d26cd99517"
-                    ]
-                }
-            },
-            "constraints": {
-                "GROUPS": [
-                    {
-                        "cardinality": "OPTIONAL_TO_MANY",
-                        "to": "ea6a7487-867c-4a74-8849-fb8539b8169f"
-                    },
-                    {
-                        "cardinality": "OPTIONAL_TO_MANY",
-                        "to": "f05e325e-1aee-4892-96e4-8bcd6e97c528"
-                    }
-                ]
-            }
-        },
-        "data": {
-            "glyphId": 63
-        },
-        "file": {
-            "dataSchema": {
-                "encoding": "text",
-                "format": "json",
-                "path": "../schema/computer.schema.json"
             }
         }
     }
