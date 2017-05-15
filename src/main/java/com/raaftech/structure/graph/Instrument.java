@@ -17,8 +17,8 @@ public abstract class Instrument extends Instance {
         super(json, isa);
     }
 
-    public double getWeight() {
-        return data.hasProperty(WEIGHT) ? (double) data.getProperty(WEIGHT) : 0;
+    public int getWeight() {
+        return data.hasProperty(WEIGHT) ? (int)data.getProperty(WEIGHT) : 0;
     }
 
     public Instrument save() {

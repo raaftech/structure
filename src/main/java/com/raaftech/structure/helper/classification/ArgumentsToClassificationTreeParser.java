@@ -22,9 +22,9 @@ import static io.vertx.core.json.Json.mapper;
 public class ArgumentsToClassificationTreeParser {
 
     private static final String RESOURCE_SCHEME = "resource:/";
-    private static final String INSTRUMENT_SCHEMA_PATH = "bundles/legacy/types/schemas/";
+    private static final String INSTRUMENT_SCHEMA_PATH = "bundles/core/schema/";
     private static final URI INSTRUMENT_SCHEMA_NS = URI.create(RESOURCE_SCHEME + INSTRUMENT_SCHEMA_PATH);
-    private static final String INSTRUMENT_SCHEMA_FILE = "instrument.schema.json";
+    private static final String INSTRUMENT_SCHEMA_FILE = "controller.schema.json";
 
     private static JsonNode argumentsSchema = JsonHelper.jsonFromResource(INSTRUMENT_SCHEMA_PATH + INSTRUMENT_SCHEMA_FILE)
             .get("properties")
