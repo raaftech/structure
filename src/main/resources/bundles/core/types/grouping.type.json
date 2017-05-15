@@ -12,14 +12,6 @@
                         "b1bc963a-19cc-4518-aecb-a35d028c49e3"
                     ]
                 }
-            },
-            "constraints": {
-                "GROUPS": [
-                    {
-                        "cardinality": "OPTIONAL_TO_MANY",
-                        "to": "b1bc963a-19cc-4518-aecb-a35d028c49e3"
-                    }
-                ]
             }
         },
         "data": {
@@ -52,7 +44,12 @@
                     {
                         "cardinality": "OPTIONAL_TO_MANY",
                         "to": "a79ce509-a021-4177-ae61-73abd01fb479"
+                    },
+                    {
+                        "cardinality": "OPTIONAL_TO_MANY",
+                        "to": "ee92c308-80f4-40b2-af3a-77d26cd99517"
                     }
+
                 ]
             }
         },
