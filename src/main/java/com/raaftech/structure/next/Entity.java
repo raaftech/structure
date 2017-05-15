@@ -9,6 +9,7 @@ import com.raaftech.structure.exceptions.IllegalEntityType;
 import com.raaftech.structure.exceptions.TypeUnknownException;
 import com.raaftech.structure.graph.Constraint;
 import com.raaftech.structure.graph.Type;
+import com.raaftech.structure.graph.converters.JsonNodeWriter;
 import com.raaftech.structure.graph.repositories.InstanceRepository;
 import com.raaftech.structure.graph.repositories.NodeRepository;
 import com.raaftech.structure.graph.repositories.TypeRepository;
@@ -410,7 +411,7 @@ public class Entity {
             final Map<String, Object> data = new HashMap(getData());
             data.put("name", getName());
             data.put("desc", getDesc());
-            final boolean validated = JsonHelper.validateToSchema(URI.create(String.format(schemaUriPattern, instanceOf.getType().toLowerCase())),
+            final boolean validated = JsonHelper.validateToSchema(URI.create(String.format(schemaUriPattern, instanceOf.getName().toLowerCase())),
                     mapper.valueToTree(data));
             System.out.println(validated);
         }
@@ -429,6 +430,8 @@ public class Entity {
         Map<String, Object> properties = new HashMap<>();
         properties.putAll(data.asMap().entrySet().stream()
                 .map(entry -> new AbstractMap.SimpleEntry<>("data-".concat(entry.getKey()), entry.getValue()))
+                .map(entry -> new AbstractMap.SimpleEntry<>(entry.getKey(),
+                        entry.getValue() instanceof JsonNode ? new JsonNodeWriter().convert((JsonNode)entry.getValue()) : entry.getValue()))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
         properties.putAll(file.asMap().entrySet().stream()
                 .map(entry -> new AbstractMap.SimpleEntry<>("file-".concat(entry.getKey()), entry.getValue()))

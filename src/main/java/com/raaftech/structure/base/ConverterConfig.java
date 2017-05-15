@@ -28,6 +28,8 @@ public class ConverterConfig {
         converters.add(new JsonSchemaBuilderReader());
         converters.add(new LocalDateTimeWriter());
         converters.add(new LocalDateTimeReader());
+        converters.add(new JsonNodeWriter());
+        converters.add(new JsonNodeReader());
 
         ConversionServiceFactoryBean bean = new ConversionServiceFactoryBean();
         bean.setConverters(converters);

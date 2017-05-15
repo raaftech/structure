@@ -349,7 +349,7 @@ public class EntityDeserializer extends StdDeserializer<Entity> {
                         break;
                     case OBJECT:
                         log.debug("Writing key \"{}\" with OBJECT value \"{}\" in data object", key, value);
-                        data.put(key, value.toString());
+                        data.put(key, value);
                         break;
                     case POJO:
                         log.warn("Pojo value for key \"{}\" in data object not supported, not writing key", key);

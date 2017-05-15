@@ -33,9 +33,6 @@
   },
   "data": {
     "instrumentType": "controller",
-    "capability": "Detect",
-    "providedBy": "Structure",
-    "appliesTo": [ "IpNetwork" ],
     "timeAllocated": 60000,
     "subjectIsLocal": false,
     "arguments": {
