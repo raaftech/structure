@@ -28,7 +28,7 @@
         "dataSchema": {
             "encoding": "text",
             "format": "json",
-            "path": "computer.schema.json"
+            "path": "schemas/computer.schema.json"
         }
     }
 }
