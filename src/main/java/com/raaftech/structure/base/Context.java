@@ -9,15 +9,12 @@ import io.vertx.core.Vertx;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.data.neo4j.core.GraphDatabase;
 import org.springframework.data.neo4j.support.Neo4jTemplate;
 import org.springframework.stereotype.Component;
 
-import java.util.HashSet;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -29,10 +26,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Component
 public class Context implements ApplicationContextAware {
 
-    @Autowired
     private static ApplicationContext context;
     private static Vertx vertx = null;
-    private static Set<String> registeredPlugins = new HashSet<>();
     private static AtomicBoolean instrumentsLoaded = new AtomicBoolean();
     private static final Logger log = LoggerFactory.getLogger(Context.class);
 
@@ -93,10 +88,6 @@ public class Context implements ApplicationContextAware {
 
     public static GroupingRepository getGroupingRepository() {
         return (GroupingRepository) context.getBean("groupingRepository");
-    }
-
-    public static ConfigurationRepository getConfigurationRepository() {
-        return (ConfigurationRepository) context.getBean("configurationRepository");
     }
 
     public static GraphDatabase getGraphDatabase() {

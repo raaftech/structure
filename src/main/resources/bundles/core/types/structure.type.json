@@ -2,14 +2,14 @@
   {
     "type": "Type",
     "name": "Structure",
-    "desc": "Structure itself.",
+    "desc": "An emergent capability systems management platform.",
     "meta": {
       "uuid": "fe3ea22e-7096-436a-8a6e-cf0eb2fb2e50",
       "relations": {
         "ISA": {
           "direction": "outgoing",
           "uuids": [
-            "8db2b492-9a4a-41fe-97a5-bc625da042ea"
+            "3fb4603b-281e-47c0-b338-768ea05d4660"
           ]
         }
       }
@@ -21,7 +21,7 @@
       "dataSchema": {
         "encoding": "text",
         "format": "json",
-        "path": "schemas/structure.schema.json"
+        "path": "../schema/structure.schema.json"
       }
     }
   }

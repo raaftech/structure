@@ -26,6 +26,7 @@ public class LeafNode<T> extends Node<T> {
      * @param failure Terminal used when the selection produces null or an empty set.
      * @param selection A function implementing the selection.
      */
+    @SuppressWarnings("unchecked")
     public LeafNode(InternalNode<T> parent, Terminal success, Terminal failure, Function<Set<T>, Set<T>> selection) {
         this.parent = parent;
         this.selection = selection;
@@ -41,6 +42,7 @@ public class LeafNode<T> extends Node<T> {
      * @param input
      */
     @Override
+    @SuppressWarnings("unchecked")
     public void consumeInput(Set<T> input) {
         Set<T> selectedSet = selection.apply(input);
 

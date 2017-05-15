@@ -1,0 +1,54 @@
+[
+    {
+        "type": "Type",
+        "name": "IpNetwork",
+        "desc": "An IP network.",
+        "meta": {
+            "uuid": "ca419a9e-f71f-4bae-a948-f964a523336b",
+            "relations": {
+                "ISA": {
+                    "direction": "outgoing",
+                    "uuids": [
+                        "5f1eb7c5-ec5e-4563-be6a-fc50774fc374"
+                    ]
+                }
+            }
+        },
+        "data": {
+            "glyphId": 283
+        },
+        "file": {
+            "dataSchema": {
+                "encoding": "text",
+                "format": "json",
+                "path": "../schema/ipnetwork.schema.json"
+            }
+        }
+    },
+    {
+        "type": "Type",
+        "name": "Ipv4Network",
+        "desc": "An IPv4 network.",
+        "meta": {
+            "uuid": "29648f07-8493-464a-b733-2889bfd3708a",
+            "relations": {
+                "ISA": {
+                    "direction": "outgoing",
+                    "uuids": [
+                        "ca419a9e-f71f-4bae-a948-f964a523336b"
+                    ]
+                }
+            }
+        },
+        "data": {
+            "glyphId": 283
+        },
+        "file": {
+            "dataSchema": {
+                "encoding": "text",
+                "format": "json",
+                "path": "../schema/ipv4network.schema.json"
+            }
+        }
+    }
+]

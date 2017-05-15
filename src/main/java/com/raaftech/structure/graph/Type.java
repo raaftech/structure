@@ -12,7 +12,6 @@ import com.raaftech.structure.base.Context;
 import com.raaftech.structure.graph.repositories.TypeRepository;
 import com.raaftech.structure.helper.JsonSchemaBuilder;
 import com.raaftech.structure.helper.Triple;
-import com.raaftech.structure.next.Entity;
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang3.tuple.Pair;
 import org.neo4j.graphdb.Direction;

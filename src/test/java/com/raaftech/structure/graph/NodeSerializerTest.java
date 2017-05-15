@@ -6,8 +6,6 @@ import com.raaftech.structure.graph.repositories.NodeRepository;
 import com.raaftech.structure.helper.JsonHelper;
 import com.raaftech.structure.helper.Triple;
 import com.raaftech.structure.helper.loader.BundleLoader;
-import com.raaftech.structure.helper.loader.NaiveSorter;
-import com.raaftech.structure.next.Entity;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,7 +15,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
 import java.net.URI;
 import java.util.Set;
 
@@ -40,7 +37,7 @@ public class NodeSerializerTest {
     @SuppressWarnings("Duplicates")
     public void setUpDatabase() throws Exception {
         if (!databaseCreated) {
-            final String raafBundle = "src/main/resources/bundles/core/";
+            final String raafBundle = "src/main/resources/bundles/";
             BundleLoader bundleLoader = new BundleLoader(raafBundle);
             bundleLoader.load();
             databaseCreated = true;
@@ -57,7 +54,7 @@ public class NodeSerializerTest {
         assertNotNull(componentNode);
 
         String serializedJson = mapper.writeValueAsString(componentNode);
-        assertTrue(JsonHelper.validateToSchema(URI.create("resource:/schema/next/entity.schema.json"),
+        assertTrue(JsonHelper.validateToSchema(URI.create("resource:/schema/entity.schema.json"),
                 mapper.readTree(serializedJson)));
         Entity entity = mapper.readValue(serializedJson, Entity.class);
         assertNotNull(entity);
@@ -80,7 +77,7 @@ public class NodeSerializerTest {
         assertNotNull(dataSchema);
         assertEquals("text", dataSchema.get("encoding").asText());
         assertEquals("json", dataSchema.get("format").asText());
-        assertEquals("schemas/linux.schema.json", dataSchema.get("path").asText());
+        assertEquals("linux.schema.json", dataSchema.get("path").asText());
     }
 
     @Test

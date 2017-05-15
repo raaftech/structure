@@ -9,7 +9,6 @@ import com.raaftech.structure.exceptions.JsonValidationException;
 import com.raaftech.structure.graph.repositories.NodeRepository;
 import com.raaftech.structure.graph.repositories.TypeRepository;
 import com.raaftech.structure.helper.Triple;
-import com.raaftech.structure.next.Entity;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;

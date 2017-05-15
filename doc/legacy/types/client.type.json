@@ -1,0 +1,120 @@
+[
+  {
+    "type": "Type",
+    "name": "HttpClient",
+    "desc": "A generic HTTP Client.",
+    "meta": {
+      "uuid": "fec4ca89-8e2d-4562-a25c-0638eef3a525",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "8f371b1b-52a3-4409-be70-9cd947bec8dd"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 103
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/httpclient.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "RemoteAccessClient",
+    "desc": "A generic remote access client.",
+    "meta": {
+      "uuid": "bf1826d4-cff3-4b76-8cc9-cc752560a4bb",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "8f371b1b-52a3-4409-be70-9cd947bec8dd"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 205
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/remoteaccessclient.schema.json"
+      }
+    }
+  },
+
+  {
+    "type": "Type",
+    "name": "TelnetClient",
+    "desc": "A generic TELNET Client.",
+    "meta": {
+      "uuid": "442f0c59-c264-4227-9b50-2ef2b90af968",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "8f371b1b-52a3-4409-be70-9cd947bec8dd"
+          ]
+        },
+        "IMPLEMENTS": {
+          "direction": "outgoing",
+          "uuids": [
+            "27fc7ed2-beb3-41c8-aa69-900ad7bb989f"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 245
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/telnetclient.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "GnuTelnetClient",
+    "desc": "GNU telnet client from GNU inetutils.",
+    "meta": {
+      "uuid": "662490c0-778a-46e5-bc9a-c0c6cec17422",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "442f0c59-c264-4227-9b50-2ef2b90af968"
+          ]
+        },
+        "IMPLEMENTS": {
+          "direction": "outgoing",
+          "uuids": [
+            "27fc7ed2-beb3-41c8-aa69-900ad7bb989f"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 92
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/gnutelnetclient.schema.json"
+      }
+    }
+  }
+
+]

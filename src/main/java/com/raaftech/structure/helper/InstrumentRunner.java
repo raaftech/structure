@@ -52,13 +52,13 @@ public class InstrumentRunner {
     private final Grouping agent;
     private final ObjectNode arguments;
 
-    private final String workingDirectory = getCurrentWorkingDirectory() + "/generatedscripts/";
+    private final String workingDirectory = getCurrentWorkingDirectory() + "/target/generated-scripts/";
     // Set timeout of transport to 10000ms
     private static final Optional<Long> transportTimeout = Optional.of(10000L);
 
     // jobs will contain system commands, paired with timeouts, eventually sent to the agent with the TaskManager.
     private final ArrayList<Pair<String, Optional<Long>>> jobList = new ArrayList<>();
-    private final String taskManagerAddress = "com.raaftech.structure.manager.taskmanager";
+    private final String taskManagerAddress = "com.raaftech.structure.bus.manager.taskmanager";
     private final Logger log = LoggerFactory.getLogger(InstrumentRunner.class);
 
 
@@ -618,7 +618,7 @@ public class InstrumentRunner {
             }
         } catch (IOException e) {
             log.error("Couldn't create FileWriter to write generated script to: " + e.getMessage());
-            
+
             if (Configuration.isTraceModeOn()) {
                 e.printStackTrace();
             }

@@ -1,0 +1,26 @@
+{
+    "type": "Type",
+    "name": "PackageManager",
+    "desc": "A package manager.",
+    "meta": {
+        "uuid": "e2b8b9ee-b66f-4252-8fba-4fb172f741bc",
+        "relations": {
+            "ISA": {
+                "direction": "outgoing",
+                "uuids": [
+                    "8db2b492-9a4a-41fe-97a5-bc625da042ea"
+                ]
+            }
+        }
+    },
+    "data": {
+        "glyphId": 193
+    },
+    "file": {
+        "dataSchema": {
+            "encoding": "text",
+            "format": "json",
+            "path": "packagemanager.schema.json"
+        }
+    }
+}

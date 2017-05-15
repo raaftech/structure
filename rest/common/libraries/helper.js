@@ -11,7 +11,6 @@ function createOptions(cmd, args) {
 }
 
 function getEventBusAddress(initial, parts) {
-    //return R.join('.', R.prepend('com.raaftech.structure', parts));
     return R.join('.', R.prepend(initial, parts));
 }
 

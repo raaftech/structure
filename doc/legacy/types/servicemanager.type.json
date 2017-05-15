@@ -1,0 +1,26 @@
+{
+  "type": "Type",
+  "name": "Smf",
+  "desc": "The Solaris Service Management Facility.",
+  "meta": {
+    "uuid": "300beaaf-5b4c-48b1-be5b-a5fe3fa547b2",
+    "relations": {
+      "ISA": {
+        "direction": "outgoing",
+        "uuids": [
+          "c3008eec-b454-4ef6-bf7e-0bd92c13d3c3"
+        ]
+      }
+    }
+  },
+  "data": {
+    "glyphId": 225
+  },
+  "file": {
+    "dataSchema": {
+      "encoding": "text",
+      "format": "json",
+      "path": "schemas/smf.schema.json"
+    }
+  }
+}

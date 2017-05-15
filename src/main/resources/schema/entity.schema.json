@@ -1,0 +1,234 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Schema for Structure entities.",
+  "type": "object",
+  "required": [
+    "type",
+    "name",
+    "desc",
+    "meta"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "type": {
+      "$ref": "#/definitions/type"
+    },
+    "name": {
+      "type": "string"
+    },
+    "desc": {
+      "$ref": "#/definitions/desc"
+    },
+    "data": {
+      "type": "object"
+    },
+    "file": {
+      "type": "object",
+      "patternProperties": {
+        "^[a-zA-Z]+$": {
+          "required": [
+            "encoding",
+            "format"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "path": {
+              "type": "string",
+              "maxLength": 260
+            },
+            "content": {
+              "type": "string"
+            },
+            "checksum": {
+              "$ref": "#/definitions/checksum"
+            },
+            "format": {
+              "$ref": "#/definitions/format"
+            },
+            "encoding": {
+              "$ref": "#/definitions/encoding"
+            }
+          },
+          "anyOf": [
+            {
+              "required": [
+                "path"
+              ]
+            },
+            {
+              "required": [
+                "content"
+              ]
+            }
+          ]
+        }
+      },
+      "minProperties": 1
+    },
+    "meta": {
+      "type": "object",
+      "required": [
+        "relations"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "uuid": {
+          "$ref": "common.schema.json#/definitions/uuid"
+        },
+        "relations": {
+          "type": "object",
+          "patternProperties": {
+            "^[a-zA-Z]+$": {
+              "required": ["direction", "uuids"],
+              "additionalProperties": false,
+              "properties": {
+                "direction": {
+                  "$ref": "#/definitions/direction"
+                },
+                "uuids": {
+                  "$ref": "common.schema.json#/definitions/uuidList"
+                }
+              }
+            }
+          },
+          "minProperties": 1
+        },
+        "constraints": {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": false,
+          "patternProperties": {
+            "^[a-zA-Z_]+$": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/constraint"
+              },
+              "minItems": 1
+            }
+          }
+        },
+        "identity": {
+          "$ref": "common.schema.json#/definitions/stringOrStringArray"
+        },
+        "checksum": {
+          "$ref": "#/definitions/checksum"
+        },
+        "bundle": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+$"
+        },
+        "path": {
+          "type": "string",
+          "maxLength": 260
+        }
+      }
+    }
+  },
+  "oneOf": [
+    {
+      "properties": {
+        "type": {
+          "enum": [
+            "Type"
+          ]
+        },
+        "file": {
+          "type": "object",
+          "required": [
+            "dataSchema"
+          ]
+        }
+      },
+      "required": [
+        "file"
+      ]
+    },
+    {
+      "properties": {
+        "type": {
+          "enum": [
+            "Component",
+            "Marker",
+            "Controller",
+            "Parser",
+            "Grouping",
+            "Profile",
+            "Actor",
+            "Result"
+          ]
+        }
+      }
+    }
+  ],
+  "definitions": {
+    "direction": {
+      "type": "string",
+      "enum": [
+        "incoming",
+        "outgoing",
+        "undirected"
+      ]
+    },
+    "cardinality": {
+      "type": "string",
+      "enum": [
+        "OPTIONAL_TO_ONE",
+        "OPTIONAL_TO_MANY",
+        "REQUIRED_TO_ONE",
+        "REQUIRED_TO_MANY"
+      ]
+    },
+    "constraint": {
+      "required": [
+        "to",
+        "cardinality"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "to": {
+          "$ref": "common.schema.json#/definitions/uuid"
+        },
+        "cardinality": {
+          "$ref": "#/definitions/cardinality"
+        }
+      }
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "Type",
+        "Component",
+        "Marker",
+        "Controller",
+        "Parser",
+        "Grouping",
+        "Profile",
+        "Actor",
+        "Result"
+      ]
+    },
+    "desc": {
+      "type": "string",
+      "minLength": 0,
+      "maxLength": 1024
+    },
+    "checksum": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{40}$"
+    },
+    "format": {
+      "type": "string",
+      "enum": [
+        "json",
+        "hbs"
+      ]
+    },
+    "encoding": {
+      "type": "string",
+      "enum": [
+        "base64",
+        "text"
+      ]
+    }
+  }
+}

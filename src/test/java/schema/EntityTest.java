@@ -23,6 +23,6 @@ public class EntityTest extends SchemaTest {
 
     @Override
     protected String schema() {
-        return "resource:/schema/next/entity.schema.json";
+        return "resource:/schema/entity.schema.json";
     }
 }

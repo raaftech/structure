@@ -9,7 +9,7 @@ import com.raaftech.structure.graph.repositories.ResultRepository;
 import com.raaftech.structure.graph.repositories.TypeRepository;
 import com.raaftech.structure.helper.InstrumentRunner;
 import com.raaftech.structure.helper.JsonHelper;
-import com.raaftech.structure.node.InstanceActor;
+import com.raaftech.structure.bus.InstanceActor;
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.Transaction;
 import org.slf4j.Logger;

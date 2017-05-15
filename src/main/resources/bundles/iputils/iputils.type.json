@@ -1,0 +1,26 @@
+  {
+    "type": "Type",
+    "name": "Iputils",
+    "desc": "Network monitoring tools, including ping.",
+    "meta": {
+      "uuid": "6619adef-3bcb-4e32-bfec-d235a7bf3e29",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "8f371b1b-52a3-4409-be70-9cd947bec8dd"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 116
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "iputils.schema.json"
+      }
+    }
+  }

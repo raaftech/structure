@@ -2,6 +2,8 @@ package com.raaftech.structure.helper;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
 import com.google.common.collect.ImmutableSet;
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.graph.*;
@@ -288,10 +290,11 @@ public class InstrumentRunnerTest {
             result = Optional.of(5000);
         }};
 
+        ObjectNode  arguments = mapper.createObjectNode();
         InstrumentRunner instrumentRunner = new InstrumentRunner(
                 origin,
                 controller,
-                mapper.createObjectNode(),
+                arguments,
                 "TASKID"
         );
 

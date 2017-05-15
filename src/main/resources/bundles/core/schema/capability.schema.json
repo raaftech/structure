@@ -1,0 +1,26 @@
+{
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/schema#",
+  "type": "object",
+  "properties": {
+    "name": {
+      "$ref": "type.schema.json#/properties/name"
+    },
+    "desc": {
+      "$ref": "type.schema.json#/properties/desc"
+    },
+    "signature": {
+      "type": "string",
+      "description": "Capabilities are interfaces. This string represents the argument/parameter signature that the implementing instrument needs to adhere to."
+    },
+    "system": {
+      "type": "boolean",
+      "description": "Is this capability for internal use?"
+    }
+  },
+  "required": [
+    "name",
+    "desc",
+    "system"
+  ]
+}

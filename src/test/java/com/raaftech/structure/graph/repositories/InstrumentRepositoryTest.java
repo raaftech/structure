@@ -4,8 +4,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.raaftech.structure.base.SpringTestConfig;
 import com.raaftech.structure.graph.*;
 import com.raaftech.structure.helper.loader.BundleLoader;
-import com.raaftech.structure.helper.loader.NaiveSorter;
-import com.raaftech.structure.next.Entity;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -61,9 +59,9 @@ public class InstrumentRepositoryTest {
     @SuppressWarnings("Duplicates")
     public void setUpDatabase() throws Exception {
         if (!databaseCreated) {
-            final String testBundle = "src/main/resources/bundles/core/";
+            final String testBundle = "src/main/resources/bundles/";
             com.raaftech.structure.base.Configuration
-                    .setSchemaNamespace(FileSystems.getDefault().getPath(testBundle).toUri().resolve("types/"));
+                    .setSchemaNamespace(FileSystems.getDefault().getPath(testBundle).toUri().resolve("legacy/types/"));
             Transaction tx = graphDatabase.beginTx();
             BundleLoader bundleLoader = new BundleLoader(testBundle);
             bundleLoader.load();

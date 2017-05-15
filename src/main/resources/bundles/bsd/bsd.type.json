@@ -1,0 +1,26 @@
+{
+  "type": "Type",
+  "name": "Bsd",
+  "desc": "The Berkeley Software Distribution Operating System.",
+  "meta": {
+    "uuid": "6004436f-7c88-4c2e-a29d-e8077bad10e9",
+    "relations": {
+      "ISA": {
+        "direction": "outgoing",
+        "uuids": [
+          "6a1eea8b-1462-4439-8c60-12edbee6c397"
+        ]
+      }
+    }
+  },
+  "data": {
+    "glyphId": 49
+  },
+  "file": {
+    "dataSchema": {
+      "encoding": "text",
+      "format": "json",
+      "path": "bsd.schema.json"
+    }
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "type": "Controller",
+  "name": "stop",
+  "desc": "SmfStop.",
+  "meta": {
+    "uuid": "fcd96134-e3cf-4869-9642-82d0f4350c28",
+    "relations": {
+      "PROVIDED_BY": {
+        "direction": "outgoing",
+        "uuids": [
+          "300beaaf-5b4c-48b1-be5b-a5fe3fa547b2"
+        ]
+      },
+      "APPLIES_TO": {
+        "direction": "outgoing",
+        "uuids": [
+          "3fb4603b-281e-47c0-b338-768ea05d4660"
+        ]
+      },
+      "GIVES_CAPABILITY": {
+        "direction": "outgoing",
+        "uuids": [
+          "632ca701-2648-4df5-87ee-a41d3d1ef3da"
+        ]
+      },
+      "INSTANCE_OF": {
+        "direction": "outgoing",
+        "uuids": [
+          "f482204e-7d63-45ca-96c9-10a7cc2783da"
+        ]
+      }
+    }
+  },
+  "data": {
+    "instrumentType": "controller",
+    "subjectIsLocal": true,
+    "arguments": {
+      "origin": {
+        "value": {
+          "from": "origin",
+          "type": "type.component.software.server",
+          "strategy": "mustBeOne",
+          "onError": "fail"
+        },
+        "canBeUserSupplied": false,
+        "isOptional": false
+      }
+    }
+  },
+  "file": {
+    "dataSchema": {
+      "encoding": "text",
+      "format": "json",
+      "path": "../../../core/schema/controller.schema.json"
+    },
+    "templateFile": {
+      "encoding": "text",
+      "format": "hbs",
+      "path": "smfstop.hbs.sh"
+    }
+  }
+}

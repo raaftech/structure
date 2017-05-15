@@ -20,6 +20,7 @@ public class BranchNode<T> extends InternalNode<T> {
      * @param parent The parent of this BranchNode.
      * @param predicate The predicate used for filtering.
      */
+    @SuppressWarnings("unchecked")
     public BranchNode(InternalNode parent, Predicate<T> predicate) {
         this.parent = parent;
         this.predicate = predicate;

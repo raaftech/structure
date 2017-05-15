@@ -1,0 +1,26 @@
+{
+    "type": "Type",
+    "name": "Software",
+    "desc": "An abstract software component.",
+    "meta": {
+        "uuid": "8db2b492-9a4a-41fe-97a5-bc625da042ea",
+        "relations": {
+            "ISA": {
+                "direction": "outgoing",
+                "uuids": [
+                    "a79ce509-a021-4177-ae61-73abd01fb479"
+                ]
+            }
+        }
+    },
+    "data": {
+        "glyphId": 226
+    },
+    "file": {
+        "dataSchema": {
+            "encoding": "text",
+            "format": "json",
+            "path": "../schema/software.schema.json"
+        }
+    }
+}

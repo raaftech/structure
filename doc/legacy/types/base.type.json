@@ -1,0 +1,1668 @@
+[
+  {
+    "type": "Type",
+    "name": "Ipv6Network",
+    "desc": "An IPv6 network.",
+    "meta": {
+      "uuid": "d5bb0276-fac4-46f8-b513-5f1c8142fa9b",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "ca419a9e-f71f-4bae-a948-f964a523336b"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 283
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/ipv6network.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Ipv6Address",
+    "desc": "An IPv6 address (address only, can be assigned to a network interface).",
+    "meta": {
+      "uuid": "47b5804d-5f5d-4bf8-89f6-a189c29b05ae",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "299001a6-1091-4c0d-87be-c512af03e179"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 118
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/ipv6address.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Ipv6Listener",
+    "desc": "An IPv6 listener (address and port, can be assigned to a network service).",
+    "meta": {
+      "uuid": "6a79b4e9-13ce-4a09-bc5b-b429d23b34d7",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "91c999a0-33ec-42ee-bae0-6f8adae42535"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 115
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/ipv6listener.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Url",
+    "desc": "A uniform resource locator.",
+    "meta": {
+      "uuid": "0e9f72bd-5bc5-43dc-ab86-30a8f7171bc6",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "3f4a43f7-b558-4bf0-ba7e-66b99cffaf16"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 254
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/url.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "ConsoleHardware",
+    "desc": "A console device.",
+    "meta": {
+      "uuid": "3d0865a2-3ecf-4035-886b-0bb603c0e2c2",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "ea6a7487-867c-4a74-8849-fb8539b8169f"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 66
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/consolehardware.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "GenericSerial",
+    "desc": "A serial communication device.",
+    "meta": {
+      "uuid": "f5b25736-ec12-4a7e-b198-548b97ebc36f",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "3d0865a2-3ecf-4035-886b-0bb603c0e2c2"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 90
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/genericserial.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "GraphicsHardware",
+    "desc": "A graphics device.",
+    "meta": {
+      "uuid": "a642b995-c073-4c27-a611-c5bf3854958f",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "ea6a7487-867c-4a74-8849-fb8539b8169f"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 94
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/graphicshardware.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "GenericVga",
+    "desc": "A VGA graphics device.",
+    "meta": {
+      "uuid": "b3a2ac7c-ad8a-4047-a460-2ac41a7ddfef",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "a642b995-c073-4c27-a611-c5bf3854958f"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 91
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/genericvga.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "MemoryHardware",
+    "desc": "A memory device.",
+    "meta": {
+      "uuid": "1c87c672-1f69-4a02-9bc8-9eff28dda5e5",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "ea6a7487-867c-4a74-8849-fb8539b8169f"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 165
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/memoryhardware.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "VolatileMemory",
+    "desc": "A generic volatile memory device.",
+    "meta": {
+      "uuid": "44131d46-c1b0-4030-ae5a-9a3108627749",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "1c87c672-1f69-4a02-9bc8-9eff28dda5e5"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 261
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/volatilememory.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "RandomAccessMemory",
+    "desc": "Random access memory.",
+    "meta": {
+      "uuid": "4c0a0638-1fa7-4f5b-9d69-1d199dcedccc",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "44131d46-c1b0-4030-ae5a-9a3108627749"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 200
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/randomaccessmemory.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "NonVolatileMemory",
+    "desc": "A generic non-volatile memory device.",
+    "meta": {
+      "uuid": "7f129e53-ff07-4ed8-9062-daf5f733a3a6",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "1c87c672-1f69-4a02-9bc8-9eff28dda5e5"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 176
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/nonvolatilememory.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "HardDiskDrive",
+    "desc": "A non-volatile harddisk-based storage device.",
+    "meta": {
+      "uuid": "24cc3545-0d1a-4d85-8d08-a83c3dbe5912",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "7f129e53-ff07-4ed8-9062-daf5f733a3a6"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 97
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/harddiskdrive.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "SolidStateDrive",
+    "desc": "A non-volatile solid-state storage device.",
+    "meta": {
+      "uuid": "7a60ec32-0a9a-40b9-bf1f-d69674d4a233",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "7f129e53-ff07-4ed8-9062-daf5f733a3a6"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 230
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/solidstatedrive.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "FloppyDrive",
+    "desc": "A floppy disk drive.",
+    "meta": {
+      "uuid": "118ec961-a823-465b-be17-b706f1c8c2f1",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "7f129e53-ff07-4ed8-9062-daf5f733a3a6"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 87
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/floppydrive.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "TapeDrive",
+    "desc": "A tape drive.",
+    "meta": {
+      "uuid": "a507461f-647b-4b79-936a-721ca2dba145",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "7f129e53-ff07-4ed8-9062-daf5f733a3a6"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 242
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/tapedrive.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "CdDrive",
+    "desc": "A Compact Disc drive.",
+    "meta": {
+      "uuid": "30af2fe3-aa05-4912-a3d5-dddfdacf74e2",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "7f129e53-ff07-4ed8-9062-daf5f733a3a6"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 55
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/cddrive.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "DvdDrive",
+    "desc": "A Digital Video Disc drive.",
+    "meta": {
+      "uuid": "23ab95d2-2815-4121-a81c-63aca40cdcfa",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "7f129e53-ff07-4ed8-9062-daf5f733a3a6"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 78
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/dvddrive.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "BdDrive",
+    "desc": "A BluRay Disc drive.",
+    "meta": {
+      "uuid": "cbc27482-11d1-4890-a3e1-e9f80baea82c",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "7f129e53-ff07-4ed8-9062-daf5f733a3a6"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 46
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/bddrive.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "NetworkHardware",
+    "desc": "A network device.",
+    "meta": {
+      "uuid": "86786ed6-d62a-4011-9ae8-0082000e48fa",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "ea6a7487-867c-4a74-8849-fb8539b8169f"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 174
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/networkhardware.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "WiredNetworkHardware",
+    "desc": "A wired network device.",
+    "meta": {
+      "uuid": "0d4c880d-d888-435f-b3a3-3d3eb9e70ddf",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "86786ed6-d62a-4011-9ae8-0082000e48fa"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 272
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/wirednetworkhardware.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "ModemHardware",
+    "desc": "A modem networking device.",
+    "meta": {
+      "uuid": "f34b76e4-f5a6-4bae-968e-f22ef09b1e35",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "0d4c880d-d888-435f-b3a3-3d3eb9e70ddf"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 169
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/modemhardware.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "EthernetHardware",
+    "desc": "A wired ethernet device.",
+    "meta": {
+      "uuid": "0dbd26f2-baff-446c-9241-46eaa3e03736",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "0d4c880d-d888-435f-b3a3-3d3eb9e70ddf"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 82
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/ethernethardware.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "WirelessNetworkHardware",
+    "desc": "A wireless network device.",
+    "meta": {
+      "uuid": "61328f83-db43-4efe-81be-df47e17814a5",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "86786ed6-d62a-4011-9ae8-0082000e48fa"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 273
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/wirelessnetworkhardware.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "BluetoothHardware",
+    "desc": "A Bluetooth device.",
+    "meta": {
+      "uuid": "009cf823-39c0-4b17-ae81-ad98ed0d4585",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "61328f83-db43-4efe-81be-df47e17814a5"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 47
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/bluetoothhardware.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "IrdaHardware",
+    "desc": "An IrDA device.",
+    "meta": {
+      "uuid": "42c7997c-0c56-4f93-956f-5fd0778c47c6",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "61328f83-db43-4efe-81be-df47e17814a5"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 119
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/irdahardware.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "WifiHardware",
+    "desc": "A WiFi device.",
+    "meta": {
+      "uuid": "78ff02be-2abe-4a8f-a082-a0d9c3cdae70",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "61328f83-db43-4efe-81be-df47e17814a5"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 262
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/wifihardware.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "WwanHardware",
+    "desc": "A wireless WAN device.",
+    "meta": {
+      "uuid": "8d6e0956-033e-4efc-8846-e85bfddc8f98",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "61328f83-db43-4efe-81be-df47e17814a5"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 274
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/wwanhardware.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "ProcessingUnit",
+    "desc": "A processing unit.",
+    "meta": {
+      "uuid": "b7b2a2ff-3af7-469b-afbf-e52f1b80be91",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "ea6a7487-867c-4a74-8849-fb8539b8169f"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 197
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/processingunit.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "AlphaProcessor",
+    "desc": "An Alpha processor.",
+    "meta": {
+      "uuid": "95b9f7a2-1a17-4cb9-8088-3e2e478ce638",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "b7b2a2ff-3af7-469b-afbf-e52f1b80be91"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 37
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/alphaprocessor.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "ArmProcessor",
+    "desc": "An ARM processor.",
+    "meta": {
+      "uuid": "f3b1b497-1e83-4a09-a280-04f46a83fe24",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "b7b2a2ff-3af7-469b-afbf-e52f1b80be91"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 43
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/armprocessor.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "ItaniumProcessor",
+    "desc": "An Itanium processor.",
+    "meta": {
+      "uuid": "241015c9-72f5-491f-a870-a30d8f7902fd",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "b7b2a2ff-3af7-469b-afbf-e52f1b80be91"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 120
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/itaniumprocessor.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "M68kProcessor",
+    "desc": "A Motorola 68000 series processor.",
+    "meta": {
+      "uuid": "33920524-4989-4322-a0ca-1cea614d7fef",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "b7b2a2ff-3af7-469b-afbf-e52f1b80be91"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 161
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/m68kprocessor.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "MipsProcessor",
+    "desc": "A processor using the MIPS ISA.",
+    "meta": {
+      "uuid": "cbe81157-97f6-401b-bbaa-cfbc4f479298",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "b7b2a2ff-3af7-469b-afbf-e52f1b80be91"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 168
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/mipsprocessor.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "MosProcessor",
+    "desc": "A MOS Technology processor.",
+    "meta": {
+      "uuid": "b4f67698-7eca-4ca1-a4cf-b7ef9737785c",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "b7b2a2ff-3af7-469b-afbf-e52f1b80be91"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 170
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/mosprocessor.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "PariscProcessor",
+    "desc": "A PA Risc processor.",
+    "meta": {
+      "uuid": "689a4f33-e08d-4e7f-83a5-79fd310bd3f9",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "b7b2a2ff-3af7-469b-afbf-e52f1b80be91"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 194
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/pariscprocessor.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "PowerProcessor",
+    "desc": "A PowerPC processor.",
+    "meta": {
+      "uuid": "808f2737-feca-4b70-aa1a-53410b970b10",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "b7b2a2ff-3af7-469b-afbf-e52f1b80be91"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 195
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/powerprocessor.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "SparcProcessor",
+    "desc": "A SPARC processor.",
+    "meta": {
+      "uuid": "798ba8d1-8da7-471a-9efa-30530569b6a1",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "b7b2a2ff-3af7-469b-afbf-e52f1b80be91"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 231
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/sparcprocessor.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "X86Processor",
+    "desc": "An x86-based processor.",
+    "meta": {
+      "uuid": "4d4971b6-43b3-4c14-a82a-c51d72ba23a5",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "b7b2a2ff-3af7-469b-afbf-e52f1b80be91"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 275
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/x86processor.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "ZilogProcessor",
+    "desc": "A ZiLOG processor.",
+    "meta": {
+      "uuid": "a68f42c5-2a1d-43cb-bebd-55339f5e61ee",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "b7b2a2ff-3af7-469b-afbf-e52f1b80be91"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 279
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/zilogprocessor.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Z80",
+    "desc": "A ZiLOG Z80 processor.",
+    "meta": {
+      "uuid": "99ce31e0-d540-4582-ae38-b84f4bf13868",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "a68f42c5-2a1d-43cb-bebd-55339f5e61ee"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 278
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/z80.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "CloudSystem",
+    "desc": "A cloud (operating) system and/or environment.",
+    "meta": {
+      "uuid": "86c0439a-4219-46e6-82a3-6fb2ee774aa4",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "8db2b492-9a4a-41fe-97a5-bc625da042ea"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 59
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/cloudsystem.schema.json"
+      }
+    }
+  },
+
+  {
+    "type": "Type",
+    "name": "Hypervisor",
+    "desc": "A virtualization hypervisor.",
+    "meta": {
+      "uuid": "c5c7fcb5-8ac3-40cc-b195-b2b6af368e81",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "8db2b492-9a4a-41fe-97a5-bc625da042ea"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 105
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/hypervisor.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Emulator",
+    "desc": "A hardware platform emulator.",
+    "meta": {
+      "uuid": "59aeae81-9741-4986-b9c2-931504cfc9e3",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "8db2b492-9a4a-41fe-97a5-bc625da042ea"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 81
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/emulator.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Locational",
+    "desc": "A place/location.",
+    "meta": {
+      "uuid": "f31b8dc9-7b9a-47cc-bd3d-20b94b6daac1",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "5f1eb7c5-ec5e-4563-be6a-fc50774fc374"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 126
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/locational.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Building",
+    "desc": "A building.",
+    "meta": {
+      "uuid": "44197148-678f-4421-a618-dc6807beaf30",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "f31b8dc9-7b9a-47cc-bd3d-20b94b6daac1"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 53
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/building.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Floor",
+    "desc": "A floor.",
+    "meta": {
+      "uuid": "9ca8061a-898c-4f2f-aeb3-c77d1747559f",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "f31b8dc9-7b9a-47cc-bd3d-20b94b6daac1"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 86
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/floor.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Room",
+    "desc": "A room.",
+    "meta": {
+      "uuid": "94721751-ab2f-4285-9c33-cd91cb919430",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "f31b8dc9-7b9a-47cc-bd3d-20b94b6daac1"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 209
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/room.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Organizational",
+    "desc": "An organizational group.",
+    "meta": {
+      "uuid": "c94c2c32-8e10-48c3-a31b-6337c2ad4df4",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "5f1eb7c5-ec5e-4563-be6a-fc50774fc374"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 191
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/organizational.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Company",
+    "desc": "A company.",
+    "meta": {
+      "uuid": "d7582691-8ccc-415c-886b-7d363c8b6e84",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "c94c2c32-8e10-48c3-a31b-6337c2ad4df4"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 60
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/company.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Department",
+    "desc": "A department.",
+    "meta": {
+      "uuid": "aa6bc876-33fe-4710-b409-edb31e1081de",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "c94c2c32-8e10-48c3-a31b-6337c2ad4df4"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 70
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/department.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Team",
+    "desc": "A team.",
+    "meta": {
+      "uuid": "9d68148a-28ec-4f24-b1d7-0fc2d407ab78",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "c94c2c32-8e10-48c3-a31b-6337c2ad4df4"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 244
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/team.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Actor",
+    "desc": "Something or someone that interacts/starts/acts within the system.",
+    "meta": {
+      "uuid": "3175d762-dd97-434f-a288-21e4591480cf",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "b1bc963a-19cc-4518-aecb-a35d028c49e3"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 34
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/actor.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "User",
+    "desc": "A user.",
+    "meta": {
+      "uuid": "88d8630d-54ce-4aa5-8505-2068c31df5b1",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "3175d762-dd97-434f-a288-21e4591480cf"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 255
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/user.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Batch",
+    "desc": "A batch user.",
+    "meta": {
+      "uuid": "395d3e08-842b-4640-8b57-751e1b0c9e4b",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "3175d762-dd97-434f-a288-21e4591480cf"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 45
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/batch.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Access",
+    "desc": "A capability that makes it possible to access a textual or graphical console.",
+    "meta": {
+      "uuid": "20d9b0db-92b2-42a7-93d9-f86e00312fef",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "916e04a9-c773-4eaf-9c08-450016426e5a"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 33
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/access.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Configure",
+    "desc": "A capability that makes it possible to configure something.",
+    "meta": {
+      "uuid": "3dc7b06a-69a0-4650-897a-34c5d069e3c5",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "916e04a9-c773-4eaf-9c08-450016426e5a"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 65
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/configure.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Install",
+    "desc": "A capability that makes it possible to install something.",
+    "meta": {
+      "uuid": "3c077211-0ffa-452f-8d84-5bd5be5598f5",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "916e04a9-c773-4eaf-9c08-450016426e5a"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 110
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/install.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "Uninstall",
+    "desc": "A capability that makes it possible to uninstall something.",
+    "meta": {
+      "uuid": "ea1b32de-cf31-4c1b-9b2b-f1a6d9983418",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "916e04a9-c773-4eaf-9c08-450016426e5a"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 249
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/uninstall.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "HTTP",
+    "desc": "The hypertext transfer protocol.",
+    "meta": {
+      "uuid": "9fd04885-179f-4c72-99a2-52c692e61b19",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "db0c3c65-52fd-4dec-907c-6c8a669e88f3"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 96
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/http.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "HTTP09",
+    "desc": "The hypertext transfer protocol, version 0.9.",
+    "meta": {
+      "uuid": "09102127-1803-48b6-a9f4-2fd1b891293d",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "9fd04885-179f-4c72-99a2-52c692e61b19"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 96
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/http09.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "HTTP10",
+    "desc": "The hypertext transfer protocol, version 1.0.",
+    "meta": {
+      "uuid": "256d493d-3b7a-4e28-8e64-8f81de4d92de",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "9fd04885-179f-4c72-99a2-52c692e61b19"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 96
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/http10.schema.json"
+      }
+    }
+  },
+  {
+    "type": "Type",
+    "name": "HTTP11",
+    "desc": "The hypertext transfer protocol, version 1.1.",
+    "meta": {
+      "uuid": "b11b10d7-6f46-49c0-bc61-3ecdd4342cd7",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "9fd04885-179f-4c72-99a2-52c692e61b19"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 96
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/http11.schema.json"
+      }
+    }
+  },
+
+  {
+    "type": "Type",
+    "name": "TELNET",
+    "desc": "The telnet protocol.",
+    "meta": {
+      "uuid": "27fc7ed2-beb3-41c8-aa69-900ad7bb989f",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "db0c3c65-52fd-4dec-907c-6c8a669e88f3"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 241
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "schemas/telnet.schema.json"
+      }
+    }
+  }
+]

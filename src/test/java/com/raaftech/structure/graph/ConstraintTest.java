@@ -5,7 +5,6 @@ import com.raaftech.structure.base.Context;
 import com.raaftech.structure.graph.repositories.NodeRepository;
 import com.raaftech.structure.graph.repositories.TypeRepository;
 import com.raaftech.structure.helper.Triple;
-import com.raaftech.structure.next.Entity;
 import mockit.Expectations;
 import mockit.Mocked;
 import mockit.StrictExpectations;

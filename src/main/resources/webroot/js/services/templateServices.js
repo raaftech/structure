@@ -4,7 +4,7 @@ angular.module("structureApp")
         return {
 
             getTemplate: function(scope, uuid) {
-                vertxEventBusService.send('com.raaftech.structure.repository.templates',
+                vertxEventBusService.send('com.raaftech.structure.bus.repository.templates',
                     {
                         'msgh': 'findOne',
                         'args': {
@@ -14,7 +14,7 @@ angular.module("structureApp")
                     .then(function(reply) {
                         scope.template = reply.result.data;
                         // get the isa values
-                        vertxEventBusService.send('com.raaftech.structure.repository.templates',
+                        vertxEventBusService.send('com.raaftech.structure.bus.repository.templates',
                             {
                                 'msgh': 'findOne',
                                 'args': {
@@ -28,7 +28,7 @@ angular.module("structureApp")
             },
 
             getAllTemplates: function(scope) {
-                vertxEventBusService.send('com.raaftech.structure.repository.templates',
+                vertxEventBusService.send('com.raaftech.structure.bus.repository.templates',
                     {
                         'msgh': 'findAllTemplates',
                         'args': {}
@@ -39,7 +39,7 @@ angular.module("structureApp")
             },
 
             getTemplates: function(scope, uuid) {
-                vertxEventBusService.send('com.raaftech.structure.node.template.' + uuid,
+                vertxEventBusService.send('com.raaftech.structure.bus.node.template.' + uuid,
                     {
                         'msgh': 'getSubTemplates',
                         'args': {}
@@ -50,7 +50,7 @@ angular.module("structureApp")
             },
 
             getSubTemplates: function(scope, uuid) {
-                vertxEventBusService.send('com.raaftech.structure.node.template.' + uuid,
+                vertxEventBusService.send('com.raaftech.structure.bus.node.template.' + uuid,
                     {
                         'msgh': 'getSubTemplates',
                         'args': {}

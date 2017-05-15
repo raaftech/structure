@@ -1,0 +1,33 @@
+{
+    "type": "Type",
+    "name": "SshServer",
+    "desc": "A generic SSH Server.",
+    "meta": {
+        "uuid": "7db4a3ef-2d3c-4071-929b-e81505fbd5e2",
+        "relations": {
+            "ISA": {
+                "direction": "outgoing",
+                "uuids": [
+                    "3fb4603b-281e-47c0-b338-768ea05d4660"
+                ]
+            },
+            "IMPLEMENTS": {
+                "direction": "outgoing",
+                "uuids": [
+                    "000b0fd3-a121-4194-a441-0857abca490d",
+                    "07b23795-140f-4a72-9c86-e1d3b86cd149"
+                ]
+            }
+        }
+    },
+    "data": {
+        "glyphId": 233
+    },
+    "file": {
+        "dataSchema": {
+            "encoding": "text",
+            "format": "json",
+            "path": "../schema/sshserver.schema.json"
+        }
+    }
+}

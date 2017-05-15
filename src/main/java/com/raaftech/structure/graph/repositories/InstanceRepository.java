@@ -1,6 +1,6 @@
 package com.raaftech.structure.graph.repositories;
 
-import com.raaftech.structure.graph.Configuration;
+import com.raaftech.structure.graph.Component;
 import com.raaftech.structure.graph.Grouping;
 import com.raaftech.structure.graph.Instance;
 import org.springframework.data.neo4j.annotation.Query;
@@ -35,7 +35,7 @@ public interface InstanceRepository extends GenericRepository<Instance> {
             "RETURN count(n)")
     int isOfType(@Param("uuid") String uuid, @Param("type") String type);
 
-    // Get the root node of a componental group
+    // Get the root node of a component group
     @Query ("MATCH (instance:Instance {uuid:{instanceUuid}})<-[*0..]-(n)<-[:GROUPS]-(grouping) " +
             "WHERE NOT n:Grouping RETURN grouping")
     Grouping getStartOfComponentGroup(@Param("instanceUuid") String instanceUuid);
@@ -44,6 +44,6 @@ public interface InstanceRepository extends GenericRepository<Instance> {
     List<Instance> getNLastCreated(@Param("amount") int amount);
 
     @Query ("MATCH (n:`type:DnsName` {`data-dnsname`: {0}}) RETURN n")
-    Configuration findDnsName(String hostname);
+    Component findDnsName(String hostname);
 
 }

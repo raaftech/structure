@@ -1,0 +1,22 @@
+{
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/schema#",
+  "type": "object",
+  "properties": {
+    "name": {
+      "$ref": "type.schema.json#/properties/name"
+    },
+    "cidr": {
+      "type": "string",
+      "description": "The network CIDR."
+    },
+    "desc": {
+      "$ref": "type.schema.json#/properties/desc"
+    }
+  },
+  "required": [
+    "name",
+    "desc",
+    "cidr"
+  ]
+}

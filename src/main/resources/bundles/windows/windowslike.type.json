@@ -1,0 +1,26 @@
+{
+  "type": "Type",
+  "name": "WindowsLike",
+  "desc": "A Windows-like operating system.",
+  "meta": {
+    "uuid": "4edbaf6a-da58-4644-abac-ae80328ddb49",
+    "relations": {
+      "ISA": {
+        "direction": "outgoing",
+        "uuids": [
+          "f05e325e-1aee-4892-96e4-8bcd6e97c528"
+        ]
+      }
+    }
+  },
+  "data": {
+    "glyphId": 267
+  },
+  "file": {
+    "dataSchema": {
+      "encoding": "text",
+      "format": "json",
+      "path": "windowslike.schema.json"
+    }
+  }
+}

@@ -1,0 +1,504 @@
+state -> componentHasChildren? (traverses outgoing has relationships)
+
+no:
+ lookup state method
+ execute state method
+ store state result
+
+
+yes:
+ recurse and find childless amongst children
+   no/yes/recurse...
+ create aggregate state result from child agregate state results
+
+
+
+
+
+
+
+Hoe bepaal je waar een StatusResult terecht komt?
+(denk aan device status bijvoorbeeld)
+Antwoord: een device heeft geen StatusResult maar een DerivedStatusResult; maw:
+de onderliggende osen/software/services etc hebben StatusResult en DerivedStatusResult
+waarvan een nieuw DerivedStatusResult voor dat device gemaakt wordt.
+
+A software has:
+   Operation
+      ...
+
+   Configuration
+      IpAddress
+         Ipv4Address
+         Ipv6Address
+
+      Listener
+         Ipv4Listener
+         Ipv6Listener
+
+      Url
+
+      DnsName
+
+      DirectoryMap
+         PrefixDirectoryMap
+         ConfigurationDirectoryMap
+         ExecutableDirectoryMap
+         LibraryDirectoryMap
+         DataDirectoryMap
+         LogDirectoryMap
+
+      FileMap
+         ConfigurationFileMap
+         ExecutableFileMap
+         LibraryFileMap
+         DataFileMap
+         LogFileMap
+
+      PackageMap
+
+   Result
+      ...
+
+
+
+Status:
+
+everything can be: unknown
+a component can be: unreachable, not-installed, active, inactive
+
+
+state transitions:
+  unknown       -> (state was never checked, software is unreachable)       -> (state is checked) -> unreachable
+  unknown       -> (state was never checked, software is installed)         -> (state is checked) -> not-installed
+  unknown       -> (state was never checked, software is not running)       -> (state is checked) -> inactive
+  unknown       -> (state was never checked, software is running)           -> (state is checked) -> active
+
+  unreachable   -> (previous check said unreachable, this one too)          -> (state is checked) -> unreachable
+  unreachable   -> (previous check said unreachable, but now not-installed) -> (state is checked) -> not-installed
+  unreachable   -> (previous check said unreachable, but now inactive)      -> (state is checked) -> inactive
+  unreachable   -> (previous check said unreachable, but now active)        -> (state is checked) -> active
+
+  not-installed -> (user installs software, but now were unreachable)       -> (state is checked) -> unreachable
+  not-installed -> (user installs software, something went wrong)           -> (state is checked) -> not-installed
+  not-installed -> (user installs software, which is not auto-started)      -> (state is checked) -> inactive
+  not-installed -> (user installs software, which is auto-started)          -> (state is checked) -> active
+
+  inactive      -> (state is checked, but now were unreachable)             -> (state is checked) -> unreachable
+  inactive      -> (user uninstalls the inactive software)                  -> (state is checked) -> not-installed
+  inactive      -> (user starts software, and fails)                        -> (state is checked) -> inactive
+  inactive      -> (user starts software, and is succesful)                 -> (state is checked) -> active
+
+  active        -> (state is checked, but now were unreachable)             -> (state is checked) -> unreachable
+  active        -> (user uninstalls the active software)                    -> (state is checked) -> not-installed
+  active        -> (user stops software, and is succesful)                  -> (state is checked) -> inactive
+  active        -> (user stops software, and fails)                         -> (state is checked) -> active
+
+
+questions that need answers:
+  what is the state
+  what is this
+  how certain is it
+
+
+
+
+*** Notes about schema:
+  - should create graph if not exists
+  - if exists, should check schema version
+  - against application required schema version
+  - if schema version is not equal enumerate change-scripts
+  - replay through enumerated change scripts until db schema == app schema
+  - if schema version in graph is equal to app, open
+
+  - schema should be divided in base/opcf/raaf/user
+    - base = abstract base types only (namespace: org.openpcf.model.base.*)
+    - opcf = freely available generic/basic types of things (namespace: org.openpcf.model.*)
+    - raaf = extended library of os'es and services (namespace: com.raaftech.model.*)
+    - user = stuff we don't touch, that uses/relates to things existing in the above (label: Instance)
+
+*** Nodes Overview:
+// Object - All, has uuid constraints, name indexes.
+
+// Model - Housekeeping stuff for the database, versioning.
+// BaseModel - The first model object.
+
+// Component - Something that can be combined/built.
+
+// Configuration - Any kind of configuration.
+// IpAddress - An IP address.
+// Ipv4Address - An IPv4 address.
+// Ipv6Address - An IPv6 address.
+// IpListener - An IP listener.
+// Ipv4Listener - An IPv4 listener.
+// Ipv6Listener - An IPv6 listener.
+// Url - A uniform resource locator.
+    url: 'scheme://domain:port/path?query_string#fragment_id'
+// DnsName - Either a short name or a fully-qualified domain name.
+// Map - A configuration object that maps keys to multi-valued attributes in the JSON format.
+// DirectoryMap - A generic map of possible directories this software has. Key: os-shortname, Values: list of directories, Format: JSON.
+// PrefixDirectoryMap - A map of possible/known prefix directories for this software. Key: os-shortname, Values: list of directory prefixes, Format: JSON.
+// ConfigDirectoryMap - A map of possible/known configuration directories for this software. Key: os-shortname, Values: list of config directories, Format: JSON.
+// BinaryDirectoryMap - A map of possible/known binary executable directories for this software. Key: os-shortname, Values: list of binary directories, Format: JSON.
+// LibraryDirectoryMap - A map of possible/known dynamic link library directories for this software. Key: os-shortname, Values: list of library directories, Format: JSON.
+// DataDirectoryMap - A map of possible/known data directories for this software. Key: os-shortname, Values: list of data directories, Format: JSON.
+// LogDirectoryMap - A map of possible/known log directories for this software. Key: os-shortname, Values: list of log directories, Format: JSON.
+// FileMap - A generic map of possible/known files this software has. Key: os-shortname, Values: list of files, Format: JSON.
+// ConfigFileMap - A map of possible/known configuration files for this software, non-full path, checked within ConfigDirectoryMap entries.
+// BinaryFileMap - A map of possible/known binary executable files for this software, non-full path, checked within BinaryDirectoryMap entries.
+// LibraryFileMap - A map of possible/known dynamic link library files for this software, non-full path, checked within LibraryDirectoryMap entries.
+// DataFileMap - A map of possible/known data files for this software, non-full path, checked within DataDirectoryMap entries.
+// LogFileMap - A map of possible/known log files for this software, non-full path, checked within LogDirectoryMap entries.
+// NameMap - A generic map of possible/known names this software has. Key: os-shortname, Values: list of names, Format: JSON.
+// PackageNameMap - A generic map of possible/known package names this software has. Key: os-shortname, Values: list of names, Format: JSON.
+// ServiceNameMap - A generic map of possible/known service names this software has. Key: os-shortname, Values: list of names, Format: JSON.
+
+// Device - Any kind of device.
+// AssembledDevice - Any assembled device.
+// Computer - An assembled computer device.
+// ConsoleDevice - A console device.
+// GenericSerial - A serial communication device.
+// GraphicsDevice - A grapical device.
+// GenericVga - A VGA graphics device.
+// MemoryDevice - A memory device.
+// VolatileMemory - A volatile memory device.
+// RandomAccessMemory - Random access memory.
+// NonVolatileMemory - A volatile memory device.
+// HardDiskDrive - A non-volatile harddisk-based storage device.
+// SolidStateDrive - A non-volatile solid-state storage device.
+// FloppyDrive - A floppy disk drive.
+// TapeDrive - A floppy disk drive.
+// CdDrive - A Compact Disc drive.
+// DvdDrive - A Digital Video Disc drive.
+// BdDrive - A Blu-Ray drive.
+// NetworkDevice - A network device.
+// WiredNetworkDevice - A wired networking device.
+// ModemDevice - A modem networking device.
+// EthernetDevice - A wired ethernet device.
+// WirelessNetworkDevice - A wireless device.
+// BluetoothDevice - A Bluetooth device.
+// IrdaDevice - An IrDA device.
+// WifiDevice - A WiFi device.
+// WwanDevice - A Wireless WAN device.
+// ProcessingUnit - A processing unit.
+// AlphaProcessor - An Alpha processor.
+// ArmProcessor- An ARM processor.
+// ItaniumProcessor - An Itanium processor.
+// M68KProcessor - A Motorola 68000 series processor.
+// MipsProcessor - A MIPS processor.
+// MosProcessor - A MOS Technology processor.
+// PariscProcessor - A PA Risc processor.
+// PowerProcessor - A PowerPC processor.
+// SparcProcessor - A SPARC processor.
+// X86Processor - An x86-based processor.
+// ZilogProcessor - A ZiLOG processor.
+
+// Software - Any kind of software.
+// CloudSystem - Any cloud (operating) system, either IAAS or PAAS.
+// OperatingSystem - Any operating system.
+// ServiceManager - Any service/boot initialization system.
+// PackageManager - Any packaging system.
+// Interpreter - Any interpreter.
+// Hypervisor - Any hypervisor.
+// Service - Any generic local/networked service.
+
+// Grouping - A group of references to things.
+// Locational - Any kind of place/location.
+// Building - A building, has address, containing references to floors, rooms, devices.
+// Floor - A floor containing references to rooms, devices.
+// Room - A room containing references to devices.
+// Organizational - Any kind of organizational group.
+// Company - A company can contain references to departments, teams, users.
+// Department - A department can contain references to teams, users.
+// Team - A team can contain references to users.
+// Component - A convenience group for organizing references to components.
+
+// Actor - Something or someone that interacts/starts/acts.
+// User - Users. Interact with the system.
+// Batch - An automated entity type. Interacts with system in an automated way.
+
+// Capability - A software component gives capabilities to its parent or to siblings.
+// Checkable - Makes it possible to state-check.
+// Stopable - Gives a stop capability.
+// Startable - Gives a start capability.
+// Restartable - Gives a restart capability.
+// Installable - Gives an install capability.
+// Configurable - Gives a configure capability.
+// Uninstallable - Gives an uninstall capability.
+// Virtualizable - Gives a virtualization capability.
+// Commandable - Can be used to run a command.
+
+// Protocol - Services implement protocols, Handlers interact with services using protocols.
+// HTTP - Can speak the HTTP protocol.
+// HTTP09 - Can speak the HTTP 0.9 protocol.
+// HTTP10 - Can speak the HTTP 1.0 protocol.
+// HTTP11 - Can speak the HTTP 1.1 protocol.
+// SMB - Can speak the SMB protocol.
+// SMB10 - Can speak the SMB 1.0 protocol.
+// SMB20 - Can speak the SMB 2.0 protocol.
+// SMB21 - Can speak the SMB 2.1 protocol.
+// SMB30 - Can speak the SMB 3.0 protocol.
+// SSH - Can speak the SSH protocol.
+// SSH10 - Can speak the SSH 1.0 protocol.
+// SSH20 - Can speak the SSH 2.0 protocol.
+// TELNET - Can speak the SSH protocol.
+
+// Operation - A command or method that can be called, with or without schedule.
+// CommandOperation - An arbitrary command.
+// VersionOperation - A command that displays a version string.
+// CustomStatusOperation - Custom command for a status check operation.
+// CustomExistenceOperation - Custom command for an existence operation.
+// CustomUsageOperation - Custom command that shows/derives/fetches the usage of a resource.
+// CustomInstallOperation - Custom command to install a software.
+// CustomUninstallOperation - Custom command to uninstall a software.
+// CustomStartOperation - Custom command to start a software.
+// CustomStopOperation - Custom command to stop a software.
+// CustomRestartOperation - Custom command to restart a software.
+
+// Result - A result from an operation.
+// CommandResult - A generic textual result from a command operation.
+// VersionResult - A textual result representing a version string.
+
+// StatusResult - A result that represents a status.
+// DerivedStatusResult - A derived status. 1/ok, 0/not-ok.
+// LocalDerivedStatusResult - A derived 1/0 status from all statuses known to the software itself.
+// AggregateDerivedStatusResult - A derived 1/0 status from all localderivedstatuses from its children.
+// SoftwareInstalledStatusResult - 1/installed, 0/not-installed.
+// SoftwareRunningStatusResult - 1/running, 0/not-running.
+// IpAddressReachableStatusResult - 1/reachable, 0/unreachable.
+// ListenerAvailableStatusResult - 1/open, 0/closed.
+// DnsNameResolvableStatusResult - 1/resolved, 0/not-resolved.
+
+// ExistenceResult - A generic result from an ExistenceHandler.
+// DirectoryExistenceResult - A generic directory existence result from an ExistenceHandler.
+// PrefixDirectoryExistenceResult - A possible result from an ExistenceHandler, parsing a PrefixDirectoryMap.
+// ConfigDirectoryExistenceResult - A possible result from an ExistenceHandler, parsing a ConfigDirectoryMap.
+// BinaryDirectoryExistenceResult - A possible result from an ExistenceHandler, parsing a BinaryDirectoryMap.
+// LibraryDirectoryExistenceResult - A possible result from an ExistenceHandler, parsing a LibraryDirectoryMap.
+// DataDirectoryExistenceResult - A possible result from an ExistenceHandler, parsing a DataDirectoryMap.
+// LogDirectoryExistenceResult - A possible result from an ExistenceHandler, parsing a LogDirectoryMap.
+// FileExistenceResult - A generic file existence result from an ExistenceHandler.
+// ConfigFileExistenceResult - A possible result from an ExistenceHandler, parsing a ConfigFileMap.
+// BinaryFileExistenceResult - A possible result from an ExistenceHandler, parsing a BinaryFileMap.
+// LibraryFileExistenceResult - A possible result from an ExistenceHandler, parsing a LibraryFileMap.
+// DataFileExistenceResult - A possible result from an ExistenceHandler, parsing a DataFileMap.
+// LogFileExistenceResult - A possible result from an ExistenceHandler, parsing a LogFileMap.
+// NameExistenceResult - A possible result from an ExistenceHandler, parsing a NameMap.
+// PackageNameExistenceResult - A possible result from an ExistenceHandler, parsing a PackageNameMap.
+// ServiceNameExistenceResult - A possible result from an ExistenceHandler, parsing a ServiceNameMap.
+// UsageResult - A generic usage result.
+// ProcessorUsageResult - The processing unit usage results from a UsageHandler.
+// MemoryUsageResult - The memory usage results from a UsageHandler.
+// StorageUsageResult - The storage usage results from a UsageHandler.
+// NetworkUsageResult - The network bandwidth usage results from a UsageHandler.
+
+*** Notes about cloud stuff
+paas: clouds that give you platforms, platforms being application runtimes like java/node/python/etc
+iaas: clouds that give you virtual machines
+saas: clouds that give you applications to useb
+
+
+*** Relations:
+ISA                       Node to node, typing, inheritance
+HAS                       Things that contain things
+PROVIDES                  A Component provides Capability(s) to ROOT/SELF/CHILDREN/SIBLINGS/PARENT/GRANDPARENT
+REQUIRES                  A Handler requires Capability(s)
+CREATED_BY                Actors can create
+MODIFIED_BY               Actors can modify
+
+*** Init Systems:
+sysv init
+bsd init
+systemd
+upstart
+windows
+
+*** Packaging Systems:
+rpm/yum
+deb/apt
+pkgng
+msi
+
+*** Services Need:
+ports
+hashmap of: os - packagenames
+hashmap of: os - executables
+hashmap of: os - servicenames
+hashmap of: os - configfiles
+hashmap of: os - datalocations
+hashmap of: os - loglocations
+
+- os can be a broader type
+- services can start, stop, state
+- to start/stop/state requires access, an init system, a servicename on that os
+stop() {
+  os=whatsMyParentOS()                      find the os by asking the parent
+  name=whatsMyServiceName(os)               lookup servicename in hashmap for os
+  initSystem=os.initSystem()                find the os initsystem
+  call initSystem.stopService(name)         shutdown the service
+}
+
+otherbox
+  otheros
+    universal (can do external state checks)                                gives to root
+
+
+mysystem      (can go on, off, reboot)                                      gives nothing
+  mydebian    (gives turn off, reboot to mysystem)                          gives to self and parent
+    sysvinit  (gives start/stop/restart to services on mydebian)            gives to siblings
+    bash      (gives runcommand to mydebian)                                gives to parent
+    kvm       (gives virtualization capability to mysystem, on to children) gives to children and grandparent
+    ssh       (gives textualaccessor, interactivelogin to mydebian)         gives to parent
+
+
+ssh
+  provides capabilities (textualaccessor, interactivelogin) to parent
+  has optional start/stop/restart operations
+  start/stop/restart is usually inherited from the init of the parent
+  which would result in siblinginitsystem.startService(ssh)
+
+sysvinit
+  provides capabilities (start/stop/restart/status) to siblings
+  has startService/stopService/restartService/checkService(svc)
+
+state mydebian
+  will check state of all children
+  will create multiple state (result) objects on all children
+  will return a cumulative/resultant state based on some state interpreter
+
+state ssh@mydebian
+  will check state of ssh service on mydebian
+  will create a state object (result) on ssh service on mydebian
+
+
+caps=getCapabilities(someservice)
+exposeCaps(caps)
+
+
+wat doe je met externe state dingen? port? icmp?
+
+GUI enables what the Handler(s) PROVIDES
+
+Service (provides requirements for handlers to interact with)
+   |
+Handler (provides abstract commands to app/gui/cmd)
+   |
+GUI/CMD (enables wat handlers provide)
+
+
+
+
+
+backend (neo4vertx + wrapping graph object = vertx + neo4j gui, is a vertx module)
+core    (onze app, is a vertx module)
+repl    (is a vertx module)
+update  (unsure as of yet)
+web     (is a javascript vertx module)
+
+neo4vertx
+  - moet met properties kunnen ingesteld worden
+  - via properties wrapper aanzetbaar waardoor neo gui
+  -
+
+app universal (project)
+  mod core (depends on vertx, main app, eb, handlers) universal-core,    org.openpcf.universal.core
+  mod update (depends on ?, updates app, model, res)  universal-update,  org.openpcf.universal.update
+  mod backend (depends on neo4j)                      universal-backend, org.openpcf.universal.backend
+
+  mod repl (depends on ? commandline interface)       universal-repl,    org.openpcf.universal.repl
+  mod web  (depends on ? web interface)               universal-web,     org.openpcf.universal.web
+
+combine into:
+
+/opt/app
+  /cfg (settings, properties, etc)
+  /bin (repl, scripts, start, stop, etc)
+  /web (web iface data)
+  /lib (jars, resources, etc)
+    jars (library deps)
+    icons (icons for types)
+    updates (payloads)
+  /dat (instance specific data)
+  /log (instance specific logs)
+
+
+  hoe wordt het structure?
+
+ * add specific handlers/icons/resources for 10000 services
+ * waarschijnlijk in lib ergens
+ * updateable?
+
+
+
+* actions ("x" a thing)
+
+ check
+ start
+ stop
+ restart
+ identify
+ sendTo
+ receiveFrom
+
+* above actions can have a configurable implementation:
+ - an action type/impl is looked up in the model. it can be:
+   - a parameterized command (command)
+   - a dedicated event handler (ex. state)
+   - both would have parameters (either msg or cmd construction)
+
+
+* at construction of entity, lookup action implementations
+
+for i in actions
+  init self.actions
+  for i parent actions
+    init parent.actions
+      up the tree..
+      until root, then you have all
+      available actions in the object
+
+ACTIONS: lookup a handler, lookup a message, send message to the handler
+CONSEQUENCE: every variation of an action has a handler on the bus..
+
+
+
+* example host collection:
+
+someHost
+  someUuid (identifier)
+  someTag (identifier)
+  someOs
+    someUuid (identifier)
+    someHostName (identifier)
+    someSrv
+      someUuid (identifier)
+      someStopMessage (aMsgForHandler)
+      someStopHandler (recvOfMsg)
+    otherSrv
+      someUuid (identifier)
+
+
+* syntax
+
+str (STructure Repl)
+
+str start someHost (search active OS, start that)
+str start someHost.someOs (the same)
+str start someHostName (the same)
+str start someUuid (the same)
+
+str start someHost.someOs.someSrv (start someSrv on SomeOs)
+str start someHostName.someSrv (the same)
+str start someHostName.someOs.* (start all services on SomeOs
+
+
+
+* walkthrough
+str state someHost
+ - search for someHost
+ - if multiple hits, warn
+ - if no hits, error
+ - if one hit, lookup state handler
+ - run state handler
+   - interprete state results
+   - write state object

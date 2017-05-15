@@ -1,0 +1,26 @@
+{
+    "type": "Type",
+    "name": "Zsh",
+    "desc": "The Zhong Shao Shell.",
+    "meta": {
+        "uuid": "7d9afc14-8e12-4c56-8ca6-4c43fd9808ab",
+        "relations": {
+            "ISA": {
+                "direction": "outgoing",
+                "uuids": [
+                    "86168e4a-8c99-43c9-ad95-c8f88d96ac32"
+                ]
+            }
+        }
+    },
+    "data": {
+        "glyphId": 280
+    },
+    "file": {
+        "dataSchema": {
+            "encoding": "text",
+            "format": "json",
+            "path": "zsh.schema.json"
+        }
+    }
+}

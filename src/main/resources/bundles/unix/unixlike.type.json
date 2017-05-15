@@ -1,0 +1,26 @@
+{
+  "type": "Type",
+  "name": "UnixLike",
+  "desc": "A UNIX-like operating system.",
+  "meta": {
+    "uuid": "6a1eea8b-1462-4439-8c60-12edbee6c397",
+    "relations": {
+      "ISA": {
+        "direction": "outgoing",
+        "uuids": [
+          "f05e325e-1aee-4892-96e4-8bcd6e97c528"
+        ]
+      }
+    }
+  },
+  "data": {
+    "glyphId": 251
+  },
+  "file": {
+    "dataSchema": {
+      "encoding": "text",
+      "format": "json",
+      "path": "unixlike.schema.json"
+    }
+  }
+}

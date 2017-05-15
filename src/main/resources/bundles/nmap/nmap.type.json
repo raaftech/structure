@@ -1,0 +1,26 @@
+{
+    "type": "Type",
+    "name": "NmapClient",
+    "desc": "The Nmap network scanner",
+    "data": {
+        "glyphId": 0
+    },
+    "file": {
+        "dataSchema": {
+            "encoding": "text",
+            "format": "json",
+            "path": "nmap.schema.json"
+        }
+    },
+    "meta": {
+        "uuid": "06f5f396-2f54-454e-9c6c-9a47038bb2d1",
+        "relations": {
+            "ISA": {
+                "direction": "outgoing",
+                "uuids": [
+                    "8f371b1b-52a3-4409-be70-9cd947bec8dd"
+                ]
+            }
+        }
+    }
+}

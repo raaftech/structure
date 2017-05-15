@@ -1,0 +1,26 @@
+ {
+    "type": "Type",
+    "name": "OpenRc",
+    "desc": "OpenRC Service Manager.",
+    "meta": {
+      "uuid": "d6788168-c131-4c9b-8b3c-eae7215e528e",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "c3008eec-b454-4ef6-bf7e-0bd92c13d3c3"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 238
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "openrc.schema.json"
+      }
+    }
+  }

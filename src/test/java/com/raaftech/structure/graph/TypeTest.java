@@ -7,7 +7,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.graph.repositories.InstanceRepository;
 import com.raaftech.structure.graph.repositories.NodeRepository;
-import com.raaftech.structure.next.Entity;
 import mockit.Expectations;
 import mockit.Mocked;
 import org.junit.Rule;

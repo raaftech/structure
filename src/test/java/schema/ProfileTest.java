@@ -23,6 +23,6 @@ public class ProfileTest extends SchemaTest {
 
     @Override
     protected String schema() {
-        return "resource:/bundles/core/types/schemas/profile.schema.json";
+        return "resource:/bundles/legacy/types/schemas/profile.schema.json";
     }
 }

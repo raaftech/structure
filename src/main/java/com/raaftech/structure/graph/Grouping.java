@@ -92,23 +92,21 @@ public class Grouping extends Instance {
      * can be used to as an argument for an instrument.
      * @return JSON representation that can be used as an argument for a instrument.
      */
+    @SuppressWarnings("unchecked")
     public Set<JsonNode> toArguments() {
         Set<JsonNode> arguments = new HashSet<>();
 
         arguments.add(super.toJson());
         BiFunction<BiFunction, Instance, Set<JsonNode>> consumeArgsHelper = (f, node) -> {
             final Set<Component> components;
-            final Set<Configuration> configurations;
             if (node instanceof Component) {
                 components = ((Component)node).getComponents();
-                configurations = ((Component)node).getConfigurations();
             } else {
                 components = Collections.emptySet();
-                configurations = Collections.emptySet();
             }
             final Set<JsonNode> childSet;
-            if (!components.isEmpty() || !configurations.isEmpty()) {
-                childSet = Stream.concat(components.stream(), configurations.stream())
+            if (!components.isEmpty()) {
+                childSet = components.stream()
                         .flatMap(instance -> ((Set<JsonNode>)f.apply(f, instance)).stream())
                         .collect(Collectors.toSet());
 //                Stream.concat(components.stream(), configurations.stream()).forEach(n -> f.accept(f, n));

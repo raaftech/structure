@@ -3,8 +3,6 @@ package com.raaftech.structure.graph.repositories;
 import com.raaftech.structure.base.SpringTestConfig;
 import com.raaftech.structure.graph.Type;
 import com.raaftech.structure.helper.loader.BundleLoader;
-import com.raaftech.structure.helper.loader.NaiveSorter;
-import com.raaftech.structure.next.Entity;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,10 +13,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
 
-import java.io.IOException;
 import java.util.Set;
 
-import static io.vertx.core.json.Json.mapper;
 import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -36,7 +32,7 @@ public class TypeRepositoryTest {
     @SuppressWarnings("Duplicates")
     public void setUpDatabase() throws Exception {
         if (!databaseCreated) {
-            final String raafBundle = "src/main/resources/bundles/core/";
+            final String raafBundle = "src/main/resources/bundles/";
             Transaction tx = graphDatabase.beginTx();
             BundleLoader bundleLoader = new BundleLoader(raafBundle);
             bundleLoader.load();

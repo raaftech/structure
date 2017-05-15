@@ -1,0 +1,26 @@
+ {
+    "type": "Type",
+    "name": "Systemd",
+    "desc": "Systemd Service Manager.",
+    "meta": {
+      "uuid": "0c189a0e-6b78-4177-832d-5d9b35b8a6af",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "c3008eec-b454-4ef6-bf7e-0bd92c13d3c3"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 238
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "systemd.schema.json"
+      }
+    }
+  }

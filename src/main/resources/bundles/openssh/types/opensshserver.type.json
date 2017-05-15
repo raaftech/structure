@@ -1,0 +1,26 @@
+{
+    "type": "Type",
+    "name": "OpenSshServer",
+    "desc": "The OpenSSH Server.",
+    "meta": {
+        "uuid": "976fd795-b002-4bd4-bc1b-37e4de8595fb",
+        "relations": {
+            "ISA": {
+                "direction": "outgoing",
+                "uuids": [
+                    "7db4a3ef-2d3c-4071-929b-e81505fbd5e2"
+                ]
+            }
+        }
+    },
+    "data": {
+        "glyphId": 233
+    },
+    "file": {
+        "dataSchema": {
+            "encoding": "text",
+            "format": "json",
+            "path": "../schema/opensshserver.schema.json"
+        }
+    }
+}

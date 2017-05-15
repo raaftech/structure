@@ -1,0 +1,24 @@
+{
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/schema#",
+  "type": "object",
+  "properties": {
+    "name": {
+      "$ref": "type.schema.json#/properties/name"
+    },
+    "system": {
+      "$ref": "capability.schema.json#/properties/system"
+    },
+    "desc": {
+      "$ref": "type.schema.json#/properties/desc"
+    },
+    "signature": {
+      "$ref": "capability.schema.json#/properties/signature"
+    }
+  },
+  "required": [
+    "name",
+    "desc",
+    "system"
+  ]
+}

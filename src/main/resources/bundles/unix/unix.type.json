@@ -1,0 +1,26 @@
+{
+  "type": "Type",
+  "name": "Unix",
+  "desc": "The UNIX Operating System.",
+  "meta": {
+    "uuid": "a3b228b6-f737-460c-a3bc-bc653167b36c",
+    "relations": {
+      "ISA": {
+        "direction": "outgoing",
+        "uuids": [
+          "6a1eea8b-1462-4439-8c60-12edbee6c397"
+        ]
+      }
+    }
+  },
+  "data": {
+    "glyphId": 250
+  },
+  "file": {
+    "dataSchema": {
+      "encoding": "text",
+      "format": "json",
+      "path": "unix.schema.json"
+    }
+  }
+}

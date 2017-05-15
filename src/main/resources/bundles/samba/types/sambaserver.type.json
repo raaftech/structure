@@ -1,0 +1,26 @@
+{
+    "type": "Type",
+    "name": "SambaServer",
+    "desc": "The Samba SMB/CIFS Server.",
+    "meta": {
+        "uuid": "3d3ae17c-6da5-45f6-9a25-f95f67df4d5f",
+        "relations": {
+            "ISA": {
+                "direction": "outgoing",
+                "uuids": [
+                    "65af133b-1a2c-4faa-8d2a-a288eaa4f412"
+                ]
+            }
+        }
+    },
+    "data": {
+        "glyphId": 212
+    },
+    "file": {
+        "dataSchema": {
+            "encoding": "text",
+            "format": "json",
+            "path": "../schema/sambaserver.schema.json"
+        }
+    }
+}

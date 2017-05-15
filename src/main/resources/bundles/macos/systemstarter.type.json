@@ -1,0 +1,26 @@
+ {
+    "type": "Type",
+    "name": "SystemStarter",
+    "desc": "Mac OS X SystemStarter.",
+    "meta": {
+      "uuid": "fd13bd74-6682-4494-92af-a6caf5e64f12",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "uuids": [
+            "c3008eec-b454-4ef6-bf7e-0bd92c13d3c3"
+          ]
+        }
+      }
+    },
+    "data": {
+      "glyphId": 239
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "systemstarter.schema.json"
+      }
+    }
+  }

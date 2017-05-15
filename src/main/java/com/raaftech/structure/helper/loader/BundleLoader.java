@@ -3,7 +3,6 @@ package com.raaftech.structure.helper.loader;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Sets;
 import com.raaftech.structure.base.Configuration;
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.exceptions.EntityDeserializationException;
@@ -12,7 +11,7 @@ import com.raaftech.structure.graph.Type;
 import com.raaftech.structure.graph.repositories.TypeRepository;
 import com.raaftech.structure.helper.LambdaHelper;
 import com.raaftech.structure.helper.Triple;
-import com.raaftech.structure.next.Entity;
+import com.raaftech.structure.graph.Entity;
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
@@ -21,7 +20,6 @@ import org.springframework.data.neo4j.support.Neo4jTemplate;
 import org.springframework.data.neo4j.support.query.CypherQueryExecutor;
 
 import java.util.*;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -133,7 +131,10 @@ public class BundleLoader {
 
             entry.getValue().stream()
                     .filter(constraintData -> !Objects.equals(type.getUuid(), constraintData.getRight().toString()))
-                    .forEach(constraintData -> type.addConstraint(typeRepository.findByUuid(constraintData.getRight().toString()), constraintData.getLeft(), relName));
+                    .forEach(constraintData -> {
+                            log.debug("This is the uuid: " + type.getUuid());
+                            type.addConstraint(typeRepository.findByUuid(constraintData.getRight().toString()), constraintData.getLeft(), relName);
+                    });
         }
         /*
         Persist the type. If we do this after we added the reflexive relationships, only
