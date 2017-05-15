@@ -2,9 +2,6 @@
     "type": "Type",
     "name": "NmapClient",
     "desc": "The Nmap network scanner",
-    "data": {
-        "glyphId": 0
-    },
     "file": {
         "dataSchema": {
             "encoding": "text",
