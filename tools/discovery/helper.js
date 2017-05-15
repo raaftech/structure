@@ -301,7 +301,7 @@ class Helper {
     //Default assumed entities
     defaultEntities() {
         const mkData = (name,desc,ver,short, long) => {
-            return R.zipObj(['name','desc','ver','short','long'],
+            return R.zipObj(['name','desc','ver','shortName','longName'],
                             [name,desc,ver,short,long]);
         };
 
