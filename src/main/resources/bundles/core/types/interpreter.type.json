@@ -20,7 +20,7 @@
         "dataSchema": {
             "encoding": "text",
             "format": "json",
-            "path": "interpreter.schema.json"
+            "path": "../schema/interpreter.schema.json"
         }
     }
 }
