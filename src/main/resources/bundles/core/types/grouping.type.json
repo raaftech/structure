@@ -85,10 +85,6 @@
                 "GROUPS": [
                     {
                         "cardinality": "OPTIONAL_TO_MANY",
-                        "to": "ea6a7487-867c-4a74-8849-fb8539b8169f"
-                    },
-                    {
-                        "cardinality": "OPTIONAL_TO_MANY",
                         "to": "f05e325e-1aee-4892-96e4-8bcd6e97c528"
                     }
                 ]
