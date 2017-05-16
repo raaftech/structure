@@ -3,21 +3,23 @@ package com.raaftech.structure.graph;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import com.google.common.collect.ImmutableSet;
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.graph.repositories.NodeRepository;
 import com.raaftech.structure.helper.LambdaHelper;
+import org.apache.commons.lang3.tuple.Pair;
 import org.neo4j.graphdb.Direction;
+import org.neo4j.graphdb.DynamicRelationshipType;
 import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.RelationshipType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -82,6 +84,15 @@ public class NodeSerializer extends StdSerializer<Node> {
                 .forEach(entry -> {
                     try {
                         final String name = entry.getKey().name();
+
+                        /*
+                        In case we come across a CONSTRAINTS relation return immediately.
+                        These need to be serialized differently.
+                         */
+                        if (Objects.equals(name, "CONSTRAINTS")) {
+                            return;
+                        }
+
                         // because our lists only contain relationships with the same direction, we can safely
                         // determine the direction of the first relationship and assume the others are directed the same
                         final String direction = "outgoing";
@@ -118,6 +129,36 @@ public class NodeSerializer extends StdSerializer<Node> {
 
         // end relations object
         gen.writeEndObject();
+
+        // do we have constraints?
+        final Optional<List<Relationship>> maybeConstraints = relMap.entrySet().stream()
+                .filter(entry -> Objects.equals("CONSTRAINTS", entry.getKey().name()))
+                .map(Map.Entry::getValue)
+                .findFirst();
+        if (maybeConstraints.isPresent()) {
+            gen.writeFieldName("constraints");
+            gen.writeStartObject();
+
+            final Map<String, List<Relationship>> constraints = maybeConstraints.get()
+                    .stream().collect(Collectors.groupingBy(rel -> rel.getProperty("forRelationship").toString()));
+
+            for (Map.Entry<String, List<Relationship>> pair: constraints.entrySet()) {
+                gen.writeFieldName(pair.getKey());
+                gen.writeStartArray();
+
+                for (Relationship rel: pair.getValue()) {
+                    gen.writeStartObject();
+                    gen.writeStringField("cardinality", rel.getProperty("cardinality").toString());
+                    gen.writeStringField("to", rel.getEndNode().getProperty("uuid").toString());
+                    gen.writeEndObject();
+                }
+
+                gen.writeEndArray();
+            }
+
+            gen.writeEndObject();
+        }
+
 
         // end meta object
         gen.writeEndObject();
