@@ -14,9 +14,6 @@
         },
         "identity": "dnsname"
     },
-    "data": {
-        "glyphId": 73
-    },
     "file": {
         "dataSchema": {
             "encoding": "text",

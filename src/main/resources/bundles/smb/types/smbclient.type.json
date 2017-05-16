@@ -19,9 +19,6 @@
             }
         }
     },
-    "data": {
-        "glyphId": 223
-    },
     "file": {
         "dataSchema": {
             "encoding": "text",

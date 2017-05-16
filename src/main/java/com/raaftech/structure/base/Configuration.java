@@ -24,6 +24,8 @@ public enum Configuration {
 	private static boolean initialized = false; 
 	private static boolean traceMode = false;
 	private static boolean unsafeMode = false;
+	private static String webHost;
+	private static int webPort;
 	private static URI schemaNamespace;
 	static final String bundlePathProperty = "bundlePath";
 
@@ -57,6 +59,22 @@ public enum Configuration {
 
 	public static void setSchemaNamespace(URI schemaNamespace) {
 		Configuration.schemaNamespace = schemaNamespace;
+	}
+
+	public static String getWebHost() {
+		return webHost;
+	}
+
+	public static void setWebHost(String webHost) {
+		Configuration.webHost = webHost;
+	}
+
+	public static int getWebPort() {
+		return webPort;
+	}
+
+	public static void setWebPort(int webPort) {
+		Configuration.webPort = webPort;
 	}
 
 	public static void init() {

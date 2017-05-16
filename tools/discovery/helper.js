@@ -279,21 +279,21 @@ class Helper {
             }, ansibleData.ipv4_addresses);
         }
 
-        if(notNil(ansibleData.ipv6_addresses)) {
-            R.forEach(ip => {
-                if(!R.equals(ip, initIp)) {
-                    let ipd = this.getInstance('Ipv6Address');
-                    ipd.data = {
-                        name: ipd.name,
-                        desc: ipd.desc,
-                        addr: ip,
-                        reachable: true
-                    };
-                    ipd.type = 'Component';
-                    result.push(this.createInstance(ipd,'Ipv6Address'));
-                }
-            }, ansibleData.ipv6_addresses);
-        }
+//        if(notNil(ansibleData.ipv6_addresses)) {
+//            R.forEach(ip => {
+//                if(!R.equals(ip, initIp)) {
+//                    let ipd = this.getInstance('Ipv6Address');
+//                    ipd.data = {
+//                        name: ipd.name,
+//                        desc: ipd.desc,
+//                        addr: ip,
+//                        reachable: true
+//                    };
+//                    ipd.type = 'Component';
+//                    result.push(this.createInstance(ipd,'Ipv6Address'));
+//                }
+//            }, ansibleData.ipv6_addresses);
+//        }
 
         return result;
     }
@@ -301,7 +301,7 @@ class Helper {
     //Default assumed entities
     defaultEntities() {
         const mkData = (name,desc,ver,short, long) => {
-            return R.zipObj(['name','desc','ver','short','long'],
+            return R.zipObj(['name','desc','ver','shortName','longName'],
                             [name,desc,ver,short,long]);
         };
 
@@ -317,9 +317,9 @@ class Helper {
         winexe.type = 'Component';
         winexe.data = mkData(winexe.name, winexe.desc, 'x', 'winexe', 'WinExe');
 
-        let samba = this.getInstance('Samba');
+        let samba = this.getInstance('SambaClient');
         samba.type = 'Component';
-        samba.data = mkData(samba.name, samba.desc, 'x', 'samba', 'Samba');
+        samba.data = mkData(samba.name, samba.desc, 'x', 'sambaclient', 'SambaClient');
 
         let structure = this.getInstance('Structure');
         structure.type = 'Component';
@@ -329,7 +329,7 @@ class Helper {
             this.createInstance(iputils, 'Iputils'),
             this.createInstance(sshClient, 'OpenSshClient'),
             this.createInstance(winexe, 'Winexe'),
-            this.createInstance(samba, 'Samba'),
+            this.createInstance(samba, 'SambaClient'),
             this.createInstance(structure, 'Structure')
         ];
     }

@@ -23,9 +23,6 @@
             },
             "identity": "addr"
         },
-        "data": {
-            "glyphId": 114
-        },
         "file": {
             "dataSchema": {
                 "encoding": "text",
@@ -48,9 +45,6 @@
                     ]
                 }
             }
-        },
-        "data": {
-            "glyphId": 117
         },
         "file": {
             "dataSchema": {

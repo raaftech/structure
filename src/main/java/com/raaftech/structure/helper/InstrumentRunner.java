@@ -648,14 +648,14 @@ public class InstrumentRunner {
      */
     private Controller findHeaviest(Set<Controller> controllers) {
         // Collect controllers by weight filtering out duplicate weights
-        Map<Double, Controller> controllersByWeight = controllers.stream()
+        Map<Integer, Controller> controllersByWeight = controllers.stream()
                 .collect(Collectors.toMap(
                         controller -> controller.getWeight(),
                         instrument -> instrument,
                         (instrument1, instrument2) -> instrument1));
 
         // Find the maximum weight
-        Optional<Double> heaviestController = controllersByWeight.keySet().stream()
+        Optional<Integer> heaviestController = controllersByWeight.keySet().stream()
                 .max(Double::compare);
 
         if (heaviestController.isPresent()) {

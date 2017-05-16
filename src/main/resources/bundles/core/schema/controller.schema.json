@@ -3,9 +3,23 @@
   "$schema": "http://json-schema.org/schema#",
   "type": "object",
   "properties": {
-    "template": {
-      "type": "string",
-      "description": "The handlebars template resulting in a command."
+    "name": {
+      "$ref": "type.schema.json#/properties/name"
+    },
+    "desc": {
+      "$ref": "type.schema.json#/properties/desc"
+    },
+    "weight": {
+      "$ref": "instrument.schema.json#/properties/weight"
+    },
+    "instrumentType": {
+      "$ref": "instrument.schema.json#/properties/instrumentType"
+    },
+    "subjectIsLocal": {
+      "$ref": "instrument.schema.json#/properties/subjectIsLocal"
+    },
+    "interpreter": {
+      "type": "string"
     },
     "resultParser": {
       "type": "string",
@@ -22,25 +36,13 @@
       "pattern": "^\\.[a-zA-Z0-9]+$",
       "description": "Possible extension in case of a scriptable instrument."
     },
-    "subjectIsLocal": {
-      "type": "boolean",
-      "description": "Is the subject for this instrument local or remote?"
-    },
     "filePath": {
-      "$ref": "instrument.schema.json#/properties/filePath"
-    },
-    "name": {
-      "$ref": "type.schema.json#/properties/name"
-    },
-    "weight": {
-      "$ref": "instrument.schema.json#/properties/weight"
+      "type": "string",
+      "description": "The filesystem location of the controller."
     },
     "arguments": {
       "type": "string",
       "description": "A string representation of the arguments object."
-    },
-    "desc": {
-      "$ref": "type.schema.json#/properties/desc"
     },
     "stateMap": {
       "type": "object",
@@ -51,14 +53,96 @@
       },
       "minProperties": 1,
       "additionalProperties": false
+    },
+    "arguments": {
+      "type": "object",
+      "patternProperties": {
+        "^[a-zA-Z0-9]+$": {
+          "additionalProperties": false,
+          "required": [
+            "value"
+          ],
+          "properties": {
+            "canBeUserSupplied": {
+              "type": "boolean",
+              "default": "false"
+            },
+            "isOptional": {
+              "type": "boolean",
+              "default": "false"
+            },
+            "pass": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "index": {
+                  "type": "number"
+                },
+                "option": {
+                  "type": "string"
+                },
+                "key": {
+                  "type": "string"
+                }
+              },
+              "oneOf": [
+                {
+                  "required": [
+                    "option"
+                  ]
+                },
+                {
+                  "required": [
+                    "index"
+                  ]
+                }
+              ]
+            },
+            "value": {
+              "type": "object",
+              "properties": {
+                "from": {
+                  "type": "string",
+                  "pattern": "^subject|origin|agent|static$"
+                },
+                "type": {
+                  "type": "string",
+                  "pattern": "^\\w+(\\.\\w+)+|string$"
+                },
+                "matches": {
+                  "type": [
+                    "object",
+                    "string"
+                  ]
+                },
+                "defaultValue": {
+                  "type": "string"
+                },
+                "strategy": {
+                  "type": "string",
+                  "pattern": "^useFirst|useLast|mustBeOne|mustBeMany$",
+                  "default": "mustBeOne"
+                },
+                "onError": {
+                  "type": "string",
+                  "pattern": "^fail|askUser|ignore$",
+                  "default": "fail"
+                }
+              },
+              "required": [
+                "from",
+                "type"
+              ]
+            }
+          }
+        }
+      }
     }
   },
   "required": [
     "name",
     "desc",
-    "filePath",
-    "subjectIsLocal",
-    "template"
+    "subjectIsLocal"
   ],
   "definitions": {
     "state": {

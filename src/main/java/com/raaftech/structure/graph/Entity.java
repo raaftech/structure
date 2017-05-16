@@ -4,12 +4,15 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.raaftech.structure.base.Configuration;
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.exceptions.IllegalEntityType;
 import com.raaftech.structure.exceptions.TypeUnknownException;
+import com.raaftech.structure.graph.converters.JsonNodeWriter;
 import com.raaftech.structure.graph.repositories.InstanceRepository;
 import com.raaftech.structure.graph.repositories.NodeRepository;
 import com.raaftech.structure.graph.repositories.TypeRepository;
+import com.raaftech.structure.helper.JsonHelper;
 import com.raaftech.structure.helper.Triple;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -28,9 +31,12 @@ import org.springframework.data.neo4j.support.Neo4jTemplate;
 import org.springframework.data.neo4j.support.index.IndexType;
 import org.springframework.data.neo4j.support.query.CypherQueryExecutor;
 
+import java.net.URI;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
+
+import static io.vertx.core.json.Json.mapper;
 
 /**
  * A new root entity node with heavily simplified and structured construction.
@@ -390,6 +396,26 @@ public class Entity {
                             "of " + duplicates + " based on the properties " + identityProperties + ", the data was " + data.asMap());
                 }
             }
+
+            // Only other case is an instance entity, in which case we need to validate against its Type schema
+            final Optional<Type> maybeInstanceOf = getInstanceOf();
+            if (!maybeInstanceOf.isPresent()) {
+                throw new IllegalEntityType("Entity with UUID " + getUuid() + " couldn't be created. It's an instance,"
+                        + "but it's type couldn't be retrieved from the graph.");
+            }
+
+            final Type instanceOf = maybeInstanceOf.get();
+            final String schemaUriPattern = "http://" + Configuration.getWebHost() + ":"
+                    + Configuration.getWebPort() + "/schemas/%s.schema.json";
+            final Map<String, Object> data = new HashMap(getData());
+            data.put("name", getName());
+            data.put("desc", getDesc());
+            final boolean validated = JsonHelper.validateToSchema(URI.create(String.format(schemaUriPattern, instanceOf.getName().toLowerCase())),
+                    mapper.valueToTree(data));
+            if (!validated) {
+                throw new IllegalEntityType("Entity with UUID " + getUuid() + " couldn't be created. It's data"
+                        + "doesn't validate against its type schema.");
+            }
         }
 
         persist();
@@ -402,10 +428,12 @@ public class Entity {
         return persistedState;
     }
 
-    public void persist() {
+    private void persist() {
         Map<String, Object> properties = new HashMap<>();
         properties.putAll(data.asMap().entrySet().stream()
                 .map(entry -> new AbstractMap.SimpleEntry<>("data-".concat(entry.getKey()), entry.getValue()))
+                .map(entry -> new AbstractMap.SimpleEntry<>(entry.getKey(),
+                        entry.getValue() instanceof JsonNode ? new JsonNodeWriter().convert((JsonNode)entry.getValue()) : entry.getValue()))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
         properties.putAll(file.asMap().entrySet().stream()
                 .map(entry -> new AbstractMap.SimpleEntry<>("file-".concat(entry.getKey()), entry.getValue()))

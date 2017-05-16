@@ -23,9 +23,6 @@
             },
             "identity": "cidr"
         },
-        "data": {
-            "glyphId": 283
-        },
         "file": {
             "dataSchema": {
                 "encoding": "text",
@@ -48,9 +45,6 @@
                     ]
                 }
             }
-        },
-        "data": {
-            "glyphId": 283
         },
         "file": {
             "dataSchema": {

@@ -15,9 +15,6 @@
             },
             "identity" : "name"
         },
-        "data": {
-            "glyphId": 95
-        },
         "file": {
             "dataSchema": {
                 "encoding": "text",

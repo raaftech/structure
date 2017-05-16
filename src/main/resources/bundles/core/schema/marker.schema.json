@@ -14,11 +14,16 @@
     },
     "filePath": {
       "$ref": "instrument.schema.json#/properties/filePath"
+    },
+    "instrumentType": {
+      "$ref": "instrument.schema.json#/properties/instrumentType"
+    },
+    "subjectIsLocal": {
+      "$ref": "instrument.schema.json#/properties/subjectIsLocal"
     }
   },
   "required": [
     "name",
-    "desc",
-    "filePath"
+    "desc"
   ]
 }

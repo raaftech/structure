@@ -8,6 +8,7 @@ const sprintf = require('sprintf-js').sprintf;
 const treeify = require('./treeify');
 const fs = require('fs');
 const path = require('path');
+const uuidV4 = require('uuid');
 const RestConnector = require('./restConnector');
 const SchemaValidator = require('./SchemaValidator');
 const SimpleCache = require('./simpleCache');
@@ -36,6 +37,7 @@ function init() {
     answerCache.init();
     if(answerCache.get('structure','token') !== '') {
         rest.setToken(answerCache.get('structure','token'));
+        memoryBank.token = answerCache.get('structure', 'token');
     }
 
     setupStatusChannel();
@@ -349,21 +351,41 @@ vorpal.command('tree <name>', 'Show a relation tree for the requested node')
 vorpal.command('discover <cidr>', 'Discover items in the network')
     .action(function(args, done) {
         const self = this;
-        let pargs = {
-            node: '299001a6-1091-4c0d-87be-c512af03e179',
-            name: 'testname',
-            checksum: 'foobar',
-            addr: args.cidr,
-            reachable: true,
-            desc: 'Some cidr description.'
-        };
-        //function to run if logged in
-        let loggedIn = () => rest.createInstance(pargs)
-            .then(created => {
-                let instanceUuid = created.meta.uuid;
-                return rest.runInstrument('IpAddressDiscover', instanceUuid);
+
+        let loggedIn = () => rest.getInstanceByPredicate('cidr', args.cidr)
+            .then(instance => {
+                if(R.isEmpty(instance)) {
+                    self.log('creating new network');
+                    return rest.getEntityByName('Ipv4Network')
+                        .then(ent => {
+                            ent.type = 'Grouping';
+                            ent.data = {
+                                name: ent.name,
+                                desc: ent.desc,
+                                cidr: args.cidr
+                            };
+                            ent.meta.relations['INSTANCE_OF'] = {
+                                direction: 'outgoing',
+                                uuids: [ent.meta.uuid]
+                            };
+                            ent.meta.uuid = uuidV4();
+                            ent.meta.relations = R.omit(['ISA'],ent.meta.relations);
+                            return rest.createInstance({entities: [ent]});
+                        })
+                        .then(i => rest.getInstanceByUuid(R.head(i)))
+                } else {
+                    self.log('reusing existing network');
+                    return instance;
+                }
             })
-            .then(result => done())
+            .then(network => {
+                self.log(network);
+                return rest.runInstrument(network.meta.uuid, 'IpAddressDiscover', {token: rest.getToken()});
+            })
+            .then(result => {
+                self.log('done');
+                done();
+            })
             .catch(helper.genericCatchHandler(done));
 
         helper.genericAuthCommandHandler(done, loggedIn, rest.getToken());
