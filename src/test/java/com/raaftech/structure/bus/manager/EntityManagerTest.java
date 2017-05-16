@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableSet;
-import com.raaftech.structure.base.Configuration;
 import com.raaftech.structure.base.SpringTestConfig;
 import com.raaftech.structure.graph.Node;
 import com.raaftech.structure.graph.repositories.NodeRepository;
@@ -23,7 +22,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.nio.file.FileSystems;
 import java.util.Iterator;
 import java.util.List;
 
@@ -62,21 +60,21 @@ public class EntityManagerTest {
         Node computerGrouping = nodeRepository.findByUuid("ec11db91-6973-4285-b018-b461fbb432d7");
         EntityManager entityManager = new EntityManager();
 
-        List<Node> foundNodes = entityManager.labelBasedTraversal(ImmutableSet.of("Component"), computerGrouping, true);
-        assertEquals(8, foundNodes.size());
+        List<Node> foundNodes = entityManager.labelBasedTraversal(ImmutableSet.of("type:Component"), computerGrouping, true);
+        assertEquals(5, foundNodes.size());
         assertTrue(foundNodes.contains(computerGrouping));
 
-        foundNodes = entityManager.labelBasedTraversal(ImmutableSet.of("Component"), computerGrouping, false);
-        assertEquals(7, foundNodes.size());
+        foundNodes = entityManager.labelBasedTraversal(ImmutableSet.of("type:Component"), computerGrouping, false);
+        assertEquals(4, foundNodes.size());
         assertTrue(!foundNodes.contains(computerGrouping));
 
-        Node operatingSystem = nodeRepository.findByUuid("73eacb63-0c2c-4632-9b37-ee9e4d2bef75");
-        foundNodes = entityManager.labelBasedTraversal(ImmutableSet.of("`type:Configuration`"), operatingSystem, false);
-        assertEquals(2, foundNodes.size());
+        Node ipAddress = nodeRepository.findByUuid("299001a6-1091-4c0d-87be-c512af03e179");
+        foundNodes = entityManager.labelBasedTraversal(ImmutableSet.of("type:Configuration"), ipAddress, false);
+        assertEquals(1, foundNodes.size());
 
         Node linuxType = nodeRepository.findByUuid("a5613527-2f64-4481-83f2-80b0cb427e28");
         foundNodes = entityManager.labelBasedTraversal(ImmutableSet.of("Type"), linuxType, false);
-        assertEquals(6, foundNodes.size());
+        assertEquals(5, foundNodes.size());
     }
 
     @Test
