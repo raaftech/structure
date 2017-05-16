@@ -243,14 +243,15 @@ public class Application {
         }
 
         // Open up the http server and send a friendly message telling the user we're done.
-        final String webHost = getConfiguration("webHost").orElse("localhost");
-        final int webPort = Integer.parseInt(getConfiguration("webPort").orElse("8080"));
+        Configuration.setWebHost(getConfiguration("webHost").orElse("localhost"));
+        Configuration.setWebPort(Integer.parseInt(getConfiguration("webPort").orElse("8080")));
         try {
-            Configuration.setSchemaNamespace(new URI(String.format("http://%s:%s/", webHost, webPort)));
+            Configuration.setSchemaNamespace(new URI(String.format("http://%s:%s/",
+                    Configuration.getWebHost(), Configuration.getWebPort())));
         } catch (URISyntaxException e) {
             handleUnrecoverableLoadingError(null, e, 1, "Unrecoverable error while setting schema namespace");
         }
-        httpServer.requestHandler(router::accept).listen(webPort, webHost);
+        httpServer.requestHandler(router::accept).listen(Configuration.getWebPort(), Configuration.getWebHost());
 
         init(vertx);
         log.info("Structure is running at {}", Configuration.getSchemaNamespace());

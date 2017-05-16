@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.raaftech.structure.base.Configuration;
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.exceptions.IllegalEntityType;
 import com.raaftech.structure.exceptions.TypeUnknownException;
@@ -404,14 +405,17 @@ public class Entity {
             }
 
             final Type instanceOf = maybeInstanceOf.get();
-            // todo: use actual schema, address and port
-            final String schemaUriPattern = "http://localhost:8080/schemas/%s.schema.json";
+            final String schemaUriPattern = "http://" + Configuration.getWebHost() + ":"
+                    + Configuration.getWebPort() + "/schemas/%s.schema.json";
             final Map<String, Object> data = new HashMap(getData());
             data.put("name", getName());
             data.put("desc", getDesc());
             final boolean validated = JsonHelper.validateToSchema(URI.create(String.format(schemaUriPattern, instanceOf.getName().toLowerCase())),
                     mapper.valueToTree(data));
-            System.out.println(validated);
+            if (!validated) {
+                throw new IllegalEntityType("Entity with UUID " + getUuid() + " couldn't be created. It's data"
+                        + "doesn't validate against its type schema.");
+            }
         }
 
         persist();
