@@ -46,8 +46,7 @@ public class EntityManagerTest {
     public void setUp() throws Exception {
         if (!databaseCreated) {
             Transaction tx = graphDatabase.beginTx();
-            final String testBundle = "src/main/resources/bundles/core/";
-            Configuration.setSchemaNamespace(FileSystems.getDefault().getPath(testBundle).toUri().resolve("types/"));
+            final String testBundle = "src/main/resources/bundles/";
             BundleLoader bundleLoader = new BundleLoader(testBundle);
             bundleLoader.load();
 
@@ -94,21 +93,23 @@ public class EntityManagerTest {
         ArrayNode entities = args.putArray("entities");
         entities.add(mapper.readTree("  {\n" +
                 "    \"type\": \"Component\",\n" +
-                "    \"name\": \"NVMe\",\n" +
-                "    \"desc\": \"A new NVMe solid state disk.\",\n" +
+                "    \"name\": \"GenericOS\",\n" +
+                "    \"desc\": \"Instance of a generic OS.\",\n" +
                 "    \"meta\": {\n" +
                 "      \"uuid\": \"" + entityUuid + "\",\n" +
                 "      \"relations\": {\n" +
                 "        \"INSTANCE_OF\": {\n" +
                 "          \"direction\": \"outgoing\",\n" +
                 "          \"uuids\": [\n" +
-                "            \"7a60ec32-0a9a-40b9-bf1f-d69674d4a233\"\n" +
+                "            \"f05e325e-1aee-4892-96e4-8bcd6e97c528\"\n" +
                 "          ]\n" +
                 "        }\n" +
                 "      }\n" +
                 "    },\n" +
                 "    \"data\": {\n" +
-                "      \"memSizeKb\": 268435456\n" +
+                "      \"ver\": \"ver\",\n" +
+                "      \"shortName\": \"shortName\",\n" +
+                "      \"longName\": \"longName\"\n" +
                 "    }\n" +
                 "  }"));
 
@@ -148,12 +149,16 @@ public class EntityManagerTest {
     public void testRead() throws Exception {
         EntityManager entityManager = new EntityManager();
 
-        // construct a message that asks for every component attached to a "Computer" grouping we created
+        /*
+        Construct a message that asks for every type that can be found by walking from
+        the "Computer" type following outgoing relationships.
+         */
+
         ObjectNode message = mapper.createObjectNode();
         message.put("msgh", "read");
         ObjectNode args = message.putObject("args");
         ArrayNode labels = args.putArray("labels");
-        labels.add("Component");
+        labels.add("Type");
         args.put("start", "ec11db91-6973-4285-b018-b461fbb432d7");
 
         // send the message constructed above and get the result
@@ -188,7 +193,7 @@ public class EntityManagerTest {
 
         // get two nodes, of which we are going to update only one
         Node computerGrouping = nodeRepository.findByUuid(computerTypeUuid);
-        Node linuxType = nodeRepository.findByUuid("a5613527-2f64-4481-83f2-80b0cb427e28");
+        Node linuxType = nodeRepository.findByUuid(linuxTypeUuid);
 
         // set the name of the Linux type to something else
         final String newName = "Updated name";
