@@ -1,14 +1,14 @@
 {
     "type": "Type",
-    "name": "Hardware",
-    "desc": "A hardware component.",
+    "name": "Interpreter",
+    "desc": "A command or programming language interpreter.",
     "meta": {
-        "uuid": "ea6a7487-867c-4a74-8849-fb8539b8169f",
+        "uuid": "d047f415-734c-4bd3-92b9-d68d5521ce69",
         "relations": {
             "ISA": {
                 "direction": "outgoing",
                 "uuids": [
-                    "a79ce509-a021-4177-ae61-73abd01fb479"
+                    "8db2b492-9a4a-41fe-97a5-bc625da042ea"
                 ]
             }
         }
@@ -17,7 +17,7 @@
         "dataSchema": {
             "encoding": "text",
             "format": "json",
-            "path": "../schema/hardware.schema.json"
+            "path": "../schema/interpreter.schema.json"
         }
     }
 }

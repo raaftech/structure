@@ -315,7 +315,12 @@ public class EntityManager extends GenericActor {
                         .map(JsonNode::asText)
                         .collect(Collectors.toList());
 
+                final String uuid = args.get("uuid").asText();
                 Node toDelete = nodeRepository.findByUuid(args.get("uuid").asText());
+                if (toDelete == null) {
+                    result.put(ERROR, "Couldn't find node with UUID \"" + uuid + "\".");
+                    return response(request, result);
+                }
                 Transaction tx = Context.getGraphDatabase().beginTx();
                 try {
                     if (safeDeleteTraversal(labels, toDelete)) {

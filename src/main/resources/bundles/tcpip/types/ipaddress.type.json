@@ -13,6 +13,14 @@
                     ]
                 }
             },
+            "constraints": {
+                "HAS": [
+                    {
+                        "cardinality": "OPTIONAL_TO_MANY",
+                        "to": "99c0da37-3599-418d-8ecc-de36d37ae9f4"
+                    }
+                ]
+            },
             "identity": "addr"
         },
         "file": {

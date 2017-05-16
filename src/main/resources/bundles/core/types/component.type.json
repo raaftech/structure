@@ -18,6 +18,12 @@
                     "cardinality": "OPTIONAL_TO_MANY",
                     "to": "a79ce509-a021-4177-ae61-73abd01fb479"
                 }
+            ],
+            "RESULTS": [
+                {
+                    "cardinality": "OPTIONAL_TO_ONE",
+                    "to": "f3498c02-58c6-486b-87c6-9d54607fdb12"
+                }
             ]
         }
     },
@@ -28,4 +34,4 @@
             "path": "../schema/component.schema.json"
         }
     }
-},
+}

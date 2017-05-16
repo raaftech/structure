@@ -132,8 +132,10 @@ public class BundleLoader {
             entry.getValue().stream()
                     .filter(constraintData -> !Objects.equals(type.getUuid(), constraintData.getRight().toString()))
                     .forEach(constraintData -> {
-                            log.debug("This is the uuid: " + type.getUuid());
-                            type.addConstraint(typeRepository.findByUuid(constraintData.getRight().toString()), constraintData.getLeft(), relName);
+                            String target = constraintData.getRight().toString();
+                            Constraint.Cardinality cardinality = constraintData.getLeft();
+                            log.debug("Adding constraint for " + type.getUuid() + " to "  + target + ": " + relName + ", " + cardinality);
+                            type.addConstraint(typeRepository.findByUuid(target), cardinality, relName);
                     });
         }
         /*

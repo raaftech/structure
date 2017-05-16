@@ -4,13 +4,14 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableSet;
-import com.raaftech.structure.base.Configuration;
+import com.raaftech.structure.base.Context;
 import com.raaftech.structure.base.SpringTestConfig;
 import com.raaftech.structure.graph.Node;
 import com.raaftech.structure.graph.repositories.NodeRepository;
 import com.raaftech.structure.helper.loader.BundleLoader;
 import com.raaftech.structure.helper.loader.NaiveSorter;
 import com.raaftech.structure.graph.Entity;
+import io.vertx.core.Vertx;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,7 +24,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.nio.file.FileSystems;
 import java.util.Iterator;
 import java.util.List;
 
@@ -45,9 +45,9 @@ public class EntityManagerTest {
     @SuppressWarnings("Duplicates")
     public void setUp() throws Exception {
         if (!databaseCreated) {
+            Context.setVertx(Vertx.vertx());
             Transaction tx = graphDatabase.beginTx();
-            final String testBundle = "src/main/resources/bundles/core/";
-            Configuration.setSchemaNamespace(FileSystems.getDefault().getPath(testBundle).toUri().resolve("types/"));
+            final String testBundle = "src/main/resources/bundles/";
             BundleLoader bundleLoader = new BundleLoader(testBundle);
             bundleLoader.load();
 
@@ -63,21 +63,21 @@ public class EntityManagerTest {
         Node computerGrouping = nodeRepository.findByUuid("ec11db91-6973-4285-b018-b461fbb432d7");
         EntityManager entityManager = new EntityManager();
 
-        List<Node> foundNodes = entityManager.labelBasedTraversal(ImmutableSet.of("Component"), computerGrouping, true);
-        assertEquals(8, foundNodes.size());
+        List<Node> foundNodes = entityManager.labelBasedTraversal(ImmutableSet.of("type:Component"), computerGrouping, true);
+        assertEquals(5, foundNodes.size());
         assertTrue(foundNodes.contains(computerGrouping));
 
-        foundNodes = entityManager.labelBasedTraversal(ImmutableSet.of("Component"), computerGrouping, false);
-        assertEquals(7, foundNodes.size());
+        foundNodes = entityManager.labelBasedTraversal(ImmutableSet.of("type:Component"), computerGrouping, false);
+        assertEquals(4, foundNodes.size());
         assertTrue(!foundNodes.contains(computerGrouping));
 
-        Node operatingSystem = nodeRepository.findByUuid("73eacb63-0c2c-4632-9b37-ee9e4d2bef75");
-        foundNodes = entityManager.labelBasedTraversal(ImmutableSet.of("`type:Configuration`"), operatingSystem, false);
-        assertEquals(2, foundNodes.size());
+        Node ipAddress = nodeRepository.findByUuid("299001a6-1091-4c0d-87be-c512af03e179");
+        foundNodes = entityManager.labelBasedTraversal(ImmutableSet.of("type:Configuration"), ipAddress, false);
+        assertEquals(1, foundNodes.size());
 
         Node linuxType = nodeRepository.findByUuid("a5613527-2f64-4481-83f2-80b0cb427e28");
         foundNodes = entityManager.labelBasedTraversal(ImmutableSet.of("Type"), linuxType, false);
-        assertEquals(6, foundNodes.size());
+        assertEquals(5, foundNodes.size());
     }
 
     @Test
@@ -94,21 +94,23 @@ public class EntityManagerTest {
         ArrayNode entities = args.putArray("entities");
         entities.add(mapper.readTree("  {\n" +
                 "    \"type\": \"Component\",\n" +
-                "    \"name\": \"NVMe\",\n" +
-                "    \"desc\": \"A new NVMe solid state disk.\",\n" +
+                "    \"name\": \"GenericOS\",\n" +
+                "    \"desc\": \"Instance of a generic OS.\",\n" +
                 "    \"meta\": {\n" +
                 "      \"uuid\": \"" + entityUuid + "\",\n" +
                 "      \"relations\": {\n" +
                 "        \"INSTANCE_OF\": {\n" +
                 "          \"direction\": \"outgoing\",\n" +
                 "          \"uuids\": [\n" +
-                "            \"7a60ec32-0a9a-40b9-bf1f-d69674d4a233\"\n" +
+                "            \"f05e325e-1aee-4892-96e4-8bcd6e97c528\"\n" +
                 "          ]\n" +
                 "        }\n" +
                 "      }\n" +
                 "    },\n" +
                 "    \"data\": {\n" +
-                "      \"memSizeKb\": 268435456\n" +
+                "      \"ver\": \"ver\",\n" +
+                "      \"shortName\": \"shortName\",\n" +
+                "      \"longName\": \"longName\"\n" +
                 "    }\n" +
                 "  }"));
 
@@ -148,12 +150,16 @@ public class EntityManagerTest {
     public void testRead() throws Exception {
         EntityManager entityManager = new EntityManager();
 
-        // construct a message that asks for every component attached to a "Computer" grouping we created
+        /*
+        Construct a message that asks for every type that can be found by walking from
+        the "Computer" type following outgoing relationships.
+         */
+
         ObjectNode message = mapper.createObjectNode();
         message.put("msgh", "read");
         ObjectNode args = message.putObject("args");
         ArrayNode labels = args.putArray("labels");
-        labels.add("Component");
+        labels.add("Type");
         args.put("start", "ec11db91-6973-4285-b018-b461fbb432d7");
 
         // send the message constructed above and get the result
@@ -188,7 +194,7 @@ public class EntityManagerTest {
 
         // get two nodes, of which we are going to update only one
         Node computerGrouping = nodeRepository.findByUuid(computerTypeUuid);
-        Node linuxType = nodeRepository.findByUuid("a5613527-2f64-4481-83f2-80b0cb427e28");
+        Node linuxType = nodeRepository.findByUuid(linuxTypeUuid);
 
         // set the name of the Linux type to something else
         final String newName = "Updated name";
@@ -266,7 +272,7 @@ public class EntityManagerTest {
         EntityManager entityManager = new EntityManager();
 
         final String computerUuid = "ec11db91-6973-4285-b018-b461fbb432d7";
-        final String ipv4AddressUuid = "d182e241-af01-4837-9913-2e6c1afa047c";
+        final String ipv4AddressUuid = "5ca95f7a-5175-4e7f-8a61-862e24485af3";
 
         /*
          construct a message that tries to delete the "Computer" node, but will fail because we have outgoing
@@ -276,19 +282,22 @@ public class EntityManagerTest {
         message.put("msgh", "delete");
         ObjectNode args = message.putObject("args");
         ArrayNode labels = args.putArray("labels");
-        labels.add("Component");
+        labels.add("type:Component");
         args.put("uuid", computerUuid);
 
         // send the message constructed above and get the result
         JsonNode response = entityManager.delete().exec(message);
         ObjectNode result = (ObjectNode) response.get("result");
 
-        // the result should not have an error property
+        // the result should have an error property
         assertTrue(result.has("error"));
 
 
-        // Now try again, but pick a leaf node in the "Computer" subgraph
+        // Now try again, but pick a leaf node in the type tree
         args.put("uuid", ipv4AddressUuid);
+        labels.removeAll();
+        // We won't have an outgoing rel to anything with label Foo, so this will succeed
+        labels.add("Foo");
 
         // send the message constructed above and get the result
         response = entityManager.delete().exec(message);

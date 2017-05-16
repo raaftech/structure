@@ -11,6 +11,14 @@
             "8db2b492-9a4a-41fe-97a5-bc625da042ea"
           ]
         }
+      },
+      "constraints": {
+        "HAS": [
+          {
+            "cardinality": "OPTIONAL_TO_MANY",
+            "to": "91c999a0-33ec-42ee-bae0-6f8adae42535"
+          }
+        ]
       }
     },
     "file": {

@@ -2,6 +2,7 @@ package com.raaftech.structure.helper.loader;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableList;
@@ -13,6 +14,7 @@ import com.raaftech.structure.exceptions.JsonValidationException;
 import com.raaftech.structure.graph.Node;
 import com.raaftech.structure.graph.repositories.NodeRepository;
 import com.raaftech.structure.helper.JsonHelper;
+import com.raaftech.structure.helper.LambdaHelper;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.parboiled.common.FileUtils;
 import org.slf4j.Logger;
@@ -116,10 +118,19 @@ public class NaiveSorter {
                                 .forEach(val -> ((ObjectNode) inputCopy.get(key)).remove(val));
                 });
 
+        /*
+        A object mapper that has a special configuration to alphabetically sort keys so
+        we calculate equal checksums for JSON objects even though properties are unsorted.
+         */
+        final ObjectMapper sortedMapper =
+                new ObjectMapper().configure(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS, true);
+
         Iterable<Map.Entry<String, JsonNode>> iterable = () -> inputCopy.fields();
         StreamSupport.stream(iterable.spliterator(), false)
-                .sorted((a, b) -> a.getKey().compareTo(b.getKey()))
                 .map(Map.Entry::getValue)
+                // use sortedMapper to reserialize the entry so its keys are sorted
+                .map(json -> LambdaHelper.wrapWithExceptionPropagation(
+                        () -> sortedMapper.readTree(json.toString())).get())
                 .forEach(result::add);
 
         return result;
