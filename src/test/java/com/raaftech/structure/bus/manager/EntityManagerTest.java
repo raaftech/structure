@@ -4,12 +4,14 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableSet;
+import com.raaftech.structure.base.Context;
 import com.raaftech.structure.base.SpringTestConfig;
 import com.raaftech.structure.graph.Node;
 import com.raaftech.structure.graph.repositories.NodeRepository;
 import com.raaftech.structure.helper.loader.BundleLoader;
 import com.raaftech.structure.helper.loader.NaiveSorter;
 import com.raaftech.structure.graph.Entity;
+import io.vertx.core.Vertx;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,6 +45,7 @@ public class EntityManagerTest {
     @SuppressWarnings("Duplicates")
     public void setUp() throws Exception {
         if (!databaseCreated) {
+            Context.setVertx(Vertx.vertx());
             Transaction tx = graphDatabase.beginTx();
             final String testBundle = "src/main/resources/bundles/";
             BundleLoader bundleLoader = new BundleLoader(testBundle);
