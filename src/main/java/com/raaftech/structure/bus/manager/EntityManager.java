@@ -362,7 +362,7 @@ public class EntityManager extends GenericActor {
 
                 Instance instance = instanceRepository.findByUuid(instanceUuid);
                 if(instance == null) {
-                    result.put(ERROR, "fucked");
+                    result.put(ERROR, "Could not find an instance with uuid "+instanceUuid);
                     return response(request, result);
                 }
                 Type instanceType = instance.getInstanceOf();
