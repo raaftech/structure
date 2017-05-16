@@ -269,7 +269,7 @@ public class EntityManagerTest {
         EntityManager entityManager = new EntityManager();
 
         final String computerUuid = "ec11db91-6973-4285-b018-b461fbb432d7";
-        final String ipv4AddressUuid = "d182e241-af01-4837-9913-2e6c1afa047c";
+        final String ipv4AddressUuid = "5ca95f7a-5175-4e7f-8a61-862e24485af3";
 
         /*
          construct a message that tries to delete the "Computer" node, but will fail because we have outgoing
@@ -279,19 +279,22 @@ public class EntityManagerTest {
         message.put("msgh", "delete");
         ObjectNode args = message.putObject("args");
         ArrayNode labels = args.putArray("labels");
-        labels.add("Component");
+        labels.add("type:Component");
         args.put("uuid", computerUuid);
 
         // send the message constructed above and get the result
         JsonNode response = entityManager.delete().exec(message);
         ObjectNode result = (ObjectNode) response.get("result");
 
-        // the result should not have an error property
+        // the result should have an error property
         assertTrue(result.has("error"));
 
 
-        // Now try again, but pick a leaf node in the "Computer" subgraph
+        // Now try again, but pick a leaf node in the type tree
         args.put("uuid", ipv4AddressUuid);
+        labels.removeAll();
+        // We won't have an outgoing rel to anything with label Foo, so this will succeed
+        labels.add("Foo");
 
         // send the message constructed above and get the result
         response = entityManager.delete().exec(message);
