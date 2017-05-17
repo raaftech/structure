@@ -25,6 +25,11 @@ class RestConnector {
         return util.format('http://%s:%s/api/Statuses/change-stream',this.host,this.port);
     }
 
+    getAllTypes() {
+        let url = util.format('%s/Entities', getBaseUrl(this.host,this.port));
+        return fetch(url).then(result => result.json());
+    }
+
     getEntityByName(name) {
         let url = util.format('%s/Entities/name/%s', getBaseUrl(this.host,this.port),name);
         return fetch(url).then(result => result.json());

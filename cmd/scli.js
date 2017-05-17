@@ -13,15 +13,17 @@ const RestConnector = require('./restConnector');
 const SchemaValidator = require('./SchemaValidator');
 const SimpleCache = require('./simpleCache');
 const EventSource = require('eventsource');
-const Structure = require('./subgraph');
+const graphLib = require('./graphLib');
 //extensions
 const neoExt = require('./extensions/neo');
 const structureExt = require('./extensions/structure');
 const groupExt = require('./extensions/groups');
 const instanceExt = require('./extensions/instance');
 
+
 const answerCache = new SimpleCache();
 const memoryBank = {a: '', b: '',token: ''};
+let typeDb = [];
 let rest;
 let validator;
 
@@ -41,7 +43,12 @@ function init() {
     }
 
     setupStatusChannel();
-    scli();
+    rest.getAllTypes()
+        .then(allTypes => {
+            typeDb = allTypes;
+            scli();
+        })
+        .catch(ex => console.log(ex));
 }
 
 function scli() {
@@ -241,40 +248,47 @@ vorpal.command('find <name>', 'Find a specified node in structure')
     .option('-v, --verbose', 'Be verbose with the result output')
     .action(function(args, done) {
         const self = this;
+        const findByUuid = graphLib.findTypeByUuid(typeDb);
+        const fuzzyFind = graphLib.findTypeByFuzzyNameMatch(typeDb);
+
         //Function that calls a specific rest method, depending on the value of the method argument
         let handler = (method, arg) => {
-            rest[method](arg)
-                .then(entity => {
-                    //Function that fetches the property keys, present in the meta object in the entity
-                    //Then adds the property path, in dot notation, to the list (2nd arg)
-                    //Returns a list of possible property paths
-                    let meta = R.curry((ent,list) => {
-                        return R.pipe(R.prop('meta'), R.keys,
-                            R.map(item => 'meta.'+item),
-                            R.concat(list)
-                        )(ent);
-                    });
-                    //Function that gets all keys from an entity, prepends 'ALL' to the list
-                    //fetches the meta keys by using above function and appends them to the list
-                    //This list is then prompted to the user to choose from.
-                    let keys = R.pipe(R.keys, R.prepend('ALL'),meta(entity))(entity);
-                    self.prompt(helper.generateQuestion('list', 'list', 'Choose a field', {choices: keys}), function(result) {
-                        let check = R.ifElse(R.propEq('list','ALL'),
-                                        () => self.log(helper.treePrint(args.options.verbose, entity)),
-                                        () => {
-                                            let pp = R.split('.',result.list);
-                                            let prop = clc.green.bold(result.list);
-                                            let outputTypeSelector = R.ifElse(R.is(Object),
-                                                x => self.log(util.format('%s\n%s', prop, helper.treePrint(args.options.verbose,R.path(pp, entity)))),
-                                                x => self.log(util.format('%s: %s', prop, helper.stringify(R.path(pp, entity)))));
-                                            outputTypeSelector(R.path(pp, entity));
-                                        }
-                                    );
-                        check(result);
-                        done();
-                    });
-                })
-                .catch(helper.genericCatchHandler(done));
+            let entity;
+            if(method === 'getEntityByName') {
+                entity = fuzzyFind(arg);
+            } else {
+                entity = findByUuid(arg);
+            }
+
+            if(R.isNil(entity)) {
+                self.log('Unable to find entity type: '+arg);
+                done();
+            } else {
+                let meta = R.curry((ent,list) => {
+                    return R.pipe(R.prop('meta'), R.keys,
+                        R.map(item => 'meta.'+item),
+                        R.concat(list)
+                    )(ent);
+                });
+
+                let keys = R.pipe(R.keys, R.prepend('ALL'),meta(entity))(entity);
+                self.prompt(helper.generateQuestion('list', 'list', 'Choose a field', {choices: keys}), function(result) {
+                    let check = R.ifElse(R.propEq('list','ALL'),
+                                    () => self.log(helper.treePrint(args.options.verbose, entity)),
+                                    () => {
+                                        let pp = R.split('.',result.list);
+                                        let prop = clc.green.bold(result.list);
+                                        let outputTypeSelector = R.ifElse(R.is(Object),
+                                            x => self.log(util.format('%s\n%s', prop, helper.treePrint(args.options.verbose,R.path(pp, entity)))),
+                                            x => self.log(util.format('%s: %s', prop, helper.stringify(R.path(pp, entity)))));
+                                        outputTypeSelector(R.path(pp, entity));
+                                    }
+                                );
+                    check(result);
+                    done();
+                });
+            }
+            
         };
 
         //Function that determines which rest call to use based on the given arguments and options
