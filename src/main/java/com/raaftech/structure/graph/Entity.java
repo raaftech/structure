@@ -84,6 +84,11 @@ public class Entity {
     private String uuid;
 
     /**
+     * "Type" entities can be made abstract. This means no instance of them can be created.
+     */
+    private boolean isAbstract;
+
+    /**
      * See {@link Type#identity}
      */
     private String[] identity;
@@ -180,6 +185,14 @@ public class Entity {
                 Optional.empty() : Optional.of(constraints);
     }
 
+    /**
+     * Returns whether this entity is abstract. This is only used on "Type" entities.
+     * @return
+     */
+    public boolean isAbstract() {
+        return isAbstract;
+    }
+
 
     /* Setters. */
     public void setBundle(String bundle) {
@@ -272,6 +285,19 @@ public class Entity {
         }
 
         constraintList.add(Pair.of(cardinality, to));
+    }
+
+    /**
+     * Sets whether an entity is abstract. Can only be used on "Type" entities.
+     * @param isAbstract True if this is an abstract entity.
+     * @throws IllegalArgumentException Thrown when called on a non "Type" entity.
+     */
+    public void setAbstract(boolean isAbstract) {
+        if ("Type".equals(type)) {
+            this.isAbstract = isAbstract;
+        } else {
+            throw new IllegalArgumentException("Only a \"Type\" entity can be made abstract.");
+        }
     }
 
 
