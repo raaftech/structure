@@ -129,7 +129,6 @@ module.exports = function(vorpal, opts) {
                     self.log(util.format('  Instruments: %s', result.graph.instruments));
                     self.log(util.format('  Groupings: %s', result.graph.groupings));
                     self.log(util.format('  Results: %s', result.graph.results));
-                    self.log(util.format('  Configurations: %s', result.graph.configurations));
                     done();
                 })
                 .catch(ex => {self.log(ex); done();})
@@ -142,7 +141,6 @@ module.exports = function(vorpal, opts) {
             let loggedIn = () => {
                 rest.purgeInit()
                     .then(result => {
-                        //self.log(result);
                         done();})
                     .catch(ex => {self.log(ex); done();});
             };
