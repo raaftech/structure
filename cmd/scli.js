@@ -303,27 +303,16 @@ vorpal.command('dig', 'Get the child elements for a type-node')
     .option('-u, --uuid <uuid>', 'Identify the type-node by uuid')
     .action(function(args, done) {
         const self = this;
+        const findByUuid = graphLib.findTypeByUuid(typeDb);
+        const fuzzyFind = graphLib.findTypeByFuzzyNameMatch(typeDb);
+        const kids = graphLib.getChildren(typeDb);
+        const getId = R.path(['meta','uuid']);
 
-        if(args.options.name) {
-            rest.getEntityByName(args.options.name)
-                .then(entity => getChildren(entity.meta.uuid))
-                .then(children => {
-                    R.forEach((item) => {
-                        self.log(sprintf('%-16s: %24s', R.prop('name', item),R.prop('uuid',item)));
-                    }, children);
-                    done();
-                })
-                .catch(helper.genericCatchHandler(done));
-        } else {
-            getChildren(args.options.uuid)
-                .then(children => {
-                    R.forEach((item) => {
-                        self.log(sprintf('%-16s: %24s', R.prop('name', item),R.prop('uuid',item)));
-                    }, children);
-                    done();
-                })
-                .catch(helper.genericCatchHandler(done))
-        }
+        let children = (args.options.name ? kids(getId(fuzzyFind(args.options.name))) : kids(args.options.uuid));
+        R.forEach((item) => {
+            self.log(sprintf('%-16s: %24s', R.prop('name', item),getId(item)));
+        }, children);
+        done();
     });
 
 vorpal.command('tree <name>', 'Show a relation tree for the requested node')

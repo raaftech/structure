@@ -95,6 +95,16 @@ function getTypeHierarchy(typeDb, instance) {
     return hierarchy;
 }
 
+function getChildren(typeDb, uuid) {
+    let isaPath = R.path(['meta','relations','ISA','uuids']);
+    let isChild = R.compose(R.equals(uuid), R.head, isaPath);
+    return R.filter(item => {
+        if(notNil(isaPath(item))) {
+            return isChild(item);
+        } else return false;
+    }, typeDb);
+}
+
 module.exports = {
     createRelation: R.curry(createRelation),
     createInstance: R.curry(createInstance),
@@ -106,5 +116,6 @@ module.exports = {
     findTypeByName: R.curry(findTypeByName),
     findTypeByUuid: R.curry(findTypeByUuid),
     findTypeByFuzzyNameMatch: R.curry(findTypeByFuzzyNameMatch),
-    getTypeHierarchy: R.curry(getTypeHierarchy)
+    getTypeHierarchy: R.curry(getTypeHierarchy),
+    getChildren: R.curry(getChildren)
 };
