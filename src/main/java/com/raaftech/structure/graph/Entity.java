@@ -488,6 +488,9 @@ public class Entity {
         if (identity != null) {
             properties.put("identity", identity);
         }
+        if ("Type".equals(type)) {
+            properties.put("isAbstract", isAbstract);
+        }
 
         /* we use neo4jTemplate.merge(...), which is basically getOrCreate(...). Now, if the entity
         already existed, but has changed properties, we need to update them using Node.setProperty(...).
