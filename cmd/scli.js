@@ -8,7 +8,6 @@ const sprintf = require('sprintf-js').sprintf;
 const treeify = require('./treeify');
 const fs = require('fs');
 const path = require('path');
-const uuidV4 = require('uuid');
 const RestConnector = require('./restConnector');
 const SchemaValidator = require('./SchemaValidator');
 const SimpleCache = require('./simpleCache');
@@ -131,6 +130,8 @@ vorpal.command('relate <fromInstanceUuid> <toInstanceUuid>', 'Create a new relat
                     R.map(R.prop('to'))
                 )(list);
             };
+            const findType = graphLib.findTypeByUuid(typeDb);
+            const getId = R.path(['meta','uuid']);
 
             let loggedIn = () => {
                 rest.getInstanceByUuid(args.fromInstanceUuid)
@@ -154,17 +155,18 @@ vorpal.command('relate <fromInstanceUuid> <toInstanceUuid>', 'Create a new relat
                         return harvestEndpointUuids(answer.relation, currentConstraints.outgoing);
                     })
                     .then(uuids => {
-                        let promises = [];
-                        R.forEach(uuid => promises.push(rest.getEntityByUuid(uuid)), uuids);
-                        return Promise.all(promises);
+                        return R.map(findType, uuids);
+                        // let promises = [];
+                        // R.forEach(uuid => promises.push(rest.getEntityByUuid(uuid)), uuids);
+                        // return Promise.all(promises);
                     })
                     .then(result => {
                         self.log('Allowed types: %s',R.map(R.prop('name'), result));
-                        self.log('%s %s %s', fromInstance.meta.uuid, requestedRelation, toInstance.meta.uuid);
+                        self.log('%s %s %s', getId(fromInstance), requestedRelation, getId(toInstance));
                         if(R.isNil(R.path(['meta','relations',requestedRelation], fromInstance))) {
-                            fromInstance.meta.relations[requestedRelation] = {direction: 'outgoing', uuids: [toInstance.meta.uuid]};
+                            fromInstance.meta.relations[requestedRelation] = {direction: 'outgoing', uuids: [getId(toInstance)]};
                         } else {
-                            fromInstance.meta.relations[requestedRelation].uuids.push(toInstance.meta.uuid);
+                            fromInstance.meta.relations[requestedRelation].uuids.push(getId(toInstance));
                         }
                         return rest.updateInstance({entities: [fromInstance]});
                     })
@@ -180,18 +182,18 @@ vorpal.command('relate <fromInstanceUuid> <toInstanceUuid>', 'Create a new relat
 vorpal.command('specialize <uuid>', 'Specialize an instance')
     .action(function(args, done) {
             const self = this;
+            const getId = R.path(['meta', 'uuid']);
+            const kids = graphLib.getChildren(typeDb);
+            const findType = graphLib.findTypeByUuid(typeDb);
 
             let selectedInstance;
-            let instanceOfType = R.compose(R.head, R.path(['meta', 'relations', 'INSTANCE_OF', 'uuids']));
 
             let loggedIn = () => {
                 rest.getInstanceByUuid(args.uuid)
                     .then(instance => {
                         selectedInstance = instance;
-                        return rest.getEntityByUuid(instanceOfType(instance));
-                    })
-                    .then(type => {
-                        return rest.getChildren(type.meta.uuid);
+                        let type = findType(graphLib.getInstanceOfUuid(selectedInstance));
+                        return kids(getId(type));
                     })
                     .then(children => {
                         if(children.length === 0) {
@@ -201,7 +203,7 @@ vorpal.command('specialize <uuid>', 'Specialize an instance')
                             let q = helper.generateQuestion('child', 'list', 'Select specialisation: ', {choices: children});
                             self.prompt(q, function(answer) {
                                 let e = R.find(R.propEq('name', answer.child), children);
-                                rest.specializeInstance(selectedInstance.meta.uuid, e.meta.uuid)
+                                rest.specializeInstance(getId(selectedInstance), getId(e))
                                     .then(updated => {
                                         self.log(updated);
                                         done();
@@ -277,7 +279,6 @@ vorpal.command('dig', 'Get the child elements for a type-node')
     .option('-u, --uuid <uuid>', 'Identify the type-node by uuid')
     .action(function(args, done) {
         const self = this;
-        const findByUuid = graphLib.findTypeByUuid(typeDb);
         const fuzzyFind = graphLib.findTypeByFuzzyNameMatch(typeDb);
         const kids = graphLib.getChildren(typeDb);
         const getId = R.path(['meta','uuid']);
@@ -343,23 +344,10 @@ vorpal.command('discover <cidr>', 'Discover items in the network')
             .then(instance => {
                 if(R.isEmpty(instance)) {
                     self.log('creating new network');
-                    return rest.getEntityByName('Ipv4Network')
-                        .then(ent => {
-                            ent.type = 'Grouping';
-                            ent.data = {
-                                name: ent.name,
-                                desc: ent.desc,
-                                cidr: args.cidr
-                            };
-                            ent.meta.relations['INSTANCE_OF'] = {
-                                direction: 'outgoing',
-                                uuids: [ent.meta.uuid]
-                            };
-                            ent.meta.uuid = uuidV4();
-                            ent.meta.relations = R.omit(['ISA'],ent.meta.relations);
-                            return rest.createInstance({entities: [ent]});
-                        })
-                        .then(i => rest.getInstanceByUuid(R.head(i)))
+                    let ent = graphLib.findTypeByName(typeDb, 'Ipv4Network');
+                    let i = graphLib.createInstance(ent, {name: ent.name, desc: ent.desc, cidr: args.cidr});
+                    return rest.createInstance({entities: [i]})
+                        .then(ins => rest.getInstanceByUuid(R.head(ins)));
                 } else {
                     self.log('reusing existing network');
                     return instance;
@@ -370,6 +358,7 @@ vorpal.command('discover <cidr>', 'Discover items in the network')
                 return rest.runInstrument(network.meta.uuid, 'IpAddressDiscover', {token: rest.getToken()});
             })
             .then(result => {
+                self.log(result);
                 self.log('done');
                 done();
             })
