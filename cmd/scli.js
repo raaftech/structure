@@ -85,32 +85,6 @@ function setupStatusChannel() {
     });
 }
 
-function getChildren(uuid) {
-    return rest.getChildren(uuid)
-        .then(children => {
-            return R.map((item) => {
-                    return R.zipObj(['name', 'uuid'],[R.prop('name',item), R.path(['meta','uuid'], item)]);
-                }, children);
-        });
-}
-
-function toRoot(uuid, childNodes) {
-    return new Promise((resolve, reject) => {
-        rest.getEntityByUuid(uuid)
-            .then(parent => {
-                let tree = {};
-                tree[parent.name] = childNodes;
-                if(R.isNil(R.path(['meta','relations','ISA'], parent))) {
-                    resolve(tree);
-                } else {
-                    //getIsaParent: small function to fetch the first of the ISA uuids for an entity
-                    let getIsaParent = R.pipe(R.path(['meta','relations','ISA','uuids']), R.head);
-                    resolve(toRoot(getIsaParent(parent), tree));
-                }
-            })
-    });
-}
-
 function payloadDir() {
     return path.join(__dirname, 'payloads');
 }
