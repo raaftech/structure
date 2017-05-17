@@ -405,6 +405,19 @@ public class Entity {
 
     public void toGraph() {
         if (!getType().equals("Type")) {
+            final Optional<Type> maybeInstanceOf = getInstanceOf();
+            if (!maybeInstanceOf.isPresent()) {
+                throw new IllegalEntityType("Entity with UUID " + getUuid() + " couldn't be created. It's an instance,"
+                        + " but its type couldn't be retrieved from the graph.");
+            }
+            final Type instanceOf = maybeInstanceOf.get();
+
+            // See if the type we try to instantiate is abstract
+            if (instanceOf.isAbstract()) {
+                throw new IllegalEntityType("Entity with UUID \"" + getUuid() + "\" tries to instantiate the abstract Type " +
+                        "\"" + instanceOf.getUuid() + "\".");
+            }
+
             // See if this instance validates against its type's constraints
             final Pair<Boolean, Set<String>> validation = validateAgainstConstraints();
             if (!validation.getLeft()) {
@@ -423,14 +436,6 @@ public class Entity {
                 }
             }
 
-            // Only other case is an instance entity, in which case we need to validate against its Type schema
-            final Optional<Type> maybeInstanceOf = getInstanceOf();
-            if (!maybeInstanceOf.isPresent()) {
-                throw new IllegalEntityType("Entity with UUID " + getUuid() + " couldn't be created. It's an instance,"
-                        + "but it's type couldn't be retrieved from the graph.");
-            }
-
-            final Type instanceOf = maybeInstanceOf.get();
             final String schemaUriPattern = "http://" + Configuration.getWebHost() + ":"
                     + Configuration.getWebPort() + "/schemas/%s.schema.json";
             final Map<String, Object> data = new HashMap(getData());
