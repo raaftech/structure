@@ -319,28 +319,38 @@ vorpal.command('tree <name>', 'Show a relation tree for the requested node')
     .option('-u, --uuid', 'Make the search go by uuid instead of name')
     .action(function(args, done) {
         const self = this;
+        const findByUuid = graphLib.findTypeByUuid(typeDb);
+        const fuzzyFind = graphLib.findTypeByFuzzyNameMatch(typeDb);
+        const kids = graphLib.getChildren(typeDb);
+        const getId = R.path(['meta','uuid']);
+
         let rootUuid = '';
         //Function that calls a specific rest method, depending on the value of the method argument
         let handler = (method, arg) => {
-            rest[method](arg)
-                .then(entity => { return R.path(['meta','uuid'], entity) })
-                .then(uuid => { rootUuid = uuid; return getChildren(uuid); })
-                .then(children => {
-                    let tree = {};
-                    R.forEach((item) => {
-                        tree[item.name] = item.uuid;
-                    }, children);
+            let entity;
+            if(method === 'getEntityByName') {
+                entity = fuzzyFind(arg);
+                rootUuid = getId(entity);
+            } else {
+                entity = findByUuid(arg);
+                rootUuid = arg;
+            }
 
-                    return tree;
-                })
-                .then(tree => {
-                    return toRoot(rootUuid, tree);
-                })
-                .then(parents => {
-                    self.log(treeify.asTree(parents,true));
-                    done();
-                })
-                .catch(helper.genericCatchHandler(done));
+            let tree = {};
+            R.forEach((item) => {
+                tree[item.name] = getId(item);
+            }, kids(rootUuid));
+
+            let dummyInstance = graphLib.createInstance(entity, {});
+            let hierarchy = graphLib.getTypeHierarchy(typeDb, dummyInstance);
+            R.forEach(item => {
+                let tt = {};
+                tt[item.name] = R.clone(tree);
+                tree = R.clone(tt);
+            },R.reverse(hierarchy));
+            
+            self.log(treeify.asTree(tree,true));
+            done();
         };
 
         //Function that determines which rest call to use based on the given arguments and options
