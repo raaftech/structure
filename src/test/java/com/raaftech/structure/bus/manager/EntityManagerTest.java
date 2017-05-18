@@ -34,10 +34,12 @@ import static org.junit.Assert.*;
 public class EntityManagerTest extends TypeSchemaTest {
 
     @Autowired private NodeRepository nodeRepository;
+    @Autowired private GraphDatabase graphDatabase;
 
     @Test
-    @Transactional
     public void testTraversal() throws Exception {
+        Transaction tx = graphDatabase.beginTx();
+
         Node computerGrouping = nodeRepository.findByUuid("ec11db91-6973-4285-b018-b461fbb432d7");
         EntityManager entityManager = new EntityManager();
 
@@ -56,12 +58,15 @@ public class EntityManagerTest extends TypeSchemaTest {
         Node linuxType = nodeRepository.findByUuid("a5613527-2f64-4481-83f2-80b0cb427e28");
         foundNodes = entityManager.labelBasedTraversal(ImmutableSet.of("Type"), linuxType, false);
         assertEquals(5, foundNodes.size());
+
+        tx.close();
     }
 
     @Test
-    @Transactional
     @Rollback
     public void testCreate() throws Exception {
+        Transaction tx = graphDatabase.beginTx();
+
         EntityManager entityManager = new EntityManager();
 
         // construct a message that creates a new entity
@@ -120,12 +125,15 @@ public class EntityManagerTest extends TypeSchemaTest {
         // because no new entity was created, it should have a data array, but it should be empty
         assertTrue(result.has("data"));
         assertEquals(0, result.get("data").size());
+
+        tx.close();
     }
 
     @Test
-    @Transactional
     @Rollback
     public void testRead() throws Exception {
+        Transaction tx = graphDatabase.beginTx();
+
         EntityManager entityManager = new EntityManager();
 
         /*
@@ -160,12 +168,14 @@ public class EntityManagerTest extends TypeSchemaTest {
         while (iterator.hasNext()) {
             mapper.treeToValue(iterator.next(), Entity.class);
         }
+        tx.close();
     }
 
     @Test
-    @Transactional
     @Rollback
     public void testUpdate() throws Exception {
+        Transaction tx = graphDatabase.beginTx();
+
         EntityManager entityManager = new EntityManager();
         final String computerTypeUuid = "ec11db91-6973-4285-b018-b461fbb432d7";
         final String linuxTypeUuid = "a5613527-2f64-4481-83f2-80b0cb427e28";
@@ -241,12 +251,15 @@ public class EntityManagerTest extends TypeSchemaTest {
 
         // the result should not have an error property
         assertTrue(result.has("error"));
+        tx.close();
+
     }
 
     @Test
-    @Transactional
     @Rollback
     public void testDelete() throws Exception {
+        Transaction tx = graphDatabase.beginTx();
+
         EntityManager entityManager = new EntityManager();
 
         final String computerUuid = "ec11db91-6973-4285-b018-b461fbb432d7";
@@ -283,12 +296,15 @@ public class EntityManagerTest extends TypeSchemaTest {
 
         // error should now be absent
         assertTrue(!result.has("error"));
+
+        tx.close();
     }
 
     @Test
-    @Transactional
     @Rollback
     public void testSpecialize() throws Exception {
+        Transaction tx = graphDatabase.beginTx();
+
         //FIXME a true instance should be created. Not yet sure how.
         EntityManager entityManager = new EntityManager();
 
@@ -306,5 +322,7 @@ public class EntityManagerTest extends TypeSchemaTest {
 
         //for now should be false since we are trying to specialize a type instead of an instance
         assertFalse(result.has("result"));
+
+        tx.close();
     }
 }
