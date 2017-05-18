@@ -1,61 +1,37 @@
 package com.raaftech.structure.graph;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.raaftech.structure.base.SpringTestConfig;
 import com.raaftech.structure.graph.repositories.NodeRepository;
-import com.raaftech.structure.helper.JsonHelper;
 import com.raaftech.structure.helper.Triple;
-import com.raaftech.structure.helper.loader.BundleLoader;
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.neo4j.graphdb.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.AnnotationConfigContextLoader;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.neo4j.core.GraphDatabase;
+import schema.TypeSchemaTest;
 
-import java.net.URI;
 import java.util.Set;
 
 import static io.vertx.core.json.Json.mapper;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(loader = AnnotationConfigContextLoader.class, classes = SpringTestConfig.class)
-public class NodeSerializerTest {
+public class NodeSerializerTest extends TypeSchemaTest {
 
     @Autowired
     NodeRepository nodeRepository;
-
-    private boolean databaseCreated = false;
-
-    @Before
-    @Transactional
-    @SuppressWarnings("Duplicates")
-    public void setUpDatabase() throws Exception {
-        if (!databaseCreated) {
-            final String raafBundle = "src/main/resources/bundles/";
-            BundleLoader bundleLoader = new BundleLoader(raafBundle);
-            bundleLoader.load();
-            databaseCreated = true;
-        }
-    }
+    @Autowired
+    GraphDatabase graphDatabase;
 
     /*
      * Test serialization of a node, test the resulting json according to schema and property values
      */
     @Test
-    @Transactional
     public void testDeserializationSerialization() throws Exception {
+        Transaction tx = graphDatabase.beginTx();
+
         Node componentNode = nodeRepository.findOneByName("Linux");
         assertNotNull(componentNode);
 
         String serializedJson = mapper.writeValueAsString(componentNode);
-        assertTrue(JsonHelper.validateToSchema(URI.create("resource:/schema/entity.schema.json"),
-                mapper.readTree(serializedJson)));
         Entity entity = mapper.readValue(serializedJson, Entity.class);
         assertNotNull(entity);
         assertEquals("Linux", entity.getName());
@@ -78,16 +54,18 @@ public class NodeSerializerTest {
         assertEquals("text", dataSchema.get("encoding").asText());
         assertEquals("json", dataSchema.get("format").asText());
         assertEquals("linux.schema.json", dataSchema.get("path").asText());
+
+        tx.close();
     }
 
     @Test
-    @Transactional
     public void testIncomingRelationshipSerialization() throws Exception {
         /*
         Bash and bashInvoke have outgoing relationships towards each other. This will
         cause issues during loading with NaiveSorter. For that reason we need to make sure
         one of the relationships is serialized as an incoming relationship.
          */
+        Transaction tx = graphDatabase.beginTx();
         Node bash = nodeRepository.findOneByName("Bash");
         Node bashInvoke = nodeRepository.findOneByName("BashInvoke");
 
@@ -104,5 +82,6 @@ public class NodeSerializerTest {
         assertTrue(!bashObj.get("meta").get("relations").has("PROVIDED_BY"));
         assertTrue(bashInvokeObj.get("meta").get("relations").has("PROVIDED_BY"));
         assertEquals("outgoing", bashInvokeObj.get("meta").get("relations").get("PROVIDED_BY").get("direction").asText());
+        tx.close();
     }
 }

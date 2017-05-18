@@ -23,6 +23,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
 import org.springframework.transaction.annotation.Transactional;
+import schema.TypeSchemaTest;
 
 import java.util.Iterator;
 import java.util.List;
@@ -30,36 +31,15 @@ import java.util.List;
 import static io.vertx.core.json.Json.mapper;
 import static org.junit.Assert.*;
 
-//FIXME This test is now actively skipped (in pom.xml), this should not be the case.
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(loader = AnnotationConfigContextLoader.class, classes = SpringTestConfig.class)
-public class EntityManagerTest {
+public class EntityManagerTest extends TypeSchemaTest {
 
-    @Autowired private GraphDatabase graphDatabase;
     @Autowired private NodeRepository nodeRepository;
-
-    private boolean databaseCreated;
-
-    @Before
-    @Transactional
-    @SuppressWarnings("Duplicates")
-    public void setUp() throws Exception {
-        if (!databaseCreated) {
-            Context.setVertx(Vertx.vertx());
-            Transaction tx = graphDatabase.beginTx();
-            final String testBundle = "src/main/resources/bundles/";
-            BundleLoader bundleLoader = new BundleLoader(testBundle);
-            bundleLoader.load();
-
-            tx.success();
-            tx.close();
-            databaseCreated = true;
-        }
-    }
+    @Autowired private GraphDatabase graphDatabase;
 
     @Test
-    @Transactional
     public void testTraversal() throws Exception {
+        Transaction tx = graphDatabase.beginTx();
+
         Node computerGrouping = nodeRepository.findByUuid("ec11db91-6973-4285-b018-b461fbb432d7");
         EntityManager entityManager = new EntityManager();
 
@@ -78,12 +58,15 @@ public class EntityManagerTest {
         Node linuxType = nodeRepository.findByUuid("a5613527-2f64-4481-83f2-80b0cb427e28");
         foundNodes = entityManager.labelBasedTraversal(ImmutableSet.of("Type"), linuxType, false);
         assertEquals(5, foundNodes.size());
+
+        tx.close();
     }
 
     @Test
-    @Transactional
     @Rollback
     public void testCreate() throws Exception {
+        Transaction tx = graphDatabase.beginTx();
+
         EntityManager entityManager = new EntityManager();
 
         // construct a message that creates a new entity
@@ -142,12 +125,15 @@ public class EntityManagerTest {
         // because no new entity was created, it should have a data array, but it should be empty
         assertTrue(result.has("data"));
         assertEquals(0, result.get("data").size());
+
+        tx.close();
     }
 
     @Test
-    @Transactional
     @Rollback
     public void testRead() throws Exception {
+        Transaction tx = graphDatabase.beginTx();
+
         EntityManager entityManager = new EntityManager();
 
         /*
@@ -182,12 +168,14 @@ public class EntityManagerTest {
         while (iterator.hasNext()) {
             mapper.treeToValue(iterator.next(), Entity.class);
         }
+        tx.close();
     }
 
     @Test
-    @Transactional
     @Rollback
     public void testUpdate() throws Exception {
+        Transaction tx = graphDatabase.beginTx();
+
         EntityManager entityManager = new EntityManager();
         final String computerTypeUuid = "ec11db91-6973-4285-b018-b461fbb432d7";
         final String linuxTypeUuid = "a5613527-2f64-4481-83f2-80b0cb427e28";
@@ -263,12 +251,15 @@ public class EntityManagerTest {
 
         // the result should not have an error property
         assertTrue(result.has("error"));
+        tx.close();
+
     }
 
     @Test
-    @Transactional
     @Rollback
     public void testDelete() throws Exception {
+        Transaction tx = graphDatabase.beginTx();
+
         EntityManager entityManager = new EntityManager();
 
         final String computerUuid = "ec11db91-6973-4285-b018-b461fbb432d7";
@@ -305,12 +296,15 @@ public class EntityManagerTest {
 
         // error should now be absent
         assertTrue(!result.has("error"));
+
+        tx.close();
     }
 
     @Test
-    @Transactional
     @Rollback
     public void testSpecialize() throws Exception {
+        Transaction tx = graphDatabase.beginTx();
+
         //FIXME a true instance should be created. Not yet sure how.
         EntityManager entityManager = new EntityManager();
 
@@ -328,5 +322,7 @@ public class EntityManagerTest {
 
         //for now should be false since we are trying to specialize a type instead of an instance
         assertFalse(result.has("result"));
+
+        tx.close();
     }
 }
