@@ -30,6 +30,7 @@ public class NaiveSorterTest {
                 .put("desc", "Foo.");
         ObjectNode meta = a
                 .putObject("meta")
+                .put("identity", "foo")
                 .put("uuid", "abba2750-7e05-4e70-8b36-1a56665dccd6");
         ObjectNode rela = meta.putObject("relations").putObject("INSTANCE_OF");
         rela.put("direction", "outgoing");
@@ -41,7 +42,8 @@ public class NaiveSorterTest {
                 .put("name", "Foo");
         ObjectNode metb = b
                 .putObject("meta")
-                .put("uuid", "abba2750-7e05-4e70-8b36-1a56665dccd6");
+                .put("uuid", "abba2750-7e05-4e70-8b36-1a56665dccd6")
+                .put("identity", "foo");
         ObjectNode relb = metb.putObject("relations").putObject("INSTANCE_OF");
         relb.put("direction", "outgoing");
         relb.putArray("uuids").add(instanceOf);
