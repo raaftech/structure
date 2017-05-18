@@ -17,6 +17,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
 import org.springframework.transaction.annotation.Transactional;
+import schema.TypeSchemaTest;
 
 import java.io.IOException;
 import java.nio.file.FileSystems;
@@ -24,9 +25,7 @@ import java.nio.file.FileSystems;
 import static io.vertx.core.json.Json.mapper;
 import static org.junit.Assert.*;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(loader = AnnotationConfigContextLoader.class, classes = SpringTestConfig.class)
-public class InstanceRepositoryTest {
+public class InstanceRepositoryTest extends TypeSchemaTest {
 
     @Autowired
     InstanceRepository instanceRepository;
@@ -34,80 +33,54 @@ public class InstanceRepositoryTest {
     TypeRepository typeRepository;
     @Autowired
     GraphDatabase graphDatabase;
-    private static boolean databaseCreated;
 
     private static Grouping grouping;
     private static Component parent, child01, child02;
 
     @Before
     @Transactional
-    @SuppressWarnings("Duplicates")
     public void setUp() throws Exception {
-        if (!databaseCreated) {
-            Transaction tx = graphDatabase.beginTx();
-            final String testBundle = "src/test/resources/bundles/repositorytests/";
-            Configuration.setSchemaNamespace(FileSystems.getDefault().getPath(testBundle).toUri().resolve("types/"));
-            NaiveSorter naiveSorter = new NaiveSorter(testBundle);
-            naiveSorter.getUpdateList(naiveSorter.sortIt(naiveSorter.readAllJson())).stream()
-                    .map(node -> {
-                        try {
-                            return mapper.readValue(node.toString(), Entity.class);
-                        } catch (IOException e) {
-                            throw new RuntimeException("Error while creating types");
-                        }
-                    })
-                    .filter(node -> node != null)
-                    .forEach(Entity::toGraph);
-
-            Type groupingType = typeRepository.findOneByName("Grouping");
-            assertNotNull(groupingType);
-            Type parentType = typeRepository.findOneByName("Software");
-            assertNotNull(parentType);
-            Type childType = typeRepository.findOneByName("Linux");
-            assertNotNull(childType);
-            if (grouping == null) {
-                grouping = new Grouping(
-                        mapper.createObjectNode()
-                                .put("name", "Grouping")
-                                .put("desc", "A description."),
-                        groupingType);
-            }
-            if (parent == null) {
-                parent = new Component(mapper.createObjectNode()
-                        .put("name", "parent")
-                        .put("desc", "Parent.")
-                        .put("checksum", "f1d2d2f924e986ac86fdf7b36c94bcdf32beec15")
-                        .put("ver", "1")
-                        .put("shortName", "parent")
-                        .put("longName", "parent"), parentType);
-                grouping.getComponents().add(parent);
-            }
-            if (child01 == null) {
-                child01 = new Component(mapper.createObjectNode()
-                        .put("name", "child")
-                        .put("desc", "Child 01.")
-                        .put("checksum", "f1d2d2f924e986ac86fdf7b36c94bcdf32beec15")
-                        .put("ver", "1")
-                        .put("shortName", "child")
-                        .put("longName", "child"), childType);
-                parent.addComponent(child01);
-            }
-            if (child02 == null) {
-                child02 = new Component(mapper.createObjectNode()
-                        .put("name", "child")
-                        .put("desc", "Child 02.")
-                        .put("checksum", "f1d2d2f924e986ac86fdf7b36c94bcdf32beec15")
-                        .put("ver", "1")
-                        .put("shortName", "child")
-                        .put("longName", "child"), childType);
-                parent.addComponent(child02);
-            }
-            grouping.save();
-
-            tx.success();
-            tx.close();
-            databaseCreated = true;
+        Type groupingType = typeRepository.findOneByName("Grouping");
+        assertNotNull(groupingType);
+        Type parentType = typeRepository.findOneByName("Software");
+        assertNotNull(parentType);
+        Type childType = typeRepository.findOneByName("Linux");
+        assertNotNull(childType);
+        if (grouping == null) {
+            grouping = new Grouping(
+                    mapper.createObjectNode()
+                            .put("name", "Grouping")
+                            .put("desc", "A description."),
+                    groupingType);
         }
+        if (parent == null) {
+            parent = new Component(mapper.createObjectNode()
+                    .put("name", "parent")
+                    .put("desc", "Parent.")
+                    .put("ver", "1")
+                    .put("shortName", "parent")
+                    .put("longName", "parent"), parentType);
+            grouping.getComponents().add(parent);
+        }
+        if (child01 == null) {
+            child01 = new Component(mapper.createObjectNode()
+                    .put("name", "child")
+                    .put("desc", "Child 01.")
+                    .put("ver", "1")
+                    .put("shortName", "child")
+                    .put("longName", "child"), childType);
+            parent.addComponent(child01);
+        }
+        if (child02 == null) {
+            child02 = new Component(mapper.createObjectNode()
+                    .put("name", "child")
+                    .put("desc", "Child 02.")
+                    .put("ver", "1")
+                    .put("shortName", "child")
+                    .put("longName", "child"), childType);
+            parent.addComponent(child02);
+        }
+        grouping.save();
     }
 
     @Test
