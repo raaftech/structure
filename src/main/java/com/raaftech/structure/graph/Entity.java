@@ -436,13 +436,12 @@ public class Entity {
                 }
             }
 
-            final String schemaUriPattern = "http://" + Configuration.getWebHost() + ":"
-                    + Configuration.getWebPort() + "/schemas/%s.schema.json";
+            final String schemaUriPattern = "/schemas/%s.schema.json";
+            final URI schemaUri = Configuration.getSchemaNamespace().resolve(String.format(schemaUriPattern, instanceOf.getName().toLowerCase()));
             final Map<String, Object> data = new HashMap(getData());
             data.put("name", getName());
             data.put("desc", getDesc());
-            final boolean validated = JsonHelper.validateToSchema(URI.create(String.format(schemaUriPattern, instanceOf.getName().toLowerCase())),
-                    mapper.valueToTree(data));
+            final boolean validated = JsonHelper.validateToSchema(schemaUri, mapper.valueToTree(data));
             if (!validated) {
                 throw new IllegalEntityType("Entity with UUID " + getUuid() + " couldn't be created. It's data"
                         + "doesn't validate against its type schema.");
