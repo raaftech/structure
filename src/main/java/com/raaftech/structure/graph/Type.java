@@ -55,6 +55,7 @@ public class Type extends Node {
     private Set<Type> childIsaSet;
 
     private int glyphId;
+    private boolean isAbstract;
 
     @RelatedTo(type="PROVIDED_BY", direction = Direction.INCOMING)
     @Fetch
@@ -484,6 +485,14 @@ public class Type extends Node {
 
     public boolean isOfType(String type) {
         return typeRepository.isOfType(getUuid(), type) > 0;
+    }
+
+    /**
+     * See {@link Entity#isAbstract}
+     * @return Whether the type is abstract or not.
+     */
+    public boolean isAbstract() {
+        return isAbstract;
     }
 
     public Type save() {

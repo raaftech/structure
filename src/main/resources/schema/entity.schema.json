@@ -75,6 +75,10 @@
         "uuid": {
           "$ref": "common.schema.json#/definitions/uuid"
         },
+        "abstract": {
+          "type": "boolean",
+          "default": false
+        },
         "relations": {
           "type": "object",
           "patternProperties": {
