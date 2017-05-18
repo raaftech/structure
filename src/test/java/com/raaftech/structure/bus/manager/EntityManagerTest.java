@@ -23,6 +23,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
 import org.springframework.transaction.annotation.Transactional;
+import schema.TypeSchemaTest;
 
 import java.util.Iterator;
 import java.util.List;
@@ -30,32 +31,9 @@ import java.util.List;
 import static io.vertx.core.json.Json.mapper;
 import static org.junit.Assert.*;
 
-//FIXME This test is now actively skipped (in pom.xml), this should not be the case.
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(loader = AnnotationConfigContextLoader.class, classes = SpringTestConfig.class)
-public class EntityManagerTest {
+public class EntityManagerTest extends TypeSchemaTest {
 
-    @Autowired private GraphDatabase graphDatabase;
     @Autowired private NodeRepository nodeRepository;
-
-    private boolean databaseCreated;
-
-    @Before
-    @Transactional
-    @SuppressWarnings("Duplicates")
-    public void setUp() throws Exception {
-        if (!databaseCreated) {
-            Context.setVertx(Vertx.vertx());
-            Transaction tx = graphDatabase.beginTx();
-            final String testBundle = "src/main/resources/bundles/";
-            BundleLoader bundleLoader = new BundleLoader(testBundle);
-            bundleLoader.load();
-
-            tx.success();
-            tx.close();
-            databaseCreated = true;
-        }
-    }
 
     @Test
     @Transactional
