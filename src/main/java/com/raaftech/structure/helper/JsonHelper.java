@@ -168,7 +168,7 @@ public class JsonHelper {
             if (Configuration.getSchemaNamespace() != null) {
                 final URI nameSpaceURI;
                 if (customNamespace == null) {
-					nameSpaceURI = Configuration.getSchemaNamespace().resolve("schemas/");
+					nameSpaceURI = Configuration.getSchemaNamespace().resolve("/schemas/");
 				} else {
 					nameSpaceURI = customNamespace;
 				}
