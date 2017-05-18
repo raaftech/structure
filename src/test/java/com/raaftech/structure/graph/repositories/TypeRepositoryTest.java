@@ -12,34 +12,18 @@ import org.springframework.data.neo4j.core.GraphDatabase;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
+import schema.TypeSchemaTest;
 
 import java.util.Set;
 
 import static org.junit.Assert.*;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(loader = AnnotationConfigContextLoader.class, classes = SpringTestConfig.class)
-public class TypeRepositoryTest {
+public class TypeRepositoryTest extends TypeSchemaTest {
 
     @Autowired
     TypeRepository typeRepository;
     @Autowired
     GraphDatabase graphDatabase;
-
-    private static boolean databaseCreated = false;
-
-    @Before
-    @SuppressWarnings("Duplicates")
-    public void setUpDatabase() throws Exception {
-        if (!databaseCreated) {
-            final String raafBundle = "src/main/resources/bundles/";
-            Transaction tx = graphDatabase.beginTx();
-            BundleLoader bundleLoader = new BundleLoader(raafBundle);
-            bundleLoader.load();
-            tx.success();
-            databaseCreated = true;
-        }
-    }
 
     @Test
     public void findByNameAndUuid() throws Exception {
