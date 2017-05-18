@@ -1,5 +1,6 @@
 package com.raaftech.structure.helper.loader;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -14,7 +15,6 @@ import com.raaftech.structure.exceptions.JsonValidationException;
 import com.raaftech.structure.graph.Node;
 import com.raaftech.structure.graph.repositories.NodeRepository;
 import com.raaftech.structure.helper.JsonHelper;
-import com.raaftech.structure.helper.LambdaHelper;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.parboiled.common.FileUtils;
 import org.slf4j.Logger;
@@ -30,7 +30,6 @@ import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 /**
  * NaiveSorter handles loading all json from bundle locations do dependency
@@ -98,7 +97,7 @@ public class NaiveSorter {
             FILE, ImmutableList.of("checksum", "path")
     );
 
-    private static ArrayNode prepareForHashing(ObjectNode input) {
+    private static String prepareForHashing(ObjectNode input) throws JsonProcessingException {
         if (!input.get("type").asText().equals("Type") || !input.get("name").asText().equals("Type")) {
             if (!JsonHelper.validateToSchema(ENTITYSCHEMA, input)) {
                 throw new JsonValidationException("Cannot calculate a checksum for type ["+ input.get("name").asText() +"]: JSON does not validate against " +
@@ -125,15 +124,12 @@ public class NaiveSorter {
         final ObjectMapper sortedMapper =
                 new ObjectMapper().configure(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS, true);
 
-        Iterable<Map.Entry<String, JsonNode>> iterable = () -> inputCopy.fields();
-        StreamSupport.stream(iterable.spliterator(), false)
-                .map(Map.Entry::getValue)
-                // use sortedMapper to reserialize the entry so its keys are sorted
-                .map(json -> LambdaHelper.wrapWithExceptionPropagation(
-                        () -> sortedMapper.readTree(json.toString())).get())
-                .forEach(result::add);
-
-        return result;
+        /*
+        Use sortedMapper to deserialize to object, then serialize back to a JSON string again.
+        This way the mapper will sort all the keys, see:
+        https://stackoverflow.com/questions/34817541/json-order-map-entries-by-keys-not-working-consistently
+         */
+        return sortedMapper.writeValueAsString(sortedMapper.treeToValue(inputCopy, Object.class));
     }
 
     /**
@@ -145,16 +141,25 @@ public class NaiveSorter {
     @SuppressWarnings("Duplicates")
     public static String calculateChecksum(ObjectNode input, ChecksumAlgorithm algorithm) {
         final String output;
-        final ArrayNode preparedJson = prepareForHashing(input);
+        final String preparedJson;
+        try {
+            preparedJson = prepareForHashing(input);
+        } catch (JsonProcessingException e) {
+            if (Configuration.isTraceModeOn()) {
+                e.printStackTrace();
+            }
+            log.error("Error while preparing JSON for hashing: " + e.getMessage());
+            return null;
+        }
 
         switch (algorithm) {
             case MD5:
-                output = DigestUtils.md5Hex(preparedJson.toString());
+                output = DigestUtils.md5Hex(preparedJson);
                 break;
             default:
                 log.warn("Invalid algorithm given to calculateChecksum, defaulting to SHA1");
             case SHA1:
-                output = DigestUtils.sha1Hex(preparedJson.toString());
+                output = DigestUtils.sha1Hex(preparedJson);
                 break;
         }
         return output;
