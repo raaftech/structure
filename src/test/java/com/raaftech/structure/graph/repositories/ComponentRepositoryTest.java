@@ -16,6 +16,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
 import org.springframework.transaction.annotation.Transactional;
+import schema.TypeSchemaTest;
 
 import java.io.IOException;
 import java.nio.file.FileSystems;
@@ -24,9 +25,7 @@ import java.util.Set;
 import static io.vertx.core.json.Json.mapper;
 import static org.junit.Assert.*;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(loader = AnnotationConfigContextLoader.class, classes = SpringTestConfig.class)
-public class ComponentRepositoryTest {
+public class ComponentRepositoryTest extends TypeSchemaTest {
 
     @Autowired
     ComponentRepository componentRepository;
@@ -34,54 +33,29 @@ public class ComponentRepositoryTest {
     TypeRepository typeRepository;
     @Autowired
     GraphDatabase graphDatabase;
-    private boolean databaseCreated;
 
     private Type parentType;
     private Type childType;
 
     @Before
     @Transactional
-    @SuppressWarnings("Duplicates")
     public void setUp() throws Exception {
-        if (!databaseCreated) {
-            Transaction tx = graphDatabase.beginTx();
-            final String testBundle = "src/test/resources/bundles/repositorytests/";
-            Configuration.setSchemaNamespace(FileSystems.getDefault().getPath(testBundle).toUri().resolve("types/"));
-            NaiveSorter naiveSorter = new NaiveSorter(testBundle);
-            naiveSorter.getUpdateList(naiveSorter.sortIt(naiveSorter.readAllJson())).stream()
-                    .map(node -> {
-                        try {
-                            return mapper.readValue(node.toString(), Entity.class);
-                        } catch (IOException e) {
-                            throw new RuntimeException("Error while creating types");
-                        }
-                    })
-                    .filter(node -> node != null)
-                    .forEach(Entity::toGraph);
-
-            parentType = typeRepository.findOneByName("Software");
-            childType = typeRepository.findOneByName("Linux");
-            Component parent = new Component(mapper.createObjectNode()
-                    .put("name", "parent")
-                    .put("desc", "Parent.")
-                    .put("checksum", "f1d2d2f924e986ac86fdf7b36c94bcdf32beec15")
-                    .put("ver", "1")
-                    .put("shortName", "parent")
-                    .put("longName", "parent"), parentType);
-            Component child = new Component(mapper.createObjectNode()
-                    .put("name", "child")
-                    .put("desc", "Child.")
-                    .put("checksum", "f1d2d2f924e986ac86fdf7b36c94bcdf32beec15")
-                    .put("ver", "1")
-                    .put("shortName", "parent")
-                    .put("longName", "parent"), childType);
-            parent.addComponent(child);
-            parent.save();
-
-            tx.success();
-            tx.close();
-            databaseCreated = true;
-        }
+        parentType = typeRepository.findOneByName("Software");
+        childType = typeRepository.findOneByName("Linux");
+        Component parent = new Component(mapper.createObjectNode()
+                .put("name", "parent")
+                .put("desc", "Parent.")
+                .put("ver", "1")
+                .put("shortName", "parent")
+                .put("longName", "parent"), parentType);
+        Component child = new Component(mapper.createObjectNode()
+                .put("name", "child")
+                .put("desc", "Child.")
+                .put("ver", "1")
+                .put("shortName", "parent")
+                .put("longName", "parent"), childType);
+        parent.addComponent(child);
+        parent.save();
     }
 
     @Test
