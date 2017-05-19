@@ -118,6 +118,16 @@ public class NaiveSorter {
                 });
 
         /*
+        A type entity might miss its "abstract" property in which case it defaults to false.
+        Because type entities that come from the graph will always have a value for "abstract"
+        we'll have to inject it in case it's missing.
+         */
+        if (inputCopy.has(META) && !inputCopy.get(META).has("abstract")) {
+            ((ObjectNode) inputCopy.get(META)).put("abstract", false);
+        }
+
+
+        /*
         A object mapper that has a special configuration to alphabetically sort keys so
         we calculate equal checksums for JSON objects even though properties are unsorted.
          */

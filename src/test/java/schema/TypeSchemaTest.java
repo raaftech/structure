@@ -1,6 +1,7 @@
 package schema;
 
 import com.raaftech.structure.base.Configuration;
+import com.raaftech.structure.base.Context;
 import com.raaftech.structure.base.SpringTestConfig;
 import com.raaftech.structure.bus.manager.SchemaManager;
 import com.raaftech.structure.helper.loader.BundleLoader;
@@ -60,6 +61,7 @@ public abstract class TypeSchemaTest {
 
             // Setup vertx and http+router
             final Vertx vertx = Vertx.vertx();
+            Context.setVertx(vertx);
             final HttpServer httpServer = vertx.createHttpServer();
             final Router router = Router.router(vertx);
             SchemaManager schemaManager = new SchemaManager();
