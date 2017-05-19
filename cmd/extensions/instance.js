@@ -140,7 +140,6 @@ module.exports = function(vorpal, options) {
                 .then(entity => {
                     validator.getSchema(entity.name)
                         .then(typeSchema => {
-                            //console.log(JSON.stringify(typeSchema, undefined, 2));
                             let getPropertyKeys = R.pipe(R.prop('properties'), R.keys);
                             let createQuestions = (schema) => {
                                 let keys = getPropertyKeys(schema);

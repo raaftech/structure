@@ -218,8 +218,6 @@ vorpal.command('specialize <uuid>', 'Specialize an instance')
         });
 
 vorpal.command('find <name>', 'Find a specified node in structure')
-    .option('-f, --field <fieldName>', 'Select a specific field from the resultset',
-        helper.getCommonFields())
     .option('-u, --uuid', 'Set search mode to uuid based search.')
     .option('-v, --verbose', 'Be verbose with the result output')
     .action(function(args, done) {
@@ -274,21 +272,7 @@ vorpal.command('find <name>', 'Find a specified node in structure')
         exec(R.path(['options', 'uuid'], args));
     });
 
-vorpal.command('dig', 'Get the child elements for a type-node')
-    .option('-n, --name <name>', 'Identify the type-node by name')
-    .option('-u, --uuid <uuid>', 'Identify the type-node by uuid')
-    .action(function(args, done) {
-        const self = this;
-        const fuzzyFind = graphLib.findTypeByFuzzyNameMatch(typeDb);
-        const kids = graphLib.getChildren(typeDb);
-        const getId = R.path(['meta','uuid']);
 
-        let children = (args.options.name ? kids(getId(fuzzyFind(args.options.name))) : kids(args.options.uuid));
-        R.forEach((item) => {
-            self.log(sprintf('%-16s: %24s', R.prop('name', item),getId(item)));
-        }, children);
-        done();
-    });
 
 vorpal.command('tree <name>', 'Show a relation tree for the requested node')
     .option('-u, --uuid', 'Make the search go by uuid instead of name')
