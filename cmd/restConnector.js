@@ -210,7 +210,15 @@ class RestConnector {
     }
 
     logout() {
-        let url = util.format('%s/StructureUsers/logout', getBaseUrl(this.host,this.port));
+        let self = this;
+        let url = util.format('%s/StructureUsers/logout?access_token=%s', getBaseUrl(this.host,this.port), this.token);
+        return fetch(url,
+            {
+                method: 'POST',
+                body: '',
+                headers: {'Content-Type': 'application/json'}
+            })
+            .then(result => result.json());
     }
 
     createUser(email, password) {

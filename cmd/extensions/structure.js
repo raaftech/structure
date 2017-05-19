@@ -34,27 +34,28 @@ module.exports = function(vorpal, opts) {
                         handler(user);
                         done();
                     })
-                    .catch(ex => {
-                        self.log(ex);
-                        done();
-                    });
+                    .catch(helper.genericCatchHandler(done));
             });
         });
 
     vorpal.command('structure logout', 'Invalidate an access token for Structure')
         .action(function(args, done) {
             const self = this;
-            self.prompt(qs, function(answers) {
+
+            let loggedIn = () => {
                 rest.logout()
                     .then(result => {
-                        self.log("Logged out");
+                        self.log(result);
+                        rest.setToken('');
+                        opts.memoryBank.token = '';
+                        opts.cache.set('structure', 'token','');
+                        opts.cache.save();
                         done();
                     })
-                    .catch(ex => {
-                        self.log(ex);
-                        done();
-                    });
-            });
+                    .catch(helper.genericCatchHandler(done));
+            };
+
+            helper.genericAuthCommandHandler(done, loggedIn, rest.getToken());
         });
 
     vorpal.command('structure bootstrap', 'Initial structure bootstrap')
@@ -67,7 +68,7 @@ module.exports = function(vorpal, opts) {
                         self.log(result);
                         done();
                     })
-                    .catch(ex => {self.log(ex); done();})
+                    .catch(helper.genericCatchHandler(done));
             };
 
             helper.genericAuthCommandHandler(done, loggedIn, rest.getToken());
@@ -93,10 +94,8 @@ module.exports = function(vorpal, opts) {
                         createUserHandler(result);
                         done();
                     })
-                    .catch(ex => {
-                        self.log(ex);
-                        done();
-                    });
+                    .catch(helper.genericCatchHandler(done));
+
                 //Function to check if the 1st and 2nd password entry are equal.
                 //if not equal prints an error message
                 //if equal calls the above createUser function.
@@ -131,7 +130,7 @@ module.exports = function(vorpal, opts) {
                     self.log(util.format('  Results: %s', result.graph.results));
                     done();
                 })
-                .catch(ex => {self.log(ex); done();})
+                .catch(helper.genericCatchHandler(done));
         });
 
     vorpal.command('structure init', 'Purge-Init structure server')
@@ -142,7 +141,7 @@ module.exports = function(vorpal, opts) {
                 rest.purgeInit()
                     .then(result => {
                         done();})
-                    .catch(ex => {self.log(ex); done();});
+                    .catch(helper.genericCatchHandler(done));
             };
 
             helper.genericAuthCommandHandler(done, loggedIn, rest.getToken());
@@ -157,7 +156,7 @@ module.exports = function(vorpal, opts) {
                     .then(result => {
                         self.log(result);
                         done();})
-                    .catch(ex => {self.log(ex); done();});
+                    .catch(helper.genericCatchHandler(done));
             };
 
             helper.genericAuthCommandHandler(done, loggedIn, rest.getToken());

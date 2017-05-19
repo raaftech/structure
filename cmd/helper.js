@@ -15,7 +15,7 @@ const Structure = require('./subgraph');
     @param token The token for the REST service
  */
 const genericAuthCommandHandler = R.curry((done, loggedInFn, token) => {
-    let loggedOut = () => { console.log('Please login first.'); done()};
+    let loggedOut = () => { console.log('Please login first.'); done();};
     let handler = R.ifElse(R.isNil,loggedOut, loggedInFn);
     handler(token);
 });
