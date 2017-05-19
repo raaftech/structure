@@ -2,26 +2,21 @@
 
 const R = require('ramda');
 const util = require('util');
-const Entity = require('./entity');
-const treeify = require('treeify');
 const uuidV4 = require('uuid');
 const graphLib = require('./graphLib');
 
 const notNil = R.compose(R.not, R.isNil);
-const getId = R.path(['meta','uuid']);
 
 class Helper {
     constructor(db) {
-        this.db = db;
-        this.types = this.db.getTypes();
-
+        this.types = db;
         this.fuzzyMatch = graphLib.findTypeByFuzzyNameMatch(this.types);
         this.typeByName = graphLib.findTypeByName(this.types);
         this.typeByUuid = graphLib.findTypeByUuid(this.types);
     }
 
-    discoTransform(data, ip, sshd, httpd) {
-        let graph = [];
+    bootstrapTransform(data, ip, sshd) {
+        let graph = {root: {}, os: {}, entities: []};
         let root = this.createRootNode();
         root.name = Helper.findFqdn(data);
         root.desc = util.format('%s [%s]', Helper.findFqdn(data), ip);
@@ -33,96 +28,47 @@ class Helper {
         let interpreter = this.interpreterData(data.shell);
         let pair = relate(interpreter);
         os = R.clone(pair[0]);
-        graph.push(R.clone(pair[1]));
+        graph.entities.push(R.clone(pair[1]));
 
         //ServiceManager
         let manager = this.mgrData(data.service_manager);
         pair = relate(manager);
         os = R.clone(pair[0]);
-        graph.push(R.clone(pair[1]));
+        graph.entities.push(R.clone(pair[1]));
 
         //Ip data
         let ipd = this.ipData(ip, true);
         pair = relate(ipd);
         os = R.clone(pair[0]);
-        graph.push(R.clone(pair[1]));
+        graph.entities.push(R.clone(pair[1]));
         R.forEach(item => {
             pair = relate(item);
             os = R.clone(pair[0]);
-            graph.push(R.clone(pair[1]));
+            graph.entities.push(R.clone(pair[1]));
         }, this.harvestIps(data,ip));
         //DNS
         let dns = this.dnsData(Helper.findFqdn(data), ip);
         pair = relate(dns);
         os = R.clone(pair[0]);
-        graph.push(R.clone(pair[1]));
+        graph.entities.push(R.clone(pair[1]));
         //Daemons (ssh only atm)
         let daemonList = this.daemonData(sshd.service);
         R.forEach(item => {
             pair = relate(item);
             os = R.clone(pair[0]);
-            graph.push(R.clone(pair[1]));
-        }, daemonList);
-
-        let tuple = graphLib.relateEntity(root, 'GROUPS', 'outgoing', os);
-        graph.push(tuple[0]);
-        graph.push(tuple[1]);
-        return graph;
-    }
-
-    bootstrapTransform(data, ip, sshd, httpd) {
-        let graph = [];
-        let root = this.createRootNode();
-        root.name = Helper.findFqdn(data);
-        root.desc = util.format('%s [%s]', Helper.findFqdn(data), ip);
-
-        //Operating System
-        let os = this.osData(data.distribution, data.distribution_version);
-        let relate = graphLib.relateEntity(os, 'HAS', 'outgoing');
-        //Interpreter
-        let interpreter = this.interpreterData(data.shell);
-        let pair = relate(interpreter);
-        os = R.clone(pair[0]);
-        graph.push(R.clone(pair[1]));
-
-        //ServiceManager
-        let manager = this.mgrData(data.service_manager);
-        pair = relate(manager);
-        os = R.clone(pair[0]);
-        graph.push(R.clone(pair[1]));
-
-        //Ip data
-        let ipd = this.ipData(ip, true);
-        pair = relate(ipd);
-        os = R.clone(pair[0]);
-        graph.push(R.clone(pair[1]));
-        R.forEach(item => {
-            pair = relate(item);
-            os = R.clone(pair[0]);
-            graph.push(R.clone(pair[1]));
-        }, this.harvestIps(data,ip));
-        //DNS
-        let dns = this.dnsData(Helper.findFqdn(data), ip);
-        pair = relate(dns);
-        os = R.clone(pair[0]);
-        graph.push(R.clone(pair[1]));
-        //Daemons (ssh only atm)
-        let daemonList = this.daemonData(sshd.service);
-        R.forEach(item => {
-            pair = relate(item);
-            os = R.clone(pair[0]);
-            graph.push(R.clone(pair[1]));
+            graph.entities.push(R.clone(pair[1]));
         }, daemonList);
         //default entities for structure bootstrap
         R.forEach(item => {
             pair = relate(item);
             os = R.clone(pair[0]);
-            graph.push(R.clone(pair[1]));
+            graph.entities.push(R.clone(pair[1]));
         }, this.defaultEntities());
 
         let tuple = graphLib.relateEntity(root, 'GROUPS', 'outgoing', os);
-        graph.push(tuple[0]);
-        graph.push(tuple[1]);
+        graph.os = tuple[1];
+        graph.root = tuple[0];
+    
         return graph;
     }
 
@@ -300,20 +246,6 @@ class Helper {
         let computer = mkInstance({name: 'Computer', desc: 'A computer'});
         computer.type = 'Grouping';
         return computer;
-    }
-
-    createNetwork(cidr, netName) {
-        let mkInstance = graphLib.createInstance(this.typeByName('Ipv4Network'));
-        let ipTest = R.test(/^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/);
-        let isIp = R.compose(ipTest, R.trim);
-        if(isIp(cidr)) cidr = cidr + '/32';
-        let network = mkInstance({
-            name: R.defaultTo('Ipv4Network', netName),
-            desc: 'An Ipv4Network',
-            cidr: cidr
-        });
-        network.type = 'Component';
-        return network;
     }
 
     static findFqdn(ansibleData) {
