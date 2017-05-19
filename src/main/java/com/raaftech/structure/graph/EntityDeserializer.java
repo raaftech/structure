@@ -201,6 +201,11 @@ public class EntityDeserializer extends StdDeserializer<Entity> {
             log.debug("Setting checksum to \"{}\"", checksum);
             entity.setChecksum(checksum);
 
+            /* If an entity has the meta key `abstract` and its a type, add it */
+            if (metaJson.has("abstract") && "Type".equals(type)) {
+                entity.setAbstract(metaJson.get("abstract").asBoolean());
+            }
+
             /* Handle the file object if existent. */
             if (entityJson.has("file")) {
                 file = new HashMap<>();

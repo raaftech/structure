@@ -84,6 +84,11 @@ public class Entity {
     private String uuid;
 
     /**
+     * "Type" entities can be made abstract. This means no instance of them can be created.
+     */
+    private boolean isAbstract;
+
+    /**
      * See {@link Type#identity}
      */
     private String[] identity;
@@ -180,6 +185,14 @@ public class Entity {
                 Optional.empty() : Optional.of(constraints);
     }
 
+    /**
+     * Returns whether this entity is abstract. This is only used on "Type" entities.
+     * @return
+     */
+    public boolean isAbstract() {
+        return isAbstract;
+    }
+
 
     /* Setters. */
     public void setBundle(String bundle) {
@@ -272,6 +285,19 @@ public class Entity {
         }
 
         constraintList.add(Pair.of(cardinality, to));
+    }
+
+    /**
+     * Sets whether an entity is abstract. Can only be used on "Type" entities.
+     * @param isAbstract True if this is an abstract entity.
+     * @throws IllegalArgumentException Thrown when called on a non "Type" entity.
+     */
+    public void setAbstract(boolean isAbstract) {
+        if ("Type".equals(type)) {
+            this.isAbstract = isAbstract;
+        } else {
+            throw new IllegalArgumentException("Only a \"Type\" entity can be made abstract.");
+        }
     }
 
 
@@ -379,6 +405,19 @@ public class Entity {
 
     public void toGraph() {
         if (!getType().equals("Type")) {
+            final Optional<Type> maybeInstanceOf = getInstanceOf();
+            if (!maybeInstanceOf.isPresent()) {
+                throw new IllegalEntityType("Entity with UUID " + getUuid() + " couldn't be created. It's an instance,"
+                        + " but its type couldn't be retrieved from the graph.");
+            }
+            final Type instanceOf = maybeInstanceOf.get();
+
+            // See if the type we try to instantiate is abstract
+            if (instanceOf.isAbstract()) {
+                throw new IllegalEntityType("Entity with UUID \"" + getUuid() + "\" tries to instantiate the abstract Type " +
+                        "\"" + instanceOf.getUuid() + "\".");
+            }
+
             // See if this instance validates against its type's constraints
             final Pair<Boolean, Set<String>> validation = validateAgainstConstraints();
             if (!validation.getLeft()) {
@@ -397,21 +436,12 @@ public class Entity {
                 }
             }
 
-            // Only other case is an instance entity, in which case we need to validate against its Type schema
-            final Optional<Type> maybeInstanceOf = getInstanceOf();
-            if (!maybeInstanceOf.isPresent()) {
-                throw new IllegalEntityType("Entity with UUID " + getUuid() + " couldn't be created. It's an instance,"
-                        + "but it's type couldn't be retrieved from the graph.");
-            }
-
-            final Type instanceOf = maybeInstanceOf.get();
-            final String schemaUriPattern = "http://" + Configuration.getWebHost() + ":"
-                    + Configuration.getWebPort() + "/schemas/%s.schema.json";
+            final String schemaUriPattern = "/schemas/%s.schema.json";
+            final URI schemaUri = Configuration.getSchemaNamespace().resolve(String.format(schemaUriPattern, instanceOf.getName().toLowerCase()));
             final Map<String, Object> data = new HashMap(getData());
             data.put("name", getName());
             data.put("desc", getDesc());
-            final boolean validated = JsonHelper.validateToSchema(URI.create(String.format(schemaUriPattern, instanceOf.getName().toLowerCase())),
-                    mapper.valueToTree(data));
+            final boolean validated = JsonHelper.validateToSchema(schemaUri, mapper.valueToTree(data));
             if (!validated) {
                 throw new IllegalEntityType("Entity with UUID " + getUuid() + " couldn't be created. It's data"
                         + "doesn't validate against its type schema.");
@@ -461,6 +491,9 @@ public class Entity {
         }
         if (identity != null) {
             properties.put("identity", identity);
+        }
+        if ("Type".equals(type)) {
+            properties.put("isAbstract", isAbstract);
         }
 
         /* we use neo4jTemplate.merge(...), which is basically getOrCreate(...). Now, if the entity

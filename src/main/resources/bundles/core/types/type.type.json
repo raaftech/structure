@@ -4,6 +4,7 @@
     "desc": "The root type.",
     "meta": {
       "uuid": "b1bc963a-19cc-4518-aecb-a35d028c49e3",
+      "abstract": true,
       "relations": {}
     },
     "file": {

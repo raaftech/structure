@@ -3,12 +3,10 @@ package com.raaftech.structure.graph.repositories;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.raaftech.structure.base.SpringTestConfig;
 import com.raaftech.structure.graph.*;
-import com.raaftech.structure.helper.loader.BundleLoader;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.neo4j.graphdb.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.neo4j.core.GraphDatabase;
 import org.springframework.data.neo4j.support.Neo4jTemplate;
@@ -17,9 +15,9 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
 import org.springframework.transaction.annotation.Transactional;
+import schema.TypeSchemaTest;
 
 import java.io.IOException;
-import java.nio.file.FileSystems;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -28,9 +26,7 @@ import java.util.stream.StreamSupport;
 import static io.vertx.core.json.Json.mapper;
 import static org.junit.Assert.*;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(loader = AnnotationConfigContextLoader.class, classes = SpringTestConfig.class)
-public class InstrumentRepositoryTest {
+public class InstrumentRepositoryTest extends TypeSchemaTest {
 
     @Autowired
     NodeRepository nodeRepository;
@@ -52,23 +48,6 @@ public class InstrumentRepositoryTest {
     private Component host1OS;
     private Grouping host2;
     private Component host2OS;
-
-    private static boolean databaseCreated = false;
-
-    @Before
-    @SuppressWarnings("Duplicates")
-    public void setUpDatabase() throws Exception {
-        if (!databaseCreated) {
-            final String testBundle = "src/main/resources/bundles/";
-            com.raaftech.structure.base.Configuration
-                    .setSchemaNamespace(FileSystems.getDefault().getPath(testBundle).toUri().resolve("legacy/types/"));
-            Transaction tx = graphDatabase.beginTx();
-            BundleLoader bundleLoader = new BundleLoader(testBundle);
-            bundleLoader.load();
-            tx.success();
-            databaseCreated = true;
-        }
-    }
 
     @Before
     @Transactional
