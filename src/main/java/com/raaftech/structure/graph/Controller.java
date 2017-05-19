@@ -150,7 +150,7 @@ public class Controller extends Instrument {
 
         public Controller build() {
             if (!json.has(NAME) || !json.has(DESC) || capability == null || !json.has(FILELOCATION)
-                    || appliesTo == null || providedBy == null || !json.has(SUBJECTLOCAL) || !json.has(TEMPLATE)) {
+                    || appliesTo == null || providedBy == null || !json.has(SUBJECTLOCAL)) {
                 log.error("Error while building Controller instrument.");
                 throw new ComponentBuilderException("Not all required parameters were set.");
             }

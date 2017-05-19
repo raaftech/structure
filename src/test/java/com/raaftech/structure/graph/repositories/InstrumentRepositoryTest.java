@@ -248,7 +248,6 @@ public class InstrumentRepositoryTest extends TypeSchemaTest {
                 .filePath("/tmp/foo")
                 .handles(appliesTo)
                 .providedBy(typeRepository.findOneByName("OpenSshClient"))
-                .template("")
                 .build();
         nonLocal.save();
         assertNotNull(instanceRepository.findByUuid(nonLocal.getUuid()));
@@ -331,7 +330,6 @@ public class InstrumentRepositoryTest extends TypeSchemaTest {
                 .filePath("/tmp/foo")
                 .handles(appliesTo)
                 .providedBy(typeRepository.findOneByName("OpenSshClient"))
-                .template("")
                 .build();
         nonLocal.save();
 
