@@ -4,25 +4,15 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableSet;
-import com.raaftech.structure.base.Context;
-import com.raaftech.structure.base.SpringTestConfig;
 import com.raaftech.structure.graph.Node;
 import com.raaftech.structure.graph.repositories.NodeRepository;
-import com.raaftech.structure.helper.loader.BundleLoader;
 import com.raaftech.structure.helper.loader.NaiveSorter;
 import com.raaftech.structure.graph.Entity;
-import io.vertx.core.Vertx;
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.neo4j.graphdb.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.neo4j.core.GraphDatabase;
 import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.AnnotationConfigContextLoader;
-import org.springframework.transaction.annotation.Transactional;
 import schema.TypeSchemaTest;
 
 import java.util.Iterator;
@@ -40,24 +30,24 @@ public class EntityManagerTest extends TypeSchemaTest {
     public void testTraversal() throws Exception {
         Transaction tx = graphDatabase.beginTx();
 
-        Node computerGrouping = nodeRepository.findByUuid("ec11db91-6973-4285-b018-b461fbb432d7");
+        Node computerGrouping = nodeRepository.findByUuid("f05e325e-1aee-4892-96e4-8bcd6e97c528");
         EntityManager entityManager = new EntityManager();
 
         List<Node> foundNodes = entityManager.labelBasedTraversal(ImmutableSet.of("type:Component"), computerGrouping, true);
-        assertEquals(5, foundNodes.size());
+        assertEquals(12, foundNodes.size());
         assertTrue(foundNodes.contains(computerGrouping));
 
         foundNodes = entityManager.labelBasedTraversal(ImmutableSet.of("type:Component"), computerGrouping, false);
-        assertEquals(4, foundNodes.size());
+        assertEquals(11, foundNodes.size());
         assertTrue(!foundNodes.contains(computerGrouping));
 
         Node ipAddress = nodeRepository.findByUuid("299001a6-1091-4c0d-87be-c512af03e179");
         foundNodes = entityManager.labelBasedTraversal(ImmutableSet.of("type:Configuration"), ipAddress, false);
-        assertEquals(1, foundNodes.size());
+        assertEquals(2, foundNodes.size());
 
         Node linuxType = nodeRepository.findByUuid("a5613527-2f64-4481-83f2-80b0cb427e28");
         foundNodes = entityManager.labelBasedTraversal(ImmutableSet.of("Type"), linuxType, false);
-        assertEquals(5, foundNodes.size());
+        assertEquals(15, foundNodes.size());
 
         tx.close();
     }
@@ -70,7 +60,7 @@ public class EntityManagerTest extends TypeSchemaTest {
         EntityManager entityManager = new EntityManager();
 
         // construct a message that creates a new entity
-        String entityUuid = "4f84bd11-e108-4d98-8f03-0c4c6855e6aa";
+        String entityUuid = "94fa591f-375b-4fff-84f7-2c6018cc7707";
         ObjectNode message = mapper.createObjectNode();
         message.put("msgh", "create");
         ObjectNode args = message.putObject("args");
@@ -138,7 +128,7 @@ public class EntityManagerTest extends TypeSchemaTest {
 
         /*
         Construct a message that asks for every type that can be found by walking from
-        the "Computer" type following outgoing relationships.
+        the "Software" type following outgoing relationships.
          */
 
         ObjectNode message = mapper.createObjectNode();
@@ -146,7 +136,7 @@ public class EntityManagerTest extends TypeSchemaTest {
         ObjectNode args = message.putObject("args");
         ArrayNode labels = args.putArray("labels");
         labels.add("Type");
-        args.put("start", "ec11db91-6973-4285-b018-b461fbb432d7");
+        args.put("start", "8db2b492-9a4a-41fe-97a5-bc625da042ea");
 
         // send the message constructed above and get the result
         JsonNode response = entityManager.read().exec(message);
@@ -161,7 +151,7 @@ public class EntityManagerTest extends TypeSchemaTest {
         ArrayNode data = (ArrayNode) result.get("data");
 
         // we should have 8 nodes contained in the array
-        assertEquals(8, data.size());
+        assertEquals(4, data.size());
 
         // all items in that array should be deserializable to an Entity
         Iterator<JsonNode> iterator = data.elements();
@@ -177,11 +167,11 @@ public class EntityManagerTest extends TypeSchemaTest {
         Transaction tx = graphDatabase.beginTx();
 
         EntityManager entityManager = new EntityManager();
-        final String computerTypeUuid = "ec11db91-6973-4285-b018-b461fbb432d7";
+        final String componentGroupTypeUuid = "ee92c308-80f4-40b2-af3a-77d26cd99517";
         final String linuxTypeUuid = "a5613527-2f64-4481-83f2-80b0cb427e28";
 
         // get two nodes, of which we are going to update only one
-        Node computerGrouping = nodeRepository.findByUuid(computerTypeUuid);
+        Node computerGrouping = nodeRepository.findByUuid(componentGroupTypeUuid);
         Node linuxType = nodeRepository.findByUuid(linuxTypeUuid);
 
         // set the name of the Linux type to something else
@@ -224,7 +214,7 @@ public class EntityManagerTest extends TypeSchemaTest {
          try an update again, this time a safe update, which means we send the old entities as well,
          and we compare the old versions to the graph version before we update.
           */
-        computerGrouping = nodeRepository.findByUuid(computerTypeUuid);
+        computerGrouping = nodeRepository.findByUuid(componentGroupTypeUuid);
         linuxType = nodeRepository.findByUuid("a5613527-2f64-4481-83f2-80b0cb427e28");
 
         // add the "original" versions of our entities to the oldEntities array
@@ -239,7 +229,7 @@ public class EntityManagerTest extends TypeSchemaTest {
         entities.add(mapper.valueToTree(linuxType));
 
         // now, edit the "Computer" entity outside of EntityManager and save it
-        computerGrouping = nodeRepository.findByUuid(computerTypeUuid);
+        computerGrouping = nodeRepository.findByUuid(componentGroupTypeUuid);
         computerGrouping.setDesc("Edited outside of EntityManager.");
         computerGrouping.setChecksum(NaiveSorter.calculateChecksum(mapper.valueToTree(computerGrouping),
                 NaiveSorter.ChecksumAlgorithm.SHA1));
