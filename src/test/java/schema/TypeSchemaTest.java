@@ -17,6 +17,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
 
 import java.net.URI;
+import java.util.Random;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(loader = AnnotationConfigContextLoader.class, classes = SpringTestConfig.class)
@@ -28,17 +29,45 @@ public abstract class TypeSchemaTest {
     private static boolean httpUp = false;
     private static boolean databaseCreated = false;
 
+    /**
+     * Generate a random number that can be used as a port. The result is guaranteed
+     * not to be a privileged port number.
+     * @return An unprivileged random port number.
+     */
+    private int generateRandomUnprivilegedPort() {
+        final int privilegedPorts = 1024;
+        final int amountOfPorts = (int) Math.pow(2, 16);
+        Random random = new Random();
+        /*
+        NextInt returns an int from 0 inclusive to arg exclusive. We want to subtract
+        the amount of privileged ports from the possible range and add it to the generated
+        number.
+        The result of this is at least 1024 (which is the last privileged number) and at most
+        2**16-1. So we'll add one to that number so we have the complete range of unprivileged
+        port numbers.
+         */
+
+        return random.nextInt(amountOfPorts - privilegedPorts) + privilegedPorts + 1 ;
+    }
+
     @Before
     public void setUpDatabase() throws Exception {
 
         // Setup the http endpoint for querying type schema's
         if (!httpUp) {
+            // Generate a random port number for the schema http namespace
+            final int httpdPort = generateRandomUnprivilegedPort();
+
+            // Setup vertx and http+router
             final Vertx vertx = Vertx.vertx();
             final HttpServer httpServer = vertx.createHttpServer();
             final Router router = Router.router(vertx);
             SchemaManager schemaManager = new SchemaManager();
             router.route("/schemas/:schema").handler(schemaManager::getSchema);
-            httpServer.requestHandler(router::accept).listen(8080);
+            httpServer.requestHandler(router::accept).listen(httpdPort);
+
+            // Set the schema namespace to the http endpoint that we exposed before
+            Configuration.setSchemaNamespace(URI.create("http://localhost:" + httpdPort));
 
             httpUp = true;
         }
@@ -46,9 +75,6 @@ public abstract class TypeSchemaTest {
         if (!databaseCreated) {
             // The location of the bundle to test
             final String testBundle = "src/main/resources/bundles/";
-            // Set the schema namespace to the http endpoint that we exposed before
-            Configuration.setSchemaNamespace(URI.create("http://localhost:8080"));
-
 
             // Load the types first
             Transaction tx = graphDatabase.beginTx();
