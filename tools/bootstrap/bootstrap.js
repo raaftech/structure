@@ -11,6 +11,7 @@ const serviceHelper = require('./serviceHelper');
 const Entity = require('./entity');
 const vClient = require('./vertxClient');
 const RestConnector = require('./restConnector');
+const graphLib = require('./graphLib');
 
 const optionDefs = [
     {name: 'cidr', alias: 'c', type: String},
@@ -61,11 +62,11 @@ const main = (db) => {
                 network = helper.createNetwork(cidr, options.net);
             } else {
                 console.log('REUSING NETWORK BASED ON: '+cidr);
-                network = Helper.json2Entity(cidrInstance, false);
+                network = cidrInstance;
                 reuseId = network.meta.uuid;
             }
 
-            let networkGroup = network.relationCreate('GROUPS', 'outgoing');
+            //let networkGroup = network.relationCreate('GROUPS', 'outgoing');
 
             nmapLib.nmapScan(cidr, args)
                 .then((nmapResults) => {
@@ -93,7 +94,8 @@ const main = (db) => {
                                                        getHttpService(nmapResults[index]));
                                 }
 
-                                networkGroup.addEntity(subGraph);
+                                //networkGroup.addEntity(subGraph);
+                                let b = graphLib.relateEntity(network,'HAS', 'outgoing', );
                                 doneCalled = true;
                                 done();
                             })

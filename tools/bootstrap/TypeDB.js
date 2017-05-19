@@ -9,6 +9,10 @@ class TypeDB {
         this.fuzzyMatcher = new FuzzyMatching(R.pluck('name',types));
     }
 
+    getTypes() {
+        return this.types;
+    }
+
     find(uuid) {
         const hit = R.pathEq(['meta','uuid'], uuid);
         return R.find(hit, this.types);
