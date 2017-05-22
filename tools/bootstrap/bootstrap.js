@@ -35,7 +35,6 @@ const main = (types) => {
 
     ansibleLib.setup('localhost')
                 .then((result) => {
-                    //result.fqdn = nmapResults[index].hostname;
                     let subGraph = helper.bootstrapTransform(result, 'localhost','ssh');
                     log(subGraph.root);
                     log(subGraph.os);
@@ -57,7 +56,7 @@ const main = (types) => {
 };
 
 if(R.isNil(options.token)) {
-    console.log('A token is required');
+    console.log('A REST api token is required');
     console.log(usage);
     process.exit(1);
 }
