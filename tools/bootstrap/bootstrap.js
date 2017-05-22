@@ -34,8 +34,6 @@ const main = (types) => {
     ansibleLib.setup('localhost')
                 .then((result) => {
                     let subGraph = helper.bootstrapTransform(result, 'localhost','ssh');
-                    log(subGraph.root);
-                    log(subGraph.os);
                     let promises = [];
 
                     R.forEach(item => {
@@ -44,7 +42,6 @@ const main = (types) => {
                     
                     Promise.all(promises)
                         .then(createdEntities => {
-                            //console.log(createdEntities);
                             return rest.createInstance({entities: [subGraph.os, subGraph.root]});
                         })
                         .then(finalResult => {
