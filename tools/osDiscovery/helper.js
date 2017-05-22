@@ -2,127 +2,55 @@
 
 const R = require('ramda');
 const util = require('util');
-const Entity = require('./entity');
-const treeify = require('treeify');
-const uuidV4 = require('uuid');
 const graphLib = require('./graphLib');
 
 const notNil = R.compose(R.not, R.isNil);
-const getId = R.path(['meta','uuid']);
 
 class Helper {
     constructor(db) {
-        this.db = db;
-        this.types = this.db.getTypes();
-
+        this.types = db;
         this.fuzzyMatch = graphLib.findTypeByFuzzyNameMatch(this.types);
         this.typeByName = graphLib.findTypeByName(this.types);
         this.typeByUuid = graphLib.findTypeByUuid(this.types);
     }
 
-    discoTransform(data, ip, sshd, httpd) {
-        let graph = [];
+    transform(ansibleData, ipEntity) {
+        let graph = {root: {}, os: {}, entities: []};
+        let ipString = R.path(['data','addr'],ipEntity);
+
         let root = this.createRootNode();
-        root.name = Helper.findFqdn(data);
-        root.desc = util.format('%s [%s]', Helper.findFqdn(data), ip);
+        root.name = Helper.findFqdn(ansibleData);
+        root.desc = util.format('%s [%s]', Helper.findFqdn(ansibleData), ipString);
 
         //Operating System
-        let os = this.osData(data.distribution, data.distribution_version);
+        let os = this.osData(ansibleData.distribution, ansibleData.distribution_version);
         let relate = graphLib.relateEntity(os, 'HAS', 'outgoing');
         //Interpreter
-        let interpreter = this.interpreterData(data.shell);
+        let interpreter = this.interpreterData(ansibleData.shell);
         let pair = relate(interpreter);
         os = R.clone(pair[0]);
-        graph.push(R.clone(pair[1]));
+        graph.entities.push(R.clone(pair[1]));
 
         //ServiceManager
-        let manager = this.mgrData(data.service_manager);
+        let manager = this.mgrData(ansibleData.service_manager);
         pair = relate(manager);
         os = R.clone(pair[0]);
-        graph.push(R.clone(pair[1]));
+        graph.entities.push(R.clone(pair[1]));
 
         //Ip data
-        let ipd = this.ipData(ip, true);
-        pair = relate(ipd);
+        pair = relate(ipEntity);
         os = R.clone(pair[0]);
-        graph.push(R.clone(pair[1]));
+        graph.entities.push(R.clone(pair[1]));
         R.forEach(item => {
             pair = relate(item);
             os = R.clone(pair[0]);
-            graph.push(R.clone(pair[1]));
-        }, this.harvestIps(data,ip));
-        //DNS
-        let dns = this.dnsData(Helper.findFqdn(data), ip);
-        pair = relate(dns);
-        os = R.clone(pair[0]);
-        graph.push(R.clone(pair[1]));
-        //Daemons (ssh only atm)
-        let daemonList = this.daemonData(sshd.service);
-        R.forEach(item => {
-            pair = relate(item);
-            os = R.clone(pair[0]);
-            graph.push(R.clone(pair[1]));
-        }, daemonList);
+            graph.entities.push(R.clone(pair[1]));
+        }, this.harvestIps(ansibleData,ipString));
 
         let tuple = graphLib.relateEntity(root, 'GROUPS', 'outgoing', os);
-        graph.push(tuple[0]);
-        graph.push(tuple[1]);
-        return graph;
-    }
+        graph.os = tuple[1];
+        graph.root = tuple[0];
 
-    bootstrapTransform(data, ip, sshd, httpd) {
-        let graph = [];
-        let root = this.createRootNode();
-        root.name = Helper.findFqdn(data);
-        root.desc = util.format('%s [%s]', Helper.findFqdn(data), ip);
-
-        //Operating System
-        let os = this.osData(data.distribution, data.distribution_version);
-        let relate = graphLib.relateEntity(os, 'HAS', 'outgoing');
-        //Interpreter
-        let interpreter = this.interpreterData(data.shell);
-        let pair = relate(interpreter);
-        os = R.clone(pair[0]);
-        graph.push(R.clone(pair[1]));
-
-        //ServiceManager
-        let manager = this.mgrData(data.service_manager);
-        pair = relate(manager);
-        os = R.clone(pair[0]);
-        graph.push(R.clone(pair[1]));
-
-        //Ip data
-        let ipd = this.ipData(ip, true);
-        pair = relate(ipd);
-        os = R.clone(pair[0]);
-        graph.push(R.clone(pair[1]));
-        R.forEach(item => {
-            pair = relate(item);
-            os = R.clone(pair[0]);
-            graph.push(R.clone(pair[1]));
-        }, this.harvestIps(data,ip));
-        //DNS
-        let dns = this.dnsData(Helper.findFqdn(data), ip);
-        pair = relate(dns);
-        os = R.clone(pair[0]);
-        graph.push(R.clone(pair[1]));
-        //Daemons (ssh only atm)
-        let daemonList = this.daemonData(sshd.service);
-        R.forEach(item => {
-            pair = relate(item);
-            os = R.clone(pair[0]);
-            graph.push(R.clone(pair[1]));
-        }, daemonList);
-        //default entities for structure bootstrap
-        R.forEach(item => {
-            pair = relate(item);
-            os = R.clone(pair[0]);
-            graph.push(R.clone(pair[1]));
-        }, this.defaultEntities());
-
-        let tuple = graphLib.relateEntity(root, 'GROUPS', 'outgoing', os);
-        graph.push(tuple[0]);
-        graph.push(tuple[1]);
         return graph;
     }
 
@@ -135,7 +63,7 @@ class Helper {
         let result = mkInstance({
                     name: c.name,
                     desc: c.desc,
-                    ver: version,
+                    ver: R.defaultTo('x', version),
                     shortName: c.name,
                     longName: c.name
                 });
@@ -233,18 +161,6 @@ class Helper {
         return list;
     }
 
-    //DnsName
-    dnsData(dns, ip) {
-        let mkInstance = graphLib.createInstance(this.typeByName('DnsName'));
-        let dnsd = mkInstance({
-            name: 'DnsName',
-            desc: 'Either a short name or a fully-qualified domain name.',
-            dnsname: R.defaultTo(ip, dns)
-        });
-        dnsd.type = 'Component';
-        return dnsd;
-    }
-
     //Ipv4Address
     ipData(ip, reachable) {
         let mkInstance = graphLib.createInstance(this.typeByName('Ipv4Address'));
@@ -271,49 +187,12 @@ class Helper {
         return result;
     }
 
-    //Default assumed entities
-    defaultEntities() {
-        const mkData = (name,desc,ver,short, long) => {
-            return R.zipObj(['name','desc','ver','shortName','longName'],
-                            [name,desc,ver,short,long]);
-        };
-
-        const genInstance = (name) => {
-            let t = this.typeByName(name);
-            let i = graphLib.createInstance(t, mkData(t.name, t.desc, 'x', t.name,t.name));
-            i.type = 'Component';
-            return i;
-        };
-
-        return [
-            genInstance('Iputils'),
-            genInstance('OpenSshClient'),
-            genInstance('Winexe'),
-            genInstance('SambaClient'),
-            genInstance('Structure')
-        ];
-    }
-
     createRootNode() {
         let mkInstance = graphLib.createInstance(graphLib.findTypeByName(this.types, 'ComponentGroup'));
 
         let computer = mkInstance({name: 'Computer', desc: 'A computer'});
         computer.type = 'Grouping';
         return computer;
-    }
-
-    createNetwork(cidr, netName) {
-        let mkInstance = graphLib.createInstance(this.typeByName('Ipv4Network'));
-        let ipTest = R.test(/^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/);
-        let isIp = R.compose(ipTest, R.trim);
-        if(isIp(cidr)) cidr = cidr + '/32';
-        let network = mkInstance({
-            name: R.defaultTo('Ipv4Network', netName),
-            desc: 'An Ipv4Network',
-            cidr: cidr
-        });
-        network.type = 'Component';
-        return network;
     }
 
     static findFqdn(ansibleData) {

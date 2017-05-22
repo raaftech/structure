@@ -81,7 +81,7 @@ class Helper {
         let result = mkInstance({
                     name: c.name,
                     desc: c.desc,
-                    ver: version,
+                    ver: R.defaultTo('x', version),
                     shortName: c.name,
                     longName: c.name
                 });
