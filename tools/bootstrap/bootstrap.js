@@ -61,4 +61,5 @@ if(R.isNil(options.token)) {
     process.exit(1);
 }
 
-rest.getAllTypes().then(types => main(types));
+rest.getAllTypes().then(types => main(types))
+    .catch(ex => console.log('Failed to fetch all types from structure. (is your token valid?)'));
