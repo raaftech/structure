@@ -23,6 +23,7 @@ class Helper {
         //Operating System
         let os = this.osData(data.distribution, data.distribution_version);
         let relate = graphLib.relateEntity(os, 'HAS', 'outgoing');
+        
         //Interpreter
         let interpreter = this.interpreterData(data.shell);
         let pair = relate(interpreter);
@@ -245,6 +246,29 @@ class Helper {
         let computer = mkInstance({name: 'Computer', desc: 'A computer'});
         computer.type = 'Grouping';
         return computer;
+    }
+
+    static findFqdn(ansibleData) {
+        let fqdn = R.prop('fqdn', ansibleData);
+        let hostname = R.prop('hostname', ansibleData);
+        let nodename = R.prop('nodename', ansibleData);
+
+        let emptyOrNil = (x) => R.or(R.isNil(x), R.isEmpty(x));
+        let isAvailable = R.compose(R.not, emptyOrNil);
+
+        //TODO find a better way to solve this
+        if(fqdn === 'localhost') {
+            return nodename;
+        }
+
+        let fn = R.cond([
+            [x => isAvailable(fqdn), x => R.identity(fqdn)],
+            [x => isAvailable(hostname), x => R.identity(hostname)],
+            [x => isAvailable(nodename), x => R.identity(nodename)],
+            [R.T, R.always('unknown')]
+        ]);
+
+        return fn();
     }
 }
 

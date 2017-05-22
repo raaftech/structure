@@ -37,13 +37,15 @@ const main = (types) => {
                     log(subGraph.root);
                     log(subGraph.os);
                     let promises = [];
-                    rest.createInstance({entities: [subGraph.os, subGraph.root]})
-                        .then(result => {
-                            console.log(result);
-                            R.forEach(item => {
-                                promises.push(rest.createInstance({entities: [item]}));
-                            }, subGraph.entities);
-                            return Promise.all(promises);
+
+                    R.forEach(item => {
+                        promises.push(rest.createInstance({entities: [item]}));
+                    }, subGraph.entities);
+                    
+                    Promise.all(promises)
+                        .then(createdEntities => {
+                            console.log(createdEntities);
+                            return rest.createInstance({entities: [subGraph.os, subGraph.root]});
                         })
                         .then(finalResult => {
                             console.log(finalResult);
