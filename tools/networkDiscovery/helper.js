@@ -13,13 +13,24 @@ class Helper {
 
     transform(network, nmapData) {
         const self = this;
-        const relate = graphLib.relateEntity(network,'HAS', 'outgoing');
+        const relateToNetwork = graphLib.relateEntity(network,'HAS', 'outgoing');
         const mkIp = (ip) => self.createIpAddress(ip, true);
-        let fn = R.compose(R.nth(1), relate, mkIp, R.prop('ip'));
+        const mkDns = (dns) => self.createDnsname(dns);
+        let fetchCreateIp = R.compose(R.nth(1), relateToNetwork, mkIp, R.prop('ip'));
 
-        let graph = R.map(fn, nmapData);
+        let graph = [];
+
+        R.forEach(nmapItem => {
+            let ipEntity = fetchCreateIp(nmapItem);
+            let dnsName = R.prop('hostname', nmapItem);
+            if(R.isNil(dnsName)) dnsName = 'unknown';
+            let dnsEntity = mkDns(dnsName);
+            ipEntity = R.head(graphLib.relateEntity(ipEntity, 'HAS', 'outgoing', dnsEntity));
+            graph.push(dnsEntity);
+            graph.push(ipEntity);
+        }, nmapData);
+
         graph.push(network);
-
         return graph;
     }
 
@@ -45,6 +56,19 @@ class Helper {
         ipd.name = ip;
         ipd.type = 'Component';
         return ipd;
+    }
+
+    //DnsName
+    createDnsname(dnsname) {
+        let mkInstance = graphLib.createInstance(this.typeByName('DnsName'));
+        let dns = mkInstance({
+            name: dnsname,
+            desc: 'The DnsName linked to an ip address',
+            dnsname: dnsname
+        });
+        dns.name = dnsname;
+        dns.type = 'Component';
+        return dns;
     }
 
     //Ipv4Network
