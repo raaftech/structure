@@ -2,7 +2,6 @@
 
 const R = require('ramda');
 const util = require('util');
-const uuidV4 = require('uuid');
 const graphLib = require('./graphLib');
 
 const notNil = R.compose(R.not, R.isNil);

@@ -6,9 +6,7 @@ const getUsage = require('command-line-usage');
 const ansibleLib = require('./ansibleLib');
 const Helper = require('./helper');
 const serviceHelper = require('./serviceHelper');
-const Entity = require('./entity');
 const RestConnector = require('./restConnector');
-const graphLib = require('./graphLib');
 
 const optionDefs = [{name: 'token', alias: 't', type: String}];
 const options = cmd(optionDefs);
@@ -39,7 +37,7 @@ const main = (types) => {
                     log(subGraph.root);
                     log(subGraph.os);
                     let promises = [];
-                    rest.createInstance({entities: [subGraph.root, subGraph.os]})
+                    rest.createInstance({entities: [subGraph.os, subGraph.root]})
                         .then(result => {
                             console.log(result);
                             R.forEach(item => {
@@ -50,7 +48,7 @@ const main = (types) => {
                         .then(finalResult => {
                             console.log(finalResult);
                             process.exit(0);
-                        })
+                        });
                 })
                 .catch(ex => console.log(ex));
 };
@@ -62,4 +60,4 @@ if(R.isNil(options.token)) {
 }
 
 rest.getAllTypes().then(types => main(types))
-    .catch(ex => console.log('Failed to fetch all types from structure. (is your token valid?)'));
+    .catch(ex => console.log('Failed to fetch all types from structure. (is your token valid?): %s', ex));

@@ -21,5 +21,7 @@ rest/credentials.sqlite
 rest/node_modules
 src/main/resources/webroot/js/vendors
 structure.iml
-tools/discovery/node_modules
+tools/bootstrap/node_modules
+tools/networkDiscovery/node_modules
+tools/osDiscovery/node_modules
 web/js/vendors
