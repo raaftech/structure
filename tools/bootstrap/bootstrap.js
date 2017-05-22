@@ -44,7 +44,7 @@ const main = (types) => {
                     
                     Promise.all(promises)
                         .then(createdEntities => {
-                            console.log(createdEntities);
+                            //console.log(createdEntities);
                             return rest.createInstance({entities: [subGraph.os, subGraph.root]});
                         })
                         .then(finalResult => {
