@@ -267,6 +267,7 @@ module.exports = function(vorpal, options) {
             let loggedIn = () => {
                 rest.getCapabilities(args.uuid)
                     .then(capabilities => {
+                    console.log(capabilities);
                         if(R.pipe(R.keys,R.length,R.equals(0))(capabilities)) {
                             self.log('No capabilities found for this instance.');
                             done();

@@ -35,6 +35,7 @@
     "instrumentType": "controller",
     "timeAllocated": 60000,
     "subjectIsLocal": false,
+    "weight": 10,
     "arguments": {
       "ipnetwork": {
         "value": {
