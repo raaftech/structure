@@ -430,7 +430,6 @@ public class Entity {
                 final String label = maybeLabelAndIdentityProperties.get().getLeft();
                 final Set<String> identityProperties = maybeLabelAndIdentityProperties.get().getRight();
                 Set<String> duplicates = findDuplicates(label, identityProperties);
-                // If we have duplicates...
                 if (duplicates.size() > 0) {
                     IllegalEntityType e = new IllegalEntityType("Entity with UUID " + getUuid() + " couldn't be created. It is a duplicate " +
                             "of " + duplicates + " based on the properties " + identityProperties + ", the data was " + data.asMap());
@@ -440,7 +439,7 @@ public class Entity {
                         if (!duplicates.toArray()[0].equals(getUuid())) {
                             throw e;
                         }
-                    // Duplicates > 2, so at least one won't be the same as this
+                        // Duplicates > 2, so at least one won't be the same as this
                     } else {
                         throw e;
                     }
@@ -519,13 +518,12 @@ public class Entity {
     }
 
     private static List<String> getClassLabels(String type) {
-        String input = "type.component.software.operatingsystem.unixlike.linux.redhat";
         // A map containing the labels needed per type
         Map<String, List<String>> labelsPerType = ImmutableMap.<String, List<String>>builder()
                 .put("Controller", ImmutableList.of("_Controller", "Controller", "Instrument", "Instance", "Node"))
                 .put("Marker", ImmutableList.of("_Marker", "Marker", "Instrument", "Instance", "Node"))
                 .put("Parser", ImmutableList.of("_Parser", "Parser", "Instrument", "Instance", "Node"))
-                .put("type.component", ImmutableList.of("_Component", "Component", "Instance", "Node"))
+                .put("Component", ImmutableList.of("_Component", "Component", "Instance", "Node"))
                 .put("Profile", ImmutableList.of("_Profile", "Profile", "Instance", "Node"))
                 .put("Actor", ImmutableList.of("_Actor", "Actor", "Instance", "Node"))
                 .put("Result", ImmutableList.of("_Result", "Result", "Instance", "Node"))
