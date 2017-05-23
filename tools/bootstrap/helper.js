@@ -14,6 +14,16 @@ class Helper {
         this.typeByUuid = graphLib.findTypeByUuid(this.types);
     }
 
+    getTypeMap(graph) {
+        const getId = R.path(['meta','uuid']);
+        const getName = R.path(['data','name']);
+        let map = {};
+        R.forEach(item => {
+            map[getId(item)] = getName(item);
+        },graph);
+        return map;
+    }
+
     bootstrapTransform(data, ip, sshd) {
         let graph = {root: {}, os: {}, entities: []};
         let root = this.createRootNode();

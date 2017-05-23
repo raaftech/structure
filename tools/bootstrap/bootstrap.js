@@ -35,7 +35,11 @@ const main = (types) => {
                 .then((result) => {
                     let subGraph = helper.bootstrapTransform(result, 'localhost','ssh');
                     let promises = [];
-
+                    //TODO remove this debug code
+//                    log(subGraph.os);
+//                    console.log(helper.getTypeMap(subGraph.entities));
+//                    console.log(helper.getTypeMap([subGraph.os]));
+//                    console.log(helper.getTypeMap([subGraph.root]));
                     R.forEach(item => {
                         promises.push(rest.createInstance({entities: [item]}));
                     }, subGraph.entities);
