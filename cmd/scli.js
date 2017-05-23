@@ -145,10 +145,14 @@ vorpal.command('relate <fromInstanceUuid> <toInstanceUuid>', 'Create a new relat
                     })
                     .then(uuid => rest.getConstraints(uuid))
                     .then(constraints => {
-                        currentConstraints = constraints;
-                        let rels = listRelations(constraints.outgoing);
-                        let q = helper.generateQuestion('relation', 'list', 'Select relation: ', {choices: rels});
-                        return prompt(self, q);
+                        if(constraints.outgoing.length === 0) {
+                            throw new Error('no possible constraints found, no relate possible');
+                        } else {
+                            currentConstraints = constraints;
+                            let rels = listRelations(constraints.outgoing);
+                            let q = helper.generateQuestion('relation', 'list', 'Select relation: ', {choices: rels});
+                            return prompt(self, q);
+                        }
                     })
                     .then(answer => {
                         requestedRelation = answer.relation;
@@ -156,9 +160,6 @@ vorpal.command('relate <fromInstanceUuid> <toInstanceUuid>', 'Create a new relat
                     })
                     .then(uuids => {
                         return R.map(findType, uuids);
-                        // let promises = [];
-                        // R.forEach(uuid => promises.push(rest.getEntityByUuid(uuid)), uuids);
-                        // return Promise.all(promises);
                     })
                     .then(result => {
                         self.log('Allowed types: %s',R.map(R.prop('name'), result));
