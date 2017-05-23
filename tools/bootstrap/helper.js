@@ -24,7 +24,7 @@ class Helper {
         return map;
     }
 
-    bootstrapTransform(data, ip, sshd) {
+    bootstrapTransform(data, ip, sshd, hostname) {
         let graph = {root: {}, os: {}, entities: []};
         let root = this.createRootNode();
         root.name = Helper.findFqdn(data);
@@ -57,7 +57,7 @@ class Helper {
             graph.entities.push(R.clone(pair[1]));
         }, this.harvestIps(data,ip));
         //DNS
-        let dns = this.dnsData(Helper.findFqdn(data), ip);
+        let dns = this.dnsData(hostname, ip);
         pair = relate(dns);
         os = R.clone(pair[0]);
         graph.entities.push(R.clone(pair[1]));

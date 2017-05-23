@@ -8,7 +8,10 @@ const Helper = require('./helper');
 const serviceHelper = require('./serviceHelper');
 const RestConnector = require('./restConnector');
 
-const optionDefs = [{name: 'token', alias: 't', type: String}];
+const optionDefs = [
+        {name: 'token', alias: 't', type: String},
+        {name: 'hostname', alias: 'h', type: String}
+    ];
 const options = cmd(optionDefs);
 
 const sections = [
@@ -18,7 +21,10 @@ const sections = [
     },
     {
         header: 'Options',
-        optionList: [{name: 'token', alias: 't', typeLabel: '[underline]{token}', description: 'REST api token'}]
+        optionList: [
+                {name: 'token', alias: 't', typeLabel: '[underline]{token}', description: 'REST api token'},
+                {name: 'hostname', alias: 'h', typeLabel: '[underline]{hostname}', description: 'The hostname of the structure machine'}
+            ]
     }
 ];
 const usage = getUsage(sections);
@@ -33,7 +39,8 @@ const main = (types) => {
 
     ansibleLib.setup('localhost')
                 .then((result) => {
-                    let subGraph = helper.bootstrapTransform(result, 'localhost','ssh');
+                    log(result);
+                    let subGraph = helper.bootstrapTransform(result, '127.0.0.1','ssh', options.hostname);
                     let promises = [];
                     //TODO remove this debug code
 //                    log(subGraph.os);
@@ -58,6 +65,12 @@ const main = (types) => {
 
 if(R.isNil(options.token)) {
     console.log('A REST api token is required');
+    console.log(usage);
+    process.exit(1);
+}
+
+if(R.isNil(options.hostname)) {
+    console.log('A hostname is required');
     console.log(usage);
     process.exit(1);
 }
