@@ -3,12 +3,11 @@
 const R = require('ramda');
 const path = require('path');
 const helper = require(path.join(__dirname, '..','libraries','helper'));
-const Structure = require(path.join(__dirname, '..','libraries','subgraph'));
+const graphLib = require(path.join(__dirname, '..', 'libraries', 'graphLib'));
 
 const evBus = require('../../server/server').eventBus;
 
 const baseAddress = helper.getEventBusAddress('com.raaftech.structure.bus');
-const instanceAddress = baseAddress(['repository', 'instances']);
 const entityAddress = baseAddress(['manager', 'entitymanager']);
 const typesAddress = baseAddress(['repository', 'types']);
 
@@ -41,23 +40,17 @@ module.exports = function(Group) {
     });
 
     Group.createGroup = function(groupName, description, callback) {
-        evBus.sendEvent(typesAddress, 'findOneByName', {name: 'Grouping'})
+        evBus.sendEvent(typesAddress, 'findOneByName', {name: 'ComponentGroup'})
             .then((result) => {
                 return evBus.sendEvent(entityAddress, 'read',
                     {labels: ['Type'], start: getResultData(result).uuid, includeStart: true});
             })
             .then((entities) => {
                 let entity = R.head(getResultData(entities));
-                let baseType = helper.json2Entity(false, entity);
-                entity = R.pipe(
-                    R.assoc('type', 'Grouping'),
-                    R.assoc('name', groupName),
-                    R.assoc('desc', description),
-                    R.dissocPath(['meta','checksum']),
-                    R.dissocPath(['meta','relations'])) (entity);
-
-                let instance = helper.createInstance(baseType, helper.json2Entity(true, entity));
-                return new Structure.SubGraph(instance).toList();
+                let instance = graphLib.createInstance(entity, {name: groupName, desc: description});
+                instance.type = 'Grouping';
+                instance.name = groupName;
+                return [instance];
             })
             .then(entityList => evBus.sendEvent(entityAddress, 'create', {entities: entityList}))
             .then((result) => callback(null, resultFetcher(result)))
