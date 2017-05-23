@@ -431,8 +431,18 @@ public class Entity {
                 final Set<String> identityProperties = maybeLabelAndIdentityProperties.get().getRight();
                 Set<String> duplicates = findDuplicates(label, identityProperties);
                 if (duplicates.size() > 0) {
-                    throw new IllegalEntityType("Entity with UUID " + getUuid() + " couldn't be created. It is a duplicate " +
+                    IllegalEntityType e = new IllegalEntityType("Entity with UUID " + getUuid() + " couldn't be created. It is a duplicate " +
                             "of " + duplicates + " based on the properties " + identityProperties + ", the data was " + data.asMap());
+                    // The "duplicate" might be the same as this (in case of an update)
+                    if (duplicates.size() == 1) {
+                        // Make sure it isn't before throwing an exception
+                        if (!duplicates.toArray()[0].equals(getUuid())) {
+                            throw e;
+                        }
+                        // Duplicates > 2, so at least one won't be the same as this
+                    } else {
+                        throw e;
+                    }
                 }
             }
 
