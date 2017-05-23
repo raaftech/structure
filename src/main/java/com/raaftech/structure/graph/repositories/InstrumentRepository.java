@@ -31,7 +31,7 @@ public interface InstrumentRepository extends GenericRepository<Instrument> {
             "protocol" +
             "<-[:IMPLEMENTS]-()<-[:ISA*0..]-(server)<-[:INSTANCE_OF]-(:Instance)<-[*..]-(subject{uuid:{subjectUuid}})," +
             "(client)-[:ISA*0..]->({name:\"Client\"})," +
-            "(server)-[:ISA*0..]->({name:\"Server\"})," +
+            "(server)-[:ISA*0..]->({name:\"Service\"})," +
             "(client)-[:ISA*0..]->()<-[:PROVIDED_BY]-(instrument)-[:GIVES_CAPABILITY]->({name:\"SendString\"})" +
             "RETURN DISTINCT instrument")
     Set<Controller> getCompatibleSendString(@Param("structureUuid") String structure, @Param("subjectUuid") String subject);
@@ -41,7 +41,7 @@ public interface InstrumentRepository extends GenericRepository<Instrument> {
             "protocol" +
             "<-[:IMPLEMENTS]-(:Type)<-[:ISA*0..]-(server:Type)<-[:INSTANCE_OF]-(:Instance)<-[*..]-(subject:Grouping {uuid:{subjectUuid}})," +
             "(client)-[:ISA*0..]->({name:\"Client\"})," +
-            "(server)-[:ISA*0..]->({name:\"Server\"})," +
+            "(server)-[:ISA*0..]->({name:\"Service\"})," +
             "(client)-[:ISA*0..]->()<-[:PROVIDED_BY]-(instrument)-[:GIVES_CAPABILITY]->({name:\"SendFile\"})" +
             "RETURN DISTINCT instrument")
     Set<Controller> getCompatibleSendFile(@Param("structureUuid") String structure, @Param("subjectUuid") String subject);

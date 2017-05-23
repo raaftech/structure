@@ -1,19 +1,14 @@
 package com.raaftech.structure.graph.repositories;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.raaftech.structure.base.SpringTestConfig;
 import com.raaftech.structure.graph.*;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.neo4j.core.GraphDatabase;
 import org.springframework.data.neo4j.support.Neo4jTemplate;
 import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.AnnotationConfigContextLoader;
 import org.springframework.transaction.annotation.Transactional;
 import schema.TypeSchemaTest;
 
@@ -253,7 +248,6 @@ public class InstrumentRepositoryTest extends TypeSchemaTest {
                 .filePath("/tmp/foo")
                 .handles(appliesTo)
                 .providedBy(typeRepository.findOneByName("OpenSshClient"))
-                .template("")
                 .build();
         nonLocal.save();
         assertNotNull(instanceRepository.findByUuid(nonLocal.getUuid()));
@@ -336,7 +330,6 @@ public class InstrumentRepositoryTest extends TypeSchemaTest {
                 .filePath("/tmp/foo")
                 .handles(appliesTo)
                 .providedBy(typeRepository.findOneByName("OpenSshClient"))
-                .template("")
                 .build();
         nonLocal.save();
 
