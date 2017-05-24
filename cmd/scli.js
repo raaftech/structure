@@ -337,9 +337,8 @@ vorpal.command('discover <cidr>', 'Discover items in the network')
                     let g = mkGroup({name: 'group-'+args.cidr, desc: 'ipv4network root group'});
                     g.type = 'Grouping';
                     let pair = graphLib.relateEntity(g, 'GROUPS', 'outgoing', i);
-                    console.log(JSON.stringify(pair,undefined, 2));
                     return rest.createInstance({entities: R.reverse(pair)})
-                        .then(ins => {console.log(ins); return rest.getInstanceByUuid(pair[1].meta.uuid)})
+                        .then(ins => return rest.getInstanceByUuid(pair[1].meta.uuid))
                         .catch(ex => console.log(ex));
                 } else {
                     self.log('reusing existing network');
@@ -347,7 +346,6 @@ vorpal.command('discover <cidr>', 'Discover items in the network')
                 }
             })
             .then(network => {
-                self.log(network);
                 return rest.runInstrument(network.meta.uuid, 'IpNetworkDiscover', {token: rest.getToken()});
             })
             .then(result => {
