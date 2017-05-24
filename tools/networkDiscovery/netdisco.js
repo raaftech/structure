@@ -103,9 +103,7 @@ const main = (db) => {
                     return Promise.all(promises);
                 })
                 .then(result => {
-                    //console.log(result);
                     let output = resolvePersistErrors(network, result);
-                    log(output);
                     if(R.length(output.errors) !== 0) {
                         console.log('There are failed creations: ');
                         console.log(output.errors);
@@ -118,7 +116,7 @@ const main = (db) => {
                     } else {
                         rest.updateInstance({entities: [network]})
                             .then(createdNetwork => console.log(createdNetwork))
-                            .catch(ex => console.log(createdNetwork));
+                            .catch(ex => console.log(ex));
                     }
                 });
         })
