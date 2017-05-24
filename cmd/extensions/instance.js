@@ -287,4 +287,16 @@ module.exports = function(vorpal, options) {
 
             helper.genericAuthCommandHandler(done, loggedIn, rest.getToken());
         });
+
+    vorpal.command('results <uuid>', 'Fetch results for an instance')
+        .action(function(args, done) {
+            const self = this;
+
+            rest.getResults(args.uuid)
+                .then(results => {
+                    console.log(results);
+                    done();
+                })
+                .catch(helper.genericCatchHandler(done));
+        });
 };

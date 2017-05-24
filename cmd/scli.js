@@ -338,7 +338,7 @@ vorpal.command('discover <cidr>', 'Discover items in the network')
                     g.type = 'Grouping';
                     let pair = graphLib.relateEntity(g, 'GROUPS', 'outgoing', i);
                     return rest.createInstance({entities: R.reverse(pair)})
-                        .then(ins => return rest.getInstanceByUuid(pair[1].meta.uuid))
+                        .then(ins => rest.getInstanceByUuid(pair[1].meta.uuid))
                         .catch(ex => console.log(ex));
                 } else {
                     self.log('reusing existing network');

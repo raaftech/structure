@@ -117,6 +117,11 @@ class RestConnector {
                     .then(result => result.json());
     }
 
+    getResults(instanceUuid) {
+        let url = util.format('%s/Instances/results/%s', getBaseUrl(this.host,this.port),instanceUuid);
+        return fetch(url).then(result => result.json());
+    }
+
     createGroup(groupName, description) {
         let url = util.format('%s/Groups?access_token=%s', getBaseUrl(this.host,this.port), this.token);
         return fetch(url,

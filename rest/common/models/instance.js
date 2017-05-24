@@ -243,4 +243,18 @@ module.exports = function (Instance) {
         http: {verb: 'post', path: '/predicate'},
         description: 'Fetch an instance by predicate'
     });
+
+    Instance.getResults = function(instanceUuid, callback) {
+        const nodeAddress = baseAddress(['node',instanceUuid]);
+        evBus.sendEvent(nodeAddress, 'getResults', {})
+            .then(result => callback(null, resultFetcher(result)))
+            .catch(ex => callback(ex));
+    };
+
+    Instance.remoteMethod('getResults',{
+        accepts: [{arg: 'instanceUuid', type: 'string', required: true}],
+        returns: {root: true, type: 'object'},
+        http: {verb: 'get', path: '/results/:instanceUuid'},
+        description: 'Fetch result list for an instance'
+    });
 };
