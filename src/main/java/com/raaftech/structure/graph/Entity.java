@@ -14,6 +14,7 @@ import com.raaftech.structure.graph.repositories.NodeRepository;
 import com.raaftech.structure.graph.repositories.TypeRepository;
 import com.raaftech.structure.helper.JsonHelper;
 import com.raaftech.structure.helper.Triple;
+import io.vertx.core.json.JsonObject;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.neo4j.graphdb.Direction;
@@ -403,25 +404,37 @@ public class Entity {
         return StreamSupport.stream(results.spliterator(), false).collect(Collectors.toSet());
     }
 
+    private String createErrorMessage(int code, String instanceUuid, String conflictUuid, String message) {
+        final JsonObject msg = new JsonObject()
+                .put("code", code)
+                .put("uuid", instanceUuid)
+                .put("conflict", conflictUuid)
+                .put("message", message);
+        return msg.toString();
+    }
+
     public void toGraph() {
         if (!getType().equals("Type")) {
             final Optional<Type> maybeInstanceOf = getInstanceOf();
             if (!maybeInstanceOf.isPresent()) {
-                throw new IllegalEntityType("Entity with UUID " + getUuid() + " couldn't be created. It's an instance,"
-                        + " but its type couldn't be retrieved from the graph.");
+                throw new IllegalEntityType(createErrorMessage(404, getUuid(), "", "instance-of type of this instance was not found"));
+                //throw new IllegalEntityType("Entity with UUID " + getUuid() + " couldn't be created. It's an instance,"
+                //        + " but its type couldn't be retrieved from the graph.");
             }
             final Type instanceOf = maybeInstanceOf.get();
 
             // See if the type we try to instantiate is abstract
             if (instanceOf.isAbstract()) {
-                throw new IllegalEntityType("Entity with UUID \"" + getUuid() + "\" tries to instantiate the abstract Type " +
-                        "\"" + instanceOf.getUuid() + "\".");
+                throw new IllegalEntityType(createErrorMessage(422, getUuid(), instanceOf.getUuid(), "Cannot instantiate based on an abstract type"));
+//                throw new IllegalEntityType("Entity with UUID \"" + getUuid() + "\" tries to instantiate the abstract Type " +
+//                        "\"" + instanceOf.getUuid() + "\".");
             }
 
             // See if this instance validates against its type's constraints
             final Pair<Boolean, Set<String>> validation = validateAgainstConstraints();
             if (!validation.getLeft()) {
-                throw new IllegalEntityType("Entity with UUID " + getUuid() + " didn't adhere to its type constraints: " + validation.getRight());
+                throw new IllegalEntityType(createErrorMessage(422, getUuid(), "", "Failed type constraints: " + validation.getRight()));
+                //throw new IllegalEntityType("Entity with UUID " + getUuid() + " didn't adhere to its type constraints: " + validation.getRight());
             }
 
             // Now check if this instance is unique per its type's identity array
@@ -431,8 +444,11 @@ public class Entity {
                 final Set<String> identityProperties = maybeLabelAndIdentityProperties.get().getRight();
                 Set<String> duplicates = findDuplicates(label, identityProperties);
                 if (duplicates.size() > 0) {
-                    IllegalEntityType e = new IllegalEntityType("Entity with UUID " + getUuid() + " couldn't be created. It is a duplicate " +
-                            "of " + duplicates + " based on the properties " + identityProperties + ", the data was " + data.asMap());
+//                    IllegalEntityType e = new IllegalEntityType("Entity with UUID " + getUuid() + " couldn't be created. It is a duplicate " +
+//                            "of " + duplicates + " based on the properties " + identityProperties + ", the data was " + data.asMap());
+
+                    IllegalEntityType e = new IllegalEntityType(createErrorMessage(409, getUuid(), duplicates.toArray()[0].toString(), "Duplicate based on "+ identityProperties));
+
                     // The "duplicate" might be the same as this (in case of an update)
                     if (duplicates.size() == 1) {
                         // Make sure it isn't before throwing an exception
@@ -453,8 +469,9 @@ public class Entity {
             data.put("desc", getDesc());
             final boolean validated = JsonHelper.validateToSchema(schemaUri, mapper.valueToTree(data));
             if (!validated) {
-                throw new IllegalEntityType("Entity with UUID " + getUuid() + " couldn't be created. It's data"
-                        + "doesn't validate against its type schema.");
+                throw new IllegalEntityType(createErrorMessage(400, getUuid(), "", "Failed to validate against type schema"));
+//                throw new IllegalEntityType("Entity with UUID " + getUuid() + " couldn't be created. It's data"
+//                        + "doesn't validate against its type schema.");
             }
         }
 

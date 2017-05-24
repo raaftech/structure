@@ -35,12 +35,39 @@ const sections = [
 ];
 const usage = getUsage(sections);
 
-const getErrors = (list) => {
-    let regex = /[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89aAbB][a-f0-9]{3}-[a-f0-9]{12}/;
-    let match = R.match(regex);
-    let errors = R.filter(R.is(String),list);
-    let fn = R.compose(R.head, match);
-    return R.map(fn, errors);
+const resolvePersistErrors = (network, list) => {
+    let getStrings = R.filter(R.is(String));
+    let toObject = R.map(x => JSON.parse(x));
+    let filterErrors = R.compose(toObject, getStrings);
+    let removeFromRelation = (network, uuid) => {
+        network.meta.relations.HAS.uuids = R.reject(R.equals(uuid), network.meta.relations.HAS.uuids);
+        return network;
+    };
+    let addRelation = (network, uuid) => {
+        network.meta.relations.HAS.uuids = R.append(uuid, network.meta.relations.HAS.uuids);
+        return network;
+    };
+    
+    list = filterErrors(list);
+
+    let result = {
+        network: {},
+        errors: []
+    };
+    R.forEach(item => {
+        if(item.code === 409) {
+            network = removeFromRelation(network, item.uuid);
+            if(!R.contains(item.conflict, network.meta.relations.HAS.uuids)) 
+                network = addRelation(network, item.conflict);
+        } else {
+            network = removeFromRelation(network, item.uuid);
+        }
+    },list);
+
+    result.network = network;
+    result.errors = R.reject(R.propEq('code', 409), list);
+
+    return result;
 };
 
 const main = (db) => {
@@ -60,7 +87,6 @@ const main = (db) => {
                 console.log('REUSING EXISTING NETWORK BASED ON: '+cidr);
                 network = cidrInstance;
                 reuseId = true;
-                log(network);
             }
 
             nmapLib.nmapScan(cidr, args)
@@ -77,24 +103,22 @@ const main = (db) => {
                     return Promise.all(promises);
                 })
                 .then(result => {
-                    let output = getErrors(result);
-                    log(network);
-                    if(R.length(output) !== 0) {
-                        console.log('There are failed creations, removing them from network relations');
-                        let fn = R.flip(R.contains)(output);
-                        network.meta.relations['HAS'].uuids = R.reject(fn,network.meta.relations['HAS'].uuids);
-                        log(network);
-                        if(!reuseId) {
-                            console.log('creating new network');
-                            rest.createInstance({entities: [network]})
-                                .then(createdNetwork => console.log(createdNetwork));
-                        } else {
-                            console.log('updating existing network');
-                            rest.updateInstance({entities: [network]})
-                                .then(createdNetwork => console.log(createdNetwork));
-                        }
+                    //console.log(result);
+                    let output = resolvePersistErrors(network, result);
+                    log(output);
+                    if(R.length(output.errors) !== 0) {
+                        console.log('There are failed creations: ');
+                        console.log(output.errors);
+                    }
+                    if(!reuseId) {
+                        console.log('creating new network');
+                        rest.createInstance({entities: [network]})
+                            .then(createdNetwork => console.log(createdNetwork))
+                            .catch(ex => console.log(ex));
                     } else {
-                        console.log('no errors');
+                        rest.updateInstance({entities: [network]})
+                            .then(createdNetwork => console.log(createdNetwork))
+                            .catch(ex => console.log(createdNetwork));
                     }
                 });
         })
