@@ -23,6 +23,7 @@ function createInstance(baseType, data) {
     let instance = instantiate(baseType);
     instance.meta.relations = R.omit(['ISA','CONSTRAINTS','IMPLEMENTS'], getRelations(instance));
     instance.meta.relations = R.merge(getRelations(instance), relation);
+    instance.meta = R.omit(['constraints'], instance.meta);
     return instance;
 }
 

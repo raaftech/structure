@@ -324,15 +324,23 @@ vorpal.command('tree <name>', 'Show a relation tree for the requested node')
 vorpal.command('discover <cidr>', 'Discover items in the network')
     .action(function(args, done) {
         const self = this;
+        let byName = graphLib.findTypeByName(typeDb);
+        let mkNetwork = graphLib.createInstance(byName('Ipv4Network'));
+        let mkGroup = graphLib.createInstance(byName('ComponentGroup'));
 
         let loggedIn = () => rest.getInstanceByPredicate('cidr', args.cidr)
             .then(instance => {
                 if(R.isEmpty(instance)) {
                     self.log('creating new network');
-                    let ent = graphLib.findTypeByName(typeDb, 'Ipv4Network');
-                    let i = graphLib.createInstance(ent, {name: ent.name, desc: ent.desc, cidr: args.cidr});
-                    return rest.createInstance({entities: [i]})
-                        .then(ins => rest.getInstanceByUuid(R.head(ins)));
+                    let i = mkNetwork({name: 'Ipv4Network', desc: 'A network', cidr: args.cidr});
+                    i.type = 'Component';
+                    let g = mkGroup({name: 'group-'+args.cidr, desc: 'ipv4network root group'});
+                    g.type = 'Grouping';
+                    let pair = graphLib.relateEntity(g, 'GROUPS', 'outgoing', i);
+                    console.log(JSON.stringify(pair,undefined, 2));
+                    return rest.createInstance({entities: R.reverse(pair)})
+                        .then(ins => {console.log(ins); return rest.getInstanceByUuid(pair[1].meta.uuid)})
+                        .catch(ex => console.log(ex));
                 } else {
                     self.log('reusing existing network');
                     return instance;
@@ -340,7 +348,7 @@ vorpal.command('discover <cidr>', 'Discover items in the network')
             })
             .then(network => {
                 self.log(network);
-                return rest.runInstrument(network.meta.uuid, 'IpAddressDiscover', {token: rest.getToken()});
+                return rest.runInstrument(network.meta.uuid, 'IpNetworkDiscover', {token: rest.getToken()});
             })
             .then(result => {
                 self.log(result);
