@@ -274,7 +274,7 @@ module.exports = function(vorpal, options) {
                         } else {
                             let q = helper.generateQuestion('capability', 'list', 'Select capability to run: ', {choices: R.keys(capabilities)});
                             self.prompt(q, function(answer) {
-                                rest.runCapability(args.uuid, answer.capability)
+                                rest.runCapability(args.uuid, answer.capability, rest.getToken())
                                     .then(result => {
                                         console.log(result);
                                         done();

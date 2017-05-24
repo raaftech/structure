@@ -171,16 +171,17 @@ class RestConnector {
         return fetch(url).then(result => result.json());
     }
 
-    runCapability(uuid, capability) {
+    runCapability(uuid, capability, token) {
         let url = util.format('%s/Instances/exec/%s/on/%s?access_token=%s', getBaseUrl(this.host,this.port), capability, uuid, this.token);
         let args = {
-            capability: capability
+            capability: capability,
+            token: token
         };
         console.log(args);
         return fetch(url,
             {
                 method: 'POST',
-                body: 'options='+JSON.stringify(args),
+                body: 'token='+token,
                 headers: {'Content-Type': 'application/x-www-form-urlencoded'}
             })
             .then(result => result.json());
