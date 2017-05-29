@@ -1,13 +1,11 @@
 'use strict';
 
-const vorpal = require('vorpal')();
 const neo4j = require('neo4j');
 const R = require('ramda');
 const util = require('util');
 const path = require('path');
 const clc = require('cli-color');
 const helper = require(path.join(__dirname, '..','helper'));
-const graphLib = require(path.join(__dirname, '..','graphLib'));
 
 const neoUrl = R.defaultTo('http://localhost:7474', process.env.NEO4JURL);
 const db = new neo4j.GraphDatabase(neoUrl);

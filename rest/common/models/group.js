@@ -50,6 +50,7 @@ module.exports = function(Group) {
                 let instance = graphLib.createInstance(entity, {name: groupName, desc: description});
                 instance.type = 'Grouping';
                 instance.name = groupName;
+                instance.desc = description;
                 return [instance];
             })
             .then(entityList => evBus.sendEvent(entityAddress, 'create', {entities: entityList}))

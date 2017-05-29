@@ -1,6 +1,5 @@
 'use strict';
 
-const vorpal = require('vorpal')();
 const R = require('ramda');
 const util = require('util');
 const path = require('path');
