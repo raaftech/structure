@@ -7,7 +7,7 @@ const util = require('util');
 const path = require('path');
 const clc = require('cli-color');
 const helper = require(path.join(__dirname, '..','helper'));
-const Structure = require(path.join(__dirname, '..', 'subgraph'));
+const graphLib = require(path.join(__dirname, '..','graphLib'));
 
 const neoUrl = R.defaultTo('http://localhost:7474', process.env.NEO4JURL);
 const db = new neo4j.GraphDatabase(neoUrl);
@@ -44,37 +44,19 @@ const getAllGroups = () => {
     return new Promise((resolve, reject) => {
         let q = 'match (n {type: "Grouping"}) return n';
         db.cypher({query: q}, function(error, queryResult) {
-            if(error) { reject(error) }
+            if(error) { reject(error); }
             else {
                 let toTupleList = data => {
                     return {
                         name: data.n.properties.name,
                         uuid: data.n.properties.uuid
-                    }
+                    };
                 };
 
                 resolve(R.map(toTupleList, queryResult));
             }
         });
     });
-};
-/*
-    Fetches all Type nodes that are children of the requested parent
-    @param parentName The name of the parent type.
-    @returns A list of Entities
- */
-const getChildLayer = (parentName) => {
-    let q = util.format('match (n:Type)-[ISA]->(c {name: "%s"}) return n', parentName);
-    return cypher(q)
-            .then(result => {
-                let toTupleList = data => {
-                    return {
-                        name: data.n.properties.name,
-                        uuid: data.n.properties.uuid
-                    }
-                };
-                return R.map(toTupleList, result);
-            });
 };
 
 /*
@@ -187,7 +169,7 @@ module.exports = function(vorpal, options) {
                         let mapped = R.map(nodeLens, children);
                         let getFirstPropertyName = R.compose(R.head, R.keys);
                         allChildren = R.map(item => R.prop(getFirstPropertyName(item), item), mapped);
-                        let names = (x) => R.map(item => {return util.format('%s : %s',item.name, item.uuid)}, x);
+                        let names = (x) => R.map(item => {return util.format('%s : %s',item.name, item.uuid);}, x);
                         let q = helper.generateQuestion('item', 'list', 'Select instance to remove: ', {choices: names(allChildren)});
                         return prompt(self, q);
                     })
@@ -264,6 +246,40 @@ module.exports = function(vorpal, options) {
                 .then(result => {
                     let mapped = R.map(nodeLens, result);
                     self.log(helper.treePrint(false, mapped));
+                    done();
+                })
+                .catch(helper.genericCatchHandler(done));
+        });
+
+    vorpal.command('group rename', 'Rename an existing group')
+        .action(function(args, done) {
+            const self = this;
+            let groupName = '';
+            let newName = '';
+
+            getAllGroups()
+                .then(groups => {
+                    if(R.length(groups) <= 0) throw new Error('No groups found');
+                    let q = helper.generateQuestion('groupName', 'list', 'Select group to view:', {choices: groups});
+                    return prompt(self, q);
+                })
+                .then(answer => {
+                    groupName = answer.groupName;
+                    let q = helper.generateQuestion('newName', 'input', 'New group name: ');
+                    return prompt(self, q);
+                })
+                .then(answer => {
+                    newName = answer.newName;
+                    return rest.getInstanceByName(groupName);
+                })
+                .then(list => {
+                    let instance = R.head(list);
+                    instance.name = newName;
+                    instance.data.name = newName;
+                    return rest.updateInstance({entities: [instance]});
+                })
+                .then(result => {
+                    self.log(result);
                     done();
                 })
                 .catch(helper.genericCatchHandler(done));

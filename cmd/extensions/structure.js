@@ -28,7 +28,7 @@ module.exports = function(vorpal, opts) {
                                 opts.memoryBank.token = user.id;
                                 opts.cache.set('structure', 'token',user.id);
                                 opts.cache.save();
-                                self.log(clc.green('AccessToken: ')+user.id)
+                                self.log(clc.green('AccessToken: ')+user.id);
                             }
                         );
                         handler(user);
@@ -141,8 +141,6 @@ module.exports = function(vorpal, opts) {
 
     vorpal.command('structure init', 'Purge-Init structure server')
         .action(function(args, done) {
-            const self = this;
-
             let loggedIn = () => {
                 rest.purgeInit()
                     .then(result => {
