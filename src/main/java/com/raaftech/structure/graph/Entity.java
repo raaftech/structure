@@ -413,18 +413,27 @@ public class Entity {
     }
 
     public void toGraph() {
-        if (!getType().equals("Type")) {
+        final Optional<List<String>> maybeClassLabels;
+        if (isInstance()) {
             final Optional<Type> maybeInstanceOf = getInstanceOf();
             if (!maybeInstanceOf.isPresent()) {
                 throw new IllegalEntityType("Entity with UUID " + getUuid() + " couldn't be created. It's an instance,"
                         + " but its type couldn't be retrieved from the graph.");
             }
             final Type instanceOf = maybeInstanceOf.get();
+            final Optional<String> maybeDomainClass =
+                    getDomainClassForPath(instanceOf.getHierarchyPath());
+
+            if (!maybeDomainClass.isPresent()) {
+                throw new IllegalEntityType("Entity with UUID \"" + getUuid() + "\" couldn't be created. It's an instance of " +
+                        "\"" + instanceOf.getName() + "\", but that type doesn't map to a domain class.");
+            }
+            maybeClassLabels = getClassLabels(maybeDomainClass.get());
 
             // See if the type we try to instantiate is abstract
             if (instanceOf.isAbstract()) {
                 throw new IllegalEntityType("Entity with UUID \"" + getUuid() + "\" tries to instantiate the abstract Type " +
-                        "\"" + instanceOf.getUuid() + "\".");
+                        "\"" + instanceOf.getName() + "\".");
             }
 
             // See if this instance validates against its type's constraints
@@ -465,9 +474,18 @@ public class Entity {
                 throw new IllegalEntityType("Entity with UUID " + getUuid() + " couldn't be created. It's data"
                         + "doesn't validate against its type schema.");
             }
+        } else {
+            maybeClassLabels = getClassLabels("Type");
         }
 
-        persist();
+        // This shouldn't happen
+        if (!maybeClassLabels.isPresent()) {
+            throw new IllegalEntityType("Entity with UUID " + getUuid() + " couldnt be created. We did not " +
+                    "retrieve any of its labels.");
+        }
+        final List<String> classLabels = maybeClassLabels.get();
+
+        persist(classLabels.toArray(new String[classLabels.size()]));
         Node node = getPersistentState();
         persistRelations(node);
         persistTypeLabels(node);
@@ -477,7 +495,13 @@ public class Entity {
         return persistedState;
     }
 
-    private void persist() {
+    /**
+     * Persist this entity to neo4j.
+     * @param labels The labels SDN needs to map this node onto an object.
+     */
+    private void persist(String... labels) {
+        final List<String> labelsToPersist = ImmutableList.copyOf(Arrays.asList(labels));
+
         Map<String, Object> properties = new HashMap<>();
         properties.putAll(data.asMap().entrySet().stream()
                 .map(entry -> new AbstractMap.SimpleEntry<>("data-".concat(entry.getKey()), entry.getValue()))
@@ -518,10 +542,10 @@ public class Entity {
         /* we use neo4jTemplate.merge(...), which is basically getOrCreate(...). Now, if the entity
         already existed, but has changed properties, we need to update them using Node.setProperty(...).
         I did not find a way in the API to do this atomically, like "SET" would do in Cypher */
-        persistedState = neo4jTemplate.merge("Node", "uuid", uuid, properties, getClassLabels(type));
+        persistedState = neo4jTemplate.merge("Node", "uuid", uuid, properties, labelsToPersist);
         properties.entrySet().stream().forEach(entry -> persistedState.setProperty(entry.getKey(), entry.getValue()));
         persistedState.getLabels().forEach(label -> persistedState.removeLabel(label));
-        getClassLabels(type).stream()
+        labelsToPersist.stream()
                 .map(DynamicLabel::label)
                 .forEach(persistedState::addLabel);
     }
@@ -542,8 +566,9 @@ public class Entity {
                 .put("type.grouping", "Grouping")
                 .build();
 
-        return domainClassPerPath.keySet().stream()
-                .filter(prefix -> path.startsWith(prefix))
+        return domainClassPerPath.entrySet().stream()
+                .filter(entry -> path.startsWith(entry.getKey()))
+                .map(Map.Entry::getValue)
                 .findFirst();
     }
 
