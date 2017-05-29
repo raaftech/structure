@@ -288,6 +288,15 @@ public class Entity {
     }
 
     /**
+     * An entity can either be of the "type" or "instance" variety.
+     * @return True if this entity is of the "instance" variety.
+     */
+    public boolean isInstance() {
+        return getRelations().stream()
+                .anyMatch(triple -> "INSTANCE_OF".equals(triple.getLeft()));
+    }
+
+    /**
      * Sets whether an entity is abstract. Can only be used on "Type" entities.
      * @param isAbstract True if this is an abstract entity.
      * @throws IllegalArgumentException Thrown when called on a non "Type" entity.
@@ -517,21 +526,48 @@ public class Entity {
                 .forEach(persistedState::addLabel);
     }
 
-    private static List<String> getClassLabels(String type) {
-        // A map containing the labels needed per type
+    /** Given a hierarchical path for a type from the type tree returns the domain class.
+     * @param path The hierarchical path for a type in the type tree.
+     * @return Optionally the domain class name.
+     */
+    private static Optional<String> getDomainClassForPath(String path) {
+        // A map containing the domain class belonging to a particular type hierarchical path
+        Map<String, String> domainClassPerPath = ImmutableMap.<String, String>builder()
+                .put("type.instrument.controller", "Controller")
+                .put("type.instrument.marker", "Marker")
+                .put("type.instrument.parser", "Parser")
+                .put("type.component", "Component")
+                .put("type.profile", "Profile")
+                .put("type.result", "Result")
+                .put("type.grouping", "Grouping")
+                .build();
+
+        return domainClassPerPath.keySet().stream()
+                .filter(prefix -> path.startsWith(prefix))
+                .findFirst();
+    }
+
+    /**
+     * Given a name of a domain class that can be mapped to the graph, return the labels
+     * SDN needs to map onto objects of that class.
+     * @param nodeEntityName The name of the SDN mapped domain class.
+     * @return Optionally a list of labels needed by SDN.
+     */
+    private static Optional<List<String>> getClassLabels(String nodeEntityName) {
+        // A map containing the labels needed per nodeEntityName
         Map<String, List<String>> labelsPerType = ImmutableMap.<String, List<String>>builder()
                 .put("Controller", ImmutableList.of("_Controller", "Controller", "Instrument", "Instance", "Node"))
                 .put("Marker", ImmutableList.of("_Marker", "Marker", "Instrument", "Instance", "Node"))
                 .put("Parser", ImmutableList.of("_Parser", "Parser", "Instrument", "Instance", "Node"))
                 .put("Component", ImmutableList.of("_Component", "Component", "Instance", "Node"))
                 .put("Profile", ImmutableList.of("_Profile", "Profile", "Instance", "Node"))
-                .put("Actor", ImmutableList.of("_Actor", "Actor", "Instance", "Node"))
                 .put("Result", ImmutableList.of("_Result", "Result", "Instance", "Node"))
                 .put("Grouping", ImmutableList.of("_Grouping", "Grouping", "Instance", "Node"))
                 .put("Type", ImmutableList.of("_Type", "Type", "Node"))
                 .build();
 
-        return labelsPerType.get(type);
+        return labelsPerType.containsKey(nodeEntityName) ?
+                Optional.of(labelsPerType.get(nodeEntityName)) : Optional.empty();
     }
 
     private void persistTypeLabels(Node node) {
