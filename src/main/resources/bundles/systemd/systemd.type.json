@@ -1,5 +1,4 @@
  {
-    "type": "Type",
     "name": "Systemd",
     "desc": "Systemd Service Manager.",
     "meta": {

@@ -1,6 +1,5 @@
 [
     {
-        "type": "Type",
         "name": "IpListener",
         "desc": "An IP listener (address and port, can be assigned to a network service).",
         "meta": {
@@ -23,7 +22,6 @@
         }
     },
     {
-        "type": "Type",
         "name": "Ipv4Listener",
         "desc": "An IPv4 listener (address and port, can be assigned to a network service).",
         "meta": {

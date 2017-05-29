@@ -1,5 +1,4 @@
 {
-    "type": "Type",
     "name": "DnsName",
     "desc": "Either a short name or a fully-qualified domain name.",
     "meta": {

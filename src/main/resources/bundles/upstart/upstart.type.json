@@ -1,5 +1,4 @@
  {
-    "type": "Type",
     "name": "Upstart",
     "desc": "Upstart Service Manager.",
     "meta": {

@@ -1,5 +1,4 @@
 {
-  "type": "Controller",
   "name": "stop",
   "desc": "BsdrcInitStop.",
   "meta": {

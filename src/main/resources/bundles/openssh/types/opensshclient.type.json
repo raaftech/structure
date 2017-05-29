@@ -1,5 +1,4 @@
 {
-    "type": "Type",
     "name": "OpenSshClient",
     "desc": "The OpenSSH client.",
     "meta": {

@@ -1,5 +1,4 @@
 {
-    "type": "Type",
     "name": "OperatingSystem",
     "desc": "An operating system.",
     "meta": {

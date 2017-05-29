@@ -1,5 +1,4 @@
   {
-    "type": "Type",
     "name": "Iputils",
     "desc": "Network monitoring tools, including ping.",
     "meta": {

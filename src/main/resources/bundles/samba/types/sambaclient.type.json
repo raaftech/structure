@@ -1,5 +1,4 @@
 {
-    "type": "Type",
     "name": "SambaClient",
     "desc": "The Same *nix smb client.",
     "meta": {

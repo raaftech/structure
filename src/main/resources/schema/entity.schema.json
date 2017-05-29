@@ -3,16 +3,12 @@
   "description": "Schema for Structure entities.",
   "type": "object",
   "required": [
-    "type",
     "name",
     "desc",
     "meta"
   ],
   "additionalProperties": false,
   "properties": {
-    "type": {
-      "$ref": "#/definitions/type"
-    },
     "name": {
       "type": "string"
     },
@@ -131,35 +127,45 @@
   "oneOf": [
     {
       "properties": {
-        "type": {
-          "enum": [
-            "Type"
-          ]
-        },
-        "file": {
+        "meta": {
           "type": "object",
-          "required": [
-            "dataSchema"
-          ]
-        }
+          "properties": {
+            "relations": {
+              "required": [
+                "ISA"
+              ]
+            }
+          }
+        },
+          "properties": {
+            "file": {
+              "properties": {
+                "dataSchema": {
+                  "type": "object"
+                }
+              },
+              "required": [
+                "dataSchema"
+              ]
+            }
+          }
       },
       "required": [
+        "meta",
         "file"
       ]
     },
     {
       "properties": {
-        "type": {
-          "enum": [
-            "Component",
-            "Marker",
-            "Controller",
-            "Parser",
-            "Grouping",
-            "Profile",
-            "Actor",
-            "Result"
-          ]
+        "meta": {
+          "type": "object",
+          "properties": {
+            "relations": {
+              "required": [
+                "INSTANCE_OF"
+              ]
+            }
+          }
         }
       }
     }
@@ -196,20 +202,6 @@
           "$ref": "#/definitions/cardinality"
         }
       }
-    },
-    "type": {
-      "type": "string",
-      "enum": [
-        "Type",
-        "Component",
-        "Marker",
-        "Controller",
-        "Parser",
-        "Grouping",
-        "Profile",
-        "Actor",
-        "Result"
-      ]
     },
     "desc": {
       "type": "string",

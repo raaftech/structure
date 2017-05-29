@@ -1,6 +1,5 @@
 [
     {
-        "type": "Type",
         "name": "SMB",
         "desc": "The server message block protocol.",
         "meta": {
@@ -23,7 +22,6 @@
         }
     },
     {
-        "type": "Type",
         "name": "SMB10",
         "desc": "The server message block protocol, version 1.0.",
         "meta": {
@@ -46,7 +44,6 @@
         }
     },
     {
-        "type": "Type",
         "name": "SMB20",
         "desc": "The server message block protocol, version 2.0.",
         "meta": {
@@ -69,7 +66,6 @@
         }
     },
     {
-        "type": "Type",
         "name": "SMB21",
         "desc": "The server message block protocol, version 2.1.",
         "meta": {
@@ -92,7 +88,6 @@
         }
     },
     {
-        "type": "Type",
         "name": "SMB30",
         "desc": "The server message block protocol, version 3.0.",
         "meta": {
