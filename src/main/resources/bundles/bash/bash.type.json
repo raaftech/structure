@@ -1,5 +1,4 @@
 {
-    "type": "Type",
     "name": "Bash",
     "desc": "The Bourne Again Shell.",
     "meta": {

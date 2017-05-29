@@ -1,5 +1,4 @@
 {
-  "type": "Controller",
   "name": "start",
   "desc": "OpenRcStart.",
   "meta": {

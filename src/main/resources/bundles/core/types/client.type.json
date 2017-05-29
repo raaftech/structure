@@ -1,5 +1,4 @@
   {
-    "type": "Type",
     "name": "Client",
     "desc": "A generic client.",
     "meta": {

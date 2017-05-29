@@ -1,5 +1,4 @@
 {
-    "type": "Type",
     "name": "BsdrcInit",
     "desc": "BSD RC Init Service Manager.",
     "meta": {

@@ -1,5 +1,4 @@
 {
-  "type": "Controller",
   "name": "IpAddressDiscover",
   "desc": "Scan an IP address using our discovery tool.",
   "meta": {

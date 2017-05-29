@@ -1,5 +1,4 @@
 {
-  "type": "Type",
   "name": "Unix",
   "desc": "The UNIX Operating System.",
   "meta": {

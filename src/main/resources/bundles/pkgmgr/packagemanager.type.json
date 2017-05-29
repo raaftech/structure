@@ -1,5 +1,4 @@
 {
-    "type": "Type",
     "name": "PackageManager",
     "desc": "A package manager.",
     "meta": {

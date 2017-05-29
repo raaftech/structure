@@ -1,5 +1,4 @@
 {
-  "type": "Type",
   "name": "Bsd",
   "desc": "The Berkeley Software Distribution Operating System.",
   "meta": {

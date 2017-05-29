@@ -1,5 +1,4 @@
 {
-    "type": "Type",
     "name": "NmapClient",
     "desc": "The Nmap network scanner",
     "file": {

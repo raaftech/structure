@@ -1,5 +1,4 @@
 {
-  "type": "Controller",
   "name": "execute",
   "desc": "This instrument executes an arbitrary command on UNIX-like machines.",
   "meta": {

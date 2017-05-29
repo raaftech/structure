@@ -1,6 +1,5 @@
 [
     {
-        "type": "Type",
         "name": "SSH",
         "desc": "The secure shell protocol.",
         "meta": {
@@ -23,7 +22,6 @@
         }
     },
     {
-        "type": "Type",
         "name": "SSH10",
         "desc": "The secure shell protocol, version 1.0.",
         "meta": {
@@ -46,7 +44,6 @@
         }
     },
     {
-        "type": "Type",
         "name": "SSH20",
         "desc": "The secure shell protocol, version 2.0.",
         "meta": {

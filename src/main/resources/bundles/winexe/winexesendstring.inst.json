@@ -1,5 +1,4 @@
 {
-  "type": "Controller",
   "name": "WinexeSendString",
   "desc": "The handler that provides the SendString capability to winese..",
   "meta": {

@@ -1,5 +1,4 @@
 {
-    "type": "Type",
     "name": "SambaServer",
     "desc": "The Samba SMB/CIFS Server.",
     "meta": {

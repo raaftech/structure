@@ -1,5 +1,4 @@
 {
-  "type": "Controller",
   "name": "IputilsPingCheckable",
   "desc": "Provide a check to IP addresses using ping..",
   "meta": {

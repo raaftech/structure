@@ -1,6 +1,5 @@
 [
     {
-        "type": "Type",
         "name": "Capability",
         "desc": "A software component gives capabilities to its parent or to siblings.",
         "meta": {
@@ -23,7 +22,6 @@
         }
     },
     {
-        "type": "Type",
         "name": "State",
         "desc": "A capability that makes it possible to state-check.",
         "meta": {
@@ -46,7 +44,6 @@
         }
     },
     {
-        "type": "Type",
         "name": "Stop",
         "desc": "A capability that makes it possible to stop something.",
         "meta": {
@@ -69,7 +66,6 @@
         }
     },
     {
-        "type": "Type",
         "name": "Start",
         "desc": "A capability that makes it possible to stop something.",
         "meta": {
@@ -92,7 +88,6 @@
         }
     },
     {
-        "type": "Type",
         "name": "Restart",
         "desc": "A capability that makes it possible to restart something.",
         "meta": {
@@ -115,7 +110,6 @@
         }
     },
     {
-        "type": "Type",
         "name": "Create",
         "desc": "Create a (selection of) adjacent entities. Can create children or parents.",
         "meta": {
@@ -138,7 +132,6 @@
         }
     },
     {
-        "type": "Type",
         "name": "Destroy",
         "desc": "Destroy self or (selection of) adjacent entities (recursively). Can only destroy children, not parents.",
         "meta": {
@@ -161,7 +154,6 @@
         }
     },
     {
-        "type": "Type",
         "name": "Execute",
         "desc": "A capability that makes it possible to run commands.",
         "meta": {
@@ -184,7 +176,6 @@
         }
     },
     {
-        "type": "Type",
         "name": "Detect",
         "desc": "A capability that makes it possible for a component to detect itself.",
         "meta": {
@@ -207,7 +198,6 @@
         }
     },
     {
-        "type": "Type",
         "name": "List",
         "desc": "A capability that makes it possible to list adjacent entities that are children of the current entity.",
         "meta": {
@@ -230,7 +220,6 @@
         }
     },
     {
-        "type": "Type",
         "name": "Identify",
         "desc": "A capability that makes it possible to identify (version, name, etc) something.",
         "meta": {
@@ -253,7 +242,6 @@
         }
     },
     {
-        "type": "Type",
         "name": "SendString",
         "desc": "A capability that makes it possible to send a string over a protocol.",
         "meta": {
@@ -276,7 +264,6 @@
         }
     },
     {
-        "type": "Type",
         "name": "ReceiveString",
         "desc": "A capability that makes it possible to receive a string over a protocol.",
         "meta": {
@@ -299,7 +286,6 @@
         }
     },
     {
-        "type": "Type",
         "name": "SendFile",
         "desc": "A capability that makes it possible to send a file over a protocol.",
         "meta": {
@@ -322,7 +308,6 @@
         }
     },
     {
-        "type": "Type",
         "name": "ReceiveFile",
         "desc": "A capability that makes it possible to receive a file over a protocol.",
         "meta": {
@@ -345,7 +330,6 @@
         }
     },
     {
-        "type": "Type",
         "name": "Invoke",
         "desc": "A capability that makes it possible to invoke a command to execute.",
         "meta": {
@@ -368,7 +352,6 @@
         }
     },
     {
-        "type": "Type",
         "name": "Verify",
         "desc": "A capability that verifies if the current type of the entity is correct. Should return true or false.",
         "meta": {
@@ -391,7 +374,6 @@
         }
     },
     {
-        "type": "Type",
         "name": "Show",
         "desc": "A capability that prints a (entity.schema.json compliant) representation of itself. The data returned is exactly what is currently in the graph, not neccessarily what is true out there.",
         "meta": {
@@ -414,7 +396,6 @@
         }
     },
     {
-        "type": "Type",
         "name": "Update",
         "desc": "This capability gathers the verify routine of the current Type and all ancestor types of that Type and runs them; for the ones that return true, select the most-specialized Type and run Identify.  Use that data to Update the current entity. Update in this case means: adjust instanceOf Type relation and update Node properties with identified data.",
         "meta": {
@@ -437,7 +418,6 @@
         }
     },
     {
-        "type": "Type",
         "name": "Guess",
         "desc": "Sometimes you cannot actually detect a thing from where you are. Let's take for example an Ipv4Address type. An Ipv4Address might have constraints that say: \"has, outgoing, to Ipv4Listener\" and \"has, incoming, from OperatingSystem\". The listeners you can actually detect, but the operating system you cannot, but you can guess! A guess is the same as a detect but it returns a much more abstract instance of something. In our case, we would return an instance of OperatingSystem and relate it according to the constraints rules. The neat thing is that that instance actually becomes a new path to traverse to further discover the topology of the system (probably you would recurse to that instance of a very abstract operating system and ask it to verify and update itself, thus providing you with the more correct truth. See verify, show and update capabilities for more details).",
         "meta": {

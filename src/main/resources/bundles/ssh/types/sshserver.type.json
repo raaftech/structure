@@ -1,5 +1,4 @@
 {
-    "type": "Type",
     "name": "SshServer",
     "desc": "A generic SSH Server.",
     "meta": {

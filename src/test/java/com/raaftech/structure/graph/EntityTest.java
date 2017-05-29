@@ -13,6 +13,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
+import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.Label;
 import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.Transaction;
@@ -102,7 +103,6 @@ public class EntityTest {
         Entity entity = new Entity();
         entity.setName("generation_1");
         entity.setUuid(UUID.randomUUID().toString());
-        entity.setType("Type");
         entity.setRelations(
                 ImmutableSet.of(Triple.of("ISA", "outgoing", ImmutableSet.of(entity.getUuid()))));
         entity.toGraph();
@@ -150,7 +150,7 @@ public class EntityTest {
         entity01.setName("entity01");
         entity01.setUuid(uuid);
         entity01.setDesc("Test entity.");
-        entity01.setType("Type");
+        entity01.addRelations("ISA", Direction.OUTGOING, ImmutableSet.of(UUID.randomUUID()));
         entity01.toGraph();
 
         // Database should contain only one entity
@@ -160,13 +160,12 @@ public class EntityTest {
         assertNotNull(entity01Node);
         assertEquals(entity01.getName(), entity01Node.getName());
         assertEquals(entity01.getDesc(), entity01Node.getDesc());
-        assertEquals(entity01.getType(), entity01Node.getType());
 
         Entity entity02 = new Entity(neo4jTemplate);
         entity02.setName("entity02");
         entity02.setUuid(uuid);
         entity02.setDesc("Test entity.");
-        entity02.setType("Type");
+        entity02.addRelations("ISA", Direction.OUTGOING, ImmutableSet.of(UUID.randomUUID()));
         entity02.toGraph();
 
         // Database should still only contain one entity
@@ -176,7 +175,6 @@ public class EntityTest {
         assertNotNull(entity02Node);
         assertEquals(entity02.getName(), entity02Node.getName());
         assertEquals(entity02.getDesc(), entity02Node.getDesc());
-        assertEquals(entity02.getType(), entity02Node.getType());
 
         assertEquals(entity01Node.getId(), entity02Node.getId());
 
@@ -184,7 +182,7 @@ public class EntityTest {
         entity03.setName("entity03");
         entity03.setUuid(UUID.randomUUID().toString());
         entity03.setDesc("Test entity.");
-        entity03.setType("Type");
+        entity03.addRelations("ISA", Direction.OUTGOING, ImmutableSet.of(UUID.randomUUID()));
         entity03.toGraph();
 
         // Database should contain two entities
@@ -210,7 +208,6 @@ public class EntityTest {
         final String rootName = "Type";
         final String rootDesc = "The root type.";
         assertEquals(rootUuid, rootNode.getUuid());
-        assertEquals(rootType, rootNode.getType());
         assertEquals(rootBundle, rootNode.getBundle());
         assertEquals(rootName, rootNode.getName());
         assertEquals(rootDesc, rootNode.getDesc());
@@ -263,7 +260,6 @@ public class EntityTest {
         final String componentName = "Component";
         final String componentDesc = "An abstract base component.";
         assertEquals(componentUuid, componentNode.getUuid());
-        assertEquals(componentType, componentNode.getType());
         assertEquals(componentBundle, componentNode.getBundle());
         assertEquals(componentName, componentNode.getName());
         assertEquals(componentDesc, componentNode.getDesc());
@@ -318,7 +314,6 @@ public class EntityTest {
         // create a child of component called foo
         Entity componentChild = new Entity();
         componentChild.setNeo4jTemplate(neo4jTemplate);
-        componentChild.setType("Type");
         Set<Triple<String, String, Set<String>>> rel = new HashSet<>();
         Set<String> uuids = new HashSet<>();
         uuids.add(componentUuid);
@@ -371,7 +366,7 @@ public class EntityTest {
     public void testCorrectEmbeddedFileWithoutPathDeserialization() throws Exception {
         final String encoding = "text";
         final String format = "json";
-        final String path = "component.type.dataSchema.json";
+        final String path = "component.instance.dataSchema.json";
         final String content = "{\\n  \\\"$schema\\\": \\\"http://json-schema.org/schema#\\\",\\n  \\\"additionalProperties\\\": false,\\n  \\\"type\\\": \\\"object\\\",\\n  \\\"properties\\\": {\\n    \\\"name\\\": {\\n      \\\"type\\\": \\\"string\\\",\\n      \\\"description\\\": \\\"The name of this node.\\\"\\n    },\\n    \\\"desc\\\": {\\n      \\\"type\\\": \\\"string\\\",\\n      \\\"description\\\": \\\"The description of this node.\\\"\\n    }\\n  },\\n  \\\"required\\\": [\\n    \\\"name\\\",\\n    \\\"desc\\\"\\n  ]\\n}";
         final String entityJson = createJson("Type", "Component", "An abstract base component.",
                 createMetaSection("core", "a79ce509-a021-4177-ae61-73abd01fb479", createRelationSection()),

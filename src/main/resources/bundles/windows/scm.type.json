@@ -1,5 +1,4 @@
 {
-    "type": "Type",
     "name": "Scm",
     "desc": "The Windows Service Control Manager.",
     "meta": {

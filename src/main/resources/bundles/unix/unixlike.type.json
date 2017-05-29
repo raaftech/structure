@@ -1,5 +1,4 @@
 {
-  "type": "Type",
   "name": "UnixLike",
   "desc": "A UNIX-like operating system.",
   "meta": {

@@ -1,5 +1,4 @@
 {
-    "type": "Type",
     "name": "UnixShell",
     "desc": "A generic UNIX shell.",
     "meta": {

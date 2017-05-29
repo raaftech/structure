@@ -141,7 +141,7 @@ public class Constraint {
      * @throws IllegalArgumentException Thrown when we pass an entity that represents a {@link Type type}.
      */
     public ValidationReport validateConstraint(Entity entity) {
-        if (Objects.equals("Type", entity.getType())) {
+        if (!entity.isInstance()) {
             throw new IllegalArgumentException("Constraints can only be validated for non-type entities.");
         }
 
