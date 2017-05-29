@@ -98,7 +98,7 @@ public class NaiveSorter {
     );
 
     private static String prepareForHashing(ObjectNode input) throws JsonProcessingException {
-        if (!input.get("type").asText().equals("Type") || !input.get("name").asText().equals("Type")) {
+        if (BundleLoader.isInstance(input) || !input.get("name").asText().equals("Type")) {
             if (!JsonHelper.validateToSchema(ENTITYSCHEMA, input)) {
                 throw new JsonValidationException("Cannot calculate a checksum for type ["+ input.get("name").asText() +"]: JSON does not validate against " +
                         "entity schema");
