@@ -235,6 +235,9 @@ public class Entity {
      * @return Did the relations object change?
      */
 	public boolean addRelations(String relationName, Direction direction, Set<UUID> uuids) {
+	    if (relations == null) {
+	        relations = new HashSet<>();
+        }
         final Set<Triple<String, String, Set<String>>> relevantTriples = relations.stream()
                 .filter(t -> t.getLeft().equals(relationName))
                 .collect(Collectors.toSet());
