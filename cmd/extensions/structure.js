@@ -122,6 +122,12 @@ module.exports = function(vorpal, opts) {
                     self.log(util.format(clc.green('  [Memory]')));
                     self.log(util.format('    Used: %s %s\n    Free: %s',result.jvm.memory.used, percentageFn(result.jvm.memory.used, result.jvm.memory.free), result.jvm.memory.free));
 
+                    self.log(util.format(clc.green.bold('[Structure instance]')));
+                    self.log(util.format('  Host: %s', result.structure.host));
+                    if(result.structure.bootstrapped) 
+                        self.log(util.format('  Bootstrapped: %s', clc.green(result.structure.bootstrapped)));
+                    else self.log(util.format('  Bootstrapped: %s', clc.red(result.structure.bootstrapped)));
+
                     self.log(util.format(clc.green.bold('[Graph info]')));
                     self.log(util.format('  Types: %s', result.graph.types));
                     self.log(util.format('  Components: %s', result.graph.components));

@@ -233,6 +233,11 @@ public class StructureManager extends GenericActor {
                 memory.put("free", runtime.freeMemory());
                 memory.put("used", runtime.totalMemory() - runtime.freeMemory());
 
+                ObjectNode structureInfo = result.putObject("structure");
+                boolean bootstrapped = Context.getInstanceRepository().findDnsName(Context.getHostname()) != null;
+                structureInfo.put("bootstrapped", bootstrapped);
+                structureInfo.put("host", Context.getHostname());
+
                 return response(request, result);
             }
 
