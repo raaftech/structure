@@ -6,6 +6,7 @@ const util = require('util');
 const path = require('path');
 const clc = require('cli-color');
 const helper = require(path.join(__dirname, '..','helper'));
+const graphLib = require(path.join(__dirname, '..', 'graphLib'));
 
 const neoUrl = R.defaultTo('http://localhost:7474', process.env.NEO4JURL);
 const db = new neo4j.GraphDatabase(neoUrl);
@@ -40,7 +41,7 @@ const prompt = (vorp, question) => {
  */
 const getAllGroups = () => {
     return new Promise((resolve, reject) => {
-        let q = 'match (n {type: "Grouping"}) return n';
+        let q = 'match (n:Grouping}) return n';
         db.cypher({query: q}, function(error, queryResult) {
             if(error) { reject(error); }
             else {
@@ -64,7 +65,6 @@ const getAllGroups = () => {
 const nodeLens = (node) => {
     let mkView = R.pipe(
         R.assoc('name', node.children.properties.name),
-        R.assoc('type', node.children.properties.type),
         R.assoc('desc', node.children.properties.desc),
         R.assoc('uuid', node.children.properties.uuid));
     let ret = {};
@@ -115,7 +115,7 @@ module.exports = function(vorpal, options) {
                         return rest.getEntityByUuid(e.uuid);
                     })
                     .then(theGroup => {
-                        selectedGroup = helper.json2Entity(false, theGroup);
+                        selectedGroup = theGroup;
                         let q = helper.generateQuestion('uuid', 'input', 'Instance uuid: ');
                         return prompt(self, q);
                     })
@@ -123,15 +123,12 @@ module.exports = function(vorpal, options) {
                         return rest.getEntityByUuid(answer.uuid);
                     })
                     .then(instance => {
-                        let rel = selectedGroup.relationCreate('GROUPS', 'outgoing');
-                        rel.addEntity(helper.json2Entity(false, instance));
-                        let graph = helper.entity2Graph(selectedGroup);
-                        return graph.toList();
+                        let pair = graphLib.relateEntity(selectedGroup, 'GROUPS', 'outgoing', instance);
+                        return rest.updateInstance({entities: [R.head(pair)]});
                     })
-                    .then(entityList => rest.updateInstance({entities: entityList}))
-                    .then(created => {
+                    .then(updateResult => {
                         self.log(clc.green('Instance grouping result: '));
-                        self.log(created);
+                        self.log(updateResult);
                         done();
                     })
                     .catch(helper.genericCatchHandler(done));
@@ -141,7 +138,7 @@ module.exports = function(vorpal, options) {
         });
 
     //Note that this command is not working yet, since structure refuses to update relations
-    vorpal.command('group del', 'Remove and existing instance from the group')
+    vorpal.command('group del', 'Remove an existing child instance from a group')
         .action(function(args, done) {
             const self = this;
             let selectedGroup;
@@ -184,8 +181,7 @@ module.exports = function(vorpal, options) {
                             return ent;
                         };
                         entity = removeGrouping(entity, selectedChildUuid);
-                        let graph = helper.entity2Graph(entity);
-                        return rest.updateInstance({entities: graph.toList()});
+                        return rest.updateInstance({entities: [entity]});
                     })
                     .then(updated => {
                         self.log(updated);

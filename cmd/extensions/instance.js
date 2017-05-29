@@ -102,7 +102,7 @@ module.exports = function(vorpal, options) {
                                             instance.desc = instance.data.desc;
                                             
                                             let ins = graphLib.createInstance(baseType, instance.data);
-                                            ins.type = R.nth(1,graphLib.getTypeHierarchy(typeDb, instance)).name; //FIXME after issue360 has been resolved
+                                            //ins.type = R.nth(1,graphLib.getTypeHierarchy(typeDb, instance)).name; //FIXME after issue360 has been resolved
                                             let graph = [ins];
                                             self.log(JSON.stringify(graph, undefined, 2));
                                             let loggedIn = () => {

@@ -49,11 +49,11 @@ import static io.vertx.core.json.Json.mapper;
 public class Entity {
 
     /* Logging object. */
-	@Transient
+    @Transient
     private final static Logger log = LoggerFactory.getLogger(Entity.class);
 
-	/* Entity repository. Used for querying the graph. */
-	private NodeRepository nodeRepository = Context.getNodeRepository();
+    /* Entity repository. Used for querying the graph. */
+    private NodeRepository nodeRepository = Context.getNodeRepository();
     private InstanceRepository instanceRepository = Context.getInstanceRepository();
     private TypeRepository typeRepository = Context.getTypeRepository();
     private Neo4jTemplate neo4jTemplate;
@@ -125,7 +125,7 @@ public class Entity {
     }
 
 
-	/* Getters. */
+    /* Getters. */
     public String getBundle() {
         return bundle;
     }
@@ -168,19 +168,21 @@ public class Entity {
 
     /**
      * Get the triples describing this entity's relations.
+     *
      * @return A triple containing left to right: relation name, direction, related UUIDs.
      */
-	public Set<Triple<String, String, Set<String>>> getRelations() {
-		return relations;
-	}
+    public Set<Triple<String, String, Set<String>>> getRelations() {
+        return relations;
+    }
 
-	public Optional<Map<String, List<Pair<Constraint.Cardinality, UUID>>>> getConstraints() {
-	    return constraints == null ?
+    public Optional<Map<String, List<Pair<Constraint.Cardinality, UUID>>>> getConstraints() {
+        return constraints == null ?
                 Optional.empty() : Optional.of(constraints);
     }
 
     /**
      * Returns whether this entity is abstract. This is only used on "Type" entities.
+     *
      * @return
      */
     public boolean isAbstract() {
@@ -221,23 +223,24 @@ public class Entity {
         this.file.setPropertiesFrom(map);
     }
 
-	public void setRelations(Set <Triple<String, String, Set<String>>> relations) {
-		this.relations = relations;
-	}
+    public void setRelations(Set<Triple<String, String, Set<String>>> relations) {
+        this.relations = relations;
+    }
 
     /**
      * Add a relation to or from a set of UUIDs to our relationships object. If the relationship
      * already exists, it checks if the direction is the same and adds the UUIDs to the set. If the direction
      * doesn't match, it throws an exception. If the relationship didn't exist yet, it'll just add it to the relations
      * object.
+     *
      * @param relationName The relationship name.
-     * @param direction The direction of the relationship.
-     * @param uuids The UUIDs to add to the relationship.
+     * @param direction    The direction of the relationship.
+     * @param uuids        The UUIDs to add to the relationship.
      * @return Did the relations object change?
      */
-	public boolean addRelations(String relationName, Direction direction, Set<UUID> uuids) {
-	    if (relations == null) {
-	        relations = new HashSet<>();
+    public boolean addRelations(String relationName, Direction direction, Set<UUID> uuids) {
+        if (relations == null) {
+            relations = new HashSet<>();
         }
         final Set<Triple<String, String, Set<String>>> relevantTriples = relations.stream()
                 .filter(t -> t.getLeft().equals(relationName))
@@ -265,8 +268,8 @@ public class Entity {
     }
 
     public void addConstraint(String relName, Constraint.Cardinality cardinality, UUID to) {
-	    if (constraints == null) {
-	        constraints = new HashMap<>();
+        if (constraints == null) {
+            constraints = new HashMap<>();
         }
 
         final List<Pair<Constraint.Cardinality, UUID>> constraintList;
@@ -282,6 +285,7 @@ public class Entity {
 
     /**
      * An entity can either be of the "type" or "instance" variety.
+     *
      * @return True if this entity is of the "instance" variety.
      */
     public boolean isInstance() {
@@ -295,6 +299,7 @@ public class Entity {
 
     /**
      * Sets whether an entity is abstract. Can only be used on "Type" entities.
+     *
      * @param isAbstract True if this is an abstract entity.
      * @throws IllegalArgumentException Thrown when called on a non "Type" entity.
      */
@@ -333,7 +338,7 @@ public class Entity {
     }
 
     private Pair<Boolean, Set<String>> validateAgainstConstraints() {
-        Optional<Type>  instanceOf = getInstanceOf();
+        Optional<Type> instanceOf = getInstanceOf();
 
         if (!instanceOf.isPresent()) {
             throw new TypeUnknownException("Type for entity \"" + uuid + "\" doesn't exist");
@@ -345,6 +350,7 @@ public class Entity {
     /**
      * Get the the identity properties for the type of an instance, and the name of the
      * type these identity properties are defined on.
+     *
      * @return Optionally the identity properties that must hold for an instance of a particular type,
      * and the type name those properties are defined on.
      */
@@ -377,7 +383,8 @@ public class Entity {
      * We do this by getting all available values for the identity properties, and returning
      * node UUIDs of nodes with the given label and the given values for the properties in the
      * graph.
-     * @param label The label to use in the query.
+     *
+     * @param label              The label to use in the query.
      * @param identityProperties The properties that need to be used for the query.
      * @return A set of UUIDs of nodes that have the given label and the same values
      * for the given properties as this entity.
@@ -396,7 +403,7 @@ public class Entity {
                                 `data-foo`:"b"ar", but with `data-foo`:"b\"ar"
                                  */
                                 String.format(inQuotes,
-                                        StringEscapeUtils.escapeJava((String)pair.getRight()))) :
+                                        StringEscapeUtils.escapeJava((String) pair.getRight()))) :
                         pair)
                 // We don't have to check for backticks in the identity names, bundleloader does that for us
                 .map(pair -> String.format(propertyQueryPattern, pair.getLeft(), pair.getRight()))
@@ -424,8 +431,6 @@ public class Entity {
             final Optional<Type> maybeInstanceOf = getInstanceOf();
             if (!maybeInstanceOf.isPresent()) {
                 throw new IllegalEntityType(createErrorMessage(404, getUuid(), "", "instance-of type of this instance was not found"));
-                //throw new IllegalEntityType("Entity with UUID " + getUuid() + " couldn't be created. It's an instance,"
-                //        + " but its type couldn't be retrieved from the graph.");
             }
             final Type instanceOf = maybeInstanceOf.get();
             final Optional<String> maybeDomainClass =
@@ -440,15 +445,12 @@ public class Entity {
             // See if the type we try to instantiate is abstract
             if (instanceOf.isAbstract()) {
                 throw new IllegalEntityType(createErrorMessage(422, getUuid(), instanceOf.getUuid(), "Cannot instantiate based on an abstract type"));
-//                throw new IllegalEntityType("Entity with UUID \"" + getUuid() + "\" tries to instantiate the abstract Type " +
-//                        "\"" + instanceOf.getUuid() + "\".");
             }
 
             // See if this instance validates against its type's constraints
             final Pair<Boolean, Set<String>> validation = validateAgainstConstraints();
             if (!validation.getLeft()) {
                 throw new IllegalEntityType(createErrorMessage(422, getUuid(), "", "Failed type constraints: " + validation.getRight()));
-                //throw new IllegalEntityType("Entity with UUID " + getUuid() + " didn't adhere to its type constraints: " + validation.getRight());
             }
 
             // Now check if this instance is unique per its type's identity array
@@ -458,10 +460,7 @@ public class Entity {
                 final Set<String> identityProperties = maybeLabelAndIdentityProperties.get().getRight();
                 Set<String> duplicates = findDuplicates(label, identityProperties);
                 if (duplicates.size() > 0) {
-//                    IllegalEntityType e = new IllegalEntityType("Entity with UUID " + getUuid() + " couldn't be created. It is a duplicate " +
-//                            "of " + duplicates + " based on the properties " + identityProperties + ", the data was " + data.asMap());
-
-                    IllegalEntityType e = new IllegalEntityType(createErrorMessage(409, getUuid(), duplicates.toArray()[0].toString(), "Duplicate based on "+ identityProperties));
+                    IllegalEntityType e = new IllegalEntityType(createErrorMessage(409, getUuid(), duplicates.toArray()[0].toString(), "Duplicate based on " + identityProperties));
 
                     // The "duplicate" might be the same as this (in case of an update)
                     if (duplicates.size() == 1) {
@@ -484,8 +483,6 @@ public class Entity {
             final boolean validated = JsonHelper.validateToSchema(schemaUri, mapper.valueToTree(data));
             if (!validated) {
                 throw new IllegalEntityType(createErrorMessage(400, getUuid(), "", "Failed to validate against type schema"));
-//                throw new IllegalEntityType("Entity with UUID " + getUuid() + " couldn't be created. It's data"
-//                        + "doesn't validate against its type schema.");
             }
         } else {
             maybeClassLabels = getClassLabels("Type");
@@ -510,6 +507,7 @@ public class Entity {
 
     /**
      * Persist this entity to neo4j.
+     *
      * @param labels The labels SDN needs to map this node onto an object.
      */
     private void persist(String... labels) {
@@ -519,7 +517,7 @@ public class Entity {
         properties.putAll(data.asMap().entrySet().stream()
                 .map(entry -> new AbstractMap.SimpleEntry<>("data-".concat(entry.getKey()), entry.getValue()))
                 .map(entry -> new AbstractMap.SimpleEntry<>(entry.getKey(),
-                        entry.getValue() instanceof JsonNode ? new JsonNodeWriter().convert((JsonNode)entry.getValue()) : entry.getValue()))
+                        entry.getValue() instanceof JsonNode ? new JsonNodeWriter().convert((JsonNode) entry.getValue()) : entry.getValue()))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
         properties.putAll(file.asMap().entrySet().stream()
                 .map(entry -> new AbstractMap.SimpleEntry<>("file-".concat(entry.getKey()), entry.getValue()))
@@ -560,7 +558,9 @@ public class Entity {
                 .forEach(persistedState::addLabel);
     }
 
-    /** Given a hierarchical path for a type from the type tree returns the domain class.
+    /**
+     * Given a hierarchical path for a type from the type tree returns the domain class.
+     *
      * @param path The hierarchical path for a type in the type tree.
      * @return Optionally the domain class name.
      */
@@ -585,6 +585,7 @@ public class Entity {
     /**
      * Given a name of a domain class that can be mapped to the graph, return the labels
      * SDN needs to map onto objects of that class.
+     *
      * @param nodeEntityName The name of the SDN mapped domain class.
      * @return Optionally a list of labels needed by SDN.
      */
@@ -629,6 +630,7 @@ public class Entity {
 
     /**
      * Called on instance entities to get the Type object the entity is an instance of.
+     *
      * @return The found type.
      */
     private Optional<Type> getInstanceOf() {
@@ -659,21 +661,21 @@ public class Entity {
         if (relations != null) {
 
 			/*
-			 * Create a set of all peers of all relations for the purpose of
+             * Create a set of all peers of all relations for the purpose of
 			 * existence checking.
 			 */
-			Set<String> allPeers = new HashSet<String>();
-			relations.forEach(relation -> allPeers.addAll(relation.getRight()));
+            Set<String> allPeers = new HashSet<String>();
+            relations.forEach(relation -> allPeers.addAll(relation.getRight()));
 
-			if (doPeersExist(allPeers)) {
+            if (doPeersExist(allPeers)) {
 
-				relations.forEach((relation) -> {
-					String rname = relation.getLeft();
-					String direction = relation.getMiddle();
-					Set<String> peers = relation.getRight();
+                relations.forEach((relation) -> {
+                    String rname = relation.getLeft();
+                    String direction = relation.getMiddle();
+                    Set<String> peers = relation.getRight();
 
-					peers.forEach((uuid) -> {
-						Node peer = nodeRepository.findGraphNodeByUuid(uuid);
+                    peers.forEach((uuid) -> {
+                        Node peer = nodeRepository.findGraphNodeByUuid(uuid);
 
                         // check if this relationship already exists by getting al relationships with the same name and direction
                         // and then checking if we have one to "peer".
@@ -696,29 +698,29 @@ public class Entity {
                                     node.createRelationshipTo(peer, () -> rname);
                             }
                         }
-					});
+                    });
 
-				});
-			} else {
-				log.error("One of the peers that entity \"{}\" would be related to, does not exist in the graph", name);
-			}
+                });
+            } else {
+                log.error("One of the peers that entity \"{}\" would be related to, does not exist in the graph", name);
+            }
 
-		} else {
-			log.error("Failed to persist relations for entity \"{}\". Are you sure the entity is in a persisted state?",
-					name);
-		}
+        } else {
+            log.error("Failed to persist relations for entity \"{}\". Are you sure the entity is in a persisted state?",
+                    name);
+        }
     }
 
     private boolean doPeersExist(Set<String> peers) {
-    	boolean result = true;
+        boolean result = true;
 
-    	for (String peer : peers) {
-    		if (nodeRepository.findByUuid(peer) == null) {
-    			result = false;
-    			break;
-    		}
-    	}
+        for (String peer : peers) {
+            if (nodeRepository.findByUuid(peer) == null) {
+                result = false;
+                break;
+            }
+        }
 
-    	return result;
+        return result;
     }
 }

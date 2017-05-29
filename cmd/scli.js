@@ -4,7 +4,6 @@ const R = require('ramda');
 const util = require('util');
 const helper = require('./helper');
 const clc = require('cli-color');
-const sprintf = require('sprintf-js').sprintf;
 const treeify = require('./treeify');
 const fs = require('fs');
 const path = require('path');
@@ -333,9 +332,7 @@ vorpal.command('discover <cidr>', 'Discover items in the network')
                 if(R.isEmpty(instance)) {
                     self.log('creating new network');
                     let i = mkNetwork({name: 'Ipv4Network', desc: 'A network', cidr: args.cidr});
-                    i.type = 'Component';
                     let g = mkGroup({name: 'group-'+args.cidr, desc: 'ipv4network root group'});
-                    g.type = 'Grouping';
                     let pair = graphLib.relateEntity(g, 'GROUPS', 'outgoing', i);
                     return rest.createInstance({entities: R.reverse(pair)})
                         .then(ins => rest.getInstanceByUuid(pair[1].meta.uuid))
