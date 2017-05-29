@@ -13,6 +13,7 @@ import com.raaftech.structure.exceptions.EntityDeserializationException;
 import com.raaftech.structure.exceptions.JsonValidationException;
 import com.raaftech.structure.helper.JsonHelper;
 import com.raaftech.structure.helper.Triple;
+import com.raaftech.structure.helper.loader.BundleLoader;
 import com.raaftech.structure.helper.loader.NaiveSorter;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -43,10 +44,11 @@ public class EntityDeserializer extends StdDeserializer<Entity> {
     private static final String FILE_DATASCHEMA = "dataSchema";
 
     private String bundle;
-    private String type;
     private String name;
     private String desc;
     private String uuid;
+
+    private boolean isInstance;
 
     private JsonNode metaJson;
     private JsonNode relationsJson;
@@ -87,11 +89,6 @@ public class EntityDeserializer extends StdDeserializer<Entity> {
 
         if (isRootType || JsonHelper.validateToSchema(entitySchema, entityJson)) {
 
-            /* Set type. */
-            type = entityJson.get("type").asText();
-            log.debug("Setting type to \"{}\"", type);
-            entity.setType(type);
-
             /* Set name. */
             name = entityJson.get("name").asText();
             log.debug("Setting name to \"{}\"", name);
@@ -104,6 +101,9 @@ public class EntityDeserializer extends StdDeserializer<Entity> {
 
             /* Load the meta object. */
             metaJson = entityJson.get("meta");
+
+            /* Set instance flag. */
+            isInstance = BundleLoader.isInstance(entityJson);
 
             /* Handle relations within meta. */
             relationsJson = metaJson.get("relations");
@@ -150,7 +150,7 @@ public class EntityDeserializer extends StdDeserializer<Entity> {
 
             // Persist identity
             final String identityKey = "identity";
-            if (metaJson.has(identityKey) && "Type".equals(type)) {
+            if (metaJson.has(identityKey) && !isInstance) {
                 final JsonNode identityProperty = metaJson.get(identityKey);
                 final Set<String> identity = identityProperty.isArray() ?
                         ImmutableSet.copyOf(mapper.convertValue(identityProperty, HashSet.class)) :
@@ -187,7 +187,8 @@ public class EntityDeserializer extends StdDeserializer<Entity> {
                 entity.setPath(path.toString());
             } else {
                 // this situation should not occur usually, because the entityloader will inject the file paths
-                path = pathHelper(new File(name.toLowerCase() + "." + type.toLowerCase() + ".json"));
+                path = pathHelper(new File(name.toLowerCase() + "."+
+                        (isInstance ? "instance" : "type") + ".json"));
                 log.debug("Constructed path from name and type as \"{}\"", path.toString());
                 entity.setPath(path.toString());
             }
@@ -202,7 +203,7 @@ public class EntityDeserializer extends StdDeserializer<Entity> {
             entity.setChecksum(checksum);
 
             /* If an entity has the meta key `abstract` and its a type, add it */
-            if (metaJson.has("abstract") && "Type".equals(type)) {
+            if (metaJson.has("abstract") && !isInstance) {
                 entity.setAbstract(metaJson.get("abstract").asBoolean());
             }
 
@@ -248,7 +249,7 @@ public class EntityDeserializer extends StdDeserializer<Entity> {
                         }
                     } else if (value.has("content")) {
                         // we don't lowercase the key variable, because the schema is case sensitive
-                        String pathString = String.join(".", name.toLowerCase(), type.toLowerCase(), key, format);
+                        String pathString = String.join(".", name.toLowerCase(), isInstance ? "instance" : "type", key, format);
                         log.debug("Created path from name, type, file key and format as \"{}\"", pathString);
                         value.put("path", pathString);
                         log.debug("Writing JSON object with name \"{}\" to file object", key);

@@ -71,9 +71,6 @@ public class Entity {
     @Indexed(indexType = IndexType.FULLTEXT, indexName = "bundle")
     private String bundle;
 
-    @Indexed(indexType = IndexType.FULLTEXT, indexName = "type")
-    private String type;
-
     @Indexed(indexType = IndexType.FULLTEXT, indexName = "name")
     private String name;
 
@@ -130,10 +127,6 @@ public class Entity {
 	/* Getters. */
     public String getBundle() {
         return bundle;
-    }
-
-    public String getType() {
-        return type;
     }
 
     public String getName() {
@@ -197,10 +190,6 @@ public class Entity {
     /* Setters. */
     public void setBundle(String bundle) {
         this.bundle = bundle;
-    }
-
-    public void setType(String type) {
-        this.type = type;
     }
 
     public void setName(String name) {
@@ -292,6 +281,10 @@ public class Entity {
      * @return True if this entity is of the "instance" variety.
      */
     public boolean isInstance() {
+        if (getRelations() == null) {
+            throw new RuntimeException("Cannot determine type of entity " +
+                    "when entity (\"" + getUuid() + "\" has no relations");
+        }
         return getRelations().stream()
                 .anyMatch(triple -> "INSTANCE_OF".equals(triple.getLeft()));
     }
@@ -302,10 +295,10 @@ public class Entity {
      * @throws IllegalArgumentException Thrown when called on a non "Type" entity.
      */
     public void setAbstract(boolean isAbstract) {
-        if ("Type".equals(type)) {
-            this.isAbstract = isAbstract;
-        } else {
+        if (isInstance()) {
             throw new IllegalArgumentException("Only a \"Type\" entity can be made abstract.");
+        } else {
+            this.isAbstract = isAbstract;
         }
     }
 
@@ -514,9 +507,6 @@ public class Entity {
         if (bundle != null) {
             properties.put("bundle", bundle);
         }
-        if (type != null) {
-            properties.put("type", type);
-        }
         if (name != null) {
             properties.put("name", name);
         }
@@ -535,7 +525,7 @@ public class Entity {
         if (identity != null) {
             properties.put("identity", identity);
         }
-        if ("Type".equals(type)) {
+        if (!isInstance()) {
             properties.put("isAbstract", isAbstract);
         }
 
@@ -597,17 +587,17 @@ public class Entity {
 
     private void persistTypeLabels(Node node) {
         /* Add labels as Neo4j labels. Node will be null if entity is not persisted. */
-        if (node != null && type !=null && uuid != null) {
+        if (node != null && uuid != null) {
             final Set<String> labels;
-            if ("Type".equals(type)) {
-                labels = nodeRepository.getTypeHierarchyForTypeUuid(uuid);
-            } else {
+            if (isInstance()) {
                 Optional<Type> maybeType = getInstanceOf();
                 if (maybeType.isPresent()) {
                     labels = nodeRepository.getTypeHierarchyForTypeUuid(maybeType.get().getUuid());
                 } else {
                     throw new TypeUnknownException("Type for entity \"" + uuid + "\" doesn't exist");
                 }
+            } else {
+                labels = nodeRepository.getTypeHierarchyForTypeUuid(uuid);
             }
             labels.stream()
                     .map(s -> "type:".concat(s))
@@ -622,7 +612,7 @@ public class Entity {
      * @return The found type.
      */
     private Optional<Type> getInstanceOf() {
-        if ("Type".equals(type)) {
+        if (!isInstance()) {
             throw new IllegalArgumentException("Cannot get the type of a type entity.");
         }
         Optional<String> instanceOfUuid = getRelations().stream()
