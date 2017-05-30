@@ -86,7 +86,7 @@ class Helper {
         let c = this.fuzzyMatch(dist);
         if(R.isNil(c)) {
             c = this.typeByName('OperatingSystem');
-        } 
+        }
         let mkInstance = graphLib.createInstance(c);
         let result = mkInstance({
                     name: c.name,
@@ -95,7 +95,6 @@ class Helper {
                     shortName: c.name,
                     longName: c.name
                 });
-        result.type = 'Component';
         return result;
     }
 
@@ -134,7 +133,6 @@ class Helper {
             }
         }
         
-        instance.type = 'Component';
         return instance;
     }
 
@@ -151,7 +149,6 @@ class Helper {
             shortName: c.name,
             longName: c.name
         });
-        result.type = 'Component';
         return result;
     }
 
@@ -160,7 +157,6 @@ class Helper {
         if(sshd === 'ssh') sshd = 'SshServer';
         if(R.isNil(sshd)) sshd = 'none';
 
-        console.log('ssh: %s', sshd);
         let ssh = this.typeByName(sshd);
         let list = [];
 
@@ -172,7 +168,6 @@ class Helper {
                 shortName: ssh.name,
                 longName: ssh.name
             });
-            ssh.type = 'Component';
             list.push(ssh);
         } else if(R.isNil(ssh) && sshd !== 'none') {
             ssh = mkInstance({
@@ -182,7 +177,6 @@ class Helper {
                 shortName: ssh.name,
                 longName: ssh.name
             });
-            ssh.type = 'Component';
             list.push(ssh);
         }
 
@@ -197,7 +191,6 @@ class Helper {
             desc: 'Either a short name or a fully-qualified domain name.',
             dnsname: R.defaultTo(ip, dns)
         });
-        dnsd.type = 'Component';
         return dnsd;
     }
 
@@ -210,7 +203,6 @@ class Helper {
             addr: ip,
             reachable: reachable
         });
-        ipd.type = 'Component';
         return ipd;
     }
 
@@ -237,7 +229,6 @@ class Helper {
         const genInstance = (name) => {
             let t = this.typeByName(name);
             let i = graphLib.createInstance(t, mkData(t.name, t.desc, 'x', t.name,t.name));
-            i.type = 'Component';
             return i;
         };
 
@@ -254,7 +245,6 @@ class Helper {
         let mkInstance = graphLib.createInstance(graphLib.findTypeByName(this.types, 'ComponentGroup'));
 
         let computer = mkInstance({name: 'Computer', desc: 'A computer'});
-        computer.type = 'Grouping';
         return computer;
     }
 

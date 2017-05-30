@@ -5,7 +5,6 @@ const cmd = require('command-line-args');
 const getUsage = require('command-line-usage');
 const ansibleLib = require('./ansibleLib');
 const Helper = require('./helper');
-const serviceHelper = require('./serviceHelper');
 const RestConnector = require('./restConnector');
 
 const optionDefs = [
@@ -34,7 +33,6 @@ rest.setToken(options.token);
 const log = (x) => console.log(JSON.stringify(x, undefined, 2));
 
 const main = (types) => {
-    const getSshService = serviceHelper.getService('ssh');
     const helper = new Helper(types);
 
     ansibleLib.setup('localhost')
@@ -42,11 +40,7 @@ const main = (types) => {
                     log(result);
                     let subGraph = helper.bootstrapTransform(result, '127.0.0.1','ssh', options.hostname);
                     let promises = [];
-                    //TODO remove this debug code
-//                    log(subGraph.os);
-//                    console.log(helper.getTypeMap(subGraph.entities));
-//                    console.log(helper.getTypeMap([subGraph.os]));
-//                    console.log(helper.getTypeMap([subGraph.root]));
+
                     R.forEach(item => {
                         promises.push(rest.createInstance({entities: [item]}));
                     }, subGraph.entities);
