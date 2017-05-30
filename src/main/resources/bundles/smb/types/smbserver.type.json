@@ -1,5 +1,4 @@
 {
-    "type": "Type",
     "name": "SmbServer",
     "desc": "A generic SMB/CIFS Server.",
     "meta": {

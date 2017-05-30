@@ -221,7 +221,7 @@ public class Type extends Node {
      * contain errors encountered during validation.
      */
     public Pair<Boolean, Set<String>> validateEntityToConstraints(Entity entity) {
-        if ("Type".equals(entity.getType())) {
+        if (!entity.isInstance()) {
             throw new IllegalArgumentException("Constraints can only be validated for non-type entities.");
         }
 

@@ -1,5 +1,4 @@
 {
-    "type": "Type",
     "name": "Software",
     "desc": "An abstract software component.",
     "meta": {

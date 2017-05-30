@@ -1,5 +1,4 @@
 {
-    "type": "Type",
     "name": "ServiceManager",
     "desc": "An operating system initialization system.",
     "meta": {

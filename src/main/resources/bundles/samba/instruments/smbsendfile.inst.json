@@ -1,5 +1,4 @@
 {
-  "type": "Controller",
   "name": "SmbClientSendFile",
   "desc": "The handler that provides the SendFile capability to smbclient..",
   "meta": {

@@ -55,7 +55,6 @@ public class NodeSerializer extends StdSerializer<Node> {
 
         // start json
         gen.writeStartObject();
-        gen.writeStringField("type", value.getType());
         gen.writeStringField("name", value.getName());
         gen.writeStringField("desc", value.getDesc());
 

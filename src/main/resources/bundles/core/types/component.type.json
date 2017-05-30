@@ -1,5 +1,4 @@
 {
-    "type": "Type",
     "name": "Component",
     "desc": "An abstract base component.",
     "meta": {

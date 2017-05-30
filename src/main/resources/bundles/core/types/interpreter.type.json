@@ -1,5 +1,4 @@
 {
-    "type": "Type",
     "name": "Interpreter",
     "desc": "A command or programming language interpreter.",
     "meta": {

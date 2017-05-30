@@ -1,5 +1,4 @@
 {
-    "type": "Type",
     "name": "Winexe",
     "desc": "A *nix smb client.",
     "meta": {

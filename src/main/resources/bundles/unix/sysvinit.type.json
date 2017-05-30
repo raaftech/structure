@@ -1,5 +1,4 @@
  {
-    "type": "Type",
     "name": "SysvInit",
     "desc": "SysV Init Service Manager.",
     "meta": {

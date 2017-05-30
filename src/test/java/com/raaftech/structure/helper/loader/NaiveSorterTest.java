@@ -2,6 +2,8 @@ package com.raaftech.structure.helper.loader;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.raaftech.structure.base.Context;
+import mockit.Mocked;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.junit.Test;
 
@@ -16,7 +18,7 @@ public class NaiveSorterTest {
     private final ObjectMapper mapper = new ObjectMapper();
 
     @Test
-    public void calculateChecksum() throws Exception {
+    public void calculateChecksum(@Mocked Context context) throws Exception {
         /*
          Objects a and b only differ in the order of their keys. This should never trigger an update, so our checksum
          calculation should return the same checksums for both objects.
@@ -26,7 +28,6 @@ public class NaiveSorterTest {
 
         ObjectNode a = mapper.createObjectNode()
                 .put("name", "Foo")
-                .put("type", "Component")
                 .put("desc", "Foo.");
         ObjectNode meta = a
                 .putObject("meta")
@@ -37,7 +38,6 @@ public class NaiveSorterTest {
         rela.putArray("uuids").add(instanceOf);
 
         ObjectNode b = mapper.createObjectNode()
-                .put("type", "Component")
                 .put("desc", "Foo.")
                 .put("name", "Foo");
         ObjectNode metb = b

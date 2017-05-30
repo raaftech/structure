@@ -84,7 +84,6 @@ public class TypeTest {
         is never validated against a constraint.
          */
         JsonNode entityJson = mapper.readTree("  {" +
-                "  \"type\": \"Component\"," +
                 "  \"name\": \"NVMe\"," +
                 "  \"desc\": \"An NVMe solid state disk.\"," +
                 "  \"meta\": {" +
@@ -176,7 +175,6 @@ public class TypeTest {
         is never validated against a constraint.
          */
         JsonNode entityJson = mapper.readTree("  {" +
-                "  \"type\": \"Component\"," +
                 "  \"name\": \"NVMe\"," +
                 "  \"desc\": \"An NVMe solid state disk.\"," +
                 "  \"meta\": {" +
@@ -269,7 +267,6 @@ public class TypeTest {
         is never validated against a constraint.
          */
         JsonNode entityJson = mapper.readTree("  {" +
-                "  \"type\": \"Component\"," +
                 "  \"name\": \"NVMe\"," +
                 "  \"desc\": \"An NVMe solid state disk.\"," +
                 "  \"meta\": {" +
@@ -400,7 +397,6 @@ public class TypeTest {
         is never validated against a constraint.
          */
         JsonNode entityJson = mapper.readTree("  {" +
-                "  \"type\": \"Component\"," +
                 "  \"name\": \"NVMe\"," +
                 "  \"desc\": \"An NVMe solid state disk.\"," +
                 "  \"meta\": {" +

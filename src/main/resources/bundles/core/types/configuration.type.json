@@ -1,5 +1,4 @@
 {
-    "type": "Type",
     "name": "Configuration",
     "desc": "An abstract configuration component.",
     "meta": {

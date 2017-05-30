@@ -71,7 +71,7 @@ public class BundleLoader {
      */
     private List<JsonNode> getSortedTypes() {
         return sortedNodes.stream()
-                .filter(json -> Objects.equals("Type", json.get("type").asText()))
+                .filter(json -> !isInstance(json))
                 .collect(Collectors.toList());
     }
 
@@ -81,8 +81,17 @@ public class BundleLoader {
      */
     private List<JsonNode> getSortedInstances() {
         return sortedNodes.stream()
-                .filter(json -> !Objects.equals("Type", json.get("type").asText()))
+                .filter(BundleLoader::isInstance)
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * Given an entity JsonNode returns whether it's an instance or not.
+     * @param entityJson The entity JSON.
+     * @return True in case of an instance, false otherwise.
+     */
+    public static boolean isInstance(JsonNode entityJson) {
+        return entityJson.path("meta").path("relations").has("INSTANCE_OF");
     }
 
     /**

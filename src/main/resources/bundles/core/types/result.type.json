@@ -1,5 +1,4 @@
 {
-    "type": "Type",
     "name": "Result",
     "desc": "A result from an operation.",
     "meta": {

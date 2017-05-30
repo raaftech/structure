@@ -1,6 +1,5 @@
 [
     {
-        "type": "Type",
         "name": "IpNetwork",
         "desc": "An IP network.",
         "meta": {
@@ -32,7 +31,6 @@
         }
     },
     {
-        "type": "Type",
         "name": "Ipv4Network",
         "desc": "An IPv4 network.",
         "meta": {

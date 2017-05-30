@@ -1,5 +1,4 @@
 {
-    "type": "Type",
     "name": "Profile",
     "desc": "A profile of software which includes its parts like binaries, data files, directories, etc.",
     "meta": {

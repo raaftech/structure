@@ -1,5 +1,4 @@
 {
-    "type": "Type",
     "name": "Tcsh",
     "desc": "The TENEX C Shell.",
     "meta": {

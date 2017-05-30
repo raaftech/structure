@@ -108,7 +108,11 @@ public abstract class Node {
     }
 
     public String getType() {
-        return type;
+        if (this instanceof Type) {
+            return "Type";
+        } else {
+            return "Instance";
+        }
     }
 
     public String getBundle() {

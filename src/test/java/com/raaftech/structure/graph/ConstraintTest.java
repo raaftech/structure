@@ -64,8 +64,9 @@ public class ConstraintTest {
                 Constraint.Cardinality.REQUIRED_TO_ONE, relationshipName);
 
         new Expectations() {{
-            entity.getType();
-            result = "Component";
+            // Constraint validation only works on instances
+            entity.isInstance();
+            result = true;
 
             entity.getRelations();
             /*
@@ -163,8 +164,9 @@ public class ConstraintTest {
                 Constraint.Cardinality.REQUIRED_TO_MANY, relationshipName);
 
         new Expectations() {{
-            entity.getType();
-            result = "Component";
+            // Constraint validation only works on instances
+            entity.isInstance();
+            result = true;
 
             entity.getRelations();
             /*
@@ -214,8 +216,9 @@ public class ConstraintTest {
                 Constraint.Cardinality.REQUIRED_TO_MANY, relationshipName);
 
         new Expectations() {{
-            entity.getType();
-            result = "Component";
+            // Constraint validation only works on instances
+            entity.isInstance();
+            result = true;
 
             entity.getRelations();
             /*
@@ -298,11 +301,6 @@ public class ConstraintTest {
     @Test
     public void testVerificationOnType(@Mocked Type type, @Mocked Entity entity) throws Exception {
         Constraint constraint = new Constraint(type, type, Constraint.Cardinality.OPTIONAL_TO_MANY, "TEST_REL");
-
-        new Expectations() {{
-            entity.getType();
-            result = "Type";
-        }};
 
         thrown.expect(IllegalArgumentException.class);
         constraint.validateConstraint(entity);

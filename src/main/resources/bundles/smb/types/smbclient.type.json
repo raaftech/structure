@@ -1,5 +1,4 @@
 {
-    "type": "Type",
     "name": "SmbClient",
     "desc": "A generic SMB/CIFS Client.",
     "meta": {

@@ -71,9 +71,6 @@ public class Entity {
     @Indexed(indexType = IndexType.FULLTEXT, indexName = "bundle")
     private String bundle;
 
-    @Indexed(indexType = IndexType.FULLTEXT, indexName = "type")
-    private String type;
-
     @Indexed(indexType = IndexType.FULLTEXT, indexName = "name")
     private String name;
 
@@ -130,10 +127,6 @@ public class Entity {
 	/* Getters. */
     public String getBundle() {
         return bundle;
-    }
-
-    public String getType() {
-        return type;
     }
 
     public String getName() {
@@ -199,10 +192,6 @@ public class Entity {
         this.bundle = bundle;
     }
 
-    public void setType(String type) {
-        this.type = type;
-    }
-
     public void setName(String name) {
         this.name = name;
     }
@@ -246,6 +235,9 @@ public class Entity {
      * @return Did the relations object change?
      */
 	public boolean addRelations(String relationName, Direction direction, Set<UUID> uuids) {
+	    if (relations == null) {
+	        relations = new HashSet<>();
+        }
         final Set<Triple<String, String, Set<String>>> relevantTriples = relations.stream()
                 .filter(t -> t.getLeft().equals(relationName))
                 .collect(Collectors.toSet());
@@ -288,15 +280,28 @@ public class Entity {
     }
 
     /**
+     * An entity can either be of the "type" or "instance" variety.
+     * @return True if this entity is of the "instance" variety.
+     */
+    public boolean isInstance() {
+        if (getRelations() == null) {
+            throw new RuntimeException("Cannot determine type of entity " +
+                    "when entity (\"" + getUuid() + "\" has no relations");
+        }
+        return getRelations().stream()
+                .anyMatch(triple -> "INSTANCE_OF".equals(triple.getLeft()));
+    }
+
+    /**
      * Sets whether an entity is abstract. Can only be used on "Type" entities.
      * @param isAbstract True if this is an abstract entity.
      * @throws IllegalArgumentException Thrown when called on a non "Type" entity.
      */
     public void setAbstract(boolean isAbstract) {
-        if ("Type".equals(type)) {
-            this.isAbstract = isAbstract;
-        } else {
+        if (isInstance()) {
             throw new IllegalArgumentException("Only a \"Type\" entity can be made abstract.");
+        } else {
+            this.isAbstract = isAbstract;
         }
     }
 
@@ -404,18 +409,27 @@ public class Entity {
     }
 
     public void toGraph() {
-        if (!getType().equals("Type")) {
+        final Optional<List<String>> maybeClassLabels;
+        if (isInstance()) {
             final Optional<Type> maybeInstanceOf = getInstanceOf();
             if (!maybeInstanceOf.isPresent()) {
                 throw new IllegalEntityType("Entity with UUID " + getUuid() + " couldn't be created. It's an instance,"
                         + " but its type couldn't be retrieved from the graph.");
             }
             final Type instanceOf = maybeInstanceOf.get();
+            final Optional<String> maybeDomainClass =
+                    getDomainClassForPath(instanceOf.getHierarchyPath());
+
+            if (!maybeDomainClass.isPresent()) {
+                throw new IllegalEntityType("Entity with UUID \"" + getUuid() + "\" couldn't be created. It's an instance of " +
+                        "\"" + instanceOf.getName() + "\", but that type doesn't map to a domain class.");
+            }
+            maybeClassLabels = getClassLabels(maybeDomainClass.get());
 
             // See if the type we try to instantiate is abstract
             if (instanceOf.isAbstract()) {
                 throw new IllegalEntityType("Entity with UUID \"" + getUuid() + "\" tries to instantiate the abstract Type " +
-                        "\"" + instanceOf.getUuid() + "\".");
+                        "\"" + instanceOf.getName() + "\".");
             }
 
             // See if this instance validates against its type's constraints
@@ -456,9 +470,18 @@ public class Entity {
                 throw new IllegalEntityType("Entity with UUID " + getUuid() + " couldn't be created. It's data"
                         + "doesn't validate against its type schema.");
             }
+        } else {
+            maybeClassLabels = getClassLabels("Type");
         }
 
-        persist();
+        // This shouldn't happen
+        if (!maybeClassLabels.isPresent()) {
+            throw new IllegalEntityType("Entity with UUID " + getUuid() + " couldnt be created. We did not " +
+                    "retrieve any of its labels.");
+        }
+        final List<String> classLabels = maybeClassLabels.get();
+
+        persist(classLabels.toArray(new String[classLabels.size()]));
         Node node = getPersistentState();
         persistRelations(node);
         persistTypeLabels(node);
@@ -468,7 +491,13 @@ public class Entity {
         return persistedState;
     }
 
-    private void persist() {
+    /**
+     * Persist this entity to neo4j.
+     * @param labels The labels SDN needs to map this node onto an object.
+     */
+    private void persist(String... labels) {
+        final List<String> labelsToPersist = ImmutableList.copyOf(Arrays.asList(labels));
+
         Map<String, Object> properties = new HashMap<>();
         properties.putAll(data.asMap().entrySet().stream()
                 .map(entry -> new AbstractMap.SimpleEntry<>("data-".concat(entry.getKey()), entry.getValue()))
@@ -480,9 +509,6 @@ public class Entity {
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
         if (bundle != null) {
             properties.put("bundle", bundle);
-        }
-        if (type != null) {
-            properties.put("type", type);
         }
         if (name != null) {
             properties.put("name", name);
@@ -502,51 +528,79 @@ public class Entity {
         if (identity != null) {
             properties.put("identity", identity);
         }
-        if ("Type".equals(type)) {
+        if (!isInstance()) {
             properties.put("isAbstract", isAbstract);
         }
 
         /* we use neo4jTemplate.merge(...), which is basically getOrCreate(...). Now, if the entity
         already existed, but has changed properties, we need to update them using Node.setProperty(...).
         I did not find a way in the API to do this atomically, like "SET" would do in Cypher */
-        persistedState = neo4jTemplate.merge("Node", "uuid", uuid, properties, getClassLabels(type));
+        persistedState = neo4jTemplate.merge("Node", "uuid", uuid, properties, labelsToPersist);
         properties.entrySet().stream().forEach(entry -> persistedState.setProperty(entry.getKey(), entry.getValue()));
         persistedState.getLabels().forEach(label -> persistedState.removeLabel(label));
-        getClassLabels(type).stream()
+        labelsToPersist.stream()
                 .map(DynamicLabel::label)
                 .forEach(persistedState::addLabel);
     }
 
-    private static List<String> getClassLabels(String type) {
-        // A map containing the labels needed per type
+    /** Given a hierarchical path for a type from the type tree returns the domain class.
+     * @param path The hierarchical path for a type in the type tree.
+     * @return Optionally the domain class name.
+     */
+    private static Optional<String> getDomainClassForPath(String path) {
+        // A map containing the domain class belonging to a particular type hierarchical path
+        Map<String, String> domainClassPerPath = ImmutableMap.<String, String>builder()
+                .put("type.instrument.controller", "Controller")
+                .put("type.instrument.marker", "Marker")
+                .put("type.instrument.parser", "Parser")
+                .put("type.component", "Component")
+                .put("type.profile", "Profile")
+                .put("type.result", "Result")
+                .put("type.grouping", "Grouping")
+                .build();
+
+        return domainClassPerPath.entrySet().stream()
+                .filter(entry -> path.startsWith(entry.getKey()))
+                .map(Map.Entry::getValue)
+                .findFirst();
+    }
+
+    /**
+     * Given a name of a domain class that can be mapped to the graph, return the labels
+     * SDN needs to map onto objects of that class.
+     * @param nodeEntityName The name of the SDN mapped domain class.
+     * @return Optionally a list of labels needed by SDN.
+     */
+    private static Optional<List<String>> getClassLabels(String nodeEntityName) {
+        // A map containing the labels needed per nodeEntityName
         Map<String, List<String>> labelsPerType = ImmutableMap.<String, List<String>>builder()
                 .put("Controller", ImmutableList.of("_Controller", "Controller", "Instrument", "Instance", "Node"))
                 .put("Marker", ImmutableList.of("_Marker", "Marker", "Instrument", "Instance", "Node"))
                 .put("Parser", ImmutableList.of("_Parser", "Parser", "Instrument", "Instance", "Node"))
                 .put("Component", ImmutableList.of("_Component", "Component", "Instance", "Node"))
                 .put("Profile", ImmutableList.of("_Profile", "Profile", "Instance", "Node"))
-                .put("Actor", ImmutableList.of("_Actor", "Actor", "Instance", "Node"))
                 .put("Result", ImmutableList.of("_Result", "Result", "Instance", "Node"))
                 .put("Grouping", ImmutableList.of("_Grouping", "Grouping", "Instance", "Node"))
                 .put("Type", ImmutableList.of("_Type", "Type", "Node"))
                 .build();
 
-        return labelsPerType.get(type);
+        return labelsPerType.containsKey(nodeEntityName) ?
+                Optional.of(labelsPerType.get(nodeEntityName)) : Optional.empty();
     }
 
     private void persistTypeLabels(Node node) {
         /* Add labels as Neo4j labels. Node will be null if entity is not persisted. */
-        if (node != null && type !=null && uuid != null) {
+        if (node != null && uuid != null) {
             final Set<String> labels;
-            if ("Type".equals(type)) {
-                labels = nodeRepository.getTypeHierarchyForTypeUuid(uuid);
-            } else {
+            if (isInstance()) {
                 Optional<Type> maybeType = getInstanceOf();
                 if (maybeType.isPresent()) {
                     labels = nodeRepository.getTypeHierarchyForTypeUuid(maybeType.get().getUuid());
                 } else {
                     throw new TypeUnknownException("Type for entity \"" + uuid + "\" doesn't exist");
                 }
+            } else {
+                labels = nodeRepository.getTypeHierarchyForTypeUuid(uuid);
             }
             labels.stream()
                     .map(s -> "type:".concat(s))
@@ -561,7 +615,7 @@ public class Entity {
      * @return The found type.
      */
     private Optional<Type> getInstanceOf() {
-        if ("Type".equals(type)) {
+        if (!isInstance()) {
             throw new IllegalArgumentException("Cannot get the type of a type entity.");
         }
         Optional<String> instanceOfUuid = getRelations().stream()

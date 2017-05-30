@@ -1,5 +1,4 @@
 {
-  "type": "Marker",
   "name": "SmbReceiveFile",
   "desc": "A marker handler that marks SmbServer with ReceiveFile..",
   "meta": {

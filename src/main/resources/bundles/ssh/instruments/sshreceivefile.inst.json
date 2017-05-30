@@ -1,5 +1,4 @@
 {
-  "type": "Marker",
   "name": "SshServerReceiveFile",
   "desc": "A marker handler that marks SshServer with ReceiveFile..",
   "meta": {

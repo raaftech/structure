@@ -1,5 +1,4 @@
 {
-    "type": "Type",
     "name": "CmdShell",
     "desc": "A Windows command shell.",
     "meta": {

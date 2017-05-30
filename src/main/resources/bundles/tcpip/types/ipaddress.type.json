@@ -1,6 +1,5 @@
 [
     {
-        "type": "Type",
         "name": "IpAddress",
         "desc": "An IP address (address only, can be assigned to a network interface).",
         "meta": {
@@ -32,7 +31,6 @@
         }
     },
     {
-        "type": "Type",
         "name": "Ipv4Address",
         "desc": "An IPv4 address (address only, can be assigned to a network interface).",
         "meta": {

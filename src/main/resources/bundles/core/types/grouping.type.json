@@ -1,6 +1,5 @@
 [
     {
-        "type": "Type",
         "name": "Grouping",
         "desc": "A group of references to things.",
         "meta": {
@@ -24,7 +23,6 @@
         }
     },
     {
-        "type": "Type",
         "name": "ComponentGroup",
         "desc": "A group for organizing references to components.",
         "meta": {

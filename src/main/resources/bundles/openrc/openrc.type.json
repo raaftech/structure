@@ -1,5 +1,4 @@
  {
-    "type": "Type",
     "name": "OpenRc",
     "desc": "OpenRC Service Manager.",
     "meta": {

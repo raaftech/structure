@@ -1,5 +1,4 @@
 {
-    "type": "Type",
     "name": "SshClient",
     "desc": "A generic SSH Client.",
     "meta": {
