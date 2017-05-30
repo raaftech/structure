@@ -72,9 +72,9 @@ public class EntityTest {
     @Autowired
     private Neo4jTemplate neo4jTemplate;
 
-    private String createJson(String type, String name, String desc, String meta, String file, String data) {
-        if(data == null) return String.format("{\"type\": \"%s\", \"name\": \"%s\", \"desc\": \"%s\",\"meta\": %s, \"file\": %s}", type, name, desc, meta, file);
-        else return String.format("{\"type\": \"%s\", \"name\": \"%s\", \"desc\": \"%s\",\"meta\": %s, \"file\": %s, \"data\": %s}", type, name, desc, meta, file, data);
+    private String createJson(String name, String desc, String meta, String file, String data) {
+        if(data == null) return String.format("{\"name\": \"%s\", \"desc\": \"%s\",\"meta\": %s, \"file\": %s}", name, desc, meta, file);
+        else return String.format("{\"name\": \"%s\", \"desc\": \"%s\",\"meta\": %s, \"file\": %s, \"data\": %s}", name, desc, meta, file, data);
     }
 
     private String createMetaSection(String bundle, String uuid, String relations) {
@@ -338,7 +338,7 @@ public class EntityTest {
         final String format = "json";
         final String path = "component.schema.json";
         final String content = "{\\n  \\\"$schema\\\": \\\"http://json-schema.org/schema#\\\",\\n  \\\"additionalProperties\\\": false,\\n  \\\"type\\\": \\\"object\\\",\\n  \\\"properties\\\": {\\n    \\\"name\\\": {\\n      \\\"type\\\": \\\"string\\\",\\n      \\\"description\\\": \\\"The name of this node.\\\"\\n    },\\n    \\\"desc\\\": {\\n      \\\"type\\\": \\\"string\\\",\\n      \\\"description\\\": \\\"The description of this node.\\\"\\n    }\\n  },\\n  \\\"required\\\": [\\n    \\\"name\\\",\\n    \\\"desc\\\"\\n  ]\\n}";
-        final String entityJson = createJson("Type", "Component", "An abstract base component.",
+        final String entityJson = createJson("Component", "An abstract base component.",
                 createMetaSection("core", "a79ce509-a021-4177-ae61-73abd01fb479",createRelationSection()),
                 createFileSection(encoding, format, null, path,content), null);
 
@@ -368,7 +368,7 @@ public class EntityTest {
         final String format = "json";
         final String path = "component.instance.dataSchema.json";
         final String content = "{\\n  \\\"$schema\\\": \\\"http://json-schema.org/schema#\\\",\\n  \\\"additionalProperties\\\": false,\\n  \\\"type\\\": \\\"object\\\",\\n  \\\"properties\\\": {\\n    \\\"name\\\": {\\n      \\\"type\\\": \\\"string\\\",\\n      \\\"description\\\": \\\"The name of this node.\\\"\\n    },\\n    \\\"desc\\\": {\\n      \\\"type\\\": \\\"string\\\",\\n      \\\"description\\\": \\\"The description of this node.\\\"\\n    }\\n  },\\n  \\\"required\\\": [\\n    \\\"name\\\",\\n    \\\"desc\\\"\\n  ]\\n}";
-        final String entityJson = createJson("Type", "Component", "An abstract base component.",
+        final String entityJson = createJson("Component", "An abstract base component.",
                 createMetaSection("core", "a79ce509-a021-4177-ae61-73abd01fb479", createRelationSection()),
                 createFileSection(encoding, format, null, null, content), null);
         Entity entity = mapper.readValue(entityJson, Entity.class);
@@ -394,7 +394,7 @@ public class EntityTest {
     public void testNoPathNoContentDeserialization() throws Exception {
         final String encoding = "text";
         final String format = "json";
-        final String entityJson = createJson("Type", "Component", "An abstract base component.",
+        final String entityJson = createJson("Component", "An abstract base component.",
                 createMetaSection("core", "a79ce509-a021-4177-ae61-73abd01fb479", createRelationSection()),
                 createFileSection(encoding, format,null,null,null), null);
 
@@ -407,7 +407,7 @@ public class EntityTest {
      */
     @Test
     public void testIncorrectEmbeddedFileDeserialization() throws Exception {
-        final String entityJson = createJson("Type", "Component", "An abstract base component.",
+        final String entityJson = createJson("Component", "An abstract base component.",
                 createMetaSection("core", "a79ce509-a021-4177-ae61-73abd01fb479", createRelationSection()),
                 createFileSection("text", "json",null, "component.schema.json", "{\\\"$schema\\\": \\\"INVALIDJSON\\\""), null);
 
@@ -425,7 +425,7 @@ public class EntityTest {
         final String path = "component.schema.json";
         final String content = "{\\\"foo\\\":\\\"bar\\\"}";
         final String checksum = "e90bf31cb76a0d7807312c4a3d2b5a96c4313101";
-        final String entityJson = createJson("Type", "Component", "An abstract base component.",
+        final String entityJson = createJson("Component", "An abstract base component.",
                 createMetaSection("core", "a79ce509-a021-4177-ae61-73abd01fb479", createRelationSection()),
                 createFileSection(encoding, format,checksum, path, content), null);
 
@@ -442,7 +442,7 @@ public class EntityTest {
         final String path = "component.schema.json";
         final String content = "{\\\"foo\\\":\\\"bar\\\"}";
         final String checksum = "cafebabedeadbeeff01dab1eca11ab1edeadbea7";
-        final String entityJson = createJson("Type", "Component", "An abstract base component.",
+        final String entityJson = createJson("Component", "An abstract base component.",
                 createMetaSection("core", "a79ce509-a021-4177-ae61-73abd01fb479", createRelationSection()),
                 createFileSection(encoding, format,checksum, path, content), null);
 
@@ -452,7 +452,7 @@ public class EntityTest {
 
     @Test
     public void testInvalidDataDeserialization() throws Exception {
-        final String componentJson = createJson("Type", "Component", "An abstract base component.",
+        final String componentJson = createJson("Component", "An abstract base component.",
                 createMetaSection("core", "a79ce509-a021-4177-ae61-73abd01fb479", createRelationSection()),
                 createFileSection("text", "json",null, "component.schema.json", null),
                 "{\"invalid\": \"foo\", \"object\": \"bar\"}");
