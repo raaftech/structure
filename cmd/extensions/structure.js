@@ -64,7 +64,8 @@ module.exports = function(vorpal, opts) {
             let loggedIn = () => {
                 rest.bootstrap()
                     .then(result => {
-                        self.log(result);
+                        if(R.has('error'))
+                            self.log(result);
                         done();
                     })
                     .catch(helper.genericCatchHandler(done));
@@ -143,7 +144,9 @@ module.exports = function(vorpal, opts) {
             let loggedIn = () => {
                 rest.purgeInit()
                     .then(result => {
-                        done();})
+                        console.log(result);
+                        done();
+                    })
                     .catch(helper.genericCatchHandler(done));
             };
 

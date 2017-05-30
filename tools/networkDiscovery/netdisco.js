@@ -20,7 +20,7 @@ const options = cmd(optionDefs);
 
 const sections = [
     {
-        header: 'structure bootstrap',
+        header: 'structure network discovery instrument',
         content: 'Wraps the nmap command for discovering a network'
     },
     {
@@ -47,7 +47,7 @@ const resolvePersistErrors = (network, list) => {
         network.meta.relations.HAS.uuids = R.append(uuid, network.meta.relations.HAS.uuids);
         return network;
     };
-    
+    console.log(list);
     list = filterErrors(list);
 
     let result = {
@@ -118,7 +118,8 @@ const main = (db) => {
                             .then(createdNetwork => console.log(createdNetwork))
                             .catch(ex => console.log(ex));
                     }
-                });
+                })
+                .catch(ex => console.log(ex));
         })
         .catch(ex => console.log(ex));
 };

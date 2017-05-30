@@ -54,7 +54,6 @@ class Helper {
             reachable: reachable
         });
         ipd.name = ip;
-        ipd.type = 'Component';
         return ipd;
     }
 
@@ -67,7 +66,6 @@ class Helper {
             dnsname: dnsname
         });
         dns.name = dnsname;
-        dns.type = 'Component';
         return dns;
     }
 
@@ -83,7 +81,6 @@ class Helper {
             cidr: cidr
         });
         network.name = R.defaultTo('Ipv4Network', netName);
-        network.type = 'Component';
         return network;
     }
 }

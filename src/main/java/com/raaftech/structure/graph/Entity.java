@@ -305,7 +305,7 @@ public class Entity {
      */
     public void setAbstract(boolean isAbstract) {
         if (isInstance()) {
-            throw new IllegalArgumentException("Only a \"Type\" entity can be made abstract.");
+            throw new IllegalArgumentException(createErrorMessage(400, getUuid(), "", "Only a \"Type\" entity can be made abstract."));
         } else {
             this.isAbstract = isAbstract;
         }
@@ -341,7 +341,7 @@ public class Entity {
         Optional<Type> instanceOf = getInstanceOf();
 
         if (!instanceOf.isPresent()) {
-            throw new TypeUnknownException("Type for entity \"" + uuid + "\" doesn't exist");
+            throw new TypeUnknownException(createErrorMessage(404, getUuid(), "", "Type for entity \"" + uuid + "\" doesn't exist"));
         }
 
         return instanceOf.get().validateEntityToConstraints(this);
@@ -357,7 +357,7 @@ public class Entity {
     private Optional<Pair<String, Set<String>>> getIdentityProperties() {
         final Optional<Type> maybeInstanceOf = getInstanceOf();
         if (!maybeInstanceOf.isPresent()) {
-            throw new TypeUnknownException("Type for entity \"" + uuid + "\" doesn't exist");
+            throw new TypeUnknownException(createErrorMessage(404, getUuid(), "", "Type for entity \"" + uuid + "\" doesn't exist"));
         }
 
         Type instanceOf = maybeInstanceOf.get();
@@ -437,8 +437,7 @@ public class Entity {
                     getDomainClassForPath(instanceOf.getHierarchyPath());
 
             if (!maybeDomainClass.isPresent()) {
-                throw new IllegalEntityType("Entity with UUID \"" + getUuid() + "\" couldn't be created. It's an instance of " +
-                        "\"" + instanceOf.getName() + "\", but that type doesn't map to a domain class.");
+                throw new IllegalEntityType(createErrorMessage(424, getUuid(), "", "No domain class found"));
             }
             maybeClassLabels = getClassLabels(maybeDomainClass.get());
 
@@ -486,13 +485,12 @@ public class Entity {
             }
         } else {
             maybeClassLabels = getClassLabels("Type");
+            // This shouldn't happen
+            if (!maybeClassLabels.isPresent()) {
+                throw new IllegalEntityType(createErrorMessage(500, getUuid(), "", "Unable to retrieve labels for entity"));
+            }
         }
 
-        // This shouldn't happen
-        if (!maybeClassLabels.isPresent()) {
-            throw new IllegalEntityType("Entity with UUID " + getUuid() + " couldnt be created. We did not " +
-                    "retrieve any of its labels.");
-        }
         final List<String> classLabels = maybeClassLabels.get();
 
         persist(classLabels.toArray(new String[classLabels.size()]));
@@ -615,7 +613,7 @@ public class Entity {
                 if (maybeType.isPresent()) {
                     labels = nodeRepository.getTypeHierarchyForTypeUuid(maybeType.get().getUuid());
                 } else {
-                    throw new TypeUnknownException("Type for entity \"" + uuid + "\" doesn't exist");
+                    throw new TypeUnknownException(createErrorMessage(404, getUuid(), "", "Type for entity \"" + uuid + "\" doesn't exist"));
                 }
             } else {
                 labels = nodeRepository.getTypeHierarchyForTypeUuid(uuid);
