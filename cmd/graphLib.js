@@ -8,10 +8,23 @@ const getId = R.path(['meta','uuid']);
 const getRelations = R.path(['meta','relations']);
 const notNil = R.compose(R.not, R.isNil);
 
+/**
+ * Function to create a relation object as used in bundle files
+ * @param {String} name 
+ * @param {String} direction  outgoing or incoming 
+ * @param {[String]} uuids list of uuids
+ * @returns {Object} An object as required in bundle files
+ */
 function createRelation(name, direction, uuids) {
     return R.objOf(name, R.zipObj(['direction', 'uuids'], [direction, uuids]));
 }
 
+/**
+ * Function to create an instance of a base-type with the data property set to the data parameter
+ * @param {Entity} baseType 
+ * @param {Object} data 
+ * @returns {Entity} An object that is an instance of the baseType parameter.
+ */
 function createInstance(baseType, data) {
     let relation = createRelation('INSTANCE_OF', 'outgoing',[getId(baseType)]);
     let instantiate = R.pipe(
@@ -27,6 +40,14 @@ function createInstance(baseType, data) {
     return instance;
 }
 
+/**
+ * Relate two instances of entities
+ * @param {Entity} entity Entity to create the relation for
+ * @param {String} relationName The name of the relation to create
+ * @param {String} direction outgoing or incoming
+ * @param {Entity} relatedEntity The entity the relation will point to
+ * @returns {[entity, relatedEntity]} A pair of entities with the new relation set
+ */
 function relateEntity(entity, relationName, direction, relatedEntity) {
     if(notNil(entity.meta.relations[relationName])) {
         entity.meta.relations[relationName].uuids.push(getId(relatedEntity));
@@ -69,9 +90,10 @@ function findTypeByUuid(typeDb, uuid) {
 }
 
 function findTypeByFuzzyNameMatch(typeDb, name) {
+    const THRESHOLD = 0.5;
     const matcher = new FuzzyMatching(R.pluck('name',typeDb));
     const condition = R.ifElse(
-                            R.pipe(R.prop('distance'), R.lte(0.5)),
+                            R.pipe(R.prop('distance'), R.lte(THRESHOLD)),
                             R.prop('value'),
                             R.always(name)
                           );
@@ -80,6 +102,12 @@ function findTypeByFuzzyNameMatch(typeDb, name) {
     return R.defaultTo(null, entity);
 }
 
+/**
+ * Fetches the type hierarchy for a given instance
+ * @param {[Entity]} typeDb List of available types in structure
+ * @param {Entity} instance Type instance to calculate the type hierarchy for
+ * @returns {[Entity]} An ordered list of entities, representing the type hierarchy for the given instance
+ */
 function getTypeHierarchy(typeDb, instance) {
     let getType = R.curry(findTypeByUuid) (typeDb);
     let getIsaType = R.compose(getType, R.head, R.path(['meta','relations','ISA','uuids']));
@@ -96,6 +124,12 @@ function getTypeHierarchy(typeDb, instance) {
     return hierarchy;
 }
 
+/**
+ * 
+ * @param {[Entity]} typeDb List of available types in structure 
+ * @param {String} uuid UUID of a type to fetch the list of children for
+ * @returns {[Entity]} A list of child nodes for the given uuid
+ */
 function getChildren(typeDb, uuid) {
     let isaPath = R.path(['meta','relations','ISA','uuids']);
     let isChild = R.compose(R.equals(uuid), R.head, isaPath);

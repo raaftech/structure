@@ -204,7 +204,6 @@ class RestConnector {
     }
 
     bootstrap() {
-        const self = this;
         let url = util.format('%s/Admins/bootstrap/%s?access_token=%s', getBaseUrl(this.host, this.port), this.token, this.token);
         return fetch(url).then(result => result.json());
     }
@@ -227,7 +226,6 @@ class RestConnector {
     }
 
     logout() {
-        let self = this;
         let url = util.format('%s/StructureUsers/logout?access_token=%s', getBaseUrl(this.host,this.port), this.token);
         return fetch(url,
             {
