@@ -393,7 +393,7 @@ public class Entity {
         final String propertyQueryPattern = "`data-%s`: %s";
         final String completeQueryPattern = "MATCH (n:`type:%s` {%s}) RETURN n.uuid";
         final String inQuotes = "\"%s\"";
-        final String properties = identityProperties.stream()
+        final String dataProperties = identityProperties.stream()
                 .filter(id -> data.hasProperty(id))
                 .map(id -> Pair.of(id, data.getProperty(id)))
                 .map(pair -> pair.getRight() instanceof String ?
@@ -408,6 +408,19 @@ public class Entity {
                 // We don't have to check for backticks in the identity names, bundleloader does that for us
                 .map(pair -> String.format(propertyQueryPattern, pair.getLeft(), pair.getRight()))
                 .collect(Collectors.joining(", "));
+
+        final String properties;
+        // add name property if we identify on that, edge case because it's not part of the data map
+        if (identityProperties.contains("name")) {
+            final String nameProperty = String.format("`name`: \"%s\"", StringEscapeUtils.escapeJava(getName()));
+            if (dataProperties.length() > 0) {
+                properties = new StringBuilder(dataProperties).append(", ").append(nameProperty).toString();
+            } else {
+                properties = nameProperty;
+            }
+        } else {
+            properties = dataProperties;
+        }
 
         final String completeQuery = String.format(completeQueryPattern, label, properties);
         CypherQueryExecutor queryExecutor = Context.getNeo4jTemplate().getInfrastructure().getCypherQueryExecutor();

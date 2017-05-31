@@ -445,6 +445,49 @@ public class EntityManager extends GenericActor {
         };
     }
 
+    @SchemaPath("resource:/schema/manager/entitymanager/group.schema.json")
+    public MessageHandler ungroup() {
+        return new MessageHandler() {
+            @Override
+            public JsonNode exec(JsonNode request) {
+                final JsonNode args = request.get("args");
+                final ObjectNode result = mapper.createObjectNode();
+
+                final String groupingUuid = args.get("grouping").asText();
+                final String groupeeUuid = args.get("groupee").asText();
+
+                final Grouping grouping = Context.getGroupingRepository().findByUuid(groupingUuid);
+                final Node groupee = nodeRepository.findByUuid(groupeeUuid);
+
+                if (grouping == null) {
+                    result.put("error", "Grouping with UUlD \"" + groupingUuid + "\" not found.");
+                    return response(request, result);
+                }
+                if (groupee == null) {
+                    result.put("error", "Grouping with UUlD \"" + groupingUuid + "\" not found.");
+                    return response(request, result);
+                }
+
+                Transaction tx = Context.getGraphDatabase().beginTx();
+                final boolean changed = grouping.getGroupees().remove(groupee);
+                Context.getGroupingRepository().save(grouping);
+                tx.success();
+
+                result.set("data", mapper.createObjectNode().put("changed", changed));
+                tx.close();
+
+                return response(request, result);
+            }
+
+            @Override
+            public JsonNode help(JsonNode request) {
+                return null;
+            }
+        };
+    }
+
+    /**
+
     /**
      * Given a starting point v_s, find collect every vertex v_e that where the path from v_s to v_e contains
      * only vertices that have at least one of the labels in {@code labels}.

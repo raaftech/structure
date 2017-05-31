@@ -13,24 +13,21 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class Grouping extends Instance {
 
     @RelatedTo(type="GROUPS", direction= Direction.OUTGOING)
     @Fetch
-    private Set<Instance> components;
+    private Set<Instance> groupees;
 
-    public Set<Instance> getComponents() {
-        if (components == null) {
-            components = new HashSet<>();
+    public Set<Instance> getGroupees() {
+        if (groupees == null) {
+            groupees = new HashSet<>();
         }
-        return components;
+        return groupees;
     }
 
     public Grouping() {}
@@ -70,9 +67,9 @@ public class Grouping extends Instance {
 //
 //        arguments.add(toJson());
 //        BiConsumer<BiConsumer, Component> consumeArgsHelper = (f, node) -> {
-//            Set<Component> components = node.getComponents();
-//            if (components.size() > 0) {
-//                components.parallelStream().forEach(n -> f.accept(f, n));
+//            Set<Component> groupees = node.getGroupees();
+//            if (groupees.size() > 0) {
+//                groupees.parallelStream().forEach(n -> f.accept(f, n));
 //            }
 //            arguments.add(node.toJson());
 //        };
@@ -83,7 +80,7 @@ public class Grouping extends Instance {
 //        // happening in consumeArgs. After calling consumeArgsHelper below, consumeArgsHelper is bound to 'f' in the lambda.
 //        Consumer<Component> consumeArgs = node -> consumeArgsHelper.accept(consumeArgsHelper, node);
 //
-//        getComponents().stream().forEach(consumeArgs);
+//        getGroupees().stream().forEach(consumeArgs);
 //
 //        return arguments;
 //    }
@@ -109,7 +106,7 @@ public class Grouping extends Instance {
                 childSet = components.stream()
                         .flatMap(instance -> ((Set<JsonNode>)f.apply(f, instance)).stream())
                         .collect(Collectors.toSet());
-//                Stream.concat(components.stream(), configurations.stream()).forEach(n -> f.accept(f, n));
+//                Stream.concat(groupees.stream(), configurations.stream()).forEach(n -> f.accept(f, n));
             } else {
                 childSet = Collections.emptySet();
             }
@@ -122,7 +119,7 @@ public class Grouping extends Instance {
         // happening in consumeArgs. After calling consumeArgsHelper below, consumeArgsHelper is bound to 'f' in the lambda.
         Function<Instance, Set<JsonNode>> consumeArgs = node -> consumeArgsHelper.apply(consumeArgsHelper, node);
 
-        return getComponents().stream().map(consumeArgs).flatMap(Collection::stream).collect(Collectors.toSet());
+        return getGroupees().stream().map(consumeArgs).flatMap(Collection::stream).collect(Collectors.toSet());
     }
 
 }
