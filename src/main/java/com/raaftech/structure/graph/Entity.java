@@ -305,7 +305,7 @@ public class Entity {
      */
     public void setAbstract(boolean isAbstract) {
         if (isInstance()) {
-            throw new IllegalArgumentException(createErrorMessage(400, getUuid(), "", "Only a \"Type\" entity can be made abstract."));
+            throw new IllegalArgumentException(createErrorMessage(400, "", "Only a \"Type\" entity can be made abstract."));
         } else {
             this.isAbstract = isAbstract;
         }
@@ -337,11 +337,11 @@ public class Entity {
         return entityJson;
     }
 
-    private Pair<Boolean, Set<String>> validateAgainstConstraints() {
+    private Pair<Boolean, Set<EntityValidationError>> validateAgainstConstraints() {
         Optional<Type> instanceOf = getInstanceOf();
 
         if (!instanceOf.isPresent()) {
-            throw new TypeUnknownException(createErrorMessage(404, getUuid(), "", "Type for entity \"" + uuid + "\" doesn't exist"));
+            throw new TypeUnknownException(createErrorMessage(404, "", "Type for entity \"" + uuid + "\" doesn't exist"));
         }
 
         return instanceOf.get().validateEntityToConstraints(this);
@@ -357,7 +357,7 @@ public class Entity {
     private Optional<Pair<String, Set<String>>> getIdentityProperties() {
         final Optional<Type> maybeInstanceOf = getInstanceOf();
         if (!maybeInstanceOf.isPresent()) {
-            throw new TypeUnknownException(createErrorMessage(404, getUuid(), "", "Type for entity \"" + uuid + "\" doesn't exist"));
+            throw new TypeUnknownException(createErrorMessage(404, "", "Type for entity \"" + uuid + "\" doesn't exist"));
         }
 
         Type instanceOf = maybeInstanceOf.get();
@@ -416,10 +416,11 @@ public class Entity {
         return StreamSupport.stream(results.spliterator(), false).collect(Collectors.toSet());
     }
 
-    private String createErrorMessage(int code, String instanceUuid, String conflictUuid, String message) {
+    private String createErrorMessage(int code, String conflictUuid, String message) {
         final JsonObject msg = new JsonObject()
                 .put("code", code)
-                .put("uuid", instanceUuid)
+                .put("uuid", getUuid())
+                .put("typeName", getName())
                 .put("conflict", conflictUuid)
                 .put("message", message);
         return msg.toString();
@@ -430,26 +431,26 @@ public class Entity {
         if (isInstance()) {
             final Optional<Type> maybeInstanceOf = getInstanceOf();
             if (!maybeInstanceOf.isPresent()) {
-                throw new IllegalEntityType(createErrorMessage(404, getUuid(), "", "instance-of type of this instance was not found"));
+                throw new IllegalEntityType(createErrorMessage(404, "", "instance-of type of this instance was not found"));
             }
             final Type instanceOf = maybeInstanceOf.get();
             final Optional<String> maybeDomainClass =
                     getDomainClassForPath(instanceOf.getHierarchyPath());
 
             if (!maybeDomainClass.isPresent()) {
-                throw new IllegalEntityType(createErrorMessage(424, getUuid(), "", "No domain class found"));
+                throw new IllegalEntityType(createErrorMessage(424, "", "No domain class found"));
             }
             maybeClassLabels = getClassLabels(maybeDomainClass.get());
 
             // See if the type we try to instantiate is abstract
             if (instanceOf.isAbstract()) {
-                throw new IllegalEntityType(createErrorMessage(422, getUuid(), instanceOf.getUuid(), "Cannot instantiate based on an abstract type"));
+                throw new IllegalEntityType(createErrorMessage(422, instanceOf.getUuid(), "Cannot instantiate based on an abstract type"));
             }
 
             // See if this instance validates against its type's constraints
-            final Pair<Boolean, Set<String>> validation = validateAgainstConstraints();
+            final Pair<Boolean, Set<EntityValidationError>> validation = validateAgainstConstraints();
             if (!validation.getLeft()) {
-                throw new IllegalEntityType(createErrorMessage(422, getUuid(), "", "Failed type constraints: " + validation.getRight()));
+                throw new IllegalEntityType(validation.getRight().toString());
             }
 
             // Now check if this instance is unique per its type's identity array
@@ -459,7 +460,7 @@ public class Entity {
                 final Set<String> identityProperties = maybeLabelAndIdentityProperties.get().getRight();
                 Set<String> duplicates = findDuplicates(label, identityProperties);
                 if (duplicates.size() > 0) {
-                    IllegalEntityType e = new IllegalEntityType(createErrorMessage(409, getUuid(), duplicates.toArray()[0].toString(), "Duplicate based on " + identityProperties));
+                    IllegalEntityType e = new IllegalEntityType(createErrorMessage(409, duplicates.toArray()[0].toString(), "Duplicate based on " + identityProperties));
 
                     // The "duplicate" might be the same as this (in case of an update)
                     if (duplicates.size() == 1) {
@@ -481,13 +482,13 @@ public class Entity {
             data.put("desc", getDesc());
             final boolean validated = JsonHelper.validateToSchema(schemaUri, mapper.valueToTree(data));
             if (!validated) {
-                throw new IllegalEntityType(createErrorMessage(400, getUuid(), "", "Failed to validate against type schema"));
+                throw new IllegalEntityType(createErrorMessage(400, "", "Failed to validate against type schema"));
             }
         } else {
             maybeClassLabels = getClassLabels("Type");
             // This shouldn't happen
             if (!maybeClassLabels.isPresent()) {
-                throw new IllegalEntityType(createErrorMessage(500, getUuid(), "", "Unable to retrieve labels for entity"));
+                throw new IllegalEntityType(createErrorMessage(500, "", "Unable to retrieve labels for entity"));
             }
         }
 
@@ -613,7 +614,7 @@ public class Entity {
                 if (maybeType.isPresent()) {
                     labels = nodeRepository.getTypeHierarchyForTypeUuid(maybeType.get().getUuid());
                 } else {
-                    throw new TypeUnknownException(createErrorMessage(404, getUuid(), "", "Type for entity \"" + uuid + "\" doesn't exist"));
+                    throw new TypeUnknownException(createErrorMessage(404, "", "Type for entity \"" + uuid + "\" doesn't exist"));
                 }
             } else {
                 labels = nodeRepository.getTypeHierarchyForTypeUuid(uuid);

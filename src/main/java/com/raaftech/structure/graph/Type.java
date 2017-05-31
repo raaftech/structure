@@ -220,13 +220,14 @@ public class Type extends Node {
      * @return A tuple containing whether verification succeeded, and a set of that may
      * contain errors encountered during validation.
      */
-    public Pair<Boolean, Set<String>> validateEntityToConstraints(Entity entity) {
+    public Pair<Boolean, Set<EntityValidationError>> validateEntityToConstraints(Entity entity) {
         if (!entity.isInstance()) {
-            throw new IllegalArgumentException("Constraints can only be validated for non-type entities.");
+            throw new IllegalArgumentException(new EntityValidationError(500, getUuid(), getName(),
+                    "Constraints can only be validated for non-type entities.").toString());
         }
 
         // All errors that occur during validation are collected in `errors`
-        Set<String> errors = new HashSet<>();
+        Set<EntityValidationError> errors = new HashSet<>();
 
         /*
         We need to whitelist a few relationships. Constraints only work on relationships between instances or
@@ -265,8 +266,8 @@ public class Type extends Node {
                 .filter(relName -> !constraintExists.test(relName))
                 .collect(Collectors.toSet());
         if (!relationsNotUnderConstraint.isEmpty()) {
-            errors.add("Found relationships that aren't under constraint while " +
-                    "instantiating " + getName() + ": " + relationsNotUnderConstraint.toString());
+            errors.add(new EntityValidationError(400, getUuid(), getName(), relationsNotUnderConstraint,
+                    "Found relationships that aren't under constraint"));
         }
 
         // Now we can check every constraint
@@ -307,7 +308,9 @@ public class Type extends Node {
                 .collect(Collectors.toSet());
 
         if (!missedRelations.isEmpty()) {
-            errors.add("Found relationships that weren't validated by any constraint: " + missedRelations.toString());
+            errors.add(new EntityValidationError(400, getUuid(), getName(),
+                    EntityValidationError.uuidSetToHashSet(missedRelations),
+                    "Found relationships that weren't validated by any constraint"));
         }
 
         /*

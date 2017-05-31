@@ -6,7 +6,6 @@ const getUsage = require('command-line-usage');
 const ansibleLib = require('./ansibleLib');
 const Helper = require('./helper');
 const RestConnector = require('./restConnector');
-const graphLib = require('./graphLib');
 
 const rest = new RestConnector('localhost', 3000);
 const log = (x) => console.log(JSON.stringify(x, undefined, 2));
@@ -19,8 +18,8 @@ const options = cmd(optionDefs);
 
 const sections = [
     {
-        header: 'structure bootstrap',
-        content: 'Wraps the nmap/ansible commands for bootstrapping structure'
+        header: 'Ansible OS discovery',
+        content: 'Wraps the ansible command for discovering os setup for an ipv4address'
     },
     {
         header: 'Options',
@@ -42,7 +41,7 @@ const main = (db) => {
     rest.getInstanceByPredicate('addr', options.ip)
         .then(ipAddress => {
             if(R.isEmpty(ipAddress)) {
-                console.log('CREATING A NEW Ipv4Address BASED ON: '+options.ip);
+                console.log('CREATING NEW Ipv4Address BASED ON: '+options.ip);
                 ipEntity = helper.ipData(options.ip, true);
             } else {
                 console.log('REUSING Ipv4Address BASED ON: '+options.ip);
@@ -59,6 +58,7 @@ const main = (db) => {
                 })
                 .then(createdEntities => rest.createInstance({entities: [subGraph.os, subGraph.root]}))
                 .then(finalResult => {
+                    if(R.is(String, finalResult)) finalResult = JSON.parse(finalResult);
                     log(finalResult);
                     process.exit(0);
                 });

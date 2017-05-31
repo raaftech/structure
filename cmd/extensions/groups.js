@@ -41,7 +41,7 @@ const prompt = (vorp, question) => {
  */
 const getAllGroups = () => {
     return new Promise((resolve, reject) => {
-        let q = 'match (n:Grouping}) return n';
+        let q = 'match (n:Grouping) return n';
         db.cypher({query: q}, function(error, queryResult) {
             if(error) { reject(error); }
             else {

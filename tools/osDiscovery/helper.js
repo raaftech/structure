@@ -67,7 +67,6 @@ class Helper {
                     shortName: c.name,
                     longName: c.name
                 });
-        result.type = 'Component';
         return result;
     }
 
@@ -106,7 +105,6 @@ class Helper {
             }
         }
         
-        instance.type = 'Component';
         return instance;
     }
 
@@ -123,7 +121,7 @@ class Helper {
             shortName: c.name,
             longName: c.name
         });
-        result.type = 'Component';
+
         return result;
     }
 
@@ -144,7 +142,6 @@ class Helper {
                 shortName: ssh.name,
                 longName: ssh.name
             });
-            ssh.type = 'Component';
             list.push(ssh);
         } else if(R.isNil(ssh) && sshd !== 'none') {
             ssh = mkInstance({
@@ -154,10 +151,8 @@ class Helper {
                 shortName: ssh.name,
                 longName: ssh.name
             });
-            ssh.type = 'Component';
             list.push(ssh);
         }
-
         return list;
     }
 
@@ -170,7 +165,6 @@ class Helper {
             addr: ip,
             reachable: reachable
         });
-        ipd.type = 'Component';
         return ipd;
     }
 
@@ -191,7 +185,6 @@ class Helper {
         let mkInstance = graphLib.createInstance(graphLib.findTypeByName(this.types, 'ComponentGroup'));
 
         let computer = mkInstance({name: 'Computer', desc: 'A computer'});
-        computer.type = 'Grouping';
         return computer;
     }
 

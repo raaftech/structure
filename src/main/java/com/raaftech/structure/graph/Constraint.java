@@ -81,7 +81,7 @@ public class Constraint {
     public class ValidationReport {
         private boolean isSuccess;
         private final String forRelationship = Constraint.this.getForRelationship();
-        private Optional<String> error = Optional.empty();
+        private Optional<EntityValidationError> error = Optional.empty();
         private Set<String> validatedUuids;
 
         /**
@@ -104,7 +104,7 @@ public class Constraint {
          * We might have encountered some errors that stem from the validation.
          * @return An optional wrapping possible errors.
          */
-        public Optional<String> getError() {
+        public Optional<EntityValidationError> getError() {
             return error;
         }
 
@@ -161,9 +161,13 @@ public class Constraint {
         if (relatedNodes.isEmpty()) {
             validationReport.isSuccess = requiredAmount(0);
             if (!validationReport.isSuccess) {
-                validationReport.error = Optional.of("Zero relationships found for " +
+                validationReport.error = Optional.of(new EntityValidationError(400,entity.getUuid(), entity.getName(),"Zero relationships found for " +
                         "constraint " + validationReport.forRelationship + " to " + endOfConstraint.getName() +
-                        ", this violates cardinality " + cardinality.toString());
+                        ", this violates cardinality " + cardinality.toString()));
+
+//                validationReport.error = Optional.of("Zero relationships found for " +
+//                        "constraint " + validationReport.forRelationship + " to " + endOfConstraint.getName() +
+//                        ", this violates cardinality " + cardinality.toString());
             }
             return validationReport;
         }
@@ -196,9 +200,11 @@ public class Constraint {
                 .collect(Collectors.toSet());
         if (!nonexistantUuids.isEmpty()) {
             validationReport.isSuccess = false;
-            validationReport.error = Optional.of("Error while retrieving node with UUID(s) " +
-                    nonexistantUuids.toString() + " from database, this fails " +
-                    "the constraint validation");
+            validationReport.error = Optional.of(
+                    new EntityValidationError(404, entity.getUuid(), entity.getName(),
+                            EntityValidationError.uuidSetToHashSet(nonexistantUuids),
+                            "Related nodes not found"));
+
             return validationReport;
         }
 
@@ -221,9 +227,10 @@ public class Constraint {
         validationReport.validatedUuids = validateAgainstConstraint;
         validationReport.isSuccess = requiredAmount(validateAgainstConstraint.size());
         if (!validationReport.isSuccess) {
-            validationReport.error = Optional.of(validateAgainstConstraint.size() + " UUIDs found for " +
-                    "constraint " + validationReport.forRelationship + " to " + endOfConstraint.getName() +
-                    ", this violates cardinality " + cardinality.toString());
+            validationReport.error = Optional.of(new EntityValidationError(500, entity.getUuid(), entity.getName(),
+                    validateAgainstConstraint,
+                    "Cardinality violations of constraint: "+ validationReport.forRelationship + " to " +
+                            endOfConstraint.getName() + ", this violates cardinality " + cardinality.toString()));
         }
         return validationReport;
     }
