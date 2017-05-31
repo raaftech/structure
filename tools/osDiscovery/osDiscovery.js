@@ -31,6 +31,35 @@ const sections = [
 ];
 const usage = getUsage(sections);
 
+const resolvePersistErrors = (os, list) => {
+    let getStrings = R.filter(R.is(String));
+    let toObject = R.map(x => JSON.parse(x));
+    let filterErrors = R.compose(toObject, getStrings);
+    let removeFromRelation = (osEntity, uuid) => {
+        osEntity.meta.relations.HAS.uuids = R.reject(R.equals(uuid), osEntity.meta.relations.HAS.uuids);
+        return osEntity;
+    };
+    let addRelation = (osEntity, uuid) => {
+        osEntity.meta.relations.HAS.uuids = R.append(uuid, osEntity.meta.relations.HAS.uuids);
+        return osEntity;
+    };
+    list = filterErrors(list);
+    let result = {os: {}, errors: []};
+    R.forEach(item => {
+        if(item.code === 409) {
+            os = removeFromRelation(os, item.uuid);
+            if(!R.contains(item.conflict, os.meta.relations.HAS.uuids))
+                os = addRelation(os, item.conflict);
+        } else {
+            os = removeFromRelation(os, item.uuid);
+        }
+    }, list);
+
+    result.os = os;
+    result.errors = R.reject(R.propEq('code', 409), list);
+    return result;
+};
+
 const main = (db) => {
     const helper = new Helper(db);
     
@@ -51,12 +80,24 @@ const main = (db) => {
             ansibleLib.setup(options.ip)
                 .then(ansibleResult => {
                     subGraph = helper.transform(ansibleResult, ipEntity);
-                    log(subGraph);
+                    //log(subGraph);
                     let promises = [];
                     R.forEach(item => promises.push(rest.createInstance({entities: [item]})), subGraph.entities);
                     return Promise.all(promises);
                 })
-                .then(createdEntities => rest.createInstance({entities: [subGraph.os, subGraph.root]}))
+                .then(createdEntities => {
+                    //log(createdEntities);
+                    let output = resolvePersistErrors(subGraph.os, createdEntities);
+                    if(R.length(output.errors) !== 0) {
+                        console.log('There are failed creations: ');
+                        console.log(output.errors);
+                    }
+                    return rest.createInstance({entities: [output.os]});
+                })
+                .then(createdOS => {
+                    console.log(createdOS);
+                    return rest.createInstance({entities: [subGraph.root]});
+                })
                 .then(finalResult => {
                     if(R.is(String, finalResult)) finalResult = JSON.parse(finalResult);
                     log(finalResult);
