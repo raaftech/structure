@@ -95,7 +95,7 @@ public class InstrumentRepositoryTest extends TypeSchemaTest {
 
         structureOS.addComponent(structureSshClient);
         structureOS.addComponent(bash);
-        structure.getComponents().add(structureOS);
+        structure.getGroupees().add(structureOS);
         structure.save();
 
         // Create the simplest host1 representation
@@ -126,7 +126,7 @@ public class InstrumentRepositoryTest extends TypeSchemaTest {
         Component systemd = new Component(systemdData, systemdType);
 
         host1OS.addComponent(hostSshServer).addComponent(systemd);
-        host1.getComponents().add(host1OS);
+        host1.getGroupees().add(host1OS);
         host1.save();
 
         // Create the simplest host2 representation
@@ -148,7 +148,7 @@ public class InstrumentRepositoryTest extends TypeSchemaTest {
         hostSshServer = new Component(sshServerData, sshServerType);
 
         host2OS.addComponent(bash).addComponent(hostSshServer).addComponent(upstart);
-        host2.getComponents().add(host2OS);
+        host2.getGroupees().add(host2OS);
         host2.save();
     }
 
