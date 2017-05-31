@@ -170,18 +170,7 @@ module.exports = function(vorpal, options) {
                     })
                     .then(answer => {
                         selectedChildUuid = R.compose(R.last, R.split(' : '))(answer.item);
-                        return rest.getEntityByUuid(selectedGroup.uuid);
-                    })
-                    .then(entity => {
-                        let removeGrouping = (ent, uuid) => {
-                            let updateList = R.pipe(R.path(['meta','relations','GROUPS','uuids']), R.reject(R.equals(uuid)));
-                            let glist = updateList(ent);
-                            if(R.length(glist) === 0) ent = R.dissocPath(['meta','relations','GROUPS'], ent);
-                            else ent = R.assocPath(['meta','relations','GROUPS','uuids'], glist, ent);
-                            return ent;
-                        };
-                        entity = removeGrouping(entity, selectedChildUuid);
-                        return rest.updateInstance({entities: [entity]});
+                        return rest.removeFromGroup(selectedGroup.uuid, selectedChildUuid);
                     })
                     .then(updated => {
                         self.log(updated);

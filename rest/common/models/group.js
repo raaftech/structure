@@ -48,7 +48,6 @@ module.exports = function(Group) {
             .then((entities) => {
                 let entity = R.head(getResultData(entities));
                 let instance = graphLib.createInstance(entity, {name: groupName, desc: description});
-                instance.type = 'Grouping';
                 instance.name = groupName;
                 instance.desc = description;
                 return [instance];
@@ -68,12 +67,6 @@ module.exports = function(Group) {
         description: 'Create a new group'
     });
 
-//    Group.getAllGroups = function(callback) {
-//    };
-//
-//    Group.getChildren = function(groupUuid, callback) {
-//    };
-//
     Group.addToGroup = function(groupUuid, instanceUuid, callback) {
         let message = {grouping: groupUuid, groupee: instanceUuid};
         evBus.sendEvent(entityAddress, 'group', message)
@@ -89,5 +82,23 @@ module.exports = function(Group) {
             returns: {root: true, type: 'object'},
             http: {verb: 'put', path: '/add/:instanceUuid/to/:groupUuid'},
             description: 'Add an instance to a grouping'
+        });
+
+
+    Group.removeFromGroup = function(groupUuid, instanceUuid, callback) {
+        let message = {grouping: groupUuid, groupee: instanceUuid};
+        evBus.sendEvent(entityAddress, 'ungroup', message)
+            .then(result => callback(null, resultFetcher(result)))
+            .catch(ex => callback(ex));
+    };
+
+    Group.remoteMethod('removeFromGroup', {
+            accepts: [
+                {arg: 'groupUuid', type: 'string', required: true},
+                {arg: 'instanceUuid', type: 'string', required: true}
+            ],
+            returns: {root: true, type: 'object'},
+            http: {verb: 'put', path: '/del/:instanceUuid/from/:groupUuid'},
+            description: 'Remove an instance from a grouping'
         });
 };

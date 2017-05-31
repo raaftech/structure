@@ -150,6 +150,17 @@ class RestConnector {
             .then(result => result.json());
     }
 
+    removeFromGroup(groupUuid, instanceUuid) {
+        let url = util.format('%s/Groups/del/%s/from/%s?access_token=%s', getBaseUrl(this.host,this.port), instanceUuid, groupUuid, this.token);
+        return fetch(url,
+            {
+                method: 'PUT',
+                body: '',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+            })
+            .then(result => result.json());
+    }
+
     getInstruments(uuid) {
         let url = util.format('%s/Instances/instruments/%s', getBaseUrl(this.host,this.port),uuid);
         return fetch(url).then(result => result.json());

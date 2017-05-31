@@ -80,13 +80,11 @@ const main = (db) => {
             ansibleLib.setup(options.ip)
                 .then(ansibleResult => {
                     subGraph = helper.transform(ansibleResult, ipEntity);
-                    //log(subGraph);
                     let promises = [];
                     R.forEach(item => promises.push(rest.createInstance({entities: [item]})), subGraph.entities);
                     return Promise.all(promises);
                 })
                 .then(createdEntities => {
-                    //log(createdEntities);
                     let output = resolvePersistErrors(subGraph.os, createdEntities);
                     if(R.length(output.errors) !== 0) {
                         console.log('There are failed creations: ');
