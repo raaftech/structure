@@ -25,6 +25,11 @@ class RestConnector {
         return util.format('http://%s:%s/api/Statuses/change-stream',this.host,this.port);
     }
 
+    getAllTypes() {
+        let url = util.format('%s/Entities', getBaseUrl(this.host,this.port));
+        return fetch(url).then(result => result.json());
+    }
+
     getEntityByName(name) {
         let url = util.format('%s/Entities/name/%s', getBaseUrl(this.host,this.port),name);
         return fetch(url).then(result => result.json());
@@ -112,6 +117,11 @@ class RestConnector {
                     .then(result => result.json());
     }
 
+    getResults(instanceUuid) {
+        let url = util.format('%s/Instances/results/%s', getBaseUrl(this.host,this.port),instanceUuid);
+        return fetch(url).then(result => result.json());
+    }
+
     createGroup(groupName, description) {
         let url = util.format('%s/Groups?access_token=%s', getBaseUrl(this.host,this.port), this.token);
         return fetch(url,
@@ -131,6 +141,17 @@ class RestConnector {
 
     addToGroup(groupUuid, instanceUuid) {
         let url = util.format('%s/Groups/add/%s/to/%s?access_token=%s', getBaseUrl(this.host,this.port), instanceUuid, groupUuid, this.token);
+        return fetch(url,
+            {
+                method: 'PUT',
+                body: '',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+            })
+            .then(result => result.json());
+    }
+
+    removeFromGroup(groupUuid, instanceUuid) {
+        let url = util.format('%s/Groups/del/%s/from/%s?access_token=%s', getBaseUrl(this.host,this.port), instanceUuid, groupUuid, this.token);
         return fetch(url,
             {
                 method: 'PUT',
@@ -166,23 +187,23 @@ class RestConnector {
         return fetch(url).then(result => result.json());
     }
 
-    runCapability(uuid, capability) {
+    runCapability(uuid, capability, token) {
         let url = util.format('%s/Instances/exec/%s/on/%s?access_token=%s', getBaseUrl(this.host,this.port), capability, uuid, this.token);
         let args = {
-            capability: capability
+            capability: capability,
+            token: token
         };
         console.log(args);
         return fetch(url,
             {
                 method: 'POST',
-                body: 'options='+JSON.stringify(args),
+                body: 'token='+token,
                 headers: {'Content-Type': 'application/x-www-form-urlencoded'}
             })
             .then(result => result.json());
     }
 
     bootstrap() {
-        const self = this;
         let url = util.format('%s/Admins/bootstrap/%s?access_token=%s', getBaseUrl(this.host, this.port), this.token, this.token);
         return fetch(url).then(result => result.json());
     }
@@ -205,7 +226,14 @@ class RestConnector {
     }
 
     logout() {
-        let url = util.format('%s/StructureUsers/logout', getBaseUrl(this.host,this.port));
+        let url = util.format('%s/StructureUsers/logout?access_token=%s', getBaseUrl(this.host,this.port), this.token);
+        return fetch(url,
+            {
+                method: 'POST',
+                body: '',
+                headers: {'Content-Type': 'application/json'}
+            })
+            .then(result => result.json());
     }
 
     createUser(email, password) {

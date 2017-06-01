@@ -1,0 +1,25 @@
+{
+  "name": "combi",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "lint": "jshint *.js",
+    "test": "jshint **.js && cd tests ; tape ansibleLibTest.js | tspec && tape nmapTests.js | tspec",
+    "start": "node bootstrap.js"
+  },
+  "author": "Black Orchid",
+  "license": "ISC",
+  "dependencies": {
+    "command-line-args": "^3.0.4",
+    "command-line-usage": "^3.0.8",
+    "fuzzy-matching": "^0.4.3",
+    "node-ansible": "^0.5.5",
+    "node-fetch": "^1.6.3",
+    "ramda": "^0.23.0",
+    "uuid": "^3.0.1"
+  },
+  "devDependencies": {
+    "tape": "^4.6.3"
+  }
+}

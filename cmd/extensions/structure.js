@@ -1,6 +1,5 @@
 'use strict';
 
-const vorpal = require('vorpal')();
 const R = require('ramda');
 const util = require('util');
 const path = require('path');
@@ -28,33 +27,34 @@ module.exports = function(vorpal, opts) {
                                 opts.memoryBank.token = user.id;
                                 opts.cache.set('structure', 'token',user.id);
                                 opts.cache.save();
-                                self.log(clc.green('AccessToken: ')+user.id)
+                                self.log(clc.green('AccessToken: ')+user.id);
                             }
                         );
                         handler(user);
                         done();
                     })
-                    .catch(ex => {
-                        self.log(ex);
-                        done();
-                    });
+                    .catch(helper.genericCatchHandler(done));
             });
         });
 
     vorpal.command('structure logout', 'Invalidate an access token for Structure')
         .action(function(args, done) {
             const self = this;
-            self.prompt(qs, function(answers) {
+
+            let loggedIn = () => {
                 rest.logout()
                     .then(result => {
-                        self.log("Logged out");
+                        self.log(result);
+                        rest.setToken('');
+                        opts.memoryBank.token = '';
+                        opts.cache.set('structure', 'token','');
+                        opts.cache.save();
                         done();
                     })
-                    .catch(ex => {
-                        self.log(ex);
-                        done();
-                    });
-            });
+                    .catch(helper.genericCatchHandler(done));
+            };
+
+            helper.genericAuthCommandHandler(done, loggedIn, rest.getToken());
         });
 
     vorpal.command('structure bootstrap', 'Initial structure bootstrap')
@@ -64,10 +64,11 @@ module.exports = function(vorpal, opts) {
             let loggedIn = () => {
                 rest.bootstrap()
                     .then(result => {
-                        self.log(result);
+                        if(R.has('error'))
+                            self.log(result);
                         done();
                     })
-                    .catch(ex => {self.log(ex); done();})
+                    .catch(helper.genericCatchHandler(done));
             };
 
             helper.genericAuthCommandHandler(done, loggedIn, rest.getToken());
@@ -93,10 +94,8 @@ module.exports = function(vorpal, opts) {
                         createUserHandler(result);
                         done();
                     })
-                    .catch(ex => {
-                        self.log(ex);
-                        done();
-                    });
+                    .catch(helper.genericCatchHandler(done));
+
                 //Function to check if the 1st and 2nd password entry are equal.
                 //if not equal prints an error message
                 //if equal calls the above createUser function.
@@ -123,28 +122,32 @@ module.exports = function(vorpal, opts) {
                     self.log(util.format(clc.green('  [Memory]')));
                     self.log(util.format('    Used: %s %s\n    Free: %s',result.jvm.memory.used, percentageFn(result.jvm.memory.used, result.jvm.memory.free), result.jvm.memory.free));
 
+                    self.log(util.format(clc.green.bold('[Structure instance]')));
+                    self.log(util.format('  Host: %s', result.structure.host));
+                    if(result.structure.bootstrapped) 
+                        self.log(util.format('  Bootstrapped: %s', clc.green(result.structure.bootstrapped)));
+                    else self.log(util.format('  Bootstrapped: %s', clc.red(result.structure.bootstrapped)));
+
                     self.log(util.format(clc.green.bold('[Graph info]')));
                     self.log(util.format('  Types: %s', result.graph.types));
                     self.log(util.format('  Components: %s', result.graph.components));
                     self.log(util.format('  Instruments: %s', result.graph.instruments));
                     self.log(util.format('  Groupings: %s', result.graph.groupings));
                     self.log(util.format('  Results: %s', result.graph.results));
-                    self.log(util.format('  Configurations: %s', result.graph.configurations));
                     done();
                 })
-                .catch(ex => {self.log(ex); done();})
+                .catch(helper.genericCatchHandler(done));
         });
 
     vorpal.command('structure init', 'Purge-Init structure server')
         .action(function(args, done) {
-            const self = this;
-
             let loggedIn = () => {
                 rest.purgeInit()
                     .then(result => {
-                        //self.log(result);
-                        done();})
-                    .catch(ex => {self.log(ex); done();});
+                        console.log(result);
+                        done();
+                    })
+                    .catch(helper.genericCatchHandler(done));
             };
 
             helper.genericAuthCommandHandler(done, loggedIn, rest.getToken());
@@ -159,7 +162,7 @@ module.exports = function(vorpal, opts) {
                     .then(result => {
                         self.log(result);
                         done();})
-                    .catch(ex => {self.log(ex); done();});
+                    .catch(helper.genericCatchHandler(done));
             };
 
             helper.genericAuthCommandHandler(done, loggedIn, rest.getToken());

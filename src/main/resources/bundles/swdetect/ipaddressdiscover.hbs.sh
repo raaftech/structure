@@ -1,1 +1,1 @@
-node tools/discovery/bootstrap -c {{{ ipnetwork.cidr }}} -t {{{ token }}}
+node tools/networkDiscovery/netdisco.js -c {{{ ipnetwork.cidr }}} -t {{{ token }}}

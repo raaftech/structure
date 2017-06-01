@@ -4,24 +4,24 @@ const R = require('ramda');
 const util = require('util');
 const helper = require('./helper');
 const clc = require('cli-color');
-const sprintf = require('sprintf-js').sprintf;
 const treeify = require('./treeify');
 const fs = require('fs');
 const path = require('path');
-const uuidV4 = require('uuid');
 const RestConnector = require('./restConnector');
 const SchemaValidator = require('./SchemaValidator');
 const SimpleCache = require('./simpleCache');
 const EventSource = require('eventsource');
-const Structure = require('./subgraph');
+const graphLib = require('./graphLib');
 //extensions
 const neoExt = require('./extensions/neo');
 const structureExt = require('./extensions/structure');
 const groupExt = require('./extensions/groups');
 const instanceExt = require('./extensions/instance');
 
+
 const answerCache = new SimpleCache();
 const memoryBank = {a: '', b: '',token: ''};
+let typeDb = [];
 let rest;
 let validator;
 
@@ -41,7 +41,12 @@ function init() {
     }
 
     setupStatusChannel();
-    scli();
+    rest.getAllTypes()
+        .then(allTypes => {
+            typeDb = allTypes;
+            scli();
+        })
+        .catch(ex => console.log(ex));
 }
 
 function scli() {
@@ -49,7 +54,7 @@ function scli() {
 	vorpal.use(neoExt, answerCache);
 	vorpal.use(structureExt, {rest: rest, memoryBank: memoryBank, cache: answerCache});
 	vorpal.use(groupExt, rest);
-	vorpal.use(instanceExt, {rest: rest, validator: validator});
+	vorpal.use(instanceExt, {rest: rest, validator: validator, typeDb: typeDb});
 	vorpal.delimiter(clc.magenta.bold('structure$')).show();
 
 	vorpal.on('keypress', function(key) {
@@ -75,32 +80,6 @@ function setupStatusChannel() {
                                  clc.green(R.path(['data','event'],data)),
                                  clc.green(JSON.stringify(R.path(['data','data'],data),undefined,2)));
         vorpal.log(output);
-    });
-}
-
-function getChildren(uuid) {
-    return rest.getChildren(uuid)
-        .then(children => {
-            return R.map((item) => {
-                    return R.zipObj(['name', 'uuid'],[R.prop('name',item), R.path(['meta','uuid'], item)]);
-                }, children);
-        });
-}
-
-function toRoot(uuid, childNodes) {
-    return new Promise((resolve, reject) => {
-        rest.getEntityByUuid(uuid)
-            .then(parent => {
-                let tree = {};
-                tree[parent.name] = childNodes;
-                if(R.isNil(R.path(['meta','relations','ISA'], parent))) {
-                    resolve(tree);
-                } else {
-                    //getIsaParent: small function to fetch the first of the ISA uuids for an entity
-                    let getIsaParent = R.pipe(R.path(['meta','relations','ISA','uuids']), R.head);
-                    resolve(toRoot(getIsaParent(parent), tree));
-                }
-            })
     });
 }
 
@@ -150,6 +129,8 @@ vorpal.command('relate <fromInstanceUuid> <toInstanceUuid>', 'Create a new relat
                     R.map(R.prop('to'))
                 )(list);
             };
+            const findType = graphLib.findTypeByUuid(typeDb);
+            const getId = R.path(['meta','uuid']);
 
             let loggedIn = () => {
                 rest.getInstanceByUuid(args.fromInstanceUuid)
@@ -163,27 +144,29 @@ vorpal.command('relate <fromInstanceUuid> <toInstanceUuid>', 'Create a new relat
                     })
                     .then(uuid => rest.getConstraints(uuid))
                     .then(constraints => {
-                        currentConstraints = constraints;
-                        let rels = listRelations(constraints.outgoing);
-                        let q = helper.generateQuestion('relation', 'list', 'Select relation: ', {choices: rels});
-                        return prompt(self, q);
+                        if(constraints.outgoing.length === 0) {
+                            throw new Error('no possible constraints found, no relate possible');
+                        } else {
+                            currentConstraints = constraints;
+                            let rels = listRelations(constraints.outgoing);
+                            let q = helper.generateQuestion('relation', 'list', 'Select relation: ', {choices: rels});
+                            return prompt(self, q);
+                        }
                     })
                     .then(answer => {
                         requestedRelation = answer.relation;
                         return harvestEndpointUuids(answer.relation, currentConstraints.outgoing);
                     })
                     .then(uuids => {
-                        let promises = [];
-                        R.forEach(uuid => promises.push(rest.getEntityByUuid(uuid)), uuids);
-                        return Promise.all(promises);
+                        return R.map(findType, uuids);
                     })
                     .then(result => {
                         self.log('Allowed types: %s',R.map(R.prop('name'), result));
-                        self.log('%s %s %s', fromInstance.meta.uuid, requestedRelation, toInstance.meta.uuid);
+                        self.log('%s %s %s', getId(fromInstance), requestedRelation, getId(toInstance));
                         if(R.isNil(R.path(['meta','relations',requestedRelation], fromInstance))) {
-                            fromInstance.meta.relations[requestedRelation] = {direction: 'outgoing', uuids: [toInstance.meta.uuid]};
+                            fromInstance.meta.relations[requestedRelation] = {direction: 'outgoing', uuids: [getId(toInstance)]};
                         } else {
-                            fromInstance.meta.relations[requestedRelation].uuids.push(toInstance.meta.uuid);
+                            fromInstance.meta.relations[requestedRelation].uuids.push(getId(toInstance));
                         }
                         return rest.updateInstance({entities: [fromInstance]});
                     })
@@ -199,18 +182,18 @@ vorpal.command('relate <fromInstanceUuid> <toInstanceUuid>', 'Create a new relat
 vorpal.command('specialize <uuid>', 'Specialize an instance')
     .action(function(args, done) {
             const self = this;
+            const getId = R.path(['meta', 'uuid']);
+            const kids = graphLib.getChildren(typeDb);
+            const findType = graphLib.findTypeByUuid(typeDb);
 
             let selectedInstance;
-            let instanceOfType = R.compose(R.head, R.path(['meta', 'relations', 'INSTANCE_OF', 'uuids']));
 
             let loggedIn = () => {
                 rest.getInstanceByUuid(args.uuid)
                     .then(instance => {
                         selectedInstance = instance;
-                        return rest.getEntityByUuid(instanceOfType(instance));
-                    })
-                    .then(type => {
-                        return rest.getChildren(type.meta.uuid);
+                        let type = findType(graphLib.getInstanceOfUuid(selectedInstance));
+                        return kids(getId(type));
                     })
                     .then(children => {
                         if(children.length === 0) {
@@ -220,7 +203,7 @@ vorpal.command('specialize <uuid>', 'Specialize an instance')
                             let q = helper.generateQuestion('child', 'list', 'Select specialisation: ', {choices: children});
                             self.prompt(q, function(answer) {
                                 let e = R.find(R.propEq('name', answer.child), children);
-                                rest.specializeInstance(selectedInstance.meta.uuid, e.meta.uuid)
+                                rest.specializeInstance(getId(selectedInstance), getId(e))
                                     .then(updated => {
                                         self.log(updated);
                                         done();
@@ -235,46 +218,51 @@ vorpal.command('specialize <uuid>', 'Specialize an instance')
         });
 
 vorpal.command('find <name>', 'Find a specified node in structure')
-    .option('-f, --field <fieldName>', 'Select a specific field from the resultset',
-        helper.getCommonFields())
     .option('-u, --uuid', 'Set search mode to uuid based search.')
     .option('-v, --verbose', 'Be verbose with the result output')
     .action(function(args, done) {
         const self = this;
+        const findByUuid = graphLib.findTypeByUuid(typeDb);
+        const fuzzyFind = graphLib.findTypeByFuzzyNameMatch(typeDb);
+
         //Function that calls a specific rest method, depending on the value of the method argument
         let handler = (method, arg) => {
-            rest[method](arg)
-                .then(entity => {
-                    //Function that fetches the property keys, present in the meta object in the entity
-                    //Then adds the property path, in dot notation, to the list (2nd arg)
-                    //Returns a list of possible property paths
-                    let meta = R.curry((ent,list) => {
-                        return R.pipe(R.prop('meta'), R.keys,
-                            R.map(item => 'meta.'+item),
-                            R.concat(list)
-                        )(ent);
-                    });
-                    //Function that gets all keys from an entity, prepends 'ALL' to the list
-                    //fetches the meta keys by using above function and appends them to the list
-                    //This list is then prompted to the user to choose from.
-                    let keys = R.pipe(R.keys, R.prepend('ALL'),meta(entity))(entity);
-                    self.prompt(helper.generateQuestion('list', 'list', 'Choose a field', {choices: keys}), function(result) {
-                        let check = R.ifElse(R.propEq('list','ALL'),
-                                        () => self.log(helper.treePrint(args.options.verbose, entity)),
-                                        () => {
-                                            let pp = R.split('.',result.list);
-                                            let prop = clc.green.bold(result.list);
-                                            let outputTypeSelector = R.ifElse(R.is(Object),
-                                                x => self.log(util.format('%s\n%s', prop, helper.treePrint(args.options.verbose,R.path(pp, entity)))),
-                                                x => self.log(util.format('%s: %s', prop, helper.stringify(R.path(pp, entity)))));
-                                            outputTypeSelector(R.path(pp, entity));
-                                        }
-                                    );
-                        check(result);
-                        done();
-                    });
-                })
-                .catch(helper.genericCatchHandler(done));
+            let entity;
+            if(method === 'getEntityByName') {
+                entity = fuzzyFind(arg);
+            } else {
+                entity = findByUuid(arg);
+            }
+
+            if(R.isNil(entity)) {
+                self.log('Unable to find entity type: '+arg);
+                done();
+            } else {
+                let meta = R.curry((ent,list) => {
+                    return R.pipe(R.prop('meta'), R.keys,
+                        R.map(item => 'meta.'+item),
+                        R.concat(list)
+                    )(ent);
+                });
+
+                let keys = R.pipe(R.keys, R.prepend('ALL'),meta(entity))(entity);
+                self.prompt(helper.generateQuestion('list', 'list', 'Choose a field', {choices: keys}), function(result) {
+                    let check = R.ifElse(R.propEq('list','ALL'),
+                                    () => self.log(helper.treePrint(args.options.verbose, entity)),
+                                    () => {
+                                        let pp = R.split('.',result.list);
+                                        let prop = clc.green.bold(result.list);
+                                        let outputTypeSelector = R.ifElse(R.is(Object),
+                                            x => self.log(util.format('%s\n%s', prop, helper.treePrint(args.options.verbose,R.path(pp, entity)))),
+                                            x => self.log(util.format('%s: %s', prop, helper.stringify(R.path(pp, entity)))));
+                                        outputTypeSelector(R.path(pp, entity));
+                                    }
+                                );
+                    check(result);
+                    done();
+                });
+            }
+            
         };
 
         //Function that determines which rest call to use based on the given arguments and options
@@ -284,60 +272,44 @@ vorpal.command('find <name>', 'Find a specified node in structure')
         exec(R.path(['options', 'uuid'], args));
     });
 
-vorpal.command('dig', 'Get the child elements for a type-node')
-    .option('-n, --name <name>', 'Identify the type-node by name')
-    .option('-u, --uuid <uuid>', 'Identify the type-node by uuid')
-    .action(function(args, done) {
-        const self = this;
 
-        if(args.options.name) {
-            rest.getEntityByName(args.options.name)
-                .then(entity => getChildren(entity.meta.uuid))
-                .then(children => {
-                    R.forEach((item) => {
-                        self.log(sprintf('%-16s: %24s', R.prop('name', item),R.prop('uuid',item)));
-                    }, children);
-                    done();
-                })
-                .catch(helper.genericCatchHandler(done));
-        } else {
-            getChildren(args.options.uuid)
-                .then(children => {
-                    R.forEach((item) => {
-                        self.log(sprintf('%-16s: %24s', R.prop('name', item),R.prop('uuid',item)));
-                    }, children);
-                    done();
-                })
-                .catch(helper.genericCatchHandler(done))
-        }
-    });
 
 vorpal.command('tree <name>', 'Show a relation tree for the requested node')
     .option('-u, --uuid', 'Make the search go by uuid instead of name')
     .action(function(args, done) {
         const self = this;
+        const findByUuid = graphLib.findTypeByUuid(typeDb);
+        const fuzzyFind = graphLib.findTypeByFuzzyNameMatch(typeDb);
+        const kids = graphLib.getChildren(typeDb);
+        const getId = R.path(['meta','uuid']);
+
         let rootUuid = '';
         //Function that calls a specific rest method, depending on the value of the method argument
         let handler = (method, arg) => {
-            rest[method](arg)
-                .then(entity => { return R.path(['meta','uuid'], entity) })
-                .then(uuid => { rootUuid = uuid; return getChildren(uuid); })
-                .then(children => {
-                    let tree = {};
-                    R.forEach((item) => {
-                        tree[item.name] = item.uuid;
-                    }, children);
+            let entity;
+            if(method === 'getEntityByName') {
+                entity = fuzzyFind(arg);
+                rootUuid = getId(entity);
+            } else {
+                entity = findByUuid(arg);
+                rootUuid = arg;
+            }
 
-                    return tree;
-                })
-                .then(tree => {
-                    return toRoot(rootUuid, tree);
-                })
-                .then(parents => {
-                    self.log(treeify.asTree(parents,true));
-                    done();
-                })
-                .catch(helper.genericCatchHandler(done));
+            let tree = {};
+            R.forEach((item) => {
+                tree[item.name] = getId(item);
+            }, kids(rootUuid));
+
+            let dummyInstance = graphLib.createInstance(entity, {});
+            let hierarchy = graphLib.getTypeHierarchy(typeDb, dummyInstance);
+            R.forEach(item => {
+                let tt = {};
+                tt[item.name] = R.clone(tree);
+                tree = R.clone(tt);
+            },R.reverse(hierarchy));
+            
+            self.log(treeify.asTree(tree,true));
+            done();
         };
 
         //Function that determines which rest call to use based on the given arguments and options
@@ -351,38 +323,30 @@ vorpal.command('tree <name>', 'Show a relation tree for the requested node')
 vorpal.command('discover <cidr>', 'Discover items in the network')
     .action(function(args, done) {
         const self = this;
+        let byName = graphLib.findTypeByName(typeDb);
+        let mkNetwork = graphLib.createInstance(byName('Ipv4Network'));
+        let mkGroup = graphLib.createInstance(byName('ComponentGroup'));
 
         let loggedIn = () => rest.getInstanceByPredicate('cidr', args.cidr)
             .then(instance => {
                 if(R.isEmpty(instance)) {
                     self.log('creating new network');
-                    return rest.getEntityByName('Ipv4Network')
-                        .then(ent => {
-                            ent.type = 'Grouping';
-                            ent.data = {
-                                name: ent.name,
-                                desc: ent.desc,
-                                cidr: args.cidr
-                            };
-                            ent.meta.relations['INSTANCE_OF'] = {
-                                direction: 'outgoing',
-                                uuids: [ent.meta.uuid]
-                            };
-                            ent.meta.uuid = uuidV4();
-                            ent.meta.relations = R.omit(['ISA'],ent.meta.relations);
-                            return rest.createInstance({entities: [ent]});
-                        })
-                        .then(i => rest.getInstanceByUuid(R.head(i)))
+                    let i = mkNetwork({name: 'Ipv4Network', desc: 'A network', cidr: args.cidr});
+                    let g = mkGroup({name: 'group-'+args.cidr, desc: 'ipv4network root group'});
+                    let pair = graphLib.relateEntity(g, 'GROUPS', 'outgoing', i);
+                    return rest.createInstance({entities: R.reverse(pair)})
+                        .then(ins => rest.getInstanceByUuid(pair[1].meta.uuid))
+                        .catch(ex => console.log(ex));
                 } else {
                     self.log('reusing existing network');
                     return instance;
                 }
             })
             .then(network => {
-                self.log(network);
-                return rest.runInstrument(network.meta.uuid, 'IpAddressDiscover', {token: rest.getToken()});
+                return rest.runInstrument(network.meta.uuid, 'IpNetworkDiscover', {token: rest.getToken()});
             })
             .then(result => {
+                self.log(result);
                 self.log('done');
                 done();
             })

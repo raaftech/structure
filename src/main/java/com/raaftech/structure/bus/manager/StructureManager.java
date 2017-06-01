@@ -168,7 +168,7 @@ public class StructureManager extends GenericActor {
         Component host = Context.getInstanceRepository().findDnsName(Context.getHostname());
         if (host == null) {
             log.info("Structure is not registered in the database, now discovering itself");
-            ProcessRunner runner = new ProcessRunner("node tools/discovery/bootstrap.js -b -c localhost -t " + token);
+            ProcessRunner runner = new ProcessRunner("node tools/bootstrap/bootstrap.js -h "+ Context.getHostname() +" -t " + token);
             try {
                 runner.run();
                 int scriptFinishedWaitCycles = 0;
@@ -232,6 +232,11 @@ public class StructureManager extends GenericActor {
                 memory.put("total", runtime.totalMemory());
                 memory.put("free", runtime.freeMemory());
                 memory.put("used", runtime.totalMemory() - runtime.freeMemory());
+
+                ObjectNode structureInfo = result.putObject("structure");
+                boolean bootstrapped = Context.getInstanceRepository().findDnsName(Context.getHostname()) != null;
+                structureInfo.put("bootstrapped", bootstrapped);
+                structureInfo.put("host", Context.getHostname());
 
                 return response(request, result);
             }

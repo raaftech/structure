@@ -19,6 +19,19 @@ const resultFetcher = R.ifElse(
 );
 
 module.exports = function (Entity) {
+    Entity.getAllTypes = function(callback) {
+        evBus.sendEvent(typesAddress, 'getAll', {})
+            .then(result => callback(null, resultFetcher(result)))
+            .catch(ex => callback(ex));
+    }
+
+    Entity.remoteMethod('getAllTypes', {
+        accepts: [],
+        returns: {root: true, type: 'object'},
+        http: {verb: 'get', path: '/'},
+        description: 'Fetch all types'
+    });
+
     Entity.fetchByUuid = function (uuid, callback) {
         evBus.sendEvent(entityAddress, 'read',
                 {labels: ['Type'], start: uuid, includeStart: true})

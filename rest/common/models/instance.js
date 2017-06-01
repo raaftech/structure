@@ -202,9 +202,9 @@ module.exports = function (Instance) {
     });
 
 
-    Instance.runCapability = function(instanceUuid, capability, callback) {
+    Instance.runCapability = function(instanceUuid, capability, token, callback) {
         const nodeAddress = baseAddress(['node',instanceUuid]);
-        evBus.sendEvent(nodeAddress, 'runCapability', {capability: capability})
+        evBus.sendEvent(nodeAddress, 'runCapability', {capability: capability, arguments: {token: token}})
                 .then(result => callback(null, resultFetcher(result)))
                 .catch(ex => callback(ex));
     };
@@ -212,7 +212,8 @@ module.exports = function (Instance) {
     Instance.remoteMethod('runCapability',{
         accepts: [
             {arg: 'instanceUuid', type: 'string', required: true},
-            {arg: 'capability', type: 'string', required: true}
+            {arg: 'capability', type: 'string', required: true},
+            {arg: 'token', type: 'string', required: true}
         ],
         returns: {root: true, type: 'object'},
         http: {verb: 'post', path: '/exec/:capability/on/:instanceUuid'},
@@ -241,5 +242,19 @@ module.exports = function (Instance) {
         returns: {root: true, type: 'object'},
         http: {verb: 'post', path: '/predicate'},
         description: 'Fetch an instance by predicate'
+    });
+
+    Instance.getResults = function(instanceUuid, callback) {
+        const nodeAddress = baseAddress(['node',instanceUuid]);
+        evBus.sendEvent(nodeAddress, 'getResults', {})
+            .then(result => callback(null, resultFetcher(result)))
+            .catch(ex => callback(ex));
+    };
+
+    Instance.remoteMethod('getResults',{
+        accepts: [{arg: 'instanceUuid', type: 'string', required: true}],
+        returns: {root: true, type: 'object'},
+        http: {verb: 'get', path: '/results/:instanceUuid'},
+        description: 'Fetch result list for an instance'
     });
 };

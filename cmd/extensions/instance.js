@@ -7,38 +7,12 @@ const util = require('util');
 const path = require('path');
 const clc = require('cli-color');
 const helper = require(path.join(__dirname, '..','helper'));
-const Structure = require(path.join(__dirname, '..', 'subgraph'));
+const graphLib = require(path.join(__dirname, '..', 'graphLib'));
 
 module.exports = function(vorpal, options) {
-    const toRoot = (uuid, childNodes) => {
-         return new Promise((resolve, reject) => {
-             rest.getEntityByUuid(uuid)
-                 .then(parent => {
-                     let tree = {};
-                     tree[parent.name] = childNodes;
-                     if(R.isNil(R.path(['meta','relations','ISA'], parent))) {
-                         resolve(tree);
-                     } else {
-                         //getIsaParent: small function to fetch the first of the ISA uuids for an entity
-                         let getIsaParent = R.pipe(R.path(['meta','relations','ISA','uuids']), R.head);
-                         resolve(toRoot(getIsaParent(parent), tree));
-                     }
-                 })
-         });
-     };
-    const getDomainClass = (uuid) => {
-         return new Promise((resolve, reject) => {
-             toRoot(uuid, {})
-                 .then(parents => {
-                     let fn = R.pipe(R.prop('Type'),R.keys,R.head);
-                     resolve(fn(parents));
-                 })
-                 .catch(ex => reject(ex));
-         });
-     };
-
     const rest = options.rest;
     const validator = options.validator;
+    const typeDb = options.typeDb;
 
     vorpal.command('instance')
         .option('-l, --last <quantity>', 'Fetch the last (quantity) created instances')
@@ -69,26 +43,11 @@ module.exports = function(vorpal, options) {
     vorpal.command('instanceof <typeName>', 'Create an instance of a Type')
         .action(function(args, done) {
             const self = this;
-            let baseType;
-            let buffer;
 
-            rest.getEntityByName(args.typeName)
-                .then(entity => {
-                    baseType = helper.json2Entity(false, entity);
-                    buffer = entity;
-                    return getDomainClass(baseType.meta.uuid);
-                })
-                .then(domainClass => {
-                    self.log('Resolved domain class: '+domainClass);
-                    buffer = R.pipe(
-                        R.assoc('type', domainClass),
-                        R.assoc('name', buffer.name),
-                        R.dissocPath(['meta','checksum']),
-                        R.dissocPath(['meta','relations'])) (buffer);
-                    return buffer;
-                })
-                .then(instance => {
-                    validator.getSchema(args.typeName)
+            let baseType = graphLib.findTypeByFuzzyNameMatch(typeDb, args.typeName);
+            let instance = graphLib.createInstance(baseType, {});
+
+            validator.getSchema(args.typeName)
                         .then(typeSchema => {
                             let getPropertyKeys = R.pipe(R.prop('properties'), R.keys);
                             let createQuestions = (schema) => {
@@ -98,7 +57,7 @@ module.exports = function(vorpal, options) {
                                     let pre = util.format('[%s]\n',clc.green(prop));
                                     if(helper.notNil(property.type)) pre += util.format('\ttype: %s\n', clc.red(property.type));
                                     if(helper.notNil(property.description)) pre += util.format('\tdescription: %s\n', property.description);
-                                    pre += 'Value: '
+                                    pre += 'Value: ';
 
                                     let valueFetcher = R.cond([
                                         [R.equals('name'), x => R.prop('name', instance)],
@@ -141,9 +100,10 @@ module.exports = function(vorpal, options) {
                                             //TODO validate if this is feasible
                                             instance.name = instance.data.name;
                                             instance.desc = instance.data.desc;
-
-                                            instance = helper.createInstance(baseType, helper.json2Entity(true, instance));
-                                            let graph = new Structure.SubGraph(instance).toList();
+                                            
+                                            let ins = graphLib.createInstance(baseType, instance.data);
+                                            //ins.type = R.nth(1,graphLib.getTypeHierarchy(typeDb, instance)).name; //FIXME after issue360 has been resolved
+                                            let graph = [ins];
                                             self.log(JSON.stringify(graph, undefined, 2));
                                             let loggedIn = () => {
                                                 self.log('creating instance');
@@ -153,7 +113,7 @@ module.exports = function(vorpal, options) {
                                                         else self.log(updated);
                                                         done();
                                                     })
-                                                    .catch(ex => {self.log(ex); done();})
+                                                    .catch(ex => {self.log(ex); done();});
                                             };
                                             helper.genericAuthCommandHandler(done, loggedIn, rest.getToken());
                                         } else {
@@ -162,29 +122,24 @@ module.exports = function(vorpal, options) {
                                         }
                                     });
                             });
-                        });
-                })
-                .catch(helper.genericCatchHandler(done));
-        })
+                        })
+                        .catch(helper.genericCatchHandler(done));
+        });
 
     vorpal.command('edit <uuid>', 'Edit the properties of an instance')
         .action(function(args,done) {
             const self = this;
             let currentInstance;
 
-            let getInstanceOf = R.compose(R.head, R.path(['meta','relations','INSTANCE_OF','uuids']));
-
             self.log(clc.green('(Input a space if you wish to override default values)'));
             rest.getInstanceByUuid(args.uuid)
                 .then(instance => {
                     currentInstance = instance;
-                    console.log(getInstanceOf(instance));
-                    return rest.getEntityByUuid(getInstanceOf(instance));
+                    return graphLib.findTypeByUuid(typeDb, graphLib.getInstanceOfUuid(instance));
                 })
                 .then(entity => {
                     validator.getSchema(entity.name)
                         .then(typeSchema => {
-                            //console.log(JSON.stringify(typeSchema, undefined, 2));
                             let getPropertyKeys = R.pipe(R.prop('properties'), R.keys);
                             let createQuestions = (schema) => {
                                 let keys = getPropertyKeys(schema);
@@ -193,7 +148,7 @@ module.exports = function(vorpal, options) {
                                     let pre = util.format('[%s]\n',clc.green(prop));
                                     if(helper.notNil(property.type)) pre += util.format('\ttype: %s\n', clc.red(property.type));
                                     if(helper.notNil(property.description)) pre += util.format('\tdescription: %s\n', property.description);
-                                    pre += 'Value: '
+                                    pre += 'Value: ';
 
                                     let valueFetcher = R.cond([
                                         [R.equals('name'), x => R.prop('name', currentInstance)],
@@ -240,7 +195,7 @@ module.exports = function(vorpal, options) {
                                                         else self.log(updated);
                                                         done();
                                                     })
-                                                    .catch(ex => {self.log(ex); done();})
+                                                    .catch(ex => {self.log(ex); done();});
                                             };
                                             helper.genericAuthCommandHandler(done, loggedIn, rest.getToken());
                                         } else {
@@ -295,7 +250,7 @@ module.exports = function(vorpal, options) {
                                                 done();
                                             });
                                     });
-                                })
+                                });
                         });
                     })
                     .catch(helper.genericCatchHandler(done));
@@ -312,13 +267,14 @@ module.exports = function(vorpal, options) {
             let loggedIn = () => {
                 rest.getCapabilities(args.uuid)
                     .then(capabilities => {
+                    console.log(capabilities);
                         if(R.pipe(R.keys,R.length,R.equals(0))(capabilities)) {
                             self.log('No capabilities found for this instance.');
                             done();
                         } else {
                             let q = helper.generateQuestion('capability', 'list', 'Select capability to run: ', {choices: R.keys(capabilities)});
                             self.prompt(q, function(answer) {
-                                rest.runCapability(args.uuid, answer.capability)
+                                rest.runCapability(args.uuid, answer.capability, rest.getToken())
                                     .then(result => {
                                         console.log(result);
                                         done();
@@ -330,5 +286,17 @@ module.exports = function(vorpal, options) {
             };
 
             helper.genericAuthCommandHandler(done, loggedIn, rest.getToken());
+        });
+
+    vorpal.command('results <uuid>', 'Fetch results for an instance')
+        .action(function(args, done) {
+            const self = this;
+
+            rest.getResults(args.uuid)
+                .then(results => {
+                    console.log(results);
+                    done();
+                })
+                .catch(helper.genericCatchHandler(done));
         });
 };

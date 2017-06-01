@@ -1,12 +1,8 @@
 "use strict";
 
 const R = require('ramda');
-const util = require('util');
-const clc = require('cli-color');
 const fs = require('fs');
 const treeify = require('./treeify');
-const uuidV4 = require('uuid');
-const Structure = require('./subgraph');
 
 /*
     Wrapper function to handle calls to endpoints that have an ACL set.
@@ -15,7 +11,7 @@ const Structure = require('./subgraph');
     @param token The token for the REST service
  */
 const genericAuthCommandHandler = R.curry((done, loggedInFn, token) => {
-    let loggedOut = () => { console.log('Please login first.'); done()};
+    let loggedOut = () => { console.log('Please login first.'); done();};
     let handler = R.ifElse(R.isNil,loggedOut, loggedInFn);
     handler(token);
 });
@@ -29,25 +25,6 @@ const genericCatchHandler = R.curry((done, error) => {
     done();
 });
 const notNil = R.compose(R.not, R.isNil);
-const entity2Graph = (entity) => {
-    let container = {};
-    container[entity.meta.uuid] = entity;
-    let graph = new Structure.SubGraph(container);
-    return graph;
-};
-/*
-    Factory function for creating an instance based on a type
-    @param baseTypeEntity The Entity object to base the instance on
-    @param instanceEntity The instance object to link to the baseTypeEntity
-    @returns A SubGraph compatible object representation of the new instance
- */
-const createInstance = (baseTypeEntity, instanceEntity) => {
-    let rel = instanceEntity.relationCreate('INSTANCE_OF', 'outgoing');
-    rel.addEntity(baseTypeEntity);
-    let container = {};
-    container[instanceEntity.meta.uuid] = instanceEntity;
-    return container;
-};
 
 /*
     Generate a Inquirer compatible question to prompt the user with
@@ -94,29 +71,6 @@ function readJsonFile(filePath) {
     return JSON.parse(fs.readFileSync(filePath, {encoding: 'utf8'}));
 }
 
-/*
-    Construct an Entity object from normal json
-    @param generateUuid Boolean, indicating if a new uuid should be generated
-    @param json The json to transform to an Entity object.
- */
-function json2Entity(generateUuid, json) {
-    if(R.isNil(json)) return null;
-    let defaultUuid = R.ifElse(R.identity, x => uuidV4(), x => R.defaultTo(null, json.meta.uuid))(generateUuid);
-    let defaultRelations = R.ifElse(R.identity,
-        x => R.ifElse(notNil, R.omit(['ISA']), R.identity)(R.defaultTo(null, R.clone(json.meta.relations))),
-        x => R.defaultTo(null, R.clone(json.meta.relations)))(generateUuid);
-
-    return new Structure.Entity(
-        R.defaultTo(null, json.type),
-        R.defaultTo(null, json.name),
-        R.defaultTo(null, json.desc),
-        defaultUuid,
-        R.defaultTo(null, R.clone(json.data)),
-        defaultRelations,
-        R.defaultTo(null, R.clone(json.file))
-    );
-}
-
 module.exports =  {
 	generateQuestion: generateQuestion,
 	createOptions: createOptions,
@@ -126,10 +80,7 @@ module.exports =  {
 	stringify: stringify,
 	readJsonFile: readJsonFile,
     treePrint: R.curry(treePrint),
-    json2Entity: R.curry(json2Entity),
     genericAuthCommandHandler: genericAuthCommandHandler,
     genericCatchHandler: genericCatchHandler,
-    notNil: notNil,
-    entity2Graph: entity2Graph,
-    createInstance: createInstance
+    notNil: notNil
 };

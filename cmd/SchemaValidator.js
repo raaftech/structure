@@ -55,7 +55,7 @@ class SchemaValidator {
                     //Function to run if validation resulted in valid=false
                     let falsey = R.pipe(R.prop('error'), R.flip(R.append)([]), R.project(['message', 'dataPath']), R.head, R.assoc('valid',false));
                     let output = R.ifElse(R.propEq('valid', true), truthy, falsey) (result);
-                    output['instance'] = instance;
+                    output.instance = instance;
                     resolve(output);
                 }
             });
@@ -90,7 +90,7 @@ function cast(type, value) {
         [R.equals('number'), x => Number(value)],
         [R.equals('integer'), x => parseInt(value)],
         [R.equals('boolean'), x => strToBoolean(value)],
-        [R.equals('object'), R.tryCatch(x => JSON.parse(value), x => {return {}})],
+        [R.equals('object'), R.tryCatch(x => JSON.parse(value), x => {return {};})],
         [R.equals('array'), x => JSON.parse(value)],
         [R.T, x => value]
     ]);

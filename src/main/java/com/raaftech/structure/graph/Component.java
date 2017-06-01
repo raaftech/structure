@@ -45,7 +45,7 @@ public class Component extends Instance {
             enforceTargetType = true
     )
     @Fetch
-    private Component inComponent;
+    private Set<Component> inComponent;
 
     @Transient
     private static final InstanceRepository instanceRepository = Context.getInstanceRepository();
@@ -212,8 +212,8 @@ public class Component extends Instance {
         if (componentsJson.size() > 0) {
             result.set("components", componentsJson);
         }
-        if (inComponent != null) {
-            result.put("incomponent", inComponent.getUuid());
+        if(!inComponent.isEmpty()) {
+            result.put("incomponent", inComponent.toArray().toString());
         }
 
         result.put("_nodeType", getNodeType());
@@ -242,8 +242,8 @@ public class Component extends Instance {
         if (componentsJson.size() > 0) {
             result.set("components", componentsJson);
         }
-        if (inComponent != null) {
-            result.put("incomponent", inComponent.getUuid());
+        if(!inComponent.isEmpty()) {
+            result.put("incomponent", inComponent.toArray().toString());
         }
 
         result.put("_nodeType", getNodeType());
