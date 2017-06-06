@@ -6,13 +6,13 @@
         "relations": {
             "ISA": {
                 "direction": "outgoing",
-                "uuids": [
+                "to": [
                     "8f371b1b-52a3-4409-be70-9cd947bec8dd"
                 ]
             },
             "IMPLEMENTS": {
                 "direction": "outgoing",
-                "uuids": [
+                "to": [
                     "0771de77-c3d8-4db1-92fa-7ac96205f9bb"
                 ]
             }

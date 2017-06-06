@@ -7,7 +7,7 @@
             "relations": {
                 "ISA": {
                     "direction": "outgoing",
-                    "uuids": [
+                    "to": [
                         "b1bc963a-19cc-4518-aecb-a35d028c49e3"
                     ]
                 }
@@ -30,7 +30,7 @@
             "relations": {
                 "ISA": {
                     "direction": "outgoing",
-                    "uuids": [
+                    "to": [
                         "5f1eb7c5-ec5e-4563-be6a-fc50774fc374"
                     ]
                 }

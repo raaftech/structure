@@ -6,7 +6,7 @@
         "relations": {
             "ISA": {
                 "direction": "outgoing",
-                "uuids": [
+                "to": [
                     "65af133b-1a2c-4faa-8d2a-a288eaa4f412"
                 ]
             }

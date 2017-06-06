@@ -252,7 +252,7 @@ public class NaiveSorter {
         Iterator<Map.Entry<String, JsonNode>> relationships = daNode.get(META).get("relations").fields();
         while(relationships.hasNext()){
             Map.Entry<String, JsonNode> relation = relationships.next();
-            ArrayNode uuids = (ArrayNode) relation.getValue().get("uuids");
+            ArrayNode uuids = (ArrayNode) relation.getValue().get("to");
             Iterator<JsonNode> iter = uuids.elements();
             while (iter.hasNext()) {
                 dependencies.add(iter.next().asText());

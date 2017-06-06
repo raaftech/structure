@@ -79,14 +79,14 @@
           "type": "object",
           "patternProperties": {
             "^[a-zA-Z]+$": {
-              "required": ["direction", "uuids"],
+              "required": ["direction", "to"],
               "additionalProperties": false,
               "properties": {
                 "direction": {
                   "$ref": "#/definitions/direction"
                 },
-                "uuids": {
-                  "$ref": "common.schema.json#/definitions/uuidList"
+                "to": {
+                  "$ref": "common.schema.json#/definitions/caseInsensitiveAlphaNumWithDotArray"
                 }
               }
             }

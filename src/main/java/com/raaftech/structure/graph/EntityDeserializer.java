@@ -115,7 +115,7 @@ public class EntityDeserializer extends StdDeserializer<Entity> {
 
                 String rname = key;
                 String direction = value.get("direction").asText();
-                ArrayNode peersJson = (ArrayNode) value.get("uuids");
+                ArrayNode peersJson = (ArrayNode) value.get("to");
                 Set<String> peers = new HashSet<String>();
                 peersJson.forEach(peer->peers.add(peer.asText()));
 
