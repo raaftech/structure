@@ -183,7 +183,7 @@ public abstract class GenericActor extends AbstractVerticle {
 
     // Check if a string is a valid UUID.
     @SuppressWarnings("unused")
-    public boolean isUuid(String str) {
+    public static boolean isUuid(String str) {
         try {
             UUID uuid = UUID.fromString(str);
             return true;

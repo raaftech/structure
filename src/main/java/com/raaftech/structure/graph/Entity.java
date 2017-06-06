@@ -4,8 +4,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import com.raaftech.structure.base.Configuration;
 import com.raaftech.structure.base.Context;
+import com.raaftech.structure.bus.GenericActor;
 import com.raaftech.structure.exceptions.IllegalEntityType;
 import com.raaftech.structure.exceptions.TypeUnknownException;
 import com.raaftech.structure.graph.converters.JsonNodeWriter;
@@ -113,6 +115,20 @@ public class Entity {
     @Transient
     private Map<String, List<Pair<Constraint.Cardinality, UUID>>> constraints;
 
+    /*
+    The next two sets are used to see if a vertice incident to an edge can be
+    queryable by name. This can only be guaranteed for types, so we constraint it
+    to just types.
+     */
+    // Incoming relations that origin from a type
+    private static final Set<String> incomingFromType = ImmutableSet.of(
+            "ISA", "CONSTRAINTS", "IMPLEMENTS"
+    );
+    // Outgoing relations that point to a typ
+    private static final Set<String> outgoingToType = ImmutableSet.of(
+            "ISA", "CONSTRAINTS", "IMPLEMENTS", "PROVIDED_BY",
+            "INSTANCE_OF", "APPLIES_TO", "GIVES_CAPABILITY"
+    );
 
     /* Empty constructor for Spring Data Neo4j's purposes. */
     public Entity() {
@@ -686,8 +702,24 @@ public class Entity {
                     String direction = relation.getMiddle();
                     Set<String> peers = relation.getRight();
 
-                    peers.forEach((uuid) -> {
-                        Node peer = nodeRepository.findGraphNodeByUuid(uuid);
+                    /*
+                    When a relation points towards a type it is possible to query that
+                    type by name as well as by uuid, which is the default. This is because
+                    types have a unique constraint on their names.
+                     */
+                    final boolean queryableByName =
+                            ("outgoing".equals(direction.toLowerCase()) ?
+                                    outgoingToType : incomingFromType).contains(rname);
+
+                    peers.forEach((identifier) -> {
+                        final Node peer;
+                        if (queryableByName) {
+                            peer = GenericActor.isUuid(identifier) ?
+                                    nodeRepository.findGraphNodeByUuid(identifier) :
+                                    neo4jTemplate.getPersistentState(typeRepository.findOneByName(identifier));
+                        } else {
+                            peer = nodeRepository.findGraphNodeByUuid(identifier);
+                        }
 
                         // check if this relationship already exists by getting al relationships with the same name and direction
                         // and then checking if we have one to "peer".
