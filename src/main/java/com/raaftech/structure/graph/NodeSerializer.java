@@ -106,7 +106,7 @@ public class NodeSerializer extends StdSerializer<Node> {
                         gen.writeStringField("direction", direction);
 
                         // write the uuids array
-                        gen.writeFieldName("uuids");
+                        gen.writeFieldName("to");
                         gen.writeStartArray();
                         List<Relationship> uuids = entry.getValue();
                         uuids.stream()

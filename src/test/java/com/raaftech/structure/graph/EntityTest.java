@@ -92,7 +92,7 @@ public class EntityTest {
     }
 
     private String createRelationSection() {
-        return "{\"INSTANCE_OF\":{\"direction\":\"outgoing\", \"uuids\": [ \"" + UUID.randomUUID().toString() + "\" ]}}";
+        return "{\"INSTANCE_OF\":{\"direction\":\"outgoing\", \"to\": [ \"" + UUID.randomUUID().toString() + "\" ]}}";
     }
 
     @Test

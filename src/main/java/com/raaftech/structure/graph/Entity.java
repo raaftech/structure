@@ -4,8 +4,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import com.raaftech.structure.base.Configuration;
 import com.raaftech.structure.base.Context;
+import com.raaftech.structure.bus.GenericActor;
 import com.raaftech.structure.exceptions.IllegalEntityType;
 import com.raaftech.structure.exceptions.TypeUnknownException;
 import com.raaftech.structure.graph.converters.JsonNodeWriter;
@@ -17,10 +19,8 @@ import com.raaftech.structure.helper.Triple;
 import io.vertx.core.json.JsonObject;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.neo4j.graphdb.Direction;
-import org.neo4j.graphdb.DynamicLabel;
+import org.neo4j.graphdb.*;
 import org.neo4j.graphdb.Node;
-import org.neo4j.graphdb.RelationshipType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.annotation.Transient;
@@ -34,7 +34,9 @@ import org.springframework.data.neo4j.support.query.CypherQueryExecutor;
 
 import java.net.URI;
 import java.util.*;
+import java.util.function.BiPredicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import static io.vertx.core.json.Json.mapper;
@@ -113,6 +115,20 @@ public class Entity {
     @Transient
     private Map<String, List<Pair<Constraint.Cardinality, UUID>>> constraints;
 
+    /*
+    The next two sets are used to see if a vertice incident to an edge can be
+    queryable by name. This can only be guaranteed for types, so we constraint it
+    to just types.
+     */
+    // Incoming relations that origin from a type
+    private static final Set<String> incomingFromType = ImmutableSet.of(
+            "ISA", "CONSTRAINTS", "IMPLEMENTS"
+    );
+    // Outgoing relations that point to a typ
+    private static final Set<String> outgoingToType = ImmutableSet.of(
+            "ISA", "CONSTRAINTS", "IMPLEMENTS", "PROVIDED_BY",
+            "INSTANCE_OF", "APPLIES_TO", "GIVES_CAPABILITY"
+    );
 
     /* Empty constructor for Spring Data Neo4j's purposes. */
     public Entity() {
@@ -671,23 +687,49 @@ public class Entity {
 
         /* Add relations. Node will be null if entity is not persisted. */
         if (relations != null) {
+            // Returns whether a relationship with a given direction implies the the entity can be queried by name
+            BiPredicate<Direction, RelationshipType> isQueryableByName = (direction, relName) ->
+                    (Direction.OUTGOING.equals(direction) ?
+                            outgoingToType : incomingFromType).contains(relName.name());
 
 			/*
              * Create a set of all peers of all relations for the purpose of
 			 * existence checking.
 			 */
-            Set<String> allPeers = new HashSet<String>();
-            relations.forEach(relation -> allPeers.addAll(relation.getRight()));
+            final Stream<Triple<String, String, String>> flattenedRelationsStream =
+                    relations.stream().flatMap(triple -> triple.flatten());
+            final boolean peersExist = flattenedRelationsStream
+                    .map(triple -> Pair.of(
+                            triple.getRight(),
+                            isQueryableByName.test(Direction.valueOf(triple.getMiddle().toUpperCase()),
+                                    DynamicRelationshipType.withName(triple.getLeft())))
+                    )
+                    .allMatch(pair -> doesPeerExist(pair.getLeft(), pair.getRight()));
 
-            if (doPeersExist(allPeers)) {
+            if (peersExist) {
 
                 relations.forEach((relation) -> {
                     String rname = relation.getLeft();
                     String direction = relation.getMiddle();
                     Set<String> peers = relation.getRight();
 
-                    peers.forEach((uuid) -> {
-                        Node peer = nodeRepository.findGraphNodeByUuid(uuid);
+                    /*
+                    When a relation points towards a type it is possible to query that
+                    type by name as well as by uuid, which is the default. This is because
+                    types have a unique constraint on their names.
+                     */
+                    final boolean queryableByName = isQueryableByName.test(
+                            Direction.valueOf(direction.toUpperCase()), DynamicRelationshipType.withName(rname));
+
+                    peers.forEach((identifier) -> {
+                        final Node peer;
+                        if (queryableByName) {
+                            peer = GenericActor.isUuid(identifier) ?
+                                    nodeRepository.findGraphNodeByUuid(identifier) :
+                                    neo4jTemplate.getPersistentState(typeRepository.findOneByName(identifier));
+                        } else {
+                            peer = nodeRepository.findGraphNodeByUuid(identifier);
+                        }
 
                         // check if this relationship already exists by getting al relationships with the same name and direction
                         // and then checking if we have one to "peer".
@@ -723,16 +765,13 @@ public class Entity {
         }
     }
 
-    private boolean doPeersExist(Set<String> peers) {
-        boolean result = true;
-
-        for (String peer : peers) {
-            if (nodeRepository.findByUuid(peer) == null) {
-                result = false;
-                break;
-            }
+    private boolean doesPeerExist(String peerIdentifier, boolean queryableByName) {
+        if (GenericActor.isUuid(peerIdentifier)) {
+            return nodeRepository.findByUuid(peerIdentifier) != null;
+        } else if (queryableByName) {
+            return typeRepository.findOneByName(peerIdentifier) != null;
+        } else {
+            return false;
         }
-
-        return result;
     }
 }

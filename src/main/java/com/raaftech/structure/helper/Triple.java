@@ -1,5 +1,8 @@
 package com.raaftech.structure.helper;
 
+import java.util.Collection;
+import java.util.stream.Stream;
+
 public class Triple<L, M, R> {
 
 	private final L left;
@@ -30,6 +33,30 @@ public class Triple<L, M, R> {
 
 	public R getRight() {
 		return this.right;
+	}
+
+	/**
+	 * If the {@link Triple#right right} field of this triple is a {@link Collection} so that the type of this {@link
+	 * Triple} is `Triple&lt;L, M, Collection&lt;?&gt;&gt;` return a {@link Stream} containing an element of type
+	 * `Triple&lt;L, M, {@link T T}&gt;` for every element in {@link Triple#right}.
+	 * {@link Triple Triple} objects are often used to
+	 * express relationships between {@link com.raaftech.structure.graph.Entity} instances. The usual way to do this is
+	 * to have a triple where the right side is a set of UUIDs. In some cases it may be convenient to represent all
+	 * these relationships as separate Triple objects. Flatten does that.
+	 *
+	 * @param <T> The type of every {@link Triple#right right} field of every {@link Triple Triple} in the resulting
+	 *            {@link Stream}.
+	 * @return If {@link Triple#right right} is a {@link Collection} then return a stream containing a triple for every
+	 * element of {@link Triple#right right}. If {@link Triple#right right} is not a {@link Collection} then return a
+	 * stream containing only this element, but with {@link Triple#right right} cast to {@link T}.
+	 */
+	public <T> Stream<Triple<L, M, T>> flatten() {
+		if (right instanceof Collection<?>) {
+			return ((Collection<T>)right).stream()
+					.map(el -> Triple.of(left, middle, el));
+		} else {
+			return Stream.of(Triple.of(left, middle, (T)right));
+		}
 	}
 
 	@Override

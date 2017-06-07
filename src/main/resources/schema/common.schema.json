@@ -25,7 +25,9 @@
     "caseInsensitiveAlphaNumWithDotArray": {
       "type": "array",
       "items": {
-        "$ref": "#/definitions/caseInsensitiveAlphaNumWithDot"
+        "type": "string",
+        "minItems": 1,
+        "uniqueItems": true
       },
       "minItems": 1,
       "uniqueItems": true
