@@ -91,7 +91,7 @@ public class TypeTest {
                 "    \"relations\": {" +
                 "      \"INSTANCE_OF\": {" +
                 "        \"direction\": \"outgoing\"," +
-                "        \"uuids\": [" +
+                "        \"to\": [" +
                 "          \"7a60ec32-0a9a-40b9-bf1f-d69674d4a233\"" +
                 "        ]" +
                 "      }" +
@@ -106,7 +106,7 @@ public class TypeTest {
         ObjectNode relations = (ObjectNode) entityJson.get("meta").get("relations");
         ObjectNode testRel = relations.putObject("TEST");
         testRel.put("direction", "outgoing");
-        ArrayNode uuidArray = testRel.putArray("uuids");
+        ArrayNode uuidArray = testRel.putArray("to");
         UUID testRelTo = UUID.randomUUID();
         uuidArray.add(testRelTo.toString());
 
@@ -127,7 +127,7 @@ public class TypeTest {
         // We'll add an __incoming__ relationship that doesn't have a constraint, this shouldn't invalidate anything
         ObjectNode incoming = relations.putObject("INCOMING_NOT_UNDER_CONSTRAINT");
         incoming.put("direction", "incoming");
-        uuidArray = incoming.putArray("uuids");
+        uuidArray = incoming.putArray("to");
         UUID incomingUuid = UUID.randomUUID();
         uuidArray.add(incomingUuid.toString());
 
@@ -137,7 +137,7 @@ public class TypeTest {
         // Now we'll introduce a relationship that is not under a constraint
         ObjectNode notUnderConstraint = relations.putObject("NOT_CONSTRAINED");
         notUnderConstraint.put("direction", "outgoing");
-        uuidArray = notUnderConstraint.putArray("uuids");
+        uuidArray = notUnderConstraint.putArray("to");
         UUID nucTo = UUID.randomUUID();
         uuidArray.add(nucTo.toString());
 
@@ -182,7 +182,7 @@ public class TypeTest {
                 "    \"relations\": {" +
                 "      \"INSTANCE_OF\": {" +
                 "        \"direction\": \"outgoing\"," +
-                "        \"uuids\": [" +
+                "        \"to\": [" +
                 "          \"7a60ec32-0a9a-40b9-bf1f-d69674d4a233\"" +
                 "        ]" +
                 "      }" +
@@ -197,7 +197,7 @@ public class TypeTest {
         ObjectNode relations = (ObjectNode) entityJson.get("meta").get("relations");
         ObjectNode testRel = relations.putObject("TEST");
         testRel.put("direction", "outgoing");
-        ArrayNode uuidArray = testRel.putArray("uuids");
+        ArrayNode uuidArray = testRel.putArray("to");
         UUID testRelTo01 = UUID.randomUUID();
         UUID testRelTo02 = UUID.randomUUID();
         uuidArray.add(testRelTo01.toString());
@@ -274,7 +274,7 @@ public class TypeTest {
                 "    \"relations\": {" +
                 "      \"INSTANCE_OF\": {" +
                 "        \"direction\": \"outgoing\"," +
-                "        \"uuids\": [" +
+                "        \"to\": [" +
                 "          \"7a60ec32-0a9a-40b9-bf1f-d69674d4a233\"" +
                 "        ]" +
                 "      }" +
@@ -289,7 +289,7 @@ public class TypeTest {
         ObjectNode relations = (ObjectNode) entityJson.get("meta").get("relations");
         ObjectNode testRel = relations.putObject("TEST");
         testRel.put("direction", "outgoing");
-        ArrayNode uuidArray = testRel.putArray("uuids");
+        ArrayNode uuidArray = testRel.putArray("to");
         UUID testRelTo01 = UUID.randomUUID();
         uuidArray.add(testRelTo01.toString());
 
@@ -404,7 +404,7 @@ public class TypeTest {
                 "    \"relations\": {" +
                 "      \"INSTANCE_OF\": {" +
                 "        \"direction\": \"outgoing\"," +
-                "        \"uuids\": [" +
+                "        \"to\": [" +
                 "          \"7a60ec32-0a9a-40b9-bf1f-d69674d4a233\"" +
                 "        ]" +
                 "      }" +
@@ -419,7 +419,7 @@ public class TypeTest {
         ObjectNode relations = (ObjectNode) entityJson.get("meta").get("relations");
         ObjectNode testRel = relations.putObject("TEST");
         testRel.put("direction", "outgoing");
-        ArrayNode uuidArray = testRel.putArray("uuids");
+        ArrayNode uuidArray = testRel.putArray("to");
         UUID testRelTo01 = UUID.randomUUID();
         uuidArray.add(testRelTo01.toString());
         UUID testRelTo02 = UUID.randomUUID();
