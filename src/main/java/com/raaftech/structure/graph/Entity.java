@@ -19,10 +19,8 @@ import com.raaftech.structure.helper.Triple;
 import io.vertx.core.json.JsonObject;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.neo4j.graphdb.Direction;
-import org.neo4j.graphdb.DynamicLabel;
+import org.neo4j.graphdb.*;
 import org.neo4j.graphdb.Node;
-import org.neo4j.graphdb.RelationshipType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.annotation.Transient;
@@ -36,6 +34,7 @@ import org.springframework.data.neo4j.support.query.CypherQueryExecutor;
 
 import java.net.URI;
 import java.util.*;
+import java.util.function.BiPredicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -688,6 +687,10 @@ public class Entity {
 
         /* Add relations. Node will be null if entity is not persisted. */
         if (relations != null) {
+            // Returns whether a relationship with a given direction implies the the entity can be queried by name
+            BiPredicate<Direction, RelationshipType> isQueryableByName = (direction, relName) ->
+                    (Direction.OUTGOING.equals(direction) ?
+                            outgoingToType : incomingFromType).contains(relName.name());
 
 			/*
              * Create a set of all peers of all relations for the purpose of
@@ -698,9 +701,8 @@ public class Entity {
             final boolean peersExist = flattenedRelationsStream
                     .map(triple -> Pair.of(
                             triple.getRight(),
-                            ("outgoing".equals(triple.getMiddle().toLowerCase()) ?
-                                    outgoingToType : incomingFromType).contains(triple.getLeft())
-                            )
+                            isQueryableByName.test(Direction.valueOf(triple.getMiddle().toUpperCase()),
+                                    DynamicRelationshipType.withName(triple.getLeft())))
                     )
                     .allMatch(pair -> doesPeerExist(pair.getLeft(), pair.getRight()));
 
@@ -716,9 +718,8 @@ public class Entity {
                     type by name as well as by uuid, which is the default. This is because
                     types have a unique constraint on their names.
                      */
-                    final boolean queryableByName =
-                            ("outgoing".equals(direction.toLowerCase()) ?
-                                    outgoingToType : incomingFromType).contains(rname);
+                    final boolean queryableByName = isQueryableByName.test(
+                            Direction.valueOf(direction.toUpperCase()), DynamicRelationshipType.withName(rname));
 
                     peers.forEach((identifier) -> {
                         final Node peer;
