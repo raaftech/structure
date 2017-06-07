@@ -10,6 +10,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.raaftech.structure.base.Configuration;
 import com.raaftech.structure.base.Context;
+import com.raaftech.structure.bus.GenericActor;
 import com.raaftech.structure.exceptions.FileInjectionException;
 import com.raaftech.structure.exceptions.JsonValidationException;
 import com.raaftech.structure.graph.Node;
@@ -53,6 +54,7 @@ public class NaiveSorter {
     private static final String CONTENT = "content";
     private static final String PATH = "path";
     private static final String UUID = "uuid";
+    private static final String NAME = "name";
 
     private String globPattern = "**/*.{type,inst}.json";
 
@@ -246,20 +248,27 @@ public class NaiveSorter {
      * "name" (for dependencies to be found by "name") and
      * "uuid" (for dependencies to be found by "uuid")
      */
-    private Set<String> getDeps(JsonNode daNode) {
-        Set<String> dependencies = new HashSet<>();
+    private Map<String, Set<String>> getDeps(JsonNode daNode) {
+        final Set<String> uuidDependencies = new HashSet<>();
+        final Set<String> namedDependencies = new HashSet<>();
 
         Iterator<Map.Entry<String, JsonNode>> relationships = daNode.get(META).get("relations").fields();
         while(relationships.hasNext()){
             Map.Entry<String, JsonNode> relation = relationships.next();
-            ArrayNode uuids = (ArrayNode) relation.getValue().get("to");
-            Iterator<JsonNode> iter = uuids.elements();
+            ArrayNode identifiers = (ArrayNode) relation.getValue().get("to");
+            Iterator<JsonNode> iter = identifiers.elements();
             while (iter.hasNext()) {
-                dependencies.add(iter.next().asText());
+                final String identifier = iter.next().asText();
+                if (GenericActor.isUuid(identifier)) {
+                    uuidDependencies.add(identifier);
+                } else {
+                    namedDependencies.add(identifier);
+                }
             }
         }
 
-        return dependencies;
+        return ImmutableMap.of("uuids", uuidDependencies,
+                "names", namedDependencies);
     }
 
     /**
@@ -301,9 +310,14 @@ public class NaiveSorter {
         Set<String> sortedUuids = sortedArray.stream()
                 .map(sortedNode -> sortedNode.get(META).get(UUID).asText())
                 .collect(Collectors.toSet());
+        Set<String> sortedNames = sortedArray.stream()
+                .map(sortedNode -> sortedNode.get(NAME).asText())
+                .collect(Collectors.toSet());
 
-        return getDeps(node).stream()
-                .allMatch(sortedUuids::contains);
+        final Map<String, Set<String>> dependencies = getDeps(node);
+        return
+                dependencies.get("uuids").stream().allMatch(sortedUuids::contains) &&
+                dependencies.get("names").stream().allMatch(sortedNames::contains);
     }
 
     /**

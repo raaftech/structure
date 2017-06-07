@@ -37,6 +37,7 @@ import org.springframework.data.neo4j.support.query.CypherQueryExecutor;
 import java.net.URI;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import static io.vertx.core.json.Json.mapper;
@@ -692,10 +693,18 @@ public class Entity {
              * Create a set of all peers of all relations for the purpose of
 			 * existence checking.
 			 */
-            Set<String> allPeers = new HashSet<String>();
-            relations.forEach(relation -> allPeers.addAll(relation.getRight()));
+            final Stream<Triple<String, String, String>> flattenedRelationsStream =
+                    relations.stream().flatMap(triple -> triple.flatten());
+            final boolean peersExist = flattenedRelationsStream
+                    .map(triple -> Pair.of(
+                            triple.getRight(),
+                            ("outgoing".equals(triple.getMiddle().toLowerCase()) ?
+                                    outgoingToType : incomingFromType).contains(triple.getLeft())
+                            )
+                    )
+                    .allMatch(pair -> doesPeerExist(pair.getLeft(), pair.getRight()));
 
-            if (doPeersExist(allPeers)) {
+            if (peersExist) {
 
                 relations.forEach((relation) -> {
                     String rname = relation.getLeft();
@@ -755,16 +764,13 @@ public class Entity {
         }
     }
 
-    private boolean doPeersExist(Set<String> peers) {
-        boolean result = true;
-
-        for (String peer : peers) {
-            if (nodeRepository.findByUuid(peer) == null) {
-                result = false;
-                break;
-            }
+    private boolean doesPeerExist(String peerIdentifier, boolean queryableByName) {
+        if (GenericActor.isUuid(peerIdentifier)) {
+            return nodeRepository.findByUuid(peerIdentifier) != null;
+        } else if (queryableByName) {
+            return typeRepository.findOneByName(peerIdentifier) != null;
+        } else {
+            return false;
         }
-
-        return result;
     }
 }
