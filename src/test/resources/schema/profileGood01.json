@@ -75,16 +75,6 @@
     ]
   },
   "commands": {
-    "p2Ft": -2377010961495074,
-    "J-IkDyAYk": true,
-    "~b(\\": [
-      "jQ>vfI#Hm`~bZ!}U<M6yDKa/@>`",
-      "i`Nt4IM[gq-|XBR^oHqo[iie&",
-      "q-C",
-      "'2m"
-    ],
-    "l'TM+29I": [],
-    "MN1->!A-^bE[-O9": true,
-    "%U0&<": ""
+    "something": { "command": "foo", "matches": "blaat" }
   }
 }

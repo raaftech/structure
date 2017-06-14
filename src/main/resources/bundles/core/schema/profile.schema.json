@@ -48,7 +48,8 @@
 						}
 					}
 				}
-			}
+			},
+          "additionalProperties": false
 		},
 		"directories": {
 			"type": "object",
