@@ -24,6 +24,36 @@ class Helper {
         return map;
     }
 
+    bootstrapCompatMode(hostname) {
+        let graph = {root: {}, os: {}, entities: []};
+        let root = this.createRootNode();
+        root.name = hostname;
+        root.desc = hostname;
+
+        //OS
+        let os = this.osData('OperatingSystem', 'x');
+        let relate = graphLib.relateEntity(os, 'HAS', 'outgoing');
+
+        //DNS
+        let dns = this.dnsData(hostname, '');
+        let pair = relate(dns);
+        os = R.clone(pair[0]);
+        graph.entities.push(R.clone(pair[1]));
+
+        //default entities for structure bootstrap
+        R.forEach(item => {
+            pair = relate(item);
+            os = R.clone(pair[0]);
+            graph.entities.push(R.clone(pair[1]));
+        }, this.defaultEntities());
+
+        let tuple = graphLib.relateEntity(root, 'GROUPS', 'outgoing', os);
+        graph.os = tuple[1];
+        graph.root = tuple[0];
+
+        return graph;
+    }
+
     bootstrapTransform(data, ip, sshd, hostname) {
         let graph = {root: {}, os: {}, entities: []};
         let root = this.createRootNode();

@@ -9,6 +9,7 @@ const RestConnector = require('./restConnector');
 
 const optionDefs = [
         {name: 'token', alias: 't', type: String},
+        {name: 'compat', alias: 'c', type: Boolean},
         {name: 'hostname', alias: 'h', type: String}
     ];
 const options = cmd(optionDefs);
@@ -22,6 +23,7 @@ const sections = [
         header: 'Options',
         optionList: [
                 {name: 'token', alias: 't', typeLabel: '[underline]{token}', description: 'REST api token'},
+                {name: 'compat', alias: 'c', typeLabel: '[underline]{compat}', description: 'Robust compatibility mode'},
                 {name: 'hostname', alias: 'h', typeLabel: '[underline]{hostname}', description: 'The hostname of the structure machine'}
             ]
     }
@@ -35,26 +37,45 @@ const log = (x) => console.log(JSON.stringify(x, undefined, 2));
 const main = (types) => {
     const helper = new Helper(types);
 
-    ansibleLib.setup('localhost')
-                .then((result) => {
-                    log(result);
-                    let subGraph = helper.bootstrapTransform(result, '127.0.0.1','ssh', options.hostname);
-                    let promises = [];
+    if(options.compat) {
+        let subGraph = helper.bootstrapCompatMode(options.hostname);
+        log(subGraph);
+        let promises = [];
 
-                    R.forEach(item => {
-                        promises.push(rest.createInstance({entities: [item]}));
-                    }, subGraph.entities);
-                    
-                    Promise.all(promises)
-                        .then(createdEntities => {
-                            return rest.createInstance({entities: [subGraph.os, subGraph.root]});
-                        })
-                        .then(finalResult => {
-                            console.log(finalResult);
-                            process.exit(0);
-                        });
-                })
-                .catch(ex => console.log(ex));
+        R.forEach(item => {
+            promises.push(rest.createInstance({entities: [item]}));
+        }, subGraph.entities);
+
+        Promise.all(promises)
+            .then(createdEntities => {
+                return rest.createInstance({entities: [subGraph.os, subGraph.root]});
+            })
+            .then(finalResult => {
+                console.log(finalResult);
+                process.exit(0);
+            });
+    } else {
+        ansibleLib.setup('localhost')
+            .then((result) => {
+                log(result);
+                let subGraph = helper.bootstrapTransform(result, '127.0.0.1','ssh', options.hostname);
+                let promises = [];
+
+                R.forEach(item => {
+                    promises.push(rest.createInstance({entities: [item]}));
+                }, subGraph.entities);
+
+                Promise.all(promises)
+                    .then(createdEntities => {
+                        return rest.createInstance({entities: [subGraph.os, subGraph.root]});
+                    })
+                    .then(finalResult => {
+                        console.log(finalResult);
+                        process.exit(0);
+                    });
+            })
+            .catch(ex => console.log(ex));
+    }
 };
 
 if(R.isNil(options.token)) {
