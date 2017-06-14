@@ -16,7 +16,7 @@ const notNil = R.compose(R.not, R.isNil);
  * @returns {Object} An object as required in bundle files
  */
 function createRelation(name, direction, uuids) {
-    return R.objOf(name, R.zipObj(['direction', 'uuids'], [direction, uuids]));
+    return R.objOf(name, R.zipObj(['direction', 'to'], [direction, uuids]));
 }
 
 /**
@@ -50,7 +50,7 @@ function createInstance(baseType, data) {
  */
 function relateEntity(entity, relationName, direction, relatedEntity) {
     if(notNil(entity.meta.relations[relationName])) {
-        entity.meta.relations[relationName].uuids.push(getId(relatedEntity));
+        entity.meta.relations[relationName].to.push(getId(relatedEntity));
     } else {
         let rel = createRelation(relationName, direction,[getId(relatedEntity)]);
         entity.meta.relations = R.merge(getRelations(entity), rel);
@@ -72,7 +72,7 @@ function updateEntity(propPath, value, entity) {
 }
 
 function getInstanceOfUuid(instance) {
-    let uuidPath = R.path(['meta','relations','INSTANCE_OF','uuids']);
+    let uuidPath = R.path(['meta','relations','INSTANCE_OF','to']);
     let id = R.compose(R.head, uuidPath);
     let hasUuid = R.compose(R.not, R.isNil, uuidPath);
     let predicate = R.ifElse(hasUuid,id,R.always(undefined));
@@ -110,11 +110,11 @@ function findTypeByFuzzyNameMatch(typeDb, name) {
  */
 function getTypeHierarchy(typeDb, instance) {
     let getType = R.curry(findTypeByUuid) (typeDb);
-    let getIsaType = R.compose(getType, R.head, R.path(['meta','relations','ISA','uuids']));
+    let getIsaType = R.compose(getType, R.head, R.path(['meta','relations','ISA','to']));
     let getFirstType = R.compose(getIsaType,R.head);
     let hasISA = R.compose(notNil, R.path(['meta','relations','ISA']));
     let whileCondition = R.compose(hasISA, R.head);
-    let getInstanceOfType = R.compose(getType, R.head, R.path(['meta','relations','INSTANCE_OF','uuids']));
+    let getInstanceOfType = R.compose(getType, R.head, R.path(['meta','relations','INSTANCE_OF','to']));
 
     let hierarchy = [getInstanceOfType(instance)];
     while(whileCondition(hierarchy)) {
@@ -131,7 +131,7 @@ function getTypeHierarchy(typeDb, instance) {
  * @returns {[Entity]} A list of child nodes for the given uuid
  */
 function getChildren(typeDb, uuid) {
-    let isaPath = R.path(['meta','relations','ISA','uuids']);
+    let isaPath = R.path(['meta','relations','ISA','to']);
     let isChild = R.compose(R.equals(uuid), R.head, isaPath);
     return R.filter(item => {
         if(notNil(isaPath(item))) {

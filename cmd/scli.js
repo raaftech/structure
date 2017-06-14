@@ -119,7 +119,7 @@ vorpal.command('relate <fromInstanceUuid> <toInstanceUuid>', 'Create a new relat
             let requestedRelation;
             let currentConstraints;
 
-            let instanceOfType = R.compose(R.head, R.path(['meta', 'relations', 'INSTANCE_OF', 'uuids']));
+            let instanceOfType = R.compose(R.head, R.path(['meta', 'relations', 'INSTANCE_OF', 'to']));
             let firstKey = R.compose(R.head, R.keys);
             let listRelations = R.compose(R.uniq, R.map(firstKey));
             let harvestEndpointUuids = (relName, list) => {
@@ -164,9 +164,9 @@ vorpal.command('relate <fromInstanceUuid> <toInstanceUuid>', 'Create a new relat
                         self.log('Allowed types: %s',R.map(R.prop('name'), result));
                         self.log('%s %s %s', getId(fromInstance), requestedRelation, getId(toInstance));
                         if(R.isNil(R.path(['meta','relations',requestedRelation], fromInstance))) {
-                            fromInstance.meta.relations[requestedRelation] = {direction: 'outgoing', uuids: [getId(toInstance)]};
+                            fromInstance.meta.relations[requestedRelation] = {direction: 'outgoing', to: [getId(toInstance)]};
                         } else {
-                            fromInstance.meta.relations[requestedRelation].uuids.push(getId(toInstance));
+                            fromInstance.meta.relations[requestedRelation].to.push(getId(toInstance));
                         }
                         return rest.updateInstance({entities: [fromInstance]});
                     })
@@ -293,6 +293,12 @@ vorpal.command('tree <name>', 'Show a relation tree for the requested node')
             } else {
                 entity = findByUuid(arg);
                 rootUuid = arg;
+            }
+
+            if(R.isNil(entity)) {
+                self.log('Could not find the specified type');
+                done();
+                return;
             }
 
             let tree = {};
