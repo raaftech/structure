@@ -1,15 +1,39 @@
 package com.raaftech.structure.graph;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.collect.ImmutableSet;
+import com.raaftech.structure.base.Configuration;
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.graph.repositories.TypeRepository;
 import org.neo4j.graphdb.Direction;
 import org.springframework.data.neo4j.annotation.Fetch;
 import org.springframework.data.neo4j.annotation.RelatedTo;
 
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+
+import static io.vertx.core.json.Json.mapper;
 
 public class Profile extends Instance {
+
+    private static final String PACKAGENAMES = "packageNames";
+    private static final String SERVICENAMES = "serviceNames";
+    private static final String PORTS = "ports";
+    private static final String COMMANDS = "commands";
+    private static final String DIRECTORIES = "directories";
+    private static final String FILES = "files";
+    private static final Set<String> DIR_FILE_PREFIXES = ImmutableSet.of(
+            "log", "data", "binary", "library", "configuration"
+    );
 
     private static final TypeRepository typeRepository = Context.getTypeRepository();
 
@@ -55,5 +79,17 @@ public class Profile extends Instance {
         } else {
             throw new IllegalStateException("Can't set providedBy, already set.");
         }
+    }
+
+    public Optional<List<String>> getPackageNames() {
+        return dataArrayStringToList(PACKAGENAMES, (el) -> el.asText());
+    }
+
+    public Optional<List<String>> getServiceNames() {
+        return dataArrayStringToList(SERVICENAMES, (el) -> el.asText());
+    }
+
+    public Optional<List<Integer>> getPorts() {
+        return dataArrayStringToList(PORTS, (el) -> el.asInt());
     }
 }
