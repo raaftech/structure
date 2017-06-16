@@ -2,14 +2,15 @@ package com.raaftech.structure.graph;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.raaftech.structure.base.Context;
+import com.raaftech.structure.bus.InstanceActor;
 import com.raaftech.structure.graph.repositories.InstanceRepository;
 import com.raaftech.structure.graph.repositories.ResultRepository;
 import com.raaftech.structure.graph.repositories.TypeRepository;
 import com.raaftech.structure.helper.InstrumentRunner;
 import com.raaftech.structure.helper.JsonHelper;
-import com.raaftech.structure.bus.InstanceActor;
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.Transaction;
 import org.slf4j.Logger;
@@ -20,7 +21,15 @@ import org.springframework.data.neo4j.annotation.NodeEntity;
 import org.springframework.data.neo4j.annotation.RelatedTo;
 import org.springframework.data.neo4j.fieldaccess.DynamicPropertiesContainer;
 
+import java.io.IOException;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+
+import static io.vertx.core.json.Json.mapper;
 
 /**
  * Give a description of Instance here.
@@ -247,6 +256,35 @@ public abstract class Instance extends Node {
         data.asMap().forEach((key, val) -> result.put(key, val.toString()));
 
         return result;
+    }
+
+    /**
+     * JSON array values in entities are saved in the graph (in the data map) as string representations of those arrays.
+     * The type of the values in that array depends on the type of entity. This method can be used to easily
+     * coerce those string representations of those JSON arrays into a List of type {@link T}.
+     * @param key The key of the value in the {@link Entity#data data} map we want to coerce.
+     * @param map A function used to map every element of the array to some instance of {@link T}.
+     * @param <T> The type to coerce the elements of the array to.
+     * @return A list containing all elements of the JSON array coerced to type {@link T}.
+     */
+    protected <T> Optional<List<T>> dataArrayStringToList(String key, Function<JsonNode, T> map) {
+        final Object value = data.getProperty(key);
+        final IllegalArgumentException exception = new IllegalArgumentException(
+                "Value belonging to \"" + key + "\" is not a JSON array.");
+        if (value == null) {
+            return Optional.empty();
+        } else if (!(value instanceof String)) {
+            throw exception;
+        }
+
+        try {
+            ArrayNode array = (ArrayNode) mapper.readTree((String)value);
+            return Optional.of(StreamSupport.stream(array.spliterator(), false)
+                    .map(map)
+                    .collect(Collectors.toList()));
+        } catch (IOException e) {
+            throw exception;
+        }
     }
 
 }
