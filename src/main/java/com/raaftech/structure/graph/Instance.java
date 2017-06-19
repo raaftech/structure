@@ -1,5 +1,6 @@
 package com.raaftech.structure.graph;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -282,6 +283,30 @@ public abstract class Instance extends Node {
             return Optional.of(StreamSupport.stream(array.spliterator(), false)
                     .map(map)
                     .collect(Collectors.toList()));
+        } catch (IOException e) {
+            throw exception;
+        }
+    }
+
+    /**
+     * JSON object values in entities are saved in the graph as string representations of those objects.
+     * This method deserializes those strings to JsonNode objects.
+     * @param key The key belonging to the JsonNode's value.
+     * @return Optionally the deserialized JsonNode, or empty if no value belongs to the key.
+     */
+    protected Optional<JsonNode> dataObjectToJsonNode(String key) {
+        final Object value = data.getProperty(key);
+        final IllegalArgumentException exception = new IllegalArgumentException(
+                "Value belonging to \"" + key + "\" is not a JSON object.");
+        if (value == null) {
+            return Optional.empty();
+        }
+        else if (!(value instanceof String)) {
+            throw exception;
+        }
+
+        try {
+            return Optional.of(mapper.readTree((String) value));
         } catch (IOException e) {
             throw exception;
         }

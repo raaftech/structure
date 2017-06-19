@@ -22,6 +22,10 @@
       "foo": {
         "command": "bar",
         "matches": "something"
+      },
+      "baz": {
+        "command": "blaat",
+        "matches": "koe"
       }
     },
     "directories": {

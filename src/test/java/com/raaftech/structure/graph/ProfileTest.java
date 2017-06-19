@@ -24,7 +24,9 @@ import org.springframework.test.context.support.AnnotationConfigContextLoader;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.junit.Assert.*;
 
@@ -91,5 +93,31 @@ public class ProfileTest {
         List<Integer> ports = maybePorts.get();
         assertEquals(80, ports.get(0).intValue());
         assertEquals(21, ports.get(1).intValue());
+
+        Optional<Map<String, Map<String, String>>> maybeCommands = profile.getCommands();
+        assertTrue(maybeCommands.isPresent());
+        Map<String, Map<String, String>> commands = maybeCommands.get();
+
+        Map<String, String> fooCommand = commands.get("foo");
+        assertNotNull(fooCommand);
+        assertEquals("bar", fooCommand.get("command"));
+        assertEquals("something", fooCommand.get("matches"));
+
+        Map<String, String> bazCommand = commands.get("baz");
+        assertNotNull(bazCommand);
+        assertEquals("blaat", bazCommand.get("command"));
+        assertEquals("koe", bazCommand.get("matches"));
+
+        Map<String, List<String>> directories = profile.getPossibleDirectories();
+        assertEquals(1, directories.size());
+        assertTrue(directories.containsKey("logDirectories"));
+        assertEquals(1, directories.get("logDirectories").size());
+        assertEquals("/some/path", directories.get("logDirectories").iterator().next());
+
+        Map<String, List<String>> files = profile.getPossibleFiles();
+        assertEquals(1, files.size());
+        assertTrue(files.containsKey("logFiles"));
+        assertEquals(1, files.get("logFiles").size());
+        assertEquals("some_file", files.get("logFiles").iterator().next());
     }
 }
