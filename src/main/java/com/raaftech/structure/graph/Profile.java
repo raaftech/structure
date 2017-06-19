@@ -90,39 +90,72 @@ public class Profile extends Instance {
         }
     }
 
+    /**
+     * Profiles may contain a list of package names.
+     * @return Return an {@link Optional} containing the package names if available, otherwise
+     * an empty {@link Optional}.
+     */
     public Optional<List<String>> getPackageNames() {
         return dataArrayStringToList(PACKAGENAMES, (el) -> el.asText());
     }
 
+    /**
+     * Profiles may contain a list of service names.
+     * @return Return an {@link Optional} containing the service names if available, otherwise
+     * an empty {@link Optional}.
+     */
     public Optional<List<String>> getServiceNames() {
         return dataArrayStringToList(SERVICENAMES, (el) -> el.asText());
     }
 
+    /**
+     * Profiles may contain a list of ports.
+     * @return Return an {@link Optional} containing the ports if available, otherwise
+     * an empty {@link Optional}.
+     */
     public Optional<List<Integer>> getPorts() {
         return dataArrayStringToList(PORTS, (el) -> el.asInt());
     }
 
+    /**
+     * Profiles may contain a list of commands.
+     * A command may look like
+     * { "arbitraryIdentifier": { "command" "actual command", "matches": "some regex"}}
+     * and is simply deserialized to a map by Jackson, keeping the same structure.
+     * @return Return a {@link Map} wrapped in an {@link Optional}. The map has
+     * another {@link Map} as values.
+     */
     public Optional<Map<String, Map<String, String>>> getCommands() {
         Optional<JsonNode> maybeJson = dataObjectToJsonNode(COMMANDS);
         if (!maybeJson.isPresent()) {
             return Optional.empty();
         }
-        JsonNode json = maybeJson.get();
-        final Map<String, Map<String, String>> commands = StreamSupport.stream(
-                Spliterators.spliteratorUnknownSize(json.fields(), Spliterator.ORDERED), false)
-                .collect(Collectors.toMap(
-                        (field) -> field.getKey(),
-                        (field) -> ImmutableMap.of(
-                                COMMANDS_COMMAND, field.getValue().get(COMMANDS_COMMAND).asText(),
-                                COMMANDS_MATCHES, field.getValue().get(COMMANDS_MATCHES).asText()
-                        )));
-        return Optional.of(commands);
+        try {
+            return Optional.of(mapper.treeToValue(maybeJson.get(), Map.class));
+        } catch (JsonProcessingException e) {
+            if (Configuration.isTraceModeOn()) {
+                e.printStackTrace();
+            }
+            log.error(e.getMessage());
+            throw new IllegalArgumentException("An error occurred while " +
+                    "deserializing commands of profile \"" + getUuid() + "\".");
+        }
     }
 
+    /**
+     * Profiles may contain a list of directories.
+     * @return Return an {@link Optional} containing the directories if available, otherwise
+     * an empty {@link Optional}.
+     */
     public Map<String, List<String>> getPossibleDirectories() {
         return getDirectoriesOrFiles(DirectoriesOrFiles.DIRECTORIES);
     }
 
+    /**
+     * Profiles may contain a list of files.
+     * @return Return an {@link Optional} containing the files if available, otherwise
+     * an empty {@link Optional}.
+     */
     public Map<String, List<String>> getPossibleFiles() {
         return getDirectoriesOrFiles(DirectoriesOrFiles.FILES);
     }
@@ -140,14 +173,49 @@ public class Profile extends Instance {
                 e.printStackTrace();
             }
             log.error(e.getMessage());
-            throw new IllegalArgumentException("An error occurred while deserializing directories/files object to Map.");
+            throw new IllegalArgumentException("An error occurred while " +
+                    "deserializing directories/files object to Map for profile \"" + getUuid() + "\".");
         }
     }
 
+    /**
+     * Same as {@link Profile#asDetectionConsumable(String)} but with the name
+     * of the {@link Profile#providedBy} as prefix.
+     * @return See {@link Profile#asDetectionConsumable(String)}
+     */
     public String asDetectionConsumable() {
         return asDetectionConsumable(providedBy.getName());
     }
 
+    /**
+     * Profiles can be ran against a target host which ultimately gives a probability
+     * of a that target host being, or owning an instance of the type to which a profile belongs.
+     * We need to format profiles to a particular format so these profiles can be consumed
+     * by scripts that check those profiles.
+     * This method formats a profile to a file that can be `source`'d on *nix machines
+     * (and possibly batch/powershell?).
+     * @param prefix The string to use as prefix for every key.
+     * @return A formatted string, possible containing the following keys prefixed by {@code prefix_}:
+     * <code>
+     *     PACKAGES,
+     *     SERVICES,
+     *     PORTS,
+     *     LOG_DIRECTORIES,
+     *     LOG_FILES,
+     *     COMMANDS_INDEX
+     * </code>
+     * All keys may have one or more values separated by comma's.
+     *
+     * <code>COMMANDS_INDEX</code> contains an index for other keys contained in this file.
+     * For instance, if <code>COMMANDS_INDEX</code> has value <code>"foo,bar"</code>, this means
+     * that the following keys exist in the string:
+     * <code>
+     *     COMMANDS_FOO_COMMAND,
+     *     COMMANDS_FOO_MATCHES,
+     *     COMMANDS_BAR_COMMAND,
+     *     COMMANDS_BAR_MATCHES
+     * </code>
+     */
     public String asDetectionConsumable(String prefix) {
         final StringBuilder out = new StringBuilder();
         final String dirPostfix = "Directories";

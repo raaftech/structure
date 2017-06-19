@@ -119,7 +119,5 @@ public class ProfileTest {
         assertTrue(files.containsKey("logFiles"));
         assertEquals(1, files.get("logFiles").size());
         assertEquals("some_file", files.get("logFiles").iterator().next());
-
-        System.out.println(profile.asDetectionConsumable("TestProfile"));
     }
 }
