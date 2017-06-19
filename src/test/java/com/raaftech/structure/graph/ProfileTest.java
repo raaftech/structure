@@ -111,7 +111,7 @@ public class ProfileTest {
         Map<String, List<String>> directories = profile.getPossibleDirectories();
         assertEquals(1, directories.size());
         assertTrue(directories.containsKey("logDirectories"));
-        assertEquals(1, directories.get("logDirectories").size());
+        assertEquals(2, directories.get("logDirectories").size());
         assertEquals("/some/path", directories.get("logDirectories").iterator().next());
 
         Map<String, List<String>> files = profile.getPossibleFiles();
@@ -119,5 +119,7 @@ public class ProfileTest {
         assertTrue(files.containsKey("logFiles"));
         assertEquals(1, files.get("logFiles").size());
         assertEquals("some_file", files.get("logFiles").iterator().next());
+
+        System.out.println(profile.asDetectionConsumable("TestProfile"));
     }
 }

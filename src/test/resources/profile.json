@@ -29,7 +29,7 @@
       }
     },
     "directories": {
-      "logDirectories": [ "/some/path" ]
+      "logDirectories": [ "/some/path", "/some/other_path" ]
     },
     "files": {
       "logFiles": [ "some_file" ]
