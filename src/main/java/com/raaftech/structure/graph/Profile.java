@@ -17,11 +17,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.neo4j.annotation.Fetch;
 import org.springframework.data.neo4j.annotation.RelatedTo;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 import static io.vertx.core.json.Json.mapper;
 
@@ -48,7 +50,7 @@ public class Profile extends Instance {
 
     @RelatedTo(type="APPLIES_TO", direction= Direction.OUTGOING)
     @Fetch
-    private Set<Type> appliesTo;
+    private Type appliesTo;
 
     @RelatedTo(type="PROVIDED_BY", direction=Direction.OUTGOING)
     @Fetch
@@ -74,7 +76,7 @@ public class Profile extends Instance {
         super(data, profileType);
     }
 
-    public void setAppliesTo(Set<Type> appliesTo) {
+    public void setAppliesTo(Type appliesTo) {
         if (this.appliesTo == null) {
             this.appliesTo = appliesTo;
         } else {
@@ -96,7 +98,7 @@ public class Profile extends Instance {
      * an empty {@link Optional}.
      */
     public Optional<List<String>> getPackageNames() {
-        return dataArrayStringToList(PACKAGENAMES, (el) -> el.asText());
+        return dataArrayStringToList(PACKAGENAMES, JsonNode::asText);
     }
 
     /**
@@ -105,7 +107,7 @@ public class Profile extends Instance {
      * an empty {@link Optional}.
      */
     public Optional<List<String>> getServiceNames() {
-        return dataArrayStringToList(SERVICENAMES, (el) -> el.asText());
+        return dataArrayStringToList(SERVICENAMES, JsonNode::asText);
     }
 
     /**
@@ -114,7 +116,7 @@ public class Profile extends Instance {
      * an empty {@link Optional}.
      */
     public Optional<List<Integer>> getPorts() {
-        return dataArrayStringToList(PORTS, (el) -> el.asInt());
+        return dataArrayStringToList(PORTS, JsonNode::asInt);
     }
 
     /**
@@ -221,17 +223,18 @@ public class Profile extends Instance {
         final String dirPostfix = "Directories";
         final String filePostfix = "Files";
 
-        /**
+        /*
          * Given a key "FOO" and value "bar", return a string prefix_FOO="bar"
          */
         BiConsumer<String, String> writeKeyValue = (key, value) -> out
-                .append(prefix.toUpperCase() + "_")
+                .append(prefix.toUpperCase())
+                .append("_")
                 .append(key)
                 .append("=\"")
                 .append(StringEscapeUtils.escapeJava(value))
                 .append("\"\n");
 
-        /**
+        /*
          * Given a key "logDirectories" and a postfix "Directories", transform the key like so:
          * logDirectories -> LOG_DIRECTORIES
          */
@@ -243,7 +246,7 @@ public class Profile extends Instance {
             return key.split(postfix)[0].toUpperCase() + "_" + postfix.toUpperCase();
         };
 
-        /**
+        /*
          * Iterates over all possible entries in a file or directory map and writes an entry in the string
          */
         BiConsumer<Map<String, List<String>>, String> writeFilesOrDirectories =
@@ -271,7 +274,7 @@ public class Profile extends Instance {
         final Optional<List<Integer>> maybePorts = getPorts();
         if (maybePorts.isPresent()) {
             final String portsAsStrings = maybePorts.get().stream()
-                    .map(integer -> integer.toString())
+                    .map(Object::toString)
                     .collect(Collectors.joining(","));
             writeKeyValue.accept("PORTS", portsAsStrings);
         }
