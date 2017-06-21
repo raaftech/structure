@@ -34,6 +34,7 @@
     "instrumentType": "controller",
     "interpreter": "Python2.x",
     "subjectIsLocal": true,
+    "extension": "py",
     "arguments": {
       "profiles": {
         "value": {
