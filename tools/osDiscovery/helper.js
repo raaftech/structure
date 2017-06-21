@@ -47,6 +47,12 @@ class Helper {
             graph.entities.push(R.clone(pair[1]));
         }, this.harvestIps(ansibleData,ipString));
 
+        //SSH / SMB
+        let ssh = this.daemonData();
+        pair = relate(ssh);
+        os = R.clone(pair[0]);
+        graph.entities.push(R.clone(pair[1]));
+
         let tuple = graphLib.relateEntity(root, 'GROUPS', 'outgoing', os);
         graph.os = tuple[1];
         graph.root = tuple[0];
@@ -126,34 +132,17 @@ class Helper {
     }
 
     daemonData(sshd) {
-        let mkInstance = graphLib.createInstance(this.typeByName('SshServer'));
-        if(sshd === 'ssh') sshd = 'SshServer';
-        if(R.isNil(sshd)) sshd = 'none';
+        let server = this.typeByName('SshServer');
+        let mkInstance = graphLib.createInstance(server);
+        let ssh = mkInstance({
+            name: server.name,
+            desc: server.desc,
+            ver: '',
+            shortName: server.name,
+            longName: server.name
+        });
 
-        console.log('ssh: %s', sshd);
-        let ssh = this.typeByName(sshd);
-        let list = [];
-
-        if(notNil(ssh) && sshd !== 'none') {
-            ssh = mkInstance({
-                name: ssh.name,
-                desc: ssh.desc,
-                ver: '',
-                shortName: ssh.name,
-                longName: ssh.name
-            });
-            list.push(ssh);
-        } else if(R.isNil(ssh) && sshd !== 'none') {
-            ssh = mkInstance({
-                name: sshd,
-                desc: ssh.desc,
-                ver: '',
-                shortName: ssh.name,
-                longName: ssh.name
-            });
-            list.push(ssh);
-        }
-        return list;
+        return ssh;
     }
 
     //Ipv4Address
