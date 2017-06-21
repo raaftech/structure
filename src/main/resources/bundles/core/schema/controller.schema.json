@@ -33,7 +33,7 @@
     },
     "extension": {
       "type": "string",
-      "pattern": "^\\.[a-zA-Z0-9]+$",
+      "pattern": "^[a-zA-Z0-9]+$",
       "description": "Possible extension in case of a scriptable instrument."
     },
     "filePath": {
