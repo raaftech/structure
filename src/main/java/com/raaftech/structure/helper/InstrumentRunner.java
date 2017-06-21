@@ -22,6 +22,7 @@ import com.raaftech.structure.helper.handlebars.ReachableAddress;
 import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.json.JsonObject;
 import joptsimple.internal.Strings;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -181,6 +182,24 @@ public class InstrumentRunner {
             }
 
             /*
+            The instrument we're running might be a detect instrument, in which case we need to transport
+            Profile data as well.
+             */
+            final String capability = controller.getCapability().getName();
+            if (capability.equals("Detect")) {
+                try {
+                    final String profileLocation = collectAndTransportProfiles();
+                    jobList.add(Pair.of(sendFile(heaviestSendFile), transportTimeout));
+                } catch (IOException e) {
+                    if (Configuration.isTraceModeOn()) {
+                        e.printStackTrace();
+                    }
+                    log.error(e.getMessage());
+                    throw new RuntimeException("Error while saving flattened profiles to file while running "+ controller.getName());
+                }
+            }
+
+            /*
             Now we have a way of transporting a script and executing that script, we look whether we have an
             appropriate interpreter for the script.
             There are two cases:
@@ -293,6 +312,37 @@ public class InstrumentRunner {
                 }
             }
         }
+    }
+
+    /**
+     * This is only called in case we're doing a detect. We query all the profiles that might match the origin,
+     * flatten them, then transport them as a single file to the subject.
+     * @return The location of the file we saved the flattened profiles in.
+     */
+    private String collectAndTransportProfiles() throws IOException {
+        final String instanceOf = origin.getInstanceOf().getName();
+        final Set<Profile> applicableProfiles = Context.getProfileRepository().findAllProfilesForType(instanceOf);
+        final StringBuilder flattenedProfiles = new StringBuilder();
+
+        final String profilesIndex = applicableProfiles.stream()
+                .map(Profile::getAppliesTo)
+                .map(Node::getName)
+                .collect(Collectors.joining(","));
+
+        flattenedProfiles
+                .append("PROFILES_INDEX=\"")
+                .append(StringEscapeUtils.escapeJava(profilesIndex))
+                .append("\"");
+
+        flattenedProfiles.append(
+                applicableProfiles.stream()
+                        .map(Profile::asDetectionConsumable)
+                        .collect(Collectors.joining("\n")));
+
+        final String outputFile = constructScriptFilename(origin.getName(), controller.getName(), "profile");
+        copyStringToFile(flattenedProfiles.toString(), outputFile);
+
+        return outputFile;
     }
 
 

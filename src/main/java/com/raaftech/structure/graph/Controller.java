@@ -192,6 +192,10 @@ public class Controller extends Instrument {
         setCapability(foundCapability);
     }
 
+    public Type getCapability() {
+        return capability;
+    }
+
     public Set<Type> getHandledTypes() {
         return appliesTo;
     }

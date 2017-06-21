@@ -84,6 +84,10 @@ public class Profile extends Instance {
         }
     }
 
+    public Type getAppliesTo() {
+        return appliesTo;
+    }
+
     public void setProvidedBy(Type providedBy) {
         if (this.providedBy == null) {
             this.providedBy = providedBy;
