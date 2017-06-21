@@ -1,0 +1,12 @@
+PROFILES_INDEX="Foo"
+
+Foo_PACKAGES="foo,bar"
+Foo_SERVICES="service01,service02"
+Foo_PORTS="80,21"
+Foo_LOG_DIRECTORIES="/some/path,/some/other_path"
+Foo_LOG_FILES="some_file,other_file"
+Foo_COMMAND_INDEX="foo,baz"
+Foo_COMMAND_foo_COMMAND="echo 'bar baz'"
+Foo_COMMAND_baz_COMMAND="echo blaatkoe"
+Foo_COMMAND_foo_MATCHES="bar baz"
+Foo_COMMAND_baz_MATCHES="koe"

@@ -231,7 +231,7 @@ public class Profile extends Instance {
          * Given a key "FOO" and value "bar", return a string prefix_FOO="bar"
          */
         BiConsumer<String, String> writeKeyValue = (key, value) -> out
-                .append(prefix.toUpperCase())
+                .append(prefix)
                 .append("_")
                 .append(key)
                 .append("=\"")
@@ -295,17 +295,17 @@ public class Profile extends Instance {
         if (maybeCommands.isPresent()) {
             Map<String, Map<String, String>> commands = maybeCommands.get();
             // first we need to write an index of all commands contained in this string
-            writeKeyValue.accept("COMMANDS_INDEX", commands.keySet().stream()
+            writeKeyValue.accept("COMMAND_INDEX", commands.keySet().stream()
                     .collect(Collectors.joining(",")));
 
             commands.entrySet().stream()
                     .map(entry -> Pair.of(
-                            "COMMANDS_" + entry.getKey() + "_" + COMMANDS_COMMAND.toUpperCase(),
+                            "COMMAND_" + entry.getKey() + "_" + COMMANDS_COMMAND.toUpperCase(),
                             entry.getValue().get(COMMANDS_COMMAND)))
                     .forEach(pair -> writeKeyValue.accept(pair.getLeft(), pair.getRight()));
             commands.entrySet().stream()
                     .map(entry -> Pair.of(
-                            "COMMANDS_" + entry.getKey() + "_" + COMMANDS_MATCHES.toUpperCase(),
+                            "COMMAND_" + entry.getKey() + "_" + COMMANDS_MATCHES.toUpperCase(),
                             entry.getValue().get(COMMANDS_MATCHES)))
                     .forEach(pair -> writeKeyValue.accept(pair.getLeft(), pair.getRight()));
         }
