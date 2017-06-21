@@ -41,6 +41,7 @@ public class Controller extends Instrument {
     private static final String TIMEALLOCATED = "timeAllocated";
 
     @RelatedTo(type="GIVES_CAPABILITY", direction=Direction.OUTGOING)
+    @Fetch
     private Type capability;
 
     @RelatedTo(type="APPLIES_TO", direction=Direction.OUTGOING)

@@ -188,7 +188,7 @@ public class InstrumentRunner {
             final String capability = controller.getCapability().getName();
             if (capability.equals("Detect")) {
                 try {
-                    final String profileLocation = collectAndTransportProfiles();
+                    collectAndTransportProfiles();
                     jobList.add(Pair.of(sendFile(heaviestSendFile), transportTimeout));
                 } catch (IOException e) {
                     if (Configuration.isTraceModeOn()) {
@@ -319,7 +319,7 @@ public class InstrumentRunner {
      * flatten them, then transport them as a single file to the subject.
      * @return The location of the file we saved the flattened profiles in.
      */
-    private String collectAndTransportProfiles() throws IOException {
+    private void collectAndTransportProfiles() throws IOException {
         final String instanceOf = origin.getInstanceOf().getName();
         final Set<Profile> applicableProfiles = Context.getProfileRepository().findAllProfilesForType(instanceOf);
         final StringBuilder flattenedProfiles = new StringBuilder();
@@ -342,7 +342,11 @@ public class InstrumentRunner {
         final String outputFile = constructScriptFilename(origin.getName(), controller.getName(), "profile");
         copyStringToFile(flattenedProfiles.toString(), outputFile);
 
-        return outputFile;
+        // This is nasty because these properties will be reused later on L365 and L645
+        arguments.put("payloadDirectory", workingDirectory);
+        arguments.put("payloadFileName", outputFile);
+
+        arguments.put("profiles", outputFile);
     }
 
 
