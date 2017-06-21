@@ -121,5 +121,16 @@ if not PROFILES_INDEX in env:
     die("No {} in environment".format(PROFILES_INDEX))
 
 profiles = env[PROFILES_INDEX].split(",")
+scores = {}
 for profile in profiles:
-    print(checkProfile(profile))
+    score = checkProfile(profile)
+    scores[profile] = float(score[0])/score[1]
+
+# get the profile with the highest score
+bestProfile = max(scores.keys(), key=(lambda k: scores[k]))
+
+# if that highest score is actually more than 0, print it
+if scores[bestProfile] > 0.0:
+    print(bestProfile)
+else:
+    print()
