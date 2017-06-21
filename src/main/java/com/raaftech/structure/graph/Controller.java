@@ -234,11 +234,13 @@ public class Controller extends Instrument {
         final Optional<String> extension;
         final Optional<ObjectNode> maybeTemplate = getFile(TEMPLATEFILE);
 
-        if (!maybeTemplate.isPresent()) { return Optional.empty(); }
-
-        final ObjectNode template = maybeTemplate.get();
-        if (template.has("path")) {
-            extension = Optional.of(Files.getFileExtension(template.get("path").asText()));
+        if (maybeTemplate.isPresent()) {
+            final ObjectNode template = maybeTemplate.get();
+            if (template.has("path")) {
+                extension = Optional.of(Files.getFileExtension(template.get("path").asText()));
+            } else {
+                extension = Optional.empty();
+            }
         } else if (data.hasProperty("extension")) {
             extension = Optional.of((String) data.getProperty("extension"));
         } else {
