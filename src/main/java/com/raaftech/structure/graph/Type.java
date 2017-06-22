@@ -57,7 +57,7 @@ public class Type extends Node {
     private int glyphId;
     private boolean isAbstract;
 
-    @RelatedTo(type="PROVIDED_BY", direction = Direction.INCOMING)
+    @RelatedTo(type="PROVIDED_BY", direction = Direction.INCOMING, elementClass = Instrument.class, enforceTargetType = true)
     @Fetch
     private Set<Instrument> instruments;
 
