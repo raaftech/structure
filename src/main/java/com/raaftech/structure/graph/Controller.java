@@ -41,6 +41,7 @@ public class Controller extends Instrument {
     private static final String TIMEALLOCATED = "timeAllocated";
 
     @RelatedTo(type="GIVES_CAPABILITY", direction=Direction.OUTGOING)
+    @Fetch
     private Type capability;
 
     @RelatedTo(type="APPLIES_TO", direction=Direction.OUTGOING)
@@ -192,6 +193,10 @@ public class Controller extends Instrument {
         setCapability(foundCapability);
     }
 
+    public Type getCapability() {
+        return capability;
+    }
+
     public Set<Type> getHandledTypes() {
         return appliesTo;
     }
@@ -229,11 +234,13 @@ public class Controller extends Instrument {
         final Optional<String> extension;
         final Optional<ObjectNode> maybeTemplate = getFile(TEMPLATEFILE);
 
-        if (!maybeTemplate.isPresent()) { return Optional.empty(); }
-
-        final ObjectNode template = maybeTemplate.get();
-        if (template.has("path")) {
-            extension = Optional.of(Files.getFileExtension(template.get("path").asText()));
+        if (maybeTemplate.isPresent()) {
+            final ObjectNode template = maybeTemplate.get();
+            if (template.has("path")) {
+                extension = Optional.of(Files.getFileExtension(template.get("path").asText()));
+            } else {
+                extension = Optional.empty();
+            }
         } else if (data.hasProperty("extension")) {
             extension = Optional.of((String) data.getProperty("extension"));
         } else {

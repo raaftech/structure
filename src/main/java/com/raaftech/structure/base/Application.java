@@ -2,6 +2,7 @@ package com.raaftech.structure.base;
 
 import ch.qos.logback.classic.Level;
 import com.raaftech.structure.bus.InstanceActor;
+import com.raaftech.structure.bus.TypeActor;
 import com.raaftech.structure.graph.Component;
 import com.raaftech.structure.graph.Instance;
 import com.raaftech.structure.graph.repositories.InstanceRepository;
@@ -283,7 +284,7 @@ public class Application {
 
         try {
             StreamSupport.stream(typeRepository.findAll().spliterator(), false)
-                    .forEach(InstanceActor::deploy);
+                    .forEach(TypeActor::deploy);
         } catch (Exception e) {
             handleUnrecoverableLoadingError(tx, e, 1, "Unrecoverable error while deploying TypeActors. Shutting down...");
         } finally {

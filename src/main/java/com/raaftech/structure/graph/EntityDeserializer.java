@@ -328,7 +328,7 @@ public class EntityDeserializer extends StdDeserializer<Entity> {
                     switch (value.getNodeType()) {
                     case ARRAY:
                         log.debug("Writing key \"{}\" with ARRAY value \"{}\" in data object", key, value);
-                        data.put(key, value.asText());
+                        data.put(key, value);
                         break;
                     case BINARY:
                         log.warn("Binary value for key \"{}\" in data object not supported, not writing key", key);

@@ -276,7 +276,7 @@ public class InstanceActor extends NodeActor<Instance> {
                 }
 
                 controllersForCapability = instrumentRepository
-                        .findControllersPerCapability(getNode().getUuid(), capability, groupingUuid);
+                        .findControllersPerCapability(getNode().getUuid(), capability);
 
                 log.debug("Found "+controllersForCapability.size() + " controllers");
                 // We might have multiple controllers for a given Capability, in that case use the heaviest

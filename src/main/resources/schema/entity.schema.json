@@ -216,7 +216,8 @@
       "type": "string",
       "enum": [
         "json",
-        "hbs"
+        "hbs",
+        "script"
       ]
     },
     "encoding": {

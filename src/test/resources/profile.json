@@ -1,0 +1,38 @@
+{
+  "name": "TestProfile",
+  "desc": "A test profile.",
+  "meta": {
+    "uuid": "ce584183-8fcd-4723-8733-2e16242c91eb",
+    "relations": {
+      "INSTANCE_OF": {
+        "direction": "outgoing",
+        "to": [
+          "c970f6d3-4898-4596-bfac-9d6d1f6b2541"
+        ]
+      }
+    }
+  },
+  "data": {
+    "providedBy":"thismakesnosense",
+    "appliesTo": "alsonomakesense",
+    "packageNames": [ "foo", "bar" ],
+    "serviceNames": [ "service01", "service02" ],
+    "ports": [ 80, 21 ],
+    "commands": {
+      "foo": {
+        "command": "bar",
+        "matches": "something"
+      },
+      "baz": {
+        "command": "blaat",
+        "matches": "koe"
+      }
+    },
+    "directories": {
+      "logDirectories": [ "/some/path", "/some/other_path" ]
+    },
+    "files": {
+      "logFiles": [ "some_file" ]
+    }
+  }
+}
