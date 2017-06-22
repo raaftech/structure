@@ -48,11 +48,21 @@ public class Profile extends Instance {
     private static final TypeRepository typeRepository = Context.getTypeRepository();
     private static final Logger log = LoggerFactory.getLogger(Profile.class);
 
-    @RelatedTo(type="APPLIES_TO", direction= Direction.OUTGOING)
+    @RelatedTo(
+            type="APPLIES_TO",
+            direction= Direction.OUTGOING,
+            elementClass = Type.class,
+            enforceTargetType = true
+    )
     @Fetch
     private Type appliesTo;
 
-    @RelatedTo(type="PROVIDED_BY", direction=Direction.OUTGOING)
+    @RelatedTo(
+            type="PROVIDED_BY",
+            direction=Direction.OUTGOING,
+            elementClass = Type.class,
+            enforceTargetType = true
+    )
     @Fetch
     private Type providedBy;
 
