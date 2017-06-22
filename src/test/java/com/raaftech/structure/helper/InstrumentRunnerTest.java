@@ -46,6 +46,8 @@ public class InstrumentRunnerTest {
     Type type;
     @Mocked
     Instance instance;
+    @Mocked
+    Type capability;
 
     @Test
     public void testScriptInstrument() throws Exception {
@@ -157,6 +159,12 @@ public class InstrumentRunnerTest {
             result = "MockedSendFile";
             marker.getName();
             result = "MockedReceiveFile";
+
+            controller.getCapability();
+            result = capability;
+
+            capability.getName();
+            result = "State";
 
             // Return an interpreter. THIS TRIGGERS THE SCRIPT ROUTINE.
             controller.getInterpreter();
