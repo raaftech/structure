@@ -320,7 +320,7 @@ public class InstrumentRunner {
      * @return The location of the file we saved the flattened profiles in.
      */
     private void collectAndTransportProfiles() throws IOException {
-        final String instanceOf = origin.getInstanceOf().getName();
+        final String instanceOf = origin.getInstanceOf().getUuid();
         final Set<Profile> applicableProfiles = Context.getProfileRepository().findAllProfilesForType(instanceOf);
         final StringBuilder flattenedProfiles = new StringBuilder();
 
@@ -332,7 +332,7 @@ public class InstrumentRunner {
         flattenedProfiles
                 .append("PROFILES_INDEX=\"")
                 .append(StringEscapeUtils.escapeJava(profilesIndex))
-                .append("\"");
+                .append("\"\n");
 
         flattenedProfiles.append(
                 applicableProfiles.stream()
