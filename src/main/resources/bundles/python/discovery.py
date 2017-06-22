@@ -86,16 +86,17 @@ def checkProfile(profile):
                     score.failure()
 
     # Check all commands
-    for commandTuple in [("{}_COMMAND_{}_COMMAND".format(profile, pfx),
-                          "{}_COMMAND_{}_MATCHES".format(profile, pfx))
-                         for pfx in env[commandsIndexKey].split(",")]:
-        if (commandTuple[0] in env and commandTuple[1] in env):
-            log_debug("Running {} to see if it matches {}".format(commandTuple[0], commandTuple[1]))
-            if matchCommandOutput(env[commandTuple[0]], env[commandTuple[1]]):
-                log_debug("success")
-                score.success()
-            else:
-                score.failure()
+    if commandsIndexKey in env:
+        for commandTuple in [("{}_COMMAND_{}_COMMAND".format(profile, pfx),
+                              "{}_COMMAND_{}_MATCHES".format(profile, pfx))
+                             for pfx in env[commandsIndexKey].split(",")]:
+            if (commandTuple[0] in env and commandTuple[1] in env):
+                log_debug("Running {} to see if it matches {}".format(commandTuple[0], commandTuple[1]))
+                if matchCommandOutput(env[commandTuple[0]], env[commandTuple[1]]):
+                    log_debug("success")
+                    score.success()
+                else:
+                    score.failure()
 
     return score.state()
 
@@ -123,8 +124,12 @@ if not PROFILES_INDEX in env:
 profiles = env[PROFILES_INDEX].split(",")
 scores = {}
 for profile in profiles:
-    score = checkProfile(profile)
-    scores[profile] = float(score[0])/score[1]
+    if len(profile) > 0:
+      score = checkProfile(profile)
+      if score[1] > 0:
+          scores[profile] = float(score[0])/score[1]
+      else:
+          scores[profile] = 0
 
 # get the profile with the highest score
 bestProfile = max(scores.keys(), key=(lambda k: scores[k]))
