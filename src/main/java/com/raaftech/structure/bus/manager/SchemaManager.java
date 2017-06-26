@@ -13,8 +13,6 @@ public class SchemaManager {
     private static final Logger log = LoggerFactory.getLogger(SchemaManager.class);
     private static final TypeRepository typeRepository = Context.getTypeRepository();
 
-    private static final String schemaSuffix = ".schema.json";
-
     public void getSchema(RoutingContext routingContext) {
         log.debug("Received schema request on REST API.");
         final String schemaName = routingContext.request().getParam("schema");
@@ -24,7 +22,7 @@ public class SchemaManager {
             return;
         }
 
-        final String typeName = schemaName.substring(0, schemaName.indexOf(schemaSuffix));
+        final String typeName = schemaName.split("\\.")[0];
         log.debug("Schema \"{}\" requested, querying for type \"{}\".", schemaName, typeName);
         Type foundType = typeRepository.findOneByCaseInsensitiveName(typeName);
         if (foundType == null) {
