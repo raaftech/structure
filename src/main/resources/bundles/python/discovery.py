@@ -132,10 +132,13 @@ for profile in profiles:
           scores[profile] = 0
 
 # get the profile with the highest score
-bestProfile = max(scores.keys(), key=(lambda k: scores[k]))
+if len(scores) > 0:
+    bestProfile = max(scores.keys(), key=(lambda k: scores[k]))
+else:
+    exit(0)
 
 # if that highest score is actually more than 0, print it
 if scores[bestProfile] > 0.0:
     print(bestProfile)
 else:
-    print()
+    exit(0)

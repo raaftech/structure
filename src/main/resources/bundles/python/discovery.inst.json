@@ -32,7 +32,7 @@
   },
   "data": {
     "instrumentType": "controller",
-    "interpreter": "Python2.x",
+    "interpreter": "Python2x",
     "subjectIsLocal": true,
     "extension": "py",
     "arguments": {
