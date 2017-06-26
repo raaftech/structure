@@ -127,6 +127,10 @@
   "oneOf": [
     {
       "properties": {
+        "name": {
+          "type": "string",
+          "pattern": "^[A-Z][A-Za-z0-9]+$"
+        },
         "meta": {
           "type": "object",
           "properties": {
@@ -157,6 +161,9 @@
     },
     {
       "properties": {
+        "name": {
+          "type": "string"
+        },
         "meta": {
           "type": "object",
           "properties": {

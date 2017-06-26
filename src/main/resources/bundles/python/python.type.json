@@ -22,7 +22,7 @@
         }
     },
     {
-        "name": "Python2.x",
+        "name": "Python2x",
         "desc": "The Python interpreter.",
         "meta": {
             "uuid": "b6f5296b-28b9-4825-950d-402b7e5d968c",
