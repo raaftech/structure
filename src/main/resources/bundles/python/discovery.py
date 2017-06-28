@@ -1,18 +1,24 @@
 #!/usr/bin/env python2
 
-from __future__ import print_function
-import sys, os, re, itertools, shlex, subprocess
+import sys, os, re, shlex, commands
 
-def eprint(*args, **kwargs):
+def eprint(msg):
     """Print to stderr"""
-    print(*args, file=sys.stderr, **kwargs)
+    sys.stderr.write("%s\n" % (msg))
 
 def die(reason="None given", exitcode=1):
-    eprint("[ERROR] {}".format(reason))
-    exit(exitcode)
+    eprint("[ERROR] %s" % (reason))
+    sys.exit(sys.exitcode)
 
 def log_debug(message):
-    eprint("[DEBUG] {}".format(message))
+    eprint("[DEBUG] %s" % (message))
+
+def cartesian_product(xs, ys):
+    product = []
+    for x in xs:
+        for y in ys:
+            product.append([x, y])
+    return product
 
 class Score:
     """A simple class to keep a score."""
@@ -54,34 +60,35 @@ def runCommand(command):
 def matchCommandOutput(command, match):
     """Run a given command and return whether or not its STDOUT matches param match."""
     prog = re.compile(match)
-    stdout = subprocess.check_output(shlex.split(command)).strip()
-    log_debug("Matching {} to {}".format(stdout, match))
+    stdout = commands.getoutput(command).strip()
+    log_debug("Matching %s to %s" % (stdout, match))
     return prog.match(stdout) is not None
 
 def checkProfile(profile):
     """Given a profile name, start checking it. Returns a tuple containing hits and total."""
-    log_debug("Checking {}".format(profile))
+    log_debug("Checking %s" % (profile))
 
     score = Score()
 
     filedirTypes = ["LOG", "DATA", "BINARY", "LIBRARY", "CONFIGURATION"]
-    packagesKey = "{}_PACKAGES".format(profile)
-    servicesKey = "{}_SERVICES".format(profile)
-    portsKey = "{}_PORTS".format(profile)
-    commandsIndexKey = "{}_COMMAND_INDEX".format(profile)
+    packagesKey = "%s_PACKAGES" % (profile)
+    servicesKey = "%s_SERVICES" % (profile)
+    portsKey = "%s_PORTS" % (profile)
+    commandsIndexKey = "%s_COMMAND_INDEX" % (profile)
 
     # Check all possible file combinations
-    for dirfileTuple in [("{}_{}_DIRECTORIES".format(profile, pfx), "{}_{}_FILES".format(profile, pfx))
+    for dirfileTuple in [("%s_%s_DIRECTORIES" % (profile, pfx), "%s_%s_FILES" % (profile, pfx))
                          for pfx in filedirTypes]:
         if (dirfileTuple[0] in env and dirfileTuple[1] in env):
-            log_debug("Found entries in profiles for {} and {}, creating all possible entries."
-                      .format(dirfileTuple[0], dirfileTuple[1]))
+            log_debug("Found entries in profiles for %s and %s, creating all possible entries." %
+                      (dirfileTuple[0], dirfileTuple[1]))
             possibleLocationsPerFile = {}
             for file in env[dirfileTuple[1]].split(","):
-                possibleLocationsPerFile.update({file: map('/'.join, itertools.product(env[dirfileTuple[0]].split(","), [file]))})
+                product = cartesian_product(env[dirfileTuple[0]].split(','), [file])
+                possibleLocationsPerFile.update({file: map('/'.join, product)})
 
             for (file, locations) in possibleLocationsPerFile.items():
-                anyMatched = False
+                anyMatched = 0
                 for location in locations:
                     anyMatched |= checkIfFileExists(location)
             if anyMatched:
@@ -91,11 +98,11 @@ def checkProfile(profile):
 
     # Check all commands
     if commandsIndexKey in env:
-        for commandTuple in [("{}_COMMAND_{}_COMMAND".format(profile, pfx),
-                              "{}_COMMAND_{}_MATCHES".format(profile, pfx))
+        for commandTuple in [("%s_COMMAND_%s_COMMAND" % (profile, pfx),
+                              "%s_COMMAND_%s_MATCHES" % (profile, pfx))
                              for pfx in env[commandsIndexKey].split(",")]:
             if (commandTuple[0] in env and commandTuple[1] in env):
-                log_debug("Running {} to see if it matches {}".format(commandTuple[0], commandTuple[1]))
+                log_debug("Running %s to see if it matches %s" % (commandTuple[0], commandTuple[1]))
                 if matchCommandOutput(env[commandTuple[0]], env[commandTuple[1]]):
                     log_debug("success")
                     score.success()
@@ -115,17 +122,18 @@ propMatcher = re.compile('(\w+)="(.*)"')
 env = {}
 
 if not os.path.isfile(profiles):
-    die("Profile {} doesn't exist.".format(profiles))
+    die("Profile %s doesn't exist." % (profiles))
 
-with open(profiles, 'r') as f:
-    for line in f:
-        match = propMatcher.match(line.strip())
-        if match != None:
-            env[match.group(1)] = match.group(2)
+f = open(profiles, 'r')
+for line in f:
+    match = propMatcher.match(line.strip())
+    if match != None:
+        env[match.group(1)] = match.group(2)
+f.close()
 
 PROFILES_INDEX = "PROFILES_INDEX"
 if not PROFILES_INDEX in env:
-    die("No {} in environment".format(PROFILES_INDEX))
+    die("No %s in environment" % (PROFILES_INDEX))
 
 # profiles are sorted to their depth in the tree meaning that more specific profiles
 # come later in the list (e.g. Debian8 would be later than UnixLike)
@@ -142,14 +150,26 @@ for profile in profiles:
 
 # First create a new list of profile names that have the maximum score of 1, then
 # map those profile names to a tuple containing their index in the profiles list + identity.
-indexedMatches = map(lambda profile: (profiles.index(profile), profile),
-                     {profile: score for profile, score in scores.items() if score == 1}.keys())
+def idxProfileTuple(profile):
+    return (profiles.index(profile[0]), profile)
 
+def matches(item):
+    return item[1] == 1
+
+indexedMatches = map(idxProfileTuple, filter(matches, scores.items()))
 # Get the most specific match based on its index in profiles
 
 # get the profile with the highest score
+def findMax(indexToProfile):
+    maxIndex = -1
+    max = None
+    for t in indexToProfile:
+        if t[0] > maxIndex:
+            max = t[1]
+    return max[0]
+
 if len(indexedMatches) > 0:
-    print(max(indexedMatches, key=(lambda k: k[0]))[1])
+    print findMax(indexedMatches)
 else:
     log_debug("Found no profiles that match.")
-    exit(0)
+    sys.exit(0)
