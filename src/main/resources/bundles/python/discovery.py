@@ -76,13 +76,18 @@ def checkProfile(profile):
         if (dirfileTuple[0] in env and dirfileTuple[1] in env):
             log_debug("Found entries in profiles for {} and {}, creating all possible entries."
                       .format(dirfileTuple[0], dirfileTuple[1]))
-            allPossibleFiles = map('/'.join, itertools.product(env[dirfileTuple[0]].split(","),
-                                                               env[dirfileTuple[1]].split(",")))
-            for possibleFile in allPossibleFiles:
-                if checkIfFileExists(possibleFile):
-                    score.success()
-                else:
-                    score.failure()
+            possibleLocationsPerFile = {}
+            for file in env[dirfileTuple[1]].split(","):
+                possibleLocationsPerFile.update({file: map('/'.join, itertools.product(env[dirfileTuple[0]].split(","), [file]))})
+
+            for (file, locations) in possibleLocationsPerFile.items():
+                anyMatched = False
+                for location in locations:
+                    anyMatched |= checkIfFileExists(location)
+            if anyMatched:
+                score.success()
+            else:
+                score.failure()
 
     # Check all commands
     if commandsIndexKey in env:
