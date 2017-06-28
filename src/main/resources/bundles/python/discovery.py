@@ -45,7 +45,7 @@ def isPortOpen(port):
 
 def checkIfFileExists(path):
     """Check whether a file exists at the given path."""
-    os.path.isfile(path)
+    return os.path.isfile(path)
 
 def runCommand(command):
     """Run a given command and return its STDOUT output."""
@@ -78,7 +78,6 @@ def checkProfile(profile):
                       .format(dirfileTuple[0], dirfileTuple[1]))
             allPossibleFiles = map('/'.join, itertools.product(env[dirfileTuple[0]].split(","),
                                                                env[dirfileTuple[1]].split(",")))
-            log_debug("Trying {}".format(allPossibleFiles))
             for possibleFile in allPossibleFiles:
                 if checkIfFileExists(possibleFile):
                     score.success()
@@ -99,6 +98,8 @@ def checkProfile(profile):
                     score.failure()
 
     return score.state()
+
+## main entry point ##
 
 if len(sys.argv) < 2:
     die("No profile file passed to script.")
@@ -121,7 +122,10 @@ PROFILES_INDEX = "PROFILES_INDEX"
 if not PROFILES_INDEX in env:
     die("No {} in environment".format(PROFILES_INDEX))
 
+# profiles are sorted to their depth in the tree meaning that more specific profiles
+# come later in the list (e.g. Debian8 would be later than UnixLike)
 profiles = env[PROFILES_INDEX].split(",")
+
 scores = {}
 for profile in profiles:
     if len(profile) > 0:
@@ -131,14 +135,16 @@ for profile in profiles:
       else:
           scores[profile] = 0
 
-# get the profile with the highest score
-if len(scores) > 0:
-    bestProfile = max(scores.keys(), key=(lambda k: scores[k]))
-else:
-    exit(0)
+# First create a new list of profile names that have the maximum score of 1, then
+# map those profile names to a tuple containing their index in the profiles list + identity.
+indexedMatches = map(lambda profile: (profiles.index(profile), profile),
+                     {profile: score for profile, score in scores.items() if score == 1}.keys())
 
-# if that highest score is actually more than 0, print it
-if scores[bestProfile] > 0.0:
-    print(bestProfile)
+# Get the most specific match based on its index in profiles
+
+# get the profile with the highest score
+if len(indexedMatches) > 0:
+    print(max(indexedMatches, key=(lambda k: k[0]))[1])
 else:
+    log_debug("Found no profiles that match.")
     exit(0)
