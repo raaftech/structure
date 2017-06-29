@@ -15,7 +15,7 @@ public interface ProfileRepository extends GenericRepository<Profile> {
     void purgeProfiles();
 
     // Return all profiles that apply to a type tree
-    @Query("MATCH (start:Type {uuid:{0}})<-[:ISA*..]-(subtypes)<-[:APPLIES_TO]-(profile:Profile) " +
+    @Query("MATCH (start:Type {uuid:{0}})<-[:ISA*0..]-(subtypes)<-[:APPLIES_TO]-(profile:Profile) " +
             "RETURN DISTINCT profile")
     Set<Profile> findAllProfilesForType(String typeUuid);
 
