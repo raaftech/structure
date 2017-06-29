@@ -1,0 +1,35 @@
+{
+  "name": "UbuntuProfile",
+  "desc": "A profile that detects Ubuntu.",
+  "meta": {
+    "uuid": "bbc779ff-9b3d-4e1f-9d37-5df68a0df8cb",
+    "relations": {
+      "INSTANCE_OF": {
+        "direction": "outgoing",
+        "to": [
+          "c970f6d3-4898-4596-bfac-9d6d1f6b2541"
+        ]
+      },
+      "APPLIES_TO": {
+        "direction": "outgoing",
+        "to": [
+          "08f72fd1-5c26-4f34-954f-ead04c7234db"
+        ]
+      },
+      "PROVIDED_BY": {
+        "direction": "outgoing",
+        "to": [
+          "08f72fd1-5c26-4f34-954f-ead04c7234db"
+        ]
+      }
+    }
+  },
+  "data": {
+    "commands": {
+      "uname": {
+        "command": "grep DISTRIB_ID /var/log/installer/lsb-release",
+        "matches": "Ubuntu"
+      }
+    }
+  }
+}

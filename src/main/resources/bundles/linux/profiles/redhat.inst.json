@@ -1,0 +1,35 @@
+{
+  "name": "RedHatProfile",
+  "desc": "A profile that detects RedHat.",
+  "meta": {
+    "uuid": "1b7bbd69-fc43-4bc0-81ae-24f35d218bb0",
+    "relations": {
+      "INSTANCE_OF": {
+        "direction": "outgoing",
+        "to": [
+          "c970f6d3-4898-4596-bfac-9d6d1f6b2541"
+        ]
+      },
+      "APPLIES_TO": {
+        "direction": "outgoing",
+        "to": [
+          "6d83cb9d-ed38-45f4-bca0-057e91d55949"
+        ]
+      },
+      "PROVIDED_BY": {
+        "direction": "outgoing",
+        "to": [
+          "6d83cb9d-ed38-45f4-bca0-057e91d55949"
+        ]
+      }
+    }
+  },
+  "data": {
+    "commands": {
+      "uname": {
+        "command": "cat /etc/redhat-release",
+        "matches": "Red Hat Enterprise Linux"
+      }
+    }
+  }
+}
