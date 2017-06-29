@@ -6,7 +6,7 @@
     "relations": {
       "ISA": {
         "direction": "outgoing",
-        "uuids": [
+        "to": [
           "a5613527-2f64-4481-83f2-80b0cb427e28"
         ]
       }
@@ -16,7 +16,7 @@
     "dataSchema": {
       "encoding": "text",
       "format": "json",
-      "path": "redhat.schema.json"
+      "path": "../schemas/redhat.schema.json"
     }
   }
 }
