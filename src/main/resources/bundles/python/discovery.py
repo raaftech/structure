@@ -59,10 +59,9 @@ def runCommand(command):
 
 def matchCommandOutput(command, match):
     """Run a given command and return whether or not its STDOUT matches param match."""
-    prog = re.compile(match)
     stdout = commands.getoutput(command).strip()
     log_debug("Matching %s to %s" % (stdout, match))
-    return prog.match(stdout) is not None
+    return match in stdout
 
 def checkProfile(profile):
     """Given a profile name, start checking it. Returns a tuple containing hits and total."""
