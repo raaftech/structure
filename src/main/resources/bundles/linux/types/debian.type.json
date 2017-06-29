@@ -1,0 +1,22 @@
+{
+  "name": "Debian",
+  "desc": "The Debian Linux operating system.",
+  "meta": {
+    "uuid": "1a38cff2-3857-4fbb-bc80-bbdbbb503b5c",
+    "relations": {
+      "ISA": {
+        "direction": "outgoing",
+        "uuids": [
+          "a5613527-2f64-4481-83f2-80b0cb427e28"
+        ]
+      }
+    }
+  },
+  "file": {
+    "dataSchema": {
+      "encoding": "text",
+      "format": "json",
+      "path": "debian.schema.json"
+    }
+  }
+}
