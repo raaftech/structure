@@ -53,7 +53,7 @@ public class NodeSerializerTest extends TypeSchemaTest {
         assertNotNull(dataSchema);
         assertEquals("text", dataSchema.get("encoding").asText());
         assertEquals("json", dataSchema.get("format").asText());
-        assertEquals("linux.schema.json", dataSchema.get("path").asText());
+        assertEquals("../schemas/linux.schema.json", dataSchema.get("path").asText());
 
         tx.close();
     }
