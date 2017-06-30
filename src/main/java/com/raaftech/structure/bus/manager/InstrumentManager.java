@@ -114,14 +114,6 @@ public class InstrumentManager extends GenericActor {
                 final JsonNode args = request.get("args");
                 final ObjectNode result = mapper.createObjectNode();
                 final ArrayNode uuids = (ArrayNode) args.get("uuids");
-                final Grouping grouping = instanceRepository.getStartOfComponentGroup(uuids.elements().next().asText());
-
-                if (grouping == null) {
-                    result.put("error", "Error while finding start of group. Couldn't call capability on instances.");
-                    return response(request, result);
-                }
-
-                final String groupingUuid = grouping.getUuid();
                 final UUID taskId = UUID.randomUUID();
 
                 // Construct the message to pass to the instances
@@ -129,7 +121,6 @@ public class InstrumentManager extends GenericActor {
                         .put("msgh", "runCapability")
                         .put("args", new JsonObject()
                             .put("capability", args.get("capability").asText())
-                            .put("grouping", groupingUuid)
                             .put("taskId", taskId.toString()));
                 if (args.has("arguments")) {
                     message.getJsonObject("args")

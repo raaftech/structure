@@ -254,29 +254,10 @@ public class InstanceActor extends NodeActor<Instance> {
                 final ObjectNode result = mapper.createObjectNode();
                 final JsonNode args = request.get("args");
                 final String capability = args.get("capability").asText();
-                final Optional<String> maybeGrouping = args.has("groupingUuid") ?
-                        Optional.of(args.get("groupingUuid").asText()) :
-                        Optional.empty();
                 final UUID taskId = args.has("taskId") ? UUID.fromString(args.get("taskId").asText()) : UUID.randomUUID();
 
-                final Set<Controller> controllersForCapability;
-                final String groupingUuid;
-                // If we have a groupingUuid already; use it. Else determine the groupingUuid
-                if (maybeGrouping.isPresent()) {
-                    groupingUuid = maybeGrouping.get();
-                } else {
-                    final Grouping grouping = instanceRepository.getStartOfComponentGroup(getNode().getUuid());
-                    if (grouping == null) {
-                        // We cannot find the grouping this node belongs to so we can't run an instrument on it
-                        result.put("error", "We couldn't find the grouping which node "
-                                + getNode().getUuid() + " belongs to.");
-                        return response(request, result);
-                    }
-                    groupingUuid = grouping.getUuid();
-                }
-
-                controllersForCapability = instrumentRepository
-                        .findControllersPerCapability(getNode().getUuid(), capability);
+                final Set<Controller> controllersForCapability =
+                        instrumentRepository.findControllersPerCapability(getNode().getUuid(), capability);
 
                 log.debug("Found "+controllersForCapability.size() + " controllers");
                 // We might have multiple controllers for a given Capability, in that case use the heaviest

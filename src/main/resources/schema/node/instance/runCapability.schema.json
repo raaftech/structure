@@ -7,9 +7,6 @@
     "capability": {
       "type": "string"
     },
-    "grouping": {
-      "$ref": "#/definitions/uuid"
-    },
     "taskId": {
       "$ref": "#/definitions/uuid"
     },
