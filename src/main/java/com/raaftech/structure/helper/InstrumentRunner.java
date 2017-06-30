@@ -49,6 +49,7 @@ public class InstrumentRunner {
     private final String taskId;
     private final Instance origin;
     private final Controller controller;
+    private final Grouping subject;
     private final Grouping agent;
     private final ObjectNode arguments;
 
@@ -88,7 +89,10 @@ public class InstrumentRunner {
         this.origin = origin;
         this.controller = controller;
         this.arguments = arguments == null ? mapper.createObjectNode() : arguments;
+
+        // TODO: Need a different way of finding the structure node.
         this.agent = groupingRepository.findByUuid(Context.getSelfIdentifier());
+        this.subject = instanceRepository.getStartOfComponentGroup(origin.getUuid());
 
         // Did we find the agent?
         if (agent == null) {
@@ -110,13 +114,6 @@ public class InstrumentRunner {
             // do we have a protocol to send a file?
             // do we have a protocol to send a command?
             log.debug("local routine");
-
-            // find the closest group the origin belongs to, nodes in that group are used to find transport methods.
-            final Grouping subject = instanceRepository.getStartOfComponentGroup(origin.getUuid());
-            if (subject == null) {
-                throw new RuntimeException("Could not find the group that " + origin.getName() +
-                        " [" + origin.getUuid() + "] belongs to");
-            }
 
             // Get a (set of) sendString instruments that are capable of sending strings from the agent to the subject
             // using a particular protocol (SSH, telnet, ...). This query only returns instruments that have a ReceiveString
@@ -498,21 +495,12 @@ public class InstrumentRunner {
     }
 
     /**
-     * See {@link InstrumentRunner#validateAndSelectArguments(Controller, Grouping)}
-     * @param controller See {@link InstrumentRunner#validateAndSelectArguments(Controller, Grouping)}
-     * @return See {@link InstrumentRunner#validateAndSelectArguments(Controller, Grouping)}
-     */
-    private ObjectNode validateAndSelectArguments(Controller controller) {
-        return validateAndSelectArguments(controller, null);
-    }
-
-    /**
      * Given an controller and the context (which consists of the origin, subject, agent and arguments)
      * return a filtered context usable in handlebars templates.
      * @param controller The controller we want to use the context in.
      * @return A properly formatted context, or null in case the controller doesn't have an arguments object.
      */
-    private ObjectNode validateAndSelectArguments(Controller controller, Grouping subject) {
+    private ObjectNode validateAndSelectArguments(Controller controller) {
         // Result will contain the filtered result set of our context
         ObjectNode result;
 
