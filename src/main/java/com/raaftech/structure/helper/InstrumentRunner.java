@@ -90,7 +90,6 @@ public class InstrumentRunner {
         this.controller = controller;
         this.arguments = arguments == null ? mapper.createObjectNode() : arguments;
 
-        // TODO: Need a different way of finding the structure node.
         this.agent = groupingRepository.findByUuid(Context.getSelfIdentifier());
         this.subject = instanceRepository.getStartOfComponentGroup(origin.getUuid());
 
@@ -114,6 +113,11 @@ public class InstrumentRunner {
             // do we have a protocol to send a file?
             // do we have a protocol to send a command?
             log.debug("local routine");
+
+            if (subject == null) {
+                throw new RuntimeException("Could not find the group that " + origin.getName() +
+                        " [" + origin.getUuid() + "] belongs to");
+            }
 
             // Get a (set of) sendString instruments that are capable of sending strings from the agent to the subject
             // using a particular protocol (SSH, telnet, ...). This query only returns instruments that have a ReceiveString
