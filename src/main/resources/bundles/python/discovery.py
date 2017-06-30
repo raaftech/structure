@@ -164,6 +164,7 @@ def findMax(indexToProfile):
     max = None
     for t in indexToProfile:
         if t[0] > maxIndex:
+            maxIndex = t[0]
             max = t[1]
     return max[0]
 
