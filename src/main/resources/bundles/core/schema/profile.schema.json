@@ -4,9 +4,7 @@
 	"type": "object",
 	"required": [
 		"name",
-		"desc",
-		"appliesTo",
-		"providedBy"
+		"desc"
 	],
 	"properties": {
 		"name": {

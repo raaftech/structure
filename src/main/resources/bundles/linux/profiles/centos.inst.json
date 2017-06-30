@@ -1,0 +1,35 @@
+{
+  "name": "CentOSProfile",
+  "desc": "A profile that detects CentOS.",
+  "meta": {
+    "uuid": "0999d5d0-7703-4b5b-8adc-6c58fa47d8bd",
+    "relations": {
+      "INSTANCE_OF": {
+        "direction": "outgoing",
+        "to": [
+          "c970f6d3-4898-4596-bfac-9d6d1f6b2541"
+        ]
+      },
+      "APPLIES_TO": {
+        "direction": "outgoing",
+        "to": [
+          "10d6c52d-b3aa-4cf8-89f2-1046bff622d8"
+        ]
+      },
+      "PROVIDED_BY": {
+        "direction": "outgoing",
+        "to": [
+          "10d6c52d-b3aa-4cf8-89f2-1046bff622d8"
+        ]
+      }
+    }
+  },
+  "data": {
+    "commands": {
+      "uname": {
+        "command": "cat /etc/redhat-release",
+        "matches": "CentOS"
+      }
+    }
+  }
+}

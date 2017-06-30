@@ -1,0 +1,22 @@
+{
+  "name": "Sles",
+  "desc": "The Sles Linux operating system.",
+  "meta": {
+    "uuid": "4a4124c5-5240-416c-8958-783279091e71",
+    "relations": {
+      "ISA": {
+        "direction": "outgoing",
+        "to": [
+          "a5613527-2f64-4481-83f2-80b0cb427e28"
+        ]
+      }
+    }
+  },
+  "file": {
+    "dataSchema": {
+      "encoding": "text",
+      "format": "json",
+      "path": "../schemas/sles.schema.json"
+    }
+  }
+}

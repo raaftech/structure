@@ -1,0 +1,22 @@
+{
+  "name": "Ubuntu",
+  "desc": "The Ubuntu operating system.",
+  "meta": {
+    "uuid": "08f72fd1-5c26-4f34-954f-ead04c7234db",
+    "relations": {
+      "ISA": {
+        "direction": "outgoing",
+        "to": [
+          "a5613527-2f64-4481-83f2-80b0cb427e28"
+        ]
+      }
+    }
+  },
+  "file": {
+    "dataSchema": {
+      "encoding": "text",
+      "format": "json",
+      "path": "../schemas/ubuntu.schema.json"
+    }
+  }
+}

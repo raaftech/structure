@@ -1,0 +1,35 @@
+{
+  "name": "SuSEProfile",
+  "desc": "A profile that detects SuSE.",
+  "meta": {
+    "uuid": "19f7e87b-3dfe-425a-a4ce-d77d817faa08",
+    "relations": {
+      "INSTANCE_OF": {
+        "direction": "outgoing",
+        "to": [
+          "c970f6d3-4898-4596-bfac-9d6d1f6b2541"
+        ]
+      },
+      "APPLIES_TO": {
+        "direction": "outgoing",
+        "to": [
+          "4a4124c5-5240-416c-8958-783279091e71"
+        ]
+      },
+      "PROVIDED_BY": {
+        "direction": "outgoing",
+        "to": [
+          "4a4124c5-5240-416c-8958-783279091e71"
+        ]
+      }
+    }
+  },
+  "data": {
+    "commands": {
+      "uname": {
+        "command": "cat /etc/SuSE-release",
+        "matches": "SUSE LINUX"
+      }
+    }
+  }
+}

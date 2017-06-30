@@ -1,6 +1,6 @@
 {
   "name": "LinuxProfile",
-  "desc": "Test profile.",
+  "desc": "A profile that detects Linux.",
   "meta": {
     "uuid": "ce594183-8fcd-4723-8733-2e16242c91ec",
     "relations": {
@@ -25,19 +25,11 @@
     }
   },
   "data": {
-    "providedBy":"thismakesnosense",
-    "appliesTo": "alsonomakesense",
     "commands": {
-      "foo": {
-        "command": "echo bar",
-        "matches": "bar"
+      "uname": {
+        "command": "uname",
+        "matches": "Linux"
       }
-    },
-    "directories": {
-      "configurationDirectories": [ "/etc/" ]
-    },
-    "files": {
-      "configurationFiles": [ "resolv.conf" ]
     }
   }
 }

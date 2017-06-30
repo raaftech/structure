@@ -321,7 +321,7 @@ public class InstrumentRunner {
      */
     private void collectAndTransportProfiles() throws IOException {
         final String instanceOf = origin.getInstanceOf().getUuid();
-        final Set<Profile> applicableProfiles = Context.getProfileRepository().findAllProfilesForType(instanceOf);
+        final List<Profile> applicableProfiles = Context.getProfileRepository().findAllProfilesForType(instanceOf);
         final StringBuilder flattenedProfiles = new StringBuilder();
 
         final String profilesIndex = applicableProfiles.stream()

@@ -1,13 +1,13 @@
 {
-  "name": "Linux",
-  "desc": "The Linux Operating System.",
+  "name": "RedHat",
+  "desc": "The RedHat Linux operating system.",
   "meta": {
-    "uuid": "a5613527-2f64-4481-83f2-80b0cb427e28",
+    "uuid": "6d83cb9d-ed38-45f4-bca0-057e91d55949",
     "relations": {
       "ISA": {
         "direction": "outgoing",
         "to": [
-          "6a1eea8b-1462-4439-8c60-12edbee6c397"
+          "a5613527-2f64-4481-83f2-80b0cb427e28"
         ]
       }
     }
@@ -16,7 +16,7 @@
     "dataSchema": {
       "encoding": "text",
       "format": "json",
-      "path": "linux.schema.json"
+      "path": "../schemas/redhat.schema.json"
     }
   }
 }

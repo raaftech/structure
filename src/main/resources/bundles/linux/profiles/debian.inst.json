@@ -1,0 +1,35 @@
+{
+  "name": "DebianProfile",
+  "desc": "A profile that detects Debian.",
+  "meta": {
+    "uuid": "d75bfb7d-4a41-44ab-a7cc-4901d477a33c",
+    "relations": {
+      "INSTANCE_OF": {
+        "direction": "outgoing",
+        "to": [
+          "c970f6d3-4898-4596-bfac-9d6d1f6b2541"
+        ]
+      },
+      "APPLIES_TO": {
+        "direction": "outgoing",
+        "to": [
+          "1a38cff2-3857-4fbb-bc80-bbdbbb503b5c"
+        ]
+      },
+      "PROVIDED_BY": {
+        "direction": "outgoing",
+        "to": [
+          "1a38cff2-3857-4fbb-bc80-bbdbbb503b5c"
+        ]
+      }
+    }
+  },
+  "data": {
+    "commands": {
+      "uname": {
+        "command": "grep DISTRIB_ID /var/log/installer/lsb-release",
+        "matches": "Debian"
+      }
+    }
+  }
+}
