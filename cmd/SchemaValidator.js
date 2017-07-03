@@ -50,6 +50,7 @@ class SchemaValidator {
                 else {
                     instance = correctTypeErrors(validator, uri, instance);
                     let result = validator.validate(instance, uri);
+                    console.log("===========================> "+result);
                     //Function to run if validation resulted in valid=true
                     let truthy = R.pipe(R.prop('valid'), R.objOf('valid'));
                     //Function to run if validation resulted in valid=false
