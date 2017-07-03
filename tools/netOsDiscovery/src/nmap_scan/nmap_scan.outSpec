@@ -1,0 +1,17 @@
+{
+    "type": "array",
+    "minItems": 0,
+    "maxItems": 50,
+    "items": {
+        "type": "object",
+        "required": ["hostname","ip","openPorts"],
+        "properties": {
+            "hostname": {},
+            "ip": {"type": "string"},
+            "openPorts": {
+                "type": "array"
+            }
+        },
+        "additionalProperties": false
+    }
+}

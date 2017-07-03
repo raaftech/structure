@@ -1,0 +1,8 @@
+() => {
+	return {
+      data: dataDictionary.inTransit,
+      db: aeonCache.get('typeDB'),
+      token: aeonCache.get('credentials').id,
+      api: aeonCache.get('api')
+    }
+}

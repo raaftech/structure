@@ -1,0 +1,19 @@
+{
+  "name": "hello",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "eventsource": "^1.0.4",
+    "fuzzy-matching": "^0.4.3",
+    "node-fetch": "^1.7.1",
+    "node-nmap": "^3.0.4",
+    "ramda": "^0.24.1",
+    "uuid": "^3.1.0"
+  }
+}

@@ -1,0 +1,16 @@
+() => {
+    return new Promise((resolve,reject) => {
+        options.ipEntities = [];
+        options.createdComputer = {};
+        options.deeplyDetected = {};
+        options.specialized = {};
+        options.toSpecialize = {};
+        options.inTransit = {};
+        options.currentGuess = "";
+        
+        var prowlMessage = util.format('Discovered %s entities on network %s\nUnix like: %s\nWindows like: %s\nUndetermined: %s',options.discoveredIpCount, options.cidr, options.pcounter.unix, options.pcounter.windows, options.pcounter.generic);
+        lib.Prowl.notify('5ce9c6d853284f9e67087ae808b73c5abaf7b49b','structure','Discovery result',prowlMessage)
+            .then(x => resolve(options))
+            .catch(ex => resolve(options));
+    });
+}

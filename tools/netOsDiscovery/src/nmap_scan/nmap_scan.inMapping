@@ -1,0 +1,3 @@
+() => {
+  return {cidr: dataDictionary.cidr, nmapArgs: dataDictionary.nmapArgs}
+}

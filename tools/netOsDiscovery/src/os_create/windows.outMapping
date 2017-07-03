@@ -1,0 +1,7 @@
+(data) => {
+  	dataDictionary.computers.push(data);
+    dataDictionary.discoveredIps = R.tail(dataDictionary.discoveredIps);
+    dataDictionary.currentType = 'Windows';
+    dataDictionary.pcounter.windows = dataDictionary.pcounter.windows + 1;
+	return dataDictionary;
+}

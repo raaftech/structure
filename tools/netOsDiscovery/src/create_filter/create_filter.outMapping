@@ -1,0 +1,4 @@
+(data) => {
+	dataDictionary.ipEntities = data;
+	return dataDictionary;
+}

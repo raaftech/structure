@@ -1,0 +1,24 @@
+{
+    "type": "object",
+    "required": ["guess","entity","ipData"],
+    "properties": {
+        "guess": {
+            "type": "string",
+            "enum": ["generic","windows","unix"]
+        },
+        "entity": {"type": "object"},
+        "ipData": {
+            "type": "object",
+            "required": ["hostname","ip","openPorts"],
+            "properties": {
+                "hostname": {},
+                "ip": {"type": "string"},
+                "openPorts": {
+                    "type": "array"
+                }
+            },
+            "additionalProperties": false
+        }
+    },
+    "additionalProperties": false
+}

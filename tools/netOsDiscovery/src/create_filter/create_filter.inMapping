@@ -1,0 +1,6 @@
+() => {
+	return {
+      ips: dataDictionary.discoveredIps,
+      db: aeonCache.get('typeDB')
+    }
+}

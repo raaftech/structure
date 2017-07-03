@@ -1,0 +1,5 @@
+(data) => {
+	dataDictionary.statusResults = R.tail(dataDictionary.statusResults);
+    dataDictionary.toSpecialize = data;
+	return dataDictionary;
+}

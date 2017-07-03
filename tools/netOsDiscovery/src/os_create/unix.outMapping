@@ -1,0 +1,8 @@
+(data) => {
+	dataDictionary.createdComputer = data;
+    dataDictionary.computers.push(data);
+    dataDictionary.discoveredIps = R.tail(dataDictionary.discoveredIps);
+    dataDictionary.currentType = 'UnixLike';
+    dataDictionary.pcounter.unix = dataDictionary.pcounter.unix + 1;
+	return dataDictionary;
+}

@@ -1,0 +1,35 @@
+{
+  "single": [],
+  "infinite": [],
+  "hourly": [
+    {
+      "label": "discovered_ips",
+      "timestamp": "2017-07-03 15:05:12",
+      "fact": 11
+    },
+    {
+      "label": "UnixLike",
+      "timestamp": "2017-07-03 15:05:14",
+      "fact": 5
+    },
+    {
+      "label": "detect_FAILED",
+      "timestamp": "2017-07-03 15:05:14",
+      "fact": 11
+    },
+    {
+      "label": "",
+      "timestamp": "2017-07-03 15:05:14",
+      "fact": 4
+    },
+    {
+      "label": "Windows",
+      "timestamp": "2017-07-03 15:05:13",
+      "fact": 2
+    }
+  ],
+  "daily": [],
+  "weekly": [],
+  "monthly": [],
+  "yearly": []
+}

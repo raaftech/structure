@@ -1,0 +1,5 @@
+(data) => {
+	dataDictionary.discoveredIps = data;
+    dataDictionary.discoveredIpCount = R.length(data);
+	return dataDictionary;
+}
