@@ -148,7 +148,7 @@ public class JsonHelper {
         boolean validationState = false;
         JsonSchemaFactory jsonSchemaFactory = JsonSchemaFactory.byDefault();
         try {
-            JsonSchema jsonSchema = jsonSchemaFactory.getJsonSchema(schema.toString());
+			JsonSchema jsonSchema = jsonSchemaFactory.getJsonSchema(schema.toString());
             validationState = validateToSchema(jsonSchema, object);
         } catch (ProcessingException e) {
             if (Configuration.isTraceModeOn()) {

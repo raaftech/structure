@@ -3,21 +3,23 @@ package com.raaftech.structure.base;
 import ch.qos.logback.classic.Level;
 import com.raaftech.structure.bus.InstanceActor;
 import com.raaftech.structure.bus.TypeActor;
+import com.raaftech.structure.bus.manager.SchemaManager;
+import com.raaftech.structure.bus.manager.TaskManager;
+import com.raaftech.structure.bus.repository.Instances;
+import com.raaftech.structure.bus.repository.Nodes;
+import com.raaftech.structure.bus.repository.Types;
 import com.raaftech.structure.graph.Component;
 import com.raaftech.structure.graph.Instance;
 import com.raaftech.structure.graph.repositories.InstanceRepository;
 import com.raaftech.structure.graph.repositories.TypeRepository;
 import com.raaftech.structure.helper.ProcessRunner;
 import com.raaftech.structure.helper.loader.BundleLoader;
-import com.raaftech.structure.bus.manager.SchemaManager;
-import com.raaftech.structure.bus.manager.TaskManager;
-import com.raaftech.structure.bus.repository.Instances;
-import com.raaftech.structure.bus.repository.Nodes;
-import com.raaftech.structure.bus.repository.Types;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.http.HttpServer;
+import io.vertx.core.http.HttpServerOptions;
+import io.vertx.core.net.SelfSignedCertificate;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.StaticHandler;
 import io.vertx.ext.web.handler.sockjs.BridgeOptions;
@@ -31,9 +33,18 @@ import org.slf4j.bridge.SLF4JBridgeHandler;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.data.neo4j.support.query.CypherQueryExecutor;
 
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManagerFactory;
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.security.KeyStore;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
 import java.util.Optional;
 import java.util.stream.StreamSupport;
 
@@ -66,6 +77,9 @@ public class Application {
                 .addOption("u", "unsafe", false, "Enable unsafe mode");
 
         CommandLineParser parser = new DefaultParser();
+
+        // The self signed certificate for the vertx webserver
+        SelfSignedCertificate selfSignedCertificate = null;
 
         // Black magic.
         SLF4JBridgeHandler.removeHandlersForRootLogger();
@@ -127,12 +141,17 @@ public class Application {
                 log.info("UNSAFE mode enabled");
                 Configuration.setUnsafeMode(true);
             }
+
+            // If no certificate was passed, we'll generate one ourself
+            if (!line.hasOption("certificate")) {
+                selfSignedCertificate = generateAndInjectCertificate();
+            }
         } catch (ParseException e) {
             log.error("Can't parse commandline options: {}", e.getMessage());
         }
 
         Vertx vertx;
-        HttpServer httpServer;
+        HttpServer httpServer = null;
         Router router;
         SockJSHandler sockJsHandler;
 
@@ -164,7 +183,15 @@ public class Application {
                 .addOutboundPermitted(new PermittedOptions().setAddressRegex("com\\.raaftech\\.structure\\..*"));
 
         // Setup httpServer, router and sockJs.
-        httpServer = vertx.createHttpServer();
+        if (selfSignedCertificate != null) {
+            httpServer = vertx.createHttpServer(new HttpServerOptions()
+                    .setSsl(true)
+                    .setKeyCertOptions(selfSignedCertificate.keyCertOptions())
+                    .setTrustOptions(selfSignedCertificate.trustOptions()));
+        } else {
+            log.error("Error while setting self signed certificate, exiting");
+            System.exit(1);
+        }
         sockJsHandler = SockJSHandler.create(vertx);
         sockJsHandler.bridge(bridgeOptions);
         router = Router.router(vertx);
@@ -245,9 +272,9 @@ public class Application {
 
         // Open up the http server and send a friendly message telling the user we're done.
         Configuration.setWebHost(getConfiguration("webHost").orElse("localhost"));
-        Configuration.setWebPort(Integer.parseInt(getConfiguration("webPort").orElse("8080")));
+        Configuration.setWebPort(Integer.parseInt(getConfiguration("webPort").orElse("8443")));
         try {
-            Configuration.setSchemaNamespace(new URI(String.format("http://%s:%s/",
+            Configuration.setSchemaNamespace(new URI(String.format("https://%s:%s/",
                     Configuration.getWebHost(), Configuration.getWebPort())));
         } catch (URISyntaxException e) {
             handleUnrecoverableLoadingError(null, e, 1, "Unrecoverable error while setting schema namespace");
@@ -369,5 +396,52 @@ public class Application {
         if(tx != null) tx.close();
         log.error(message);
         System.exit(exitCode);
+    }
+
+    /**
+     * Generate a self-signed certificate and inject that in a new {@link javax.net.ssl.TrustManager}
+     * which in turn will be used by {@link SSLContext}. This ensures our JSON schema library will
+     * be able to follow references using the exposed https server which uses the self-signed cert.
+     * @return The self-signed certificate.
+     */
+    private static SelfSignedCertificate generateAndInjectCertificate() {
+        final SelfSignedCertificate cert = SelfSignedCertificate.create();
+
+        try {
+            // Create an InputStream from our generated certificate.
+            BufferedInputStream is = new BufferedInputStream(new FileInputStream(cert.certificatePath()));
+            // Turn it into a X509Certificate object
+            CertificateFactory cf = CertificateFactory.getInstance("X.509");
+            X509Certificate caCert = (X509Certificate) cf.generateCertificate(is);
+            // Get an instance of a new TrustManagerFactory
+            TrustManagerFactory trustManagerFactory = TrustManagerFactory
+                    .getInstance(TrustManagerFactory.getDefaultAlgorithm());
+            // Get an instance of a new KeyStore
+            KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
+            // We don't need to load a KeyStore from file, as ours will just contain `cert`
+            ks.load(null);
+            // Add an entry for `cert`
+            ks.setCertificateEntry("localhost", caCert);
+            // Init the factory with our new KeyStore
+            trustManagerFactory.init(ks);
+
+            // Create a new SSL Context using a TrustManager created by our factory
+            SSLContext sslContext = SSLContext.getInstance("TLS");
+            sslContext.init(null, trustManagerFactory.getTrustManagers(), null);
+            // Set the default SSLSocketFactory to our a new SSLSocketFactory created from
+            // our SSLContext
+            HttpsURLConnection.setDefaultSSLSocketFactory(sslContext.getSocketFactory());
+
+            // Create all-trusting host name verifier
+            HostnameVerifier allHostsValid = (hostname, session) -> Configuration.getWebHost().equals(hostname);
+            // Install the all-trusting host verifier
+            HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
+        } catch (Exception e) {
+            log.error("Error while generating self-signed certificate: \n"+ e.getMessage());
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+        return cert;
     }
 }
