@@ -19,6 +19,7 @@ import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.HttpServerOptions;
+import io.vertx.core.net.JksOptions;
 import io.vertx.core.net.SelfSignedCertificate;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.StaticHandler;
@@ -74,12 +75,14 @@ public class Application {
                 .addOption("h", "help", false, "Display help message")
                 .addOption("l", "loglevel", true, "Set loglevel (INFO | DEBUG | TRACE)")
                 .addOption("t", "trace", false, "Enable (back)traces")
-                .addOption("u", "unsafe", false, "Enable unsafe mode");
+                .addOption("u", "unsafe", false, "Enable unsafe mode")
+                .addOption("k", "keystore", true, "Pass a keystore containing the certificate to use for https");
 
         CommandLineParser parser = new DefaultParser();
 
         // The self signed certificate for the vertx webserver
         SelfSignedCertificate selfSignedCertificate = null;
+        String keyStoreLocation = null;
 
         // Black magic.
         SLF4JBridgeHandler.removeHandlersForRootLogger();
@@ -142,8 +145,13 @@ public class Application {
                 Configuration.setUnsafeMode(true);
             }
 
-            // If no certificate was passed, we'll generate one ourself
-            if (!line.hasOption("certificate")) {
+            // Check if a keystore was passed; if not, we generate a certificate
+            if (line.hasOption("keystore")) {
+                keyStoreLocation = line.getOptionValue("keystore");
+                log.info("Using keystore " + keyStoreLocation + " for HTTPS");
+                System.setProperty("javax.net.ssl.trustStore", keyStoreLocation);
+            } else {
+                log.info("Generating a self-signed certificate for HTTPS");
                 selfSignedCertificate = generateAndInjectCertificate();
             }
         } catch (ParseException e) {
@@ -183,14 +191,20 @@ public class Application {
                 .addOutboundPermitted(new PermittedOptions().setAddressRegex("com\\.raaftech\\.structure\\..*"));
 
         // Setup httpServer, router and sockJs.
-        if (selfSignedCertificate != null) {
+        // If we don't have a self signed certificate we were passed a keystore
+        if (selfSignedCertificate == null) {
+            System.out.println("Password: ");
+            final String password = System.console().readLine();
+            httpServer = vertx.createHttpServer(new HttpServerOptions()
+                    .setSsl(true)
+                    .setKeyStoreOptions(new JksOptions()
+                            .setPassword(password)
+                            .setPath(keyStoreLocation)));
+        } else {
             httpServer = vertx.createHttpServer(new HttpServerOptions()
                     .setSsl(true)
                     .setKeyCertOptions(selfSignedCertificate.keyCertOptions())
                     .setTrustOptions(selfSignedCertificate.trustOptions()));
-        } else {
-            log.error("Error while setting self signed certificate, exiting");
-            System.exit(1);
         }
         sockJsHandler = SockJSHandler.create(vertx);
         sockJsHandler.bridge(bridgeOptions);
