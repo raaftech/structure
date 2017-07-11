@@ -77,7 +77,7 @@ public class Application {
                 .addOption("l", "loglevel", true, "Set loglevel (INFO | DEBUG | TRACE)")
                 .addOption("t", "trace", false, "Enable (back)traces")
                 .addOption("u", "unsafe", false, "Enable unsafe mode")
-                .addOption("k", "keystore", true, "Pass a keystore containing the certificate to use for https");
+                .addOption("k", "keystore-file", true, "Pass a keystore containing the certificate to use for https");
 
         CommandLineParser parser = new DefaultParser();
 
@@ -147,12 +147,12 @@ public class Application {
             }
 
             // Check if a keystore was passed; if not, we generate a certificate
-            final String KEYSTORE = "keystore";
-            Optional<String> keyStoreLocationDefault = getConfiguration(KEYSTORE);
+            final String KEYSTORE_LOCATION = "keystore-file";
+            Optional<String> keyStoreLocationDefault = getConfiguration(KEYSTORE_LOCATION);
             if (keyStoreLocationDefault.isPresent()) {
                 keyStoreLocation = keyStoreLocationDefault.get();
-            } else if (line.hasOption(KEYSTORE)) {
-                keyStoreLocation = line.getOptionValue(KEYSTORE);
+            } else if (line.hasOption(KEYSTORE_LOCATION)) {
+                keyStoreLocation = line.getOptionValue(KEYSTORE_LOCATION);
             } else {
                 log.info("Generating a self-signed certificate for HTTPS");
                 selfSignedCertificate = generateAndInjectCertificate();
@@ -394,12 +394,15 @@ public class Application {
 
     /**
      * Get a configuration property, giving priority to environment variables, then properties.
+     * Property names are translated to environment keys by uppercasing them and replacing
+     * "-" by "_".
      * @param configurationKey The name of the configuration key
      * @return The value of the configuration key, or null if there was no configuration
      */
     private static Optional<String> getConfiguration(String configurationKey) {
-        if (System.getenv(configurationKey.toUpperCase()) != null) {
-            return Optional.of(System.getenv(configurationKey.toUpperCase()));
+        String possibleEnvKey = configurationKey.replace("-", "_").toUpperCase();
+        if (System.getenv(possibleEnvKey) != null) {
+            return Optional.of(System.getenv(possibleEnvKey));
         } else if (System.getProperty(configurationKey) != null){
             return Optional.of(System.getProperty(configurationKey));
         } else {
