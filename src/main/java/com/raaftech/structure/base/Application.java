@@ -84,6 +84,7 @@ public class Application {
         // The self signed certificate for the vertx webserver
         SelfSignedCertificate selfSignedCertificate = null;
         String keyStoreLocation = null;
+        String keyStorePassword = null;
 
         // Black magic.
         SLF4JBridgeHandler.removeHandlersForRootLogger();
@@ -162,6 +163,14 @@ public class Application {
                 log.info("Using keystore " + keyStoreLocation + " for HTTPS");
                 System.setProperty("javax.net.ssl.trustStore", keyStoreLocation);
             }
+
+            // Check for keystore password. Note that we won't expose a cmd line
+            // option for this as passwords are better passed via environment.
+            final String KEYSTORE_PASS = "keystore-password";
+            Optional<String> maybeKeyStorePassword = getConfiguration(KEYSTORE_PASS);
+            if (maybeKeyStorePassword.isPresent()) {
+                keyStorePassword = maybeKeyStorePassword.get();
+            }
         } catch (ParseException e) {
             log.error("Can't parse commandline options: {}", e.getMessage());
         }
@@ -201,13 +210,16 @@ public class Application {
         // Setup httpServer, router and sockJs.
         // If we don't have a self signed certificate we were passed a keystore
         if (selfSignedCertificate == null) {
-            System.out.print(String.format("Password for keystore %s: ",
-                    Paths.get(keyStoreLocation).getFileName().toString()));
-            final String password = new String(System.console().readPassword());
+            // If we don't have a keystore password, prompt for one
+            if (keyStorePassword == null) {
+                System.out.print(String.format("Password for keystore %s: ",
+                        Paths.get(keyStoreLocation).getFileName().toString()));
+                keyStorePassword = new String(System.console().readPassword());
+            }
             httpServer = vertx.createHttpServer(new HttpServerOptions()
                     .setSsl(true)
                     .setKeyStoreOptions(new JksOptions()
-                            .setPassword(password)
+                            .setPassword(keyStorePassword)
                             .setPath(keyStoreLocation)));
         } else {
             httpServer = vertx.createHttpServer(new HttpServerOptions()
