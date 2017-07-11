@@ -47,6 +47,7 @@ import java.security.KeyStore;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.stream.StreamSupport;
 
 /**
@@ -146,13 +147,20 @@ public class Application {
             }
 
             // Check if a keystore was passed; if not, we generate a certificate
-            if (line.hasOption("keystore")) {
-                keyStoreLocation = line.getOptionValue("keystore");
-                log.info("Using keystore " + keyStoreLocation + " for HTTPS");
-                System.setProperty("javax.net.ssl.trustStore", keyStoreLocation);
+            final String KEYSTORE = "keystore";
+            Optional<String> keyStoreLocationDefault = getConfiguration(KEYSTORE);
+            if (keyStoreLocationDefault.isPresent()) {
+                keyStoreLocation = keyStoreLocationDefault.get();
+            } else if (line.hasOption(KEYSTORE)) {
+                keyStoreLocation = line.getOptionValue(KEYSTORE);
             } else {
                 log.info("Generating a self-signed certificate for HTTPS");
                 selfSignedCertificate = generateAndInjectCertificate();
+            }
+
+            if (keyStoreLocation != null) {
+                log.info("Using keystore " + keyStoreLocation + " for HTTPS");
+                System.setProperty("javax.net.ssl.trustStore", keyStoreLocation);
             }
         } catch (ParseException e) {
             log.error("Can't parse commandline options: {}", e.getMessage());
@@ -193,8 +201,8 @@ public class Application {
         // Setup httpServer, router and sockJs.
         // If we don't have a self signed certificate we were passed a keystore
         if (selfSignedCertificate == null) {
-            System.out.println("Password: ");
-            final String password = System.console().readLine();
+            System.out.print("Password: ");
+            final String password = new String(System.console().readPassword());
             httpServer = vertx.createHttpServer(new HttpServerOptions()
                     .setSsl(true)
                     .setKeyStoreOptions(new JksOptions()
