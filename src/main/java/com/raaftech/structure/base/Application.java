@@ -43,11 +43,11 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.Paths;
 import java.security.KeyStore;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.Optional;
-import java.util.function.Consumer;
 import java.util.stream.StreamSupport;
 
 /**
@@ -201,7 +201,8 @@ public class Application {
         // Setup httpServer, router and sockJs.
         // If we don't have a self signed certificate we were passed a keystore
         if (selfSignedCertificate == null) {
-            System.out.print("Password: ");
+            System.out.print(String.format("Password for keystore %s: ",
+                    Paths.get(keyStoreLocation).getFileName().toString()));
             final String password = new String(System.console().readPassword());
             httpServer = vertx.createHttpServer(new HttpServerOptions()
                     .setSsl(true)
