@@ -1,0 +1,22 @@
+{
+  "type": "object",
+  "properties": {
+    "instanceUuid": {
+      "type": "string"
+    },
+    "typeName": {
+      "type": "string"
+    },
+    "token": {
+      "type": "string"
+    },
+    "data": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": true
+    }
+  },
+  "required": ["instanceUuid", "typeName", "token", "data"],
+  "additionalProperties": true
+}

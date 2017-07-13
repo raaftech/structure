@@ -1,0 +1,11 @@
+{
+	"instanceUuid": "cffe09fc-56b1-4a42-b9c7-e20db8f987a3",
+	"typeName": "Ipv4Address",
+	"token": "wLb63qcywp2viUodXTAS9sfNR2aAU8n8pvgHmTXoOkG7kICZ76yTHn6KxlEfQ8K1",
+	"data": {
+		"name": "MyIpv4Address",
+		"addr": "172.17.1.82",
+		"desc": "My description",
+		"reachable": true
+	}
+}
