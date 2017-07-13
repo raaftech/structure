@@ -15,7 +15,7 @@ const notify = (apiKey, appName, subject, message, url) => {
         if (!R.isNil(url) && url !== '')
             postData = util.format('%s&url=%s', postData, encodeURIComponent(url));
 
-        console.log('%s , %s', prowlUrl, postData);
+        //console.log('%s , %s', prowlUrl, postData);
         fetch(prowlUrl, {
             method: 'POST',
             body: postData,

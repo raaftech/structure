@@ -1,8 +1,8 @@
 module.exports = {
-    "ns": "aeon",
-    "netName": "myname",
-    "configName": "pConfig",
-    "processName": "pName",
+    "ns": "structure",
+    "netName": "discovery",
+    "configName": "discoveryConfig",
+    "processName": "discoveryProcess",
     "start": "recv cidr",
     "model": {
         "places": [
@@ -164,235 +164,235 @@ module.exports = {
         ],
         "arcs": [
             {
-                "id": "e34d57b8-c532-4aaf-bbf1-9566e5c3eda0",
+                "id": "b678310e-5adf-415a-8982-fb79d104bd8e",
                 "from": "Start",
                 "to": "recv cidr",
                 "weight": 1
             },
             {
-                "id": "08e03592-b10c-4935-b526-eef59f973dd5",
+                "id": "202fce82-11c4-45e4-a5f6-e5efe7b9eaf7",
                 "from": "recv cidr",
                 "to": "about to get all types from structure",
                 "weight": 1
             },
             {
-                "id": "46bc4b5e-0455-45eb-ae69-208819a16d23",
+                "id": "2c37ef21-12ef-430a-bd97-12146a78f159",
                 "from": "about to get all types from structure",
                 "to": "Get all types",
                 "weight": 1
             },
             {
-                "id": "7d3a7548-30bc-4bd8-b811-a0a422e3126d",
+                "id": "3fe843d7-fec6-42c6-9cd0-e02142bc59c7",
                 "from": "Get all types",
                 "to": "about to nmap scan",
                 "weight": 1
             },
             {
-                "id": "23ba7571-d246-4ead-bab3-359ae33c889c",
+                "id": "6083e3de-18cb-42d8-af4d-9444cce906f1",
                 "from": "about to nmap scan",
                 "to": "Nmap scan",
                 "weight": 1
             },
             {
-                "id": "00003b42-fdd1-4476-9bfb-8e09d335f0d0",
+                "id": "2d260c47-4b16-4998-ad94-3c056f02ba52",
                 "from": "Nmap scan",
                 "to": "After scan",
                 "weight": 1
             },
             {
-                "id": "6dae4c4c-eaee-4a07-a8cf-88331ff067ee",
+                "id": "1b695e18-36ef-445b-b798-3b984abe2bbf",
                 "from": "After scan",
                 "to": "CreateFilter",
                 "weight": 1
             },
             {
-                "id": "03b61a39-6e84-4239-812a-629de01a90ad",
+                "id": "3d6c0835-eb37-47dd-8c0d-586e7c4e4f3e",
                 "from": "CreateFilter",
                 "to": "stop or continue",
                 "weight": 1
             },
             {
-                "id": "71314a9b-9b12-431c-a5ba-6f1a28841de1",
+                "id": "ceb89b1a-cb88-44a4-a040-ceda17b256ed",
                 "from": "recv cidr",
                 "to": "listening for status messages",
                 "weight": 1
             },
             {
-                "id": "80dfc380-0427-42a9-9641-b315a257a3ef",
+                "id": "d4be8ff7-99db-40d4-b789-b27cc8fab761",
                 "from": "listening for status messages",
                 "to": "Status listener",
                 "weight": 1
             },
             {
-                "id": "7a78b5d7-83c5-464b-b1b9-a419d3df15cf",
+                "id": "d14758d8-847c-4f08-879f-cd7f831d81bd",
                 "from": "Status listener",
                 "to": "status event received",
                 "weight": 1
             },
             {
-                "id": "15cc43e0-359a-4123-866d-b9767ac95605",
+                "id": "f142413c-cf8b-4170-abc7-742abc4a6378",
                 "from": "status event received",
                 "to": "Handle event",
                 "weight": 1
             },
             {
-                "id": "16a0c78b-1e0c-4bd8-b274-32d281d90db5",
+                "id": "37af63a3-c87c-4d38-bb59-adc83c0fa53a",
                 "from": "Handle event",
                 "to": "about to specialize",
                 "weight": 1
             },
             {
-                "id": "6d2a433a-eb1f-4971-9aa6-ede36ef0c0b2",
+                "id": "72000d61-ff0a-4668-9730-d1e93b0c78a3",
                 "from": "about to specialize",
                 "to": "Specialize",
                 "weight": 1
             },
             {
-                "id": "a911f25f-eeeb-4189-9f1f-ec3f1d229de7",
+                "id": "4d25d702-08fd-47c0-badf-8dea61a2644c",
                 "from": "Specialize",
                 "to": "specialize attempted",
                 "weight": 1
             },
             {
-                "id": "4eccd0e5-a710-4e55-bb90-d752d318a8be",
+                "id": "d7649075-8e33-456e-8f2c-901a6c83e5ea",
                 "from": "specialize attempted",
                 "to": "Loop exit",
                 "weight": 1
             },
             {
-                "id": "3c2ddaea-43fc-41b4-8dad-65502c16a268",
+                "id": "f02192eb-a726-4bd4-b9a4-41fffbb7de73",
                 "from": "Loop exit",
                 "to": "End",
                 "weight": 1
             },
             {
-                "id": "424b601a-8c3e-4b4e-834f-6508bdb8eaa5",
+                "id": "7d20a02e-7137-489d-b162-a152af6ac8ec",
                 "from": "specialize attempted",
                 "to": "Still receiving",
                 "weight": 1
             },
             {
-                "id": "f86ca3c0-2176-4807-9fc3-307e03584b4e",
+                "id": "e42ad19c-c3db-4448-91d4-802fe46f88b4",
                 "from": "Still receiving",
                 "to": "listening for status messages",
                 "weight": 1
             },
             {
-                "id": "cb245e18-7db0-46ec-a1ce-811a2172cbaa",
+                "id": "c0777ef4-4c50-4e3b-9d37-9381905ac3e5",
                 "from": "stop or continue",
                 "to": "Forcing to end",
                 "weight": 1
             },
             {
-                "id": "9cce4616-f05a-45f2-a9fd-4952dd3c7237",
+                "id": "454d8b6c-7ef1-42ea-8528-4cc2f73bb799",
                 "from": "Forcing to end",
                 "to": "force end",
                 "weight": 1
             },
             {
-                "id": "c7e0cc4b-b3ff-45a0-a036-6fbfce540623",
+                "id": "68a071a2-7d02-4836-809f-2648bdfd47bf",
                 "from": "stop or continue",
                 "to": "Guess by port",
                 "weight": 1
             },
             {
-                "id": "6ed7cdec-f695-439f-b10d-70c389207ac0",
+                "id": "9765a143-c1ef-4d41-97b5-19c57ec8c927",
                 "from": "Guess by port",
                 "to": "determine OS category",
                 "weight": 1
             },
             {
-                "id": "65820a08-0428-45e1-9751-195001510ec5",
+                "id": "bac429b7-e571-4f5d-9190-ce557a1778ff",
                 "from": "determine OS category",
                 "to": "UnixLike create",
                 "weight": 1
             },
             {
-                "id": "bedc9ae1-6bd5-4e02-9ff2-51a5372e4036",
+                "id": "8a39f5a4-eda9-4d8f-b318-85d77d23cbeb",
                 "from": "UnixLike create",
                 "to": "About to deep detect",
                 "weight": 1
             },
             {
-                "id": "8884d002-a025-4c16-906a-e515d8754e09",
+                "id": "213abb7e-c465-422b-bcb6-9abec87424b2",
                 "from": "determine OS category",
                 "to": "Windows create",
                 "weight": 1
             },
             {
-                "id": "ecf9e721-97f4-4886-85a4-d8d2e560ed5e",
+                "id": "a4b6aca2-9498-4c47-ae75-a5012a85a3f7",
                 "from": "Windows create",
                 "to": "About to deep detect",
                 "weight": 1
             },
             {
-                "id": "a82741d9-62d1-4107-9073-7551bf44d0e3",
+                "id": "a143c62f-c590-4d92-adb9-495c8776ac3e",
                 "from": "determine OS category",
                 "to": "Generic create",
                 "weight": 1
             },
             {
-                "id": "4df8ff49-23bb-4dec-a7d5-e05af6ecb054",
+                "id": "49798951-d11f-4ad8-9122-34216f2198a4",
                 "from": "Generic create",
                 "to": "About to deep detect",
                 "weight": 1
             },
             {
-                "id": "56f62caf-d507-4186-9e83-53f7f7cc99c7",
+                "id": "97f2b352-dcf7-42c5-b763-ec5004f90e47",
                 "from": "About to deep detect",
                 "to": "Detect",
                 "weight": 1
             },
             {
-                "id": "f04d4359-7020-44b8-9d15-36d1691a42e9",
+                "id": "0052b7d4-7de8-49b8-bc48-51d1375e4157",
                 "from": "Detect",
                 "to": "check detect result",
                 "weight": 1
             },
             {
-                "id": "c148c2a9-7848-465c-8112-b952335e8d99",
+                "id": "7b17daf6-7671-4da9-80d8-5ab360ceddb8",
                 "from": "check detect result",
                 "to": "Detect OK",
                 "weight": 1
             },
             {
-                "id": "2821e98f-6b14-41e8-9d04-1e81bfc04f6f",
+                "id": "3889fa6d-d3d1-4dc4-aaf0-199a4e5d759c",
                 "from": "Detect OK",
                 "to": "detect ok kpi",
                 "weight": 1
             },
             {
-                "id": "a84604e7-a7f6-4821-b741-006a29a73e33",
+                "id": "4766f010-8959-4d56-9e78-30249c42ed0a",
                 "from": "detect ok kpi",
                 "to": "ok pass",
                 "weight": 1
             },
             {
-                "id": "119b6e40-bee8-4d0f-a3ae-1e3470a0cff0",
+                "id": "d257eb1f-2641-4160-924c-e1b0e704edc0",
                 "from": "ok pass",
                 "to": "stop or continue",
                 "weight": 1
             },
             {
-                "id": "15dd91ca-712b-4bbd-897d-5721ea8186af",
+                "id": "bc16ec66-d520-46bf-a42d-f3a19ad270bd",
                 "from": "check detect result",
                 "to": "Detect failed",
                 "weight": 1
             },
             {
-                "id": "d08a532f-6b41-46e9-b7ff-2199888a4d93",
+                "id": "49c8c6f1-de39-4a4a-ab25-f45932f1d8d5",
                 "from": "Detect failed",
                 "to": "detect failed kpi",
                 "weight": 1
             },
             {
-                "id": "6fbe4cde-a46f-4985-a11c-91baa420eae5",
+                "id": "8fb2e7da-0361-4180-aad5-ba8d371a5988",
                 "from": "detect failed kpi",
                 "to": "failed pass",
                 "weight": 1
             },
             {
-                "id": "5c74918d-355c-45d8-888c-d3ee5f0b01eb",
+                "id": "0019009a-99ae-43e8-94d0-8de9c220df50",
                 "from": "failed pass",
                 "to": "stop or continue",
                 "weight": 1
@@ -464,13 +464,13 @@ module.exports = {
                 "tokens": 0
             }
         ],
-        "netname": ""
+        "netname": "discovery"
     },
     "config": {
-        "ns": "",
-        "name": "",
+        "ns": "structure",
+        "name": "discoveryConfig",
         "net": {
-            "name": ""
+            "name": "discovery"
         },
         "places": [
             {
@@ -1046,240 +1046,240 @@ module.exports = {
         ],
         "arcs": [
             {
-                "id": "e34d57b8-c532-4aaf-bbf1-9566e5c3eda0",
+                "id": "b678310e-5adf-415a-8982-fb79d104bd8e",
                 "rule": "",
                 "ruleType": "none",
                 "mapping": ""
             },
             {
-                "id": "08e03592-b10c-4935-b526-eef59f973dd5",
+                "id": "202fce82-11c4-45e4-a5f6-e5efe7b9eaf7",
                 "rule": "",
                 "ruleType": "none",
                 "mapping": ""
             },
             {
-                "id": "46bc4b5e-0455-45eb-ae69-208819a16d23",
+                "id": "2c37ef21-12ef-430a-bd97-12146a78f159",
                 "rule": "",
                 "ruleType": "none",
                 "mapping": ""
             },
             {
-                "id": "7d3a7548-30bc-4bd8-b811-a0a422e3126d",
+                "id": "3fe843d7-fec6-42c6-9cd0-e02142bc59c7",
                 "rule": "",
                 "ruleType": "none",
                 "mapping": ""
             },
             {
-                "id": "23ba7571-d246-4ead-bab3-359ae33c889c",
+                "id": "6083e3de-18cb-42d8-af4d-9444cce906f1",
                 "rule": "",
                 "ruleType": "none",
                 "mapping": ""
             },
             {
-                "id": "00003b42-fdd1-4476-9bfb-8e09d335f0d0",
+                "id": "2d260c47-4b16-4998-ad94-3c056f02ba52",
                 "rule": "",
                 "ruleType": "none",
                 "mapping": ""
             },
             {
-                "id": "6dae4c4c-eaee-4a07-a8cf-88331ff067ee",
+                "id": "1b695e18-36ef-445b-b798-3b984abe2bbf",
                 "rule": "",
                 "ruleType": "none",
                 "mapping": ""
             },
             {
-                "id": "03b61a39-6e84-4239-812a-629de01a90ad",
+                "id": "3d6c0835-eb37-47dd-8c0d-586e7c4e4f3e",
                 "rule": "",
                 "ruleType": "none",
                 "mapping": ""
             },
             {
-                "id": "71314a9b-9b12-431c-a5ba-6f1a28841de1",
+                "id": "ceb89b1a-cb88-44a4-a040-ceda17b256ed",
                 "rule": "",
                 "ruleType": "none",
                 "mapping": ""
             },
             {
-                "id": "80dfc380-0427-42a9-9641-b315a257a3ef",
+                "id": "d4be8ff7-99db-40d4-b789-b27cc8fab761",
                 "rule": "",
                 "ruleType": "none",
                 "mapping": ""
             },
             {
-                "id": "7a78b5d7-83c5-464b-b1b9-a419d3df15cf",
+                "id": "d14758d8-847c-4f08-879f-cd7f831d81bd",
                 "rule": "",
                 "ruleType": "none",
                 "mapping": ""
             },
             {
-                "id": "15cc43e0-359a-4123-866d-b9767ac95605",
+                "id": "f142413c-cf8b-4170-abc7-742abc4a6378",
                 "rule": "",
                 "ruleType": "none",
                 "mapping": ""
             },
             {
-                "id": "16a0c78b-1e0c-4bd8-b274-32d281d90db5",
+                "id": "37af63a3-c87c-4d38-bb59-adc83c0fa53a",
                 "rule": "",
                 "ruleType": "none",
                 "mapping": ""
             },
             {
-                "id": "6d2a433a-eb1f-4971-9aa6-ede36ef0c0b2",
+                "id": "72000d61-ff0a-4668-9730-d1e93b0c78a3",
                 "rule": "",
                 "ruleType": "none",
                 "mapping": ""
             },
             {
-                "id": "a911f25f-eeeb-4189-9f1f-ec3f1d229de7",
+                "id": "4d25d702-08fd-47c0-badf-8dea61a2644c",
                 "rule": "",
                 "ruleType": "none",
                 "mapping": ""
             },
             {
-                "id": "4eccd0e5-a710-4e55-bb90-d752d318a8be",
+                "id": "d7649075-8e33-456e-8f2c-901a6c83e5ea",
                 "rule": "shouldTerminate",
                 "ruleType": "local",
                 "mapping": "dataDictionary.countDown === 0"
             },
             {
-                "id": "3c2ddaea-43fc-41b4-8dad-65502c16a268",
+                "id": "f02192eb-a726-4bd4-b9a4-41fffbb7de73",
                 "rule": "",
                 "ruleType": "none",
                 "mapping": ""
             },
             {
-                "id": "424b601a-8c3e-4b4e-834f-6508bdb8eaa5",
+                "id": "7d20a02e-7137-489d-b162-a152af6ac8ec",
                 "rule": "shouldContinue",
                 "ruleType": "local",
                 "mapping": "dataDictionary.countDown > 0"
             },
             {
-                "id": "f86ca3c0-2176-4807-9fc3-307e03584b4e",
+                "id": "e42ad19c-c3db-4448-91d4-802fe46f88b4",
                 "rule": "",
                 "ruleType": "none",
                 "mapping": ""
             },
             {
-                "id": "cb245e18-7db0-46ec-a1ce-811a2172cbaa",
+                "id": "c0777ef4-4c50-4e3b-9d37-9381905ac3e5",
                 "rule": "forceTerminate",
                 "ruleType": "local",
                 "mapping": "R.and(R.compose(R.equals(0), R.length) (dataDictionary.discoveredIps), R.equals(0, dataDictionary.countDown))"
             },
             {
-                "id": "9cce4616-f05a-45f2-a9fd-4952dd3c7237",
+                "id": "454d8b6c-7ef1-42ea-8528-4cc2f73bb799",
                 "rule": "",
                 "ruleType": "none",
                 "mapping": ""
             },
             {
-                "id": "c7e0cc4b-b3ff-45a0-a036-6fbfce540623",
-                "rule": "",
-                "ruleType": "none",
-                "mapping": ""
-            },
-            {
-                "id": "6ed7cdec-f695-439f-b10d-70c389207ac0",
+                "id": "68a071a2-7d02-4836-809f-2648bdfd47bf",
                 "rule": "guessCheck",
                 "ruleType": "local",
                 "mapping": "R.length(dataDictionary.discoveredIps) > 0"
             },
             {
-                "id": "65820a08-0428-45e1-9751-195001510ec5",
+                "id": "9765a143-c1ef-4d41-97b5-19c57ec8c927",
+                "rule": "",
+                "ruleType": "none",
+                "mapping": ""
+            },
+            {
+                "id": "bac429b7-e571-4f5d-9190-ce557a1778ff",
                 "rule": "unixType",
                 "ruleType": "local",
                 "mapping": "dataDictionary.currentGuess === 'unix'"
             },
             {
-                "id": "bedc9ae1-6bd5-4e02-9ff2-51a5372e4036",
+                "id": "8a39f5a4-eda9-4d8f-b318-85d77d23cbeb",
                 "rule": "",
                 "ruleType": "none",
                 "mapping": ""
             },
             {
-                "id": "8884d002-a025-4c16-906a-e515d8754e09",
+                "id": "213abb7e-c465-422b-bcb6-9abec87424b2",
                 "rule": "windowsType",
                 "ruleType": "local",
                 "mapping": "dataDictionary.currentGuess === 'windows'"
             },
             {
-                "id": "ecf9e721-97f4-4886-85a4-d8d2e560ed5e",
+                "id": "a4b6aca2-9498-4c47-ae75-a5012a85a3f7",
                 "rule": "",
                 "ruleType": "none",
                 "mapping": ""
             },
             {
-                "id": "a82741d9-62d1-4107-9073-7551bf44d0e3",
+                "id": "a143c62f-c590-4d92-adb9-495c8776ac3e",
                 "rule": "normalType",
                 "ruleType": "local",
                 "mapping": "dataDictionary.currentGuess === 'generic'"
             },
             {
-                "id": "4df8ff49-23bb-4dec-a7d5-e05af6ecb054",
+                "id": "49798951-d11f-4ad8-9122-34216f2198a4",
                 "rule": "",
                 "ruleType": "none",
                 "mapping": ""
             },
             {
-                "id": "56f62caf-d507-4186-9e83-53f7f7cc99c7",
+                "id": "97f2b352-dcf7-42c5-b763-ec5004f90e47",
                 "rule": "",
                 "ruleType": "none",
                 "mapping": ""
             },
             {
-                "id": "f04d4359-7020-44b8-9d15-36d1691a42e9",
+                "id": "0052b7d4-7de8-49b8-bc48-51d1375e4157",
                 "rule": "",
                 "ruleType": "none",
                 "mapping": ""
             },
             {
-                "id": "c148c2a9-7848-465c-8112-b952335e8d99",
+                "id": "7b17daf6-7671-4da9-80d8-5ab360ceddb8",
                 "rule": "detectOK",
                 "ruleType": "local",
                 "mapping": "R.compose(R.not, R.has('error')) (dataDictionary.deeplyDetected.specialized)"
             },
             {
-                "id": "2821e98f-6b14-41e8-9d04-1e81bfc04f6f",
+                "id": "3889fa6d-d3d1-4dc4-aaf0-199a4e5d759c",
                 "rule": "",
                 "ruleType": "none",
                 "mapping": ""
             },
             {
-                "id": "a84604e7-a7f6-4821-b741-006a29a73e33",
+                "id": "4766f010-8959-4d56-9e78-30249c42ed0a",
                 "rule": "",
                 "ruleType": "none",
                 "mapping": ""
             },
             {
-                "id": "119b6e40-bee8-4d0f-a3ae-1e3470a0cff0",
+                "id": "d257eb1f-2641-4160-924c-e1b0e704edc0",
                 "rule": "",
                 "ruleType": "none",
                 "mapping": ""
             },
             {
-                "id": "15dd91ca-712b-4bbd-897d-5721ea8186af",
+                "id": "bc16ec66-d520-46bf-a42d-f3a19ad270bd",
                 "rule": "detectFAIL",
                 "ruleType": "local",
                 "mapping": "R.has('error', dataDictionary.deeplyDetected.specialized)"
             },
             {
-                "id": "d08a532f-6b41-46e9-b7ff-2199888a4d93",
+                "id": "49c8c6f1-de39-4a4a-ab25-f45932f1d8d5",
                 "rule": "",
                 "ruleType": "none",
                 "mapping": ""
             },
             {
-                "id": "6fbe4cde-a46f-4985-a11c-91baa420eae5",
+                "id": "8fb2e7da-0361-4180-aad5-ba8d371a5988",
                 "rule": "",
                 "ruleType": "none",
                 "mapping": ""
             },
             {
-                "id": "5c74918d-355c-45d8-888c-d3ee5f0b01eb",
+                "id": "0019009a-99ae-43e8-94d0-8de9c220df50",
                 "rule": "",
                 "ruleType": "none",
                 "mapping": ""
             }
         ],
-        "created": ""
+        "created": "Tue Jul 11 2017 13:21:54 GMT+0200"
     }
 };

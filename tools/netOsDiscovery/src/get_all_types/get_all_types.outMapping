@@ -1,5 +1,0 @@
-(data) => {
-	aeonCache.set('typeDB',data.db);
-	aeonCache.set('credentials', data.credentials);
-	return dataDictionary;
-}

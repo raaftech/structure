@@ -5,7 +5,6 @@ const nmapLib = require('./nmapLib');
 const RestConnector = require('./restConnector');
 const graphLib = require('./graphLib');
 const structureLib = require('./structureLib');
-const EventSource = require('eventsource');
 
 const getAllTypes = (input) => {
     const rest = new RestConnector(R.defaultTo('localhost', R.path(['api','server'],input)),
@@ -38,7 +37,7 @@ const nmap = (data) => {
         .catch(ex => {
             ex.name = "NmapError";
             throw ex;
-        })
+        });
 };
 
 //{all: [], created: []}
@@ -162,7 +161,7 @@ const deepDetect = (input) => {
     let uuid = R.path(['meta','uuid'], R.find(isOS, input.entry.computer));
     return rest.runCapability(uuid, 'Detect', input.token)
         .then(result => {
-            console.log('DEEP DETECT: '+JSON.stringify(result, undefined, 2));
+            //console.log('DEEP DETECT: '+JSON.stringify(result, undefined, 2));
             return {
                 entity: uuid,
                 specialized: result
@@ -181,8 +180,16 @@ const deepDetect = (input) => {
 // "result":{"process":"scp root@172.17.1.1:/tmp/", "returnCode":0,"stdout":"Linux\n","stderr":""},
 // "process":"scp /tmp/"}
 const handleStatusMessage = (input) => {
-    console.log(JSON.stringify(input.item.data.taskObj.jobs, undefined, 2));
-    let jobs = input.item.data.taskObj.jobs;
+    //console.log(JSON.stringify(input.item, undefined, 2));
+    let jobs = R.path(['item', 'data','taskObj','jobs'], input);
+    if(R.isNil(jobs)) {
+        return Promise.resolve({
+            status: R.compose(R.prop('status'), R.head)(jobs),
+            originName: R.compose(R.prop('originName'), R.head)(jobs),
+            origin: R.compose(R.prop('originUuid'), R.head)(jobs),
+            specialization: 'UNKNOWN_SPECIALIZATION'
+        });
+    }
     let result = R.find(job => {
         if(R.isNil(job.result)) return false;
         let str = R.trim(job.result.stdout);
@@ -204,7 +211,7 @@ const handleStatusMessage = (input) => {
         origin: result.originUuid,
         specialization: R.trim(result.result.stdout)
     };
-    console.log(obj);
+    //console.log(obj);
     return Promise.resolve(obj);
 };
 
@@ -227,7 +234,7 @@ const specialize = (input) => {
 
     return rest.specializeInstance(input.entry.origin, getId(toEnt))
         .then(result => {
-            console.log(result);
+            //console.log(result);
             return {
                 entity: input.entry.origin,
                 status: 'SUCCESS',
