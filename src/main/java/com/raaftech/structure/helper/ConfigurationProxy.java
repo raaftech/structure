@@ -17,9 +17,18 @@ import java.util.function.Function;
  */
 public class ConfigurationProxy {
 
+    /**
+     * The parsed command line options. These options are parsed according to {@link ConfigurationProxyBuilder#options}.
+     */
     final CommandLine commandLineOptions;
+    /**
+     * A function that takes a string and outputs a string. Used when looking up keys in the environment.
+     */
     final Function<String, String> keyTransform;
 
+    /**
+     * A builder for {@link ConfigurationProxy}.
+     */
     public static class ConfigurationProxyBuilder {
         /**
          * The commons cli options we'll proxy for.
@@ -35,21 +44,42 @@ public class ConfigurationProxy {
          */
         private Function<String, String> keyTransform;
 
+        /**
+         * See {@link ConfigurationProxyBuilder#options}.
+         * @param options See {@link ConfigurationProxyBuilder#options}.
+         * @return This builder.
+         */
         public ConfigurationProxyBuilder options(Options options) {
             this.options = options;
             return this;
         }
 
+        /**
+         * The arguments that will be parsed with {@link ConfigurationProxyBuilder#options}.
+         * @param args A list of arguments.
+         * @return This builder.
+         */
         public ConfigurationProxyBuilder args(String[] args) {
             this.args = args;
             return this;
         }
 
+        /**
+         * See {@link ConfigurationProxy#keyTransform}.
+         * @param keyTransform See {@link ConfigurationProxy#keyTransform}.
+         * @return This builder.
+         */
         public ConfigurationProxyBuilder transformer(Function<String, String> keyTransform) {
             this.keyTransform = keyTransform;
             return this;
         }
 
+        /**
+         * Build a {@link ConfigurationProxy} according to the given settings.
+         * @return A {@link ConfigurationProxy}.
+         * @throws ParseException Thrown when we can't parse {@link ConfigurationProxyBuilder#args} with
+         * {@link ConfigurationProxyBuilder#options}.
+         */
         public ConfigurationProxy build() throws ParseException {
             Validate.notNull(options, "Cannot build a ConfigurationProxy without options.");
             Validate.notNull(args, "Cannot build a ConfigurationProxy without arguments.");
@@ -63,6 +93,7 @@ public class ConfigurationProxy {
         }
     }
 
+    /* Used by ConfigurationProxyBuilder */
     private ConfigurationProxy(CommandLine commandLineOptions, Function<String, String> keyTransform) {
         this.commandLineOptions = commandLineOptions;
         this.keyTransform = keyTransform;
