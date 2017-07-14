@@ -20,11 +20,11 @@ public class ConfigurationProxy {
     /**
      * The parsed command line options. These options are parsed according to {@link ConfigurationProxyBuilder#options}.
      */
-    final CommandLine commandLineOptions;
+    private final CommandLine commandLineOptions;
     /**
      * A function that takes a string and outputs a string. Used when looking up keys in the environment.
      */
-    final Function<String, String> keyTransform;
+    private final Function<String, String> keyTransform;
 
     /**
      * A builder for {@link ConfigurationProxy}.
