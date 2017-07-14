@@ -7,6 +7,7 @@ import com.raaftech.structure.graph.Component;
 import com.raaftech.structure.graph.Instance;
 import com.raaftech.structure.graph.repositories.InstanceRepository;
 import com.raaftech.structure.graph.repositories.TypeRepository;
+import com.raaftech.structure.helper.ConfigurationProxy;
 import com.raaftech.structure.helper.ProcessRunner;
 import com.raaftech.structure.helper.loader.BundleLoader;
 import com.raaftech.structure.bus.manager.SchemaManager;
@@ -46,6 +47,7 @@ import java.util.stream.StreamSupport;
 public class Application {
 
     private static final Logger log = LoggerFactory.getLogger(Application.class);
+    private static ConfigurationProxy configuration;
 
     // Make Application uninstantiable by hiding the public constructor
     private Application() {}
@@ -56,17 +58,6 @@ public class Application {
     @SuppressWarnings("resource")
 	public static void main(String[] args) throws InterruptedException {
 
-        final Options options;
-        options = new Options()
-                .addOption("b", "background", false, "Enable background mode (daemonized)")
-                .addOption("f", "foreground", false, "Enable foreground mode (no-detach)")
-                .addOption("h", "help", false, "Display help message")
-                .addOption("l", "loglevel", true, "Set loglevel (INFO | DEBUG | TRACE)")
-                .addOption("t", "trace", false, "Enable (back)traces")
-                .addOption("u", "unsafe", false, "Enable unsafe mode");
-
-        CommandLineParser parser = new DefaultParser();
-
         // Black magic.
         SLF4JBridgeHandler.removeHandlersForRootLogger();
         SLF4JBridgeHandler.install();
@@ -75,23 +66,31 @@ public class Application {
                 (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
 
         try {
-            CommandLine line = parser.parse(options, args);
+            Options options = new Options()
+                    .addOption("h", "help", false, "Display help message")
+                    .addOption("l", "loglevel", true, "Set loglevel (INFO | DEBUG | TRACE)")
+                    .addOption("t", "trace", false, "Enable (back)traces")
+                    .addOption("u", "unsafe", false, "Enable unsafe mode");
+
+            configuration = ConfigurationProxy.builder()
+                    .options(options)
+                    .args(args)
+                    .transformer(s -> s.toUpperCase().replace("-", "_"))
+                    .build();
+
             HelpFormatter formatter = new HelpFormatter();
 
             // HELP
-            if(line.hasOption("help")){
+            final Optional<String> maybeHelp = configuration.getConfiguration("help");
+            if (maybeHelp.isPresent()) {
                 formatter.printHelp("Structure", options);
                 return;
             }
 
-            // DETACH || NODETACH
-            if(line.hasOption("background")){
-                log.info("Background mode not implemented");
-            }
-
             // LOGGING level
-            if(line.hasOption("loglevel")){
-                String loglevel = line.getOptionValue("loglevel");
+            final Optional<String> maybeLogLevel = configuration.getConfiguration("loglevel");
+            if (maybeLogLevel.isPresent()){
+                String loglevel = maybeLogLevel.get();
                 switch(loglevel){
                     case "TRACE":
                         log.info("Setting loglevel to TRACE...");
@@ -117,13 +116,15 @@ public class Application {
             }
 
             // TRACING mode
-            if(line.hasOption("trace")) {
+            final Optional<String> maybeTrace = configuration.getConfiguration("trace");
+            if (maybeTrace.isPresent()) {
                 log.info("TRACE mode enabled");
                 Configuration.setTraceMode(true);
             }
 
             // MODE
-            if(line.hasOption("unsafe")){
+            final Optional<String> maybeUnsafe = configuration.getConfiguration("unsafe");
+            if(maybeUnsafe.isPresent()){
                 log.info("UNSAFE mode enabled");
                 Configuration.setUnsafeMode(true);
             }
@@ -152,7 +153,7 @@ public class Application {
         }));
 
         // Setup vertx with a maxWorkerExecuteTime of 5 minutes, in ns.
-        Long workerTimeout = Long.parseLong(getConfiguration("workertimeout").orElse("300000000000"));
+        Long workerTimeout = Long.parseLong(configuration.getConfiguration("workertimeout").orElse("300000000000"));
         vertx = Vertx.vertx(new VertxOptions().setMaxWorkerExecuteTime(workerTimeout));
 
 
@@ -211,7 +212,7 @@ public class Application {
             }
         });
 
-        final int jobpool = Integer.parseInt(getConfiguration("jobpool").orElse("50"));
+        final int jobpool = Integer.parseInt(configuration.getConfiguration("jobpool").orElse("50"));
         vertx.deployVerticle(new TaskManager(jobpool), ar -> {
             if (ar.succeeded()) {
                 log.info("Deployed TaskManager with id: {}", ar.result());
@@ -244,8 +245,8 @@ public class Application {
         }
 
         // Open up the http server and send a friendly message telling the user we're done.
-        Configuration.setWebHost(getConfiguration("webHost").orElse("localhost"));
-        Configuration.setWebPort(Integer.parseInt(getConfiguration("webPort").orElse("8080")));
+        Configuration.setWebHost(configuration.getConfiguration("web-host").orElse("localhost"));
+        Configuration.setWebPort(Integer.parseInt(configuration.getConfiguration("web-port").orElse("8080")));
         try {
             Configuration.setSchemaNamespace(new URI(String.format("http://%s:%s/",
                     Configuration.getWebHost(), Configuration.getWebPort())));
@@ -340,21 +341,6 @@ public class Application {
             log.error("Failed to execute getHostName: " +  e.getMessage());
         }
         return stdout;
-    }
-
-    /**
-     * Get a configuration property, giving priority to environment variables, then properties.
-     * @param configurationKey The name of the configuration key
-     * @return The value of the configuration key, or null if there was no configuration
-     */
-    private static Optional<String> getConfiguration(String configurationKey) {
-        if (System.getenv(configurationKey.toUpperCase()) != null) {
-            return Optional.of(System.getenv(configurationKey.toUpperCase()));
-        } else if (System.getProperty(configurationKey) != null){
-            return Optional.of(System.getProperty(configurationKey));
-        } else {
-            return Optional.empty();
-        }
     }
 
     /**
