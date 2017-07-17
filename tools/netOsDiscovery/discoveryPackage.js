@@ -1,0 +1,1618 @@
+module.exports =  {
+  "ns": "structure",
+  "netName": "discovery",
+  "configName": "discoveryConfig",
+  "processName": "discoveryProcess",
+  "start": "recv cidr",
+  "model": {
+    "places": [
+      {
+        "id": "Start",
+        "im": 1,
+        "em": 0,
+        "capacity": 0
+      },
+      {
+        "id": "about to get all types from structure",
+        "im": 0,
+        "em": 0,
+        "capacity": 0
+      },
+      {
+        "id": "about to nmap scan",
+        "im": 0,
+        "em": 0,
+        "capacity": 0
+      },
+      {
+        "id": "After scan",
+        "im": 0,
+        "em": 0,
+        "capacity": 0
+      },
+      {
+        "id": "stop or continue",
+        "im": 0,
+        "em": 0,
+        "capacity": 0
+      },
+      {
+        "id": "listening for status messages",
+        "im": 0,
+        "em": 0,
+        "capacity": 0
+      },
+      {
+        "id": "status event received",
+        "im": 0,
+        "em": 0,
+        "capacity": 0
+      },
+      {
+        "id": "about to specialize",
+        "im": 0,
+        "em": 0,
+        "capacity": 0
+      },
+      {
+        "id": "specialize attempted",
+        "im": 0,
+        "em": 0,
+        "capacity": 0
+      },
+      {
+        "id": "End",
+        "im": 0,
+        "em": 1,
+        "capacity": 0
+      },
+      {
+        "id": "force end",
+        "im": 0,
+        "em": 1,
+        "capacity": 0
+      },
+      {
+        "id": "determine OS category",
+        "im": 0,
+        "em": 0,
+        "capacity": 0
+      },
+      {
+        "id": "About to deep detect",
+        "im": 0,
+        "em": 0,
+        "capacity": 0
+      },
+      {
+        "id": "check detect result",
+        "im": 0,
+        "em": 0,
+        "capacity": 0
+      },
+      {
+        "id": "detect ok kpi",
+        "im": 0,
+        "em": 0,
+        "capacity": 0
+      },
+      {
+        "id": "detect failed kpi",
+        "im": 0,
+        "em": 0,
+        "capacity": 0
+      }
+    ],
+    "transitions": [
+      {
+        "id": "recv cidr"
+      },
+      {
+        "id": "Get all types"
+      },
+      {
+        "id": "Nmap scan"
+      },
+      {
+        "id": "CreateFilter"
+      },
+      {
+        "id": "Status listener"
+      },
+      {
+        "id": "Handle event"
+      },
+      {
+        "id": "Specialize"
+      },
+      {
+        "id": "Loop exit"
+      },
+      {
+        "id": "Still receiving"
+      },
+      {
+        "id": "Forcing to end"
+      },
+      {
+        "id": "Guess by port"
+      },
+      {
+        "id": "UnixLike create"
+      },
+      {
+        "id": "Windows create"
+      },
+      {
+        "id": "Generic create"
+      },
+      {
+        "id": "Detect"
+      },
+      {
+        "id": "Detect OK"
+      },
+      {
+        "id": "ok pass"
+      },
+      {
+        "id": "Detect failed"
+      },
+      {
+        "id": "failed pass"
+      }
+    ],
+    "arcs": [
+      {
+        "id": "b678310e-5adf-415a-8982-fb79d104bd8e",
+        "from": "Start",
+        "to": "recv cidr",
+        "weight": 1
+      },
+      {
+        "id": "202fce82-11c4-45e4-a5f6-e5efe7b9eaf7",
+        "from": "recv cidr",
+        "to": "about to get all types from structure",
+        "weight": 1
+      },
+      {
+        "id": "2c37ef21-12ef-430a-bd97-12146a78f159",
+        "from": "about to get all types from structure",
+        "to": "Get all types",
+        "weight": 1
+      },
+      {
+        "id": "3fe843d7-fec6-42c6-9cd0-e02142bc59c7",
+        "from": "Get all types",
+        "to": "about to nmap scan",
+        "weight": 1
+      },
+      {
+        "id": "6083e3de-18cb-42d8-af4d-9444cce906f1",
+        "from": "about to nmap scan",
+        "to": "Nmap scan",
+        "weight": 1
+      },
+      {
+        "id": "2d260c47-4b16-4998-ad94-3c056f02ba52",
+        "from": "Nmap scan",
+        "to": "After scan",
+        "weight": 1
+      },
+      {
+        "id": "1b695e18-36ef-445b-b798-3b984abe2bbf",
+        "from": "After scan",
+        "to": "CreateFilter",
+        "weight": 1
+      },
+      {
+        "id": "3d6c0835-eb37-47dd-8c0d-586e7c4e4f3e",
+        "from": "CreateFilter",
+        "to": "stop or continue",
+        "weight": 1
+      },
+      {
+        "id": "ceb89b1a-cb88-44a4-a040-ceda17b256ed",
+        "from": "recv cidr",
+        "to": "listening for status messages",
+        "weight": 1
+      },
+      {
+        "id": "d4be8ff7-99db-40d4-b789-b27cc8fab761",
+        "from": "listening for status messages",
+        "to": "Status listener",
+        "weight": 1
+      },
+      {
+        "id": "d14758d8-847c-4f08-879f-cd7f831d81bd",
+        "from": "Status listener",
+        "to": "status event received",
+        "weight": 1
+      },
+      {
+        "id": "f142413c-cf8b-4170-abc7-742abc4a6378",
+        "from": "status event received",
+        "to": "Handle event",
+        "weight": 1
+      },
+      {
+        "id": "37af63a3-c87c-4d38-bb59-adc83c0fa53a",
+        "from": "Handle event",
+        "to": "about to specialize",
+        "weight": 1
+      },
+      {
+        "id": "72000d61-ff0a-4668-9730-d1e93b0c78a3",
+        "from": "about to specialize",
+        "to": "Specialize",
+        "weight": 1
+      },
+      {
+        "id": "4d25d702-08fd-47c0-badf-8dea61a2644c",
+        "from": "Specialize",
+        "to": "specialize attempted",
+        "weight": 1
+      },
+      {
+        "id": "d7649075-8e33-456e-8f2c-901a6c83e5ea",
+        "from": "specialize attempted",
+        "to": "Loop exit",
+        "weight": 1
+      },
+      {
+        "id": "f02192eb-a726-4bd4-b9a4-41fffbb7de73",
+        "from": "Loop exit",
+        "to": "End",
+        "weight": 1
+      },
+      {
+        "id": "7d20a02e-7137-489d-b162-a152af6ac8ec",
+        "from": "specialize attempted",
+        "to": "Still receiving",
+        "weight": 1
+      },
+      {
+        "id": "e42ad19c-c3db-4448-91d4-802fe46f88b4",
+        "from": "Still receiving",
+        "to": "listening for status messages",
+        "weight": 1
+      },
+      {
+        "id": "c0777ef4-4c50-4e3b-9d37-9381905ac3e5",
+        "from": "stop or continue",
+        "to": "Forcing to end",
+        "weight": 1
+      },
+      {
+        "id": "454d8b6c-7ef1-42ea-8528-4cc2f73bb799",
+        "from": "Forcing to end",
+        "to": "force end",
+        "weight": 1
+      },
+      {
+        "id": "68a071a2-7d02-4836-809f-2648bdfd47bf",
+        "from": "stop or continue",
+        "to": "Guess by port",
+        "weight": 1
+      },
+      {
+        "id": "9765a143-c1ef-4d41-97b5-19c57ec8c927",
+        "from": "Guess by port",
+        "to": "determine OS category",
+        "weight": 1
+      },
+      {
+        "id": "bac429b7-e571-4f5d-9190-ce557a1778ff",
+        "from": "determine OS category",
+        "to": "UnixLike create",
+        "weight": 1
+      },
+      {
+        "id": "8a39f5a4-eda9-4d8f-b318-85d77d23cbeb",
+        "from": "UnixLike create",
+        "to": "About to deep detect",
+        "weight": 1
+      },
+      {
+        "id": "213abb7e-c465-422b-bcb6-9abec87424b2",
+        "from": "determine OS category",
+        "to": "Windows create",
+        "weight": 1
+      },
+      {
+        "id": "a4b6aca2-9498-4c47-ae75-a5012a85a3f7",
+        "from": "Windows create",
+        "to": "About to deep detect",
+        "weight": 1
+      },
+      {
+        "id": "a143c62f-c590-4d92-adb9-495c8776ac3e",
+        "from": "determine OS category",
+        "to": "Generic create",
+        "weight": 1
+      },
+      {
+        "id": "49798951-d11f-4ad8-9122-34216f2198a4",
+        "from": "Generic create",
+        "to": "About to deep detect",
+        "weight": 1
+      },
+      {
+        "id": "97f2b352-dcf7-42c5-b763-ec5004f90e47",
+        "from": "About to deep detect",
+        "to": "Detect",
+        "weight": 1
+      },
+      {
+        "id": "0052b7d4-7de8-49b8-bc48-51d1375e4157",
+        "from": "Detect",
+        "to": "check detect result",
+        "weight": 1
+      },
+      {
+        "id": "7b17daf6-7671-4da9-80d8-5ab360ceddb8",
+        "from": "check detect result",
+        "to": "Detect OK",
+        "weight": 1
+      },
+      {
+        "id": "3889fa6d-d3d1-4dc4-aaf0-199a4e5d759c",
+        "from": "Detect OK",
+        "to": "detect ok kpi",
+        "weight": 1
+      },
+      {
+        "id": "4766f010-8959-4d56-9e78-30249c42ed0a",
+        "from": "detect ok kpi",
+        "to": "ok pass",
+        "weight": 1
+      },
+      {
+        "id": "d257eb1f-2641-4160-924c-e1b0e704edc0",
+        "from": "ok pass",
+        "to": "stop or continue",
+        "weight": 1
+      },
+      {
+        "id": "bc16ec66-d520-46bf-a42d-f3a19ad270bd",
+        "from": "check detect result",
+        "to": "Detect failed",
+        "weight": 1
+      },
+      {
+        "id": "49c8c6f1-de39-4a4a-ab25-f45932f1d8d5",
+        "from": "Detect failed",
+        "to": "detect failed kpi",
+        "weight": 1
+      },
+      {
+        "id": "8fb2e7da-0361-4180-aad5-ba8d371a5988",
+        "from": "detect failed kpi",
+        "to": "failed pass",
+        "weight": 1
+      },
+      {
+        "id": "0019009a-99ae-43e8-94d0-8de9c220df50",
+        "from": "failed pass",
+        "to": "stop or continue",
+        "weight": 1
+      }
+    ],
+    "markings": [
+      {
+        "id": "Start",
+        "tokens": 1
+      },
+      {
+        "id": "about to get all types from structure",
+        "tokens": 0
+      },
+      {
+        "id": "about to nmap scan",
+        "tokens": 0
+      },
+      {
+        "id": "After scan",
+        "tokens": 0
+      },
+      {
+        "id": "stop or continue",
+        "tokens": 0
+      },
+      {
+        "id": "listening for status messages",
+        "tokens": 0
+      },
+      {
+        "id": "status event received",
+        "tokens": 0
+      },
+      {
+        "id": "about to specialize",
+        "tokens": 0
+      },
+      {
+        "id": "specialize attempted",
+        "tokens": 0
+      },
+      {
+        "id": "End",
+        "tokens": 0
+      },
+      {
+        "id": "force end",
+        "tokens": 0
+      },
+      {
+        "id": "determine OS category",
+        "tokens": 0
+      },
+      {
+        "id": "About to deep detect",
+        "tokens": 0
+      },
+      {
+        "id": "check detect result",
+        "tokens": 0
+      },
+      {
+        "id": "detect ok kpi",
+        "tokens": 0
+      },
+      {
+        "id": "detect failed kpi",
+        "tokens": 0
+      }
+    ],
+    "netname": "discovery"
+  },
+  "config": {
+    "ns": "structure",
+    "name": "discoveryConfig",
+    "net": {
+      "name": "discovery"
+    },
+    "places": [
+      {
+        "id": "Start",
+        "name": "Start",
+        "audit": false,
+        "kpi": [],
+        "rule": false
+      },
+      {
+        "id": "about to get all types from structure",
+        "name": "about to get all types from structure",
+        "audit": false,
+        "kpi": [],
+        "rule": false
+      },
+      {
+        "id": "about to nmap scan",
+        "name": "about to nmap scan",
+        "audit": false,
+        "kpi": [],
+        "rule": false
+      },
+      {
+        "id": "After scan",
+        "name": "After scan",
+        "audit": false,
+        "kpi": [
+          {
+            "label": "discovered_ips",
+            "fact": "#discoveredIpCount",
+            "type": "hourly"
+          }
+        ],
+        "rule": false
+      },
+      {
+        "id": "stop or continue",
+        "name": "stop or continue",
+        "audit": false,
+        "kpi": [],
+        "rule": true
+      },
+      {
+        "id": "listening for status messages",
+        "name": "listening for status messages",
+        "audit": false,
+        "kpi": [],
+        "rule": false
+      },
+      {
+        "id": "status event received",
+        "name": "status event received",
+        "audit": false,
+        "kpi": [],
+        "rule": false
+      },
+      {
+        "id": "about to specialize",
+        "name": "about to specialize",
+        "audit": false,
+        "kpi": [],
+        "rule": false
+      },
+      {
+        "id": "specialize attempted",
+        "name": "specialize attempted",
+        "audit": false,
+        "kpi": [
+          {
+            "label": "specialize_ATTEMPTED",
+            "fact": 1,
+            "type": "hourly"
+          }
+        ],
+        "rule": true
+      },
+      {
+        "id": "End",
+        "name": "End",
+        "audit": false,
+        "kpi": [],
+        "rule": false
+      },
+      {
+        "id": "force end",
+        "name": "force end",
+        "audit": false,
+        "kpi": [],
+        "rule": false
+      },
+      {
+        "id": "determine OS category",
+        "name": "determine OS category",
+        "audit": false,
+        "kpi": [],
+        "rule": true
+      },
+      {
+        "id": "About to deep detect",
+        "name": "About to deep detect",
+        "audit": false,
+        "kpi": [],
+        "rule": false
+      },
+      {
+        "id": "check detect result",
+        "name": "check detect result",
+        "audit": false,
+        "kpi": [
+          {
+            "label": "#currentType",
+            "fact": 1,
+            "type": "hourly"
+          }
+        ],
+        "rule": true
+      },
+      {
+        "id": "detect ok kpi",
+        "name": "detect ok kpi",
+        "audit": false,
+        "kpi": [
+          {
+            "label": "detect_OK",
+            "fact": 1,
+            "type": "hourly"
+          }
+        ],
+        "rule": false
+      },
+      {
+        "id": "detect failed kpi",
+        "name": "detect failed kpi",
+        "audit": false,
+        "kpi": [
+          {
+            "label": "detect_FAILED",
+            "fact": 1,
+            "type": "hourly"
+          }
+        ],
+        "rule": false
+      }
+    ],
+    "transitions": [
+      {
+        "id": "recv cidr",
+        "name": "recv cidr",
+        "type": "Input",
+        "connector": "Input",
+        "inMapping": "(payload) => {\n  aeonCache.set('api', payload.api);\n  return {\n    cidr: payload.cidr, \n    computers: [],\n    specializationResults: [],\n    statusResults: [],\n    currentType: '',\n    countDown: 0,\n    nmapArgs: R.defaultTo('-p22,445,137,138', payload.nmap),\n    pcounter: {unix: 0, windows: 0, generic: 0}\n  }\n}",
+        "outMapping": "",
+        "toContinue": [],
+        "toStop": [],
+        "toRun": [],
+        "theDefault": "stop",
+        "inSpec": {
+          "type": "object",
+          "properties": {
+            "cidr": {
+              "type": "string",
+              "pattern": "^([0-9]{1,3}\\.){3}[0-9]{1,3}(/([0-9]|[1-2][0-9]|3[0-2]))?$"
+            },
+            "api": {
+              "type": "object",
+              "required": [
+                "server",
+                "port"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "server": {
+                  "type": "string"
+                },
+                "port": {
+                  "type": "integer"
+                },
+                "email": {
+                  "type": "string"
+                },
+                "pwd": {
+                  "type": "string"
+                }
+              }
+            },
+            "nmap": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "cidr",
+            "api"
+          ],
+          "additionalProperties": false
+        },
+        "outSpec": {
+          "type": "object",
+          "properties": {},
+          "required": [],
+          "additionalProperties": true
+        }
+      },
+      {
+        "id": "Get all types",
+        "name": "Get all types",
+        "type": "Local",
+        "connector": "structure.getAllTypes",
+        "inMapping": "() => {\n  return {api: aeonCache.get('api')}\n}",
+        "outMapping": "(data) => {\n\taeonCache.set('typeDB',data.db);\n\taeonCache.set('credentials', data.credentials);\n\treturn dataDictionary;\n}",
+        "toContinue": [],
+        "toStop": [],
+        "toRun": [],
+        "theDefault": "stop",
+        "inSpec": {
+          "type": "object",
+          "required": [
+            "api"
+          ],
+          "properties": {
+            "api": {
+              "type": "object",
+              "required": [
+                "server",
+                "port"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "server": {
+                  "type": "string"
+                },
+                "port": {
+                  "type": "integer"
+                },
+                "email": {
+                  "type": "string"
+                },
+                "pwd": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "additionalProperties": true
+        },
+        "outSpec": {
+          "type": "object",
+          "required": [
+            "db",
+            "credentials"
+          ],
+          "properties": {
+            "db": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object"
+              }
+            },
+            "credentials": {
+              "type": "object",
+              "required": [
+                "id"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": true
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      {
+        "id": "Nmap scan",
+        "name": "Nmap scan",
+        "type": "Local",
+        "connector": "structure.nmap",
+        "inMapping": "() => {\n  return {cidr: dataDictionary.cidr, nmapArgs: dataDictionary.nmapArgs}\n}",
+        "outMapping": "(data) => {\n\tdataDictionary.discoveredIps = data;\n    dataDictionary.discoveredIpCount = R.length(data);\n\treturn dataDictionary;\n}",
+        "toContinue": [],
+        "toStop": [],
+        "toRun": [],
+        "theDefault": "stop",
+        "inSpec": {
+          "type": "object",
+          "required": [
+            "cidr"
+          ],
+          "properties": {
+            "cidr": {
+              "type": "string",
+              "pattern": "^([0-9]{1,3}\\.){3}[0-9]{1,3}(/([0-9]|[1-2][0-9]|3[0-2]))?$"
+            },
+            "nmapArgs": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "outSpec": {
+          "type": "array",
+          "minItems": 0,
+          "maxItems": 50,
+          "items": {
+            "type": "object",
+            "required": [
+              "hostname",
+              "ip",
+              "openPorts"
+            ],
+            "properties": {
+              "hostname": {},
+              "ip": {
+                "type": "string"
+              },
+              "openPorts": {
+                "type": "array"
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      {
+        "id": "CreateFilter",
+        "name": "CreateFilter",
+        "type": "Local",
+        "connector": "structure.createFilter",
+        "inMapping": "() => {\n\treturn {\n      ips: dataDictionary.discoveredIps,\n      db: aeonCache.get('typeDB')\n    }\n}",
+        "outMapping": "(data) => {\n\tdataDictionary.ipEntities = data;\n\treturn dataDictionary;\n}",
+        "toContinue": [],
+        "toStop": [],
+        "toRun": [],
+        "theDefault": "stop",
+        "inSpec": {
+          "type": "object",
+          "required": [
+            "ips",
+            "db"
+          ],
+          "properties": {
+            "ips": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object"
+              }
+            },
+            "db": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object"
+              }
+            }
+          },
+          "additionalProperties": true
+        },
+        "outSpec": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          },
+          "minItems": 0,
+          "maxItems": 50
+        }
+      },
+      {
+        "id": "Status listener",
+        "name": "Status listener",
+        "type": "Input",
+        "connector": "Input",
+        "inMapping": "(payload) => {\n  dataDictionary.statusResults.push(payload);\n  return dataDictionary;\n}",
+        "outMapping": "",
+        "toContinue": [],
+        "toStop": [],
+        "toRun": [],
+        "theDefault": "stop",
+        "inSpec": {
+          "type": "object",
+          "required": [
+            "event",
+            "source"
+          ],
+          "properties": {
+            "source": {
+              "type": "string",
+              "pattern": "TaskManager"
+            },
+            "event": {
+              "type": "string",
+              "pattern": "taskFinished"
+            }
+          },
+          "additionalProperties": true
+        },
+        "outSpec": {
+          "type": "object",
+          "properties": {},
+          "required": [],
+          "additionalProperties": true
+        }
+      },
+      {
+        "id": "Handle event",
+        "name": "Handle event",
+        "type": "Local",
+        "connector": "structure.handleStatusMessage",
+        "inMapping": "() => {\n  return {item: R.head(dataDictionary.statusResults)}\n}",
+        "outMapping": "(data) => {\n\tdataDictionary.statusResults = R.tail(dataDictionary.statusResults);\n    dataDictionary.toSpecialize = data;\n\treturn dataDictionary;\n}",
+        "toContinue": [],
+        "toStop": [],
+        "toRun": [],
+        "theDefault": "stop",
+        "inSpec": {
+          "type": "object",
+          "properties": {},
+          "required": [],
+          "additionalProperties": true
+        },
+        "outSpec": {
+          "type": "object",
+          "properties": {},
+          "required": [],
+          "additionalProperties": true
+        }
+      },
+      {
+        "id": "Specialize",
+        "name": "Specialize",
+        "type": "Local",
+        "connector": "structure.specialize",
+        "inMapping": "() => {\n\treturn {\n      db: aeonCache.get('typeDB'),\n      api: aeonCache.get('api'),\n      token: aeonCache.get('credentials').id,\n      entry: dataDictionary.toSpecialize\n    }\n}",
+        "outMapping": "(data) => {\n\tdataDictionary.specializationResults.push(data);\n    dataDictionary.countDown = dataDictionary.countDown - 1;\n\treturn dataDictionary;\n}",
+        "toContinue": [],
+        "toStop": [],
+        "toRun": [],
+        "theDefault": "stop",
+        "inSpec": {
+          "type": "object",
+          "properties": {},
+          "required": [],
+          "additionalProperties": true
+        },
+        "outSpec": {
+          "type": "object",
+          "properties": {},
+          "required": [],
+          "additionalProperties": true
+        }
+      },
+      {
+        "id": "Loop exit",
+        "name": "Loop exit",
+        "type": "Script",
+        "connector": "Script",
+        "inMapping": "() => {\n    return new Promise((resolve, reject) => {\n        options.ipEntities = [];\n        options.createdComputer = {};\n        options.deeplyDetected = {};\n        options.specialized = {};\n        options.toSpecialize = {};\n        options.inTransit = {};\n        options.currentGuess = \"\";\n        var prowlMessage = util.format('Discovered %s entities on network %s\\nUnix: %s\\nWindows: %s\\nUndetermined: %s', options.discoveredIpCount, options.cidr, options.pcounter.unix, options.pcounter.windows, options.pcounter.generic);\n        lib.Prowl.notify('5ce9c6d853284f9e67087ae808b73c5abaf7b49b','structure','Discovery result',prowlMessage)\n            .then(x => resolve(options))\n            .catch(ex => resolve(options));\n    });\n}",
+        "outMapping": "",
+        "toContinue": [],
+        "toStop": [],
+        "toRun": [],
+        "theDefault": "stop",
+        "inSpec": {
+          "type": "object",
+          "properties": {},
+          "required": [],
+          "additionalProperties": true
+        },
+        "outSpec": {
+          "type": "object",
+          "properties": {},
+          "required": [],
+          "additionalProperties": true
+        }
+      },
+      {
+        "id": "Still receiving",
+        "name": "Still receiving",
+        "type": "Pass",
+        "connector": "Pass",
+        "inMapping": "",
+        "outMapping": "",
+        "toContinue": [],
+        "toStop": [],
+        "toRun": [],
+        "theDefault": "stop",
+        "inSpec": {
+          "type": "object",
+          "properties": {},
+          "required": [],
+          "additionalProperties": true
+        },
+        "outSpec": {
+          "type": "object",
+          "properties": {},
+          "required": [],
+          "additionalProperties": true
+        }
+      },
+      {
+        "id": "Forcing to end",
+        "name": "Forcing to end",
+        "type": "Script",
+        "connector": "Script",
+        "inMapping": "() => {\n    return new Promise((resolve, reject) => {\n        options.ipEntities = [];\n        options.createdComputer = {};\n        options.deeplyDetected = {};\n        options.specialized = {};\n        options.toSpecialize = {};\n        options.inTransit = {};\n        options.currentGuess = \"\";\n        var prowlMessage = util.format('Discovered %s entities on network %s\\nUnix: %s\\nWindows: %s\\nUndetermined: %s', options.discoveredIpCount, options.cidr, options.pcounter.unix, options.pcounter.windows, options.pcounter.generic);\n        lib.Prowl.notify('5ce9c6d853284f9e67087ae808b73c5abaf7b49b','structure','Discovery result',prowlMessage)\n            .then(x => resolve(options))\n            .catch(ex => resolve(options));\n    });\n}",
+        "outMapping": "",
+        "toContinue": [],
+        "toStop": [],
+        "toRun": [],
+        "theDefault": "stop",
+        "inSpec": {
+          "type": "object",
+          "properties": {},
+          "required": [],
+          "additionalProperties": true
+        },
+        "outSpec": {
+          "type": "object",
+          "properties": {},
+          "required": [],
+          "additionalProperties": true
+        }
+      },
+      {
+        "id": "Guess by port",
+        "name": "Guess by port",
+        "type": "Local",
+        "connector": "structure.guessByPort",
+        "inMapping": "() => {\n  \tlet ip = R.head(dataDictionary.discoveredIps);\n\treturn {\n      currentIp: ip,\n      entity: R.find(x => {\n      \treturn R.path(['data','addr'],x) === ip.ip;\n      }, dataDictionary.ipEntities)\n    }\n}",
+        "outMapping": "(data) => {\n\tdataDictionary.currentGuess = data.guess;\n    dataDictionary.inTransit = data;\n\treturn dataDictionary;\n}",
+        "toContinue": [],
+        "toStop": [],
+        "toRun": [],
+        "theDefault": "stop",
+        "inSpec": {
+          "type": "object",
+          "required": [
+            "currentIp",
+            "entity"
+          ],
+          "properties": {
+            "currentIp": {
+              "type": "object",
+              "required": [
+                "hostname",
+                "ip",
+                "openPorts"
+              ],
+              "properties": {
+                "hostname": {},
+                "ip": {
+                  "type": "string"
+                },
+                "openPorts": {
+                  "type": "array"
+                }
+              },
+              "additionalProperties": false
+            },
+            "entity": {
+              "type": "object"
+            }
+          },
+          "additionalProperties": false
+        },
+        "outSpec": {
+          "type": "object",
+          "required": [
+            "guess",
+            "entity",
+            "ipData"
+          ],
+          "properties": {
+            "guess": {
+              "type": "string",
+              "enum": [
+                "generic",
+                "windows",
+                "unix"
+              ]
+            },
+            "entity": {
+              "type": "object"
+            },
+            "ipData": {
+              "type": "object",
+              "required": [
+                "hostname",
+                "ip",
+                "openPorts"
+              ],
+              "properties": {
+                "hostname": {},
+                "ip": {
+                  "type": "string"
+                },
+                "openPorts": {
+                  "type": "array"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      {
+        "id": "UnixLike create",
+        "name": "UnixLike create",
+        "type": "Local",
+        "connector": "structure.unixCreate",
+        "inMapping": "() => {\n\treturn {\n      data: dataDictionary.inTransit,\n      db: aeonCache.get('typeDB'),\n      token: aeonCache.get('credentials').id,\n      api: aeonCache.get('api')\n    }\n}",
+        "outMapping": "(data) => {\n\tdataDictionary.createdComputer = data;\n    dataDictionary.computers.push(data);\n    dataDictionary.discoveredIps = R.tail(dataDictionary.discoveredIps);\n    dataDictionary.currentType = 'UnixLike';\n    dataDictionary.pcounter.unix = dataDictionary.pcounter.unix + 1;\n\treturn dataDictionary;\n}",
+        "toContinue": [],
+        "toStop": [],
+        "toRun": [],
+        "theDefault": "stop",
+        "inSpec": {
+          "type": "object",
+          "required": [
+            "data",
+            "db",
+            "token",
+            "api"
+          ],
+          "properties": {
+            "data": {
+              "type": "object"
+            },
+            "db": {
+              "type": "array"
+            },
+            "token": {
+              "type": "string"
+            },
+            "api": {
+              "type": "object"
+            }
+          },
+          "additionalProperties": false
+        },
+        "outSpec": {
+          "type": "object",
+          "required": [
+            "computer",
+            "result"
+          ],
+          "properties": {
+            "computer": {
+              "type": "array"
+            },
+            "result": {}
+          },
+          "additionalProperties": false
+        }
+      },
+      {
+        "id": "Windows create",
+        "name": "Windows create",
+        "type": "Local",
+        "connector": "structure.windowsCreate",
+        "inMapping": "() => {\n\treturn {\n      data: dataDictionary.inTransit,\n      db: aeonCache.get('typeDB'),\n      token: aeonCache.get('credentials').id,\n      api: aeonCache.get('api')\n    }\n}",
+        "outMapping": "(data) => {\n  \tdataDictionary.computers.push(data);\n    dataDictionary.discoveredIps = R.tail(dataDictionary.discoveredIps);\n    dataDictionary.currentType = 'Windows';\n    dataDictionary.pcounter.windows = dataDictionary.pcounter.windows + 1;\n\treturn dataDictionary;\n}",
+        "toContinue": [],
+        "toStop": [],
+        "toRun": [],
+        "theDefault": "stop",
+        "inSpec": {
+          "type": "object",
+          "required": [
+            "data",
+            "db",
+            "token",
+            "api"
+          ],
+          "properties": {
+            "data": {
+              "type": "object"
+            },
+            "db": {
+              "type": "array"
+            },
+            "token": {
+              "type": "string"
+            },
+            "api": {
+              "type": "object"
+            }
+          },
+          "additionalProperties": false
+        },
+        "outSpec": {
+          "type": "object",
+          "required": [
+            "computer",
+            "result"
+          ],
+          "properties": {
+            "computer": {
+              "type": "array"
+            },
+            "result": {}
+          },
+          "additionalProperties": false
+        }
+      },
+      {
+        "id": "Generic create",
+        "name": "Generic create",
+        "type": "Local",
+        "connector": "structure.genericCreate",
+        "inMapping": "() => {\n\treturn {\n      data: dataDictionary.inTransit,\n      db: aeonCache.get('typeDB'),\n      token: aeonCache.get('credentials').id,\n      api: aeonCache.get('api')\n    }\n}",
+        "outMapping": "(data) => {\n\tdataDictionary.computers.push(data);\n    dataDictionary.discoveredIps = R.tail(dataDictionary.discoveredIps);\n    dataDictionary.currentType = '';\n    dataDictionary.pcounter.generic = dataDictionary.pcounter.generic + 1;\n\treturn dataDictionary;\n}",
+        "toContinue": [],
+        "toStop": [],
+        "toRun": [],
+        "theDefault": "stop",
+        "inSpec": {
+          "type": "object",
+          "required": [
+            "data",
+            "db",
+            "token",
+            "api"
+          ],
+          "properties": {
+            "data": {
+              "type": "object"
+            },
+            "db": {
+              "type": "array"
+            },
+            "token": {
+              "type": "string"
+            },
+            "api": {
+              "type": "object"
+            }
+          },
+          "additionalProperties": false
+        },
+        "outSpec": {
+          "type": "object",
+          "required": [
+            "computer",
+            "result"
+          ],
+          "properties": {
+            "computer": {
+              "type": "array"
+            },
+            "result": {}
+          },
+          "additionalProperties": false
+        }
+      },
+      {
+        "id": "Detect",
+        "name": "Detect",
+        "type": "Local",
+        "connector": "structure.deepDetect",
+        "inMapping": "() => {\n\treturn {\n      entry: dataDictionary.createdComputer,\n      db: aeonCache.get('typeDB'),\n      token: aeonCache.get('credentials').id,\n      api: aeonCache.get('api')\n    }\n}",
+        "outMapping": "(data) => {\n\tdataDictionary.deeplyDetected = data;\n    if(R.has('error', data.specialized)) {\n      dataDictionary.statusResults.push(data);\n    } else {\n      dataDictionary.countDown = dataDictionary.countDown + 1;\n    }\n\treturn dataDictionary;\n}",
+        "toContinue": [],
+        "toStop": [],
+        "toRun": [],
+        "theDefault": "stop",
+        "inSpec": {
+          "type": "object",
+          "required": [
+            "entry",
+            "db",
+            "token",
+            "api"
+          ],
+          "properties": {
+            "entry": {
+              "type": "object"
+            },
+            "db": {
+              "type": "array"
+            },
+            "token": {
+              "type": "string"
+            },
+            "api": {
+              "type": "object"
+            }
+          },
+          "additionalProperties": false
+        },
+        "outSpec": {
+          "type": "object",
+          "required": [
+            "entity",
+            "specialized"
+          ],
+          "properties": {
+            "entity": {
+              "type": "string"
+            },
+            "specialized": {}
+          },
+          "additionalProperties": false
+        }
+      },
+      {
+        "id": "Detect OK",
+        "name": "Detect OK",
+        "type": "Pass",
+        "connector": "Pass",
+        "inMapping": "",
+        "outMapping": "",
+        "toContinue": [],
+        "toStop": [],
+        "toRun": [],
+        "theDefault": "stop",
+        "inSpec": {
+          "type": "object",
+          "properties": {},
+          "required": [],
+          "additionalProperties": true
+        },
+        "outSpec": {
+          "type": "object",
+          "properties": {},
+          "required": [],
+          "additionalProperties": true
+        }
+      },
+      {
+        "id": "ok pass",
+        "name": "ok pass",
+        "type": "Pass",
+        "connector": "Pass",
+        "inMapping": "",
+        "outMapping": "",
+        "toContinue": [],
+        "toStop": [],
+        "toRun": [],
+        "theDefault": "stop",
+        "inSpec": {
+          "type": "object",
+          "properties": {},
+          "required": [],
+          "additionalProperties": true
+        },
+        "outSpec": {
+          "type": "object",
+          "properties": {},
+          "required": [],
+          "additionalProperties": true
+        }
+      },
+      {
+        "id": "Detect failed",
+        "name": "Detect failed",
+        "type": "Pass",
+        "connector": "Pass",
+        "inMapping": "",
+        "outMapping": "",
+        "toContinue": [],
+        "toStop": [],
+        "toRun": [],
+        "theDefault": "stop",
+        "inSpec": {
+          "type": "object",
+          "properties": {},
+          "required": [],
+          "additionalProperties": true
+        },
+        "outSpec": {
+          "type": "object",
+          "properties": {},
+          "required": [],
+          "additionalProperties": true
+        }
+      },
+      {
+        "id": "failed pass",
+        "name": "failed pass",
+        "type": "Pass",
+        "connector": "Pass",
+        "inMapping": "",
+        "outMapping": "",
+        "toContinue": [],
+        "toStop": [],
+        "toRun": [],
+        "theDefault": "stop",
+        "inSpec": {
+          "type": "object",
+          "properties": {},
+          "required": [],
+          "additionalProperties": true
+        },
+        "outSpec": {
+          "type": "object",
+          "properties": {},
+          "required": [],
+          "additionalProperties": true
+        }
+      }
+    ],
+    "arcs": [
+      {
+        "id": "b678310e-5adf-415a-8982-fb79d104bd8e",
+        "rule": "",
+        "ruleType": "none",
+        "mapping": ""
+      },
+      {
+        "id": "202fce82-11c4-45e4-a5f6-e5efe7b9eaf7",
+        "rule": "",
+        "ruleType": "none",
+        "mapping": ""
+      },
+      {
+        "id": "2c37ef21-12ef-430a-bd97-12146a78f159",
+        "rule": "",
+        "ruleType": "none",
+        "mapping": ""
+      },
+      {
+        "id": "3fe843d7-fec6-42c6-9cd0-e02142bc59c7",
+        "rule": "",
+        "ruleType": "none",
+        "mapping": ""
+      },
+      {
+        "id": "6083e3de-18cb-42d8-af4d-9444cce906f1",
+        "rule": "",
+        "ruleType": "none",
+        "mapping": ""
+      },
+      {
+        "id": "2d260c47-4b16-4998-ad94-3c056f02ba52",
+        "rule": "",
+        "ruleType": "none",
+        "mapping": ""
+      },
+      {
+        "id": "1b695e18-36ef-445b-b798-3b984abe2bbf",
+        "rule": "",
+        "ruleType": "none",
+        "mapping": ""
+      },
+      {
+        "id": "3d6c0835-eb37-47dd-8c0d-586e7c4e4f3e",
+        "rule": "",
+        "ruleType": "none",
+        "mapping": ""
+      },
+      {
+        "id": "ceb89b1a-cb88-44a4-a040-ceda17b256ed",
+        "rule": "",
+        "ruleType": "none",
+        "mapping": ""
+      },
+      {
+        "id": "d4be8ff7-99db-40d4-b789-b27cc8fab761",
+        "rule": "",
+        "ruleType": "none",
+        "mapping": ""
+      },
+      {
+        "id": "d14758d8-847c-4f08-879f-cd7f831d81bd",
+        "rule": "",
+        "ruleType": "none",
+        "mapping": ""
+      },
+      {
+        "id": "f142413c-cf8b-4170-abc7-742abc4a6378",
+        "rule": "",
+        "ruleType": "none",
+        "mapping": ""
+      },
+      {
+        "id": "37af63a3-c87c-4d38-bb59-adc83c0fa53a",
+        "rule": "",
+        "ruleType": "none",
+        "mapping": ""
+      },
+      {
+        "id": "72000d61-ff0a-4668-9730-d1e93b0c78a3",
+        "rule": "",
+        "ruleType": "none",
+        "mapping": ""
+      },
+      {
+        "id": "4d25d702-08fd-47c0-badf-8dea61a2644c",
+        "rule": "",
+        "ruleType": "none",
+        "mapping": ""
+      },
+      {
+        "id": "d7649075-8e33-456e-8f2c-901a6c83e5ea",
+        "rule": "shouldTerminate",
+        "ruleType": "local",
+        "mapping": "dataDictionary.countDown === 0"
+      },
+      {
+        "id": "f02192eb-a726-4bd4-b9a4-41fffbb7de73",
+        "rule": "",
+        "ruleType": "none",
+        "mapping": ""
+      },
+      {
+        "id": "7d20a02e-7137-489d-b162-a152af6ac8ec",
+        "rule": "shouldContinue",
+        "ruleType": "local",
+        "mapping": "dataDictionary.countDown > 0"
+      },
+      {
+        "id": "e42ad19c-c3db-4448-91d4-802fe46f88b4",
+        "rule": "",
+        "ruleType": "none",
+        "mapping": ""
+      },
+      {
+        "id": "c0777ef4-4c50-4e3b-9d37-9381905ac3e5",
+        "rule": "forceTerminate",
+        "ruleType": "local",
+        "mapping": "R.and(R.compose(R.equals(0), R.length) (dataDictionary.discoveredIps), R.equals(0, dataDictionary.countDown))"
+      },
+      {
+        "id": "454d8b6c-7ef1-42ea-8528-4cc2f73bb799",
+        "rule": "",
+        "ruleType": "none",
+        "mapping": ""
+      },
+      {
+        "id": "68a071a2-7d02-4836-809f-2648bdfd47bf",
+        "rule": "guessCheck",
+        "ruleType": "local",
+        "mapping": "R.length(dataDictionary.discoveredIps) > 0"
+      },
+      {
+        "id": "9765a143-c1ef-4d41-97b5-19c57ec8c927",
+        "rule": "",
+        "ruleType": "none",
+        "mapping": ""
+      },
+      {
+        "id": "bac429b7-e571-4f5d-9190-ce557a1778ff",
+        "rule": "unixType",
+        "ruleType": "local",
+        "mapping": "dataDictionary.currentGuess === 'unix'"
+      },
+      {
+        "id": "8a39f5a4-eda9-4d8f-b318-85d77d23cbeb",
+        "rule": "",
+        "ruleType": "none",
+        "mapping": ""
+      },
+      {
+        "id": "213abb7e-c465-422b-bcb6-9abec87424b2",
+        "rule": "windowsType",
+        "ruleType": "local",
+        "mapping": "dataDictionary.currentGuess === 'windows'"
+      },
+      {
+        "id": "a4b6aca2-9498-4c47-ae75-a5012a85a3f7",
+        "rule": "",
+        "ruleType": "none",
+        "mapping": ""
+      },
+      {
+        "id": "a143c62f-c590-4d92-adb9-495c8776ac3e",
+        "rule": "normalType",
+        "ruleType": "local",
+        "mapping": "dataDictionary.currentGuess === 'generic'"
+      },
+      {
+        "id": "49798951-d11f-4ad8-9122-34216f2198a4",
+        "rule": "",
+        "ruleType": "none",
+        "mapping": ""
+      },
+      {
+        "id": "97f2b352-dcf7-42c5-b763-ec5004f90e47",
+        "rule": "",
+        "ruleType": "none",
+        "mapping": ""
+      },
+      {
+        "id": "0052b7d4-7de8-49b8-bc48-51d1375e4157",
+        "rule": "",
+        "ruleType": "none",
+        "mapping": ""
+      },
+      {
+        "id": "7b17daf6-7671-4da9-80d8-5ab360ceddb8",
+        "rule": "detectOK",
+        "ruleType": "local",
+        "mapping": "R.compose(R.not, R.has('error')) (dataDictionary.deeplyDetected.specialized)"
+      },
+      {
+        "id": "3889fa6d-d3d1-4dc4-aaf0-199a4e5d759c",
+        "rule": "",
+        "ruleType": "none",
+        "mapping": ""
+      },
+      {
+        "id": "4766f010-8959-4d56-9e78-30249c42ed0a",
+        "rule": "",
+        "ruleType": "none",
+        "mapping": ""
+      },
+      {
+        "id": "d257eb1f-2641-4160-924c-e1b0e704edc0",
+        "rule": "",
+        "ruleType": "none",
+        "mapping": ""
+      },
+      {
+        "id": "bc16ec66-d520-46bf-a42d-f3a19ad270bd",
+        "rule": "detectFAIL",
+        "ruleType": "local",
+        "mapping": "R.has('error', dataDictionary.deeplyDetected.specialized)"
+      },
+      {
+        "id": "49c8c6f1-de39-4a4a-ab25-f45932f1d8d5",
+        "rule": "",
+        "ruleType": "none",
+        "mapping": ""
+      },
+      {
+        "id": "8fb2e7da-0361-4180-aad5-ba8d371a5988",
+        "rule": "",
+        "ruleType": "none",
+        "mapping": ""
+      },
+      {
+        "id": "0019009a-99ae-43e8-94d0-8de9c220df50",
+        "rule": "",
+        "ruleType": "none",
+        "mapping": ""
+      }
+    ],
+    "created": "Tue Jul 11 2017 13:21:54 GMT+0200"
+  }
+}

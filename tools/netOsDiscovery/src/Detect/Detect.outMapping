@@ -1,0 +1,9 @@
+(data) => {
+	dataDictionary.deeplyDetected = data;
+    if(R.has('error', data.specialized)) {
+      dataDictionary.statusResults.push(data);
+    } else {
+      dataDictionary.countDown = dataDictionary.countDown + 1;
+    }
+	return dataDictionary;
+}

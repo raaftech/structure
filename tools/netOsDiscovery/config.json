@@ -1,0 +1,36 @@
+{
+    "log": {
+        "type": "stdout",
+        "path": "structure.log",
+        "level": "debug"
+    },
+    "sources": {
+        "event": [
+			{
+				"url": "http://localhost:3000/api/Statuses/change-stream",
+                "transition": "Status listener",
+                "event": "data"
+			}
+		],
+        "fs": ""
+    },
+    "runtime": {
+        "projectPath": "projects/",
+        "libraryPath": "library/",
+        "dropins": "dropins/",
+        "packageFile": "discoveryPackage.js",
+        "save": false
+    },
+    "security": {
+        "encrypted": false,
+        "shares": 4,
+        "threshold": 2,
+        "shards": [
+            "8014a9a992772540c18f06a1d573ffa3e3ccba486752f809d4c9ae38f4c2c5d856e7c",
+            "80297d6a33d36a5a2fa0447c6b85374f4c6f8f8795b3f31ae2603e9d66d18f390ed42",
+            "803dc19b5c00a0133a4a35c8f16770eb290e9cc2c41c45ebf0074efe172ff626867a3",
+            "804304ed709be5ae323f11d6d7b8b757d2f9e409a071f4ec8f22cfd642f70b2baf63e"
+        ]
+    },
+    "templates": {}
+}

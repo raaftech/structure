@@ -1,0 +1,50 @@
+{
+  "log": {
+    "type": "stdout",
+    "path": "structure.log",
+    "level": "debug"
+  },
+  "sources": {
+    "event": [
+      {
+        "url": "http://localhost:3000/api/Statuses/change-stream",
+        "transition": "handleStatusMessage",
+        "event": "data"
+      }
+    ],
+    "fs": ""
+  },
+  "runtime": {
+    "projectPath": "projects/",
+    "libraryPath": "library/",
+    "dropins": "dropins/",
+    "packageFile": "tryDetectPackage.js",
+    "save": false
+  },
+  "security": {
+    "encrypted": false,
+    "shares": 4,
+    "threshold": 2,
+    "shards": [
+      "80155d68afb1f2cf5f4e6e0fc1b75f11574f3b9ec0d597be9073aaef30a1b8094540c",
+      "802a9927ce5e7122dd53a2fb2e3faa38191e93d174a95197cd3ba6cdf83d9c91409ea",
+      "803fdae2eef44f365ca856a8840746606391441b577d1cc0f9f31d9300f6c059fc943",
+      "8044c1a8dd90a6e80979fac2e0ef907b446dd28fcc410dd4b66a7f5878c405b09b33b"
+    ]
+  },
+  "templates": {
+    "Structure_api_host": "localhost",
+    "Structure_api_port": 3000,
+    "Structure_api_token": "",
+    "Structure_allTypes_result_cacheEntry": "typeDB",
+    "Structure_detect_instance_uuid_dictEntry": "newInstanceUuid",
+    "Structure_detect_result_dictEntry": "detectResult",
+    "Structure_specialize_specialization_dictEntry": "specializeTo",
+    "Structure_specialize_origin_uuid_dictEntry": "newInstanceUuid",
+    "Structure_specialize_result_dictEntry": "specializeResult",
+    "Structure_getInstance_result_dictEntry": "fetchedInstance",
+    "Structure_getInstance_uuid_dictEntry": "originInstanceUuid",
+    "Structure_removeInstance_uuid_dictEntry": "newInstanceUuid",
+    "Structure_removeInstance_result_dictEntry": "removalResult"
+  }
+}

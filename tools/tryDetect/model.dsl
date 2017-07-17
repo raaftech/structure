@@ -1,0 +1,6 @@
+(Start)->[recv]->(about to get all types)->[getAllTypes]->(all types)->[fetchInstance]->(about to create)->[createGenericInstance]->(instance created)->[detect]->(check detect result)
+[recv]->(listening for status)->[handleStatusMessage]->(about to specialize)->[specialize]->(check specialize result)
+(check detect result)->[detect ok]->(detect went ok)
+(check detect result)->[detect nok]->(about to remove generic instance)->[removeInstance]->(No specialize End)
+(check specialize result)->[specialize not ok]->(failed specialize End)
+(check specialize result)->[specialize ok]->(End)

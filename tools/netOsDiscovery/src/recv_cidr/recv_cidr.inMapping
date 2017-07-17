@@ -1,0 +1,13 @@
+(payload) => {
+  aeonCache.set('api', payload.api);
+  return {
+    cidr: payload.cidr, 
+    computers: [],
+    specializationResults: [],
+    statusResults: [],
+    currentType: '',
+    countDown: 0,
+    nmapArgs: R.defaultTo('-p22,445,137,138', payload.nmap),
+    pcounter: {unix: 0, windows: 0, generic: 0}
+  }
+}

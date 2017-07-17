@@ -1,0 +1,439 @@
+[
+  {
+    "transition": "recv cidr",
+    "type": "Input",
+    "connector": "Input",
+    "mappings": [
+      {
+        "key": "inMapping",
+        "file": "src/recv_cidr/recv_cidr.inMapping"
+      },
+      {
+        "key": "outMapping",
+        "file": "src/recv_cidr/recv_cidr.outMapping"
+      },
+      {
+        "key": "inSpec",
+        "file": "src/recv_cidr/recv_cidr.inSpec.json"
+      },
+      {
+        "key": "outSpec",
+        "file": "src/recv_cidr/recv_cidr.outSpec.json"
+      }
+    ]
+  },
+  {
+    "transition": "Get all types",
+    "type": "Local",
+    "connector": "structure.getAllTypes",
+    "mappings": [
+      {
+        "key": "inMapping",
+        "file": "src/Get_all_types/Get_all_types.inMapping"
+      },
+      {
+        "key": "outMapping",
+        "file": "src/Get_all_types/Get_all_types.outMapping"
+      },
+      {
+        "key": "inSpec",
+        "file": "src/Get_all_types/Get_all_types.inSpec.json"
+      },
+      {
+        "key": "outSpec",
+        "file": "src/Get_all_types/Get_all_types.outSpec.json"
+      }
+    ]
+  },
+  {
+    "transition": "Nmap scan",
+    "type": "Local",
+    "connector": "structure.nmap",
+    "mappings": [
+      {
+        "key": "inMapping",
+        "file": "src/Nmap_scan/Nmap_scan.inMapping"
+      },
+      {
+        "key": "outMapping",
+        "file": "src/Nmap_scan/Nmap_scan.outMapping"
+      },
+      {
+        "key": "inSpec",
+        "file": "src/Nmap_scan/Nmap_scan.inSpec.json"
+      },
+      {
+        "key": "outSpec",
+        "file": "src/Nmap_scan/Nmap_scan.outSpec.json"
+      }
+    ]
+  },
+  {
+    "transition": "CreateFilter",
+    "type": "Local",
+    "connector": "structure.createFilter",
+    "mappings": [
+      {
+        "key": "inMapping",
+        "file": "src/CreateFilter/CreateFilter.inMapping"
+      },
+      {
+        "key": "outMapping",
+        "file": "src/CreateFilter/CreateFilter.outMapping"
+      },
+      {
+        "key": "inSpec",
+        "file": "src/CreateFilter/CreateFilter.inSpec.json"
+      },
+      {
+        "key": "outSpec",
+        "file": "src/CreateFilter/CreateFilter.outSpec.json"
+      }
+    ]
+  },
+  {
+    "transition": "Status listener",
+    "type": "Input",
+    "connector": "Input",
+    "mappings": [
+      {
+        "key": "inMapping",
+        "file": "src/Status_listener/Status_listener.inMapping"
+      },
+      {
+        "key": "outMapping",
+        "file": "src/Status_listener/Status_listener.outMapping"
+      },
+      {
+        "key": "inSpec",
+        "file": "src/Status_listener/Status_listener.inSpec.json"
+      },
+      {
+        "key": "outSpec",
+        "file": "src/Status_listener/Status_listener.outSpec.json"
+      }
+    ]
+  },
+  {
+    "transition": "Handle event",
+    "type": "Local",
+    "connector": "structure.handleStatusMessage",
+    "mappings": [
+      {
+        "key": "inMapping",
+        "file": "src/Handle_event/Handle_event.inMapping"
+      },
+      {
+        "key": "outMapping",
+        "file": "src/Handle_event/Handle_event.outMapping"
+      },
+      {
+        "key": "inSpec",
+        "file": "src/Handle_event/Handle_event.inSpec.json"
+      },
+      {
+        "key": "outSpec",
+        "file": "src/Handle_event/Handle_event.outSpec.json"
+      }
+    ]
+  },
+  {
+    "transition": "Specialize",
+    "type": "Local",
+    "connector": "structure.specialize",
+    "mappings": [
+      {
+        "key": "inMapping",
+        "file": "src/Specialize/Specialize.inMapping"
+      },
+      {
+        "key": "outMapping",
+        "file": "src/Specialize/Specialize.outMapping"
+      },
+      {
+        "key": "inSpec",
+        "file": "src/Specialize/Specialize.inSpec.json"
+      },
+      {
+        "key": "outSpec",
+        "file": "src/Specialize/Specialize.outSpec.json"
+      }
+    ]
+  },
+  {
+    "transition": "Loop exit",
+    "type": "Script",
+    "connector": "Script",
+    "mappings": [
+      {
+        "key": "inMapping",
+        "file": "src/Loop_exit/Loop_exit.inMapping"
+      },
+      {
+        "key": "outMapping",
+        "file": "src/Loop_exit/Loop_exit.outMapping"
+      },
+      {
+        "key": "inSpec",
+        "file": "src/Loop_exit/Loop_exit.inSpec.json"
+      },
+      {
+        "key": "outSpec",
+        "file": "src/Loop_exit/Loop_exit.outSpec.json"
+      }
+    ]
+  },
+  {
+    "transition": "Still receiving",
+    "type": "Pass",
+    "connector": "Pass",
+    "mappings": [
+      {
+        "key": "inMapping",
+        "file": "src/Still_receiving/Still_receiving.inMapping"
+      },
+      {
+        "key": "outMapping",
+        "file": "src/Still_receiving/Still_receiving.outMapping"
+      },
+      {
+        "key": "inSpec",
+        "file": "src/Still_receiving/Still_receiving.inSpec.json"
+      },
+      {
+        "key": "outSpec",
+        "file": "src/Still_receiving/Still_receiving.outSpec.json"
+      }
+    ]
+  },
+  {
+    "transition": "Forcing to end",
+    "type": "Script",
+    "connector": "Script",
+    "mappings": [
+      {
+        "key": "inMapping",
+        "file": "src/Forcing_to_end/Forcing_to_end.inMapping"
+      },
+      {
+        "key": "outMapping",
+        "file": "src/Forcing_to_end/Forcing_to_end.outMapping"
+      },
+      {
+        "key": "inSpec",
+        "file": "src/Forcing_to_end/Forcing_to_end.inSpec.json"
+      },
+      {
+        "key": "outSpec",
+        "file": "src/Forcing_to_end/Forcing_to_end.outSpec.json"
+      }
+    ]
+  },
+  {
+    "transition": "Guess by port",
+    "type": "Local",
+    "connector": "structure.guessByPort",
+    "mappings": [
+      {
+        "key": "inMapping",
+        "file": "src/Guess_by_port/Guess_by_port.inMapping"
+      },
+      {
+        "key": "outMapping",
+        "file": "src/Guess_by_port/Guess_by_port.outMapping"
+      },
+      {
+        "key": "inSpec",
+        "file": "src/Guess_by_port/Guess_by_port.inSpec.json"
+      },
+      {
+        "key": "outSpec",
+        "file": "src/Guess_by_port/Guess_by_port.outSpec.json"
+      }
+    ]
+  },
+  {
+    "transition": "UnixLike create",
+    "type": "Local",
+    "connector": "structure.unixCreate",
+    "mappings": [
+      {
+        "key": "inMapping",
+        "file": "src/UnixLike_create/UnixLike_create.inMapping"
+      },
+      {
+        "key": "outMapping",
+        "file": "src/UnixLike_create/UnixLike_create.outMapping"
+      },
+      {
+        "key": "inSpec",
+        "file": "src/UnixLike_create/UnixLike_create.inSpec.json"
+      },
+      {
+        "key": "outSpec",
+        "file": "src/UnixLike_create/UnixLike_create.outSpec.json"
+      }
+    ]
+  },
+  {
+    "transition": "Windows create",
+    "type": "Local",
+    "connector": "structure.windowsCreate",
+    "mappings": [
+      {
+        "key": "inMapping",
+        "file": "src/Windows_create/Windows_create.inMapping"
+      },
+      {
+        "key": "outMapping",
+        "file": "src/Windows_create/Windows_create.outMapping"
+      },
+      {
+        "key": "inSpec",
+        "file": "src/Windows_create/Windows_create.inSpec.json"
+      },
+      {
+        "key": "outSpec",
+        "file": "src/Windows_create/Windows_create.outSpec.json"
+      }
+    ]
+  },
+  {
+    "transition": "Generic create",
+    "type": "Local",
+    "connector": "structure.genericCreate",
+    "mappings": [
+      {
+        "key": "inMapping",
+        "file": "src/Generic_create/Generic_create.inMapping"
+      },
+      {
+        "key": "outMapping",
+        "file": "src/Generic_create/Generic_create.outMapping"
+      },
+      {
+        "key": "inSpec",
+        "file": "src/Generic_create/Generic_create.inSpec.json"
+      },
+      {
+        "key": "outSpec",
+        "file": "src/Generic_create/Generic_create.outSpec.json"
+      }
+    ]
+  },
+  {
+    "transition": "Detect",
+    "type": "Local",
+    "connector": "structure.deepDetect",
+    "mappings": [
+      {
+        "key": "inMapping",
+        "file": "src/Detect/Detect.inMapping"
+      },
+      {
+        "key": "outMapping",
+        "file": "src/Detect/Detect.outMapping"
+      },
+      {
+        "key": "inSpec",
+        "file": "src/Detect/Detect.inSpec.json"
+      },
+      {
+        "key": "outSpec",
+        "file": "src/Detect/Detect.outSpec.json"
+      }
+    ]
+  },
+  {
+    "transition": "Detect OK",
+    "type": "Pass",
+    "connector": "Pass",
+    "mappings": [
+      {
+        "key": "inMapping",
+        "file": "src/Detect_OK/Detect_OK.inMapping"
+      },
+      {
+        "key": "outMapping",
+        "file": "src/Detect_OK/Detect_OK.outMapping"
+      },
+      {
+        "key": "inSpec",
+        "file": "src/Detect_OK/Detect_OK.inSpec.json"
+      },
+      {
+        "key": "outSpec",
+        "file": "src/Detect_OK/Detect_OK.outSpec.json"
+      }
+    ]
+  },
+  {
+    "transition": "ok pass",
+    "type": "Pass",
+    "connector": "Pass",
+    "mappings": [
+      {
+        "key": "inMapping",
+        "file": "src/ok_pass/ok_pass.inMapping"
+      },
+      {
+        "key": "outMapping",
+        "file": "src/ok_pass/ok_pass.outMapping"
+      },
+      {
+        "key": "inSpec",
+        "file": "src/ok_pass/ok_pass.inSpec.json"
+      },
+      {
+        "key": "outSpec",
+        "file": "src/ok_pass/ok_pass.outSpec.json"
+      }
+    ]
+  },
+  {
+    "transition": "Detect failed",
+    "type": "Pass",
+    "connector": "Pass",
+    "mappings": [
+      {
+        "key": "inMapping",
+        "file": "src/Detect_failed/Detect_failed.inMapping"
+      },
+      {
+        "key": "outMapping",
+        "file": "src/Detect_failed/Detect_failed.outMapping"
+      },
+      {
+        "key": "inSpec",
+        "file": "src/Detect_failed/Detect_failed.inSpec.json"
+      },
+      {
+        "key": "outSpec",
+        "file": "src/Detect_failed/Detect_failed.outSpec.json"
+      }
+    ]
+  },
+  {
+    "transition": "failed pass",
+    "type": "Pass",
+    "connector": "Pass",
+    "mappings": [
+      {
+        "key": "inMapping",
+        "file": "src/failed_pass/failed_pass.inMapping"
+      },
+      {
+        "key": "outMapping",
+        "file": "src/failed_pass/failed_pass.outMapping"
+      },
+      {
+        "key": "inSpec",
+        "file": "src/failed_pass/failed_pass.inSpec.json"
+      },
+      {
+        "key": "outSpec",
+        "file": "src/failed_pass/failed_pass.outSpec.json"
+      }
+    ]
+  }
+]

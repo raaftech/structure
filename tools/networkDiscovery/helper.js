@@ -34,16 +34,6 @@ class Helper {
         return graph;
     }
 
-    getTypeMap(graph) {
-        const getId = R.path(['meta','uuid']);
-        const getName = R.path(['data','name']);
-        let map = {};
-        R.forEach(item => {
-            map[getId(item)] = getName(item);
-        },graph);
-        return map;
-    }
-
     //Ipv4Address
     createIpAddress(ip, reachable) {
         let mkInstance = graphLib.createInstance(this.typeByName('Ipv4Address'));

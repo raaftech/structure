@@ -461,6 +461,82 @@ public class EntityTest {
         mapper.readValue(componentJson, Entity.class);
     }
 
+    @Test
+    @Transactional
+    @Rollback
+    public void testAbstractType() throws Exception {
+        String rootType = "  {" +
+                "    \"name\": \"Type\"," +
+                "    \"desc\": \"The root type.\"," +
+                "    \"meta\": {" +
+                "      \"uuid\": \"b1bc963a-19cc-4518-aecb-a35d028c49e3\"," +
+                "      \"abstract\": true," +
+                "      \"relations\": {}" +
+                "    }," +
+                "    \"file\": {" +
+                "      \"dataSchema\": {" +
+                "           \"encoding\": \"text\"," +
+                "           \"format\": \"json\"," +
+                "           \"content\": \"{}\"" +
+                "      }" +
+                "    }" +
+                "  }";
+
+        String componentType = "  {" +
+                "    \"name\": \"Component\"," +
+                "    \"desc\": \"Component type.\"," +
+                "    \"meta\": {" +
+                "      \"uuid\": \"b1bc963a-19cc-4518-aecb-a35d028d49e3\"," +
+                "      \"abstract\": true," +
+                "      \"relations\": {" +
+                "         \"ISA\": {" +
+                "           \"direction\": \"outgoing\"," +
+                "           \"to\": [\"b1bc963a-19cc-4518-aecb-a35d028c49e3\"]" +
+                "         }" +
+                "       }" +
+                "    }," +
+                "    \"file\": {" +
+                "      \"dataSchema\": {" +
+                "           \"encoding\": \"text\"," +
+                "           \"format\": \"json\"," +
+                "           \"content\": \"{}\"" +
+                "      }" +
+                "    }" +
+                "  }";
+
+
+        String instance = "  {" +
+                "    \"name\": \"TypeInstance\"," +
+                "    \"desc\": \"Instance of the root type.\"," +
+                "    \"meta\": {" +
+                "      \"uuid\": \"b1bc963a-19cc-4518-aecb-a35d028c49e4\"," +
+                "      \"relations\": {" +
+                "         \"INSTANCE_OF\": {" +
+                "           \"direction\": \"outgoing\"," +
+                "           \"to\": [\"b1bc963a-19cc-4518-aecb-a35d028d49e3\"]" +
+                "         }" +
+                "       }" +
+                "    }," +
+                "    \"file\": {" +
+                "      \"dataSchema\": {" +
+                "           \"encoding\": \"text\"," +
+                "           \"format\": \"json\"," +
+                "           \"content\": \"{}\"" +
+                "      }" +
+                "    }" +
+                "  }";
+
+
+        Entity typeEntity = mapper.readValue(rootType, Entity.class);
+        Entity componentEntity = mapper.readValue(componentType, Entity.class);
+        Entity instanceEntity = mapper.readValue(instance, Entity.class);
+
+        exception.expectMessage("Cannot instantiate based on an abstract type");
+        typeEntity.toGraph();
+        componentEntity.toGraph();
+        instanceEntity.toGraph();
+    }
+
     /**
      * Check if a set of labels completely matches some strings
      * @param labels The set of labels, usually provided by a neo4j backed node.

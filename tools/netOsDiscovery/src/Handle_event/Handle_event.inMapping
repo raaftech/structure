@@ -1,0 +1,3 @@
+() => {
+  return {item: R.head(dataDictionary.statusResults)}
+}

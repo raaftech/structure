@@ -1,0 +1,278 @@
+[
+  {
+    "transition": "recv",
+    "type": "Input",
+    "connector": "Input",
+    "mappings": [
+      {
+        "key": "inMapping",
+        "file": "src/recv/recv.inMapping"
+      },
+      {
+        "key": "outMapping",
+        "file": "src/recv/recv.outMapping"
+      },
+      {
+        "key": "inSpec",
+        "file": "src/recv/recv.inSpec.json"
+      },
+      {
+        "key": "outSpec",
+        "file": "src/recv/recv.outSpec.json"
+      }
+    ]
+  },
+  {
+    "transition": "getAllTypes",
+    "type": "Script",
+    "connector": "Structure.allTypes",
+    "mappings": [
+      {
+        "key": "inMapping",
+        "file": "src/getAllTypes/getAllTypes.inMapping"
+      },
+      {
+        "key": "outMapping",
+        "file": "src/getAllTypes/getAllTypes.outMapping"
+      },
+      {
+        "key": "inSpec",
+        "file": "src/getAllTypes/getAllTypes.inSpec.json"
+      },
+      {
+        "key": "outSpec",
+        "file": "src/getAllTypes/getAllTypes.outSpec.json"
+      }
+    ]
+  },
+  {
+    "transition": "fetchInstance",
+    "type": "Script",
+    "connector": "Structure.getInstance",
+    "mappings": [
+      {
+        "key": "inMapping",
+        "file": "src/fetchInstance/fetchInstance.inMapping"
+      },
+      {
+        "key": "outMapping",
+        "file": "src/fetchInstance/fetchInstance.outMapping"
+      },
+      {
+        "key": "inSpec",
+        "file": "src/fetchInstance/fetchInstance.inSpec.json"
+      },
+      {
+        "key": "outSpec",
+        "file": "src/fetchInstance/fetchInstance.outSpec.json"
+      }
+    ]
+  },
+  {
+    "transition": "createGenericInstance",
+    "type": "Local",
+    "connector": "structure.createGenericInstance",
+    "mappings": [
+      {
+        "key": "inMapping",
+        "file": "src/createGenericInstance/createGenericInstance.inMapping"
+      },
+      {
+        "key": "outMapping",
+        "file": "src/createGenericInstance/createGenericInstance.outMapping"
+      },
+      {
+        "key": "inSpec",
+        "file": "src/createGenericInstance/createGenericInstance.inSpec.json"
+      },
+      {
+        "key": "outSpec",
+        "file": "src/createGenericInstance/createGenericInstance.outSpec.json"
+      }
+    ]
+  },
+  {
+    "transition": "detect",
+    "type": "Script",
+    "connector": "Structure.detect",
+    "mappings": [
+      {
+        "key": "inMapping",
+        "file": "src/detect/detect.inMapping"
+      },
+      {
+        "key": "outMapping",
+        "file": "src/detect/detect.outMapping"
+      },
+      {
+        "key": "inSpec",
+        "file": "src/detect/detect.inSpec.json"
+      },
+      {
+        "key": "outSpec",
+        "file": "src/detect/detect.outSpec.json"
+      }
+    ]
+  },
+  {
+    "transition": "handleStatusMessage",
+    "type": "Input",
+    "connector": "Input",
+    "mappings": [
+      {
+        "key": "inMapping",
+        "file": "src/handleStatusMessage/handleStatusMessage.inMapping"
+      },
+      {
+        "key": "outMapping",
+        "file": "src/handleStatusMessage/handleStatusMessage.outMapping"
+      },
+      {
+        "key": "inSpec",
+        "file": "src/handleStatusMessage/handleStatusMessage.inSpec.json"
+      },
+      {
+        "key": "outSpec",
+        "file": "src/handleStatusMessage/handleStatusMessage.outSpec.json"
+      }
+    ]
+  },
+  {
+    "transition": "specialize",
+    "type": "Script",
+    "connector": "Structure.specialize",
+    "mappings": [
+      {
+        "key": "inMapping",
+        "file": "src/specialize/specialize.inMapping"
+      },
+      {
+        "key": "outMapping",
+        "file": "src/specialize/specialize.outMapping"
+      },
+      {
+        "key": "inSpec",
+        "file": "src/specialize/specialize.inSpec.json"
+      },
+      {
+        "key": "outSpec",
+        "file": "src/specialize/specialize.outSpec.json"
+      }
+    ]
+  },
+  {
+    "transition": "detect ok",
+    "type": "Pass",
+    "connector": "Pass",
+    "mappings": [
+      {
+        "key": "inMapping",
+        "file": "src/detect_ok/detect_ok.inMapping"
+      },
+      {
+        "key": "outMapping",
+        "file": "src/detect_ok/detect_ok.outMapping"
+      },
+      {
+        "key": "inSpec",
+        "file": "src/detect_ok/detect_ok.inSpec.json"
+      },
+      {
+        "key": "outSpec",
+        "file": "src/detect_ok/detect_ok.outSpec.json"
+      }
+    ]
+  },
+  {
+    "transition": "detect nok",
+    "type": "Pass",
+    "connector": "Pass",
+    "mappings": [
+      {
+        "key": "inMapping",
+        "file": "src/detect_nok/detect_nok.inMapping"
+      },
+      {
+        "key": "outMapping",
+        "file": "src/detect_nok/detect_nok.outMapping"
+      },
+      {
+        "key": "inSpec",
+        "file": "src/detect_nok/detect_nok.inSpec.json"
+      },
+      {
+        "key": "outSpec",
+        "file": "src/detect_nok/detect_nok.outSpec.json"
+      }
+    ]
+  },
+  {
+    "transition": "removeInstance",
+    "type": "Script",
+    "connector": "Structure.removeInstance",
+    "mappings": [
+      {
+        "key": "inMapping",
+        "file": "src/removeInstance/removeInstance.inMapping"
+      },
+      {
+        "key": "outMapping",
+        "file": "src/removeInstance/removeInstance.outMapping"
+      },
+      {
+        "key": "inSpec",
+        "file": "src/removeInstance/removeInstance.inSpec.json"
+      },
+      {
+        "key": "outSpec",
+        "file": "src/removeInstance/removeInstance.outSpec.json"
+      }
+    ]
+  },
+  {
+    "transition": "specialize not ok",
+    "type": "Pass",
+    "connector": "Pass",
+    "mappings": [
+      {
+        "key": "inMapping",
+        "file": "src/specialize_not_ok/specialize_not_ok.inMapping"
+      },
+      {
+        "key": "outMapping",
+        "file": "src/specialize_not_ok/specialize_not_ok.outMapping"
+      },
+      {
+        "key": "inSpec",
+        "file": "src/specialize_not_ok/specialize_not_ok.inSpec.json"
+      },
+      {
+        "key": "outSpec",
+        "file": "src/specialize_not_ok/specialize_not_ok.outSpec.json"
+      }
+    ]
+  },
+  {
+    "transition": "specialize ok",
+    "type": "Pass",
+    "connector": "Pass",
+    "mappings": [
+      {
+        "key": "inMapping",
+        "file": "src/specialize_ok/specialize_ok.inMapping"
+      },
+      {
+        "key": "outMapping",
+        "file": "src/specialize_ok/specialize_ok.outMapping"
+      },
+      {
+        "key": "inSpec",
+        "file": "src/specialize_ok/specialize_ok.inSpec.json"
+      },
+      {
+        "key": "outSpec",
+        "file": "src/specialize_ok/specialize_ok.outSpec.json"
+      }
+    ]
+  }
+]

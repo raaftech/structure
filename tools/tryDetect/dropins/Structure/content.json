@@ -1,0 +1,15 @@
+{
+  "Structure_api_host": "localhost",
+  "Structure_api_port": 3000,
+  "Structure_api_token": "",
+  "Structure_allTypes_result_cacheEntry": "typeDB",
+  "Structure_detect_instance_uuid_dictEntry": "instanceUuid",
+  "Structure_detect_result_dictEntry": "detectResult",
+  "Structure_specialize_specialization_dictEntry": "",
+  "Structure_specialize_origin_uuid_dictEntry": "",
+  "Structure_specialize_result_dictEntry": "specializeResult",
+  "Structure_getInstance_uuid_dictEntry": "",
+  "Structure_getInstance_result_dictEntry": "",
+  "Structure_removeInstance_uuid_dictEntry": "",
+  "Structure_removeInstance_result_dictEntry": ""
+}

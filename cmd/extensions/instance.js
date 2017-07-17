@@ -120,7 +120,8 @@ module.exports = function(vorpal, options) {
                                             self.log(vres);
                                             done();
                                         }
-                                    });
+                                    })
+                                    .catch(ex => console.log(ex));
                             });
                         })
                         .catch(helper.genericCatchHandler(done));

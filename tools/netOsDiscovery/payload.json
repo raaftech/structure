@@ -1,0 +1,9 @@
+{
+	"cidr": "172.17.1.0/24",
+	"api": {
+		"server": "localhost",
+		"port": 3000,
+		"email": "a@b.nl",
+		"pwd": "test"
+	}
+}

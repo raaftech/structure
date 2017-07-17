@@ -1,0 +1,7 @@
+(data) => {
+	dataDictionary.computers.push(data);
+    dataDictionary.discoveredIps = R.tail(dataDictionary.discoveredIps);
+    dataDictionary.currentType = '';
+    dataDictionary.pcounter.generic = dataDictionary.pcounter.generic + 1;
+	return dataDictionary;
+}

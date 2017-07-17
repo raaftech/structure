@@ -1,0 +1,9 @@
+() => {
+  	let ip = R.head(dataDictionary.discoveredIps);
+	return {
+      currentIp: ip,
+      entity: R.find(x => {
+      	return R.path(['data','addr'],x) === ip.ip;
+      }, dataDictionary.ipEntities)
+    }
+}

@@ -1,0 +1,5 @@
+(data) => {
+	dataDictionary.currentGuess = data.guess;
+    dataDictionary.inTransit = data;
+	return dataDictionary;
+}

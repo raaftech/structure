@@ -1,0 +1,4 @@
+(payload) => {
+  dataDictionary.statusResults.push(payload);
+  return dataDictionary;
+}
