@@ -121,8 +121,8 @@ public class ConfigurationProxy {
              */
             final String value = commandLineOptions.getOptionValue(configurationKey);
             return Optional.of(value == null ? "" : value);
-        } else if (System.getenv(configurationKey.toUpperCase()) != null) {
-            return Optional.of(System.getenv(configurationKey.toUpperCase()));
+        } else if (System.getenv(keyTransform.apply(configurationKey)) != null) {
+            return Optional.of(System.getenv(keyTransform.apply(configurationKey)));
         } else if (System.getProperty(configurationKey) != null){
             return Optional.of(System.getProperty(configurationKey));
         } else {
