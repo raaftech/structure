@@ -180,13 +180,12 @@ const deepDetect = (input) => {
 // "result":{"process":"scp root@172.17.1.1:/tmp/", "returnCode":0,"stdout":"Linux\n","stderr":""},
 // "process":"scp /tmp/"}
 const handleStatusMessage = (input) => {
-    //console.log(JSON.stringify(input.item, undefined, 2));
     let jobs = R.path(['item', 'data','taskObj','jobs'], input);
     if(R.isNil(jobs)) {
         return Promise.resolve({
-            status: R.compose(R.prop('status'), R.head)(jobs),
-            originName: R.compose(R.prop('originName'), R.head)(jobs),
-            origin: R.compose(R.prop('originUuid'), R.head)(jobs),
+            status: 'ERROR',
+            originName: '',
+            origin: '',
             specialization: 'UNKNOWN_SPECIALIZATION'
         });
     }
@@ -211,7 +210,6 @@ const handleStatusMessage = (input) => {
         origin: result.originUuid,
         specialization: R.trim(result.result.stdout)
     };
-    //console.log(obj);
     return Promise.resolve(obj);
 };
 

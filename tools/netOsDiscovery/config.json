@@ -1,6 +1,6 @@
 {
     "log": {
-        "type": "stdout",
+        "type": "file",
         "path": "structure.log",
         "level": "debug"
     },
@@ -19,7 +19,7 @@
         "libraryPath": "library/",
         "dropins": "dropins/",
         "packageFile": "discoveryPackage.js",
-        "save": false
+        "save": true
     },
     "security": {
         "encrypted": false,
