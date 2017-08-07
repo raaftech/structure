@@ -37,9 +37,9 @@ public interface InstrumentRepository extends GenericRepository<Instrument> {
     Set<Controller> getCompatibleSendString(@Param("structureUuid") String structure, @Param("subjectUuid") String subject);
 
     // Find the sendFile (client) controllers of the common protocols of an agent and subject
-    @Query ("MATCH (commander:Grouping {uuid:{structureUuid}})-[*..]->(:Instance)-[:INSTANCE_OF]->(client:Type)-[:ISA*0..]->(:Type)-[:IMPLEMENTS]->" +
+    @Query ("MATCH (commander:Group {uuid:{structureUuid}})-[*..]->(:Instance)-[:INSTANCE_OF]->(client:Type)-[:ISA*0..]->(:Type)-[:IMPLEMENTS]->" +
             "protocol" +
-            "<-[:IMPLEMENTS]-(:Type)<-[:ISA*0..]-(server:Type)<-[:INSTANCE_OF]-(:Instance)<-[*..]-(subject:Grouping {uuid:{subjectUuid}})," +
+            "<-[:IMPLEMENTS]-(:Type)<-[:ISA*0..]-(server:Type)<-[:INSTANCE_OF]-(:Instance)<-[*..]-(subject:Group {uuid:{subjectUuid}})," +
             "(client)-[:ISA*0..]->({name:\"Client\"})," +
             "(server)-[:ISA*0..]->({name:\"Service\"})," +
             "(client)-[:ISA*0..]->()<-[:PROVIDED_BY]-(instrument)-[:GIVES_CAPABILITY]->({name:\"SendFile\"})" +
@@ -73,7 +73,7 @@ public interface InstrumentRepository extends GenericRepository<Instrument> {
     // This query checks if we can execute something about a patient, on the structure node.
     // A good example would be a ping check. Structure needs a particular tool (ping), that can do something (ICMP echo request)
     // which is about something that doesn't belong to its tree (the IP address of the patient).
-    @Query ("MATCH (structure:Grouping {uuid:{structureUuid}})-[*..]->(:Instance)-[:INSTANCE_OF|ISA*..]->()<-[:PROVIDED_BY]-(instrument {uuid:{instrumentUuid}})," +
+    @Query ("MATCH (structure:Group {uuid:{structureUuid}})-[*..]->(:Instance)-[:INSTANCE_OF|ISA*..]->()<-[:PROVIDED_BY]-(instrument {uuid:{instrumentUuid}})," +
         "(instrument)-[:APPLIES_TO]->(patientType)<-[:INSTANCE_OF|ISA*..]-(patient {uuid:{patientUuid}})" +
             "RETURN instrument")
     Instrument validateNonLocalInstrument(@Param("instrumentUuid") String instrumentUuid, @Param("structureUuid") String structureUuid,

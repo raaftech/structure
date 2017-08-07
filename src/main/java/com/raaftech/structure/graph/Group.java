@@ -17,7 +17,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class Grouping extends Instance {
+public class Group extends Instance {
 
     @RelatedTo(type="GROUPS", direction= Direction.OUTGOING)
     @Fetch
@@ -30,14 +30,14 @@ public class Grouping extends Instance {
         return groupees;
     }
 
-    public Grouping() {}
+    public Group() {}
 
     /**
      * Construct a component based on a type and the data that represents it.
      * @param instanceData The data needed to instantiate the type.
      * @param type The type to instantiate.
      */
-    public Grouping(ObjectNode instanceData, Type type) {
+    public Group(ObjectNode instanceData, Type type) {
         ObjectNode instanceDataCopy = instanceData.deepCopy();
         if (type == null) {
             throw new IllegalArgumentException("Component constructor called with null as type.");

@@ -13,10 +13,8 @@ import com.raaftech.structure.bus.GenericActor;
 import com.raaftech.structure.bus.NodeActor;
 import com.raaftech.structure.exceptions.EntityDeserializationException;
 import com.raaftech.structure.exceptions.EntitySerializationException;
-import com.raaftech.structure.graph.Grouping;
-import com.raaftech.structure.graph.Instance;
-import com.raaftech.structure.graph.Node;
-import com.raaftech.structure.graph.Type;
+import com.raaftech.structure.graph.*;
+import com.raaftech.structure.graph.Group;
 import com.raaftech.structure.graph.repositories.InstanceRepository;
 import com.raaftech.structure.graph.repositories.NodeRepository;
 import com.raaftech.structure.graph.repositories.TypeRepository;
@@ -24,7 +22,6 @@ import com.raaftech.structure.helper.JsonHelper;
 import com.raaftech.structure.helper.LambdaHelper;
 import com.raaftech.structure.helper.Triple;
 import com.raaftech.structure.helper.loader.NaiveSorter;
-import com.raaftech.structure.graph.Entity;
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.Label;
 import org.neo4j.graphdb.PathExpanders;
@@ -398,25 +395,25 @@ public class EntityManager extends GenericActor {
                 final JsonNode args = request.get("args");
                 final ObjectNode result = mapper.createObjectNode();
 
-                final String groupingUuid = args.get("grouping").asText();
+                final String groupingUuid = args.get("group").asText();
                 final String groupeeUuid = args.get("groupee").asText();
 
-                final Grouping grouping = Context.getGroupingRepository().findByUuid(groupingUuid);
+                final Group group = Context.getGroupingRepository().findByUuid(groupingUuid);
                 final Node groupee = nodeRepository.findByUuid(groupeeUuid);
 
-                if (grouping == null) {
-                    result.put("error", "Grouping with UUlD \"" + groupingUuid + "\" not found.");
+                if (group == null) {
+                    result.put("error", "Group with UUlD \"" + groupingUuid + "\" not found.");
                     return response(request, result);
                 }
                 if (groupee == null) {
-                    result.put("error", "Grouping with UUlD \"" + groupingUuid + "\" not found.");
+                    result.put("error", "Group with UUlD \"" + groupingUuid + "\" not found.");
                     return response(request, result);
                 }
 
                 Transaction tx = Context.getGraphDatabase().beginTx();
                 try {
                     final String groupRelName = "GROUPS";
-                    Entity groupingEntity = mapper.treeToValue(mapper.valueToTree(grouping), Entity.class);
+                    Entity groupingEntity = mapper.treeToValue(mapper.valueToTree(group), Entity.class);
                     boolean changed = groupingEntity.addRelations(groupRelName,
                             Direction.OUTGOING, ImmutableSet.of(UUID.fromString(groupeeUuid)));
 
@@ -453,24 +450,24 @@ public class EntityManager extends GenericActor {
                 final JsonNode args = request.get("args");
                 final ObjectNode result = mapper.createObjectNode();
 
-                final String groupingUuid = args.get("grouping").asText();
+                final String groupingUuid = args.get("group").asText();
                 final String groupeeUuid = args.get("groupee").asText();
 
-                final Grouping grouping = Context.getGroupingRepository().findByUuid(groupingUuid);
+                final Group group = Context.getGroupingRepository().findByUuid(groupingUuid);
                 final Node groupee = nodeRepository.findByUuid(groupeeUuid);
 
-                if (grouping == null) {
-                    result.put("error", "Grouping with UUlD \"" + groupingUuid + "\" not found.");
+                if (group == null) {
+                    result.put("error", "Group with UUlD \"" + groupingUuid + "\" not found.");
                     return response(request, result);
                 }
                 if (groupee == null) {
-                    result.put("error", "Grouping with UUlD \"" + groupingUuid + "\" not found.");
+                    result.put("error", "Group with UUlD \"" + groupingUuid + "\" not found.");
                     return response(request, result);
                 }
 
                 Transaction tx = Context.getGraphDatabase().beginTx();
-                final boolean changed = grouping.getGroupees().remove(groupee);
-                Context.getGroupingRepository().save(grouping);
+                final boolean changed = group.getGroupees().remove(groupee);
+                Context.getGroupingRepository().save(group);
                 tx.success();
 
                 result.set("data", mapper.createObjectNode().put("changed", changed));

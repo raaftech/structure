@@ -601,7 +601,7 @@ public class Entity {
                 .put("type.component", "Component")
                 .put("type.profile", "Profile")
                 .put("type.result", "Result")
-                .put("type.grouping", "Grouping")
+                .put("type.grouping", "Group")
                 .build();
 
         return domainClassPerPath.entrySet().stream()
@@ -626,7 +626,7 @@ public class Entity {
                 .put("Component", ImmutableList.of("_Component", "Component", "Instance", "Node"))
                 .put("Profile", ImmutableList.of("_Profile", "Profile", "Instance", "Node"))
                 .put("Result", ImmutableList.of("_Result", "Result", "Instance", "Node"))
-                .put("Grouping", ImmutableList.of("_Grouping", "Grouping", "Instance", "Node"))
+                .put("Group", ImmutableList.of("_Grouping", "Group", "Instance", "Node"))
                 .put("Type", ImmutableList.of("_Type", "Type", "Node"))
                 .build();
 

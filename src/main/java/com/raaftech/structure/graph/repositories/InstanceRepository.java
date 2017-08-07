@@ -1,7 +1,7 @@
 package com.raaftech.structure.graph.repositories;
 
 import com.raaftech.structure.graph.Component;
-import com.raaftech.structure.graph.Grouping;
+import com.raaftech.structure.graph.Group;
 import com.raaftech.structure.graph.Instance;
 import org.springframework.data.neo4j.annotation.Query;
 import org.springframework.data.repository.query.Param;
@@ -37,8 +37,8 @@ public interface InstanceRepository extends GenericRepository<Instance> {
 
     // Get the root node of a component group
     @Query ("MATCH (instance:Instance {uuid:{instanceUuid}})<-[*0..]-(n)<-[:GROUPS]-(grouping) " +
-            "WHERE NOT n:Grouping RETURN grouping")
-    Grouping getStartOfComponentGroup(@Param("instanceUuid") String instanceUuid);
+            "WHERE NOT n:Group RETURN grouping")
+    Group getStartOfComponentGroup(@Param("instanceUuid") String instanceUuid);
 
     @Query ("MATCH (n:Instance) WHERE NOT (n)-[:INSTANCE_OF]->({name:\"Handler\"}) RETURN n ORDER BY id(n) DESC LIMIT {amount}")
     List<Instance> getNLastCreated(@Param("amount") int amount);
