@@ -17,18 +17,15 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class Group extends Instance {
+public class Group extends Instance implements Groupable {
 
     @RelatedTo(type="MEMBER_OF", direction= Direction.INCOMING)
     @Fetch
-    private Set<Instance> groupees;
+    private Set<Groupable> groupees;
 
-    public Set<Instance> getGroupees() {
-        if (groupees == null) {
-            groupees = new HashSet<>();
-        }
-        return groupees;
-    }
+    @RelatedTo(type="MEMBER_OF", direction= Direction.OUTGOING)
+    @Fetch
+    private Set<Group> memberOf;
 
     public Group() {}
 
@@ -54,6 +51,32 @@ public class Group extends Instance {
         this.instanceOf = type;
         this.instanceData = instanceData.deepCopy();
         setProperties(instanceDataCopy);
+    }
+
+    public Set<Groupable> getGroupees() {
+        if (groupees == null) {
+            groupees = new HashSet<>();
+        }
+        return groupees;
+    }
+
+    public Set<Group> getMemberOf() {
+        if (memberOf == null) {
+            memberOf = new HashSet<>();
+        }
+        return memberOf;
+    }
+
+    public void addMember(Groupable groupable) {
+        /*
+        If we're already a member of this group return. This is done because we
+        call `addMember` from `addToGroup` and `addToGroup` from `addMember`.
+         */
+        if (getMemberOf().contains(groupable)) {
+            return;
+        }
+        getGroupees().add(groupable);
+        groupable.addToGroup(this);
     }
 
 
@@ -94,7 +117,7 @@ public class Group extends Instance {
         Set<JsonNode> arguments = new HashSet<>();
 
         arguments.add(super.toJson());
-        BiFunction<BiFunction, Instance, Set<JsonNode>> consumeArgsHelper = (f, node) -> {
+        BiFunction<BiFunction, Groupable, Set<JsonNode>> consumeArgsHelper = (f, node) -> {
             final Set<Component> components;
             if (node instanceof Component) {
                 components = ((Component)node).getComponents();
@@ -110,14 +133,14 @@ public class Group extends Instance {
             } else {
                 childSet = Collections.emptySet();
             }
-            return Sets.union(childSet, ImmutableSet.of(node.toJson()));
+            return Sets.union(childSet, ImmutableSet.of(((Instance)node).toJson()));
         };
 
         // Lambda's can't refer to themselves using their variable name. That means consumeArgsHelper defined
         // above cannot refer to itself by name. This sucks, because it's a recursive function.
         // However, it can refer to itself if it's passed a reference to itself as an argument, so that's what's
         // happening in consumeArgs. After calling consumeArgsHelper below, consumeArgsHelper is bound to 'f' in the lambda.
-        Function<Instance, Set<JsonNode>> consumeArgs = node -> consumeArgsHelper.apply(consumeArgsHelper, node);
+        Function<Groupable, Set<JsonNode>> consumeArgs = node -> consumeArgsHelper.apply(consumeArgsHelper, node);
 
         return getGroupees().stream().map(consumeArgs).flatMap(Collection::stream).collect(Collectors.toSet());
     }

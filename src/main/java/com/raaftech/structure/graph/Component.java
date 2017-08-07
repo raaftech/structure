@@ -28,7 +28,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class Component extends Instance {
+public class Component extends Instance implements Groupable {
 
     @RelatedTo(
             type="HAS",
@@ -46,6 +46,10 @@ public class Component extends Instance {
     )
     @Fetch
     private Set<Component> inComponent;
+
+    @RelatedTo(type="MEMBER_OF", direction= Direction.OUTGOING)
+    @Fetch
+    private Set<Group> memberOf;
 
     @Transient
     private static final InstanceRepository instanceRepository = Context.getInstanceRepository();
@@ -118,6 +122,13 @@ public class Component extends Instance {
         return getStartOfResultChain().getThisAndNewer().stream()
                 .filter(r -> r.getTaskId().equals(task))
                 .collect(Collectors.toSet());
+    }
+
+    public Set<Group> getMemberOf() {
+        if (memberOf == null) {
+            memberOf = new HashSet<>();
+        }
+        return memberOf;
     }
 
     /**
