@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 
 public class Group extends Instance {
 
-    @RelatedTo(type="GROUPS", direction= Direction.OUTGOING)
+    @RelatedTo(type="MEMBER_OF", direction= Direction.INCOMING)
     @Fetch
     private Set<Instance> groupees;
 

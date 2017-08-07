@@ -1,6 +1,6 @@
 [
     {
-        "name": "Grouping",
+        "name": "Group",
         "desc": "A group of references to things.",
         "meta": {
             "uuid": "5f1eb7c5-ec5e-4563-be6a-fc50774fc374",
@@ -36,16 +36,11 @@
                 }
             },
             "constraints": {
-                "GROUPS": [
-                    {
-                        "cardinality": "OPTIONAL_TO_MANY",
-                        "to": "a79ce509-a021-4177-ae61-73abd01fb479"
-                    },
+                "MEMBER_OF": [
                     {
                         "cardinality": "OPTIONAL_TO_MANY",
                         "to": "ee92c308-80f4-40b2-af3a-77d26cd99517"
                     }
-
                 ]
             }
         },
