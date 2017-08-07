@@ -412,10 +412,10 @@ public class EntityManager extends GenericActor {
 
                 Transaction tx = Context.getGraphDatabase().beginTx();
                 try {
-                    final String groupRelName = "GROUPS";
+                    final String groupRelName = "MEMBER_OF";
                     Entity groupingEntity = mapper.treeToValue(mapper.valueToTree(group), Entity.class);
                     boolean changed = groupingEntity.addRelations(groupRelName,
-                            Direction.OUTGOING, ImmutableSet.of(UUID.fromString(groupeeUuid)));
+                            Direction.INCOMING, ImmutableSet.of(UUID.fromString(groupeeUuid)));
 
                     groupingEntity.toGraph();
                     tx.success();
