@@ -262,7 +262,7 @@ vorpal.command('find <name>', 'Find a specified node in structure')
                     done();
                 });
             }
-            
+
         };
 
         //Function that determines which rest call to use based on the given arguments and options
@@ -313,7 +313,7 @@ vorpal.command('tree <name>', 'Show a relation tree for the requested node')
                 tt[item.name] = R.clone(tree);
                 tree = R.clone(tt);
             },R.reverse(hierarchy));
-            
+
             self.log(treeify.asTree(tree,true));
             done();
         };
@@ -339,7 +339,7 @@ vorpal.command('discover <cidr>', 'Discover items in the network')
                     self.log('creating new network');
                     let i = mkNetwork({name: 'Ipv4Network', desc: 'A network', cidr: args.cidr});
                     let g = mkGroup({name: 'group-'+args.cidr, desc: 'ipv4network root group'});
-                    let pair = graphLib.relateEntity(g, 'GROUPS', 'outgoing', i);
+                    let pair = graphLib.relateEntity(g, 'MEMBER_OF', 'incoming', i);
                     return rest.createInstance({entities: R.reverse(pair)})
                         .then(ins => rest.getInstanceByUuid(pair[1].meta.uuid))
                         .catch(ex => console.log(ex));
