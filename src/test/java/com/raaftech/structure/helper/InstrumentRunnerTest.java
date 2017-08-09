@@ -35,7 +35,7 @@ public class InstrumentRunnerTest {
     @Mocked
     GroupingRepository groupingRepository;
     @Mocked
-    Grouping grouping;
+    Group group;
     @Mocked
     Component origin;
     @Mocked
@@ -76,17 +76,17 @@ public class InstrumentRunnerTest {
         ));
 
         new StrictExpectations() {{
-            // Return a mocked grouping when querying the "structure" grouping
+            // Return a mocked group when querying the "structure" group
             groupingRepository.findByUuid(anyString);
-            result = grouping;
+            result = group;
 
             // Set the UUID of the origin to originUuid
             origin.getUuid();
             result = originUuid;
 
-            // We'll query the Grouping the origin is part of and return it
+            // We'll query the Group the origin is part of and return it
             instanceRepository.getStartOfComponentGroup(originUuid);
-            result = grouping;
+            result = group;
 
             /*
             Return a set of one type, where the name matches origin.isOfType. This
@@ -109,11 +109,11 @@ public class InstrumentRunnerTest {
             // Next two statements are called in getCompatibleSendString
 
             // Return the agent's UUID
-            grouping.getUuid();
+            group.getUuid();
             result = agentUuid;
 
             // Return the subject's UUID
-            grouping.getUuid();
+            group.getUuid();
             result = subjectUuid;
 
             /*
@@ -138,11 +138,11 @@ public class InstrumentRunnerTest {
             // Next two statements are called in getCompatibleSendString
 
             // Return the agent's UUID
-            grouping.getUuid();
+            group.getUuid();
             result = agentUuid;
 
             // Return the subject's UUID
-            grouping.getUuid();
+            group.getUuid();
             result = subjectUuid;
 
             // Same as above, but with {send,receive} file
@@ -178,7 +178,7 @@ public class InstrumentRunnerTest {
              The subject is now queried to see if it has the needed interpreter, because
              we need it to execute the script.
               */
-            grouping.getUuid();
+            group.getUuid();
             result = subjectUuid;
             groupingRepository.getChildrenOfType(subjectUuid, "Bash");
             result = ImmutableSet.of(instance);
@@ -201,7 +201,7 @@ public class InstrumentRunnerTest {
             result = calledControllerName;
 
             // subject.toArguments
-            grouping.toArguments();
+            group.toArguments();
             result = ImmutableSet.of(
                     mapper.createObjectNode()
                             .put("_hierarchyPath", "type.component.software.server.httpserver")
@@ -209,7 +209,7 @@ public class InstrumentRunnerTest {
             );
 
             // agent.toArguments
-            grouping.toArguments();
+            group.toArguments();
             result = Collections.EMPTY_SET;
 
             // origin.toJson
@@ -238,7 +238,7 @@ public class InstrumentRunnerTest {
             result = calledControllerName;
 
             // subject.toArguments
-            grouping.toArguments();
+            group.toArguments();
             result = ImmutableSet.of(
                     mapper.createObjectNode()
                             .put("_hierarchyPath", "type.component.software.server.httpserver")
@@ -246,7 +246,7 @@ public class InstrumentRunnerTest {
             );
 
             // agent.toArguments
-            grouping.toArguments();
+            group.toArguments();
             result = Collections.EMPTY_SET;
 
             // origin.toJson
@@ -275,7 +275,7 @@ public class InstrumentRunnerTest {
             result = calledControllerName;
 
             // subject.toArguments
-            grouping.toArguments();
+            group.toArguments();
             result = ImmutableSet.of(
                     mapper.createObjectNode()
                             .put("_hierarchyPath", "type.component.software.server.httpserver")
@@ -283,7 +283,7 @@ public class InstrumentRunnerTest {
             );
 
             // agent.toArguments
-            grouping.toArguments();
+            group.toArguments();
             result = Collections.EMPTY_SET;
 
             // origin.toJson

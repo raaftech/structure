@@ -41,7 +41,7 @@ const prompt = (vorp, question) => {
  */
 const getAllGroups = () => {
     return new Promise((resolve, reject) => {
-        let q = 'match (n:Grouping) return n';
+        let q = 'match (n:Group) return n';
         db.cypher({query: q}, function(error, queryResult) {
             if(error) { reject(error); }
             else {
@@ -123,7 +123,7 @@ module.exports = function(vorpal, options) {
                         return rest.getEntityByUuid(answer.uuid);
                     })
                     .then(instance => {
-                        let pair = graphLib.relateEntity(selectedGroup, 'GROUPS', 'outgoing', instance);
+                        let pair = graphLib.relateEntity(selectedGroup, 'MEMBER_OF', 'incoming', instance);
                         return rest.updateInstance({entities: [R.head(pair)]});
                     })
                     .then(updateResult => {
@@ -156,7 +156,7 @@ module.exports = function(vorpal, options) {
                     })
                     .then(answer => {
                         selectedGroup = R.find(R.propEq('name', answer.groupName), allGroups);
-                        let query = util.format('match (n:Grouping {name: "%s"})-[GROUPS]->(children:Instance) return children',answer.groupName);
+                        let query = util.format('match (n:Group {name: "%s"})<-[MEMBER_OF]-(children:Instance) return children',answer.groupName);
                         return cypher(query);
                     })
                     .then(children => {
@@ -223,7 +223,7 @@ module.exports = function(vorpal, options) {
                     return prompt(self, q);
                 })
                 .then(answer => {
-                    let query = util.format('match (n:Grouping {name: "%s"})-[GROUPS]->(children:Instance) return children',answer.groupName);
+                    let query = util.format('match (n:Group {name: "%s"})<-[MEMBER_OF]-(children:Instance) return children',answer.groupName);
                     return cypher(query);
                 })
                 .then(result => {

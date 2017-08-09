@@ -49,8 +49,8 @@ public class InstrumentRunner {
     private final String taskId;
     private final Instance origin;
     private final Controller controller;
-    private final Grouping subject;
-    private final Grouping agent;
+    private final Group subject;
+    private final Group agent;
     private final ObjectNode arguments;
 
     private final String workingDirectory = getCurrentWorkingDirectory() + "/target/generated-scripts/";

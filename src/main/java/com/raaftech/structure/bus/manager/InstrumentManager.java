@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.raaftech.structure.annotations.SchemaPath;
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.bus.GenericActor;
-import com.raaftech.structure.graph.Grouping;
 import com.raaftech.structure.graph.repositories.InstanceRepository;
 import com.raaftech.structure.graph.repositories.InstrumentRepository;
 import io.vertx.core.json.JsonObject;

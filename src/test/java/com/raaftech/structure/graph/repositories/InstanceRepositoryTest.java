@@ -1,7 +1,7 @@
 package com.raaftech.structure.graph.repositories;
 
 import com.raaftech.structure.graph.Component;
-import com.raaftech.structure.graph.Grouping;
+import com.raaftech.structure.graph.Group;
 import com.raaftech.structure.graph.Type;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,22 +22,22 @@ public class InstanceRepositoryTest extends TypeSchemaTest {
     @Autowired
     GraphDatabase graphDatabase;
 
-    private static Grouping grouping;
+    private static Group group;
     private static Component parent, child01, child02;
 
     @Before
     @Transactional
     public void setUp() throws Exception {
-        Type groupingType = typeRepository.findOneByName("Grouping");
+        Type groupingType = typeRepository.findOneByName("Group");
         assertNotNull(groupingType);
         Type parentType = typeRepository.findOneByName("Software");
         assertNotNull(parentType);
         Type childType = typeRepository.findOneByName("Linux");
         assertNotNull(childType);
-        if (grouping == null) {
-            grouping = new Grouping(
+        if (group == null) {
+            group = new Group(
                     mapper.createObjectNode()
-                            .put("name", "Grouping")
+                            .put("name", "Group")
                             .put("desc", "A description."),
                     groupingType);
         }
@@ -48,7 +48,7 @@ public class InstanceRepositoryTest extends TypeSchemaTest {
                     .put("ver", "1")
                     .put("shortName", "parent")
                     .put("longName", "parent"), parentType);
-            grouping.getGroupees().add(parent);
+            group.getGroupees().add(parent);
         }
         if (child01 == null) {
             child01 = new Component(mapper.createObjectNode()
@@ -68,7 +68,7 @@ public class InstanceRepositoryTest extends TypeSchemaTest {
                     .put("longName", "child"), childType);
             parent.addComponent(child02);
         }
-        grouping.save();
+        group.save();
     }
 
     @Test
@@ -88,7 +88,7 @@ public class InstanceRepositoryTest extends TypeSchemaTest {
 
     @Test
     public void getStartOfComponentGroup() throws Exception {
-        assertEquals(grouping.getUuid(), instanceRepository.getStartOfComponentGroup(child01.getUuid()).getUuid());
+        assertEquals(group.getUuid(), instanceRepository.getStartOfComponentGroup(child01.getUuid()).getUuid());
     }
 
     // Disabled this test. We don't test against a static bundle anymore so this test is hopeless

@@ -47,7 +47,7 @@ class Helper {
             graph.entities.push(R.clone(pair[1]));
         }, this.defaultEntities());
 
-        let tuple = graphLib.relateEntity(root, 'GROUPS', 'outgoing', os);
+        let tuple = graphLib.relateEntity(root, 'MEMBER_OF', 'incoming', os);
         graph.os = tuple[1];
         graph.root = tuple[0];
 
@@ -63,7 +63,7 @@ class Helper {
         //Operating System
         let os = this.osData(data.distribution, data.distribution_version);
         let relate = graphLib.relateEntity(os, 'HAS', 'outgoing');
-        
+
         //Interpreter
         let interpreter = this.interpreterData(data.shell);
         let pair = relate(interpreter);
@@ -105,10 +105,10 @@ class Helper {
             graph.entities.push(R.clone(pair[1]));
         }, this.defaultEntities());
 
-        let tuple = graphLib.relateEntity(root, 'GROUPS', 'outgoing', os);
+        let tuple = graphLib.relateEntity(root, 'MEMBER_OF', 'incoming', os);
         graph.os = tuple[1];
         graph.root = tuple[0];
-    
+
         return graph;
     }
 
@@ -162,7 +162,7 @@ class Helper {
                             });
             }
         }
-        
+
         return instance;
     }
 
