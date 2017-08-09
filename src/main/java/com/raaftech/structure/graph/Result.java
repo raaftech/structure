@@ -96,11 +96,11 @@ public class Result extends Instance {
     }
 
     public long getDate() {
-        return Long.parseLong((String) data.getProperty(DATECREATED));
+        return (long) data.getProperty(DATECREATED);
     }
 
     public int getReturnCode() {
-        return Integer.parseInt((String) data.getProperty(RETURNCODE));
+        return (int) data.getProperty(RETURNCODE);
     }
 
     public String getTaskId() {
@@ -120,7 +120,7 @@ public class Result extends Instance {
     public Optional<State> getState() {
         final Optional<State> maybeState;
         if (data.hasProperty(STATECODE)) {
-            maybeState = Optional.of(new Result.State(Integer.parseInt((String) data.getProperty(STATECODE)),
+            maybeState = Optional.of(new Result.State((int) data.getProperty(STATECODE),
                     (String) data.getProperty(STATEINTERPRETATION), (String) data.getProperty(STATEDESCRIPTION)));
         } else {
             maybeState = Optional.empty();
