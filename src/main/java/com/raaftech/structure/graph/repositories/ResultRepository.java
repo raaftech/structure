@@ -5,6 +5,9 @@ import org.springframework.data.neo4j.annotation.Query;
 
 public interface ResultRepository extends GenericRepository<Result> {
 
+    @Query("MATCH (n:Result {uuid: {0}}) RETURN n")
+    Result findByUuid(String uuid);
+
     @Query("MATCH (n:Result) RETURN count(n)")
     long count();
 }

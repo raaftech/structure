@@ -1,5 +1,6 @@
 package com.raaftech.structure.graph;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.common.collect.ImmutableList;
@@ -9,6 +10,7 @@ import com.raaftech.structure.base.Configuration;
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.bus.GenericActor;
 import com.raaftech.structure.exceptions.IllegalEntityType;
+import com.raaftech.structure.exceptions.ResultBuilderException;
 import com.raaftech.structure.exceptions.TypeUnknownException;
 import com.raaftech.structure.graph.converters.JsonNodeWriter;
 import com.raaftech.structure.graph.repositories.InstanceRepository;
@@ -138,6 +140,107 @@ public class Entity {
     // Allow construction of Entity with a specific neo4j template, for testing purposes
     public Entity(Neo4jTemplate neo4jTemplate) {
         this.neo4jTemplate = neo4jTemplate;
+    }
+
+    /* Builders */
+    public static class ResultBuilder {
+        // Required
+        private String process;
+        private String taskId;
+        // Optional
+        private String stdout;
+        private String stderr;
+        private Integer returnCode;
+        private String user;
+        private Result.State state;
+        private String error;
+
+
+        public ResultBuilder() {}
+        public ResultBuilder process(String process) {
+            this.process = process;
+            return this;
+        }
+        public ResultBuilder taskId(String taskId) {
+            this.taskId = taskId;
+            return this;
+        }
+
+        // Optional fields
+        public ResultBuilder stdout(String stdout) {
+            this.stdout = stdout;
+            return this;
+        }
+        public ResultBuilder stderr(String stderr) {
+            this.stderr = stderr;
+            return this;
+        }
+        public ResultBuilder returnCode(int returnCode) {
+            this.returnCode = returnCode;
+            return this;
+        }
+        public ResultBuilder user(String user) {
+            this.user = user;
+            return this;
+        }
+        public ResultBuilder state(Result.State state) {
+            this.state = state;
+            return this;
+        }
+        public ResultBuilder error(String error) {
+            this.error = error;
+            return this;
+        }
+
+        public Result build() throws JsonProcessingException {
+            if (process == null || taskId == null) {
+                log.error("Error while building Result");
+                throw new ResultBuilderException("Not all required parameters were set.");
+            }
+            Type resultType = Context.getTypeRepository().findOneByName("Result");
+            Map<String, Object> data = new HashMap<>();
+                    data.put(Result.NAME, "Result");
+                    data.put(Result.DESC, "A result.");
+                    data.put(Result.PROCESS, process);
+                    data.put(Result.TASKID, taskId);
+                    data.put(Result.DATECREATED, System.currentTimeMillis());
+
+            if (stdout != null) {
+                data.put(Result.STDOUT, stdout);
+            }
+            if (stderr != null) {
+                data.put(Result.STDERR, stderr);
+            }
+            if (returnCode != null) {
+                data.put(Result.RETURNCODE, returnCode);
+            }
+            if (user != null) {
+                data.put(Result.USER, user);
+            }
+            if (error != null) {
+                data.put(Result.ERROR, error);
+            }
+            if (state != null) {
+                data.put(Result.STATECODE, state.code);
+                data.put(Result.STATEINTERPRETATION, state.interpretation);
+                data.put(Result.STATEDESCRIPTION, state.description);
+            }
+
+            Entity entity = new Entity();
+            entity.setUuid(UUID.randomUUID().toString());
+            entity.setName("Result");
+            entity.setDesc("A result.");
+            entity.addRelations("INSTANCE_OF", Direction.OUTGOING, ImmutableSet.of(UUID.fromString(resultType.getUuid())));
+            entity.setData(data);
+
+            // -_-
+            Transaction tx = Context.getGraphDatabase().beginTx();
+            entity.toGraph();
+            tx.success();
+            tx.close();
+
+            return Context.getResultRepository().findByUuid(entity.getUuid());
+        }
     }
 
 

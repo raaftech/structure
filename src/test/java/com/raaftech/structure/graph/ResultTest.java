@@ -1,7 +1,10 @@
 package com.raaftech.structure.graph;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.github.fge.jsonschema.main.JsonSchema;
+import com.raaftech.structure.base.Configuration;
 import com.raaftech.structure.base.Context;
+import com.raaftech.structure.base.SpringTestConfig;
 import com.raaftech.structure.exceptions.IllegalEntityType;
 import com.raaftech.structure.graph.repositories.InstanceRepository;
 import com.raaftech.structure.graph.repositories.ResultRepository;
@@ -15,69 +18,121 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
+import org.neo4j.graphdb.Transaction;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.neo4j.core.GraphDatabase;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.AnnotationConfigContextLoader;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.net.URI;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.IntStream;
 
+import static io.vertx.core.json.Json.mapper;
 import static junit.framework.TestCase.assertFalse;
 import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(loader = AnnotationConfigContextLoader.class, classes = SpringTestConfig.class)
 public class ResultTest {
 
-    @Mocked
-    Context context;
+    @Autowired
+    GraphDatabase graphDatabase;
+    @Autowired
+    InstanceRepository instanceRepository;
+    @Autowired
+    TypeRepository typeRepository;
+    @Autowired
+    ResultRepository resultRepository;
     @Mocked
     JsonHelper jsonHelper;
-    @Mocked
-    InstanceRepository instanceRepository;
-    @Mocked
-    TypeRepository typeRepository;
-    @Mocked
-    Type resultType;
 
     @Before
     public void setUp() throws Exception {
         new Expectations() {{
-            // Validation of generated JSON to Result type's schema is always true
-            JsonHelper.validateToSchema((JsonNode) any, (JsonNode) any);
+            JsonHelper.validateToSchema((URI)any, (JsonNode)any);
             result = true;
-
-            typeRepository.findOneByName("Result");
-            result = resultType;
         }};
 
+        String rootType = "  {" +
+                "    \"name\": \"Type\"," +
+                "    \"desc\": \"The root type.\"," +
+                "    \"meta\": {" +
+                "      \"uuid\": \"b1bc963a-19cc-4518-aecb-a35d028c49e3\"," +
+                "      \"abstract\": true," +
+                "      \"relations\": {}" +
+                "    },  " +
+                "    \"file\": {" +
+                "      \"dataSchema\": {" +
+                "        \"encoding\": \"text\"," +
+                "        \"format\": \"json\"," +
+                "        \"content\": \"{}\"" +
+                "      }   " +
+                "    }   " +
+                "  }";
+
+        String resultType = "{" +
+                "    \"name\": \"Result\"," +
+                "    \"desc\": \"A result from an operation.\"," +
+                "    \"meta\": {" +
+                "        \"uuid\": \"f3498c02-58c6-486b-87c6-9d54607fdb12\"," +
+                "        \"relations\": {" +
+                "            \"ISA\": {" +
+                "                \"direction\": \"outgoing\"," +
+                "                \"to\": [" +
+                "                    \"b1bc963a-19cc-4518-aecb-a35d028c49e3\"" +
+                "                ]   " +
+                "            }   " +
+                "        },  " +
+                "        \"constraints\": {" +
+                "            \"NEXT_RESULT\": [" +
+                "                {   " +
+                "                    \"cardinality\": \"OPTIONAL_TO_ONE\"," +
+                "                    \"to\": \"f3498c02-58c6-486b-87c6-9d54607fdb12\"" +
+                "                }   " +
+                "            ]   " +
+                "        }   " +
+                "    },  " +
+                "    \"file\": {" +
+                "        \"dataSchema\": {" +
+                "            \"encoding\": \"text\"," +
+                "            \"format\": \"json\"," +
+                "            \"content\": \"{}\"" +
+                "        }   " +
+                "    }   " +
+                "}";
+
+        Entity rootEntity = mapper.readValue(rootType, Entity.class);
+        Entity resultEntity = mapper.readValue(resultType, Entity.class);
+
+        Configuration.setSchemaNamespace(URI.create("http://localhost"));
+
+        Transaction tx = graphDatabase.beginTx();
+        rootEntity.toGraph();
+        resultEntity.toGraph();
+        tx.success();
+        tx.close();
     }
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
     @Test
-    public void save(
-            @Mocked ResultRepository resultRepository,
-            @Mocked TypeRepository typeRepository,
-            @Mocked Type type) throws Exception {
+    public void save() throws Exception {
         // save the thing
         String taskId = UUID.randomUUID().toString();
 
-        Result res = new Result.Builder().process("test.exe").taskId(taskId)
+        Result res = new Entity.ResultBuilder().process("test.exe").taskId(taskId)
                 .stdout("stdout").stderr("stderr").returnCode(0).build();
         res.save();
 
-        // Make sure the result was actually saved to the repository.
-        new Verifications() {{
-            resultRepository.save(res);
-        }};
-
-
-        // Return the created result from the repository.
-        new StrictExpectations() {{
-            resultRepository.findByUuid(res.getUuid());
-            result = res;
-        }};
 
         // retrieve the result
         Result retrieved = resultRepository.findByUuid(res.getUuid());
@@ -88,28 +143,28 @@ public class ResultTest {
 
     @Test
     public void getThisAndNewer() throws Exception {
-        Result r1 = new Result.Builder()
+        Result r1 = new Entity.ResultBuilder()
                 .process("1")
                 .taskId(UUID.randomUUID().toString())
                 .stdout("1")
                 .stderr("1")
                 .returnCode(1)
                 .build();
-        Result r2 = new Result.Builder()
+        Result r2 = new Entity.ResultBuilder()
                 .process("2")
                 .taskId(UUID.randomUUID().toString())
                 .stdout("2")
                 .stderr("2")
                 .returnCode(2)
                 .build();
-        Result r3 = new Result.Builder()
+        Result r3 = new Entity.ResultBuilder()
                 .process("3")
                 .taskId(UUID.randomUUID().toString())
                 .stdout("3")
                 .stderr("3")
                 .returnCode(3)
                 .build();
-        Result r4 = new Result.Builder()
+        Result r4 = new Entity.ResultBuilder()
                 .process("4")
                 .taskId(UUID.randomUUID().toString())
                 .stdout("4")
@@ -133,28 +188,28 @@ public class ResultTest {
 
     @Test
     public void getThisAndOlder() throws Exception {
-        Result r1 = new Result.Builder()
+        Result r1 = new Entity.ResultBuilder()
                 .process("1")
                 .taskId(UUID.randomUUID().toString())
                 .stdout("1")
                 .stderr("1")
                 .returnCode(1)
                 .build();
-        Result r2 = new Result.Builder()
+        Result r2 = new Entity.ResultBuilder()
                 .process("2")
                 .taskId(UUID.randomUUID().toString())
                 .stdout("2")
                 .stderr("2")
                 .returnCode(2)
                 .build();
-        Result r3 = new Result.Builder()
+        Result r3 = new Entity.ResultBuilder()
                 .process("3")
                 .taskId(UUID.randomUUID().toString())
                 .stdout("3")
                 .stderr("3")
                 .returnCode(3)
                 .build();
-        Result r4 = new Result.Builder()
+        Result r4 = new Entity.ResultBuilder()
                 .process("4")
                 .taskId(UUID.randomUUID().toString())
                 .stdout("4")
@@ -177,29 +232,29 @@ public class ResultTest {
     }
 
     @Test
-    public void testSetNextException() {
-        Result r1 = new Result.Builder()
+    public void testSetNextException() throws Exception {
+        Result r1 = new Entity.ResultBuilder()
                 .process("1")
                 .taskId(UUID.randomUUID().toString())
                 .stdout("1")
                 .stderr("1")
                 .returnCode(1)
                 .build();
-        Result r2 = new Result.Builder()
+        Result r2 = new Entity.ResultBuilder()
                 .process("2")
                 .taskId(UUID.randomUUID().toString())
                 .stdout("2")
                 .stderr("2")
                 .returnCode(2)
                 .build();
-        Result r3 = new Result.Builder()
+        Result r3 = new Entity.ResultBuilder()
                 .process("3")
                 .taskId(UUID.randomUUID().toString())
                 .stdout("3")
                 .stderr("3")
                 .returnCode(3)
                 .build();
-        Result r4 = new Result.Builder()
+        Result r4 = new Entity.ResultBuilder()
                 .process("4")
                 .taskId(UUID.randomUUID().toString())
                 .stdout("4")
@@ -228,7 +283,7 @@ public class ResultTest {
 
     @Test
     public void testOptionals() throws Exception {
-        Result result = new Result.Builder()
+        Result result = new Entity.ResultBuilder()
                 .process("1")
                 .taskId(UUID.randomUUID().toString())
                 .stdout("1")
@@ -249,14 +304,14 @@ public class ResultTest {
     @Test
     public void testAddResultToResult() throws Exception {
         // Adding a result to a result shouldn't be allowed.
-        Result r1 = new Result.Builder()
+        Result r1 = new Entity.ResultBuilder()
                 .process("1")
                 .taskId(UUID.randomUUID().toString())
                 .stdout("1")
                 .stderr("1")
                 .returnCode(1)
                 .build();
-        Result r2 = new Result.Builder()
+        Result r2 = new Entity.ResultBuilder()
                 .process("2")
                 .taskId(UUID.randomUUID().toString())
                 .stdout("2")
