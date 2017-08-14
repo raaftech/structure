@@ -267,6 +267,7 @@ class Helper {
             genInstance('OpenSshClient'),
             genInstance('Winexe'),
             genInstance('SambaClient'),
+            genInstance('Python2x'),
             genInstance('Structure')
         ];
     }
