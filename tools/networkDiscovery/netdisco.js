@@ -99,7 +99,6 @@ const main = (db) => {
                     R.forEach(item => {
                         promises.push(rest.createInstance({entities: [item]}));
                     }, graph);
-                    log(helper.getTypeMap(graph));
                     return Promise.all(promises);
                 })
                 .then(result => {
