@@ -116,6 +116,12 @@ public class InstanceActor extends NodeActor<Instance> {
             public JsonNode exec(JsonNode request) {
                 ObjectNode result = mapper.createObjectNode();
 
+                // This depends on Structure being bootstrapped, return if not
+                if (Context.getSelfGroup() == null) {
+                    result.put("error", "Structure isn't bootstrapped.");
+                    return response(request, result);
+                }
+
                 Instance structure = INSTANCE_REPOSITORY.findByUuid(Context.getSelfIdentifier());
                 String originUuid = getNode().getUuid();
                 Instance startOfComponentGroup = INSTANCE_REPOSITORY.getStartOfComponentGroup(originUuid);
@@ -153,6 +159,13 @@ public class InstanceActor extends NodeActor<Instance> {
             @Override
             public JsonNode exec(JsonNode request) {
                 ObjectNode result = mapper.createObjectNode();
+
+                // This depends on Structure being bootstrapped, return if not
+                if (Context.getSelfGroup() == null) {
+                    result.put("error", "Structure isn't bootstrapped.");
+                    return response(request, result);
+                }
+
                 JsonNode args = request.get("args");
                 JsonNode instrumentArgs;
                 Controller instrument = null;
@@ -219,6 +232,12 @@ public class InstanceActor extends NodeActor<Instance> {
             public JsonNode exec(JsonNode request) {
                 ObjectNode result = mapper.createObjectNode();
 
+                // This depends on Structure being bootstrapped, return if not
+                if (Context.getSelfGroup() == null) {
+                    result.put("error", "Structure isn't bootstrapped.");
+                    return response(request, result);
+                }
+
                 Instance structure = INSTANCE_REPOSITORY.findByUuid(Context.getSelfIdentifier());
                 String originUuid = getNode().getUuid();
 
@@ -252,6 +271,13 @@ public class InstanceActor extends NodeActor<Instance> {
             @Override
             public JsonNode exec(JsonNode request) {
                 final ObjectNode result = mapper.createObjectNode();
+
+                // This depends on Structure being bootstrapped, return if not
+                if (Context.getSelfGroup() == null) {
+                    result.put("error", "Structure isn't bootstrapped.");
+                    return response(request, result);
+                }
+
                 final JsonNode args = request.get("args");
                 final String capability = args.get("capability").asText();
                 final UUID taskId = args.has("taskId") ? UUID.fromString(args.get("taskId").asText()) : UUID.randomUUID();

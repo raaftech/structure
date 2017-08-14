@@ -10,6 +10,7 @@ import com.raaftech.structure.base.Context;
 import com.raaftech.structure.bus.GenericActor;
 import com.raaftech.structure.bus.NodeActor;
 import com.raaftech.structure.graph.Component;
+import com.raaftech.structure.graph.Group;
 import com.raaftech.structure.graph.Instance;
 import com.raaftech.structure.graph.repositories.*;
 import com.raaftech.structure.helper.ProcessRunner;
@@ -183,7 +184,7 @@ public class StructureManager extends GenericActor {
             }
             // Wait a second so debug messages are done
             int newNodesWaitCycles = 0;
-            Instance structureInstance = null;
+            Group structureInstance = null;
             while (host == null && structureInstance == null && newNodesWaitCycles < 5) {
                 if (newNodesWaitCycles == 0) {
                     log.info("Waiting for registration...");
@@ -201,6 +202,7 @@ public class StructureManager extends GenericActor {
                         Context.getInstanceRepository().getStartOfComponentGroup(host.getUuid()) : structureInstance;
             }
             if (host != null && structureInstance != null) {
+                Context.setSelfGroup(structureInstance);
                 Context.setSelfIdentifier(structureInstance.getUuid());
             } else {
                 throw new RuntimeException("Self discovery script didn't create any new nodes.");

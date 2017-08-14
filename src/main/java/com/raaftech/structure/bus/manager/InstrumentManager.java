@@ -109,9 +109,16 @@ public class InstrumentManager extends GenericActor {
         return new MessageHandler() {
             @Override
             public JsonNode exec(JsonNode request) {
+                final ObjectNode result = mapper.createObjectNode();
+
+                // This depends on Structure being bootstrapped, return if not
+                if (Context.getSelfGroup() == null) {
+                    result.put("error", "Structure isn't bootstrapped.");
+                    return response(request, result);
+                }
+
                 final String instanceActorFormat = "com.raaftech.structure.bus.node.%s";
                 final JsonNode args = request.get("args");
-                final ObjectNode result = mapper.createObjectNode();
                 final ArrayNode uuids = (ArrayNode) args.get("uuids");
                 final UUID taskId = UUID.randomUUID();
 
