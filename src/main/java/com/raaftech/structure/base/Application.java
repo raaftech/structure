@@ -4,6 +4,7 @@ import ch.qos.logback.classic.Level;
 import com.raaftech.structure.bus.InstanceActor;
 import com.raaftech.structure.bus.TypeActor;
 import com.raaftech.structure.graph.Component;
+import com.raaftech.structure.graph.Group;
 import com.raaftech.structure.graph.Instance;
 import com.raaftech.structure.graph.repositories.InstanceRepository;
 import com.raaftech.structure.graph.repositories.TypeRepository;
@@ -311,8 +312,9 @@ public class Application {
 
             Component host = Context.getInstanceRepository().findDnsName(Context.getHostname());
             if (host != null) {
-                Instance structureInstance = Context.getInstanceRepository().getStartOfComponentGroup(host.getUuid());
+                Group structureInstance = Context.getInstanceRepository().getStartOfComponentGroup(host.getUuid());
                 if (structureInstance != null) {
+                    Context.setSelfGroup(structureInstance);
                     Context.setSelfIdentifier(structureInstance.getUuid());
                 }
             }

@@ -4,6 +4,7 @@
 
 package com.raaftech.structure.base;
 
+import com.raaftech.structure.graph.Group;
 import com.raaftech.structure.graph.repositories.*;
 import io.vertx.core.Vertx;
 import org.slf4j.Logger;
@@ -37,6 +38,8 @@ public class Context implements ApplicationContextAware {
     private static String hostname = null;
     // The identifier used to identify this structure instance in the database.
     private static String selfIdentifier = null;
+    // The Grouping representing the server Structure is running on
+    private static Group structure;
 
     public static void setHostname(String hostname) {
         if (Context.hostname == null) {
@@ -50,12 +53,24 @@ public class Context implements ApplicationContextAware {
         Context.selfIdentifier = selfIdentifier;
     }
 
+    public static void setSelfGroup(Group structure) {
+        Context.structure = structure;
+    }
+
     public static String getHostname() {
         return hostname;
     }
 
     public static String getSelfIdentifier() {
         return selfIdentifier;
+    }
+
+    /**
+     * This returns the group that represents this Structure instance in the database.
+     * @return See description.
+     */
+    public static Group getSelfGroup() {
+        return structure;
     }
 
     public static NodeRepository getNodeRepository() {
