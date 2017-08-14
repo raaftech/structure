@@ -17,7 +17,7 @@ public interface GroupingRepository extends GenericRepository<Group> {
     @Query ("MATCH (grouping:Group {name:{0}}) RETURN grouping")
     Group findOneByName(String name);
 
-    @Query("MATCH (:Group{uuid:{uuid}})-[*1..]->(m:Instance)-[:INSTANCE_OF|ISA*1..]->(:Type{name: {name}})" +
+    @Query("MATCH (:Group{uuid:{uuid}})<-[:MEMBER_OF]-()-[*1..]->(m:Instance)-[:INSTANCE_OF|ISA*1..]->(:Type{name: {name}})" +
             "RETURN m")
     Set<Instance> getChildrenOfType(@Param("uuid") String groupUuid, @Param("name") String typeName);
 

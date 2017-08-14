@@ -40,12 +40,12 @@ class Helper {
         //Ip data
         pair = relate(ipEntity);
         os = R.clone(pair[0]);
-        graph.entities.push(R.clone(pair[1]));
-        R.forEach(item => {
-            pair = relate(item);
-            os = R.clone(pair[0]);
-            graph.entities.push(R.clone(pair[1]));
-        }, this.harvestIps(ansibleData,ipString));
+//        graph.entities.push(R.clone(pair[1]));
+//        R.forEach(item => {
+//            pair = relate(item);
+//            os = R.clone(pair[0]);
+//            graph.entities.push(R.clone(pair[1]));
+//        }, this.harvestIps(ansibleData,ipString));
 
         //SSH / SMB
         let ssh = this.daemonData();
