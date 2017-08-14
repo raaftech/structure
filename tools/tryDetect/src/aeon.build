@@ -6,19 +6,19 @@
     "mappings": [
       {
         "key": "inMapping",
-        "file": "src/recv/recv.inMapping"
+        "file": "src/recv/inMapping.js"
       },
       {
         "key": "outMapping",
-        "file": "src/recv/recv.outMapping"
+        "file": "src/recv/outMapping.js"
       },
       {
         "key": "inSpec",
-        "file": "src/recv/recv.inSpec.json"
+        "file": "src/recv/inSpec.json"
       },
       {
         "key": "outSpec",
-        "file": "src/recv/recv.outSpec.json"
+        "file": "src/recv/outSpec.json"
       }
     ]
   },
@@ -29,19 +29,19 @@
     "mappings": [
       {
         "key": "inMapping",
-        "file": "src/getAllTypes/getAllTypes.inMapping"
+        "file": "src/getAllTypes/inMapping.js"
       },
       {
         "key": "outMapping",
-        "file": "src/getAllTypes/getAllTypes.outMapping"
+        "file": "src/getAllTypes/outMapping.js"
       },
       {
         "key": "inSpec",
-        "file": "src/getAllTypes/getAllTypes.inSpec.json"
+        "file": "src/getAllTypes/inSpec.json"
       },
       {
         "key": "outSpec",
-        "file": "src/getAllTypes/getAllTypes.outSpec.json"
+        "file": "src/getAllTypes/outSpec.json"
       }
     ]
   },
@@ -52,19 +52,19 @@
     "mappings": [
       {
         "key": "inMapping",
-        "file": "src/fetchInstance/fetchInstance.inMapping"
+        "file": "src/fetchInstance/inMapping.js"
       },
       {
         "key": "outMapping",
-        "file": "src/fetchInstance/fetchInstance.outMapping"
+        "file": "src/fetchInstance/outMapping.js"
       },
       {
         "key": "inSpec",
-        "file": "src/fetchInstance/fetchInstance.inSpec.json"
+        "file": "src/fetchInstance/inSpec.json"
       },
       {
         "key": "outSpec",
-        "file": "src/fetchInstance/fetchInstance.outSpec.json"
+        "file": "src/fetchInstance/outSpec.json"
       }
     ]
   },
@@ -75,19 +75,19 @@
     "mappings": [
       {
         "key": "inMapping",
-        "file": "src/createGenericInstance/createGenericInstance.inMapping"
+        "file": "src/createGenericInstance/inMapping.js"
       },
       {
         "key": "outMapping",
-        "file": "src/createGenericInstance/createGenericInstance.outMapping"
+        "file": "src/createGenericInstance/outMapping.js"
       },
       {
         "key": "inSpec",
-        "file": "src/createGenericInstance/createGenericInstance.inSpec.json"
+        "file": "src/createGenericInstance/inSpec.json"
       },
       {
         "key": "outSpec",
-        "file": "src/createGenericInstance/createGenericInstance.outSpec.json"
+        "file": "src/createGenericInstance/outSpec.json"
       }
     ]
   },
@@ -98,19 +98,19 @@
     "mappings": [
       {
         "key": "inMapping",
-        "file": "src/detect/detect.inMapping"
+        "file": "src/detect/inMapping.js"
       },
       {
         "key": "outMapping",
-        "file": "src/detect/detect.outMapping"
+        "file": "src/detect/outMapping.js"
       },
       {
         "key": "inSpec",
-        "file": "src/detect/detect.inSpec.json"
+        "file": "src/detect/inSpec.json"
       },
       {
         "key": "outSpec",
-        "file": "src/detect/detect.outSpec.json"
+        "file": "src/detect/outSpec.json"
       }
     ]
   },
@@ -121,19 +121,19 @@
     "mappings": [
       {
         "key": "inMapping",
-        "file": "src/handleStatusMessage/handleStatusMessage.inMapping"
+        "file": "src/handleStatusMessage/inMapping.js"
       },
       {
         "key": "outMapping",
-        "file": "src/handleStatusMessage/handleStatusMessage.outMapping"
+        "file": "src/handleStatusMessage/outMapping.js"
       },
       {
         "key": "inSpec",
-        "file": "src/handleStatusMessage/handleStatusMessage.inSpec.json"
+        "file": "src/handleStatusMessage/inSpec.json"
       },
       {
         "key": "outSpec",
-        "file": "src/handleStatusMessage/handleStatusMessage.outSpec.json"
+        "file": "src/handleStatusMessage/outSpec.json"
       }
     ]
   },
@@ -144,65 +144,19 @@
     "mappings": [
       {
         "key": "inMapping",
-        "file": "src/specialize/specialize.inMapping"
+        "file": "src/specialize/inMapping.js"
       },
       {
         "key": "outMapping",
-        "file": "src/specialize/specialize.outMapping"
+        "file": "src/specialize/outMapping.js"
       },
       {
         "key": "inSpec",
-        "file": "src/specialize/specialize.inSpec.json"
+        "file": "src/specialize/inSpec.json"
       },
       {
         "key": "outSpec",
-        "file": "src/specialize/specialize.outSpec.json"
-      }
-    ]
-  },
-  {
-    "transition": "detect ok",
-    "type": "Pass",
-    "connector": "Pass",
-    "mappings": [
-      {
-        "key": "inMapping",
-        "file": "src/detect_ok/detect_ok.inMapping"
-      },
-      {
-        "key": "outMapping",
-        "file": "src/detect_ok/detect_ok.outMapping"
-      },
-      {
-        "key": "inSpec",
-        "file": "src/detect_ok/detect_ok.inSpec.json"
-      },
-      {
-        "key": "outSpec",
-        "file": "src/detect_ok/detect_ok.outSpec.json"
-      }
-    ]
-  },
-  {
-    "transition": "detect nok",
-    "type": "Pass",
-    "connector": "Pass",
-    "mappings": [
-      {
-        "key": "inMapping",
-        "file": "src/detect_nok/detect_nok.inMapping"
-      },
-      {
-        "key": "outMapping",
-        "file": "src/detect_nok/detect_nok.outMapping"
-      },
-      {
-        "key": "inSpec",
-        "file": "src/detect_nok/detect_nok.inSpec.json"
-      },
-      {
-        "key": "outSpec",
-        "file": "src/detect_nok/detect_nok.outSpec.json"
+        "file": "src/specialize/outSpec.json"
       }
     ]
   },
@@ -213,19 +167,65 @@
     "mappings": [
       {
         "key": "inMapping",
-        "file": "src/removeInstance/removeInstance.inMapping"
+        "file": "src/removeInstance/inMapping.js"
       },
       {
         "key": "outMapping",
-        "file": "src/removeInstance/removeInstance.outMapping"
+        "file": "src/removeInstance/outMapping.js"
       },
       {
         "key": "inSpec",
-        "file": "src/removeInstance/removeInstance.inSpec.json"
+        "file": "src/removeInstance/inSpec.json"
       },
       {
         "key": "outSpec",
-        "file": "src/removeInstance/removeInstance.outSpec.json"
+        "file": "src/removeInstance/outSpec.json"
+      }
+    ]
+  },
+  {
+    "transition": "detect ok",
+    "type": "Pass",
+    "connector": "Pass",
+    "mappings": [
+      {
+        "key": "inMapping",
+        "file": "src/detect_ok/inMapping.js"
+      },
+      {
+        "key": "outMapping",
+        "file": "src/detect_ok/outMapping.js"
+      },
+      {
+        "key": "inSpec",
+        "file": "src/detect_ok/inSpec.json"
+      },
+      {
+        "key": "outSpec",
+        "file": "src/detect_ok/outSpec.json"
+      }
+    ]
+  },
+  {
+    "transition": "detect nok",
+    "type": "Pass",
+    "connector": "Pass",
+    "mappings": [
+      {
+        "key": "inMapping",
+        "file": "src/detect_nok/inMapping.js"
+      },
+      {
+        "key": "outMapping",
+        "file": "src/detect_nok/outMapping.js"
+      },
+      {
+        "key": "inSpec",
+        "file": "src/detect_nok/inSpec.json"
+      },
+      {
+        "key": "outSpec",
+        "file": "src/detect_nok/outSpec.json"
       }
     ]
   },
@@ -236,19 +236,19 @@
     "mappings": [
       {
         "key": "inMapping",
-        "file": "src/specialize_not_ok/specialize_not_ok.inMapping"
+        "file": "src/specialize_not_ok/inMapping.js"
       },
       {
         "key": "outMapping",
-        "file": "src/specialize_not_ok/specialize_not_ok.outMapping"
+        "file": "src/specialize_not_ok/outMapping.js"
       },
       {
         "key": "inSpec",
-        "file": "src/specialize_not_ok/specialize_not_ok.inSpec.json"
+        "file": "src/specialize_not_ok/inSpec.json"
       },
       {
         "key": "outSpec",
-        "file": "src/specialize_not_ok/specialize_not_ok.outSpec.json"
+        "file": "src/specialize_not_ok/outSpec.json"
       }
     ]
   },
@@ -259,19 +259,19 @@
     "mappings": [
       {
         "key": "inMapping",
-        "file": "src/specialize_ok/specialize_ok.inMapping"
+        "file": "src/specialize_ok/inMapping.js"
       },
       {
         "key": "outMapping",
-        "file": "src/specialize_ok/specialize_ok.outMapping"
+        "file": "src/specialize_ok/outMapping.js"
       },
       {
         "key": "inSpec",
-        "file": "src/specialize_ok/specialize_ok.inSpec.json"
+        "file": "src/specialize_ok/inSpec.json"
       },
       {
         "key": "outSpec",
-        "file": "src/specialize_ok/specialize_ok.outSpec.json"
+        "file": "src/specialize_ok/outSpec.json"
       }
     ]
   }

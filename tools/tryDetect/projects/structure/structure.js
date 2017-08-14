@@ -26,7 +26,7 @@ const createGenericInstance = (input) => {
 	return rest.createInstance({entities: [R.last(pair)]})
 		.then(result => {
 			console.log('----->createInstance result: '+JSON.stringify(result));
-			rest.updateInstance({entities: [R.head(pair)]})
+			return rest.updateInstance({entities: [R.head(pair)]})
 		})
 		.then(result => {
 			console.log('----->updateInstance result: '+JSON.stringify(result));
