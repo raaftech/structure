@@ -336,6 +336,9 @@ public class InstanceActor extends NodeActor<Instance> {
             if (res.failed()) {
                 if (Configuration.isTraceModeOn()) {
                     res.cause().printStackTrace();
+                    publishStatus("runControllerError", mapper.createObjectNode()
+                            .put("taskId", taskId.toString())
+                            .put("data", res.cause().getMessage()));
                 }
                 log.error(res.cause().getMessage());
             } else {
