@@ -71,7 +71,8 @@ public class Application {
                     .addOption("h", "help", false, "Display help message")
                     .addOption("l", "loglevel", true, "Set loglevel (INFO | DEBUG | TRACE)")
                     .addOption("t", "trace", false, "Enable (back)traces")
-                    .addOption("u", "unsafe", false, "Enable unsafe mode");
+                    .addOption("u", "unsafe", false, "Enable unsafe mode")
+                    .addOption("b", "bundles", true, "Bundle locations to load");
 
             configuration = ConfigurationProxy.builder()
                     .options(options)
@@ -194,7 +195,7 @@ public class Application {
         queryExecutor.query("CREATE CONSTRAINT ON (n:Node) ASSERT n.uuid IS UNIQUE", null, null);
 
         // Initialize Configuration
-        Configuration.init();
+        Configuration.init(configuration);
 
         // Deploy our main actors.
         vertx.deployVerticle("com.raaftech.structure.bus.manager.StructureManager", ar -> {

@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.neo4j.support.Neo4jTemplate;
 import org.springframework.data.neo4j.support.query.CypherQueryExecutor;
 
+import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -43,7 +44,7 @@ public class BundleLoader {
      * because of cyclic dependencies.
      */
     public BundleLoader() throws Exception {
-        this(Configuration.getBundlePath());
+        this(Configuration.getBundlePaths());
     }
 
     /**
@@ -51,8 +52,8 @@ public class BundleLoader {
      * @throws Exception Exceptions may occur when the list of entities is unsortable
      * because of cyclic dependencies.
      */
-    public BundleLoader(String bundlePath) throws Exception {
-        NaiveSorter naiveSorter = new NaiveSorter(bundlePath);
+    public BundleLoader(List<Path> bundlePaths) throws Exception {
+        NaiveSorter naiveSorter = new NaiveSorter(bundlePaths);
         sortedNodes = naiveSorter.getUpdateList(naiveSorter.sortIt(naiveSorter.readAllJson()));
 
         // Find all the type entities
