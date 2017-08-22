@@ -285,6 +285,22 @@ class RestConnector {
             headers: {'Content-Type': 'application/x-www-form-urlencoded'}
         }).then(result => result.json());
     }
+
+    getSchema(typeName) {
+        let url = util.format('%s/schemas/%s',getBaseUrl(this.host,this.port), encodeURIComponent(typeName));
+        return fetch(url).then(result => result.json());
+    }
+
+    validateInstanceBySchema(typeName, instance) {
+        let url = util.format('%s/schemas/validate/%s?access_token=%s',getBaseUrl(this.host,this.port), encodeURIComponent(typeName), this.token);
+        let data = util.format('instance=%s', encodeURIComponent(JSON.stringify(instance)));
+
+        return fetch(url, {
+            method: 'POST',
+            body: data,
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+        }).then(result => result.json());
+    }
 }
 
 module.exports = RestConnector;

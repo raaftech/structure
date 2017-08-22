@@ -11,7 +11,6 @@ const graphLib = require(path.join(__dirname, '..', 'graphLib'));
 
 module.exports = function(vorpal, options) {
     const rest = options.rest;
-    const validator = options.validator;
     const typeDb = options.typeDb;
 
     vorpal.command('instance')
@@ -47,7 +46,7 @@ module.exports = function(vorpal, options) {
             let baseType = graphLib.findTypeByFuzzyNameMatch(typeDb, args.typeName);
             let instance = graphLib.createInstance(baseType, {});
 
-            validator.getSchema(args.typeName)
+            rest.getSchema(args.typeName)
                         .then(typeSchema => {
                             let getPropertyKeys = R.pipe(R.prop('properties'), R.keys);
                             let createQuestions = (schema) => {
@@ -93,7 +92,7 @@ module.exports = function(vorpal, options) {
                                 if(R.isNil(instance.data)) instance.data = res;
                                 else instance.data = R.merge(instance.data,res);
 
-                                validator.validate(args.typeName, instance.data)
+                                rest.validateInstanceBySchema(args.typeName, instance.data)
                                     .then(vres => {
                                         if(vres.valid) {
                                             instance.data = R.merge(instance.data, vres.instance);
@@ -139,7 +138,7 @@ module.exports = function(vorpal, options) {
                     return graphLib.findTypeByUuid(typeDb, graphLib.getInstanceOfUuid(instance));
                 })
                 .then(entity => {
-                    validator.getSchema(entity.name)
+                    rest.getSchema(entity.name)
                         .then(typeSchema => {
                             let getPropertyKeys = R.pipe(R.prop('properties'), R.keys);
                             let createQuestions = (schema) => {
@@ -183,7 +182,7 @@ module.exports = function(vorpal, options) {
                                 res = sanitizeAnswer(typeSchema.required, res);
                                 if(R.isNil(currentInstance.data)) currentInstance.data = res;
                                 else currentInstance.data = R.merge(currentInstance.data,res);
-                                validator.validate(entity.name, currentInstance.data)
+                                rest.validateInstanceBySchema(entity.name, currentInstance.data)
                                     .then(vres => {
                                         if(vres.valid) {
                                             currentInstance.data = R.merge(currentInstance.data, vres.instance);

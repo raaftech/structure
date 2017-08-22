@@ -54,7 +54,7 @@ function scli() {
 	vorpal.use(neoExt, answerCache);
 	vorpal.use(structureExt, {rest: rest, memoryBank: memoryBank, cache: answerCache});
 	vorpal.use(groupExt, rest);
-	vorpal.use(instanceExt, {rest: rest, validator: validator, typeDb: typeDb});
+	vorpal.use(instanceExt, {rest: rest, typeDb: typeDb});
 	vorpal.delimiter(clc.magenta.bold('structure$')).show();
 
 	vorpal.on('keypress', function(key) {
