@@ -1,0 +1,4 @@
+#!/bin/bash
+
+cd /opt/structure/backend
+exec java -jar /opt/structure/backend/structure.jar -u

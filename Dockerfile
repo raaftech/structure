@@ -6,23 +6,30 @@ from openjdk:8-jre
 
 MAINTAINER Structure Team "structure@raaf.tech"
 
+RUN echo "deb http://ppa.launchpad.net/ansible/ansible/ubuntu trusty main" >> /etc/apt/sources.list.d/ansible.list
+RUN echo "deb http://deb.nodesource.com/node_8.x trusty main" >> /etc/apt/sources.list.d/nodejs.list
+RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 93C4A3FD7BB9C367 1655A0AB68576280
 RUN apt-get update
 RUN apt-get install -y --no-install-recommends \
 		nmap \
 		smbclient \
 		nodejs \
+		ansible \
 		runit
 RUN rm -rf /var/lib/apt/lists/*
-
-COPY ../target/structure-0.9.0-SNAPSHOT-fat.jar /opt/structure/backend/structure.jar
-COPY ../rest /opt/structure/
-COPY ../src/main/resources/bundles /opt/structure/bundles/raaf
-COPY bin/winexe-x86_64 /usr/bin/winexe
-
-EXPOSE 3000
 
 ENV STRUCTURE_HOME=/opt/structure/
 ENV STRUCTURE_BUNDLES=${STRUCTURE_HOME}/bundles/
 
-WORKDIR /opt/structure/
-ENTRYPOINT ["java", "-jar", "/opt/structure/structure.jar", "-u"]
+COPY target/structure-0.9.0-SNAPSHOT-fat.jar ${STRUCTURE_HOME}/backend/structure.jar
+COPY rest ${STRUCTURE_HOME}/rest
+COPY tools ${STRUCTURE_HOME}/tools
+COPY src/main/resources/bundles ${STRUCTURE_HOME}/bundles/raaf
+COPY docker/bin/winexe-x86_64 /usr/bin/winexe
+COPY docker/service/structure /etc/service/structure/run
+COPY docker/service/rest /etc/service/rest/run
+
+EXPOSE 3000
+
+WORKDIR ${STRUCTURE_HOME}
+ENTRYPOINT ["runsvdir", "-P", "/etc/service"]
