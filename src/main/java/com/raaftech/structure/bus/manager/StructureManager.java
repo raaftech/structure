@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.raaftech.structure.annotations.SchemaPath;
 import com.raaftech.structure.base.Application;
+import com.raaftech.structure.base.Configuration;
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.bus.GenericActor;
 import com.raaftech.structure.bus.NodeActor;
@@ -21,6 +22,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Optional;
 
 public class StructureManager extends GenericActor {
 
@@ -169,7 +174,21 @@ public class StructureManager extends GenericActor {
         Component host = Context.getInstanceRepository().findDnsName(Context.getHostname());
         if (host == null) {
             log.info("Structure is not registered in the database, now discovering itself");
-            ProcessRunner runner = new ProcessRunner("node tools/bootstrap/bootstrap.js -c -h "+ Context.getHostname() +" -t " + token);
+            /*
+            We should properly retrieve the location of tools/bootstrap. For now assume work directory
+            contains the tools dir.
+             */
+            final Optional<String> maybeStructureHome = Configuration.getConfigurationProxy().getConfiguration("home");
+            final String bootstrapRelativeLocation = "tools/bootstrap/bootstrap.js";
+            final Path bootstrapLocation = maybeStructureHome.isPresent() ?
+                    Paths.get(maybeStructureHome.get()).resolve(bootstrapRelativeLocation) :
+                    Paths.get("").resolve(bootstrapRelativeLocation).toAbsolutePath();
+            if (!Files.exists(bootstrapLocation)) {
+                final String error = "Bootstrap program not found at location \"" + bootstrapLocation + "\"";
+                log.error(error);
+                throw new RuntimeException(error);
+            }
+            ProcessRunner runner = new ProcessRunner("node ".concat(bootstrapLocation.toString()).concat( " -c -h "+ Context.getHostname() +" -t " + token));
             try {
                 runner.run();
                 int scriptFinishedWaitCycles = 0;

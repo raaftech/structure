@@ -36,6 +36,7 @@ public enum Configuration {
 	private static int webPort;
 	private static URI schemaNamespace;
 	private static List<Path> bundlePaths = new ArrayList<>();
+	private static ConfigurationProxy configurationProxy;
 	static final String bundlePathProperty = "bundles";
 
 	public static boolean isTraceModeOn() {
@@ -86,12 +87,16 @@ public enum Configuration {
 		return bundlePaths;
 	}
 
+	public static ConfigurationProxy getConfigurationProxy() {
+		return configurationProxy;
+	}
+
 	public static void init() {
 		bundlePaths.add(fallbackBundlePath);
 	}
 
 	public static void init(ConfigurationProxy configurationProxy) {
-
+		Configuration.configurationProxy = configurationProxy;
 		if (!isInitialized()) {
 		    Optional<String> bundles = configurationProxy.getConfiguration(bundlePathProperty);
 			if (bundles.isPresent()) {
