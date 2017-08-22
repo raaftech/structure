@@ -14,8 +14,9 @@ RUN apt-get install -y --no-install-recommends \
 		runit
 RUN rm -rf /var/lib/apt/lists/*
 
-COPY target/structure-0.9.0-SNAPSHOT-fat.jar /opt/structure/structure.jar
-COPY src/main/resources/bundles /opt/structure/bundles/raaf
+COPY ../target/structure-0.9.0-SNAPSHOT-fat.jar /opt/structure/backend/structure.jar
+COPY ../rest /opt/structure/
+COPY ../src/main/resources/bundles /opt/structure/bundles/raaf
 COPY bin/winexe-x86_64 /usr/bin/winexe
 
 EXPOSE 3000
