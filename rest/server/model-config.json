@@ -56,5 +56,9 @@
   "group": {
     "dataSource": "db",
     "public": true
+  },
+  "schema": {
+    "dataSource": "db",
+    "public": true
   }
 }
