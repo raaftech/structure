@@ -21,7 +21,7 @@ RUN rm -rf /var/lib/apt/lists/*
 ENV STRUCTURE_HOME=/opt/structure/
 ENV STRUCTURE_BUNDLES=${STRUCTURE_HOME}/bundles/
 
-COPY target/structure-0.9.0-SNAPSHOT-fat.jar ${STRUCTURE_HOME}/backend/structure.jar
+COPY target/structure-0.9.0-SNAPSHOT-fat.jar ${STRUCTURE_HOME}/structure.jar
 COPY rest ${STRUCTURE_HOME}/rest
 COPY tools ${STRUCTURE_HOME}/tools
 COPY src/main/resources/bundles ${STRUCTURE_HOME}/bundles/raaf
