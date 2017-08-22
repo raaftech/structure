@@ -95,7 +95,7 @@ public enum Configuration {
 		if (!isInitialized()) {
 		    Optional<String> bundles = configurationProxy.getConfiguration(bundlePathProperty);
 			if (bundles.isPresent()) {
-				log.info("Setting {} to \"{}\"", bundlePathProperty, bundles.get());
+				log.info("Setting {} to \"{}\"", bundlePathProperty, bundles.get().trim());
 				bundlePaths.addAll(Stream.of(bundles.get().split(BUNDLESEPARATOR))
 						.map(Paths::get)
                         .collect(Collectors.toList()));

@@ -77,7 +77,8 @@ public class Application {
             configuration = ConfigurationProxy.builder()
                     .options(options)
                     .args(args)
-                    .transformer(s -> s.toUpperCase().replace("-", "_"))
+                    // make sure env keys are prepended with "STRUCTURE_" and replace - with _.
+                    .transformer(s -> "STRUCTURE_".concat(s.toUpperCase().replace("-", "_")))
                     .build();
 
             HelpFormatter formatter = new HelpFormatter();
