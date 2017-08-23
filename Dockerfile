@@ -2,7 +2,7 @@
 # and the REST interface to it. We'll expose just the
 # REST interface.
 
-from openjdk:8-jre
+FROM openjdk:8-jre
 
 MAINTAINER Structure Team "structure@raaf.tech"
 
