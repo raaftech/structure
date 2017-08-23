@@ -1,4 +1,19 @@
 #!/bin/bash
 
-cd /opt/structure
-exec java -jar /opt/structure/structure.jar -u
+# Service script for Structure backend. We'll use a script to determine
+# the max amount of memory assigned to this container and assign
+# 50% for max heap size
+
+JAR="${STRUCTURE_HOME}/structure.jar"
+OPTS="-u"
+
+source /opt/container-limits
+cd ${STRUCTURE_HOME}
+if [ -z "$CONTAINER_MAX_MEMORY" ]; then
+    EXEC="java ${JAVA_OPTIONS} -jar ${JAR} ${OPTS}"
+else
+    JAVA_MAX_MEM=$((CONTAINER_MAX_MEMORY/2))
+    EXEC="java -Xmx${JAVA_MAX_MEM} ${JAVA_OPTIONS} -jar ${JAR} ${OPTS}"
+fi
+
+exec $EXEC

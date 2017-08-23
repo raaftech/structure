@@ -29,6 +29,9 @@ COPY docker/bin/winexe-x86_64 /usr/bin/winexe
 COPY docker/service/structure /etc/service/structure/run
 COPY docker/service/rest /etc/service/rest/run
 
+ADD https://raw.githubusercontent.com/fabric8io-images/java/master/images/jboss/openjdk8/jdk/container-limits /opt/container-limits
+RUN chmod 755 /opt/container-limits
+
 EXPOSE 3000
 
 WORKDIR ${STRUCTURE_HOME}
