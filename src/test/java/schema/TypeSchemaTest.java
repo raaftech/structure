@@ -1,6 +1,6 @@
 package schema;
 
-import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.raaftech.structure.base.Configuration;
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.base.SpringTestConfig;
@@ -83,7 +83,7 @@ public abstract class TypeSchemaTest {
 
             // Load the types first
             Transaction tx = graphDatabase.beginTx();
-            BundleLoader bundleLoader = new BundleLoader(ImmutableList.of(testBundle));
+            BundleLoader bundleLoader = new BundleLoader(ImmutableSet.of(testBundle));
             bundleLoader.loadTypes();
             tx.success();
             tx.close();

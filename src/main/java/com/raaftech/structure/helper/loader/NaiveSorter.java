@@ -43,7 +43,7 @@ public class NaiveSorter {
 
     private static final Logger log = LoggerFactory.getLogger(NaiveSorter.class);
     private final ObjectMapper mapper = new ObjectMapper();
-    private final List<Path> bundlePaths;
+    private final Set<Path> bundlePaths;
     public static final Map<String, Path> checksumToFiles = new HashMap<>();
     public static final Map<String, String> checksumToUuid = new HashMap<>();
     private final NodeRepository nodeRepository = Context.getNodeRepository();
@@ -62,7 +62,7 @@ public class NaiveSorter {
         bundlePaths = Configuration.getBundlePaths();
     }
 
-    public NaiveSorter(List<Path> bundlePaths) {
+    public NaiveSorter(Set<Path> bundlePaths) {
         this.bundlePaths = bundlePaths;
     }
 

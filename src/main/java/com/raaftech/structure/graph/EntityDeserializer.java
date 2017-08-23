@@ -382,7 +382,7 @@ public class EntityDeserializer extends StdDeserializer<Entity> {
 
             Set<String> bundlePathStrings;
 
-            if (System.getProperty("bundlePath") == null) {
+            if (Configuration.getBundlePaths() == null) {
                 log.debug("Bundle path property not set, triggering configuration initialization");
                 Configuration.init();
             }

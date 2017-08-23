@@ -9,9 +9,9 @@ import org.slf4j.LoggerFactory;
 import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -35,7 +35,7 @@ public enum Configuration {
 	private static String webHost;
 	private static int webPort;
 	private static URI schemaNamespace;
-	private static List<Path> bundlePaths = new ArrayList<>();
+	private static Set<Path> bundlePaths = new HashSet<>();
 	private static ConfigurationProxy configurationProxy;
 	static final String bundlePathProperty = "bundles";
 
@@ -83,7 +83,7 @@ public enum Configuration {
 		Configuration.webPort = webPort;
 	}
 
-	public static List<Path> getBundlePaths() {
+	public static Set<Path> getBundlePaths() {
 		return bundlePaths;
 	}
 

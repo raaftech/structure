@@ -7,11 +7,11 @@ import com.raaftech.structure.base.Configuration;
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.exceptions.EntityDeserializationException;
 import com.raaftech.structure.graph.Constraint;
+import com.raaftech.structure.graph.Entity;
 import com.raaftech.structure.graph.Type;
 import com.raaftech.structure.graph.repositories.TypeRepository;
 import com.raaftech.structure.helper.LambdaHelper;
 import com.raaftech.structure.helper.Triple;
-import com.raaftech.structure.graph.Entity;
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
@@ -52,7 +52,7 @@ public class BundleLoader {
      * @throws Exception Exceptions may occur when the list of entities is unsortable
      * because of cyclic dependencies.
      */
-    public BundleLoader(List<Path> bundlePaths) throws Exception {
+    public BundleLoader(Set<Path> bundlePaths) throws Exception {
         NaiveSorter naiveSorter = new NaiveSorter(bundlePaths);
         sortedNodes = naiveSorter.getUpdateList(naiveSorter.sortIt(naiveSorter.readAllJson()));
 
