@@ -40,12 +40,12 @@ class Helper {
         //Ip data
         pair = relate(ipEntity);
         os = R.clone(pair[0]);
-        graph.entities.push(R.clone(pair[1]));
-        R.forEach(item => {
-            pair = relate(item);
-            os = R.clone(pair[0]);
-            graph.entities.push(R.clone(pair[1]));
-        }, this.harvestIps(ansibleData,ipString));
+//        graph.entities.push(R.clone(pair[1]));
+//        R.forEach(item => {
+//            pair = relate(item);
+//            os = R.clone(pair[0]);
+//            graph.entities.push(R.clone(pair[1]));
+//        }, this.harvestIps(ansibleData,ipString));
 
         //SSH / SMB
         let ssh = this.daemonData();
@@ -53,7 +53,7 @@ class Helper {
         os = R.clone(pair[0]);
         graph.entities.push(R.clone(pair[1]));
 
-        let tuple = graphLib.relateEntity(root, 'GROUPS', 'outgoing', os);
+        let tuple = graphLib.relateEntity(root, 'MEMBER_OF', 'incoming', os);
         graph.os = tuple[1];
         graph.root = tuple[0];
 
@@ -64,7 +64,7 @@ class Helper {
         let c = this.fuzzyMatch(dist);
         if(R.isNil(c)) {
             c = this.typeByName('OperatingSystem');
-        } 
+        }
         let mkInstance = graphLib.createInstance(c);
         let result = mkInstance({
                     name: c.name,
@@ -110,7 +110,7 @@ class Helper {
                             });
             }
         }
-        
+
         return instance;
     }
 

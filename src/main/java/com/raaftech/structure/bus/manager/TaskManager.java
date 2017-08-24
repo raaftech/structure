@@ -8,6 +8,7 @@ import com.raaftech.structure.annotations.SchemaPath;
 import com.raaftech.structure.base.Configuration;
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.bus.GenericActor;
+import com.raaftech.structure.graph.Entity;
 import com.raaftech.structure.graph.Instance;
 import com.raaftech.structure.graph.Result;
 import com.raaftech.structure.helper.ProcessRunner;
@@ -259,7 +260,7 @@ public class TaskManager extends GenericActor {
                     .put("taskId", task.id)
                     .set("taskObj", task.toJson()));
 
-            final Result.Builder resultBuilder = new Result.Builder()
+            final Entity.ResultBuilder resultBuilder = new Entity.ResultBuilder()
                     .taskId(job.taskId)
                     .process(job.process.getCommand());
             if (job.status == JobStatus.FINISHED) {
@@ -299,15 +300,15 @@ public class TaskManager extends GenericActor {
                 String reason = job.metadata.has("error") ? job.metadata.get("error").asText() : "Job was cancelled for an unknown reason.";
                 resultBuilder.error(reason);
             }
-            Result result = resultBuilder.build();
-            Instance origin = result.add(UUID.fromString(job.metadata.get("originUuid").asText()));
+            try {
+                Result result = resultBuilder.build();
+                Instance origin = result.add(UUID.fromString(job.metadata.get("originUuid").asText()));
                 /*
                 result.add returns the origin instance, on which we want to save the result
                 We save the origin itself, which will cause the save to propagate to the result chain.
                 If we would just save the result, it won't update the head of the result list to the latest result.
                  */
-            origin.save();
-            try {
+                origin.save();
                 log.info(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(task.toJson()));
             } catch (JsonProcessingException e) {
                 if (Configuration.isTraceModeOn()) {

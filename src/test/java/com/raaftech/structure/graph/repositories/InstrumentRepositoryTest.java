@@ -38,17 +38,17 @@ public class InstrumentRepositoryTest extends TypeSchemaTest {
     @Autowired
     GraphDatabase graphDatabase;
 
-    private Grouping structure;
-    private Grouping host1;
+    private Group structure;
+    private Group host1;
     private Component host1OS;
-    private Grouping host2;
+    private Group host2;
     private Component host2OS;
 
     @Before
     @Transactional
     public void setupComponents() throws IOException {
         // Create the simplest structure server representation
-        Type groupingType = typeRepository.findOneByName("Grouping");
+        Type groupingType = typeRepository.findOneByName("Group");
         assertNotNull(groupingType);
         ObjectNode groupingData = (ObjectNode) mapper.readTree(
                 "{\n" +
@@ -56,7 +56,7 @@ public class InstrumentRepositoryTest extends TypeSchemaTest {
                         "    \"name\": \"Computer\"\n" +
                         "}"
         );
-        structure = new Grouping(groupingData, groupingType);
+        structure = new Group(groupingData, groupingType);
         Type genericLinuxType = typeRepository.findOneByName("Linux");
         assertNotNull(genericLinuxType);
         ObjectNode genericLinuxData = (ObjectNode) mapper.readTree(
@@ -95,11 +95,11 @@ public class InstrumentRepositoryTest extends TypeSchemaTest {
 
         structureOS.addComponent(structureSshClient);
         structureOS.addComponent(bash);
-        structure.getGroupees().add(structureOS);
+        structure.addMember(structureOS);
         structure.save();
 
         // Create the simplest host1 representation
-        host1 = new Grouping(groupingData, groupingType);
+        host1 = new Group(groupingData, groupingType);
         host1OS = new Component(genericLinuxData, genericLinuxType);
 
         Type sshServerType = typeRepository.findOneByName("SshServer");
@@ -126,7 +126,7 @@ public class InstrumentRepositoryTest extends TypeSchemaTest {
         Component systemd = new Component(systemdData, systemdType);
 
         host1OS.addComponent(hostSshServer).addComponent(systemd);
-        host1.getGroupees().add(host1OS);
+        host1.addMember(host1OS);
         host1.save();
 
         // Create the simplest host2 representation
@@ -142,13 +142,13 @@ public class InstrumentRepositoryTest extends TypeSchemaTest {
         );
         Component upstart = new Component(upstartData, upstartType);
 
-        host2 = new Grouping(groupingData, groupingType);
+        host2 = new Group(groupingData, groupingType);
         host2OS = new Component(genericLinuxData, genericLinuxType);
         bash = new Component(bashData, bashType);
         hostSshServer = new Component(sshServerData, sshServerType);
 
         host2OS.addComponent(bash).addComponent(hostSshServer).addComponent(upstart);
-        host2.getGroupees().add(host2OS);
+        host2.addMember(host2OS);
         host2.save();
     }
 
@@ -157,8 +157,8 @@ public class InstrumentRepositoryTest extends TypeSchemaTest {
     public void tearDown() throws Exception {
         neo4jTemplate.query("MATCH (:Component)-[r]-() DELETE r", null);
         neo4jTemplate.query("MATCH (n:Component) DELETE n", null);
-        neo4jTemplate.query("MATCH (:Grouping)-[r]-() DELETE r", null);
-        neo4jTemplate.query("MATCH (n:Grouping) DELETE n", null);
+        neo4jTemplate.query("MATCH (:Group)-[r]-() DELETE r", null);
+        neo4jTemplate.query("MATCH (n:Group) DELETE n", null);
     }
 
     @Test

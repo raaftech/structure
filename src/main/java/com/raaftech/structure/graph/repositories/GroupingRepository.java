@@ -1,26 +1,26 @@
 package com.raaftech.structure.graph.repositories;
 
-import com.raaftech.structure.graph.Grouping;
+import com.raaftech.structure.graph.Group;
 import com.raaftech.structure.graph.Instance;
 import org.springframework.data.neo4j.annotation.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.Set;
 
-public interface GroupingRepository extends GenericRepository<Grouping> {
+public interface GroupingRepository extends GenericRepository<Group> {
 
     @Override
-    @Query("MATCH (grouping:Grouping {uuid:{0}}) RETURN grouping")
-    Grouping findByUuid(String uuid);
+    @Query("MATCH (grouping:Group {uuid:{0}}) RETURN grouping")
+    Group findByUuid(String uuid);
 
     @Override
-    @Query ("MATCH (grouping:Grouping {name:{0}}) RETURN grouping")
-    Grouping findOneByName(String name);
+    @Query ("MATCH (grouping:Group {name:{0}}) RETURN grouping")
+    Group findOneByName(String name);
 
-    @Query("MATCH (:Grouping{uuid:{uuid}})-[*1..]->(m:Instance)-[:INSTANCE_OF|ISA*1..]->(:Type{name: {name}})" +
+    @Query("MATCH (:Group{uuid:{uuid}})<-[:MEMBER_OF]-()-[*1..]->(m:Instance)-[:INSTANCE_OF|ISA*1..]->(:Type{name: {name}})" +
             "RETURN m")
     Set<Instance> getChildrenOfType(@Param("uuid") String groupUuid, @Param("name") String typeName);
 
-    @Query("MATCH (n:Grouping) RETURN count(n)")
+    @Query("MATCH (n:Group) RETURN count(n)")
     long count();
 }

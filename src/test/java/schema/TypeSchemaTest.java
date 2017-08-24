@@ -1,5 +1,6 @@
 package schema;
 
+import com.google.common.collect.ImmutableSet;
 import com.raaftech.structure.base.Configuration;
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.base.SpringTestConfig;
@@ -18,6 +19,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
 
 import java.net.URI;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Random;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -76,11 +79,11 @@ public abstract class TypeSchemaTest {
 
         if (!databaseCreated) {
             // The location of the bundle to test
-            final String testBundle = "src/main/resources/bundles/";
+            final Path testBundle = Paths.get("src/main/resources/bundles/");
 
             // Load the types first
             Transaction tx = graphDatabase.beginTx();
-            BundleLoader bundleLoader = new BundleLoader(testBundle);
+            BundleLoader bundleLoader = new BundleLoader(ImmutableSet.of(testBundle));
             bundleLoader.loadTypes();
             tx.success();
             tx.close();

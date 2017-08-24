@@ -1,6 +1,6 @@
 {
   "log": {
-    "type": "stdout",
+    "type": "file",
     "path": "structure.log",
     "level": "debug"
   },
@@ -19,17 +19,18 @@
     "libraryPath": "library/",
     "dropins": "dropins/",
     "packageFile": "tryDetectPackage.js",
-    "save": false
+    "save": true,
+    "dump": true
   },
   "security": {
     "encrypted": false,
     "shares": 4,
     "threshold": 2,
     "shards": [
-      "80155d68afb1f2cf5f4e6e0fc1b75f11574f3b9ec0d597be9073aaef30a1b8094540c",
-      "802a9927ce5e7122dd53a2fb2e3faa38191e93d174a95197cd3ba6cdf83d9c91409ea",
-      "803fdae2eef44f365ca856a8840746606391441b577d1cc0f9f31d9300f6c059fc943",
-      "8044c1a8dd90a6e80979fac2e0ef907b446dd28fcc410dd4b66a7f5878c405b09b33b"
+      "801c49cf5309548886d3bc36cbb1f495a5f02f0eb756b47a79041de15f6e2e81c8236",
+      "8029668569d8e2ec1d31ccb6188fd6e3f9006dcadf6c967233125af7e9b2bddcf5b91",
+      "80353cf370d870c0db901389199a3731cd5f133647c5c8c5fa5f280ac4b6cce75e707",
+      "804329d0ddab8e253b252db7bee2420f5130e8421ed9027366eed4da841a4b774f4c2"
     ]
   },
   "templates": {
@@ -42,9 +43,34 @@
     "Structure_specialize_specialization_dictEntry": "specializeTo",
     "Structure_specialize_origin_uuid_dictEntry": "newInstanceUuid",
     "Structure_specialize_result_dictEntry": "specializeResult",
-    "Structure_getInstance_result_dictEntry": "fetchedInstance",
-    "Structure_getInstance_uuid_dictEntry": "originInstanceUuid",
+    "Structure_getInstance_uuid_dictEntry": "fetchedInstance",
+    "Structure_getInstance_result_dictEntry": "originInstanceUuid",
     "Structure_removeInstance_uuid_dictEntry": "newInstanceUuid",
     "Structure_removeInstance_result_dictEntry": "removalResult"
-  }
+  },
+  "input": [
+    {
+      "type": "input",
+      "name": "instanceUuid",
+      "message": "Instance uuid: "
+    },
+    {
+      "type": "input",
+      "name": "typeName",
+      "message": "Type Name: ",
+      "default": "Ipv4Address"
+    },
+    {
+      "type": "input",
+      "name": "token",
+      "message": "Token: ",
+      "default": "HQUPKnFph2Cp1PxANcBEWq0W5EifeKEysGjmCWFVadX4LBXdu0kvMJFkuawNLjIh"
+    },
+    {
+      "type": "input",
+      "name": "data",
+      "message": "Data: ",
+      "default": "{\"name\": \"soekris\", \"addr\":\"172.17.1.1\", \"desc\": \"My description\", \"reachable\": true}"
+    }
+  ]
 }

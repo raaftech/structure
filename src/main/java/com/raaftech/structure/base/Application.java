@@ -9,6 +9,7 @@ import com.raaftech.structure.bus.repository.Instances;
 import com.raaftech.structure.bus.repository.Nodes;
 import com.raaftech.structure.bus.repository.Types;
 import com.raaftech.structure.graph.Component;
+import com.raaftech.structure.graph.Group;
 import com.raaftech.structure.graph.Instance;
 import com.raaftech.structure.graph.repositories.InstanceRepository;
 import com.raaftech.structure.graph.repositories.TypeRepository;
@@ -88,12 +89,14 @@ public class Application {
                     .addOption("h", "help", false, "Display help message")
                     .addOption("l", "loglevel", true, "Set loglevel (INFO | DEBUG | TRACE)")
                     .addOption("t", "trace", false, "Enable (back)traces")
-                    .addOption("u", "unsafe", false, "Enable unsafe mode");
+                    .addOption("u", "unsafe", false, "Enable unsafe mode")
+                    .addOption("b", "bundles", true, "Bundle locations to load");
 
             configuration = ConfigurationProxy.builder()
                     .options(options)
                     .args(args)
-                    .transformer(s -> s.toUpperCase().replace("-", "_"))
+                    // make sure env keys are prepended with "STRUCTURE_" and replace - with _.
+                    .transformer(s -> "STRUCTURE_".concat(s.toUpperCase().replace("-", "_")))
                     .build();
 
             HelpFormatter formatter = new HelpFormatter();
@@ -252,7 +255,7 @@ public class Application {
         queryExecutor.query("CREATE CONSTRAINT ON (n:Node) ASSERT n.uuid IS UNIQUE", null, null);
 
         // Initialize Configuration
-        Configuration.init();
+        Configuration.init(configuration);
 
         // Deploy our main actors.
         vertx.deployVerticle("com.raaftech.structure.bus.manager.StructureManager", ar -> {
@@ -370,8 +373,9 @@ public class Application {
 
             Component host = Context.getInstanceRepository().findDnsName(Context.getHostname());
             if (host != null) {
-                Instance structureInstance = Context.getInstanceRepository().getStartOfComponentGroup(host.getUuid());
+                Group structureInstance = Context.getInstanceRepository().getStartOfComponentGroup(host.getUuid());
                 if (structureInstance != null) {
+                    Context.setSelfGroup(structureInstance);
                     Context.setSelfIdentifier(structureInstance.getUuid());
                 }
             }

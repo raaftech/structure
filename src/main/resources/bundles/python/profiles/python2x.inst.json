@@ -1,0 +1,35 @@
+{
+  "name": "Python2xProfile",
+  "desc": "A profile that detects Python2x.",
+  "meta": {
+    "uuid": "9351d12e-2a28-4c7d-af4d-c02a8a3fb247",
+    "relations": {
+      "INSTANCE_OF": {
+        "direction": "outgoing",
+        "to": [
+          "c970f6d3-4898-4596-bfac-9d6d1f6b2541"
+        ]
+      },
+      "APPLIES_TO": {
+        "direction": "outgoing",
+        "to": [
+          "b6f5296b-28b9-4825-950d-402b7e5d968c"
+        ]
+      },
+      "PROVIDED_BY": {
+        "direction": "outgoing",
+        "to": [
+          "b6f5296b-28b9-4825-950d-402b7e5d968c"
+        ]
+      }
+    }
+  },
+  "data": {
+    "commands": {
+      "pyversion": {
+        "command": "python2 --version",
+        "matches": "Python 2"
+      }
+    }
+  }
+}

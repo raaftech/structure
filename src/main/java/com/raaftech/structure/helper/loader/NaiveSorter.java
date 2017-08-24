@@ -43,7 +43,7 @@ public class NaiveSorter {
 
     private static final Logger log = LoggerFactory.getLogger(NaiveSorter.class);
     private final ObjectMapper mapper = new ObjectMapper();
-    private final String bundlePath;
+    private final Set<Path> bundlePaths;
     public static final Map<String, Path> checksumToFiles = new HashMap<>();
     public static final Map<String, String> checksumToUuid = new HashMap<>();
     private final NodeRepository nodeRepository = Context.getNodeRepository();
@@ -59,11 +59,11 @@ public class NaiveSorter {
     private String globPattern = "**/*.{type,inst}.json";
 
     public NaiveSorter() {
-        bundlePath = Configuration.getBundlePath();
+        bundlePaths = Configuration.getBundlePaths();
     }
 
-    public NaiveSorter(String bundlePath) {
-        this.bundlePath = bundlePath;
+    public NaiveSorter(Set<Path> bundlePaths) {
+        this.bundlePaths = bundlePaths;
     }
 
     /**
@@ -330,26 +330,23 @@ public class NaiveSorter {
         ArrayList<JsonNode> unsorted = new ArrayList<>();
         List<Path> jsonFilePaths = new ArrayList<>();
 
-        if(bundlePath == null) {
+        if(bundlePaths == null) {
             return unsorted;
         }
 
-        for (String bundlePathEntryString : bundlePath.split(":")) {
-            Path bundlePathEntry = Paths.get(bundlePathEntryString);
-
+        for (Path bundlePathEntry: bundlePaths) {
             jsonFilePaths.addAll(globFiles(bundlePathEntry, globPattern));
         }
 
         try {
             for (Path jsonFilePath : jsonFilePaths) {
                 JsonNode jsonFile = mapper.readTree(jsonFilePath.toFile());
-                String[] bundlePaths = bundlePath.split(":");
                 String fromBundle = null;
                 // the next piece of code finds the bundle name where the json originates from
-                for (String s: bundlePaths) {
+                for (Path s: bundlePaths) {
                     if (jsonFilePath.startsWith(s)) {
                         int bundleIndex = s.endsWith(File.separator) ? 0 : 1;
-                        fromBundle = jsonFilePath.toString().replace(s, "").split(Pattern.quote(File.separator))[bundleIndex];
+                        fromBundle = jsonFilePath.toString().replace(s.toString(), "").split(Pattern.quote(File.separator))[bundleIndex];
                         break;
                     }
                 }

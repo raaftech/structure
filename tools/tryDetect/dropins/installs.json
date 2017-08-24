@@ -1,4 +1,5 @@
 {
+  "repository": "/home/blackorchid/NOW/aeon/tools/apm/resources/repository",
   "dependencies": {
     "Structure": "1.0.0"
   }

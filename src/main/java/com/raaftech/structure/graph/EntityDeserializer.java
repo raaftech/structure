@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static io.vertx.core.json.Json.mapper;
 
@@ -379,14 +380,16 @@ public class EntityDeserializer extends StdDeserializer<Entity> {
         if (!filePath.isAbsolute()) {
             log.debug("Relative path specified for file \"{}\"", filePath.getName());
 
-            Set<String> bundlePathStrings = new HashSet<String>();
+            Set<String> bundlePathStrings;
 
-            if (System.getProperty("bundlePath") == null) {
+            if (Configuration.getBundlePaths() == null) {
                 log.debug("Bundle path property not set, triggering configuration initialization");
                 Configuration.init();
             }
 
-            bundlePathStrings.addAll(Arrays.asList(System.getProperty("bundlePath").split(":")));
+            bundlePathStrings = Configuration.getBundlePaths().stream()
+                    .map(p -> p.toString())
+                    .collect(Collectors.toSet());
 
             if (bundlePathStrings.size() == 0) {
                 log.warn("Path helper could not find any bundle paths to search in. Will return File object without adjustment!");

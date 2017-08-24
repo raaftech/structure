@@ -26,7 +26,7 @@ const createError = (status, msg) => {
 
 module.exports = function(Group) {
     Group.removeGroup = function(uuid, callback) {
-        let message = {labels: ['Grouping'], uuid: uuid, includeStart: true};
+        let message = {labels: ['Group'], uuid: uuid, includeStart: true};
         evBus.sendEvent(entityAddress, 'delete', message)
             .then((result) => callback(null, getResultData(result)))
             .catch((ex) => callback(ex));

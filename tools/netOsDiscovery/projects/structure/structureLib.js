@@ -51,7 +51,7 @@ const createComputer = (db, osType, ipEntity, dnsData, ssh, smb) => {
     let relateTo = R.compose(R.head, relate);
     let computer = [];
 
-    grouping = R.head(graphLib.relateEntity(grouping, 'GROUPS', 'outgoing', os));
+    grouping = R.head(graphLib.relateEntity(grouping, 'MEMBER_OF', 'incoming', os));
 
     let dns = createDns(db, dnsData);
     os = relateTo(dns);

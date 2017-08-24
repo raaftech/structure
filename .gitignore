@@ -24,4 +24,5 @@ structure.iml
 tools/bootstrap/node_modules
 tools/networkDiscovery/node_modules
 tools/osDiscovery/node_modules
+tools/tryDetect/projects/structure/node_modules
 web/js/vendors

@@ -1,0 +1,4 @@
+#!/bin/bash
+
+cd /opt/structure/rest
+exec npm start

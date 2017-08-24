@@ -2,12 +2,18 @@
 
 package com.raaftech.structure.base;
 
-import java.io.InputStream;
-import java.net.URI;
-import java.util.Properties;
-
+import com.raaftech.structure.helper.ConfigurationProxy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.net.URI;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * The Configuration contains application wide configuration options for
@@ -20,6 +26,8 @@ public enum Configuration {
 	INSTANCE;
 
 	private static final Logger log = LoggerFactory.getLogger(Configuration.class);
+    private static final String BUNDLESEPARATOR = ",";
+	private static final Path fallbackBundlePath = Paths.get("src/main/resources/bundles");
 
 	private static boolean initialized = false; 
 	private static boolean traceMode = false;
@@ -27,7 +35,9 @@ public enum Configuration {
 	private static String webHost;
 	private static int webPort;
 	private static URI schemaNamespace;
-	static final String bundlePathProperty = "bundlePath";
+	private static Set<Path> bundlePaths = new HashSet<>();
+	private static ConfigurationProxy configurationProxy;
+	static final String bundlePathProperty = "bundles";
 
 	public static boolean isTraceModeOn() {
 		return traceMode;
@@ -47,10 +57,6 @@ public enum Configuration {
 
 	public static boolean isInitialized() {
 		return initialized;
-	}
-
-	public static String getBundlePath() {
-		return System.getProperty(bundlePathProperty);
 	}
 
 	public static URI getSchemaNamespace() {
@@ -77,39 +83,33 @@ public enum Configuration {
 		Configuration.webPort = webPort;
 	}
 
+	public static Set<Path> getBundlePaths() {
+		return bundlePaths;
+	}
+
+	public static ConfigurationProxy getConfigurationProxy() {
+		return configurationProxy;
+	}
+
 	public static void init() {
+		bundlePaths.add(fallbackBundlePath);
+	}
 
+	public static void init(ConfigurationProxy configurationProxy) {
+		Configuration.configurationProxy = configurationProxy;
 		if (!isInitialized()) {
-			final String propertyFile = "config.properties";
-
-			try {
-				Properties p = new Properties();
-				Thread currentThread = Thread.currentThread();
-				ClassLoader classLoader = currentThread.getContextClassLoader();
-				InputStream inputStream = classLoader.getResourceAsStream(propertyFile);
-
-				if (inputStream.available() > 0) {
-					p.load(inputStream);
-
-					if (p.containsKey(bundlePathProperty)) {
-						log.info("Setting {} to {} from {}", bundlePathProperty, p.getProperty(bundlePathProperty),
-								propertyFile);
-						System.setProperty(bundlePathProperty, p.getProperty(bundlePathProperty));
-					} else {
-						log.error("bundlePathProperty is empty, defaulting to 'bundles'");
-						System.setProperty(bundlePathProperty, "src/main/resources/bundles");
-					}
-				}
-				
-				initialized = true;
-				
-			} catch (Exception e) {
-				log.error(e.getMessage());
-
-				if (Configuration.isTraceModeOn()) {
-					e.printStackTrace();
-				}
+		    Optional<String> bundles = configurationProxy.getConfiguration(bundlePathProperty);
+			if (bundles.isPresent()) {
+				log.info("Setting {} to \"{}\"", bundlePathProperty, bundles.get().trim());
+				bundlePaths.addAll(Stream.of(bundles.get().split(BUNDLESEPARATOR))
+						.map(Paths::get)
+                        .collect(Collectors.toList()));
+			} else {
+				log.error("bundlePathProperty is empty, defaulting to 'bundles'");
+				bundlePaths.add(fallbackBundlePath);
 			}
 		}
+
+		initialized = true;
 	}
 }

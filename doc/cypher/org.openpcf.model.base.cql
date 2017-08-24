@@ -1182,15 +1182,15 @@ MERGE (service)-[:ISA]->(software);
 
 
 // Grouping - A group of references to things. Members of a group are HAS relations.
-MERGE (grouping:Object:Grouping {
+MERGE (group:Object:Grouping {
     uuid: '5f1eb7c5-ec5e-4563-be6a-fc50774fc374',
     name: 'Grouping',
     desc: 'A group of references to things.'
     });
 
-MATCH (grouping:Grouping {uuid: '5f1eb7c5-ec5e-4563-be6a-fc50774fc374'}),
+MATCH (group:Grouping {uuid: '5f1eb7c5-ec5e-4563-be6a-fc50774fc374'}),
     (object:Object {uuid: 'b1bc963a-19cc-4518-aecb-a35d028c49e3'})
-MERGE (grouping)-[:ISA]->(object);
+MERGE (group)-[:ISA]->(object);
 
 // Locational - Any kind of place/location.
 MERGE (locational:Object:Grouping:Locational {
@@ -1200,8 +1200,8 @@ MERGE (locational:Object:Grouping:Locational {
     });
 
 MATCH (locational:Locational {uuid: 'f31b8dc9-7b9a-47cc-bd3d-20b94b6daac1'}),
-    (grouping:Grouping {uuid: '5f1eb7c5-ec5e-4563-be6a-fc50774fc374'})
-MERGE (locational)-[:ISA]->(grouping);
+    (group:Grouping {uuid: '5f1eb7c5-ec5e-4563-be6a-fc50774fc374'})
+MERGE (locational)-[:ISA]->(group);
 
 
 // Building - A building, has address, containing references to floors, rooms, devices.
@@ -1255,8 +1255,8 @@ MERGE (organizational:Object:Grouping:Organizational {
     });
 
 MATCH (organizational:Organizational {uuid: 'c94c2c32-8e10-48c3-a31b-6337c2ad4df4'}),
-    (grouping:Grouping {uuid: '5f1eb7c5-ec5e-4563-be6a-fc50774fc374'})
-MERGE (organizational)-[:ISA]->(grouping);
+    (group:Grouping {uuid: '5f1eb7c5-ec5e-4563-be6a-fc50774fc374'})
+MERGE (organizational)-[:ISA]->(group);
 
 
 // Company - A company can contain references to departments, teams, users.
@@ -1303,8 +1303,8 @@ MERGE (componental:Object:Grouping:Componental {
     });
 
 MATCH (componental:Componental {uuid: 'ee92c308-80f4-40b2-af3a-77d26cd99517'}),
-    (grouping:Grouping {uuid: '5f1eb7c5-ec5e-4563-be6a-fc50774fc374'})
-MERGE (componental)-[:ISA]->(grouping);
+    (group:Grouping {uuid: '5f1eb7c5-ec5e-4563-be6a-fc50774fc374'})
+MERGE (componental)-[:ISA]->(group);
 
 
 // Actor - Something or someone that interacts/starts/acts.
