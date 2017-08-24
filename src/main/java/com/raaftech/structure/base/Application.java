@@ -90,7 +90,10 @@ public class Application {
                     .addOption("l", "loglevel", true, "Set loglevel (INFO | DEBUG | TRACE)")
                     .addOption("t", "trace", false, "Enable (back)traces")
                     .addOption("u", "unsafe", false, "Enable unsafe mode")
-                    .addOption("b", "bundles", true, "Bundle locations to load");
+                    .addOption("b", "bundles", true, "Bundle locations to load")
+                    .addOption("s", "ssl", false, "Enable SSL")
+                    .addOption("k", "keystore-file", true, "Location of the keystore (used with -s)")
+                    .addOption("p", "keystore-password", true, "Password for the keystore");
 
             configuration = ConfigurationProxy.builder()
                     .options(options)
@@ -110,9 +113,9 @@ public class Application {
 
             // LOGGING level
             final Optional<String> maybeLogLevel = configuration.getConfiguration("loglevel");
-            if (maybeLogLevel.isPresent()){
+            if (maybeLogLevel.isPresent()) {
                 String loglevel = maybeLogLevel.get();
-                switch(loglevel){
+                switch (loglevel) {
                     case "TRACE":
                         log.info("Setting loglevel to TRACE...");
                         root.setLevel(Level.TRACE);
@@ -130,8 +133,7 @@ public class Application {
                         root.setLevel(Level.INFO);
                         break;
                 }
-            }
-            else{
+            } else {
                 log.info("No loglevel specified defaulting to INFO...");
                 root.setLevel(Level.INFO);
             }
@@ -145,32 +147,34 @@ public class Application {
 
             // MODE
             final Optional<String> maybeUnsafe = configuration.getConfiguration("unsafe");
-            if(maybeUnsafe.isPresent()){
+            if (maybeUnsafe.isPresent()) {
                 log.info("UNSAFE mode enabled");
                 Configuration.setUnsafeMode(true);
             }
 
-            // Check if a keystore was passed; if not, we generate a certificate
-            final String KEYSTORE_LOCATION = "keystore-file";
-            Optional<String> keyStoreLocationDefault = configuration.getConfiguration(KEYSTORE_LOCATION);
-            if (keyStoreLocationDefault.isPresent()) {
-                keyStoreLocation = keyStoreLocationDefault.get();
-            } else {
-                log.info("Generating a self-signed certificate for HTTPS");
-                selfSignedCertificate = generateAndInjectCertificate();
-            }
+            if (configuration.getConfiguration("ssl").isPresent()) {
+                // Check if a keystore was passed; if not, we generate a certificate
+                final String KEYSTORE_LOCATION = "keystore-file";
+                Optional<String> keyStoreLocationDefault = configuration.getConfiguration(KEYSTORE_LOCATION);
+                if (keyStoreLocationDefault.isPresent()) {
+                    keyStoreLocation = keyStoreLocationDefault.get();
+                } else {
+                    log.info("Generating a self-signed certificate for HTTPS");
+                    selfSignedCertificate = generateAndInjectCertificate();
+                }
 
-            if (keyStoreLocation != null) {
-                log.info("Using keystore " + keyStoreLocation + " for HTTPS");
-                System.setProperty("javax.net.ssl.trustStore", keyStoreLocation);
-            }
+                if (keyStoreLocation != null) {
+                    log.info("Using keystore " + keyStoreLocation + " for HTTPS");
+                    System.setProperty("javax.net.ssl.trustStore", keyStoreLocation);
+                }
 
-            // Check for keystore password if a keystore password was given
-            // option for this as passwords are better passed via environment.
-            final String KEYSTORE_PASS = "keystore-password";
-            Optional<String> maybeKeyStorePassword = configuration.getConfiguration(KEYSTORE_PASS);
-            if (maybeKeyStorePassword.isPresent()) {
-                keyStorePassword = maybeKeyStorePassword.get();
+                // Check for keystore password if a keystore password was given
+                // option for this as passwords are better passed via environment.
+                final String KEYSTORE_PASS = "keystore-password";
+                Optional<String> maybeKeyStorePassword = configuration.getConfiguration(KEYSTORE_PASS);
+                if (maybeKeyStorePassword.isPresent()) {
+                    keyStorePassword = maybeKeyStorePassword.get();
+                }
             }
         } catch (ParseException e) {
             log.error("Can't parse commandline options: {}", e.getMessage());
@@ -210,23 +214,27 @@ public class Application {
 
         // Setup httpServer, router and sockJs.
         // If we don't have a self signed certificate we were passed a keystore
-        if (selfSignedCertificate == null) {
-            // If we don't have a keystore password, prompt for one
-            if (keyStorePassword == null) {
-                System.out.print(String.format("Password for keystore %s: ",
-                        Paths.get(keyStoreLocation).getFileName().toString()));
-                keyStorePassword = new String(System.console().readPassword());
+        if (configuration.getConfiguration("ssl").isPresent()) {
+            if (selfSignedCertificate == null) {
+                // If we don't have a keystore password, prompt for one
+                if (keyStorePassword == null) {
+                    System.out.print(String.format("Password for keystore %s: ",
+                            Paths.get(keyStoreLocation).getFileName().toString()));
+                    keyStorePassword = new String(System.console().readPassword());
+                }
+                httpServer = vertx.createHttpServer(new HttpServerOptions()
+                        .setSsl(true)
+                        .setKeyStoreOptions(new JksOptions()
+                                .setPassword(keyStorePassword)
+                                .setPath(keyStoreLocation)));
+            } else {
+                httpServer = vertx.createHttpServer(new HttpServerOptions()
+                        .setSsl(true)
+                        .setKeyCertOptions(selfSignedCertificate.keyCertOptions())
+                        .setTrustOptions(selfSignedCertificate.trustOptions()));
             }
-            httpServer = vertx.createHttpServer(new HttpServerOptions()
-                    .setSsl(true)
-                    .setKeyStoreOptions(new JksOptions()
-                            .setPassword(keyStorePassword)
-                            .setPath(keyStoreLocation)));
         } else {
-            httpServer = vertx.createHttpServer(new HttpServerOptions()
-                    .setSsl(true)
-                    .setKeyCertOptions(selfSignedCertificate.keyCertOptions())
-                    .setTrustOptions(selfSignedCertificate.trustOptions()));
+            httpServer = vertx.createHttpServer();
         }
         sockJsHandler = SockJSHandler.create(vertx);
         sockJsHandler.bridge(bridgeOptions);
@@ -308,10 +316,18 @@ public class Application {
 
         // Open up the http server and send a friendly message telling the user we're done.
         Configuration.setWebHost(configuration.getConfiguration("webHost").orElse("localhost"));
-        Configuration.setWebPort(Integer.parseInt(configuration.getConfiguration("webPort").orElse("8443")));
+        Configuration.setWebPort(Integer.parseInt(configuration.getConfiguration("webPort").orElse(
+                configuration.getConfiguration("ssl").isPresent() ? "8443" : "8080"
+        )));
         try {
-            Configuration.setSchemaNamespace(new URI(String.format("https://%s:%s/",
-                    Configuration.getWebHost(), Configuration.getWebPort())));
+            final String scheme;
+            if (configuration.getConfiguration("ssl").isPresent()) {
+                scheme = "https";
+            } else {
+                scheme = "http";
+            }
+            Configuration.setSchemaNamespace(new URI(String.format("%s://%s:%s/",
+                    scheme, Configuration.getWebHost(), Configuration.getWebPort())));
         } catch (URISyntaxException e) {
             handleUnrecoverableLoadingError(null, e, 1, "Unrecoverable error while setting schema namespace");
         }
