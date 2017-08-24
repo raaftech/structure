@@ -3,6 +3,11 @@ package com.raaftech.structure.base;
 import ch.qos.logback.classic.Level;
 import com.raaftech.structure.bus.InstanceActor;
 import com.raaftech.structure.bus.TypeActor;
+import com.raaftech.structure.bus.manager.SchemaManager;
+import com.raaftech.structure.bus.manager.TaskManager;
+import com.raaftech.structure.bus.repository.Instances;
+import com.raaftech.structure.bus.repository.Nodes;
+import com.raaftech.structure.bus.repository.Types;
 import com.raaftech.structure.graph.Component;
 import com.raaftech.structure.graph.Group;
 import com.raaftech.structure.graph.Instance;
@@ -11,15 +16,13 @@ import com.raaftech.structure.graph.repositories.TypeRepository;
 import com.raaftech.structure.helper.ConfigurationProxy;
 import com.raaftech.structure.helper.ProcessRunner;
 import com.raaftech.structure.helper.loader.BundleLoader;
-import com.raaftech.structure.bus.manager.SchemaManager;
-import com.raaftech.structure.bus.manager.TaskManager;
-import com.raaftech.structure.bus.repository.Instances;
-import com.raaftech.structure.bus.repository.Nodes;
-import com.raaftech.structure.bus.repository.Types;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.http.HttpServer;
+import io.vertx.core.http.HttpServerOptions;
+import io.vertx.core.net.JksOptions;
+import io.vertx.core.net.SelfSignedCertificate;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.StaticHandler;
 import io.vertx.ext.web.handler.sockjs.BridgeOptions;
@@ -33,9 +36,19 @@ import org.slf4j.bridge.SLF4JBridgeHandler;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.data.neo4j.support.query.CypherQueryExecutor;
 
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManagerFactory;
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.Paths;
+import java.security.KeyStore;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
 import java.util.Optional;
 import java.util.stream.StreamSupport;
 
@@ -59,6 +72,11 @@ public class Application {
     @SuppressWarnings("resource")
 	public static void main(String[] args) throws InterruptedException {
 
+        // The self signed certificate for the vertx webserver
+        SelfSignedCertificate selfSignedCertificate = null;
+        String keyStoreLocation = null;
+        String keyStorePassword = null;
+
         // Black magic.
         SLF4JBridgeHandler.removeHandlersForRootLogger();
         SLF4JBridgeHandler.install();
@@ -72,7 +90,10 @@ public class Application {
                     .addOption("l", "loglevel", true, "Set loglevel (INFO | DEBUG | TRACE)")
                     .addOption("t", "trace", false, "Enable (back)traces")
                     .addOption("u", "unsafe", false, "Enable unsafe mode")
-                    .addOption("b", "bundles", true, "Bundle locations to load");
+                    .addOption("b", "bundles", true, "Bundle locations to load")
+                    .addOption("s", "ssl", false, "Enable SSL")
+                    .addOption("k", "keystore-file", true, "Location of the keystore (used with -s)")
+                    .addOption("p", "keystore-password", true, "Password for the keystore");
 
             configuration = ConfigurationProxy.builder()
                     .options(options)
@@ -92,9 +113,9 @@ public class Application {
 
             // LOGGING level
             final Optional<String> maybeLogLevel = configuration.getConfiguration("loglevel");
-            if (maybeLogLevel.isPresent()){
+            if (maybeLogLevel.isPresent()) {
                 String loglevel = maybeLogLevel.get();
-                switch(loglevel){
+                switch (loglevel) {
                     case "TRACE":
                         log.info("Setting loglevel to TRACE...");
                         root.setLevel(Level.TRACE);
@@ -112,8 +133,7 @@ public class Application {
                         root.setLevel(Level.INFO);
                         break;
                 }
-            }
-            else{
+            } else {
                 log.info("No loglevel specified defaulting to INFO...");
                 root.setLevel(Level.INFO);
             }
@@ -127,16 +147,41 @@ public class Application {
 
             // MODE
             final Optional<String> maybeUnsafe = configuration.getConfiguration("unsafe");
-            if(maybeUnsafe.isPresent()){
+            if (maybeUnsafe.isPresent()) {
                 log.info("UNSAFE mode enabled");
                 Configuration.setUnsafeMode(true);
+            }
+
+            if (configuration.getConfiguration("ssl").isPresent()) {
+                // Check if a keystore was passed; if not, we generate a certificate
+                final String KEYSTORE_LOCATION = "keystore-file";
+                Optional<String> keyStoreLocationDefault = configuration.getConfiguration(KEYSTORE_LOCATION);
+                if (keyStoreLocationDefault.isPresent()) {
+                    keyStoreLocation = keyStoreLocationDefault.get();
+                } else {
+                    log.info("Generating a self-signed certificate for HTTPS");
+                    selfSignedCertificate = generateAndInjectCertificate();
+                }
+
+                if (keyStoreLocation != null) {
+                    log.info("Using keystore " + keyStoreLocation + " for HTTPS");
+                    System.setProperty("javax.net.ssl.trustStore", keyStoreLocation);
+                }
+
+                // Check for keystore password if a keystore password was given
+                // option for this as passwords are better passed via environment.
+                final String KEYSTORE_PASS = "keystore-password";
+                Optional<String> maybeKeyStorePassword = configuration.getConfiguration(KEYSTORE_PASS);
+                if (maybeKeyStorePassword.isPresent()) {
+                    keyStorePassword = maybeKeyStorePassword.get();
+                }
             }
         } catch (ParseException e) {
             log.error("Can't parse commandline options: {}", e.getMessage());
         }
 
         Vertx vertx;
-        HttpServer httpServer;
+        HttpServer httpServer = null;
         Router router;
         SockJSHandler sockJsHandler;
 
@@ -168,7 +213,29 @@ public class Application {
                 .addOutboundPermitted(new PermittedOptions().setAddressRegex("com\\.raaftech\\.structure\\..*"));
 
         // Setup httpServer, router and sockJs.
-        httpServer = vertx.createHttpServer();
+        // If we don't have a self signed certificate we were passed a keystore
+        if (configuration.getConfiguration("ssl").isPresent()) {
+            if (selfSignedCertificate == null) {
+                // If we don't have a keystore password, prompt for one
+                if (keyStorePassword == null) {
+                    System.out.print(String.format("Password for keystore %s: ",
+                            Paths.get(keyStoreLocation).getFileName().toString()));
+                    keyStorePassword = new String(System.console().readPassword());
+                }
+                httpServer = vertx.createHttpServer(new HttpServerOptions()
+                        .setSsl(true)
+                        .setKeyStoreOptions(new JksOptions()
+                                .setPassword(keyStorePassword)
+                                .setPath(keyStoreLocation)));
+            } else {
+                httpServer = vertx.createHttpServer(new HttpServerOptions()
+                        .setSsl(true)
+                        .setKeyCertOptions(selfSignedCertificate.keyCertOptions())
+                        .setTrustOptions(selfSignedCertificate.trustOptions()));
+            }
+        } else {
+            httpServer = vertx.createHttpServer();
+        }
         sockJsHandler = SockJSHandler.create(vertx);
         sockJsHandler.bridge(bridgeOptions);
         router = Router.router(vertx);
@@ -248,11 +315,19 @@ public class Application {
         }
 
         // Open up the http server and send a friendly message telling the user we're done.
-        Configuration.setWebHost(configuration.getConfiguration("web-host").orElse("localhost"));
-        Configuration.setWebPort(Integer.parseInt(configuration.getConfiguration("web-port").orElse("8080")));
+        Configuration.setWebHost(configuration.getConfiguration("webHost").orElse("localhost"));
+        Configuration.setWebPort(Integer.parseInt(configuration.getConfiguration("webPort").orElse(
+                configuration.getConfiguration("ssl").isPresent() ? "8443" : "8080"
+        )));
         try {
-            Configuration.setSchemaNamespace(new URI(String.format("http://%s:%s/",
-                    Configuration.getWebHost(), Configuration.getWebPort())));
+            final String scheme;
+            if (configuration.getConfiguration("ssl").isPresent()) {
+                scheme = "https";
+            } else {
+                scheme = "http";
+            }
+            Configuration.setSchemaNamespace(new URI(String.format("%s://%s:%s/",
+                    scheme, Configuration.getWebHost(), Configuration.getWebPort())));
         } catch (URISyntaxException e) {
             handleUnrecoverableLoadingError(null, e, 1, "Unrecoverable error while setting schema namespace");
         }
@@ -359,5 +434,52 @@ public class Application {
         if(tx != null) tx.close();
         log.error(message);
         System.exit(exitCode);
+    }
+
+    /**
+     * Generate a self-signed certificate and inject that in a new {@link javax.net.ssl.TrustManager}
+     * which in turn will be used by {@link SSLContext}. This ensures our JSON schema library will
+     * be able to follow references using the exposed https server which uses the self-signed cert.
+     * @return The self-signed certificate.
+     */
+    private static SelfSignedCertificate generateAndInjectCertificate() {
+        final SelfSignedCertificate cert = SelfSignedCertificate.create();
+
+        try {
+            // Create an InputStream from our generated certificate.
+            BufferedInputStream is = new BufferedInputStream(new FileInputStream(cert.certificatePath()));
+            // Turn it into a X509Certificate object
+            CertificateFactory cf = CertificateFactory.getInstance("X.509");
+            X509Certificate caCert = (X509Certificate) cf.generateCertificate(is);
+            // Get an instance of a new TrustManagerFactory
+            TrustManagerFactory trustManagerFactory = TrustManagerFactory
+                    .getInstance(TrustManagerFactory.getDefaultAlgorithm());
+            // Get an instance of a new KeyStore
+            KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
+            // We don't need to load a KeyStore from file, as ours will just contain `cert`
+            ks.load(null);
+            // Add an entry for `cert`
+            ks.setCertificateEntry("localhost", caCert);
+            // Init the factory with our new KeyStore
+            trustManagerFactory.init(ks);
+
+            // Create a new SSL Context using a TrustManager created by our factory
+            SSLContext sslContext = SSLContext.getInstance("TLS");
+            sslContext.init(null, trustManagerFactory.getTrustManagers(), null);
+            // Set the default SSLSocketFactory to our a new SSLSocketFactory created from
+            // our SSLContext
+            HttpsURLConnection.setDefaultSSLSocketFactory(sslContext.getSocketFactory());
+
+            // Create all-trusting host name verifier
+            HostnameVerifier allHostsValid = (hostname, session) -> Configuration.getWebHost().equals(hostname);
+            // Install the all-trusting host verifier
+            HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
+        } catch (Exception e) {
+            log.error("Error while generating self-signed certificate: \n"+ e.getMessage());
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+        return cert;
     }
 }
