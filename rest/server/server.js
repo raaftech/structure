@@ -19,7 +19,9 @@ app.eventBus = new BusHelper(eventBusUrl);
  * use them to setup the https server. If we don't find them, generate a certificate and use that
  * to setup the https server.
  *
- * @returns {Promise} An object containing a `cert` and `key` if successfull, an error string otherwise.
+ * [0]: File location is passed with env key "STRUCTURE_SSLDIR", or we default to "/opt/structure/ssl".
+ *
+ * @returns {Promise} An object containing a `cert` and `key` if successful, an error string otherwise.
  */
 const getSSL = () => {
     return new Promise((resolve, reject) => {
