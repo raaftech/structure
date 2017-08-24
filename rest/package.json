@@ -21,6 +21,7 @@
     "loopback-datasource-juggler": "^2.39.0",
     "neo4j": "^2.0.0-RC2",
     "node-fetch": "^1.7.2",
+    "pem": "^1.9.7",
     "ramda": "^0.23.0",
     "serve-favicon": "^2.0.1",
     "strong-error-handler": "^1.0.1",
