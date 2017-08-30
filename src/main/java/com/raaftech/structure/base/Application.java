@@ -74,6 +74,10 @@ public class Application {
 
         // The self signed certificate for the vertx webserver
         SelfSignedCertificate selfSignedCertificate = null;
+        // Option names for keystore
+        final String KEYSTORE_LOCATION = "keystore-file";
+        final String KEYSTORE_PASS = "keystore-password";
+        // Variables to hold keystore data
         String keyStoreLocation = null;
         String keyStorePassword = null;
 
@@ -92,8 +96,8 @@ public class Application {
                     .addOption("u", "unsafe", false, "Enable unsafe mode")
                     .addOption("b", "bundles", true, "Bundle locations to load")
                     .addOption("s", "ssl", false, "Enable SSL")
-                    .addOption("k", "keystore-file", true, "Location of the keystore (used with -s)")
-                    .addOption("p", "keystore-password", true, "Password for the keystore");
+                    .addOption("k", KEYSTORE_LOCATION, true, "Location of the keystore (used with -s)")
+                    .addOption("p", KEYSTORE_PASS, true, "Password for the keystore");
 
             configuration = ConfigurationProxy.builder()
                     .options(options)
@@ -154,7 +158,6 @@ public class Application {
 
             if (configuration.getConfiguration("ssl").isPresent()) {
                 // Check if a keystore was passed; if not, we generate a certificate
-                final String KEYSTORE_LOCATION = "keystore-file";
                 Optional<String> keyStoreLocationDefault = configuration.getConfiguration(KEYSTORE_LOCATION);
                 if (keyStoreLocationDefault.isPresent()) {
                     keyStoreLocation = keyStoreLocationDefault.get();
@@ -170,7 +173,6 @@ public class Application {
 
                 // Check for keystore password if a keystore password was given
                 // option for this as passwords are better passed via environment.
-                final String KEYSTORE_PASS = "keystore-password";
                 Optional<String> maybeKeyStorePassword = configuration.getConfiguration(KEYSTORE_PASS);
                 if (maybeKeyStorePassword.isPresent()) {
                     keyStorePassword = maybeKeyStorePassword.get();
