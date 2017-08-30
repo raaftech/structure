@@ -18,13 +18,13 @@ class RestConnector {
         });
     }
 
-    fetchNoVerifyNoVerify(url, obj) {
+    fetchNoVerify(url, obj) {
         if (obj === undefined) {
             obj = { agent: this.agent };
         } else {
             obj.agent = this.agent;
         }
-        return this.fetchNoVerify(url, obj);
+        return fetch(url, obj);
     }
 
     getToken() {

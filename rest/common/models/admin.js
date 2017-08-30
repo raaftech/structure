@@ -3,6 +3,7 @@
 const R = require('ramda');
 const path = require('path');
 const helper = require(path.join(__dirname, '..','libraries','helper'));
+const neoHelper = require(path.join(__dirname, '..','libraries','neoHelper'));
 
 const evBus = require('../../server/server').eventBus;
 
@@ -80,5 +81,18 @@ module.exports = function(Admin) {
         returns: {root: true, type: 'object'},
         http: {verb: 'post', path: '/query'},
         description: 'Request an action from structure'
+    });
+
+    Admin.cypher = function(query, callback) {
+        neoHelper.cypher(query)
+            .then(result => callback(null, result))
+            .catch(ex => callback(ex));
+    };
+
+    Admin.remoteMethod('cypher', {
+        accepts: [{arg: 'query', type: 'string', required: true}],
+        returns: {root: true, type: 'object'},
+        http: {verb: 'post', path: '/cypher'},
+        description: 'Arbitrary cypher query directly to neo4j backend'
     });
 };
