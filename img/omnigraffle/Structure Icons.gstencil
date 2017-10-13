@@ -5,7 +5,7 @@
 	<key>ApplicationVersion</key>
 	<array>
 		<string>com.omnigroup.OmniGraffle7</string>
-		<string>181.4.0.297378</string>
+		<string>179.19.0.296447</string>
 	</array>
 	<key>GraphDocumentVersion</key>
 	<integer>14</integer>
@@ -22,9 +22,9 @@
 	<key>MasterSheets</key>
 	<array/>
 	<key>ModificationDate</key>
-	<string>2017-10-13 11:43:36 +0000</string>
+	<string>2017-10-13 12:09:32 +0000</string>
 	<key>Modifier</key>
-	<string>Stephan Kaffa</string>
+	<string>Rubin Simons</string>
 	<key>MovementHandleVisible</key>
 	<string>NO</string>
 	<key>NotesVisible</key>
@@ -49,11 +49,6 @@
 		<array>
 			<string>float</string>
 			<string>18</string>
-		</array>
-		<key>NSPaperName</key>
-		<array>
-			<string>string</string>
-			<string>na-letter</string>
 		</array>
 		<key>NSPaperSize</key>
 		<array>
@@ -90,7 +85,7 @@
 			<key>BackgroundGraphic</key>
 			<dict>
 				<key>Bounds</key>
-				<string>{{-1092, -1001}, {3033, 2851}}</string>
+				<string>{{-1107, -960}, {3063, 2769}}</string>
 				<key>Class</key>
 				<string>GraffleShapes.CanvasBackgroundGraphic</string>
 				<key>ID</key>
@@ -133,7 +128,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>701</integer>
+					<integer>3</integer>
 					<key>Name</key>
 					<string>AIX</string>
 					<key>Scaling</key>
@@ -363,7 +358,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>698</integer>
+					<integer>4</integer>
 					<key>Name</key>
 					<string>Arch Linux</string>
 					<key>Scaling</key>
@@ -462,7 +457,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>695</integer>
+					<integer>5</integer>
 					<key>Name</key>
 					<string>BSD</string>
 					<key>Scaling</key>
@@ -827,7 +822,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>686</integer>
+					<integer>6</integer>
 					<key>Name</key>
 					<string>Centos</string>
 					<key>Scaling</key>
@@ -1243,7 +1238,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>683</integer>
+					<integer>7</integer>
 					<key>Name</key>
 					<string>Debian</string>
 					<key>Scaling</key>
@@ -2604,9 +2599,9 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>680</integer>
+					<integer>8</integer>
 					<key>Name</key>
-					<string>DOS Like</string>
+					<string>DOS-Like</string>
 					<key>Scaling</key>
 					<integer>1</integer>
 					<key>Shape</key>
@@ -3098,9 +3093,9 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>677</integer>
+					<integer>9</integer>
 					<key>Name</key>
-					<string>Dragon Fly BSD</string>
+					<string>DragonFlyBSD</string>
 					<key>Scaling</key>
 					<integer>1</integer>
 					<key>Shape</key>
@@ -3875,7 +3870,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>674</integer>
+					<integer>10</integer>
 					<key>Name</key>
 					<string>Dyson</string>
 					<key>Scaling</key>
@@ -4583,7 +4578,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>671</integer>
+					<integer>11</integer>
 					<key>Name</key>
 					<string>Fedora</string>
 					<key>Scaling</key>
@@ -4803,9 +4798,9 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>668</integer>
+					<integer>12</integer>
 					<key>Name</key>
-					<string>Free BSD</string>
+					<string>FreeBSD</string>
 					<key>Scaling</key>
 					<integer>1</integer>
 					<key>Shape</key>
@@ -4941,9 +4936,9 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>665</integer>
+					<integer>13</integer>
 					<key>Name</key>
-					<string>Free Dos</string>
+					<string>FreeDOS</string>
 					<key>Scaling</key>
 					<integer>1</integer>
 					<key>Shape</key>
@@ -5410,9 +5405,9 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>662</integer>
+					<integer>14</integer>
 					<key>Name</key>
-					<string>HP-UX</string>
+					<string>HP/UX</string>
 					<key>Scaling</key>
 					<integer>1</integer>
 					<key>Shape</key>
@@ -5714,7 +5709,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>659</integer>
+					<integer>15</integer>
 					<key>Name</key>
 					<string>Illumos</string>
 					<key>Scaling</key>
@@ -6323,7 +6318,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>656</integer>
+					<integer>16</integer>
 					<key>Name</key>
 					<string>Linux</string>
 					<key>Scaling</key>
@@ -7016,7 +7011,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>652</integer>
+					<integer>17</integer>
 					<key>Name</key>
 					<string>Mac OS X</string>
 					<key>Scaling</key>
@@ -7226,7 +7221,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>649</integer>
+					<integer>18</integer>
 					<key>Name</key>
 					<string>Mageia</string>
 					<key>Scaling</key>
@@ -7376,7 +7371,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>646</integer>
+					<integer>19</integer>
 					<key>Name</key>
 					<string>Mint</string>
 					<key>Scaling</key>
@@ -7613,9 +7608,9 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>643</integer>
+					<integer>20</integer>
 					<key>Name</key>
-					<string>MS DOS</string>
+					<string>MS-DOS</string>
 					<key>Scaling</key>
 					<integer>1</integer>
 					<key>Shape</key>
@@ -8240,9 +8235,9 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>640</integer>
+					<integer>21</integer>
 					<key>Name</key>
-					<string>Net BSD</string>
+					<string>NetBSD</string>
 					<key>Scaling</key>
 					<integer>1</integer>
 					<key>Shape</key>
@@ -9040,9 +9035,9 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>637</integer>
+					<integer>22</integer>
 					<key>Name</key>
-					<string>Nexenta Stor</string>
+					<string>NexentaStor</string>
 					<key>Scaling</key>
 					<integer>1</integer>
 					<key>Shape</key>
@@ -9247,9 +9242,9 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>634</integer>
+					<integer>23</integer>
 					<key>Name</key>
-					<string>Omni OS</string>
+					<string>OmniOS</string>
 					<key>Scaling</key>
 					<integer>1</integer>
 					<key>Shape</key>
@@ -9972,9 +9967,9 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>631</integer>
+					<integer>24</integer>
 					<key>Name</key>
-					<string>Open BSD</string>
+					<string>OpenBSD</string>
 					<key>Scaling</key>
 					<integer>1</integer>
 					<key>Shape</key>
@@ -12568,9 +12563,9 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>628</integer>
+					<integer>25</integer>
 					<key>Name</key>
-					<string>Open Indiana</string>
+					<string>OpenIndiana</string>
 					<key>Scaling</key>
 					<integer>1</integer>
 					<key>Shape</key>
@@ -12728,9 +12723,9 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>625</integer>
+					<integer>26</integer>
 					<key>Name</key>
-					<string>Open Suse</string>
+					<string>OpenSuse</string>
 					<key>Scaling</key>
 					<integer>1</integer>
 					<key>Shape</key>
@@ -13048,9 +13043,9 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>619</integer>
+					<integer>27</integer>
 					<key>Name</key>
-					<string>Open Sxce</string>
+					<string>OpenSXCE</string>
 					<key>Scaling</key>
 					<integer>1</integer>
 					<key>Shape</key>
@@ -14037,7 +14032,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>607</integer>
+					<integer>28</integer>
 					<key>Name</key>
 					<string>Operating System</string>
 					<key>Scaling</key>
@@ -14285,9 +14280,9 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>604</integer>
+					<integer>29</integer>
 					<key>Name</key>
-					<string>React OS</string>
+					<string>ReactOS</string>
 					<key>Scaling</key>
 					<integer>1</integer>
 					<key>Shape</key>
@@ -14892,9 +14887,9 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>600</integer>
+					<integer>30</integer>
 					<key>Name</key>
-					<string>Rhel</string>
+					<string>RHEL</string>
 					<key>Scaling</key>
 					<integer>1</integer>
 					<key>Shape</key>
@@ -15442,9 +15437,9 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>597</integer>
+					<integer>31</integer>
 					<key>Name</key>
-					<string>Sles</string>
+					<string>SLES</string>
 					<key>Scaling</key>
 					<integer>1</integer>
 					<key>Shape</key>
@@ -15799,9 +15794,9 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>594</integer>
+					<integer>32</integer>
 					<key>Name</key>
-					<string>Smart OS</string>
+					<string>SmartOS</string>
 					<key>Scaling</key>
 					<integer>1</integer>
 					<key>Shape</key>
@@ -16283,7 +16278,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>591</integer>
+					<integer>33</integer>
 					<key>Name</key>
 					<string>Solaris</string>
 					<key>Scaling</key>
@@ -16513,9 +16508,9 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>588</integer>
+					<integer>34</integer>
 					<key>Name</key>
-					<string>Unix</string>
+					<string>UNIX</string>
 					<key>Scaling</key>
 					<integer>1</integer>
 					<key>Shape</key>
@@ -16739,7 +16734,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>587</integer>
+					<integer>35</integer>
 					<key>Name</key>
 					<string>Ubuntu</string>
 					<key>Scaling</key>
@@ -16963,9 +16958,9 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>568</integer>
+					<integer>36</integer>
 					<key>Name</key>
-					<string>Unix Like</string>
+					<string>UNIX-Like</string>
 					<key>Scaling</key>
 					<integer>1</integer>
 					<key>Shape</key>
@@ -17177,7 +17172,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>564</integer>
+					<integer>37</integer>
 					<key>Name</key>
 					<string>Windows</string>
 					<key>Scaling</key>
@@ -17293,7 +17288,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>561</integer>
+					<integer>38</integer>
 					<key>Name</key>
 					<string>Windows 8</string>
 					<key>Scaling</key>
@@ -17409,7 +17404,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>558</integer>
+					<integer>39</integer>
 					<key>Name</key>
 					<string>Windows 9x</string>
 					<key>Scaling</key>
@@ -18428,7 +18423,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>555</integer>
+					<integer>40</integer>
 					<key>Name</key>
 					<string>Windows 2000</string>
 					<key>Scaling</key>
@@ -19523,7 +19518,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>552</integer>
+					<integer>41</integer>
 					<key>Name</key>
 					<string>Windows Like</string>
 					<key>Scaling</key>
@@ -19687,7 +19682,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>549</integer>
+					<integer>42</integer>
 					<key>Name</key>
 					<string>Windows ME</string>
 					<key>Scaling</key>
@@ -19824,7 +19819,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>546</integer>
+					<integer>43</integer>
 					<key>Name</key>
 					<string>Windows Vista</string>
 					<key>Scaling</key>
@@ -20077,7 +20072,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>543</integer>
+					<integer>44</integer>
 					<key>Name</key>
 					<string>Windows XP</string>
 					<key>Scaling</key>
@@ -20268,7 +20263,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>540</integer>
+					<integer>45</integer>
 					<key>Name</key>
 					<string>Gentoo</string>
 					<key>Scaling</key>
@@ -20500,9 +20495,9 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>536</integer>
+					<integer>46</integer>
 					<key>Name</key>
-					<string>Mac OS9</string>
+					<string>Mac OS 9</string>
 					<key>Scaling</key>
 					<integer>1</integer>
 					<key>Shape</key>
@@ -20675,7 +20670,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>537</integer>
+					<integer>47</integer>
 					<key>Name</key>
 					<string>MacOS</string>
 					<key>Scaling</key>
@@ -21059,7 +21054,7 @@
 			<key>BackgroundGraphic</key>
 			<dict>
 				<key>Bounds</key>
-				<string>{{-1078, -866}, {2631, 2082}}</string>
+				<string>{{-1106, -959}, {2687, 2268}}</string>
 				<key>Class</key>
 				<string>GraffleShapes.CanvasBackgroundGraphic</string>
 				<key>ID</key>
@@ -21102,7 +21097,9 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>132</integer>
+					<integer>3</integer>
+					<key>Name</key>
+					<string>Rc</string>
 					<key>Scaling</key>
 					<integer>1</integer>
 					<key>Shape</key>
@@ -21418,9 +21415,9 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>130</integer>
+					<integer>4</integer>
 					<key>Name</key>
-					<string>Bsdrc Init</string>
+					<string>BSD Rc</string>
 					<key>Scaling</key>
 					<integer>1</integer>
 					<key>Shape</key>
@@ -21792,7 +21789,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>126</integer>
+					<integer>5</integer>
 					<key>Name</key>
 					<string>Launchd</string>
 					<key>Scaling</key>
@@ -22025,7 +22022,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>118</integer>
+					<integer>6</integer>
 					<key>Name</key>
 					<string>SCM</string>
 					<key>Scaling</key>
@@ -22312,7 +22309,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>115</integer>
+					<integer>7</integer>
 					<key>Name</key>
 					<string>SMF</string>
 					<key>Scaling</key>
@@ -22578,9 +22575,9 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>112</integer>
+					<integer>8</integer>
 					<key>Name</key>
-					<string>System Ctl</string>
+					<string>SystemCtl</string>
 					<key>Scaling</key>
 					<integer>1</integer>
 					<key>Shape</key>
@@ -22986,7 +22983,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>109</integer>
+					<integer>9</integer>
 					<key>Name</key>
 					<string>Systemd</string>
 					<key>Scaling</key>
@@ -24317,9 +24314,9 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>106</integer>
+					<integer>10</integer>
 					<key>Name</key>
-					<string>System Starter</string>
+					<string>SystemStarter</string>
 					<key>Scaling</key>
 					<integer>1</integer>
 					<key>Shape</key>
@@ -24745,9 +24742,9 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>103</integer>
+					<integer>11</integer>
 					<key>Name</key>
-					<string>Sysv Init</string>
+					<string>SysVInit</string>
 					<key>Scaling</key>
 					<integer>1</integer>
 					<key>Shape</key>
@@ -26076,7 +26073,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>100</integer>
+					<integer>12</integer>
 					<key>Name</key>
 					<string>Upstart</string>
 					<key>Scaling</key>
@@ -26286,7 +26283,7 @@
 			<key>BackgroundGraphic</key>
 			<dict>
 				<key>Bounds</key>
-				<string>{{-1079, -866}, {2632, 2082}}</string>
+				<string>{{-1107, -959}, {2688, 2268}}</string>
 				<key>Class</key>
 				<string>GraffleShapes.CanvasBackgroundGraphic</string>
 				<key>ID</key>
@@ -26329,7 +26326,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>168</integer>
+					<integer>3</integer>
 					<key>Name</key>
 					<string>AIX Lpp</string>
 					<key>Scaling</key>
@@ -26692,7 +26689,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>165</integer>
+					<integer>4</integer>
 					<key>Name</key>
 					<string>Apt</string>
 					<key>Scaling</key>
@@ -26995,7 +26992,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>161</integer>
+					<integer>5</integer>
 					<key>Name</key>
 					<string>BSD Pkg</string>
 					<key>Scaling</key>
@@ -27424,7 +27421,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>158</integer>
+					<integer>6</integer>
 					<key>Name</key>
 					<string>BSD Pkg Ng</string>
 					<key>Scaling</key>
@@ -28184,7 +28181,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>155</integer>
+					<integer>7</integer>
 					<key>Name</key>
 					<string>Opt Zip</string>
 					<key>Scaling</key>
@@ -28621,7 +28618,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>152</integer>
+					<integer>8</integer>
 					<key>Name</key>
 					<string>Package Manager</string>
 					<key>Scaling</key>
@@ -28838,7 +28835,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>149</integer>
+					<integer>9</integer>
 					<key>Name</key>
 					<string>PacMan</string>
 					<key>Scaling</key>
@@ -29037,7 +29034,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>146</integer>
+					<integer>10</integer>
 					<key>Name</key>
 					<string>SD/UX</string>
 					<key>Scaling</key>
@@ -29414,7 +29411,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>143</integer>
+					<integer>11</integer>
 					<key>Name</key>
 					<string>Solaris Ips</string>
 					<key>Scaling</key>
@@ -30135,7 +30132,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>140</integer>
+					<integer>12</integer>
 					<key>Name</key>
 					<string>Solaris Pkg</string>
 					<key>Scaling</key>
@@ -30897,7 +30894,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>137</integer>
+					<integer>13</integer>
 					<key>Name</key>
 					<string>Yum</string>
 					<key>Scaling</key>
@@ -31191,7 +31188,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>134</integer>
+					<integer>14</integer>
 					<key>Name</key>
 					<string>Zypp</string>
 					<key>Scaling</key>
@@ -31639,7 +31636,7 @@
 			<key>BackgroundGraphic</key>
 			<dict>
 				<key>Bounds</key>
-				<string>{{-1078, -867}, {2632, 2061}}</string>
+				<string>{{-1106, -960}, {2688, 2247}}</string>
 				<key>Class</key>
 				<string>GraffleShapes.CanvasBackgroundGraphic</string>
 				<key>ID</key>
@@ -31682,7 +31679,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>110</integer>
+					<integer>3</integer>
 					<key>Name</key>
 					<string>Batch</string>
 					<key>Scaling</key>
@@ -31885,7 +31882,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>107</integer>
+					<integer>4</integer>
 					<key>Name</key>
 					<string>Csh</string>
 					<key>Scaling</key>
@@ -32298,9 +32295,9 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>104</integer>
+					<integer>5</integer>
 					<key>Name</key>
-					<string>Dos Shell</string>
+					<string>DOS Shell</string>
 					<key>Scaling</key>
 					<integer>1</integer>
 					<key>Shape</key>
@@ -32779,7 +32776,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>101</integer>
+					<integer>6</integer>
 					<key>Name</key>
 					<string>Interpreter</string>
 					<key>Scaling</key>
@@ -33053,7 +33050,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>98</integer>
+					<integer>7</integer>
 					<key>Name</key>
 					<string>Ksh</string>
 					<key>Scaling</key>
@@ -33477,7 +33474,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>95</integer>
+					<integer>8</integer>
 					<key>Name</key>
 					<string>Sh</string>
 					<key>Scaling</key>
@@ -33837,7 +33834,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>91</integer>
+					<integer>9</integer>
 					<key>Name</key>
 					<string>Tcsh</string>
 					<key>Scaling</key>
@@ -34321,9 +34318,9 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>90</integer>
+					<integer>10</integer>
 					<key>Name</key>
-					<string>Unix Shell</string>
+					<string>UNIX Shell</string>
 					<key>Scaling</key>
 					<integer>1</integer>
 					<key>Shape</key>
@@ -34539,7 +34536,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>87</integer>
+					<integer>11</integer>
 					<key>Name</key>
 					<string>Zsh</string>
 					<key>Scaling</key>
@@ -35041,7 +35038,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>74</integer>
+					<integer>12</integer>
 					<key>Name</key>
 					<string>Bash</string>
 					<key>Scaling</key>
@@ -35745,7 +35742,7 @@
 			<key>BackgroundGraphic</key>
 			<dict>
 				<key>Bounds</key>
-				<string>{{-1079, -867}, {2994, 2208}}</string>
+				<string>{{-1106, -960}, {3049, 2394}}</string>
 				<key>Class</key>
 				<string>GraffleShapes.CanvasBackgroundGraphic</string>
 				<key>ID</key>
@@ -35767,11 +35764,11 @@
 			<key>BaseZoom</key>
 			<integer>0</integer>
 			<key>CanvasDimensionsOrigin</key>
-			<string>{-0.5, -0.5}</string>
+			<string>{0, -0.5}</string>
 			<key>CanvasOrigin</key>
 			<string>{0, 0}</string>
 			<key>CanvasSize</key>
-			<string>{837.10244444444447, 475.5}</string>
+			<string>{836.60244444444447, 475.5}</string>
 			<key>CanvasSizingMode</key>
 			<integer>2</integer>
 			<key>ColumnAlign</key>
@@ -35784,335 +35781,11 @@
 			<array>
 				<dict>
 					<key>Bounds</key>
-					<string>{{0, 1.4210854715202004e-14}, {86.602444444444444, 100}}</string>
-					<key>Class</key>
-					<string>ShapedGraphic</string>
-					<key>ID</key>
-					<integer>99</integer>
-					<key>Name</key>
-					<string>C</string>
-					<key>Scaling</key>
-					<integer>1</integer>
-					<key>Shape</key>
-					<string>Bezier</string>
-					<key>ShapeData</key>
-					<dict>
-						<key>AdditionalUnitPoints</key>
-						<array>
-							<array>
-								<string>{0.11877391195013753, 0.12695333333333336}</string>
-								<string>{0.089874291462134881, 0.15429666666666675}</string>
-								<string>{0.050900539117448629, 0.16796888888888895}</string>
-								<string>{0.001855220920117806, 0.16796888888888895}</string>
-								<string>{-0.040419695620600771, 0.16796888888888895}</string>
-								<string>{-0.075924210504707212, 0.15675111111111106}</string>
-								<string>{-0.1046557577281626, 0.13431111111111105}</string>
-								<string>{-0.14247224225130928, 0.10463444444444447}</string>
-								<string>{-0.1613785600098534, 0.058814444444444391}</string>
-								<string>{-0.1613785600098534, -0.0031500000000000972}</string>
-								<string>{-0.1613785600098534, -0.050197777777777897}</string>
-								<string>{-0.14718214266469248, -0.088778888888888963}</string>
-								<string>{-0.11877904395821504, -0.11889333333333341}</string>
-								<string>{-0.088069107620775355, -0.15160777777777779}</string>
-								<string>{-0.045718493960909434, -0.16796888888888895}</string>
-								<string>{0.0082753630254215338, -0.16796888888888895}</string>
-								<string>{0.054340267531581166, -0.16796888888888895}</string>
-								<string>{0.090088552799382327, -0.15733555555555562}</string>
-								<string>{0.11551508682074685, -0.13606777777777784}</string>
-								<string>{0.14094033784009197, -0.11480000000000001}</string>
-								<string>{0.15506105806610548, -0.090636666666666754}</string>
-								<string>{0.15786826648465158, -0.063585555555555617}</string>
-								<string>{0.15786826648465158, -0.063585555555555617}</string>
-								<string>{0.10925403696585434, -0.063585555555555617}</string>
-								<string>{0.10925403696585434, -0.063585555555555617}</string>
-								<string>{0.10383848544177621, -0.084126666666666738}</string>
-								<string>{0.093052287464300609, -0.1004033333333334}</string>
-								<string>{0.076892877029388629, -0.11241333333333337}</string>
-								<string>{0.060729617588418328, -0.12442000000000003}</string>
-								<string>{0.038048707888666433, -0.13042555555555563}</string>
-								<string>{0.0088462989240747358, -0.13042555555555563}</string>
-								<string>{-0.026755724113509571, -0.13042555555555563}</string>
-								<string>{-0.055506516367256564, -0.11938444444444452}</string>
-								<string>{-0.07740864384120516, -0.097303333333333408}</string>
-								<string>{-0.099310771315153756, -0.075222222222222301}</string>
-								<string>{-0.11025862754707949, -0.041374444444444491}</string>
-								<string>{-0.11025862754707949, 0.0042355555555554369}</string>
-								<string>{-0.11025862754707949, 0.041595555555555497}</string>
-								<string>{-0.10037309698725438, 0.071893333333333254}</string>
-								<string>{-0.080595620857506933, 0.09513444444444441}</string>
-								<string>{-0.060823276735837317, 0.11837555555555557}</string>
-								<string>{-0.031324494304753703, 0.12999222222222218}</string>
-								<string>{0.0078968774296853672, 0.12999222222222218}</string>
-								<string>{0.044001837258892063, 0.12999222222222218}</string>
-								<string>{0.071491438527524598, 0.11776777777777769}</string>
-								<string>{0.090363115231543611, 0.093316666666666492}</string>
-								<string>{0.10037181398523554, 0.080441111111110963}</string>
-								<string>{0.10783760273638698, 0.063514444444444318}</string>
-								<string>{0.11276304748903687, 0.042535555555555438}</string>
-								<string>{0.11276304748903687, 0.042535555555555438}</string>
-								<string>{0.16137727700783411, 0.042535555555555438}</string>
-								<string>{0.16137727700783411, 0.042535555555555438}</string>
-								<string>{0.15708306924875104, 0.076099999999999945}</string>
-								<string>{0.14288151989551234, 0.10424111111111112}</string>
-							</array>
-						</array>
-						<key>UnitPoints</key>
-						<array>
-							<string>{0, -0.5}</string>
-							<string>{0, -0.5}</string>
-							<string>{-0.5, -0.25}</string>
-							<string>{-0.5, -0.25}</string>
-							<string>{-0.5, -0.25}</string>
-							<string>{-0.5, 0.25}</string>
-							<string>{-0.5, 0.25}</string>
-							<string>{-0.5, 0.25}</string>
-							<string>{0, 0.5}</string>
-							<string>{0, 0.5}</string>
-							<string>{0, 0.5}</string>
-							<string>{0.5, 0.25}</string>
-							<string>{0.5, 0.25}</string>
-							<string>{0.5, 0.25}</string>
-							<string>{0.5, -0.25}</string>
-							<string>{0.5, -0.25}</string>
-							<string>{0.5, -0.25}</string>
-							<string>{0, -0.5}</string>
-						</array>
-					</dict>
-					<key>Style</key>
-					<dict>
-						<key>fill</key>
-						<dict>
-							<key>Color</key>
-							<dict>
-								<key>b</key>
-								<real>0.105882</real>
-								<key>g</key>
-								<real>0.11372500000000001</real>
-								<key>r</key>
-								<real>0.11372500000000001</real>
-								<key>space</key>
-								<string>srgb</string>
-							</dict>
-						</dict>
-						<key>shadow</key>
-						<dict>
-							<key>Draws</key>
-							<string>NO</string>
-						</dict>
-						<key>stroke</key>
-						<dict>
-							<key>Cap</key>
-							<integer>0</integer>
-						</dict>
-					</dict>
-				</dict>
-				<dict>
-					<key>Bounds</key>
-					<string>{{125, 0}, {86.602401733398438, 99.999950681477529}}</string>
-					<key>Class</key>
-					<string>ShapedGraphic</string>
-					<key>ID</key>
-					<integer>177</integer>
-					<key>Name</key>
-					<string>C++</string>
-					<key>Scaling</key>
-					<integer>1</integer>
-					<key>Shape</key>
-					<string>Bezier</string>
-					<key>ShapeData</key>
-					<dict>
-						<key>AdditionalUnitPoints</key>
-						<array>
-							<array>
-								<string>{-0.11292470574348679, 0.12695333333333336}</string>
-								<string>{-0.14182432623148944, 0.15429666666666675}</string>
-								<string>{-0.18079807857617564, 0.16796888888888895}</string>
-								<string>{-0.22984339677350651, 0.16796888888888895}</string>
-								<string>{-0.27211831331422515, 0.16796888888888895}</string>
-								<string>{-0.30762282819833159, 0.15675111111111106}</string>
-								<string>{-0.33635437542178692, 0.13431222222222217}</string>
-								<string>{-0.37417085994493354, 0.10463555555555559}</string>
-								<string>{-0.39307717770347772, 0.05881555555555551}</string>
-								<string>{-0.39307717770347772, -0.0031488888888889788}</string>
-								<string>{-0.39307717770347772, -0.050196666666666778}</string>
-								<string>{-0.37888076035831686, -0.0887777777777779}</string>
-								<string>{-0.35047766165183947, -0.11889222222222229}</string>
-								<string>{-0.31976900831641913, -0.15160666666666672}</string>
-								<string>{-0.27741711165453375, -0.16796777777777788}</string>
-								<string>{-0.2234232546682029, -0.16796777777777788}</string>
-								<string>{-0.17735835016204321, -0.16796777777777788}</string>
-								<string>{-0.14161006489424222, -0.15733444444444455}</string>
-								<string>{-0.11618353087287758, -0.13606666666666672}</string>
-								<string>{-0.090758279853532464, -0.11479888888888895}</string>
-								<string>{-0.076638842629538351, -0.090635555555555636}</string>
-								<string>{-0.073830351208972744, -0.063584444444444554}</string>
-								<string>{-0.073830351208972744, -0.063584444444444554}</string>
-								<string>{-0.12244458072777009, -0.063584444444444554}</string>
-								<string>{-0.12244458072777009, -0.063584444444444554}</string>
-								<string>{-0.12786013225184822, -0.084125555555555676}</string>
-								<string>{-0.13864633022932382, -0.10040222222222234}</string>
-								<string>{-0.1548057406642358, -0.1124122222222223}</string>
-								<string>{-0.17096900010520621, -0.12441888888888897}</string>
-								<string>{-0.19364990980495805, -0.13042444444444456}</string>
-								<string>{-0.22285231876954975, -0.13042444444444456}</string>
-								<string>{-0.25845434180713406, -0.13042444444444456}</string>
-								<string>{-0.28720513406088105, -0.1193833333333334}</string>
-								<string>{-0.30910726153482965, -0.09730222222222229}</string>
-								<string>{-0.3310106720107977, -0.075221111111111238}</string>
-								<string>{-0.34195724524070398, -0.041373333333333373}</string>
-								<string>{-0.34195724524070398, 0.0042366666666665553}</string>
-								<string>{-0.34195724524070398, 0.041595555555555497}</string>
-								<string>{-0.33207171468087887, 0.071893333333333254}</string>
-								<string>{-0.31229423855113142, 0.095135555555555529}</string>
-								<string>{-0.2925218944294618, 0.11837555555555557}</string>
-								<string>{-0.26302311199837819, 0.12999222222222218}</string>
-								<string>{-0.22380174026393912, 0.12999222222222218}</string>
-								<string>{-0.18769678043473231, 0.12999222222222218}</string>
-								<string>{-0.1602084621681194, 0.11776777777777769}</string>
-								<string>{-0.14133550246208082, 0.093316666666666492}</string>
-								<string>{-0.13132808671040841, 0.080441111111110963}</string>
-								<string>{-0.12386101495723745, 0.063514444444444318}</string>
-								<string>{-0.11893557020458745, 0.042535555555555438}</string>
-								<string>{-0.11893557020458745, 0.042535555555555438}</string>
-								<string>{-0.070321340685790101, 0.042535555555555438}</string>
-								<string>{-0.070321340685790101, 0.042535555555555438}</string>
-								<string>{-0.07461554844487317, 0.076099999999999945}</string>
-								<string>{-0.088818380800131269, 0.10424222222222213}</string>
-							</array>
-							<array>
-								<string>{0.16830035590476022, 0.010438888888888886}</string>
-								<string>{0.16830035590476022, 0.010438888888888886}</string>
-								<string>{0.086358865928855111, 0.010438888888888886}</string>
-								<string>{0.086358865928855111, 0.010438888888888886}</string>
-								<string>{0.086358865928855111, 0.010438888888888886}</string>
-								<string>{0.086358865928855111, 0.081727777777777844}</string>
-								<string>{0.086358865928855111, 0.081727777777777844}</string>
-								<string>{0.086358865928855111, 0.081727777777777844}</string>
-								<string>{0.05422094834377289, 0.081727777777777844}</string>
-								<string>{0.05422094834377289, 0.081727777777777844}</string>
-								<string>{0.05422094834377289, 0.081727777777777844}</string>
-								<string>{0.05422094834377289, 0.010438888888888997}</string>
-								<string>{0.05422094834377289, 0.010438888888888997}</string>
-								<string>{0.05422094834377289, 0.010438888888888997}</string>
-								<string>{-0.027720541632132445, 0.010438888888888997}</string>
-								<string>{-0.027720541632132445, 0.010438888888888997}</string>
-								<string>{-0.027720541632132445, 0.010438888888888997}</string>
-								<string>{-0.027720541632132445, -0.016904444444444389}</string>
-								<string>{-0.027720541632132445, -0.016904444444444389}</string>
-								<string>{-0.027720541632132445, -0.016904444444444389}</string>
-								<string>{0.05422094834377289, -0.016904444444444389}</string>
-								<string>{0.05422094834377289, -0.016904444444444389}</string>
-								<string>{0.05422094834377289, -0.016904444444444389}</string>
-								<string>{0.05422094834377289, -0.088356666666666583}</string>
-								<string>{0.05422094834377289, -0.088356666666666583}</string>
-								<string>{0.05422094834377289, -0.088356666666666583}</string>
-								<string>{0.086358865928855111, -0.088356666666666583}</string>
-								<string>{0.086358865928855111, -0.088356666666666583}</string>
-								<string>{0.086358865928855111, -0.088356666666666583}</string>
-								<string>{0.086358865928855111, -0.016904444444444389}</string>
-								<string>{0.086358865928855111, -0.016904444444444389}</string>
-								<string>{0.086358865928855111, -0.016904444444444389}</string>
-								<string>{0.16830035590476022, -0.016904444444444389}</string>
-								<string>{0.16830035590476022, -0.016904444444444389}</string>
-								<string>{0.16830035590476022, -0.016904444444444389}</string>
-								<string>{0.16830035590476022, 0.010438888888888886}</string>
-							</array>
-							<array>
-								<string>{0.39307589470145832, 0.010438888888888886}</string>
-								<string>{0.39307589470145832, 0.010438888888888886}</string>
-								<string>{0.3111344047255532, 0.010438888888888886}</string>
-								<string>{0.3111344047255532, 0.010438888888888886}</string>
-								<string>{0.3111344047255532, 0.010438888888888886}</string>
-								<string>{0.3111344047255532, 0.081727777777777844}</string>
-								<string>{0.3111344047255532, 0.081727777777777844}</string>
-								<string>{0.3111344047255532, 0.081727777777777844}</string>
-								<string>{0.27899648714047098, 0.081727777777777844}</string>
-								<string>{0.27899648714047098, 0.081727777777777844}</string>
-								<string>{0.27899648714047098, 0.081727777777777844}</string>
-								<string>{0.27899648714047098, 0.010438888888888997}</string>
-								<string>{0.27899648714047098, 0.010438888888888997}</string>
-								<string>{0.27899648714047098, 0.010438888888888997}</string>
-								<string>{0.19705499716456576, 0.010438888888888997}</string>
-								<string>{0.19705499716456576, 0.010438888888888997}</string>
-								<string>{0.19705499716456576, 0.010438888888888997}</string>
-								<string>{0.19705499716456576, -0.016904444444444389}</string>
-								<string>{0.19705499716456576, -0.016904444444444389}</string>
-								<string>{0.19705499716456576, -0.016904444444444389}</string>
-								<string>{0.27899648714047098, -0.016904444444444389}</string>
-								<string>{0.27899648714047098, -0.016904444444444389}</string>
-								<string>{0.27899648714047098, -0.016904444444444389}</string>
-								<string>{0.27899648714047098, -0.088356666666666583}</string>
-								<string>{0.27899648714047098, -0.088356666666666583}</string>
-								<string>{0.27899648714047098, -0.088356666666666583}</string>
-								<string>{0.3111344047255532, -0.088356666666666583}</string>
-								<string>{0.3111344047255532, -0.088356666666666583}</string>
-								<string>{0.3111344047255532, -0.088356666666666583}</string>
-								<string>{0.3111344047255532, -0.016904444444444389}</string>
-								<string>{0.3111344047255532, -0.016904444444444389}</string>
-								<string>{0.3111344047255532, -0.016904444444444389}</string>
-								<string>{0.39307589470145832, -0.016904444444444389}</string>
-								<string>{0.39307589470145832, -0.016904444444444389}</string>
-								<string>{0.39307589470145832, -0.016904444444444389}</string>
-								<string>{0.39307589470145832, 0.010438888888888886}</string>
-							</array>
-						</array>
-						<key>UnitPoints</key>
-						<array>
-							<string>{0, -0.5}</string>
-							<string>{0, -0.5}</string>
-							<string>{-0.5, -0.25}</string>
-							<string>{-0.5, -0.25}</string>
-							<string>{-0.5, -0.25}</string>
-							<string>{-0.5, 0.25}</string>
-							<string>{-0.5, 0.25}</string>
-							<string>{-0.5, 0.25}</string>
-							<string>{0, 0.5}</string>
-							<string>{0, 0.5}</string>
-							<string>{0, 0.5}</string>
-							<string>{0.5, 0.25}</string>
-							<string>{0.5, 0.25}</string>
-							<string>{0.5, 0.25}</string>
-							<string>{0.5, -0.25}</string>
-							<string>{0.5, -0.25}</string>
-							<string>{0.5, -0.25}</string>
-							<string>{0, -0.5}</string>
-						</array>
-					</dict>
-					<key>Style</key>
-					<dict>
-						<key>fill</key>
-						<dict>
-							<key>Color</key>
-							<dict>
-								<key>b</key>
-								<real>0.105882</real>
-								<key>g</key>
-								<real>0.11372500000000001</real>
-								<key>r</key>
-								<real>0.11372500000000001</real>
-								<key>space</key>
-								<string>srgb</string>
-							</dict>
-						</dict>
-						<key>shadow</key>
-						<dict>
-							<key>Draws</key>
-							<string>NO</string>
-						</dict>
-						<key>stroke</key>
-						<dict>
-							<key>Cap</key>
-							<integer>0</integer>
-						</dict>
-					</dict>
-				</dict>
-				<dict>
-					<key>Bounds</key>
 					<string>{{250, 0}, {86.602444444444458, 100}}</string>
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>174</integer>
+					<integer>37</integer>
 					<key>Name</key>
 					<string>C#</string>
 					<key>Scaling</key>
@@ -36332,11 +36005,530 @@
 				</dict>
 				<dict>
 					<key>Bounds</key>
+					<string>{{125.05548441220924, 0.064029011689449078}, {86.491543065891065, 99.871941976621102}}</string>
+					<key>Class</key>
+					<string>ShapedGraphic</string>
+					<key>ID</key>
+					<integer>36</integer>
+					<key>Name</key>
+					<string>C++</string>
+					<key>Scaling</key>
+					<integer>1</integer>
+					<key>Shape</key>
+					<string>Bezier</string>
+					<key>ShapeData</key>
+					<dict>
+						<key>AdditionalUnitPoints</key>
+						<array>
+							<array>
+								<string>{-0.11292470574348679, 0.12695333333333336}</string>
+								<string>{-0.14182432623148944, 0.15429666666666675}</string>
+								<string>{-0.18079807857617564, 0.16796888888888895}</string>
+								<string>{-0.22984339677350651, 0.16796888888888895}</string>
+								<string>{-0.27211959631624466, 0.16796888888888895}</string>
+								<string>{-0.30762411120035105, 0.15675111111111106}</string>
+								<string>{-0.33635565842380638, 0.13431222222222217}</string>
+								<string>{-0.374172142946953, 0.10463555555555559}</string>
+								<string>{-0.39307846070549712, 0.05881555555555551}</string>
+								<string>{-0.39307846070549712, -0.0031488888888889788}</string>
+								<string>{-0.39307846070549712, -0.050196666666666778}</string>
+								<string>{-0.37888204336033626, -0.0887777777777779}</string>
+								<string>{-0.35047894465385887, -0.11889222222222229}</string>
+								<string>{-0.31977029131843854, -0.15160666666666672}</string>
+								<string>{-0.27741839465655316, -0.16796777777777788}</string>
+								<string>{-0.2234245376702223, -0.16796777777777788}</string>
+								<string>{-0.17736091616608207, -0.16796777777777788}</string>
+								<string>{-0.14161134789626162, -0.15733444444444455}</string>
+								<string>{-0.11618481387489699, -0.13606666666666672}</string>
+								<string>{-0.090760845857571382, -0.11479888888888895}</string>
+								<string>{-0.076641408633577157, -0.090635555555555636}</string>
+								<string>{-0.073831634210992148, -0.063584444444444554}</string>
+								<string>{-0.073831634210992148, -0.063584444444444554}</string>
+								<string>{-0.12244586372978949, -0.063584444444444554}</string>
+								<string>{-0.12244586372978949, -0.063584444444444554}</string>
+								<string>{-0.12786269825588703, -0.084125555555555676}</string>
+								<string>{-0.13864889623336263, -0.1004033333333334}</string>
+								<string>{-0.15480830666827466, -0.1124122222222223}</string>
+								<string>{-0.17097156610924502, -0.12441888888888897}</string>
+								<string>{-0.1936511928069774, -0.13042444444444456}</string>
+								<string>{-0.22285488477358856, -0.13042444444444456}</string>
+								<string>{-0.25845690781117286, -0.13042444444444456}</string>
+								<string>{-0.28720770006491986, -0.1193833333333334}</string>
+								<string>{-0.30910982753886845, -0.09730222222222229}</string>
+								<string>{-0.33101323801483656, -0.075221111111111238}</string>
+								<string>{-0.34195981124474278, -0.041373333333333373}</string>
+								<string>{-0.34195981124474278, 0.0042366666666665553}</string>
+								<string>{-0.34195981124474278, 0.041595555555555497}</string>
+								<string>{-0.33207428068491768, 0.071894444444444372}</string>
+								<string>{-0.31229680455517028, 0.095136666666666536}</string>
+								<string>{-0.29252446043350061, 0.11837666666666657}</string>
+								<string>{-0.26302567800241705, 0.12999333333333318}</string>
+								<string>{-0.22380302326595852, 0.12999333333333318}</string>
+								<string>{-0.18769806343675172, 0.12999333333333318}</string>
+								<string>{-0.16021102817215827, 0.11776888888888881}</string>
+								<string>{-0.14133806846611963, 0.093317777777777611}</string>
+								<string>{-0.13133065271444722, 0.080441111111110852}</string>
+								<string>{-0.12386358096127625, 0.063515555555555436}</string>
+								<string>{-0.11893813620862626, 0.042536666666666556}</string>
+								<string>{-0.11893813620862626, 0.042536666666666556}</string>
+								<string>{-0.070322623687809505, 0.042536666666666556}</string>
+								<string>{-0.070322623687809505, 0.042536666666666556}</string>
+								<string>{-0.07461554844487317, 0.076099999999999945}</string>
+								<string>{-0.088818380800131269, 0.10424222222222213}</string>
+							</array>
+							<array>
+								<string>{0.16830035590476022, 0.010438888888888886}</string>
+								<string>{0.16830035590476022, 0.010438888888888886}</string>
+								<string>{0.086358865928855111, 0.010438888888888886}</string>
+								<string>{0.086358865928855111, 0.010438888888888886}</string>
+								<string>{0.086358865928855111, 0.010438888888888886}</string>
+								<string>{0.086358865928855111, 0.081727777777777844}</string>
+								<string>{0.086358865928855111, 0.081727777777777844}</string>
+								<string>{0.086358865928855111, 0.081727777777777844}</string>
+								<string>{0.05422094834377289, 0.081727777777777844}</string>
+								<string>{0.05422094834377289, 0.081727777777777844}</string>
+								<string>{0.05422094834377289, 0.081727777777777844}</string>
+								<string>{0.05422094834377289, 0.010438888888888997}</string>
+								<string>{0.05422094834377289, 0.010438888888888997}</string>
+								<string>{0.05422094834377289, 0.010438888888888997}</string>
+								<string>{-0.027720541632132445, 0.010438888888888997}</string>
+								<string>{-0.027720541632132445, 0.010438888888888997}</string>
+								<string>{-0.027720541632132445, 0.010438888888888997}</string>
+								<string>{-0.027720541632132445, -0.01690333333333327}</string>
+								<string>{-0.027720541632132445, -0.01690333333333327}</string>
+								<string>{-0.027720541632132445, -0.01690333333333327}</string>
+								<string>{0.05422094834377289, -0.01690333333333327}</string>
+								<string>{0.05422094834377289, -0.01690333333333327}</string>
+								<string>{0.05422094834377289, -0.01690333333333327}</string>
+								<string>{0.05422094834377289, -0.088356666666666583}</string>
+								<string>{0.05422094834377289, -0.088356666666666583}</string>
+								<string>{0.05422094834377289, -0.088356666666666583}</string>
+								<string>{0.086358865928855111, -0.088356666666666583}</string>
+								<string>{0.086358865928855111, -0.088356666666666583}</string>
+								<string>{0.086358865928855111, -0.088356666666666583}</string>
+								<string>{0.086358865928855111, -0.01690333333333327}</string>
+								<string>{0.086358865928855111, -0.01690333333333327}</string>
+								<string>{0.086358865928855111, -0.01690333333333327}</string>
+								<string>{0.16830035590476022, -0.01690333333333327}</string>
+								<string>{0.16830035590476022, -0.01690333333333327}</string>
+								<string>{0.16830035590476022, -0.01690333333333327}</string>
+								<string>{0.16830035590476022, 0.010438888888888886}</string>
+							</array>
+							<array>
+								<string>{0.39307589470145832, 0.010438888888888886}</string>
+								<string>{0.39307589470145832, 0.010438888888888886}</string>
+								<string>{0.3111344047255532, 0.010438888888888886}</string>
+								<string>{0.3111344047255532, 0.010438888888888886}</string>
+								<string>{0.3111344047255532, 0.010438888888888886}</string>
+								<string>{0.3111344047255532, 0.081727777777777844}</string>
+								<string>{0.3111344047255532, 0.081727777777777844}</string>
+								<string>{0.3111344047255532, 0.081727777777777844}</string>
+								<string>{0.27899648714047098, 0.081727777777777844}</string>
+								<string>{0.27899648714047098, 0.081727777777777844}</string>
+								<string>{0.27899648714047098, 0.081727777777777844}</string>
+								<string>{0.27899648714047098, 0.010438888888888997}</string>
+								<string>{0.27899648714047098, 0.010438888888888997}</string>
+								<string>{0.27899648714047098, 0.010438888888888997}</string>
+								<string>{0.19705499716456576, 0.010438888888888997}</string>
+								<string>{0.19705499716456576, 0.010438888888888997}</string>
+								<string>{0.19705499716456576, 0.010438888888888997}</string>
+								<string>{0.19705499716456576, -0.01690333333333327}</string>
+								<string>{0.19705499716456576, -0.01690333333333327}</string>
+								<string>{0.19705499716456576, -0.01690333333333327}</string>
+								<string>{0.27899648714047098, -0.01690333333333327}</string>
+								<string>{0.27899648714047098, -0.01690333333333327}</string>
+								<string>{0.27899648714047098, -0.01690333333333327}</string>
+								<string>{0.27899648714047098, -0.088356666666666583}</string>
+								<string>{0.27899648714047098, -0.088356666666666583}</string>
+								<string>{0.27899648714047098, -0.088356666666666583}</string>
+								<string>{0.3111344047255532, -0.088356666666666583}</string>
+								<string>{0.3111344047255532, -0.088356666666666583}</string>
+								<string>{0.3111344047255532, -0.088356666666666583}</string>
+								<string>{0.3111344047255532, -0.01690333333333327}</string>
+								<string>{0.3111344047255532, -0.01690333333333327}</string>
+								<string>{0.3111344047255532, -0.01690333333333327}</string>
+								<string>{0.39307589470145832, -0.01690333333333327}</string>
+								<string>{0.39307589470145832, -0.01690333333333327}</string>
+								<string>{0.39307589470145832, -0.01690333333333327}</string>
+								<string>{0.39307589470145832, 0.010438888888888886}</string>
+							</array>
+						</array>
+						<key>UnitPoints</key>
+						<array>
+							<string>{0, -0.5}</string>
+							<string>{0, -0.5}</string>
+							<string>{-0.5, -0.25}</string>
+							<string>{-0.5, -0.25}</string>
+							<string>{-0.5, -0.25}</string>
+							<string>{-0.5, 0.25}</string>
+							<string>{-0.5, 0.25}</string>
+							<string>{-0.5, 0.25}</string>
+							<string>{0, 0.5}</string>
+							<string>{0, 0.5}</string>
+							<string>{0, 0.5}</string>
+							<string>{0.5, 0.25}</string>
+							<string>{0.5, 0.25}</string>
+							<string>{0.5, 0.25}</string>
+							<string>{0.5, -0.25}</string>
+							<string>{0.5, -0.25}</string>
+							<string>{0.5, -0.25}</string>
+							<string>{0, -0.5}</string>
+						</array>
+					</dict>
+					<key>Style</key>
+					<dict>
+						<key>fill</key>
+						<dict>
+							<key>Color</key>
+							<dict>
+								<key>b</key>
+								<real>0.10588235294117647</real>
+								<key>g</key>
+								<real>0.11372549019607843</real>
+								<key>r</key>
+								<real>0.11372549019607843</real>
+								<key>space</key>
+								<string>srgb</string>
+							</dict>
+						</dict>
+						<key>shadow</key>
+						<dict>
+							<key>Draws</key>
+							<string>NO</string>
+						</dict>
+						<key>stroke</key>
+						<dict>
+							<key>Draws</key>
+							<string>NO</string>
+						</dict>
+					</dict>
+				</dict>
+				<dict>
+					<key>Bounds</key>
+					<string>{{0, 0}, {86.602444444444458, 100}}</string>
+					<key>Class</key>
+					<string>ShapedGraphic</string>
+					<key>ID</key>
+					<integer>32</integer>
+					<key>Name</key>
+					<string>C</string>
+					<key>Scaling</key>
+					<integer>1</integer>
+					<key>Shape</key>
+					<string>Bezier</string>
+					<key>ShapeData</key>
+					<dict>
+						<key>AdditionalUnitPoints</key>
+						<array>
+							<array>
+								<string>{0.11877391195013753, 0.12695333333333336}</string>
+								<string>{0.089874291462134881, 0.15429666666666675}</string>
+								<string>{0.050900539117448629, 0.16796888888888895}</string>
+								<string>{0.001855220920117806, 0.16796888888888895}</string>
+								<string>{-0.040419695620600771, 0.16796888888888895}</string>
+								<string>{-0.075924210504707212, 0.15675111111111106}</string>
+								<string>{-0.10465704073018212, 0.13431111111111105}</string>
+								<string>{-0.14247352525332874, 0.10463444444444447}</string>
+								<string>{-0.16137984301187286, 0.058814444444444391}</string>
+								<string>{-0.16137984301187286, -0.0031500000000000972}</string>
+								<string>{-0.16137984301187286, -0.050197777777777897}</string>
+								<string>{-0.147183425666712, -0.088778888888888963}</string>
+								<string>{-0.11878032696023466, -0.11889333333333341}</string>
+								<string>{-0.088069107620775355, -0.15160777777777779}</string>
+								<string>{-0.045719776962928949, -0.16796888888888895}</string>
+								<string>{0.0082740800234019085, -0.16796888888888895}</string>
+								<string>{0.054337701527542248, -0.16796888888888895}</string>
+								<string>{0.090087269797362701, -0.15733555555555562}</string>
+								<string>{0.11551380381872722, -0.13606777777777784}</string>
+								<string>{0.14093777183605294, -0.11480000000000001}</string>
+								<string>{0.15505977506408597, -0.090636666666666754}</string>
+								<string>{0.15786698348263195, -0.063585555555555617}</string>
+								<string>{0.15786698348263195, -0.063585555555555617}</string>
+								<string>{0.10925275396383483, -0.063585555555555617}</string>
+								<string>{0.10925275396383483, -0.063585555555555617}</string>
+								<string>{0.10383591943773729, -0.084126666666666738}</string>
+								<string>{0.093051004462280984, -0.10040444444444452}</string>
+								<string>{0.076890311025349489, -0.11241333333333337}</string>
+								<string>{0.060727051584379188, -0.12442000000000003}</string>
+								<string>{0.038047424886646808, -0.13042555555555563}</string>
+								<string>{0.0088437329200355963, -0.13042555555555563}</string>
+								<string>{-0.026757007115529197, -0.13042555555555563}</string>
+								<string>{-0.05550779936927619, -0.11938444444444452}</string>
+								<string>{-0.0774112098452443, -0.097303333333333408}</string>
+								<string>{-0.099313337319192896, -0.075222222222222301}</string>
+								<string>{-0.11026119355111863, -0.041374444444444491}</string>
+								<string>{-0.11026119355111863, 0.0042366666666666664}</string>
+								<string>{-0.11026119355111863, 0.041595555555555608}</string>
+								<string>{-0.10037694599331293, 0.071894444444444483}</string>
+								<string>{-0.080599469863565587, 0.095135555555555529}</string>
+								<string>{-0.06082712574189586, 0.11837666666666657}</string>
+								<string>{-0.031328343310812357, 0.12999333333333318}</string>
+								<string>{0.0078943114256462277, 0.12999333333333318}</string>
+								<string>{0.043999271254852923, 0.12999333333333318}</string>
+								<string>{0.071487589521465833, 0.11776888888888881}</string>
+								<string>{0.090359266225485069, 0.093317777777777611}</string>
+								<string>{0.1003692479811964, 0.080442222222222082}</string>
+								<string>{0.10783375373032844, 0.063515555555555436}</string>
+								<string>{0.11275919848297844, 0.042536666666666556}</string>
+								<string>{0.11275919848297844, 0.042536666666666556}</string>
+								<string>{0.16137471100379519, 0.042536666666666556}</string>
+								<string>{0.16137471100379519, 0.042536666666666556}</string>
+								<string>{0.15708306924875104, 0.076099999999999945}</string>
+								<string>{0.14288151989551234, 0.10424111111111112}</string>
+							</array>
+						</array>
+						<key>UnitPoints</key>
+						<array>
+							<string>{0, -0.5}</string>
+							<string>{0, -0.5}</string>
+							<string>{-0.5, -0.25}</string>
+							<string>{-0.5, -0.25}</string>
+							<string>{-0.5, -0.25}</string>
+							<string>{-0.5, 0.25}</string>
+							<string>{-0.5, 0.25}</string>
+							<string>{-0.5, 0.25}</string>
+							<string>{0, 0.5}</string>
+							<string>{0, 0.5}</string>
+							<string>{0, 0.5}</string>
+							<string>{0.5, 0.25}</string>
+							<string>{0.5, 0.25}</string>
+							<string>{0.5, 0.25}</string>
+							<string>{0.5, -0.25}</string>
+							<string>{0.5, -0.25}</string>
+							<string>{0.5, -0.25}</string>
+							<string>{0, -0.5}</string>
+						</array>
+					</dict>
+					<key>Style</key>
+					<dict>
+						<key>fill</key>
+						<dict>
+							<key>Color</key>
+							<dict>
+								<key>b</key>
+								<real>0.10588235294117647</real>
+								<key>g</key>
+								<real>0.11372549019607843</real>
+								<key>r</key>
+								<real>0.11372549019607843</real>
+								<key>space</key>
+								<string>srgb</string>
+							</dict>
+						</dict>
+						<key>shadow</key>
+						<dict>
+							<key>Draws</key>
+							<string>NO</string>
+						</dict>
+						<key>stroke</key>
+						<dict>
+							<key>Draws</key>
+							<string>NO</string>
+						</dict>
+					</dict>
+				</dict>
+				<dict>
+					<key>Bounds</key>
+					<string>{{375, 0}, {86.602444444444458, 100}}</string>
+					<key>Class</key>
+					<string>ShapedGraphic</string>
+					<key>ID</key>
+					<integer>28</integer>
+					<key>Name</key>
+					<string>Java</string>
+					<key>Scaling</key>
+					<integer>1</integer>
+					<key>Shape</key>
+					<string>Bezier</string>
+					<key>ShapeData</key>
+					<dict>
+						<key>AdditionalUnitPoints</key>
+						<array>
+							<array>
+								<string>{0.17712997580258194, -0.012841111111111192}</string>
+								<string>{0.26265489041879753, -0.038882222222222262}</string>
+								<string>{0.32843312095373234, 0.063959999999999906}</string>
+								<string>{0.14951977234412173, 0.10468999999999995}</string>
+								<string>{0.14951977234412173, 0.10468999999999995}</string>
+								<string>{0.15159438660956448, 0.10308777777777778}</string>
+								<string>{0.15221151058091764, 0.10165111111111103}</string>
+								<string>{0.28617488343926645, 0.041368888888888788}</string>
+								<string>{0.22423924395256989, -0.016566666666666729}</string>
+								<string>{0.18100335889928687, -0.0087611111111111084}</string>
+								<string>{0.17040576221866977, -0.0068511111111111411}</string>
+								<string>{0.16568303178509203, -0.0051933333333333831}</string>
+								<string>{0.16568303178509203, -0.0051933333333333831}</string>
+								<string>{0.16568303178509203, -0.0051933333333333831}</string>
+								<string>{0.1696141499726721, -0.010532222222222276}</string>
+							</array>
+							<array>
+								<string>{0.071447816458863111, -0.078546666666666709}</string>
+								<string>{0.11161091167557502, -0.029587777777777879}</string>
+								<string>{0.024158928026152715, 0.0095077777777777817}</string>
+								<string>{0.024158928026152715, 0.0095077777777777817}</string>
+								<string>{0.024158928026152715, 0.0095077777777777817}</string>
+								<string>{0.067648847479285901, -0.021394444444444494}</string>
+								<string>{0.033210507273338297, -0.055732222222222239}</string>
+								<string>{-0.083540110492134056, -0.17223222222222229}</string>
+								<string>{0.16089871725458083, -0.22510333333333332}</string>
+								<string>{0.16089871725458083, -0.22510333333333332}</string>
+								<string>{0.0051692151363447181, -0.14688777777777784}</string>
+								<string>{0.033936686416344508, -0.12420333333333339}</string>
+							</array>
+							<array>
+								<string>{-0.082974306601558467, -0.15489555555555556}</string>
+								<string>{-0.034080382642522222, -0.21848111111111118}</string>
+								<string>{0.10137768756848042, -0.24930888888888897}</string>
+								<string>{0.071446533456843708, -0.35140000000000005}</string>
+								<string>{0.071446533456843708, -0.35140000000000005}</string>
+								<string>{0.14563355922722221, -0.28712888888888893}</string>
+								<string>{0.0010777216963340219, -0.18829777777777784}</string>
+								<string>{-0.11484151076053783, -0.10901666666666671}</string>
+								<string>{-0.025357251912314416, -0.063813333333333389}</string>
+								<string>{0.0010302506216145479, -0.01216666666666677}</string>
+								<string>{-0.066631426877865829, -0.065036666666666687}</string>
+								<string>{-0.11628745403645258, -0.11157777777777783}</string>
+							</array>
+							<array>
+								<string>{-0.19295837171647706, 0.011967777777777799}</string>
+								<string>{-0.13097397815304157, -0.013981111111111111}</string>
+								<string>{-0.080581507835293276, -0.011037777777777813}</string>
+								<string>{-0.080581507835293276, -0.011037777777777813}</string>
+								<string>{-0.080581507835293276, -0.011037777777777813}</string>
+								<string>{-0.21035203009409537, 0.015653333333333408}</string>
+								<string>{-0.12653607416778068, 0.025348888888888976}</string>
+								<string>{-0.091145746463404897, 0.029453333333333331}</string>
+								<string>{-0.020598597422192277, 0.028522222222222227}</string>
+								<string>{0.04511804901580907, 0.023756666666666759}</string>
+								<string>{0.098823230547764873, 0.019831111111111133}</string>
+								<string>{0.15275037142908454, 0.01149111111111123}</string>
+								<string>{0.15275037142908454, 0.01149111111111123}</string>
+								<string>{0.15275037142908454, 0.01149111111111123}</string>
+								<string>{0.13381326162207374, 0.018511111111111145}</string>
+								<string>{0.12011336605843814, 0.026614444444444496}</string>
+								<string>{-0.01167275237291221, 0.056632222222222306}</string>
+								<string>{-0.26624857907526339, 0.042666666666666631}</string>
+							</array>
+							<array>
+								<string>{-0.074285816925875769, 0.1452}</string>
+								<string>{-0.01770414486632399, 0.15078999999999998}</string>
+								<string>{0.011216003653989781, 0.14999111111111119}</string>
+								<string>{0.073564769790947615, 0.13976777777777782}</string>
+								<string>{0.073564769790947615, 0.13976777777777782}</string>
+								<string>{0.089957686593398756, 0.14867000000000008}</string>
+								<string>{0.11285157462837847, 0.15637777777777773}</string>
+								<string>{-0.026925080380076571, 0.20825777777777776}</string>
+								<string>{-0.20349053529410255, 0.15337444444444448}</string>
+								<string>{-0.093704052490178658, 0.12680777777777774}</string>
+								<string>{-0.093704052490178547, 0.12680777777777785}</string>
+								<string>{-0.1209909394397386, 0.14054888888888895}</string>
+							</array>
+							<array>
+								<string>{-0.11078465837505225, 0.059109999999999885}</string>
+								<string>{-0.11078465837505225, 0.059109999999999885}</string>
+								<string>{-0.14138938854689753, 0.078724444444444375}</string>
+								<string>{-0.094650907980529109, 0.082912222222222165}</string>
+								<string>{-0.034209965846486279, 0.088311111111111118}</string>
+								<string>{0.013524124286971695, 0.088754444444444469}</string>
+								<string>{0.096116096286735564, 0.074982222222222061}</string>
+								<string>{0.096116096286735564, 0.074982222222222061}</string>
+								<string>{0.10753994626787544, 0.085008888888888801}</string>
+								<string>{0.12550454054414673, 0.090496666666666559}</string>
+								<string>{-0.043493768459191506, 0.13329222222222215}</string>
+								<string>{-0.23172684373805202, 0.093871111111111127}</string>
+							</array>
+							<array>
+								<string>{-0.14888340334247685, 0.1751733333333334}</string>
+								<string>{-0.14888340334247685, 0.1751733333333334}</string>
+								<string>{-0.15783875743820419, 0.17462444444444447}</string>
+								<string>{-0.17351319310976593, 0.17756888888888889}</string>
+								<string>{-0.18854099576352734, 0.1803622222222222}</string>
+								<string>{-0.2363174249636269, 0.1936822222222222}</string>
+								<string>{-0.21084085386350393, 0.20328333333333337}</string>
+								<string>{-0.13996782230935223, 0.22999555555555562}</string>
+								<string>{0.11515456325328266, 0.22360444444444449}</string>
+								<string>{0.19583614524609272, 0.20243888888888895}</string>
+								<string>{0.23826502202914479, 0.19129111111111108}</string>
+								<string>{0.21807313624711655, 0.17688333333333339}</string>
+								<string>{0.21807313624711655, 0.17688333333333339}</string>
+								<string>{0.29199329759745052, 0.20575777777777782}</string>
+								<string>{0.057477207469124547, 0.26380444444444451}</string>
+								<string>{-0.22751218210417462, 0.22378444444444445}</string>
+								<string>{-0.33201141358596492, 0.20911222222222225}</string>
+								<string>{-0.17721465393586527, 0.15788888888888886}</string>
+							</array>
+							<array>
+								<string>{-0.067420473119824575, 0.26501111111111109}</string>
+								<string>{-0.15193053313865912, 0.26031666666666664}</string>
+								<string>{-0.16836194000169347, 0.24853777777777775}</string>
+								<string>{-0.16836450600573238, 0.24853777777777775}</string>
+								<string>{-0.088083220642989235, 0.26000222222222213}</string>
+								<string>{0.047281190420593866, 0.26209222222222206}</string>
+								<string>{0.15703046616595384, 0.24420555555555545}</string>
+								<string>{0.25431281128836503, 0.22834444444444446}</string>
+								<string>{0.26329895743255904, 0.20836555555555558}</string>
+								<string>{0.26329895743255904, 0.20836555555555558}</string>
+								<string>{0.25862498107572018, 0.26105666666666671}</string>
+								<string>{0.061168404279068445, 0.27214000000000005}</string>
+							</array>
+						</array>
+						<key>UnitPoints</key>
+						<array>
+							<string>{0, -0.5}</string>
+							<string>{0, -0.5}</string>
+							<string>{-0.5, -0.25}</string>
+							<string>{-0.5, -0.25}</string>
+							<string>{-0.5, -0.25}</string>
+							<string>{-0.5, 0.25}</string>
+							<string>{-0.5, 0.25}</string>
+							<string>{-0.5, 0.25}</string>
+							<string>{0, 0.5}</string>
+							<string>{0, 0.5}</string>
+							<string>{0, 0.5}</string>
+							<string>{0.5, 0.25}</string>
+							<string>{0.5, 0.25}</string>
+							<string>{0.5, 0.25}</string>
+							<string>{0.5, -0.25}</string>
+							<string>{0.5, -0.25}</string>
+							<string>{0.5, -0.25}</string>
+							<string>{0, -0.5}</string>
+						</array>
+					</dict>
+					<key>Style</key>
+					<dict>
+						<key>fill</key>
+						<dict>
+							<key>Color</key>
+							<dict>
+								<key>b</key>
+								<real>0.10588235294117647</real>
+								<key>g</key>
+								<real>0.11372549019607843</real>
+								<key>r</key>
+								<real>0.11372549019607843</real>
+								<key>space</key>
+								<string>srgb</string>
+							</dict>
+						</dict>
+						<key>shadow</key>
+						<dict>
+							<key>Draws</key>
+							<string>NO</string>
+						</dict>
+						<key>stroke</key>
+						<dict>
+							<key>Draws</key>
+							<string>NO</string>
+						</dict>
+					</dict>
+				</dict>
+				<dict>
+					<key>Bounds</key>
 					<string>{{500, 0}, {86.602444444444458, 100}}</string>
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>173</integer>
+					<integer>6</integer>
 					<key>Name</key>
 					<string>Python</string>
 					<key>Scaling</key>
@@ -36649,7 +36841,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>154</integer>
+					<integer>7</integer>
 					<key>Name</key>
 					<string>CSS</string>
 					<key>Scaling</key>
@@ -36819,7 +37011,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>105</integer>
+					<integer>8</integer>
 					<key>Name</key>
 					<string>Cypher</string>
 					<key>Scaling</key>
@@ -37083,7 +37275,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>151</integer>
+					<integer>9</integer>
 					<key>Name</key>
 					<string>Elixir</string>
 					<key>Scaling</key>
@@ -37183,7 +37375,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>148</integer>
+					<integer>10</integer>
 					<key>Name</key>
 					<string>Erlang</string>
 					<key>Scaling</key>
@@ -37320,7 +37512,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>145</integer>
+					<integer>11</integer>
 					<key>Name</key>
 					<string>Go</string>
 					<key>Scaling</key>
@@ -37909,7 +38101,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>142</integer>
+					<integer>12</integer>
 					<key>Name</key>
 					<string>Haskell</string>
 					<key>Scaling</key>
@@ -38057,7 +38249,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>139</integer>
+					<integer>13</integer>
 					<key>Name</key>
 					<string>HTML</string>
 					<key>Scaling</key>
@@ -38247,7 +38439,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>134</integer>
+					<integer>14</integer>
 					<key>Name</key>
 					<string>Idris</string>
 					<key>Scaling</key>
@@ -38503,9 +38695,9 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>131</integer>
+					<integer>15</integer>
 					<key>Name</key>
-					<string>Javascript</string>
+					<string>JavaScript</string>
 					<key>Scaling</key>
 					<integer>1</integer>
 					<key>Shape</key>
@@ -38704,7 +38896,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>128</integer>
+					<integer>16</integer>
 					<key>Name</key>
 					<string>Perl</string>
 					<key>Scaling</key>
@@ -39073,9 +39265,9 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>125</integer>
+					<integer>17</integer>
 					<key>Name</key>
-					<string>Php</string>
+					<string>PHP</string>
 					<key>Scaling</key>
 					<integer>1</integer>
 					<key>Shape</key>
@@ -39279,7 +39471,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>121</integer>
+					<integer>18</integer>
 					<key>Name</key>
 					<string>Ruby</string>
 					<key>Scaling</key>
@@ -39629,7 +39821,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>118</integer>
+					<integer>19</integer>
 					<key>Name</key>
 					<string>Rust</string>
 					<key>Scaling</key>
@@ -40455,9 +40647,9 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>115</integer>
+					<integer>20</integer>
 					<key>Name</key>
-					<string>Typescript</string>
+					<string>TypeScript</string>
 					<key>Scaling</key>
 					<integer>1</integer>
 					<key>Shape</key>
@@ -40635,9 +40827,9 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>111</integer>
+					<integer>21</integer>
 					<key>Name</key>
-					<string>Xml</string>
+					<string>XML</string>
 					<key>Scaling</key>
 					<integer>1</integer>
 					<key>Shape</key>
@@ -40844,7 +41036,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>108</integer>
+					<integer>22</integer>
 					<key>Name</key>
 					<string>SQL</string>
 					<key>Scaling</key>
@@ -41096,206 +41288,11 @@
 				</dict>
 				<dict>
 					<key>Bounds</key>
-					<string>{{375, 0}, {86.602444444444458, 100}}</string>
-					<key>Class</key>
-					<string>ShapedGraphic</string>
-					<key>ID</key>
-					<integer>102</integer>
-					<key>Name</key>
-					<string>Java</string>
-					<key>Scaling</key>
-					<integer>1</integer>
-					<key>Shape</key>
-					<string>Bezier</string>
-					<key>ShapeData</key>
-					<dict>
-						<key>AdditionalUnitPoints</key>
-						<array>
-							<array>
-								<string>{0.17712997580258194, -0.012841111111111192}</string>
-								<string>{0.26265489041879753, -0.038881111111111144}</string>
-								<string>{0.32843183795171293, 0.063959999999999906}</string>
-								<string>{0.14951977234412173, 0.10469111111111107}</string>
-								<string>{0.14951977234412173, 0.10469111111111107}</string>
-								<string>{0.15159438660956448, 0.10308777777777778}</string>
-								<string>{0.15221151058091764, 0.10165111111111103}</string>
-								<string>{0.28617488343926645, 0.041368888888888788}</string>
-								<string>{0.22423796095055049, -0.016565555555555611}</string>
-								<string>{0.18100335889928687, -0.0087611111111111084}</string>
-								<string>{0.17040576221866977, -0.0068511111111111411}</string>
-								<string>{0.16568303178509203, -0.0051933333333333831}</string>
-								<string>{0.16568303178509203, -0.0051933333333333831}</string>
-								<string>{0.16568303178509203, -0.0051933333333333831}</string>
-								<string>{0.1696141499726721, -0.010532222222222276}</string>
-							</array>
-							<array>
-								<string>{0.071447816458863111, -0.078546666666666709}</string>
-								<string>{0.11160962867355551, -0.029587777777777879}</string>
-								<string>{0.024157645024133201, 0.0095077777777777817}</string>
-								<string>{0.024157645024133201, 0.0095077777777777817}</string>
-								<string>{0.024157645024133201, 0.0095077777777777817}</string>
-								<string>{0.067648847479285901, -0.021394444444444494}</string>
-								<string>{0.033209224271318893, -0.055732222222222239}</string>
-								<string>{-0.08354139349415346, -0.17223222222222229}</string>
-								<string>{0.16089743425256142, -0.22510333333333332}</string>
-								<string>{0.16089743425256142, -0.22510333333333332}</string>
-								<string>{0.0051692151363447181, -0.14688777777777784}</string>
-								<string>{0.033936686416344508, -0.12420333333333339}</string>
-							</array>
-							<array>
-								<string>{-0.082974306601558467, -0.15489555555555556}</string>
-								<string>{-0.034080382642522222, -0.21848111111111118}</string>
-								<string>{0.10137897057049983, -0.24930888888888897}</string>
-								<string>{0.071446533456843708, -0.35140000000000005}</string>
-								<string>{0.071446533456843708, -0.35140000000000005}</string>
-								<string>{0.14563484222924172, -0.28712888888888893}</string>
-								<string>{0.0010790046983534252, -0.18829777777777784}</string>
-								<string>{-0.11484022775851843, -0.10901666666666671}</string>
-								<string>{-0.025355968910295013, -0.063813333333333389}</string>
-								<string>{0.0010315336236339512, -0.01216666666666677}</string>
-								<string>{-0.066631426877865829, -0.065036666666666687}</string>
-								<string>{-0.11628745403645258, -0.11157777777777783}</string>
-							</array>
-							<array>
-								<string>{-0.19295837171647706, 0.011967777777777799}</string>
-								<string>{-0.13097526115506108, -0.013981111111111111}</string>
-								<string>{-0.080582790837312679, -0.011037777777777813}</string>
-								<string>{-0.080582790837312679, -0.011037777777777813}</string>
-								<string>{-0.080582790837312679, -0.011037777777777813}</string>
-								<string>{-0.21035331309611477, 0.015654444444444526}</string>
-								<string>{-0.12653735716980008, 0.025348888888888976}</string>
-								<string>{-0.091147029465424301, 0.029454444444444561}</string>
-								<string>{-0.020599880424211681, 0.028523333333333345}</string>
-								<string>{0.045116766013789666, 0.023757777777777767}</string>
-								<string>{0.09882194754574547, 0.019832222222222251}</string>
-								<string>{0.15274908842706514, 0.011492222222222237}</string>
-								<string>{0.15274908842706514, 0.011492222222222237}</string>
-								<string>{0.15274908842706514, 0.011492222222222237}</string>
-								<string>{0.13381197862005434, 0.018512222222222263}</string>
-								<string>{0.12011208305641874, 0.026615555555555614}</string>
-								<string>{-0.01167275237291221, 0.056632222222222306}</string>
-								<string>{-0.26624857907526339, 0.042666666666666631}</string>
-							</array>
-							<array>
-								<string>{-0.074285816925875769, 0.1452}</string>
-								<string>{-0.017705427868343393, 0.15078999999999998}</string>
-								<string>{0.011214720651970378, 0.14999000000000007}</string>
-								<string>{0.073564769790947615, 0.13976777777777782}</string>
-								<string>{0.073564769790947615, 0.13976777777777782}</string>
-								<string>{0.089957686593398756, 0.14867000000000008}</string>
-								<string>{0.11285157462837847, 0.15637777777777773}</string>
-								<string>{-0.026925080380076571, 0.20825888888888888}</string>
-								<string>{-0.20349053529410255, 0.15337444444444448}</string>
-								<string>{-0.093704052490178658, 0.12680777777777774}</string>
-								<string>{-0.093704052490178547, 0.12680777777777785}</string>
-								<string>{-0.1209909394397386, 0.14054888888888895}</string>
-							</array>
-							<array>
-								<string>{-0.11078465837505225, 0.059109999999999885}</string>
-								<string>{-0.11078465837505225, 0.059109999999999885}</string>
-								<string>{-0.14138938854689753, 0.078725555555555493}</string>
-								<string>{-0.094649624978509705, 0.082912222222222165}</string>
-								<string>{-0.034208682844466765, 0.088311111111111118}</string>
-								<string>{0.013525407288991209, 0.088754444444444469}</string>
-								<string>{0.096117379288755078, 0.074982222222222061}</string>
-								<string>{0.096117379288755078, 0.074982222222222061}</string>
-								<string>{0.10754122926989496, 0.085009999999999919}</string>
-								<string>{0.12550582354616635, 0.090496666666666559}</string>
-								<string>{-0.043493768459191506, 0.13329222222222215}</string>
-								<string>{-0.23172684373805202, 0.093871111111111127}</string>
-							</array>
-							<array>
-								<string>{-0.14888340334247685, 0.1751733333333334}</string>
-								<string>{-0.14888340334247685, 0.1751733333333334}</string>
-								<string>{-0.15783875743820419, 0.17462444444444447}</string>
-								<string>{-0.17351319310976593, 0.17756888888888889}</string>
-								<string>{-0.18854099576352734, 0.1803622222222222}</string>
-								<string>{-0.2363174249636269, 0.1936822222222222}</string>
-								<string>{-0.21084085386350393, 0.20328333333333337}</string>
-								<string>{-0.13996782230935223, 0.22999555555555562}</string>
-								<string>{0.11515456325328266, 0.22360444444444449}</string>
-								<string>{0.19583614524609272, 0.20243888888888895}</string>
-								<string>{0.23826502202914479, 0.19129111111111108}</string>
-								<string>{0.21807313624711655, 0.17688333333333339}</string>
-								<string>{0.21807313624711655, 0.17688333333333339}</string>
-								<string>{0.29199329759745052, 0.20575888888888882}</string>
-								<string>{0.057477207469124547, 0.26380555555555563}</string>
-								<string>{-0.22751218210417462, 0.22378444444444445}</string>
-								<string>{-0.33201141358596492, 0.20911222222222225}</string>
-								<string>{-0.17721465393586527, 0.15788888888888886}</string>
-							</array>
-							<array>
-								<string>{-0.067420473119824575, 0.26501111111111109}</string>
-								<string>{-0.15193053313865912, 0.26031666666666664}</string>
-								<string>{-0.16836194000169347, 0.24853777777777775}</string>
-								<string>{-0.16836450600573238, 0.24853777777777775}</string>
-								<string>{-0.088081937640969721, 0.26000222222222213}</string>
-								<string>{0.047282473422613269, 0.26209222222222206}</string>
-								<string>{0.15703174916797324, 0.24420444444444445}</string>
-								<string>{0.25431409429038443, 0.22834333333333334}</string>
-								<string>{0.26330024043457845, 0.20836444444444446}</string>
-								<string>{0.26330024043457845, 0.20836444444444446}</string>
-								<string>{0.25862498107572018, 0.26105666666666671}</string>
-								<string>{0.061168404279068445, 0.27214000000000005}</string>
-							</array>
-						</array>
-						<key>UnitPoints</key>
-						<array>
-							<string>{0, -0.5}</string>
-							<string>{0, -0.5}</string>
-							<string>{-0.5, -0.25}</string>
-							<string>{-0.5, -0.25}</string>
-							<string>{-0.5, -0.25}</string>
-							<string>{-0.5, 0.25}</string>
-							<string>{-0.5, 0.25}</string>
-							<string>{-0.5, 0.25}</string>
-							<string>{0, 0.5}</string>
-							<string>{0, 0.5}</string>
-							<string>{0, 0.5}</string>
-							<string>{0.5, 0.25}</string>
-							<string>{0.5, 0.25}</string>
-							<string>{0.5, 0.25}</string>
-							<string>{0.5, -0.25}</string>
-							<string>{0.5, -0.25}</string>
-							<string>{0.5, -0.25}</string>
-							<string>{0, -0.5}</string>
-						</array>
-					</dict>
-					<key>Style</key>
-					<dict>
-						<key>fill</key>
-						<dict>
-							<key>Color</key>
-							<dict>
-								<key>b</key>
-								<real>0.105882</real>
-								<key>g</key>
-								<real>0.11372500000000001</real>
-								<key>r</key>
-								<real>0.11372500000000001</real>
-								<key>space</key>
-								<string>srgb</string>
-							</dict>
-						</dict>
-						<key>shadow</key>
-						<dict>
-							<key>Draws</key>
-							<string>NO</string>
-						</dict>
-						<key>stroke</key>
-						<dict>
-							<key>Cap</key>
-							<integer>0</integer>
-						</dict>
-					</dict>
-				</dict>
-				<dict>
-					<key>Bounds</key>
 					<string>{{0, 375}, {86.602444444444458, 100}}</string>
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>96</integer>
+					<integer>24</integer>
 					<key>Name</key>
 					<string>Visual Basic</string>
 					<key>Scaling</key>
@@ -41866,7 +41863,7 @@
 			<key>BackgroundGraphic</key>
 			<dict>
 				<key>Bounds</key>
-				<string>{{-1078, -867}, {2757, 2418}}</string>
+				<string>{{-1106, -960}, {2813, 2604}}</string>
 				<key>Class</key>
 				<string>GraffleShapes.CanvasBackgroundGraphic</string>
 				<key>ID</key>
@@ -41909,7 +41906,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>341</integer>
+					<integer>3</integer>
 					<key>Name</key>
 					<string>Visual Basic Server</string>
 					<key>Scaling</key>
@@ -42625,7 +42622,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>338</integer>
+					<integer>4</integer>
 					<key>Name</key>
 					<string>HTTP Server</string>
 					<key>Scaling</key>
@@ -43087,7 +43084,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>334</integer>
+					<integer>5</integer>
 					<key>Name</key>
 					<string>ICMP Server</string>
 					<key>Scaling</key>
@@ -43567,7 +43564,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>331</integer>
+					<integer>6</integer>
 					<key>Name</key>
 					<string>SMB Server</string>
 					<key>Scaling</key>
@@ -44107,7 +44104,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>327</integer>
+					<integer>7</integer>
 					<key>Name</key>
 					<string>SSH Server</string>
 					<key>Scaling</key>
@@ -44628,7 +44625,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>319</integer>
+					<integer>8</integer>
 					<key>Name</key>
 					<string>Telnet Server</string>
 					<key>Scaling</key>
@@ -44943,7 +44940,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>316</integer>
+					<integer>9</integer>
 					<key>Name</key>
 					<string>C Server</string>
 					<key>Scaling</key>
@@ -45292,7 +45289,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>309</integer>
+					<integer>10</integer>
 					<key>Name</key>
 					<string>C++ Server</string>
 					<key>Scaling</key>
@@ -45711,7 +45708,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>306</integer>
+					<integer>11</integer>
 					<key>Name</key>
 					<string>C# Server</string>
 					<key>Scaling</key>
@@ -46160,7 +46157,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>303</integer>
+					<integer>12</integer>
 					<key>Name</key>
 					<string>Elixir Server</string>
 					<key>Scaling</key>
@@ -46485,7 +46482,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>300</integer>
+					<integer>13</integer>
 					<key>Name</key>
 					<string>Erlang Server</string>
 					<key>Scaling</key>
@@ -46847,7 +46844,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>297</integer>
+					<integer>14</integer>
 					<key>Name</key>
 					<string>Go Server</string>
 					<key>Scaling</key>
@@ -47661,7 +47658,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>294</integer>
+					<integer>15</integer>
 					<key>Name</key>
 					<string>Haskell Server</string>
 					<key>Scaling</key>
@@ -48040,7 +48037,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>291</integer>
+					<integer>16</integer>
 					<key>Name</key>
 					<string>Idris Server</string>
 					<key>Scaling</key>
@@ -48521,7 +48518,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>288</integer>
+					<integer>17</integer>
 					<key>Name</key>
 					<string>Java Server</string>
 					<key>Scaling</key>
@@ -48941,7 +48938,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>264</integer>
+					<integer>18</integer>
 					<key>Name</key>
 					<string>Javascript Server</string>
 					<key>Scaling</key>
@@ -49370,7 +49367,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>260</integer>
+					<integer>19</integer>
 					<key>Name</key>
 					<string>Perl Server</string>
 					<key>Scaling</key>
@@ -49964,7 +49961,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>257</integer>
+					<integer>20</integer>
 					<key>Name</key>
 					<string>Php Server</string>
 					<key>Scaling</key>
@@ -50395,7 +50392,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>252</integer>
+					<integer>21</integer>
 					<key>Name</key>
 					<string>Python Server</string>
 					<key>Scaling</key>
@@ -50933,7 +50930,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>247</integer>
+					<integer>22</integer>
 					<key>Name</key>
 					<string>Ruby Server</string>
 					<key>Scaling</key>
@@ -51508,7 +51505,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>244</integer>
+					<integer>23</integer>
 					<key>Name</key>
 					<string>Rust Server</string>
 					<key>Scaling</key>
@@ -52559,7 +52556,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>241</integer>
+					<integer>24</integer>
 					<key>Name</key>
 					<string>Typescript Server</string>
 					<key>Scaling</key>
@@ -52967,7 +52964,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>238</integer>
+					<integer>25</integer>
 					<key>Name</key>
 					<string>FW Server</string>
 					<key>Scaling</key>
@@ -53339,7 +53336,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>235</integer>
+					<integer>26</integer>
 					<key>Name</key>
 					<string>LB Server</string>
 					<key>Scaling</key>
@@ -53763,7 +53760,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>232</integer>
+					<integer>27</integer>
 					<key>Name</key>
 					<string>Proxy Server</string>
 					<key>Scaling</key>
@@ -54342,9 +54339,9 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>229</integer>
+					<integer>28</integer>
 					<key>Name</key>
-					<string>Server</string>
+					<string>Generic Server</string>
 					<key>Scaling</key>
 					<integer>1</integer>
 					<key>Shape</key>
@@ -54674,7 +54671,7 @@
 			<key>BackgroundGraphic</key>
 			<dict>
 				<key>Bounds</key>
-				<string>{{-1924.214285714286, -1545.6428571428573}, {4446.4285714285716, 3316.0714285714284}}</string>
+				<string>{{-1106, -959}, {2811, 2144}}</string>
 				<key>Class</key>
 				<string>GraffleShapes.CanvasBackgroundGraphic</string>
 				<key>ID</key>
@@ -54700,7 +54697,7 @@
 			<key>CanvasOrigin</key>
 			<string>{0, 0}</string>
 			<key>CanvasSize</key>
-			<string>{598.20068181818181, 225.5}</string>
+			<string>{598.20068181818181, 225.00001734647552}</string>
 			<key>CanvasSizingMode</key>
 			<integer>2</integer>
 			<key>ColumnAlign</key>
@@ -54713,11 +54710,642 @@
 			<array>
 				<dict>
 					<key>Bounds</key>
+					<string>{{125, 125}, {98.200698852539062, 100.00001734647552}}</string>
+					<key>Class</key>
+					<string>ShapedGraphic</string>
+					<key>ID</key>
+					<integer>13</integer>
+					<key>Name</key>
+					<string>Microsoft SQL Server</string>
+					<key>Scaling</key>
+					<integer>1</integer>
+					<key>Shape</key>
+					<string>Bezier</string>
+					<key>ShapeData</key>
+					<dict>
+						<key>AdditionalUnitPoints</key>
+						<array>
+							<array>
+								<string>{0.17078315971699887, -0.4714795454545454}</string>
+								<string>{0.095869312146045993, -0.48987159090909083}</string>
+								<string>{-0.0039251717841247702, -0.49999999999999994}</string>
+								<string>{-0.1102137783712851, -0.49999999999999994}</string>
+								<string>{-0.21650122777336755, -0.49999999999999994}</string>
+								<string>{-0.3162945545184605, -0.48987159090909083}</string>
+								<string>{-0.39120840208941327, -0.4714795454545454}</string>
+								<string>{-0.47141984294684114, -0.45178749999999995}</string>
+								<string>{-0.49999999999999989, -0.42827159090909084}</string>
+								<string>{-0.49999999999999989, -0.41282954545454542}</string>
+								<string>{-0.49999999999999989, -0.39738749999999995}</string>
+								<string>{-0.47142100013191901, -0.37387159090909083}</string>
+								<string>{-0.39120840208941327, -0.35418068181818174}</string>
+								<string>{-0.3162945545184605, -0.33578749999999991}</string>
+								<string>{-0.21650007058828968, -0.32565909090909084}</string>
+								<string>{-0.1102137783712851, -0.32565909090909084}</string>
+								<string>{-0.0039228574139690275, -0.32565909090909084}</string>
+								<string>{0.095869312146045993, -0.33578749999999991}</string>
+								<string>{0.17078315971699887, -0.35418068181818174}</string>
+								<string>{0.2509946005744268, -0.37387159090909083}</string>
+								<string>{0.27957475762758544, -0.39738749999999989}</string>
+								<string>{0.27957475762758544, -0.41282954545454537}</string>
+								<string>{0.27957475762758544, -0.42827159090909084}</string>
+								<string>{0.2509946005744268, -0.45178749999999995}</string>
+							</array>
+							<array>
+								<string>{-0.034072157432715411, 0.16717840909090909}</string>
+								<string>{-0.058922706979908979, 0.16833749999999992}</string>
+								<string>{-0.084383093063138348, 0.16893409090909084}</string>
+								<string>{-0.11021377837128515, 0.16893409090909084}</string>
+								<string>{-0.21833883767702039, 0.16893409090909084}</string>
+								<string>{-0.32012483712620027, 0.15856477272727265}</string>
+								<string>{-0.39682306408722395, 0.13973749999999996}</string>
+								<string>{-0.43476600560540446, 0.13042272727272719}</string>
+								<string>{-0.46474172786247081, 0.11946477272727263}</string>
+								<string>{-0.4859193719725145, 0.10717386363636361}</string>
+								<string>{-0.49116489193048551, 0.10412840909090915}</string>
+								<string>{-0.4958549630510804, 0.10099886363636368}</string>
+								<string>{-0.49999999999999994, 0.097792045454545451}</string>
+								<string>{-0.49999999999999994, 0.097792045454545451}</string>
+								<string>{-0.49999999999999994, 0.29518863636363646}</string>
+								<string>{-0.49999999999999994, 0.29518863636363646}</string>
+								<string>{-0.49999999999999994, 0.3106329545454547}</string>
+								<string>{-0.47142100013191907, 0.33414659090909105}</string>
+								<string>{-0.39120840208941338, 0.35383750000000014}</string>
+								<string>{-0.31629455451846056, 0.37223068181818197}</string>
+								<string>{-0.21650007058828979, 0.38236022727272734}</string>
+								<string>{-0.11021377837128515, 0.38236022727272734}</string>
+								<string>{-0.08435763499142529, 0.38236022727272734}</string>
+								<string>{-0.058891462982806564, 0.38175795454545469}</string>
+								<string>{-0.034072157432715522, 0.38058522727272737}</string>
+								<string>{-0.034072157432715522, 0.38058522727272737}</string>
+								<string>{-0.034072157432715522, 0.16717840909090909}</string>
+								<string>{-0.034072157432715522, 0.16717840909090909}</string>
+								<string>{-0.034072157432715522, 0.16717840909090909}</string>
+								<string>{-0.034072157432715411, 0.16717840909090909}</string>
+							</array>
+							<array>
+								<string>{-0.39120840208941327, 0.1173556818181819}</string>
+								<string>{-0.3162945545184605, 0.13574886363636374}</string>
+								<string>{-0.21650007058828968, 0.14587840909090921}</string>
+								<string>{-0.1102137783712851, 0.14587840909090921}</string>
+								<string>{-0.084357634991425234, 0.14587840909090921}</string>
+								<string>{-0.058891462982806453, 0.14527500000000015}</string>
+								<string>{-0.034072157432715411, 0.14410340909090913}</string>
+								<string>{-0.034072157432715411, 0.14410340909090913}</string>
+								<string>{-0.034072157432715411, 0.05752727272727276}</string>
+								<string>{-0.034072157432715411, 0.05752727272727276}</string>
+								<string>{-0.034072157432715411, 0.012317045454545483}</string>
+								<string>{0.003382451982605339, -0.024463636363636243}</string>
+								<string>{0.049421060305543274, -0.024463636363636243}</string>
+								<string>{0.049421060305543274, -0.024463636363636243}</string>
+								<string>{0.27957475762758544, -0.024463636363636243}</string>
+								<string>{0.27957475762758544, -0.024463636363636243}</string>
+								<string>{0.27957475762758544, -0.024463636363636243}</string>
+								<string>{0.27957475762758544, -0.13759318181818175}</string>
+								<string>{0.27957475762758544, -0.13759318181818175}</string>
+								<string>{0.27543203504882163, -0.13438522727272723}</string>
+								<string>{0.27073964955807106, -0.13125568181818176}</string>
+								<string>{0.26549412960009999, -0.12821022727272724}</string>
+								<string>{0.24431648549005625, -0.11591931818181817}</string>
+								<string>{0.21434076323299001, -0.10496363636363631}</string>
+								<string>{0.17639782171480944, -0.095648863636363601}</string>
+								<string>{0.099701909123941501, -0.076820454545454497}</string>
+								<string>{-0.002085247510316246, -0.066450000000000009}</string>
+								<string>{-0.1102137783712851, -0.066450000000000009}</string>
+								<string>{-0.21833883767702028, -0.066450000000000009}</string>
+								<string>{-0.32012483712620021, -0.076820454545454497}</string>
+								<string>{-0.3968230640872239, -0.095648863636363601}</string>
+								<string>{-0.4347660056054044, -0.10496363636363631}</string>
+								<string>{-0.46474172786247075, -0.11591931818181817}</string>
+								<string>{-0.48591937197251445, -0.12821022727272724}</string>
+								<string>{-0.49116489193048546, -0.13125568181818176}</string>
+								<string>{-0.49585496305108034, -0.13438522727272723}</string>
+								<string>{-0.49999999999999989, -0.13759318181818175}</string>
+								<string>{-0.49999999999999989, -0.13759318181818175}</string>
+								<string>{-0.49999999999999989, 0.058705681818181921}</string>
+								<string>{-0.49999999999999989, 0.058705681818181921}</string>
+								<string>{-0.49999999999999989, 0.074147727272727337}</string>
+								<string>{-0.47142100013191901, 0.097664772727272808}</string>
+							</array>
+							<array>
+								<string>{0.22061154916995107, 0.26581590909090913}</string>
+								<string>{0.22061154916995107, 0.26581590909090913}</string>
+								<string>{0.18866282635512155, 0.27867727272727272}</string>
+								<string>{0.18866282635512155, 0.27867727272727272}</string>
+								<string>{0.19879861045215841, 0.30206590909090913}</string>
+								<string>{0.21498300095120604, 0.31132272727272725}</string>
+								<string>{0.21498300095120604, 0.31132272727272725}</string>
+								<string>{0.22528426251437805, 0.28744318181818185}</string>
+								<string>{0.22061154916995107, 0.26581590909090913}</string>
+							</array>
+							<array>
+								<string>{0.22248966055132924, 0.18254545454545457}</string>
+								<string>{0.21923565611236728, 0.1853295454545455}</string>
+								<string>{0.18866282635512166, 0.21015113636363636}</string>
+								<string>{0.18870448501792481, 0.21015113636363636}</string>
+								<string>{0.19374981195742491, 0.21334659090909092}</string>
+								<string>{0.20517817178643916, 0.22301363636363636}</string>
+								<string>{0.20517817178643916, 0.22301363636363636}</string>
+								<string>{0.21735985910114497, 0.20781704545454549}</string>
+								<string>{0.22248966055132924, 0.18254545454545457}</string>
+							</array>
+							<array>
+								<string>{0.20984972794578827, 0.22993636363636372}</string>
+								<string>{0.21456409995301828, 0.23358068181818192}</string>
+								<string>{0.21819418954228709, 0.25705000000000011}</string>
+								<string>{0.21819418954228709, 0.25705000000000011}</string>
+								<string>{0.22228021005223531, 0.25107045454545462}</string>
+								<string>{0.2609058907663574, 0.20277840909090916}</string>
+								<string>{0.2609058907663574, 0.2028181818181819}</string>
+								<string>{0.23045456544228782, 0.22026931818181816}</string>
+								<string>{0.20984972794578827, 0.22993636363636372}</string>
+							</array>
+							<array>
+								<string>{0.20984972794578827, 0.25938522727272728}</string>
+								<string>{0.21076737571253679, 0.24558295454545465}</string>
+								<string>{0.20192532453255518, 0.24005340909090922}</string>
+								<string>{0.20192532453255518, 0.24005340909090922}</string>
+								<string>{0.19867132009359323, 0.24554090909090909}</string>
+								<string>{0.14194610757655368, 0.29153863636363653}</string>
+								<string>{0.14194610757655368, 0.29157954545454556}</string>
+								<string>{0.15082866023426056, 0.28559999999999997}</string>
+								<string>{0.20984972794578827, 0.25938522727272728}</string>
+							</array>
+							<array>
+								<string>{0.23137221320903623, 0.16280227272727266}</string>
+								<string>{0.23137221320903623, 0.16280227272727266}</string>
+								<string>{0.27725228717630634, 0.13753068181818173}</string>
+								<string>{0.28054679309299368, 0.13613749999999991}</string>
+								<string>{0.28054679309299368, 0.13613749999999991}</string>
+								<string>{0.22649004936551531, 0.12507954545454536}</string>
+								<string>{0.22649004936551531, 0.12507954545454536}</string>
+								<string>{0.22649236373567116, 0.12507727272727276}</string>
+								<string>{0.23838128322567653, 0.14166704545454556}</string>
+							</array>
+							<array>
+								<string>{0.18866051198496581, 0.10943068181818183}</string>
+								<string>{0.18866051198496581, 0.10943068181818183}</string>
+								<string>{0.2181930323572091, 0.091530681818181914}</string>
+								<string>{0.2181930323572091, 0.091530681818181914}</string>
+								<string>{0.21105898635215914, 0.092432954545454638}</string>
+								<string>{0.15320783275435501, 0.079573863636363651}</string>
+								<string>{0.15316617409155187, 0.079530681818181903}</string>
+								<string>{0.1541231661509479, 0.082314772727272945}</string>
+								<string>{0.18127998555833014, 0.10943068181818194}</string>
+								<string>{0.18127998555833014, 0.10943068181818194}</string>
+								<string>{0.18127998555833014, 0.10943068181818194}</string>
+								<string>{0.18866051198496581, 0.10943068181818194}</string>
+								<string>{0.18866051198496581, 0.10943068181818194}</string>
+								<string>{0.18866051198496581, 0.10943068181818194}</string>
+								<string>{0.18866051198496581, 0.10943068181818183}</string>
+							</array>
+							<array>
+								<string>{0.18870217064776917, 0.20236931818181825}</string>
+								<string>{0.1998377626520832, 0.19225340909090916}</string>
+								<string>{0.21819187517213134, 0.17476136363636374}</string>
+								<string>{0.21819187517213134, 0.17476136363636374}</string>
+								<string>{0.20822388291138516, 0.16829090909090927}</string>
+								<string>{0.18569811818562643, 0.16280227272727288}</string>
+								<string>{0.18569811818562643, 0.16284431818181833}</string>
+								<string>{0.18824276817185592, 0.16419318181818188}</string>
+								<string>{0.18870217064776917, 0.20236931818181825}</string>
+							</array>
+							<array>
+								<string>{0.21735985910114497, 0.085551136363636315}</string>
+								<string>{0.22157201278458072, 0.085551136363636315}</string>
+								<string>{0.20847383488820448, 0.053355681818181844}</string>
+								<string>{0.20847383488820448, 0.053355681818181844}</string>
+								<string>{0.20847383488820448, 0.053355681818181844}</string>
+								<string>{0.16209038541206211, 0.07358977272727274}</string>
+								<string>{0.15929694063409128, 0.075884090909090984}</string>
+								<string>{0.15645952282316133, 0.078178409090909118}</string>
+								<string>{0.21314307667739762, 0.085551136363636315}</string>
+							</array>
+							<array>
+								<string>{0.23137221320903623, 0.11635340909090908}</string>
+								<string>{0.23137221320903623, 0.11635340909090908}</string>
+								<string>{0.22294674865708675, 0.096611363636363579}</string>
+								<string>{0.22294674865708675, 0.096611363636363579}</string>
+								<string>{0.22294674865708675, 0.096611363636363579}</string>
+								<string>{0.19858684558290884, 0.11131477272727264}</string>
+								<string>{0.19858684558290884, 0.11131477272727264}</string>
+								<string>{0.19858684558290884, 0.11131477272727264}</string>
+								<string>{0.23137221320903623, 0.11635340909090908}</string>
+							</array>
+							<array>
+								<string>{0.14757697016545446, 0.082765909090909195}</string>
+								<string>{0.14757697016545446, 0.082765909090909195}</string>
+								<string>{0.13118312916731278, 0.093823863636363747}</string>
+								<string>{0.13352064302460409, 0.096568181818181831}</string>
+								<string>{0.13585699969681753, 0.099311363636363725}</string>
+								<string>{0.16818180766195379, 0.10644090909090909}</string>
+								<string>{0.16818180766195379, 0.10644090909090909}</string>
+								<string>{0.16818180766195379, 0.10644090909090909}</string>
+								<string>{0.14757697016545446, 0.082765909090909195}</string>
+							</array>
+							<array>
+								<string>{0.27350069315386161, 0.24869772727272732}</string>
+								<string>{0.27350069315386161, 0.24869772727272732}</string>
+								<string>{0.23746363545892801, 0.26073863636363648}</string>
+								<string>{0.23746363545892801, 0.26073863636363648}</string>
+								<string>{0.23746363545892801, 0.26073863636363648}</string>
+								<string>{0.26557628974062852, 0.27728636363636372}</string>
+								<string>{0.2758347354559193, 0.28142386363636362}</string>
+								<string>{0.2758347354559193, 0.28142159090909102}</string>
+								<string>{0.27679635625562682, 0.26102500000000006}</string>
+							</array>
+							<array>
+								<string>{0.18866051198496581, 0.1517431818181818}</string>
+								<string>{0.19745974731706639, 0.15358522727272728}</string>
+								<string>{0.22624125457377398, 0.16415454545454555}</string>
+								<string>{0.22624125457377398, 0.16415454545454555}</string>
+								<string>{0.22811936595515214, 0.13380340909090915}</string>
+								<string>{0.22015214669403804, 0.12507727272727276}</string>
+								<string>{0.22015214669403804, 0.12507727272727276}</string>
+								<string>{0.22015214669403804, 0.12507727272727276}</string>
+								<string>{0.18866051198496581, 0.1517431818181818}</string>
+							</array>
+							<array>
+								<string>{0.27258304538711309, 0.28694999999999993}</string>
+								<string>{0.27258304538711309, 0.28694999999999993}</string>
+								<string>{0.23091396791820096, 0.26258181818181825}</string>
+								<string>{0.23091396791820096, 0.26258181818181825}</string>
+								<string>{0.23091396791820096, 0.26258181818181825}</string>
+								<string>{0.23241599414927228, 0.2975204545454545}</string>
+								<string>{0.22649236373567116, 0.31132500000000007}</string>
+								<string>{0.22649236373567116, 0.31132272727272736}</string>
+								<string>{0.26649393750737704, 0.29293068181818183}</string>
+							</array>
+							<array>
+								<string>{0.28384477056491464, 0.18487840909090913}</string>
+								<string>{0.30728702587234402, 0.17291931818181816}</string>
+								<string>{0.3578398131840409, 0.1591147727272727}</string>
+								<string>{0.3578398131840409, 0.1591147727272727}</string>
+								<string>{0.34703633329707473, 0.1517431818181818}</string>
+								<string>{0.29648354598537763, 0.13793636363636363}</string>
+								<string>{0.29648354598537763, 0.13797727272727267}</string>
+								<string>{0.29694179127621312, 0.14486022727272729}</string>
+								<string>{0.28384477056491464, 0.18487840909090913}</string>
+							</array>
+							<array>
+								<string>{0.27258304538711309, 0.18487840909090913}</string>
+								<string>{0.29039559529071968, 0.1549772727272728}</string>
+								<string>{0.29039559529071968, 0.13793636363636363}</string>
+								<string>{0.29039559529071968, 0.13797954545454549}</string>
+								<string>{0.29039559529071968, 0.13797954545454549}</string>
+								<string>{0.24109488223327458, 0.16923409090909103}</string>
+								<string>{0.24109488223327458, 0.16923409090909103}</string>
+								<string>{0.24939189924158089, 0.17152500000000004}</string>
+								<string>{0.27258304538711309, 0.18487840909090913}</string>
+							</array>
+							<array>
+								<string>{0.2608619177333984, 0.19364431818181826}</string>
+								<string>{0.2608619177333984, 0.19364431818181826}</string>
+								<string>{0.23137452757919197, 0.17799545454545462}</string>
+								<string>{0.23137452757919197, 0.17799545454545462}</string>
+								<string>{0.23183277287002724, 0.18487840909090925}</string>
+								<string>{0.22061154916995107, 0.21522954545454553}</string>
+								<string>{0.22061154916995107, 0.21522954545454553}</string>
+								<string>{0.22061154916995107, 0.21522954545454553}</string>
+								<string>{0.2608619177333984, 0.19364431818181826}</string>
+							</array>
+							<array>
+								<string>{0.1824869295945456, 0.28146363636363636}</string>
+								<string>{0.1836556865231912, 0.28744431818181826}</string>
+								<string>{0.15132856418789908, 0.34122272727272729}</string>
+								<string>{0.15132856418789908, 0.34122272727272729}</string>
+								<string>{0.19253708199582031, 0.32877159090909092}</string>
+								<string>{0.2099318880863168, 0.31730340909090904}</string>
+								<string>{0.2099318880863168, 0.31734204545454547}</string>
+								<string>{0.18615867784661744, 0.29616590909090912}</string>
+								<string>{0.1824869295945456, 0.28146363636363636}</string>
+							</array>
+							<array>
+								<string>{0.18570043255578206, 0.38005227272727282}</string>
+								<string>{0.20117546860209734, 0.35719772727272736}</string>
+								<string>{0.20759900296933687, 0.3278704545454546}</string>
+								<string>{0.20759900296933687, 0.3278704545454546}</string>
+								<string>{0.20159436960028509, 0.33200795454545462}</string>
+								<string>{0.14661997810605831, 0.34994772727272738}</string>
+								<string>{0.1466604795837837, 0.34994772727272738}</string>
+								<string>{0.16305084902669165, 0.37108409090909089}</string>
+								<string>{0.18570043255578206, 0.38005227272727282}</string>
+							</array>
+							<array>
+								<string>{0.32784904752096244, 0.22301363636363647}</string>
+								<string>{0.34611637116017058, 0.2156806818181819}</string>
+								<string>{0.42478412712372404, 0.20925000000000016}</string>
+								<string>{0.42478412712372404, 0.20921136363636383}</string>
+								<string>{0.41777737147723948, 0.19495568181818201}</string>
+								<string>{0.37047627423434848, 0.16415681818181826}</string>
+								<string>{0.37047627423434848, 0.16415681818181826}</string>
+								<string>{0.3634267027399829, 0.18254545454545457}</string>
+								<string>{0.32784904752096244, 0.22301363636363647}</string>
+							</array>
+							<array>
+								<string>{0.22653517958355229, 0.31914659090909103}</string>
+								<string>{0.22653517958355229, 0.31914659090909103}</string>
+								<string>{0.24918360592756483, 0.33618636363636367}</string>
+								<string>{0.27024784589997752, 0.3412238636363637}</string>
+								<string>{0.27024784589997752, 0.3412238636363637}</string>
+								<string>{0.27892441961382419, 0.31820681818181829}</string>
+								<string>{0.27600252729220998, 0.2933829545454546}</string>
+								<string>{0.27600252729221009, 0.2933829545454546}</string>
+								<string>{0.23662814783270802, 0.31636136363636369}</string>
+							</array>
+							<array>
+								<string>{0.19721210971040282, 0.37431818181818188}</string>
+								<string>{0.20893323736411751, 0.37476818181818183}</string>
+								<string>{0.26816144120458341, 0.34626136363636373}</string>
+								<string>{0.26811978254178004, 0.34626136363636373}</string>
+								<string>{0.25527155662222301, 0.34351704545454553}</string>
+								<string>{0.2206103919848732, 0.32557840909090907}</string>
+								<string>{0.2206103919848732, 0.32557840909090907}</string>
+								<string>{0.2206103919848732, 0.32557840909090907}</string>
+								<string>{0.19721210971040282, 0.37431818181818188}</string>
+							</array>
+							<array>
+								<string>{0.19250005207332843, 0.38398636363636363}</string>
+								<string>{0.20092435944020004, 0.39361250000000003}</string>
+								<string>{0.25352189278448822, 0.40282727272727281}</string>
+								<string>{0.25352189278448822, 0.40282727272727281}</string>
+								<string>{0.26231997093151083, 0.39201136363636369}</string>
+								<string>{0.26816028401950553, 0.34994772727272738}</string>
+								<string>{0.26811978254178026, 0.34994772727272738}</string>
+								<string>{0.26553231670766964, 0.35502613636363634}</string>
+								<string>{0.19250005207332843, 0.38398636363636363}</string>
+							</array>
+							<array>
+								<string>{0.18866051198496581, 0.39131477272727266}</string>
+								<string>{0.18903659713527265, 0.39410113636363631}</string>
+								<string>{0.15504197110277418, 0.43448749999999992}</string>
+								<string>{0.15504197110277418, 0.43448749999999992}</string>
+								<string>{0.17660611502882539, 0.43346590909090899}</string>
+								<string>{0.25156046407750365, 0.40511931818181801}</string>
+								<string>{0.25156046407750365, 0.40511931818181801}</string>
+								<string>{0.21973556006600592, 0.40467159090909088}</string>
+								<string>{0.18866051198496581, 0.39131477272727266}</string>
+							</array>
+							<array>
+								<string>{0.23746363545892801, 0.44743295454545451}</string>
+								<string>{0.24217453591092453, 0.44190340909090908}</string>
+								<string>{0.25352189278448811, 0.41019772727272719}</string>
+								<string>{0.25352189278448811, 0.41019772727272719}</string>
+								<string>{0.21572938532643027, 0.42584659090909083}</string>
+								<string>{0.17001710319545071, 0.43448749999999992}</string>
+								<string>{0.17001710319545071, 0.43448749999999992}</string>
+								<string>{0.18532319022039745, 0.44317272727272727}</string>
+								<string>{0.23746363545892801, 0.44743295454545451}</string>
+							</array>
+							<array>
+								<string>{0.5, 0.05752727272727276}</string>
+								<string>{0.5, 0.05752727272727276}</string>
+								<string>{0.5, 0.44073409090909088}</string>
+								<string>{0.5, 0.44073409090909088}</string>
+								<string>{0.5, 0.47341363636363631}</string>
+								<string>{0.47292649791822394, 0.5}</string>
+								<string>{0.4396504838190809, 0.5}</string>
+								<string>{0.4396504838190809, 0.5}</string>
+								<string>{0.049421060305543163, 0.5}</string>
+								<string>{0.049421060305543163, 0.5}</string>
+								<string>{0.016142731836244373, 0.5}</string>
+								<string>{-0.010928455875375831, 0.47341363636363631}</string>
+								<string>{-0.010928455875375831, 0.44073409090909088}</string>
+								<string>{-0.010928455875375831, 0.44073409090909088}</string>
+								<string>{-0.010928455875375831, 0.05752727272727276}</string>
+								<string>{-0.010928455875375831, 0.05752727272727276}</string>
+								<string>{-0.010928455875375831, 0.024848863636363738}</string>
+								<string>{0.016145046206400226, -0.001736363636363536}</string>
+								<string>{0.049421060305543163, -0.001736363636363536}</string>
+								<string>{0.049421060305543163, -0.001736363636363536}</string>
+								<string>{0.43965048381908112, -0.001736363636363536}</string>
+								<string>{0.43965048381908112, -0.001736363636363536}</string>
+								<string>{0.47292765510330192, -0.001736363636363536}</string>
+								<string>{0.5, 0.024848863636363627}</string>
+							</array>
+							<array>
+								<string>{0.24643066262731927, 0.11799204545454545}</string>
+								<string>{0.22853710976826214, 0.11553409090909084}</string>
+								<string>{0.21018299724821388, 0.048442045454545557}</string>
+								<string>{0.21030797323662354, 0.048442045454545557}</string>
+								<string>{0.1972526111881282, 0.052207954545454571}</string>
+								<string>{0.091934882881298252, 0.082644318181818166}</string>
+								<string>{0.13276962990906838, 0.10939090909090909}</string>
+								<string>{0.20096486091792554, 0.15403522727272734}</string>
+								<string>{0.19792146416313539, 0.24419090909090913}</string>
+								<string>{0.096814732354663313, 0.3195159090909091}</string>
+								<string>{-0.044917295982484839, 0.42510909090909088}</string>
+								<string>{0.23708870749369915, 0.45562386363636365}</string>
+								<string>{0.24109256786311895, 0.44894659090909084}</string>
+								<string>{0.31099811841706337, 0.33335795454545458}</string>
+								<string>{0.27813059065040746, 0.2482022727272728}</string>
+								<string>{0.27813059065040746, 0.2482022727272728}</string>
+								<string>{0.27813059065040746, 0.2482022727272728}</string>
+								<string>{0.36013219682329545, 0.22207272727272731}</string>
+								<string>{0.43099936817694751, 0.2114613636363637}</string>
+								<string>{0.4401758458444327, 0.21015113636363636}</string>
+								<string>{0.39058236496228738, 0.13797954545454549}</string>
+							</array>
+							<array>
+								<string>{0.28384477056491464, 0.1913113636363637}</string>
+								<string>{0.29915201477493902, 0.20003522727272738}</string>
+								<string>{0.31521027210049923, 0.22530909090909101}</string>
+								<string>{0.31521027210049923, 0.22534772727272734}</string>
+								<string>{0.34469766225470566, 0.19684090909090912}</string>
+								<string>{0.36250789778815651, 0.1641954545454547}</string>
+								<string>{0.36250789778815651, 0.1641954545454547}</string>
+								<string>{0.35550345651182769, 0.16464431818181824}</string>
+								<string>{0.28384477056491464, 0.1913113636363637}</string>
+							</array>
+							<array>
+								<string>{0.27258304538711309, 0.2023284090909091}</string>
+								<string>{0.27024784589997752, 0.20785795454545453}</string>
+								<string>{0.2290358565368229, 0.25291590909090911}</string>
+								<string>{0.2290358565368229, 0.25291590909090911}</string>
+								<string>{0.23992265374939548, 0.24877613636363638}</string>
+								<string>{0.30724305283938502, 0.22809204545454553}</string>
+								<string>{0.30724305283938502, 0.22809204545454553}</string>
+								<string>{0.29831768433379702, 0.21473863636363644}</string>
+								<string>{0.27258304538711309, 0.2023284090909091}</string>
+							</array>
+							<array>
+								<string>{0.16722250123240212, 0.28694999999999993}</string>
+								<string>{0.16163098293614886, 0.28879545454545452}</string>
+								<string>{0.13306124054869095, 0.30349999999999988}</string>
+								<string>{0.13306124054869095, 0.30349999999999988}</string>
+								<string>{0.13397888831543947, 0.33061363636363628}</string>
+								<string>{0.14007031056533137, 0.3379875}</string>
+								<string>{0.14007031056533137, 0.3379875}</string>
+								<string>{0.15362441938238725, 0.32467500000000005}</string>
+								<string>{0.16722250123240212, 0.28694999999999993}</string>
+							</array>
+							<array>
+								<string>{0.10357269320940654, 0.41110113636363643}</string>
+								<string>{0.12088071041906301, 0.42674999999999996}</string>
+								<string>{0.15133087855805483, 0.43088522727272727}</string>
+								<string>{0.15133087855805483, 0.43084431818181823}</string>
+								<string>{0.15133087855805483, 0.43084431818181823}</string>
+								<string>{0.17802482393429031, 0.39131704545454549}</string>
+								<string>{0.17802482393429031, 0.39131704545454549}</string>
+								<string>{0.17802482393429031, 0.39131704545454549}</string>
+								<string>{0.10357269320940654, 0.41110113636363643}</string>
+							</array>
+							<array>
+								<string>{0.14428130706368913, 0.10943068181818183}</string>
+								<string>{0.15270561443056074, 0.11541022727272721}</string>
+								<string>{0.17239396134538965, 0.14072499999999999}</string>
+								<string>{0.17239396134538965, 0.14068295454545454}</string>
+								<string>{0.17239396134538965, 0.14068295454545454}</string>
+								<string>{0.16488730174526656, 0.11631477272727275}</string>
+								<string>{0.16488730174526656, 0.11631477272727275}</string>
+								<string>{0.16488730174526656, 0.11631477272727275}</string>
+								<string>{0.14428130706368913, 0.10943068181818183}</string>
+							</array>
+							<array>
+								<string>{0.15504197110277418, 0.26741363636363646}</string>
+								<string>{0.15504197110277418, 0.26741363636363646}</string>
+								<string>{0.13631061624734131, 0.29153750000000012}</string>
+								<string>{0.13631061624734131, 0.29153750000000012}</string>
+								<string>{0.13631061624734131, 0.29153750000000012}</string>
+								<string>{0.19249773770317269, 0.2432875000000001}</string>
+								<string>{0.19249773770317269, 0.2432875000000001}</string>
+								<string>{0.1722689853569801, 0.25176704545454553}</string>
+								<string>{0.15504197110277418, 0.26741363636363646}</string>
+							</array>
+							<array>
+								<string>{0.21502234524385366, 0.12278409090909104}</string>
+								<string>{0.21502234524385366, 0.12278409090909104}</string>
+								<string>{0.17005876185825419, 0.11635340909090919}</string>
+								<string>{0.17005876185825419, 0.11635340909090919}</string>
+								<string>{0.17005876185825419, 0.11635340909090919}</string>
+								<string>{0.18127882837325249, 0.14211704545454562}</string>
+								<string>{0.18131932985097776, 0.14760454545454549}</string>
+								<string>{0.18131932985097776, 0.14760454545454549}</string>
+								<string>{0.21502234524385366, 0.12278409090909104}</string>
+							</array>
+							<array>
+								<string>{0.18315578256955267, 0.22301363636363647}</string>
+								<string>{0.1826975372787174, 0.22715113636363637}</string>
+								<string>{0.17005876185825419, 0.24869772727272732}</string>
+								<string>{0.17005876185825419, 0.24869772727272732}</string>
+								<string>{0.18127882837325249, 0.24173295454545463}</string>
+								<string>{0.19487575303818949, 0.22989431818181827}</string>
+								<string>{0.19487575303818949, 0.22989431818181827}</string>
+								<string>{0.19112184464558901, 0.22530795454545449}</string>
+								<string>{0.18315578256955267, 0.22301363636363647}</string>
+							</array>
+							<array>
+								<string>{0.13631293061749716, 0.35777045454545453}</string>
+								<string>{0.13631293061749716, 0.35777045454545453}</string>
+								<string>{0.096982524190953989, 0.40741590909090908}</string>
+								<string>{0.096982524190953989, 0.40741590909090908}</string>
+								<string>{0.096982524190953989, 0.40741590909090908}</string>
+								<string>{0.099027270223545072, 0.41019772727272719}</string>
+								<string>{0.099027270223545072, 0.41019772727272719}</string>
+								<string>{0.099027270223545072, 0.41019772727272719}</string>
+								<string>{0.17235345986766437, 0.38398636363636351}</string>
+								<string>{0.17235345986766437, 0.38398636363636351}</string>
+								<string>{0.15362441938238725, 0.37386931818181823}</string>
+								<string>{0.13631293061749716, 0.35777045454545453}</string>
+							</array>
+							<array>
+								<string>{0.069828019153727383, 0.36694772727272729}</string>
+								<string>{0.069828019153727383, 0.36694772727272729}</string>
+								<string>{0.067490505296436076, 0.38763068181818183}</string>
+								<string>{0.09322977298343138, 0.40512159090909083}</string>
+								<string>{0.09322977298343138, 0.40512159090909083}</string>
+								<string>{0.12601398342448089, 0.36325909090909081}</string>
+								<string>{0.12834918291161646, 0.3549863636363636}</string>
+								<string>{0.12834686854146082, 0.35498636363636371}</string>
+								<string>{0.085260239352161538, 0.36694772727272729}</string>
+							</array>
+							<array>
+								<string>{0.12134011289497626, 0.30857840909090906}</string>
+								<string>{0.07545888174262827, 0.33016250000000003}</string>
+								<string>{0.069825704783571751, 0.36281136363636368}</string>
+								<string>{0.06986967781653064, 0.36284886363636371}</string>
+								<string>{0.078293985183402248, 0.36284886363636371}</string>
+								<string>{0.13072256950632177, 0.34675454545454543}</string>
+								<string>{0.13072256950632177, 0.34675454545454543}</string>
+								<string>{0.12041899357299413, 0.32328295454545464}</string>
+								<string>{0.12134011289497626, 0.30857840909090906}</string>
+							</array>
+						</array>
+						<key>UnitPoints</key>
+						<array>
+							<string>{-0.49999999999999989, -0.17744545454545446}</string>
+							<string>{-0.49999999999999989, -0.17744545454545446}</string>
+							<string>{-0.49999999999999989, -0.37407613636363629}</string>
+							<string>{-0.49999999999999989, -0.37407613636363629}</string>
+							<string>{-0.49585496305108034, -0.37086818181818171}</string>
+							<string>{-0.49116489193048546, -0.3677386363636363}</string>
+							<string>{-0.48591937197251445, -0.36469318181818178}</string>
+							<string>{-0.46474172786247075, -0.35240227272727265}</string>
+							<string>{-0.4347660056054044, -0.34144659090909085}</string>
+							<string>{-0.3968230640872239, -0.33213181818181814}</string>
+							<string>{-0.32012599431127808, -0.31330340909090904}</string>
+							<string>{-0.21833883767702028, -0.30293295454545449}</string>
+							<string>{-0.1102137783712851, -0.30293295454545449}</string>
+							<string>{-0.0020875618804719887, -0.30293295454545449}</string>
+							<string>{0.099699594753785759, -0.31330340909090904}</string>
+							<string>{0.17639897889988732, -0.33213181818181814}</string>
+							<string>{0.21434076323299001, -0.34144659090909085}</string>
+							<string>{0.24431648549005625, -0.35240227272727265}</string>
+							<string>{0.26549412960009999, -0.36469318181818178}</string>
+							<string>{0.27073964955807106, -0.3677386363636363}</string>
+							<string>{0.27543319223389962, -0.37086818181818171}</string>
+							<string>{0.27957475762758544, -0.37407727272727265}</string>
+							<string>{0.27957475762758544, -0.37407727272727265}</string>
+							<string>{0.27957475762758544, -0.17744659090909087}</string>
+							<string>{0.27957475762758544, -0.17744659090909087}</string>
+							<string>{0.27957475762758544, -0.16200454545454546}</string>
+							<string>{0.25099691494458243, -0.13848863636363634}</string>
+							<string>{0.17078315971699887, -0.11879659090909089}</string>
+							<string>{0.095869312146045993, -0.10040454545454541}</string>
+							<string>{-0.0039251717841246592, -0.090276136363636295}</string>
+							<string>{-0.11021377837128504, -0.090276136363636295}</string>
+							<string>{-0.2165012277733675, -0.090276136363636295}</string>
+							<string>{-0.31629455451846039, -0.10040454545454541}</string>
+							<string>{-0.39120840208941321, -0.11879659090909089}</string>
+							<string>{-0.47142100013191901, -0.13848636363636357}</string>
+							<string>{-0.49999999999999989, -0.16200340909090905}</string>
+						</array>
+					</dict>
+					<key>Style</key>
+					<dict>
+						<key>fill</key>
+						<dict>
+							<key>Color</key>
+							<dict>
+								<key>b</key>
+								<real>0.10588235294117647</real>
+								<key>g</key>
+								<real>0.11372549019607843</real>
+								<key>r</key>
+								<real>0.11372549019607843</real>
+								<key>space</key>
+								<string>srgb</string>
+							</dict>
+						</dict>
+						<key>shadow</key>
+						<dict>
+							<key>Draws</key>
+							<string>NO</string>
+						</dict>
+						<key>stroke</key>
+						<dict>
+							<key>Draws</key>
+							<string>NO</string>
+						</dict>
+					</dict>
+				</dict>
+				<dict>
+					<key>Bounds</key>
 					<string>{{0, 0}, {98.200681818181835, 100}}</string>
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>585</integer>
+					<integer>3</integer>
 					<key>Name</key>
 					<string>Oracle Database</string>
 					<key>Scaling</key>
@@ -54971,9 +55599,9 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>580</integer>
+					<integer>4</integer>
 					<key>Name</key>
-					<string>Postgres Database</string>
+					<string>PostgreSQL Database</string>
 					<key>Scaling</key>
 					<integer>1</integer>
 					<key>Shape</key>
@@ -55607,9 +56235,9 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>577</integer>
+					<integer>5</integer>
 					<key>Name</key>
-					<string>Mysql Database</string>
+					<string>MySQL Database</string>
 					<key>Scaling</key>
 					<integer>1</integer>
 					<key>Shape</key>
@@ -56089,7 +56717,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>574</integer>
+					<integer>6</integer>
 					<key>Name</key>
 					<string>Mongo Database</string>
 					<key>Scaling</key>
@@ -56524,9 +57152,9 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>571</integer>
+					<integer>7</integer>
 					<key>Name</key>
-					<string>Neo4J Database</string>
+					<string>Neo4j Database</string>
 					<key>Scaling</key>
 					<integer>1</integer>
 					<key>Shape</key>
@@ -56934,7 +57562,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>568</integer>
+					<integer>8</integer>
 					<key>Name</key>
 					<string>DB2 Database</string>
 					<key>Scaling</key>
@@ -60330,637 +60958,6 @@
 						</dict>
 					</dict>
 				</dict>
-				<dict>
-					<key>Bounds</key>
-					<string>{{125, 125}, {98.20068181818182, 100}}</string>
-					<key>Class</key>
-					<string>ShapedGraphic</string>
-					<key>ID</key>
-					<integer>483</integer>
-					<key>Name</key>
-					<string>Microsoft Sql Database</string>
-					<key>Scaling</key>
-					<integer>1</integer>
-					<key>Shape</key>
-					<string>Bezier</string>
-					<key>ShapeData</key>
-					<dict>
-						<key>AdditionalUnitPoints</key>
-						<array>
-							<array>
-								<string>{0.17078315971699887, -0.4714795454545454}</string>
-								<string>{0.095869312146045993, -0.48987159090909083}</string>
-								<string>{-0.0039251717841247702, -0.49999999999999994}</string>
-								<string>{-0.1102137783712851, -0.49999999999999994}</string>
-								<string>{-0.21650122777336755, -0.49999999999999994}</string>
-								<string>{-0.3162945545184605, -0.48987159090909083}</string>
-								<string>{-0.39120840208941327, -0.4714795454545454}</string>
-								<string>{-0.47141984294684114, -0.45178749999999995}</string>
-								<string>{-0.49999999999999989, -0.42827159090909084}</string>
-								<string>{-0.49999999999999989, -0.41282954545454542}</string>
-								<string>{-0.49999999999999989, -0.39738749999999995}</string>
-								<string>{-0.47142100013191901, -0.37387159090909083}</string>
-								<string>{-0.39120840208941327, -0.35418068181818174}</string>
-								<string>{-0.3162945545184605, -0.33578749999999991}</string>
-								<string>{-0.21650007058828968, -0.32565909090909084}</string>
-								<string>{-0.1102137783712851, -0.32565909090909084}</string>
-								<string>{-0.0039240145990468989, -0.32565909090909084}</string>
-								<string>{0.095869312146045993, -0.33578749999999991}</string>
-								<string>{0.17078315971699887, -0.35418068181818174}</string>
-								<string>{0.2509946005744268, -0.37387159090909083}</string>
-								<string>{0.27957475762758544, -0.39738749999999989}</string>
-								<string>{0.27957475762758544, -0.41282954545454537}</string>
-								<string>{0.27957475762758544, -0.42827159090909084}</string>
-								<string>{0.2509946005744268, -0.45178749999999995}</string>
-							</array>
-							<array>
-								<string>{-0.034072157432715411, 0.16717840909090909}</string>
-								<string>{-0.058922706979908979, 0.16833749999999992}</string>
-								<string>{-0.084383093063138348, 0.16893409090909084}</string>
-								<string>{-0.11021377837128515, 0.16893409090909084}</string>
-								<string>{-0.21833999486209826, 0.16893409090909084}</string>
-								<string>{-0.32012483712620027, 0.15856477272727265}</string>
-								<string>{-0.39682306408722395, 0.13973749999999996}</string>
-								<string>{-0.43476600560540446, 0.13042272727272719}</string>
-								<string>{-0.46474172786247081, 0.11946477272727263}</string>
-								<string>{-0.4859193719725145, 0.10717386363636361}</string>
-								<string>{-0.49116489193048551, 0.10412840909090915}</string>
-								<string>{-0.4958549630510804, 0.10099886363636368}</string>
-								<string>{-0.49999999999999994, 0.097792045454545451}</string>
-								<string>{-0.49999999999999994, 0.097792045454545451}</string>
-								<string>{-0.49999999999999994, 0.29518863636363646}</string>
-								<string>{-0.49999999999999994, 0.29518863636363646}</string>
-								<string>{-0.49999999999999994, 0.31063181818181829}</string>
-								<string>{-0.47142100013191907, 0.33414659090909105}</string>
-								<string>{-0.39120840208941338, 0.35383750000000014}</string>
-								<string>{-0.31629455451846056, 0.37223068181818197}</string>
-								<string>{-0.21650007058828979, 0.38236022727272734}</string>
-								<string>{-0.11021377837128515, 0.38236022727272734}</string>
-								<string>{-0.08435763499142529, 0.38236022727272734}</string>
-								<string>{-0.058892620167884435, 0.38175681818181839}</string>
-								<string>{-0.034072157432715522, 0.38058522727272737}</string>
-								<string>{-0.034072157432715522, 0.38058522727272737}</string>
-								<string>{-0.034072157432715522, 0.16717840909090909}</string>
-								<string>{-0.034072157432715522, 0.16717840909090909}</string>
-								<string>{-0.034072157432715522, 0.16717840909090909}</string>
-								<string>{-0.034072157432715411, 0.16717840909090909}</string>
-							</array>
-							<array>
-								<string>{-0.39120840208941327, 0.1173556818181819}</string>
-								<string>{-0.3162945545184605, 0.13574886363636374}</string>
-								<string>{-0.21650007058828968, 0.14587840909090921}</string>
-								<string>{-0.1102137783712851, 0.14587840909090921}</string>
-								<string>{-0.084357634991425234, 0.14587840909090921}</string>
-								<string>{-0.058892620167884324, 0.14527500000000015}</string>
-								<string>{-0.034072157432715411, 0.14410340909090913}</string>
-								<string>{-0.034072157432715411, 0.14410340909090913}</string>
-								<string>{-0.034072157432715411, 0.05752727272727276}</string>
-								<string>{-0.034072157432715411, 0.05752727272727276}</string>
-								<string>{-0.034072157432715411, 0.012317045454545483}</string>
-								<string>{0.003382451982605339, -0.024463636363636243}</string>
-								<string>{0.049421060305543274, -0.024463636363636243}</string>
-								<string>{0.049421060305543274, -0.024463636363636243}</string>
-								<string>{0.27957475762758544, -0.024463636363636243}</string>
-								<string>{0.27957475762758544, -0.024463636363636243}</string>
-								<string>{0.27957475762758544, -0.024463636363636243}</string>
-								<string>{0.27957475762758544, -0.13759318181818175}</string>
-								<string>{0.27957475762758544, -0.13759318181818175}</string>
-								<string>{0.27543203504882163, -0.13438522727272723}</string>
-								<string>{0.27073964955807106, -0.13125568181818176}</string>
-								<string>{0.26549412960009999, -0.12821022727272724}</string>
-								<string>{0.24431648549005625, -0.11591931818181817}</string>
-								<string>{0.21434076323299001, -0.10496363636363631}</string>
-								<string>{0.17639782171480944, -0.095648863636363601}</string>
-								<string>{0.09970075193886363, -0.076820454545454497}</string>
-								<string>{-0.0020864046953941173, -0.066450000000000009}</string>
-								<string>{-0.1102137783712851, -0.066450000000000009}</string>
-								<string>{-0.21833883767702028, -0.066450000000000009}</string>
-								<string>{-0.32012483712620021, -0.076820454545454497}</string>
-								<string>{-0.3968230640872239, -0.095648863636363601}</string>
-								<string>{-0.4347660056054044, -0.10496363636363631}</string>
-								<string>{-0.46474172786247075, -0.11591931818181817}</string>
-								<string>{-0.48591937197251445, -0.12821022727272724}</string>
-								<string>{-0.49116489193048546, -0.13125568181818176}</string>
-								<string>{-0.49585496305108034, -0.13438522727272723}</string>
-								<string>{-0.49999999999999989, -0.13759318181818175}</string>
-								<string>{-0.49999999999999989, -0.13759318181818175}</string>
-								<string>{-0.49999999999999989, 0.058705681818181921}</string>
-								<string>{-0.49999999999999989, 0.058705681818181921}</string>
-								<string>{-0.49999999999999989, 0.074147727272727337}</string>
-								<string>{-0.47142100013191901, 0.097664772727272808}</string>
-							</array>
-							<array>
-								<string>{0.22061154916995107, 0.26581590909090913}</string>
-								<string>{0.22061154916995107, 0.26581590909090913}</string>
-								<string>{0.18866166917004368, 0.27867727272727272}</string>
-								<string>{0.18866166917004368, 0.27867727272727272}</string>
-								<string>{0.19879745326708065, 0.30206590909090913}</string>
-								<string>{0.21498184376612828, 0.31132272727272725}</string>
-								<string>{0.21498184376612828, 0.31132272727272725}</string>
-								<string>{0.22528426251437805, 0.28744318181818185}</string>
-								<string>{0.22061154916995107, 0.26581590909090913}</string>
-							</array>
-							<array>
-								<string>{0.22248966055132924, 0.18254545454545457}</string>
-								<string>{0.21923565611236728, 0.1853295454545455}</string>
-								<string>{0.18866166917004379, 0.21015113636363636}</string>
-								<string>{0.18870332783284693, 0.21015113636363636}</string>
-								<string>{0.19374981195742491, 0.21334659090909092}</string>
-								<string>{0.20517817178643916, 0.22301363636363636}</string>
-								<string>{0.20517817178643916, 0.22301363636363636}</string>
-								<string>{0.21735985910114497, 0.20781704545454549}</string>
-								<string>{0.22248966055132924, 0.18254545454545457}</string>
-							</array>
-							<array>
-								<string>{0.20984972794578827, 0.22993636363636372}</string>
-								<string>{0.21456409995301828, 0.23358068181818192}</string>
-								<string>{0.21819418954228709, 0.25705000000000011}</string>
-								<string>{0.21819418954228709, 0.25705000000000011}</string>
-								<string>{0.22228021005223531, 0.25107045454545462}</string>
-								<string>{0.2609058907663574, 0.20277840909090916}</string>
-								<string>{0.2609058907663574, 0.2028181818181819}</string>
-								<string>{0.23045456544228782, 0.22026931818181816}</string>
-								<string>{0.20984972794578827, 0.22993636363636372}</string>
-							</array>
-							<array>
-								<string>{0.20984972794578827, 0.25938522727272728}</string>
-								<string>{0.21076737571253679, 0.24558295454545465}</string>
-								<string>{0.20192532453255518, 0.24005340909090922}</string>
-								<string>{0.20192532453255518, 0.24005340909090922}</string>
-								<string>{0.19867132009359323, 0.24554090909090909}</string>
-								<string>{0.14194610757655368, 0.29153863636363653}</string>
-								<string>{0.14194610757655368, 0.29157954545454556}</string>
-								<string>{0.15082866023426056, 0.28559999999999997}</string>
-								<string>{0.20984972794578827, 0.25938522727272728}</string>
-							</array>
-							<array>
-								<string>{0.23137221320903623, 0.16280227272727266}</string>
-								<string>{0.23137221320903623, 0.16280227272727266}</string>
-								<string>{0.27725344436138422, 0.13752954545454543}</string>
-								<string>{0.28054795027807145, 0.13613749999999991}</string>
-								<string>{0.28054795027807145, 0.13613749999999991}</string>
-								<string>{0.22649120655059318, 0.12507840909090906}</string>
-								<string>{0.22649120655059318, 0.12507840909090906}</string>
-								<string>{0.22649236373567116, 0.12507727272727276}</string>
-								<string>{0.23838128322567653, 0.14166704545454556}</string>
-							</array>
-							<array>
-								<string>{0.18866051198496581, 0.10943068181818183}</string>
-								<string>{0.18866051198496581, 0.10943068181818183}</string>
-								<string>{0.2181930323572091, 0.091530681818181914}</string>
-								<string>{0.2181930323572091, 0.091530681818181914}</string>
-								<string>{0.21105898635215914, 0.092432954545454638}</string>
-								<string>{0.15320667556927714, 0.07957272727272735}</string>
-								<string>{0.15316501690647388, 0.079530681818181903}</string>
-								<string>{0.15412200896586992, 0.082314772727272945}</string>
-								<string>{0.18127882837325215, 0.10943068181818194}</string>
-								<string>{0.18127882837325215, 0.10943068181818194}</string>
-								<string>{0.18127882837325215, 0.10943068181818194}</string>
-								<string>{0.18866051198496581, 0.10943068181818194}</string>
-								<string>{0.18866051198496581, 0.10943068181818194}</string>
-								<string>{0.18866051198496581, 0.10943068181818194}</string>
-								<string>{0.18866051198496581, 0.10943068181818183}</string>
-							</array>
-							<array>
-								<string>{0.18870217064776917, 0.20236931818181825}</string>
-								<string>{0.1998377626520832, 0.19225340909090916}</string>
-								<string>{0.21819303235720922, 0.17476136363636374}</string>
-								<string>{0.21819303235720922, 0.17476136363636374}</string>
-								<string>{0.20822388291138516, 0.16829090909090927}</string>
-								<string>{0.1856992753707043, 0.16280227272727288}</string>
-								<string>{0.1856992753707043, 0.16284431818181833}</string>
-								<string>{0.18824276817185592, 0.16419318181818188}</string>
-								<string>{0.18870217064776917, 0.20236931818181825}</string>
-							</array>
-							<array>
-								<string>{0.21735985910114497, 0.085551136363636315}</string>
-								<string>{0.22157201278458072, 0.085551136363636315}</string>
-								<string>{0.20847383488820448, 0.053355681818181844}</string>
-								<string>{0.20847383488820448, 0.053355681818181844}</string>
-								<string>{0.20847383488820448, 0.053355681818181844}</string>
-								<string>{0.16209038541206211, 0.07358977272727274}</string>
-								<string>{0.15929694063409128, 0.075884090909090984}</string>
-								<string>{0.15645952282316133, 0.078178409090909118}</string>
-								<string>{0.21314307667739762, 0.085551136363636315}</string>
-							</array>
-							<array>
-								<string>{0.23137221320903623, 0.11635340909090908}</string>
-								<string>{0.23137221320903623, 0.11635340909090908}</string>
-								<string>{0.22294674865708675, 0.096611363636363579}</string>
-								<string>{0.22294674865708675, 0.096611363636363579}</string>
-								<string>{0.22294674865708675, 0.096611363636363579}</string>
-								<string>{0.19858684558290884, 0.11131477272727264}</string>
-								<string>{0.19858684558290884, 0.11131477272727264}</string>
-								<string>{0.19858684558290884, 0.11131477272727264}</string>
-								<string>{0.23137221320903623, 0.11635340909090908}</string>
-							</array>
-							<array>
-								<string>{0.14757697016545446, 0.082765909090909195}</string>
-								<string>{0.14757697016545446, 0.082765909090909195}</string>
-								<string>{0.13118312916731278, 0.093823863636363747}</string>
-								<string>{0.13352064302460409, 0.096568181818181831}</string>
-								<string>{0.13585584251173966, 0.099312500000000026}</string>
-								<string>{0.16818180766195379, 0.10644090909090909}</string>
-								<string>{0.16818180766195379, 0.10644090909090909}</string>
-								<string>{0.16818180766195379, 0.10644090909090909}</string>
-								<string>{0.14757697016545446, 0.082765909090909195}</string>
-							</array>
-							<array>
-								<string>{0.27350069315386161, 0.24869659090909102}</string>
-								<string>{0.27350069315386161, 0.24869659090909102}</string>
-								<string>{0.23746363545892801, 0.26073750000000007}</string>
-								<string>{0.23746363545892801, 0.26073750000000007}</string>
-								<string>{0.23746363545892801, 0.26073750000000007}</string>
-								<string>{0.26557628974062852, 0.27728522727272742}</string>
-								<string>{0.2758347354559193, 0.28142272727272732}</string>
-								<string>{0.2758347354559193, 0.28142159090909102}</string>
-								<string>{0.27679635625562682, 0.26102500000000006}</string>
-							</array>
-							<array>
-								<string>{0.18866051198496581, 0.1517431818181818}</string>
-								<string>{0.19746090450214426, 0.15358522727272728}</string>
-								<string>{0.22624125457377398, 0.16415454545454555}</string>
-								<string>{0.22624125457377398, 0.16415454545454555}</string>
-								<string>{0.22811936595515214, 0.13380340909090915}</string>
-								<string>{0.22015214669403804, 0.12507727272727276}</string>
-								<string>{0.22015214669403804, 0.12507727272727276}</string>
-								<string>{0.22015214669403804, 0.12507727272727276}</string>
-								<string>{0.18866051198496581, 0.1517431818181818}</string>
-							</array>
-							<array>
-								<string>{0.27258304538711309, 0.28694999999999993}</string>
-								<string>{0.27258304538711309, 0.28694999999999993}</string>
-								<string>{0.23091396791820096, 0.26258068181818173}</string>
-								<string>{0.23091396791820096, 0.26258068181818173}</string>
-								<string>{0.23091396791820096, 0.26258068181818173}</string>
-								<string>{0.23241599414927228, 0.29751931818181809}</string>
-								<string>{0.22649236373567116, 0.31132386363636355}</string>
-								<string>{0.22649236373567116, 0.31132272727272736}</string>
-								<string>{0.26649393750737704, 0.29293068181818183}</string>
-							</array>
-							<array>
-								<string>{0.28384477056491464, 0.18487840909090913}</string>
-								<string>{0.30728702587234402, 0.17291931818181816}</string>
-								<string>{0.3578398131840409, 0.1591147727272727}</string>
-								<string>{0.3578398131840409, 0.1591147727272727}</string>
-								<string>{0.34703633329707473, 0.1517431818181818}</string>
-								<string>{0.29648354598537763, 0.13793750000000005}</string>
-								<string>{0.29648354598537763, 0.13797840909090908}</string>
-								<string>{0.29694179127621312, 0.14486022727272729}</string>
-								<string>{0.28384477056491464, 0.18487840909090913}</string>
-							</array>
-							<array>
-								<string>{0.27258304538711309, 0.18487840909090913}</string>
-								<string>{0.29039443810564181, 0.1549772727272728}</string>
-								<string>{0.29039443810564181, 0.13793750000000005}</string>
-								<string>{0.29039443810564181, 0.13797954545454549}</string>
-								<string>{0.29039443810564181, 0.13797954545454549}</string>
-								<string>{0.24109372504819682, 0.16923409090909103}</string>
-								<string>{0.24109372504819682, 0.16923409090909103}</string>
-								<string>{0.24939189924158089, 0.17152500000000004}</string>
-								<string>{0.27258304538711309, 0.18487840909090913}</string>
-							</array>
-							<array>
-								<string>{0.2608619177333984, 0.19364431818181826}</string>
-								<string>{0.2608619177333984, 0.19364431818181826}</string>
-								<string>{0.2313733703941141, 0.17799659090909103}</string>
-								<string>{0.2313733703941141, 0.17799659090909103}</string>
-								<string>{0.23183277287002735, 0.18487840909090925}</string>
-								<string>{0.22061154916995129, 0.21522954545454553}</string>
-								<string>{0.22061154916995129, 0.21522954545454553}</string>
-								<string>{0.22061154916995129, 0.21522954545454553}</string>
-								<string>{0.2608619177333984, 0.19364431818181826}</string>
-							</array>
-							<array>
-								<string>{0.1824869295945456, 0.28146363636363636}</string>
-								<string>{0.1836556865231912, 0.28744318181818185}</string>
-								<string>{0.15132856418789908, 0.34122159090909088}</string>
-								<string>{0.15132856418789908, 0.34122159090909088}</string>
-								<string>{0.19253823918089807, 0.3287704545454545}</string>
-								<string>{0.2099318880863168, 0.31730340909090904}</string>
-								<string>{0.2099318880863168, 0.31734204545454547}</string>
-								<string>{0.18615867784661744, 0.29616590909090912}</string>
-								<string>{0.1824869295945456, 0.28146363636363636}</string>
-							</array>
-							<array>
-								<string>{0.18570043255578206, 0.38005227272727282}</string>
-								<string>{0.20117546860209734, 0.35719772727272736}</string>
-								<string>{0.20759784578425899, 0.3278704545454546}</string>
-								<string>{0.20759784578425899, 0.3278704545454546}</string>
-								<string>{0.20159321241520733, 0.33200795454545462}</string>
-								<string>{0.14661882092098044, 0.34994772727272738}</string>
-								<string>{0.14665932239870583, 0.34994772727272738}</string>
-								<string>{0.16305084902669165, 0.37108409090909089}</string>
-								<string>{0.18570043255578206, 0.38005227272727282}</string>
-							</array>
-							<array>
-								<string>{0.32784904752096244, 0.22301363636363647}</string>
-								<string>{0.34611752834524856, 0.2156806818181819}</string>
-								<string>{0.42478412712372404, 0.20925000000000016}</string>
-								<string>{0.42478412712372404, 0.20921022727272731}</string>
-								<string>{0.41777737147723948, 0.1949556818181819}</string>
-								<string>{0.37047627423434848, 0.16415568181818185}</string>
-								<string>{0.37047627423434848, 0.16415568181818185}</string>
-								<string>{0.3634267027399829, 0.18254545454545457}</string>
-								<string>{0.32784904752096244, 0.22301363636363647}</string>
-							</array>
-							<array>
-								<string>{0.22653517958355229, 0.31914659090909103}</string>
-								<string>{0.22653517958355229, 0.31914659090909103}</string>
-								<string>{0.24918360592756483, 0.33618636363636367}</string>
-								<string>{0.27024784589997752, 0.3412227272727274}</string>
-								<string>{0.27024784589997752, 0.3412227272727274}</string>
-								<string>{0.27892441961382419, 0.31820568181818187}</string>
-								<string>{0.27600252729220998, 0.2933829545454546}</string>
-								<string>{0.27600252729221009, 0.2933829545454546}</string>
-								<string>{0.23662814783270802, 0.31636136363636369}</string>
-							</array>
-							<array>
-								<string>{0.19721210971040282, 0.37431818181818188}</string>
-								<string>{0.20893323736411751, 0.37476931818181836}</string>
-								<string>{0.26816144120458341, 0.34626136363636373}</string>
-								<string>{0.26811978254178004, 0.34626136363636373}</string>
-								<string>{0.25527271380730088, 0.34351704545454553}</string>
-								<string>{0.2206103919848732, 0.32557840909090907}</string>
-								<string>{0.2206103919848732, 0.32557840909090907}</string>
-								<string>{0.2206103919848732, 0.32557840909090907}</string>
-								<string>{0.19721210971040282, 0.37431818181818188}</string>
-							</array>
-							<array>
-								<string>{0.19250005207332843, 0.38398636363636363}</string>
-								<string>{0.20092435944020004, 0.39361250000000003}</string>
-								<string>{0.25352189278448822, 0.40282727272727281}</string>
-								<string>{0.25352189278448822, 0.40282727272727281}</string>
-								<string>{0.26231997093151083, 0.39201249999999999}</string>
-								<string>{0.26816028401950553, 0.34994772727272738}</string>
-								<string>{0.26811978254178026, 0.34994772727272738}</string>
-								<string>{0.26553231670766964, 0.35502613636363634}</string>
-								<string>{0.19250005207332843, 0.38398636363636363}</string>
-							</array>
-							<array>
-								<string>{0.18866051198496581, 0.39131477272727266}</string>
-								<string>{0.18903659713527265, 0.39410227272727272}</string>
-								<string>{0.15504197110277418, 0.43448863636363644}</string>
-								<string>{0.15504197110277418, 0.43448863636363644}</string>
-								<string>{0.17660611502882539, 0.43346590909090921}</string>
-								<string>{0.25156162126258141, 0.40512045454545453}</string>
-								<string>{0.25156162126258141, 0.40512045454545453}</string>
-								<string>{0.21973556006600592, 0.40467159090909088}</string>
-								<string>{0.18866051198496581, 0.39131477272727266}</string>
-							</array>
-							<array>
-								<string>{0.23746363545892801, 0.44743295454545451}</string>
-								<string>{0.24217453591092453, 0.44190340909090908}</string>
-								<string>{0.25352189278448811, 0.41019886363636371}</string>
-								<string>{0.25352189278448811, 0.41019886363636371}</string>
-								<string>{0.21572938532643027, 0.42584659090909094}</string>
-								<string>{0.17001710319545071, 0.43448863636363644}</string>
-								<string>{0.17001710319545071, 0.43448863636363644}</string>
-								<string>{0.18532319022039745, 0.44317272727272727}</string>
-								<string>{0.23746363545892801, 0.44743295454545451}</string>
-							</array>
-							<array>
-								<string>{0.5, 0.05752727272727276}</string>
-								<string>{0.5, 0.05752727272727276}</string>
-								<string>{0.5, 0.44073409090909088}</string>
-								<string>{0.5, 0.44073409090909088}</string>
-								<string>{0.5, 0.47341363636363631}</string>
-								<string>{0.47292765510330192, 0.5}</string>
-								<string>{0.4396504838190809, 0.5}</string>
-								<string>{0.4396504838190809, 0.5}</string>
-								<string>{0.049421060305543163, 0.5}</string>
-								<string>{0.049421060305543163, 0.5}</string>
-								<string>{0.016142731836244373, 0.5}</string>
-								<string>{-0.010928455875375831, 0.47341363636363631}</string>
-								<string>{-0.010928455875375831, 0.44073409090909088}</string>
-								<string>{-0.010928455875375831, 0.44073409090909088}</string>
-								<string>{-0.010928455875375831, 0.05752727272727276}</string>
-								<string>{-0.010928455875375831, 0.05752727272727276}</string>
-								<string>{-0.010928455875375831, 0.024848863636363738}</string>
-								<string>{0.016143889021322355, -0.001736363636363536}</string>
-								<string>{0.049421060305543163, -0.001736363636363536}</string>
-								<string>{0.049421060305543163, -0.001736363636363536}</string>
-								<string>{0.43965048381908112, -0.001736363636363536}</string>
-								<string>{0.43965048381908112, -0.001736363636363536}</string>
-								<string>{0.47292765510330192, -0.001736363636363536}</string>
-								<string>{0.5, 0.024848863636363627}</string>
-							</array>
-							<array>
-								<string>{0.24643066262731927, 0.11799204545454545}</string>
-								<string>{0.22853710976826214, 0.11553409090909084}</string>
-								<string>{0.21018299724821388, 0.048442045454545557}</string>
-								<string>{0.21030797323662354, 0.048442045454545557}</string>
-								<string>{0.1972526111881282, 0.052207954545454571}</string>
-								<string>{0.091934882881298252, 0.082644318181818166}</string>
-								<string>{0.13276962990906838, 0.10939090909090909}</string>
-								<string>{0.20096486091792554, 0.15403522727272734}</string>
-								<string>{0.19792146416313539, 0.24419090909090913}</string>
-								<string>{0.096814732354663313, 0.3195159090909091}</string>
-								<string>{-0.044917295982484839, 0.42510909090909088}</string>
-								<string>{0.23708870749369915, 0.45562386363636365}</string>
-								<string>{0.24109256786311895, 0.44894659090909084}</string>
-								<string>{0.31099811841706337, 0.33335795454545458}</string>
-								<string>{0.27813059065040746, 0.2482022727272728}</string>
-								<string>{0.27813059065040746, 0.2482022727272728}</string>
-								<string>{0.27813059065040746, 0.2482022727272728}</string>
-								<string>{0.36013219682329545, 0.22207272727272731}</string>
-								<string>{0.43099936817694751, 0.2114613636363637}</string>
-								<string>{0.4401758458444327, 0.21015113636363636}</string>
-								<string>{0.39058236496228738, 0.13797954545454549}</string>
-							</array>
-							<array>
-								<string>{0.28384477056491464, 0.1913113636363637}</string>
-								<string>{0.29915201477493902, 0.20003409090909108}</string>
-								<string>{0.31521142928557699, 0.2253079545454546}</string>
-								<string>{0.31521142928557699, 0.22534772727272734}</string>
-								<string>{0.34469881943978353, 0.19684090909090912}</string>
-								<string>{0.36250905497323427, 0.16419431818181818}</string>
-								<string>{0.36250905497323427, 0.16419431818181818}</string>
-								<string>{0.35550345651182769, 0.16464431818181824}</string>
-								<string>{0.28384477056491464, 0.1913113636363637}</string>
-							</array>
-							<array>
-								<string>{0.27258304538711309, 0.2023284090909091}</string>
-								<string>{0.27024784589997752, 0.20785795454545453}</string>
-								<string>{0.2290358565368229, 0.2529147727272727}</string>
-								<string>{0.2290358565368229, 0.2529147727272727}</string>
-								<string>{0.23992265374939548, 0.24877613636363627}</string>
-								<string>{0.30724305283938502, 0.22809204545454531}</string>
-								<string>{0.30724305283938502, 0.22809204545454531}</string>
-								<string>{0.29831768433379702, 0.21473863636363644}</string>
-								<string>{0.27258304538711309, 0.2023284090909091}</string>
-							</array>
-							<array>
-								<string>{0.16722250123240212, 0.28694999999999993}</string>
-								<string>{0.16163098293614886, 0.28879545454545452}</string>
-								<string>{0.13306124054869095, 0.30349999999999988}</string>
-								<string>{0.13306124054869095, 0.30349999999999988}</string>
-								<string>{0.13397888831543947, 0.33061363636363628}</string>
-								<string>{0.14007031056533137, 0.3379875}</string>
-								<string>{0.14007031056533137, 0.3379875}</string>
-								<string>{0.15362441938238725, 0.32467500000000005}</string>
-								<string>{0.16722250123240212, 0.28694999999999993}</string>
-							</array>
-							<array>
-								<string>{0.10357269320940654, 0.41110113636363643}</string>
-								<string>{0.12088071041906301, 0.42674886363636366}</string>
-								<string>{0.15132972137297696, 0.43088522727272727}</string>
-								<string>{0.15132972137297696, 0.43084431818181823}</string>
-								<string>{0.15132972137297696, 0.43084431818181823}</string>
-								<string>{0.17802482393429031, 0.39131590909090919}</string>
-								<string>{0.17802482393429031, 0.39131590909090919}</string>
-								<string>{0.17802482393429031, 0.39131590909090919}</string>
-								<string>{0.10357269320940654, 0.41110113636363643}</string>
-							</array>
-							<array>
-								<string>{0.14428130706368913, 0.10943068181818183}</string>
-								<string>{0.15270561443056074, 0.11541022727272721}</string>
-								<string>{0.17239396134538965, 0.14072499999999999}</string>
-								<string>{0.17239396134538965, 0.14068295454545454}</string>
-								<string>{0.17239396134538965, 0.14068295454545454}</string>
-								<string>{0.16488614456018857, 0.11631363636363623}</string>
-								<string>{0.16488614456018857, 0.11631363636363623}</string>
-								<string>{0.16488614456018857, 0.11631363636363623}</string>
-								<string>{0.14428130706368913, 0.10943068181818183}</string>
-							</array>
-							<array>
-								<string>{0.15504197110277418, 0.26741363636363646}</string>
-								<string>{0.15504197110277418, 0.26741363636363646}</string>
-								<string>{0.13631177343241918, 0.29153750000000012}</string>
-								<string>{0.13631177343241918, 0.29153750000000012}</string>
-								<string>{0.13631177343241918, 0.29153750000000012}</string>
-								<string>{0.19249889488825056, 0.2432875000000001}</string>
-								<string>{0.19249889488825056, 0.2432875000000001}</string>
-								<string>{0.1722689853569801, 0.25176704545454553}</string>
-								<string>{0.15504197110277418, 0.26741363636363646}</string>
-							</array>
-							<array>
-								<string>{0.21502234524385366, 0.12278409090909104}</string>
-								<string>{0.21502234524385366, 0.12278409090909104}</string>
-								<string>{0.17005876185825419, 0.11635340909090919}</string>
-								<string>{0.17005876185825419, 0.11635340909090919}</string>
-								<string>{0.17005876185825419, 0.11635340909090919}</string>
-								<string>{0.18127882837325249, 0.14211704545454562}</string>
-								<string>{0.18131932985097776, 0.14760454545454549}</string>
-								<string>{0.18131932985097776, 0.14760454545454549}</string>
-								<string>{0.21502234524385366, 0.12278409090909104}</string>
-							</array>
-							<array>
-								<string>{0.18315578256955267, 0.22301363636363647}</string>
-								<string>{0.1826975372787174, 0.22715113636363637}</string>
-								<string>{0.17005876185825419, 0.24869659090909102}</string>
-								<string>{0.17005876185825419, 0.24869659090909102}</string>
-								<string>{0.18127882837325249, 0.24173295454545463}</string>
-								<string>{0.19487575303818949, 0.22989431818181827}</string>
-								<string>{0.19487575303818949, 0.22989431818181827}</string>
-								<string>{0.19112184464558901, 0.22530795454545449}</string>
-								<string>{0.18315578256955267, 0.22301363636363647}</string>
-							</array>
-							<array>
-								<string>{0.13631293061749716, 0.35777045454545453}</string>
-								<string>{0.13631293061749716, 0.35777045454545453}</string>
-								<string>{0.096982524190953989, 0.40741590909090908}</string>
-								<string>{0.096982524190953989, 0.40741590909090908}</string>
-								<string>{0.096982524190953989, 0.40741590909090908}</string>
-								<string>{0.09902611303846709, 0.4101988636363636}</string>
-								<string>{0.09902611303846709, 0.4101988636363636}</string>
-								<string>{0.09902611303846709, 0.4101988636363636}</string>
-								<string>{0.17235230268258639, 0.38398636363636351}</string>
-								<string>{0.17235230268258639, 0.38398636363636351}</string>
-								<string>{0.15362441938238725, 0.37386931818181823}</string>
-								<string>{0.13631293061749716, 0.35777045454545453}</string>
-							</array>
-							<array>
-								<string>{0.069828019153727383, 0.36694772727272729}</string>
-								<string>{0.069828019153727383, 0.36694772727272729}</string>
-								<string>{0.067490505296436076, 0.38763068181818183}</string>
-								<string>{0.093228615798353509, 0.40512159090909083}</string>
-								<string>{0.093228615798353509, 0.40512159090909083}</string>
-								<string>{0.12601282623940302, 0.36325909090909081}</string>
-								<string>{0.12834802572653869, 0.3549863636363636}</string>
-								<string>{0.12834686854146082, 0.35498636363636371}</string>
-								<string>{0.085260239352161538, 0.36694772727272729}</string>
-							</array>
-							<array>
-								<string>{0.12134011289497626, 0.30857840909090906}</string>
-								<string>{0.07545888174262827, 0.33016250000000003}</string>
-								<string>{0.069826861968649623, 0.36281022727272727}</string>
-								<string>{0.06986967781653064, 0.36284886363636371}</string>
-								<string>{0.078293985183402248, 0.36284886363636371}</string>
-								<string>{0.13072256950632177, 0.34675454545454543}</string>
-								<string>{0.13072256950632177, 0.34675454545454543}</string>
-								<string>{0.120420150758072, 0.32328295454545464}</string>
-								<string>{0.12134011289497626, 0.30857840909090906}</string>
-							</array>
-						</array>
-						<key>UnitPoints</key>
-						<array>
-							<string>{-0.49999999999999989, -0.17744545454545446}</string>
-							<string>{-0.49999999999999989, -0.17744545454545446}</string>
-							<string>{-0.49999999999999989, -0.37407613636363629}</string>
-							<string>{-0.49999999999999989, -0.37407613636363629}</string>
-							<string>{-0.49585496305108034, -0.37086818181818171}</string>
-							<string>{-0.49116489193048546, -0.3677386363636363}</string>
-							<string>{-0.48591937197251445, -0.36469318181818178}</string>
-							<string>{-0.46474172786247075, -0.35240227272727265}</string>
-							<string>{-0.4347660056054044, -0.34144659090909085}</string>
-							<string>{-0.3968230640872239, -0.33213181818181814}</string>
-							<string>{-0.32012599431127808, -0.31330340909090904}</string>
-							<string>{-0.21833883767702028, -0.30293295454545449}</string>
-							<string>{-0.1102137783712851, -0.30293295454545449}</string>
-							<string>{-0.0020875618804719887, -0.30293295454545449}</string>
-							<string>{0.099699594753785759, -0.31330340909090904}</string>
-							<string>{0.17639782171480944, -0.33213181818181814}</string>
-							<string>{0.21434076323299001, -0.34144659090909085}</string>
-							<string>{0.24431648549005625, -0.35240227272727265}</string>
-							<string>{0.26549412960009999, -0.36469318181818178}</string>
-							<string>{0.27073964955807106, -0.3677386363636363}</string>
-							<string>{0.27543203504882163, -0.37086818181818171}</string>
-							<string>{0.27957475762758544, -0.37407727272727265}</string>
-							<string>{0.27957475762758544, -0.37407727272727265}</string>
-							<string>{0.27957475762758544, -0.17744659090909087}</string>
-							<string>{0.27957475762758544, -0.17744659090909087}</string>
-							<string>{0.27957475762758544, -0.16200454545454546}</string>
-							<string>{0.25099575775950456, -0.13848863636363634}</string>
-							<string>{0.17078315971699887, -0.11879659090909089}</string>
-							<string>{0.095869312146045993, -0.10040454545454541}</string>
-							<string>{-0.0039251717841246592, -0.090276136363636295}</string>
-							<string>{-0.11021377837128504, -0.090276136363636295}</string>
-							<string>{-0.2165012277733675, -0.090276136363636295}</string>
-							<string>{-0.31629455451846039, -0.10040454545454541}</string>
-							<string>{-0.39120840208941321, -0.11879659090909089}</string>
-							<string>{-0.47142100013191901, -0.13848636363636357}</string>
-							<string>{-0.49999999999999989, -0.16200340909090905}</string>
-						</array>
-					</dict>
-					<key>Style</key>
-					<dict>
-						<key>fill</key>
-						<dict>
-							<key>Color</key>
-							<dict>
-								<key>b</key>
-								<real>0.105882</real>
-								<key>g</key>
-								<real>0.11372500000000001</real>
-								<key>r</key>
-								<real>0.11372500000000001</real>
-								<key>space</key>
-								<string>srgb</string>
-							</dict>
-						</dict>
-						<key>shadow</key>
-						<dict>
-							<key>Draws</key>
-							<string>NO</string>
-						</dict>
-						<key>stroke</key>
-						<dict>
-							<key>Cap</key>
-							<integer>0</integer>
-						</dict>
-					</dict>
-				</dict>
 			</array>
 			<key>GridInfo</key>
 			<dict>
@@ -61047,7 +61044,7 @@
 			<key>BackgroundGraphic</key>
 			<dict>
 				<key>Bounds</key>
-				<string>{{-1078, -866}, {3412, 2527}}</string>
+				<string>{{-1106, -959}, {2687, 2519}}</string>
 				<key>Class</key>
 				<string>GraffleShapes.CanvasBackgroundGraphic</string>
 				<key>ID</key>
@@ -61073,7 +61070,7 @@
 			<key>CanvasOrigin</key>
 			<string>{0, 0}</string>
 			<key>CanvasSize</key>
-			<string>{1255.0820000000001, 794.89700000000005}</string>
+			<string>{475, 600.5}</string>
 			<key>CanvasSizingMode</key>
 			<integer>2</integer>
 			<key>ColumnAlign</key>
@@ -61086,13 +61083,15 @@
 			<array>
 				<dict>
 					<key>Bounds</key>
-					<string>{{355.08200000000011, 265}, {900, 529.89700000000005}}</string>
+					<string>{{0, 0}, {99.999928730479922, 58.877399444580078}}</string>
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>223</integer>
+					<integer>3</integer>
 					<key>Name</key>
 					<string>Amazon Web Services</string>
+					<key>Scaling</key>
+					<integer>1</integer>
 					<key>Shape</key>
 					<string>Bezier</string>
 					<key>ShapeData</key>
@@ -61368,7 +61367,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>219</integer>
+					<integer>4</integer>
 					<key>Name</key>
 					<string>Apache Cloud Stack</string>
 					<key>Scaling</key>
@@ -61968,9 +61967,9 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>216</integer>
+					<integer>5</integer>
 					<key>Name</key>
-					<string>Citrix Cloud Com</string>
+					<string>Citrix Cloud.Com</string>
 					<key>Scaling</key>
 					<integer>1</integer>
 					<key>Shape</key>
@@ -62387,7 +62386,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>213</integer>
+					<integer>6</integer>
 					<key>Name</key>
 					<string>Cloud System</string>
 					<key>Scaling</key>
@@ -62689,7 +62688,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>210</integer>
+					<integer>7</integer>
 					<key>Name</key>
 					<string>Eucalyptus</string>
 					<key>Scaling</key>
@@ -62866,7 +62865,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>207</integer>
+					<integer>8</integer>
 					<key>Name</key>
 					<string>Google Cloud</string>
 					<key>Scaling</key>
@@ -63197,7 +63196,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>204</integer>
+					<integer>9</integer>
 					<key>Name</key>
 					<string>Heroku Cloud</string>
 					<key>Scaling</key>
@@ -63798,9 +63797,9 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>197</integer>
+					<integer>10</integer>
 					<key>Name</key>
-					<string>Hp Cloud</string>
+					<string>HP Cloud</string>
 					<key>Scaling</key>
 					<integer>1</integer>
 					<key>Shape</key>
@@ -64059,9 +64058,9 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>194</integer>
+					<integer>11</integer>
 					<key>Name</key>
-					<string>Ibm Blue Mix</string>
+					<string>IBM Bluemix</string>
 					<key>Scaling</key>
 					<integer>1</integer>
 					<key>Shape</key>
@@ -64269,7 +64268,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>191</integer>
+					<integer>12</integer>
 					<key>Name</key>
 					<string>Joyent Cloud</string>
 					<key>Scaling</key>
@@ -64643,7 +64642,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>188</integer>
+					<integer>13</integer>
 					<key>Name</key>
 					<string>Microsoft Azure</string>
 					<key>Scaling</key>
@@ -65001,9 +65000,9 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>185</integer>
+					<integer>14</integer>
 					<key>Name</key>
-					<string>On App Cloud</string>
+					<string>OnApp Cloud</string>
 					<key>Scaling</key>
 					<integer>1</integer>
 					<key>Shape</key>
@@ -65481,9 +65480,9 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>182</integer>
+					<integer>15</integer>
 					<key>Name</key>
-					<string>Open Nebula</string>
+					<string>OpenNebula</string>
 					<key>Scaling</key>
 					<integer>1</integer>
 					<key>Shape</key>
@@ -66013,9 +66012,9 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>179</integer>
+					<integer>16</integer>
 					<key>Name</key>
-					<string>Open Shift</string>
+					<string>OpenShift</string>
 					<key>Scaling</key>
 					<integer>1</integer>
 					<key>Shape</key>
@@ -66226,9 +66225,9 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>176</integer>
+					<integer>17</integer>
 					<key>Name</key>
-					<string>Open Stack</string>
+					<string>OpenStack</string>
 					<key>Scaling</key>
 					<integer>1</integer>
 					<key>Shape</key>
@@ -67398,7 +67397,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>172</integer>
+					<integer>18</integer>
 					<key>Name</key>
 					<string>Oracle Cloud</string>
 					<key>Scaling</key>
@@ -67732,9 +67731,9 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>169</integer>
+					<integer>19</integer>
 					<key>Name</key>
-					<string>Vmware Cloud Foundry</string>
+					<string>VMware Cloud Foundry</string>
 					<key>Scaling</key>
 					<integer>1</integer>
 					<key>Shape</key>
@@ -68797,9 +68796,9 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>165</integer>
+					<integer>20</integer>
 					<key>Name</key>
-					<string>Adpoint</string>
+					<string>LineUp AdPoint</string>
 					<key>Scaling</key>
 					<integer>1</integer>
 					<key>Shape</key>
@@ -68953,7 +68952,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>162</integer>
+					<integer>21</integer>
 					<key>Name</key>
 					<string>Salesforce</string>
 					<key>Scaling</key>
@@ -69795,7 +69794,7 @@
 				<string>YES</string>
 			</dict>
 			<key>HPages</key>
-			<integer>3</integer>
+			<integer>1</integer>
 			<key>KeepToScale</key>
 			<false/>
 			<key>Layers</key>
@@ -69843,7 +69842,7 @@
 			<key>UniqueID</key>
 			<integer>6</integer>
 			<key>VPages</key>
-			<integer>2</integer>
+			<integer>1</integer>
 			<key>VisibleVoidKey</key>
 			<real>1</real>
 		</dict>
@@ -69900,7 +69899,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>336</integer>
+					<integer>3</integer>
 					<key>Name</key>
 					<string>Alpha Processor</string>
 					<key>Scaling</key>
@@ -70307,7 +70306,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>333</integer>
+					<integer>4</integer>
 					<key>Name</key>
 					<string>Arm Processor</string>
 					<key>Scaling</key>
@@ -70789,7 +70788,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>330</integer>
+					<integer>5</integer>
 					<key>Name</key>
 					<string>Itanium Processor</string>
 					<key>Scaling</key>
@@ -71417,7 +71416,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>306</integer>
+					<integer>6</integer>
 					<key>Name</key>
 					<string>M68k Processor</string>
 					<key>Scaling</key>
@@ -72197,7 +72196,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>303</integer>
+					<integer>7</integer>
 					<key>Name</key>
 					<string>Mips Processor</string>
 					<key>Scaling</key>
@@ -72728,7 +72727,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>300</integer>
+					<integer>8</integer>
 					<key>Name</key>
 					<string>Mos Processor</string>
 					<key>Scaling</key>
@@ -73157,7 +73156,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>297</integer>
+					<integer>9</integer>
 					<key>Name</key>
 					<string>Parisc Processor</string>
 					<key>Scaling</key>
@@ -73610,7 +73609,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>293</integer>
+					<integer>10</integer>
 					<key>Name</key>
 					<string>Power Processor</string>
 					<key>Scaling</key>
@@ -74081,7 +74080,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>290</integer>
+					<integer>11</integer>
 					<key>Name</key>
 					<string>Processing Unit</string>
 					<key>Scaling</key>
@@ -74403,7 +74402,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>287</integer>
+					<integer>12</integer>
 					<key>Name</key>
 					<string>Sparc Processor</string>
 					<key>Scaling</key>
@@ -74919,7 +74918,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>285</integer>
+					<integer>13</integer>
 					<key>Name</key>
 					<string>X86 Processor</string>
 					<key>Scaling</key>
@@ -75463,7 +75462,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>282</integer>
+					<integer>14</integer>
 					<key>Name</key>
 					<string>z80</string>
 					<key>Scaling</key>
@@ -75869,7 +75868,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>279</integer>
+					<integer>15</integer>
 					<key>Name</key>
 					<string>Zilog Processor</string>
 					<key>Scaling</key>
@@ -76549,7 +76548,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>95</integer>
+					<integer>3</integer>
 					<key>Name</key>
 					<string>CD Drive</string>
 					<key>Scaling</key>
@@ -76997,7 +76996,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>90</integer>
+					<integer>4</integer>
 					<key>Name</key>
 					<string>DVD Drive</string>
 					<key>Scaling</key>
@@ -77470,7 +77469,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>87</integer>
+					<integer>5</integer>
 					<key>Name</key>
 					<string>Floppy drive</string>
 					<key>Scaling</key>
@@ -77771,7 +77770,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>83</integer>
+					<integer>6</integer>
 					<key>Name</key>
 					<string>Hard Disk Drive</string>
 					<key>Scaling</key>
@@ -78063,7 +78062,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>80</integer>
+					<integer>7</integer>
 					<key>Name</key>
 					<string>SSD Drive</string>
 					<key>Scaling</key>
@@ -78483,7 +78482,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>78</integer>
+					<integer>8</integer>
 					<key>Name</key>
 					<string>Tape Drive</string>
 					<key>Scaling</key>
@@ -78947,7 +78946,7 @@
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
-					<integer>75</integer>
+					<integer>9</integer>
 					<key>Name</key>
 					<string>Blu-ray Drive</string>
 					<key>Scaling</key>
@@ -136555,7 +136554,7 @@
 		<key>CurrentSheet</key>
 		<integer>0</integer>
 		<key>Frame</key>
-		<string>{{63, 53}, {1680, 1124}}</string>
+		<string>{{0, 0}, {1680, 990}}</string>
 		<key>ShowInfo</key>
 		<true/>
 		<key>Sidebar</key>
@@ -136598,7 +136597,7 @@
 			</array>
 			<array>
 				<string>Database Servers</string>
-				<real>0.55999999999999994</real>
+				<real>1</real>
 				<real>1</real>
 			</array>
 			<array>
