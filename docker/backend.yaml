@@ -1,8 +1,7 @@
 # backend.yaml - A docker-compose file for the backend services.
 
 # Environment variables:
-# DB_NAME
-# DB_PASS
+# PASSWORD
 
 version: '3'
 services:
@@ -20,9 +19,9 @@ services:
     ports:
       - "3000:3000"
     environment:
-      PGRST_DB_URI: postgres://${DB_NAME}:${DB_PASS}@database:5432/${DB_NAME}
+      PGRST_DB_URI: postgres://structure:${PGPASSWORD}@database:5432/structure
       PGRST_DB_SCHEMA: public
-      PGRST_DB_ANON_ROLE: ${DB_NAME} # TODO: Need to fix this.
+      PGRST_DB_ANON_ROLE: anonymous
     depends_on:
       - database
 
@@ -31,8 +30,8 @@ services:
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_DB: ${DB_NAME}
-      POSTGRES_USER: ${DB_NAME}
-      POSTGRES_PASSWORD: ${DB_PASS}
+      POSTGRES_DB: structure
+      POSTGRES_USER: structure
+      POSTGRES_PASSWORD: ${PGPASSWORD}
   # volumes:
   #   - "./pgdata:/var/lib/postgresql/data"
