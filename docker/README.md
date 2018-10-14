@@ -27,12 +27,14 @@ You can run the backend (ephemerally, throw-away afterwards) as follows:
   - `docker stack deploy -c backend.yaml --prune structure`
 * Create the anonymous role:
   - `psql -U structure -h localhost -c 'CREATE USER anonymous'`
+* Grant default select rights to the anonymous role:
+  - `psql -U structure -h localhost -c 'ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT ON TABLES TO anonymous'`
 * Unset PGPASSWORD variable:
   - `unset PGPASSWORD`
 
 Or as a one-liner:
 
-* `export PGPASSWORD=$(cat /dev/urandom | LC_CTYPE=C tr -dc 'a-zA-Z0-9' | fold -w 16 | head -n 1) && docker stack deploy -c backend.yaml --prune structure && sleep 4 && psql -U structure -h localhost -c 'CREATE USER anonymous' && unset PGPASSWORD`
+* `export PGPASSWORD=$(cat /dev/urandom | LC_CTYPE=C tr -dc 'a-zA-Z0-9' | fold -w 16 | head -n 1) && docker stack deploy -c backend.yaml --prune structure && sleep 4 && psql -U structure -h localhost -c 'CREATE USER anonymous' && psql -U structure -h localhost -c 'ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT ON TABLES TO anonymous' && unset PGPASSWORD`
 
 This will create a PostgreSQL, PostgREST and Swagger service. The services are running on ports:
 
@@ -44,6 +46,6 @@ This will create a PostgreSQL, PostgREST and Swagger service. The services are r
 
 You can clean up all docker-related artifacts as follows:
 
-* `docker stack rm structure && docker container prune -f && docker volume prune -f`
+* `docker stack rm structure && sleep 4 && docker container prune -f && sleep 4 && docker volume prune -f`
 
 Of course, be careful with the above command. If you have dangling volumes that you care about (why), don't run the above without thinking.
