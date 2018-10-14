@@ -22,5 +22,5 @@ You can run the backend as follows:
 This will create a PostgreSQL, PostgREST and Swagger service. The services are running on ports:
 
 * 3000: PostgREST service, accessible using HTTP
-* 5432: PostgeSQL service, accessible using PSQL
+* 5432: PostgreSQL service, accessible using PSQL
 * 8080: SwaggerUI service, accessible using HTTP
