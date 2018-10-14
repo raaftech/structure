@@ -17,7 +17,7 @@ The backend.yaml file is configured to require two environment variables:
 
 You can run the backend (ephemerally, throw-away afterwards) as follows:
 
-`APP_NAME=postgres APP_PASS=secret docker stack deploy -c backend.yaml --prune structure`
+`DB_NAME=postgres DB_PASS=secret docker stack deploy -c backend.yaml --prune structure`
 
 This will create a PostgreSQL, PostgREST and Swagger service. The services are running on ports:
 

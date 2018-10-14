@@ -19,8 +19,6 @@ services:
     image: postgrest/postgrest
     ports:
       - "3000:3000"
-    links:
-      - database:database
     environment:
       PGRST_DB_URI: postgres://${DB_NAME}:${DB_PASS}@database:5432/${DB_NAME}
       PGRST_DB_SCHEMA: public
