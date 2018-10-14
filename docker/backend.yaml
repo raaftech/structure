@@ -1,8 +1,5 @@
 # backend.yaml - A docker-compose file for the backend services.
 
-# Environment variables:
-# PASSWORD
-
 version: '3'
 services:
   swagger:
