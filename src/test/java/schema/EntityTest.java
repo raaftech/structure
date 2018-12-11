@@ -1,8 +1,8 @@
 package schema;
 
 import com.google.common.collect.ImmutableSet;
+
 import java.util.Set;
-import java.util.function.Function;
 
 public class EntityTest extends SchemaTest {
 

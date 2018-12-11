@@ -12,7 +12,6 @@ import com.raaftech.structure.bus.GenericActor;
 import com.raaftech.structure.bus.NodeActor;
 import com.raaftech.structure.graph.Component;
 import com.raaftech.structure.graph.Group;
-import com.raaftech.structure.graph.Instance;
 import com.raaftech.structure.graph.repositories.*;
 import com.raaftech.structure.helper.ProcessRunner;
 import com.raaftech.structure.helper.loader.BundleLoader;

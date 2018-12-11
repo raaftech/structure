@@ -1,24 +1,22 @@
 package com.raaftech.structure.helper;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.raaftech.structure.base.Configuration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.nio.file.Files;
 import java.nio.file.FileSystems;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.attribute.FileAttribute;
 import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.PosixFilePermissions;
-
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.Set;
-
-import com.raaftech.structure.base.Configuration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import static io.vertx.core.json.Json.mapper;
 

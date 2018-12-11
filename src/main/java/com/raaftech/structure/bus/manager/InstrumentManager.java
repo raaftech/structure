@@ -12,7 +12,8 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.UUID;
 
 /**
  * Give a description of InstrumentManager here.

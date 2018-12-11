@@ -3,24 +3,25 @@ package com.raaftech.structure.helper;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-
 import com.google.common.collect.ImmutableSet;
 import com.raaftech.structure.base.Context;
 import com.raaftech.structure.graph.*;
 import com.raaftech.structure.graph.repositories.GroupingRepository;
 import com.raaftech.structure.graph.repositories.InstanceRepository;
 import com.raaftech.structure.graph.repositories.InstrumentRepository;
-import mockit.*;
+import mockit.Mocked;
+import mockit.StrictExpectations;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Test;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class InstrumentRunnerTest {
 

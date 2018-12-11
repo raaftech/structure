@@ -1,29 +1,19 @@
 package com.raaftech.structure.graph.repositories;
 
-import com.raaftech.structure.base.Configuration;
-import com.raaftech.structure.base.SpringTestConfig;
 import com.raaftech.structure.graph.Component;
 import com.raaftech.structure.graph.Type;
-import com.raaftech.structure.helper.loader.NaiveSorter;
-import com.raaftech.structure.graph.Entity;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.neo4j.graphdb.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.neo4j.core.GraphDatabase;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.AnnotationConfigContextLoader;
 import org.springframework.transaction.annotation.Transactional;
 import schema.TypeSchemaTest;
 
-import java.io.IOException;
-import java.nio.file.FileSystems;
 import java.util.Set;
 
 import static io.vertx.core.json.Json.mapper;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class ComponentRepositoryTest extends TypeSchemaTest {
 

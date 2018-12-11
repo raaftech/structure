@@ -5,8 +5,8 @@ import com.raaftech.structure.graph.Type;
 import org.springframework.data.neo4j.annotation.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.util.Set;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Give a description of TypeRepository here.

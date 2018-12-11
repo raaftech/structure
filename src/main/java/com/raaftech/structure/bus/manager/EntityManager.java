@@ -14,7 +14,6 @@ import com.raaftech.structure.bus.NodeActor;
 import com.raaftech.structure.exceptions.EntityDeserializationException;
 import com.raaftech.structure.exceptions.EntitySerializationException;
 import com.raaftech.structure.graph.*;
-import com.raaftech.structure.graph.Group;
 import com.raaftech.structure.graph.repositories.InstanceRepository;
 import com.raaftech.structure.graph.repositories.NodeRepository;
 import com.raaftech.structure.graph.repositories.TypeRepository;

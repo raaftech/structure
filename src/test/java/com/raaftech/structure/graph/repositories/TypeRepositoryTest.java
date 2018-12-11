@@ -1,17 +1,9 @@
 package com.raaftech.structure.graph.repositories;
 
-import com.raaftech.structure.base.SpringTestConfig;
 import com.raaftech.structure.graph.Type;
-import com.raaftech.structure.helper.loader.BundleLoader;
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.neo4j.graphdb.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.neo4j.core.GraphDatabase;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.AnnotationConfigContextLoader;
 import schema.TypeSchemaTest;
 
 import java.util.Set;

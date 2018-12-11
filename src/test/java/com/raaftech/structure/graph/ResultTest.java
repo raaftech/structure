@@ -1,9 +1,7 @@
 package com.raaftech.structure.graph;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.github.fge.jsonschema.main.JsonSchema;
 import com.raaftech.structure.base.Configuration;
-import com.raaftech.structure.base.Context;
 import com.raaftech.structure.base.SpringTestConfig;
 import com.raaftech.structure.exceptions.IllegalEntityType;
 import com.raaftech.structure.graph.repositories.InstanceRepository;
@@ -12,8 +10,6 @@ import com.raaftech.structure.graph.repositories.TypeRepository;
 import com.raaftech.structure.helper.JsonHelper;
 import mockit.Expectations;
 import mockit.Mocked;
-import mockit.StrictExpectations;
-import mockit.Verifications;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -25,7 +21,6 @@ import org.springframework.data.neo4j.core.GraphDatabase;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.net.URI;
 import java.util.List;
@@ -37,7 +32,6 @@ import static junit.framework.TestCase.assertFalse;
 import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(loader = AnnotationConfigContextLoader.class, classes = SpringTestConfig.class)

@@ -1,6 +1,7 @@
 package schema;
 
 import com.google.common.collect.ImmutableSet;
+
 import java.util.Set;
 
 public class RequestTest extends SchemaTest {
