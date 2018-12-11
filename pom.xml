@@ -401,10 +401,9 @@
                 <configuration>
                     <mainClass>${main.class}</mainClass>
                     <arguments>
-                        <argument>--loglevel=DEBUG</argument>
-                        <argument>--foreground</argument>
-                        <argument>--unsafe</argument>
-                        <argument>--trace</argument>
+                        <argument>-l DEBUG</argument>
+                        <argument>-u</argument>
+                        <argument>-t</argument>
                     </arguments>
                 </configuration>
             </plugin>
