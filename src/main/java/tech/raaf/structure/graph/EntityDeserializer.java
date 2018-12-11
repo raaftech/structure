@@ -175,7 +175,7 @@ public class EntityDeserializer extends StdDeserializer<Entity> {
                 entity.setBundle(bundle);
             } else {
                 // TODO: replace this guard code with actual retrieve bundle code
-                log.warn("Setting default bundle name [core]");
+                log.debug("Setting default bundle name [core]");
                 entity.setBundle("core");
             }
 
