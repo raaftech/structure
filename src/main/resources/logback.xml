@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <configuration>
+    <contextName>${HOSTNAME}</contextName>
     <contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator">
         <resetJUL>true</resetJUL>
     </contextListener>
@@ -11,7 +12,7 @@
 	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
 		<target>System.out</target>
 		<encoder>
-			<pattern>[%-5level] %logger{0}: %msg%n</pattern>
+            <pattern>[%level] [%date{"yyyy-MM-dd'T'HH:mm:ss,SSSXXX", UTC}] [%contextName] %c{0}: %m%n</pattern>
 		</encoder>
 	</appender>
 
