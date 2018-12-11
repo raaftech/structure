@@ -105,11 +105,10 @@ public enum Configuration {
 						.map(Paths::get)
                         .collect(Collectors.toList()));
 			} else {
-				log.error("bundlePathProperty is empty, defaulting to 'bundles'");
+				log.info("Setting {} to \"{}\"", bundlePathProperty, fallbackBundlePath);
 				bundlePaths.add(fallbackBundlePath);
 			}
 		}
-
 		initialized = true;
 	}
 }
