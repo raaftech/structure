@@ -10,7 +10,6 @@ import com.raaftech.structure.bus.repository.Nodes;
 import com.raaftech.structure.bus.repository.Types;
 import com.raaftech.structure.graph.Component;
 import com.raaftech.structure.graph.Group;
-import com.raaftech.structure.graph.Instance;
 import com.raaftech.structure.graph.repositories.InstanceRepository;
 import com.raaftech.structure.graph.repositories.TypeRepository;
 import com.raaftech.structure.helper.ConfigurationProxy;
