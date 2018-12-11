@@ -1,0 +1,211 @@
+package tech.raaf.structure.graph;
+
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.neo4j.annotation.GraphId;
+import org.springframework.data.neo4j.annotation.Indexed;
+import org.springframework.data.neo4j.annotation.NodeEntity;
+import org.springframework.data.neo4j.fieldaccess.DynamicProperties;
+import org.springframework.data.neo4j.support.index.IndexType;
+import tech.raaf.structure.base.Configuration;
+
+import java.io.IOException;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+
+import static io.vertx.core.json.Json.mapper;
+
+/**
+ * Give a description of Node here.
+ *
+ * @author Boy van Duuren <boy.van.duuren@raaftech.com>
+ * @since 2014-11-26
+ */
+@NodeEntity
+@JsonSerialize(using = NodeSerializer.class)
+public abstract class Node {
+
+    private static final Logger log = LoggerFactory.getLogger(Node.class);
+
+    @Indexed(indexType = IndexType.FULLTEXT, indexName = "name")
+    protected String name;
+    @Indexed(indexType = IndexType.FULLTEXT, indexName = "description")
+    protected String desc;
+    protected String bundle;
+    protected String type;
+    protected String checksum;
+    @GraphId
+    @SuppressWarnings("unused")
+    private Long id;
+    @Indexed(indexType = IndexType.FULLTEXT, indexName = "uuid")
+    private String uuid;
+
+    DynamicProperties data;
+    DynamicProperties file;
+
+    /****************/
+    /* Constructors */
+    /****************/
+
+    public Node() { this.uuid = UUID.randomUUID().toString(); }
+
+    public Node(String name, String desc) {
+        this(name, desc, UUID.randomUUID().toString());
+    }
+
+    @SuppressWarnings("unused")
+    public Node(String name, String desc, String uuid) {
+        UUID check = UUID.fromString(uuid); // throws exception on invalid uuid
+        if (name.length() == 0 || desc.length() == 0) {
+            throw new RuntimeException("Cannot create node with an empty name or description.");
+        }
+        this.name = name;
+        this.desc = desc;
+        this.uuid = uuid;
+    }
+
+    @SuppressWarnings("unused")
+    public Node(String name, String desc, String uuid, String checksum) {
+        UUID check = UUID.fromString(uuid); // throws exception on invalid uuid
+        if (name.length() == 0 || desc.length() == 0) {
+            throw new RuntimeException("Cannot create node with an empty name or description.");
+        }
+        this.name = name;
+        this.desc = desc;
+        this.uuid = uuid;
+        this.checksum = checksum;
+    }
+
+
+    /******************/
+    /* Public Methods */
+    /******************/
+
+    public String getDesc() {
+        return desc;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getNodeType() {
+        return getClass().getSimpleName();
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public String getChecksum() {
+        return checksum;
+    }
+
+    public String getType() {
+        if (this instanceof Type) {
+            return "Type";
+        } else {
+            return "Instance";
+        }
+    }
+
+    public String getBundle() {
+        return bundle;
+    }
+
+    public Map<String, Object> getFiles() {
+        return file.asMap();
+    }
+
+    public Map<String, Object> getData() {
+        return data.asMap();
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setDesc(String desc) {
+        this.desc = desc;
+    }
+
+    public void setBundle(String bundle) {
+        this.bundle = bundle;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public void setChecksum(String checksum) {
+        this.checksum = checksum;
+    }
+
+    public ObjectNode toJson() {
+        ObjectNode json = mapper.createObjectNode();
+        json
+                .put("name", name)
+                .put("desc", desc)
+                .put("uuid", uuid)
+                .put("checksum", checksum);
+
+        return json;
+    }
+
+    public Optional<ObjectNode> getFile(String name) {
+        Optional<ObjectNode> maybeFile = Optional.empty();
+        if (file.hasProperty(name)) {
+            try {
+                maybeFile = Optional.of((ObjectNode) mapper.readTree((String) file.getProperty(name)));
+            } catch (IOException e) {
+                if (Configuration.isTraceModeOn()) {
+                    log.error("Error while trying to get file object on {}", getUuid());
+                    e.printStackTrace();
+                }
+            }
+        }
+        return maybeFile;
+    }
+
+    public Optional<String> getFileContent(String name) {
+        final Optional<String> content;
+        final Optional<ObjectNode> file = getFile(name);
+        if (file.isPresent()) {
+            content = Optional.of(
+                    file
+                            .get()
+                            .get("content")
+                            .asText()
+            );
+        } else {
+            content = Optional.empty();
+        }
+        return content;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Node node = (Node) o;
+
+        if (id != null ? !id.equals(node.id) : node.id != null) return false;
+        return uuid != null ? uuid.equals(node.uuid) : node.uuid == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (uuid != null ? uuid.hashCode() : 0);
+        return result;
+    }
+}

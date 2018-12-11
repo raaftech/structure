@@ -7,7 +7,7 @@ angular.module("structureApp")
                 var i = 0;
                 while(i < 6) {
                     i++;
-                    vertxEventBusService.send('com.raaftech.structure.bus.manager.taskmanager',
+                    vertxEventBusService.send('tech.raaf.structure.bus.manager.taskmanager',
                         {
                             'msgh': 'queueTask',
                             'args': {
@@ -45,7 +45,7 @@ angular.module("structureApp")
             },
 
             queueStatus: function(scope) {
-                vertxEventBusService.send('com.raaftech.structure.bus.manager.taskmanager',
+                vertxEventBusService.send('tech.raaf.structure.bus.manager.taskmanager',
                     {
                         'msgh': 'queueStatus',
                         'args': {}
@@ -57,7 +57,7 @@ angular.module("structureApp")
             },
 
             cancelJob: function(taskId, jobId) {
-                vertxEventBusService.send('com.raaftech.structure.bus.manager.taskmanager',
+                vertxEventBusService.send('tech.raaf.structure.bus.manager.taskmanager',
                     {
                         'msgh': 'cancelJob',
                         'args': {
@@ -68,7 +68,7 @@ angular.module("structureApp")
             },
 
             cancelTask: function(taskId) {
-                vertxEventBusService.send('com.raaftech.structure.bus.manager.taskmanager',
+                vertxEventBusService.send('tech.raaf.structure.bus.manager.taskmanager',
                     {
                         'msgh': 'cancelTask',
                         'args': {
@@ -78,7 +78,7 @@ angular.module("structureApp")
             },
 
             pauseTask: function(taskId) {
-                vertxEventBusService.send('com.raaftech.structure.bus.manager.taskmanager',
+                vertxEventBusService.send('tech.raaf.structure.bus.manager.taskmanager',
                     {
                         'msgh': 'toggleTaskPause',
                         'args': {
@@ -88,7 +88,7 @@ angular.module("structureApp")
             },
 
             liveStatus: function(scope) {
-                vertxEventBusService.on('com.raaftech.structure.bus.status', function(result) {
+                vertxEventBusService.on('tech.raaf.structure.bus.status', function(result) {
                     scope.updateState(result);
                 });
             }

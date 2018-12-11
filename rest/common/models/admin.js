@@ -7,7 +7,7 @@ const neoHelper = require(path.join(__dirname, '..','libraries','neoHelper'));
 
 const evBus = require('../../server/server').eventBus;
 
-const baseAddress = helper.getEventBusAddress('com.raaftech.structure.bus');
+const baseAddress = helper.getEventBusAddress('tech.raaf.structure.bus');
 const managerAddress = baseAddress(['manager', 'structuremanager']);
 
 const getResultData = helper.getResultData(['body','result','data']);

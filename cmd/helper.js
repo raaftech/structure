@@ -52,7 +52,7 @@ function stringify(json) {
 }
 
 function getEventBusAddress(parts) {
-    return R.join('.',R.prepend('com.raaftech.structure.bus', parts));
+    return R.join('.',R.prepend('tech.raaf.structure.bus', parts));
 }
 
 function getCommonFields() {

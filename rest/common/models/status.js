@@ -34,7 +34,7 @@ module.exports = function (Status) {
     //TODO think about if we want to persist status messages
     //FIXME if not, we need a way to auto clean status message resources in memory db
     function setupStatusChannel() {
-        eb.registerHandler('com.raaftech.structure.bus.status', function(error, message) {
+        eb.registerHandler('tech.raaf.structure.bus.status', function(error, message) {
 			console.log(message);
             if(error) {
                 console.log("ERROR: "+error);

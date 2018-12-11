@@ -3,7 +3,7 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.raaftech</groupId>
+    <groupId>tech.raaf</groupId>
     <artifactId>structure</artifactId>
     <packaging>jar</packaging>
     <version>0.9.0-SNAPSHOT</version>
@@ -13,11 +13,11 @@
         Vert.x and Neo4j application to manage computing environments.
     </description>
 
-    <url>https://www.raaftech.com/products-and-services/structure/</url>
+    <url>http://raaf.tech/structure.html</url>
 
     <organization>
         <name>RAAF Technology</name>
-        <url>https://raaftech.com/</url>
+        <url>http://raaf.tech/</url>
     </organization>
 
     <scm>
@@ -39,52 +39,31 @@
     <developers>
         <developer>
             <id>rubin</id>
-            <email>rubin@raaftech.com</email>
+            <email>rubin@raaf.tech</email>
             <name>Rubin Simons</name>
             <organization>RAAF Technology</organization>
-            <organizationUrl>https://www.raaftech.com/</organizationUrl>
+            <organizationUrl>http://raaf.tech/</organizationUrl>
         </developer>
         <developer>
             <id>freek</id>
-            <email>freek@raaftech.com</email>
+            <email>freek@raaf.tech</email>
             <name>Freek Alleman</name>
             <organization>RAAF Technology</organization>
-            <organizationUrl>https://www.raaftech.com/</organizationUrl>
-        </developer>
-        <developer>
-            <id>maurice</id>
-            <email>maurice@raaftech.com</email>
-            <name>Maurice Schillemans</name>
-            <organization>RAAF Technology</organization>
-            <organizationUrl>https://www.raaftech.com/</organizationUrl>
+            <organizationUrl>http://raaf.tech/</organizationUrl>
         </developer>
         <developer>
             <id>stephan</id>
-            <email>stephan@raaftech.com</email>
+            <email>stephan@raaf.tech</email>
             <name>Stephan Kaffa</name>
             <organization>RAAF Technology</organization>
-            <organizationUrl>https://www.raaftech.com/</organizationUrl>
-        </developer>
-        <developer>
-            <id>boy</id>
-            <email>boy@raaftech.com</email>
-            <name>Boy van Duuren</name>
-            <organization>RAAF Technology</organization>
-            <organizationUrl>https://www.raaftech.com/</organizationUrl>
+            <organizationUrl>http://raaf.tech/</organizationUrl>
         </developer>
         <developer>
             <id>jasper</id>
-            <email>jasper@raaftech.com</email>
+            <email>jasper@raaf.tech</email>
             <name>Jasper Spoel</name>
             <organization>RAAF Technology</organization>
-            <organizationUrl>https://www.raaftech.com/</organizationUrl>
-        </developer>
-        <developer>
-            <id>bardo</id>
-            <email>bardo@raaftech.com</email>
-            <name>Bardo Frings</name>
-            <organization>RAAF Technology</organization>
-            <organizationUrl>https://www.raaftech.com/</organizationUrl>
+            <organizationUrl>http://raaf.tech/</organizationUrl>
         </developer>
     </developers>
 
@@ -92,7 +71,7 @@
         <!-- Generic settings -->
         <java.source-target.version>1.8</java.source-target.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <main.class>com.raaftech.structure.base.Application</main.class>
+        <main.class>tech.raaf.structure.base.Application</main.class>
 
         <!-- Core component versions -->
         <vertx.version>3.4.1</vertx.version>
@@ -378,9 +357,6 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${maven.surefire.plugin.version}</version>
                 <configuration>
-                    <excludes>
-                        <exclude>com.raaftech.structure.bus.manager.EntityManagerTest</exclude>
-                    </excludes>
                     <forkCount>1</forkCount>
                     <reuseForks>false</reuseForks>
                 </configuration>

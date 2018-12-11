@@ -1,0 +1,162 @@
+package tech.raaf.structure.bus;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import io.vertx.core.Verticle;
+import io.vertx.core.eventbus.MessageConsumer;
+import org.apache.commons.lang3.Validate;
+import org.neo4j.graphdb.Transaction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import tech.raaf.structure.base.Context;
+import tech.raaf.structure.graph.Entity;
+import tech.raaf.structure.graph.Instance;
+import tech.raaf.structure.graph.Node;
+import tech.raaf.structure.graph.Type;
+import tech.raaf.structure.graph.repositories.NodeRepository;
+
+import java.util.UUID;
+
+public abstract class NodeActor<T extends Node> extends GenericActor {
+
+    protected static final String startOfAddress = "tech.raaf.structure.bus.node.";
+    public static final String SHAREDMAP_ID = "nodeActors";
+
+    // We keep a reference to the consumers in case we
+    // need to reconfigure or close them later
+    @SuppressWarnings("unused")
+    private MessageConsumer<Object> primaryConsumer;
+    @SuppressWarnings("unused")
+    private MessageConsumer<Object> secondaryConsumer;
+
+    private NodeRepository nodeRepository = Context.getNodeRepository();
+
+    protected String uuid;
+    protected String primaryConsumerAddress;
+
+    public NodeActor(T node) {
+        this.uuid = node.getUuid();
+        primaryConsumerAddress = startOfAddress + uuid;
+    }
+
+    private Logger log = LoggerFactory.getLogger(NodeActor.class);
+
+    @Override
+    public void start() {
+        primaryConsumer = vertx.eventBus().consumer(primaryConsumerAddress, this::handleMessage);
+        vertx.sharedData().getLocalMap(SHAREDMAP_ID).put(primaryConsumerAddress, deploymentID());
+        log.debug("Listen for {} on addr: {}", this.getClass().getSimpleName(), primaryConsumerAddress);
+        if (getSecondaryAddress() != null) {
+            String secondaryConsumerAddress = startOfAddress + getSecondaryAddress();
+            secondaryConsumer = vertx.eventBus().consumer(secondaryConsumerAddress, this::handleMessage);
+            log.debug("Listen for {} on addr: {}", this.getClass().getSimpleName(), secondaryConsumerAddress);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    protected T getNode() {
+        return (T) nodeRepository.findByUuid(uuid);
+    }
+
+    // Used to register an optional second handler address
+    protected abstract String getSecondaryAddress();
+
+    // Default methods every NodeActor exposes on the eventbus
+    public MessageHandler uuid() {
+        return new MessageHandler() {
+
+            @Override
+            public JsonNode exec(JsonNode request) {
+                ObjectNode result = mapper.createObjectNode();
+                result.put("data", uuid);
+                return response(request, result);
+            }
+
+            @Override
+            public JsonNode help(JsonNode request) {
+                // TODO Auto-generated method stub
+                return null;
+            }
+
+        };
+    }
+
+    /**
+     * Serialize node to entity JSON and return it to the caller.
+     * @return Serialized entity in the data property of the response.
+     */
+    public MessageHandler json() {
+        return new MessageHandler() {
+            @Override
+            public JsonNode exec(JsonNode request) {
+                Transaction tx = Context.getGraphDatabase().beginTx();
+                final JsonNode response = response(request, mapper.createObjectNode().set("data", mapper.valueToTree(getNode())));
+                tx.close();
+                return response;
+            }
+
+            @Override
+            public JsonNode help(JsonNode request) {
+                return null;
+            }
+        };
+    }
+
+    public MessageHandler undeploy() {
+        return new MessageHandler() {
+            @Override
+            public JsonNode exec(JsonNode request) {
+                vertx.undeploy(deploymentID(), (result) -> {
+                    if (result.succeeded()) {
+                        log.info("Undeployed NodeActor \"" + primaryConsumerAddress + "\"");
+                    } else {
+                        log.error("Error while undeploying \"" + primaryConsumerAddress + "\": " + result.cause().getMessage());
+                    }
+                });
+                return response(request, mapper.createObjectNode().put("data", deploymentID()));
+            };
+
+            @Override
+            public JsonNode help(JsonNode request) {
+                return null;
+            }
+        };
+    }
+
+    /**
+     * A helper method to deploy NodeActors. Given a type entity it will deploy
+     * a TypeActor, otherwise an InstanceActor.
+     * @param entity The entity to deploy an bus for.
+     */
+    public static void deploy(Entity entity) {
+        deploy(UUID.fromString(entity.getUuid()));
+    }
+
+    /**
+     * A helper method to deploy NodeActors. Given the UUID of a type it will deploy
+     * a TypeActor, otherwise an InstanceActor.
+     * @param uuid The UUID of the node to deploy an bus for.
+     */
+    public static void deploy(UUID uuid) {
+        final Node node = Context.getNodeRepository().findByUuid(uuid.toString());
+        Validate.notNull(node, "Couldn't retrieve node \"" + uuid + "\" from database.");
+        deploy(node);
+    }
+
+    /**
+     * A helper method to deploy NodeActors. Given a type it will deploy
+     * a TypeActor, otherwise an InstanceActor.
+     * @param node The node to deploy an bus for.
+     */
+    public static void deploy(Node node) {
+        final String address = startOfAddress + node.getUuid();
+        // Make sure we deploy only once
+        if (Context.getVertx().sharedData().getLocalMap(SHAREDMAP_ID).get(address) == null) {
+            final Verticle verticle = node instanceof Type ?
+                    new TypeActor((Type) node) :
+                    new InstanceActor((Instance) node);
+            Context.getVertx().deployVerticle(verticle);
+        }
+    }
+
+}

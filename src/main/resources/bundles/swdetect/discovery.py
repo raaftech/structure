@@ -1,6 +1,10 @@
 #!/usr/bin/env python2
 
-import sys, os, re, shlex, commands
+import commands
+import os
+import re
+import sys
+
 
 def eprint(msg):
     """Print to stderr"""
