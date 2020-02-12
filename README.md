@@ -11,6 +11,7 @@ cd src/main/resources/webroot
 npm install -g bower
 bower install
 cd -
-java -jar target/structure-*-fat.jar -l DEBUG -u -s 
+java -jar target/structure-*-fat.jar -l DEBUG -u -s
 curl https://localhost:8443/eventbus
 ```
+
