@@ -13,6 +13,7 @@ npm install -g bower
 bower install
 cd -
 java -jar target/structure-*-fat.jar -l DEBUG -u -s
-curl https://localhost:8443/eventbus
+curl --insecure https://localhost:8443/eventbus # Vert.x Socks.js bridge.
+curl http://localhost:7474 # Neo4j web console
 ```
 
