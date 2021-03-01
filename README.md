@@ -5,6 +5,7 @@ Need to explain stuff here.
 
 ### Quick notes on how to run
 ```
+export JAVA_HOME="$(/usr/libexec/java_home -v 1.8.0)"
 git clone git@github.com:raaftech/structure.git
 mvn package
 cd src/main/resources/webroot

@@ -114,6 +114,14 @@
         <maven.exec.plugin.version>1.5.0</maven.exec.plugin.version>
     </properties>
 
+    <repositories>
+        <repository>
+            <id>xebia-nexus</id>
+            <name>Xebia Nexus</name>
+            <url>https://nexus.xebialabs.com/nexus/content/repositories/jboss-community</url>
+        </repository>
+    </repositories>
+
     <dependencies>
         <!-- Project dependencies -->
         <dependency>
