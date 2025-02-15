@@ -8,9 +8,8 @@ MERGE (object:Object {
     desc: 'The root object.'
     });
 
-CREATE INDEX ON :Object(name);
-CREATE CONSTRAINT ON (object:Object)
-    ASSERT object.uuid IS UNIQUE;
+CREATE CONSTRAINT ObjectUuid FOR (object:Object)
+    REQUIRE object.uuid IS UNIQUE;
 
 
 // Model - Housekeeping stuff for the database, versioning.
