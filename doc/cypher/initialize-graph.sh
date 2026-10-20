@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 if [[ -z "$NEO4J_USERNAME" || -z "$NEO4J_PASSWORD" ]]; then
   echo "Error: variables NEO4J_USERNAME and/or NEO4J_PASSWORD are not set"
