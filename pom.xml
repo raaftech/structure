@@ -359,7 +359,6 @@
             </plugin>
 
             <!-- Surefire plugin setup -->
-            <!-- FIXME EntityManagerTest SHOULD NOT BE EXCLUDED -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>

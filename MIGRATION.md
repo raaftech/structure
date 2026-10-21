@@ -56,8 +56,7 @@ References:
 ## Baseline
 
 On the current code with JDK 1.8.0_504, `mvn test` runs 104 tests with
-0 failures and 5 skipped. All 5 skipped tests are in
-`EntityManagerTest`. The migrated code must give the same result.
+0 failures and 0 skipped. The migrated code must give the same result.
 
 ## Inventory
 
