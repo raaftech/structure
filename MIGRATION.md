@@ -147,6 +147,7 @@ in sequence, and each `toGraph()` reads the entities written before it.
 
 ```java
 public final class Graph {
+    private static final Logger log = LoggerFactory.getLogger(Graph.class);
     private static Driver driver;
     private static final ThreadLocal<Bound> bound = new ThreadLocal<>();
 
@@ -162,8 +163,12 @@ public final class Graph {
     }
 
     public static void connect(String uri, String user, String password) {
-        driver = GraphDatabase.driver(uri, AuthTokens.basic(user, password));
-        driver.verifyConnectivity();
+        try {
+            driver = GraphDatabase.driver(uri, AuthTokens.basic(user, password));
+            driver.verifyConnectivity();
+        } catch (Neo4jException e) {
+            throw new GraphException(e);
+        }
     }
 
     public static void close() {
@@ -193,10 +198,18 @@ public final class Graph {
             }
             tx.commit();
             actions = b.afterCommit;
+        } catch (Neo4jException e) {
+            throw new GraphException(e);
         } finally {
             bound.remove();
         }
-        actions.forEach(Runnable::run);
+        for (Runnable action : actions) {
+            try {
+                action.run();
+            } catch (RuntimeException e) {
+                log.error("Action after commit failed", e);
+            }
+        }
         return result;
     }
 
@@ -220,11 +233,15 @@ public final class Graph {
     // Use the bound transaction if there is one, else auto-commit.
     public static List<Map<String, Object>> query(String cypher, Map<String, Object> params) {
         Bound b = bound.get();
-        if (b != null) {
-            return rows(b.tx.run(cypher, params));
-        }
-        try (Session session = driver.session()) {
-            return rows(session.run(cypher, params));
+        try {
+            if (b != null) {
+                return rows(b.tx.run(cypher, params));
+            }
+            try (Session session = driver.session()) {
+                return rows(session.run(cypher, params));
+            }
+        } catch (Neo4jException e) {
+            throw new GraphException(e);
         }
     }
 
@@ -264,25 +281,33 @@ public final class Graph {
 `tech.raaf.structure.base`. `GraphNode` has two fields:
 `Set<String> labels` and `Map<String, Object> properties`. It holds
 copies, thus it stays valid after the transaction closes.
+`GraphException` is a `RuntimeException`. All driver exceptions extend
+`Neo4jException`.
 
 Rules:
 
-- Send all values as parameters. Put only labels and relationship types
-  in the query text. Put them in backticks, and double each backtick in
-  the name. This also corrects `Entity.findDuplicates`, which now puts
-  values into the query text.
+- Send all values as parameters. Put only labels, relationship types
+  and property keys in the query text. Put them in backticks, and
+  double each backtick in the name. This also corrects
+  `Entity.findDuplicates`, which now puts values into the query text.
+  Its `data-*` keys stay in the query text.
 - An exception in the work rolls back the transaction. If nested work
   throws an exception, `Graph` marks the outer transaction as failed.
   The outer transaction then rolls back, also if a caller catches the
   exception. Neo4j 2.1 does the same after `tx.failure()` in a nested
   transaction.
+- If the outer work catches an exception, `Graph` commits. Thus put
+  each `catch` that calls `tx.failure()` outside `Graph.transaction`.
+  The `create`, `update`, `delete` and `group` handlers of
+  `EntityManager` have such a `catch`.
 - `Graph` changes driver exceptions to `GraphException`. Do not catch
   driver exceptions outside `Graph`.
 - Catch a `GraphException` only outside `Graph.transaction`. After a
   failed query, the driver rejects each query in the transaction.
 - Use `Graph.afterCommit` for side effects, for example verticle
   deploys. Then a rollback does not deploy an actor, and the new actor
-  can read the committed node.
+  can read the committed node. If an action fails, `Graph` logs the
+  error and runs the next action.
 - The driver does not retry explicit transactions. This is the same as
   now. Do not use `writeTransaction`, because the driver can run the
   work again.
@@ -371,7 +396,12 @@ all labels, and `persistTypeLabels` adds them again.
 Property values must be primitives, strings or lists. Change `JsonNode`
 values to strings with `toString()`, as `JsonNodeWriter` does now.
 
-Change `persistRelations` to one `MERGE` for each relationship:
+Change `persistRelations` to one `MERGE` for each relationship. Keep
+the current peer check before the writes. A peer is a `uuid`. If the
+relationship goes to a type (`outgoingToType`, `incomingFromType`), the
+peer can also be the name of the type. Find the `uuid` of each peer. If
+a peer is missing, log the error and write no relationship, as now.
+Then:
 
 ```cypher
 MATCH (a:Node {uuid: $from}), (b:Node {uuid: $to})
@@ -387,8 +417,8 @@ Replace the SDN write calls:
 |--------------------------------|--------------------------------------------------------------------------|
 | `BundleLoader`: `type.save()`  | Constraint statement below. Delete `createReflexiveConstraint`.          |
 | `TaskManager`: `origin.save()` | Move `RESULTS` to the new result. Add `(oldHead)-[:NEXT_RESULT]->(new)`. |
-| `EntityManager` specialize     | Delete the old `INSTANCE_OF` relationship. Make the new one.             |
-| `Instances.putNode`            | Make an `Entity` and call `toGraph()`.                                   |
+| `EntityManager` specialize     | Replace `INSTANCE_OF`, then call `toGraph()`. See below.                 |
+| `Instances.putNode`            | Make an `Entity` and call `toGraph()`. See below.                        |
 | `EntityManager` ungroup        | Ungroup statement below.                                                 |
 | `EntityManager` delete         | Delete statement below.                                                  |
 
@@ -406,6 +436,17 @@ DELETE r
 MATCH (n:Node {uuid: $uuid})
 DETACH DELETE n
 ```
+
+Specialize deletes the old `INSTANCE_OF` relationship and makes the
+new one. Now it does not update the `type:` labels. After the new
+`INSTANCE_OF`, make an `Entity` from the graph and call `toGraph()`.
+This replaces the `type:` labels of the old type with the labels of the
+new type. It also checks the data against the schema of the new type.
+If the check fails, the specialization rolls back.
+
+`toGraph()` in `Instances.putNode` adds the schema and constraint
+checks. The SDN path did not do them. This is correct, and it gives one
+write path.
 
 The result chain keeps the relationship directions that SDN writes
 now: `(instance)-[:RESULTS]->(newest)` and
@@ -439,8 +480,9 @@ RETURN badOut + count(i) = 0 AS safe
 ```
 
 `labelBasedTraversal` follows outgoing relationships through nodes that
-have one of the labels. The start node can have no label from the list. Go
-through the graph breadth-first in Java, with one query for each level:
+have one of the labels. The start node can have no label from the
+list. Go through the graph breadth-first in Java, with one query for
+each level:
 
 ```cypher
 MATCH (a:Node)-->(n)
@@ -504,7 +546,12 @@ Replacements for `id()`:
   this sequence when it reads relationships with a query.
 
 Indexes: SDN made legacy full-text indexes for the `@Indexed` fields.
-No query uses them. Do not make them again. Add
+Only SDN `save()` writes them. The current `persist` does not. The
+`@Query` methods do not read them. The generated finders of
+`GenericRepository` read them. Only one generated finder has a caller:
+`ComponentRepository.findOneByName`, in `ComponentRepositoryTest`. Its
+test nodes come from `save()`. The new repository classes use label
+queries. Do not make the legacy indexes again. Add
 `CREATE INDEX node_name IF NOT EXISTS FOR (n:Node) ON (n.name)`,
 because many queries find nodes by name.
 
@@ -572,8 +619,9 @@ for more than 2 seconds. Worker threads can run for 5 minutes
 
 ### Phase 0: prepare
 
-1. Start a Neo4j 2026.10 server for development. Community Edition is
-   enough. Set a password.
+1. Start two Neo4j 2026.10 servers for development, one for Structure
+   and one for the tests. Use different ports. Community Edition is
+   enough. Set a password on each server.
 2. For TLS tests, configure the Bolt SSL policy
    (`dbms.ssl.policy.bolt.*`) and set `server.bolt.tls_level`.
 
@@ -622,7 +670,8 @@ steps on one branch.
    this rolls back the writes. With `Graph.transaction`, throw an
    exception to roll back. Some sites return before `close()`, for
    example specialize in `EntityManager`. `Graph.transaction` closes
-   the transaction on all paths.
+   the transaction on all paths. Put each `catch` that calls
+   `tx.failure()` outside `Graph.transaction` (see "Graph access").
 4. Change the domain classes and add `NodeMapper` (see "Mapping").
    Remove the `_` labels from `getClassLabels`, `EntityTest` and
    `StoreFormatTest`.
@@ -630,12 +679,16 @@ steps on one branch.
    "Queries").
 6. Replace the SDN write calls (see "Writes").
 7. Run the schema statements (constraints and indexes) in their own
-   transactions, before the data loads.
+   transactions, before the data loads. Call
+   `BundleLoader.createIndices` after `loadTypes`, also in its own
+   transaction. `Entity.findDuplicates` finds nodes by the identity
+   properties, and these indexes make this fast.
 8. Change the tests:
    - Add a test base class. It connects `Graph` to
      `STRUCTURE_TEST_NEO4J_URI` with `STRUCTURE_TEST_NEO4J_PASSWORD`.
-     It runs `MATCH (n) DETACH DELETE n` before each test. The separate
-     variables prevent a test run from deleting the data of a normal run.
+     It runs `MATCH (n) DETACH DELETE n` before each test. Community
+     Edition has one user database. Thus the test server must not be
+     the server of a normal run.
    - `mvn verify` must have a test server. If the variables are not
      set, the tests fail. Do not skip them, because the JaCoCo minimum
      and the baseline (0 skipped) count all tests.
@@ -733,20 +786,6 @@ localhost.
 Embedded Community Edition is GPLv3, as Neo4j 2.1.8 is now. The driver
 is Apache 2.0.
 
-## Open questions
-
-- `Entity.toGraph()` in `Instances.putNode` adds schema and constraint
-  validation that the SDN path did not do. Accept this, or write a
-  minimal path for `putNode`.
-- Specialize does not update the `type:` labels now. Decide if the new
-  code adds the labels of the new type. If it does, it must also remove
-  the `type:` labels of the old type. A call to `toGraph()` after the
-  new `INSTANCE_OF` does the two changes (see "Writes"). But it also
-  checks the data against the schema of the new type.
-- `BundleLoader.createIndices` has no callers. Call it after
-  `loadTypes` in its own transaction, or delete it (see "Unused and
-  unfinished code").
-
 ## Unused and unfinished code
 
 The code below has no callers. The git history shows that a refactor
@@ -770,7 +809,8 @@ Unfinished or disconnected features:
 - `BundleLoader.createIndices` (#266). It makes an index for the
   identity properties of each type. Merge 67ed554b, one day after #266,
   removed its call from `Application` in error. Its `CREATE INDEX`
-  statement is in `createEntityIndex` (see "Queries").
+  statement is in `createEntityIndex` (see "Queries"). Phase 3 calls
+  it again (step 7).
 - Protocol compatibility: `Type.findCommonProtocols`,
   `implementsProtocol`, `addImplementedProtocol` and
   `TypeRepository.getCommonProtocols` (#62, STR-35). The ssh, smb,
