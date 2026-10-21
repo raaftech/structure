@@ -2,18 +2,18 @@ package tech.raaf.structure.graph;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.collect.ImmutableMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.neo4j.annotation.GraphId;
-import org.springframework.data.neo4j.annotation.Indexed;
-import org.springframework.data.neo4j.annotation.NodeEntity;
-import org.springframework.data.neo4j.fieldaccess.DynamicProperties;
-import org.springframework.data.neo4j.support.index.IndexType;
 import tech.raaf.structure.base.Configuration;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import static io.vertx.core.json.Json.mapper;
@@ -24,28 +24,24 @@ import static io.vertx.core.json.Json.mapper;
  * @author Boy van Duuren <boy.van.duuren@raaftech.com>
  * @since 2014-11-26
  */
-@NodeEntity
 @JsonSerialize(using = NodeSerializer.class)
 public abstract class Node {
 
     private static final Logger log = LoggerFactory.getLogger(Node.class);
 
-    @Indexed(indexType = IndexType.FULLTEXT, indexName = "name")
     protected String name;
-    @Indexed(indexType = IndexType.FULLTEXT, indexName = "description")
     protected String desc;
     protected String bundle;
     protected String path;
     protected String type;
     protected String checksum;
-    @GraphId
-    @SuppressWarnings("unused")
-    private Long id;
-    @Indexed(indexType = IndexType.FULLTEXT, indexName = "uuid")
-    private String uuid;
+    String uuid;
 
-    DynamicProperties data;
-    DynamicProperties file;
+    Map<String, Object> data = new HashMap<>();
+    Map<String, Object> file = new HashMap<>();
+
+    // NodeMapper sets this for a node that it reads from the graph
+    boolean persisted;
 
     /****************/
     /* Constructors */
@@ -89,8 +85,8 @@ public abstract class Node {
         return desc;
     }
 
-    public Long getId() {
-        return id;
+    public boolean isPersisted() {
+        return persisted;
     }
 
     public String getName() {
@@ -126,11 +122,11 @@ public abstract class Node {
     }
 
     public Map<String, Object> getFiles() {
-        return file.asMap();
+        return file;
     }
 
     public Map<String, Object> getData() {
-        return data.asMap();
+        return data;
     }
 
     public void setName(String name) {
@@ -166,9 +162,9 @@ public abstract class Node {
 
     public Optional<ObjectNode> getFile(String name) {
         Optional<ObjectNode> maybeFile = Optional.empty();
-        if (file.hasProperty(name)) {
+        if (file.containsKey(name)) {
             try {
-                maybeFile = Optional.of((ObjectNode) mapper.readTree((String) file.getProperty(name)));
+                maybeFile = Optional.of((ObjectNode) mapper.readTree((String) file.get(name)));
             } catch (IOException e) {
                 if (Configuration.isTraceModeOn()) {
                     log.error("Error while trying to get file object on {}", getUuid());
@@ -195,22 +191,33 @@ public abstract class Node {
         return content;
     }
 
+    // The nodes at the end of a pattern from this node, as (b)
+    @SuppressWarnings("unchecked")
+    protected <T extends Node> Set<T> related(String pattern) {
+        final List<Map<String, Object>> rows = Graph.query(
+                "MATCH (a:Node {uuid: $uuid})" + pattern + " RETURN DISTINCT b",
+                ImmutableMap.of("uuid", uuid));
+        final Set<T> related = new LinkedHashSet<>();
+        rows.forEach(row -> related.add((T) NodeMapper.map((GraphNode) row.get("b"))));
+        return related;
+    }
+
+    // The first node at the end of a pattern from this node, or null
+    protected <T extends Node> T relatedOne(String pattern) {
+        final Set<T> related = related(pattern);
+        return related.isEmpty() ? null : related.iterator().next();
+    }
+
+    // A uuid identifies a node
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Node node = (Node) o;
-
-        if (id != null ? !id.equals(node.id) : node.id != null) return false;
-        return uuid != null ? uuid.equals(node.uuid) : node.uuid == null;
-
+        if (!(o instanceof Node)) return false;
+        return uuid != null && uuid.equals(((Node) o).uuid);
     }
 
     @Override
     public int hashCode() {
-        int result = id != null ? id.hashCode() : 0;
-        result = 31 * result + (uuid != null ? uuid.hashCode() : 0);
-        return result;
+        return uuid != null ? uuid.hashCode() : System.identityHashCode(this);
     }
 }

@@ -7,27 +7,28 @@ package tech.raaf.structure.base;
 import io.vertx.core.Vertx;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
-import org.springframework.data.neo4j.core.GraphDatabase;
-import org.springframework.data.neo4j.support.Neo4jTemplate;
-import org.springframework.stereotype.Component;
 import tech.raaf.structure.graph.Group;
 import tech.raaf.structure.graph.repositories.*;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * SpringContext singleton/wrapper.
+ * Holds the shared objects of Structure: Vert.x and the repositories.
  *
  * @author Rubin Simons <rubin.simons@raaftech.com>
  * @since 2014-11-12
  */
-@Component
-public class Context implements ApplicationContextAware {
+public class Context {
 
-    private static ApplicationContext context;
+    // The repositories have no state, so one object of each is enough
+    private static final NodeRepository nodeRepository = new NodeRepository();
+    private static final ComponentRepository componentRepository = new ComponentRepository();
+    private static final TypeRepository typeRepository = new TypeRepository();
+    private static final InstanceRepository instanceRepository = new InstanceRepository();
+    private static final InstrumentRepository instrumentRepository = new InstrumentRepository();
+    private static final ResultRepository resultRepository = new ResultRepository();
+    private static final ProfileRepository profileRepository = new ProfileRepository();
+    private static final GroupingRepository groupingRepository = new GroupingRepository();
     private static Vertx vertx = null;
     private static AtomicBoolean instrumentsLoaded = new AtomicBoolean();
     private static final Logger log = LoggerFactory.getLogger(Context.class);
@@ -74,52 +75,39 @@ public class Context implements ApplicationContextAware {
     }
 
     public static NodeRepository getNodeRepository() {
-        return (NodeRepository)context.getBean("nodeRepository");
+        return nodeRepository;
     }
 
     public static ComponentRepository getComponentRepository() {
-        return (ComponentRepository)context.getBean("componentRepository");
+        return componentRepository;
     }
 
     public static TypeRepository getTypeRepository() {
-        return (TypeRepository)context.getBean("typeRepository");
+        return typeRepository;
     }
 
     public static InstanceRepository getInstanceRepository() {
-        return (InstanceRepository)context.getBean("instanceRepository");
+        return instanceRepository;
     }
 
     public static InstrumentRepository getInstrumentRepository() {
-        return (InstrumentRepository)context.getBean("instrumentRepository");
+        return instrumentRepository;
     }
 
     public static ResultRepository getResultRepository() {
-        return (ResultRepository)context.getBean("resultRepository");
+        return resultRepository;
     }
 
     public static ProfileRepository getProfileRepository() {
-        return (ProfileRepository)context.getBean("profileRepository");
+        return profileRepository;
     }
 
     public static GroupingRepository getGroupingRepository() {
-        return (GroupingRepository) context.getBean("groupingRepository");
-    }
-
-    public static GraphDatabase getGraphDatabase() {
-        return (GraphDatabase)context.getBean("graphDatabase");
-    }
-
-    public static Neo4jTemplate getNeo4jTemplate() {
-        return (Neo4jTemplate)context.getBean("neo4jTemplate");
+        return groupingRepository;
     }
 
     public static Vertx getVertx() {
         return vertx;
-    }
-
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        context = applicationContext;
     }
 
     public static void setVertx(Vertx vertxRef) {

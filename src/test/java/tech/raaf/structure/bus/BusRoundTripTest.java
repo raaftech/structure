@@ -7,9 +7,6 @@ import io.vertx.core.json.JsonObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.neo4j.graphdb.GraphDatabaseService;
-import org.neo4j.graphdb.Transaction;
-import org.springframework.beans.factory.annotation.Autowired;
 import tech.raaf.structure.base.Configuration;
 import tech.raaf.structure.base.Context;
 import tech.raaf.structure.bus.manager.EntityManager;
@@ -57,9 +54,6 @@ public class BusRoundTripTest extends TypeSchemaTest {
     private final String group = UUID.randomUUID().toString();
     private final String created = UUID.randomUUID().toString();
 
-    @Autowired
-    GraphDatabaseService graphDatabaseService;
-
     @Before
     public void deploy() throws Exception {
         // Application sets these, status and reload need them
@@ -77,20 +71,15 @@ public class BusRoundTripTest extends TypeSchemaTest {
             });
             id.get();
         }
-        try (Transaction tx = graphDatabaseService.beginTx()) {
-            mapper.readValue(os(host, "bus-host", "A host for the bus test."), Entity.class).toGraph();
-            mapper.readValue(entity(group, "bus-group", "A group for the bus test.", COMPONENT_GROUP, "{}"),
-                    Entity.class).toGraph();
-            tx.success();
+        mapper.readValue(os(host, "bus-host", "A host for the bus test."), Entity.class).toGraph();
+        mapper.readValue(entity(group, "bus-group", "A group for the bus test.", COMPONENT_GROUP, "{}"),
+                Entity.class).toGraph();
+        for (String uuid : Arrays.asList(OPERATING_SYSTEM, host)) {
+            NodeActor.deploy(Context.getNodeRepository().findByUuid(uuid)).get();
         }
-        try (Transaction tx = graphDatabaseService.beginTx()) {
-            for (String uuid : Arrays.asList(OPERATING_SYSTEM, host)) {
-                NodeActor.deploy(Context.getNodeRepository().findByUuid(uuid)).get();
-            }
-            // The instrument handlers need a bootstrapped Structure
-            Context.setSelfGroup(Context.getGroupingRepository().findByUuid(group));
-            Context.setSelfIdentifier(group);
-        }
+        // The instrument handlers need a bootstrapped Structure
+        Context.setSelfGroup(Context.getGroupingRepository().findByUuid(group));
+        Context.setSelfIdentifier(group);
     }
 
     @After

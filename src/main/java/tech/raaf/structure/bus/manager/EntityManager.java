@@ -6,10 +6,8 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
-import org.neo4j.graphdb.Direction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.neo4j.support.Neo4jTemplate;
 import tech.raaf.structure.annotations.SchemaPath;
 import tech.raaf.structure.base.Configuration;
 import tech.raaf.structure.base.Context;
@@ -39,7 +37,6 @@ import java.util.stream.StreamSupport;
 public class EntityManager extends GenericActor {
 
     private static final Logger log = LoggerFactory.getLogger(EntityManager.class);
-    private static final Neo4jTemplate neo4jTemplate = Context.getNeo4jTemplate();
     private static final NodeRepository nodeRepository = Context.getNodeRepository();
     private static final InstanceRepository instanceRepository = Context.getInstanceRepository();
     private static final TypeRepository typeRepository = Context.getTypeRepository();
@@ -340,25 +337,37 @@ public class EntityManager extends GenericActor {
                 final String instanceUuid = args.get("instance").asText();
                 final String isaUuid = args.get("isa").asText();
 
-                Graph.transaction(() -> {
-                    Instance instance = instanceRepository.findByUuid(instanceUuid);
-                    if (instance == null) {
-                        result.put(ERROR, "Could not find an instance with uuid " + instanceUuid);
-                        return;
-                    }
-                    Type instanceType = instance.getInstanceOf();
-                    Type isa = typeRepository.findByUuid(isaUuid);
+                try {
+                    Graph.transaction(() -> {
+                        Instance instance = instanceRepository.findByUuid(instanceUuid);
+                        if (instance == null) {
+                            result.put(ERROR, "Could not find an instance with uuid " + instanceUuid);
+                            return;
+                        }
+                        Type instanceType = instance.getInstanceOf();
+                        Type isa = typeRepository.findByUuid(isaUuid);
 
-                    if (isa == null) {
-                        result.put(ERROR, "Could not find a type with uuid " + isaUuid);
-                    } else if (!instanceType.getChildIsaSet().contains(isa)) {
-                        result.put(ERROR, "Invalid specialization requested. Type [" + isa.getName() + "] is not in the specialization set of: [" + instanceType.getName() + "]");
-                    } else {
-                        instance.setInstanceOf(isa);
-                        instance.save();
-                        result.put("data", "Instance [" + instanceType.getName() + "] specialized to [" + isa.getName() + "]");
-                    }
-                });
+                        if (isa == null) {
+                            result.put(ERROR, "Could not find a type with uuid " + isaUuid);
+                        } else if (!instanceType.getChildIsaSet().contains(isa)) {
+                            result.put(ERROR, "Invalid specialization requested. Type [" + isa.getName() + "] is not in the specialization set of: [" + instanceType.getName() + "]");
+                        } else {
+                            Graph.query("MATCH (i:Instance {uuid: $instance})-[r:INSTANCE_OF]->() DELETE r",
+                                    ImmutableMap.of("instance", instanceUuid));
+                            Graph.query("MATCH (i:Instance {uuid: $instance}), (t:Type {uuid: $type}) " +
+                                    "MERGE (i)-[:INSTANCE_OF]->(t)",
+                                    ImmutableMap.of("instance", instanceUuid, "type", isaUuid));
+                            // Replaces the type labels and checks the data against the new type
+                            LambdaHelper.wrapWithExceptionPropagation(() -> mapper.treeToValue(
+                                    mapper.valueToTree(instanceRepository.findByUuid(instanceUuid)), Entity.class))
+                                    .get().toGraph();
+                            result.put("data", "Instance [" + instanceType.getName() + "] specialized to [" + isa.getName() + "]");
+                        }
+                    });
+                } catch (RuntimeException e) {
+                    log.error(e.getMessage());
+                    result.put(ERROR, e.getMessage());
+                }
 
                 return response(request, result);
             }
@@ -447,11 +456,12 @@ public class EntityManager extends GenericActor {
                     return response(request, result);
                 }
 
-                final boolean changed = Graph.transaction(() -> {
-                    final boolean removed = group.getGroupees().remove(groupee);
-                    Context.getGroupingRepository().save(group);
-                    return removed;
-                });
+                final long removed = ((Number) Graph.query(
+                        "MATCH (m:Node {uuid: $member})-[r:MEMBER_OF]->(g:Group {uuid: $group}) " +
+                        "DELETE r RETURN count(*) AS removed",
+                        ImmutableMap.of("member", groupeeUuid, "group", groupingUuid))
+                        .get(0).get("removed")).longValue();
+                final boolean changed = removed > 0;
 
                 result.set("data", mapper.createObjectNode().put("changed", changed));
 
@@ -479,7 +489,7 @@ public class EntityManager extends GenericActor {
      */
     List<Node> labelBasedTraversal(Set<String> labels, Node start, boolean includeStart) {
         final String nextLevel = "MATCH (a:Node)-->(n) " +
-                "WHERE a.uuid IN {frontier} AND any(l IN labels(n) WHERE l IN {labels}) " +
+                "WHERE a.uuid IN $frontier AND any(l IN labels(n) WHERE l IN $labels) " +
                 "RETURN DISTINCT n";
         final List<Node> found = new ArrayList<>();
         if (includeStart) {
@@ -492,12 +502,10 @@ public class EntityManager extends GenericActor {
             final Map<String, Object> params = ImmutableMap.of(
                     "frontier", frontier, "labels", new ArrayList<>(labels));
             final List<String> next = new ArrayList<>();
-            for (Map<String, Object> row : neo4jTemplate.query(nextLevel, params)) {
-                final org.neo4j.graphdb.Node n = (org.neo4j.graphdb.Node) row.get("n");
-                final String uuid = (String) n.getProperty("uuid");
-                if (visited.add(uuid)) {
-                    next.add(uuid);
-                    found.add(neo4jTemplate.convert(n, Node.class));
+            for (Node n : NodeMapper.<Node>mapAll(Graph.query(nextLevel, params), "n")) {
+                if (visited.add(n.getUuid())) {
+                    next.add(n.getUuid());
+                    found.add(n);
                 }
             }
             frontier = next;
@@ -518,13 +526,14 @@ public class EntityManager extends GenericActor {
      * @return True if we can safely delete v_s, false otherwise.
      */
     private boolean safeDeleteTraversal(List<String> labels, Node start) {
-        final String safe = "MATCH (s:Node {uuid: {uuid}}) " +
-                "OPTIONAL MATCH (s)-->(o) WHERE any(l IN labels(o) WHERE l IN {labels}) " +
+        final String safe = "MATCH (s:Node {uuid: $uuid}) " +
+                "OPTIONAL MATCH (s)-->(o) WHERE any(l IN labels(o) WHERE l IN $labels) " +
                 "WITH s, count(o) AS badOut " +
-                "OPTIONAL MATCH (s)<--(i) WHERE none(l IN labels(i) WHERE l IN {labels}) " +
-                "RETURN badOut + count(i) = 0 AS safe";
+                "OPTIONAL MATCH (s)<--(i) WHERE none(l IN labels(i) WHERE l IN $labels) " +
+                "WITH badOut, count(i) AS badIn " +
+                "RETURN badOut + badIn = 0 AS safe";
         final Map<String, Object> params = ImmutableMap.of("uuid", start.getUuid(), "labels", labels);
-        return (Boolean) neo4jTemplate.query(safe, params).single().get("safe");
+        return (Boolean) Graph.query(safe, params).get(0).get("safe");
     }
 
     /**

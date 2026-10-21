@@ -1,5 +1,6 @@
 package tech.raaf.structure.bus.repository;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -8,11 +9,15 @@ import org.slf4j.LoggerFactory;
 import tech.raaf.structure.annotations.SchemaPath;
 import tech.raaf.structure.base.Configuration;
 import tech.raaf.structure.base.Context;
-import tech.raaf.structure.graph.Component;
+import tech.raaf.structure.bus.NodeActor;
+import tech.raaf.structure.graph.Entity;
+import tech.raaf.structure.graph.Graph;
 import tech.raaf.structure.graph.Instance;
 import tech.raaf.structure.graph.Type;
 import tech.raaf.structure.graph.repositories.InstanceRepository;
 import tech.raaf.structure.graph.repositories.TypeRepository;
+
+import java.util.UUID;
 
 public class Instances extends Repository<Instance> {
 
@@ -76,13 +81,28 @@ public class Instances extends Repository<Instance> {
 
                 try {
                     if (type.isOfType("Component")) {
-                        Instance newInstance = new Component(args, type);
-                        newInstance.save();
-                        result.put("data", newInstance.getUuid());
+                        // The entity write path checks the data and the constraints
+                        final String uuid = UUID.randomUUID().toString();
+                        final ObjectNode json = mapper.createObjectNode()
+                                .put("name", args.path("name").asText())
+                                .put("desc", args.path("desc").asText());
+                        json.putObject("meta").put("uuid", uuid).putObject("relations")
+                                .putObject("INSTANCE_OF").put("direction", "outgoing")
+                                .putArray("to").add(type.getUuid());
+                        final ObjectNode data = args.deepCopy();
+                        data.remove("name");
+                        data.remove("desc");
+                        json.set("data", data);
+                        final Entity entity = mapper.treeToValue(json, Entity.class);
+                        Graph.transaction(() -> {
+                            entity.toGraph();
+                            Graph.afterCommit(() -> NodeActor.deploy(entity));
+                        });
+                        result.put("data", uuid);
                     } else {
                         // TODO: add support for other Instances
                     }
-                } catch (RuntimeException e) {
+                } catch (RuntimeException | JsonProcessingException e) {
                 	log.error(e.getMessage());
 
         			if (Configuration.isTraceModeOn()) {

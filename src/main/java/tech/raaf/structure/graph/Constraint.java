@@ -4,14 +4,14 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.collect.ImmutableSet;
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.tuple.Pair;
-import org.neo4j.graphdb.Direction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.annotation.Transient;
-import org.springframework.data.neo4j.annotation.*;
 import tech.raaf.structure.base.Context;
 import tech.raaf.structure.graph.repositories.NodeRepository;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -29,39 +29,23 @@ import java.util.stream.Collectors;
  * parent of a CPU instance in stead of the other way around.
  *
  */
-@RelationshipEntity(type = "CONSTRAINTS")
 @JsonSerialize(using = ConstraintSerializer.class)
 public class Constraint {
 
     // The order in this enum matters. Cardinalities are placed loosest to strictest so we can compare them
     public enum Cardinality { OPTIONAL_TO_MANY, OPTIONAL_TO_ONE, REQUIRED_TO_MANY, REQUIRED_TO_ONE }
 
-    @GraphId
-    private Long id;
+    // The columns that fromRows reads, for (a)-[r:CONSTRAINTS]->(b)
+    static final String COLUMNS =
+            "RETURN a, b, r.forRelationship AS forRelationship, r.cardinality AS cardinality";
 
-    @StartNode
-    @Fetch
     private Type startOfConstraint;
-
-    @EndNode
-    @Fetch
     private Type endOfConstraint;
-
-    @GraphProperty
     private Cardinality cardinality;
-
-    @GraphProperty
     private String forRelationship;
 
-    @Transient
     private final NodeRepository nodeRepository = Context.getNodeRepository();
-    @Transient
     static final Logger log = LoggerFactory.getLogger(Constraint.class);
-
-    @SuppressWarnings("unused")
-    public Constraint() {
-        // Empty constructor for SDN
-    }
 
     public Constraint(Type startOfConstraint, Type endOfConstraint, Cardinality cardinality, String forRelationship) {
         Validate.notNull(startOfConstraint, "A constraint cannot be created with null types.");
@@ -73,6 +57,18 @@ public class Constraint {
         this.endOfConstraint = endOfConstraint;
         this.cardinality = cardinality;
         this.forRelationship = forRelationship;
+    }
+
+    // Make constraints from rows with the columns in COLUMNS
+    public static Set<Constraint> fromRows(List<Map<String, Object>> rows) {
+        final Set<Constraint> constraints = new HashSet<>();
+        for (Map<String, Object> row : rows) {
+            constraints.add(new Constraint(NodeMapper.map((GraphNode) row.get("a")),
+                    NodeMapper.map((GraphNode) row.get("b")),
+                    Cardinality.valueOf((String) row.get("cardinality")),
+                    (String) row.get("forRelationship")));
+        }
+        return constraints;
     }
 
     /**

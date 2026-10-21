@@ -4,19 +4,13 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
+import com.google.common.collect.ImmutableMap;
 import org.junit.Test;
-import org.neo4j.graphdb.Direction;
-import org.neo4j.graphdb.DynamicLabel;
-import org.neo4j.graphdb.GraphDatabaseService;
-import org.neo4j.graphdb.Label;
-import org.neo4j.graphdb.Node;
-import org.neo4j.graphdb.Relationship;
-import org.neo4j.graphdb.Transaction;
-import org.springframework.beans.factory.annotation.Autowired;
 import tech.raaf.structure.schema.TypeSchemaTest;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -26,8 +20,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Checks the stored format of some nodes from the bundles. This format
- * must not change. The test ignores the SDN artifacts: the "_" labels
- * and "__type__".
+ * must not change.
  */
 public class StoreFormatTest extends TypeSchemaTest {
 
@@ -40,9 +33,6 @@ public class StoreFormatTest extends TypeSchemaTest {
     private static final Set<String> FILE_KEYS = ImmutableSet.of("encoding", "format", "path", "content", "checksum");
 
     private final ObjectMapper mapper = new ObjectMapper();
-
-    @Autowired
-    GraphDatabaseService graphDatabaseService;
 
     @Test
     public void type() throws Exception {
@@ -57,7 +47,7 @@ public class StoreFormatTest extends TypeSchemaTest {
         assertEquals("bash", n.properties.get("bundle"));
         assertEquals(BUNDLES + "bash/bash.type.json", n.properties.get("path"));
         assertEquals(false, n.properties.get("isAbstract"));
-        assertEquals(0, n.properties.get("glyphId"));
+        assertEquals(0L, n.properties.get("glyphId"));
         assertTrue(n.properties.get("created") instanceof Long);
         assertFile(n, "file-dataSchema", "text", "json", "bash.schema.json");
         assertEquals(ImmutableSet.of("ISA -> 86168e4a-8c99-43c9-ad95-c8f88d96ac32"), n.outgoing);
@@ -73,7 +63,7 @@ public class StoreFormatTest extends TypeSchemaTest {
         assertEquals("core", n.properties.get("bundle"));
         assertEquals(BUNDLES + "core/types/instrument.type.json", n.properties.get("path"));
         assertEquals(false, n.properties.get("isAbstract"));
-        assertEquals(0, n.properties.get("glyphId"));
+        assertEquals(0L, n.properties.get("glyphId"));
         assertFile(n, "file-dataSchema", "text", "json", "../schema/controller.schema.json");
         assertEquals(ImmutableSet.of(
                 "ISA -> 14dbfbfa-b50a-466f-8539-55d5d3f15e4a",
@@ -139,32 +129,21 @@ public class StoreFormatTest extends TypeSchemaTest {
         assertEquals(path, file.get("path").asText());
     }
 
+    @SuppressWarnings("unchecked")
     private Stored read(String uuid) {
-        try (Transaction tx = graphDatabaseService.beginTx()) {
-            Node node = graphDatabaseService.findNodesByLabelAndProperty(DynamicLabel.label("Node"), "uuid", uuid)
-                    .iterator().next();
-            Stored stored = new Stored();
-            for (Label label : node.getLabels()) {
-                if (!label.name().startsWith("_")) {
-                    stored.labels.add(label.name());
-                }
-            }
-            for (String key : node.getPropertyKeys()) {
-                stored.properties.put(key, node.getProperty(key));
-            }
-            for (Relationship r : node.getRelationships(Direction.OUTGOING)) {
-                Map<String, Object> properties = new TreeMap<>();
-                for (String key : r.getPropertyKeys()) {
-                    if (!key.equals("__type__")) {
-                        properties.put(key, r.getProperty(key));
-                    }
-                }
-                stored.outgoing.add(r.getType().name() + " -> " + r.getEndNode().getProperty("uuid")
-                        + (properties.isEmpty() ? "" : " " + properties));
-            }
-            tx.success();
-            return stored;
+        final Map<String, Object> params = ImmutableMap.of("uuid", uuid);
+        final Map<String, Object> node = Graph.query("MATCH (n:Node {uuid: $uuid}) "
+                + "RETURN labels(n) AS labels, properties(n) AS properties", params).get(0);
+        Stored stored = new Stored();
+        stored.labels.addAll((List<String>) node.get("labels"));
+        stored.properties.putAll((Map<String, Object>) node.get("properties"));
+        for (Map<String, Object> r : Graph.query("MATCH (n:Node {uuid: $uuid})-[r]->(b) "
+                + "RETURN type(r) AS type, b.uuid AS peer, properties(r) AS properties", params)) {
+            Map<String, Object> properties = new TreeMap<>((Map<String, Object>) r.get("properties"));
+            stored.outgoing.add(r.get("type") + " -> " + r.get("peer")
+                    + (properties.isEmpty() ? "" : " " + properties));
         }
+        return stored;
     }
 
     private static class Stored {

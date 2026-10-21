@@ -1,7 +1,11 @@
 package tech.raaf.structure.graph;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import tech.raaf.structure.base.Context;
+
+import java.util.Collections;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 public abstract class Instrument extends Instance {
 
@@ -14,12 +18,33 @@ public abstract class Instrument extends Instance {
     }
 
     public int getWeight() {
-        return data.hasProperty(WEIGHT) ? (int)data.getProperty(WEIGHT) : 0;
+        return data.containsKey(WEIGHT) ? ((Number) data.get(WEIGHT)).intValue() : 0;
     }
 
     public Instrument save() {
-        Context.getNodeRepository().save(this);
+        Graph.transaction(this::write);
         return this;
+    }
+
+    // The relations of a new instrument to its types
+    protected Entity toEntity(Type capability, Set<Type> appliesTo, Type providedBy) {
+        final Entity entity = super.toEntity();
+        if (!persisted) {
+            if (capability != null) {
+                entity.addRelations("GIVES_CAPABILITY", Direction.OUTGOING, uuids(Collections.singleton(capability)));
+            }
+            if (appliesTo != null && !appliesTo.isEmpty()) {
+                entity.addRelations("APPLIES_TO", Direction.OUTGOING, uuids(appliesTo));
+            }
+            if (providedBy != null) {
+                entity.addRelations("PROVIDED_BY", Direction.OUTGOING, uuids(Collections.singleton(providedBy)));
+            }
+        }
+        return entity;
+    }
+
+    private static Set<UUID> uuids(Set<Type> types) {
+        return types.stream().map(t -> UUID.fromString(t.getUuid())).collect(Collectors.toSet());
     }
 
     public ObjectNode toJson() {

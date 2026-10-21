@@ -1,8 +1,7 @@
 package tech.raaf.structure.graph.repositories;
 
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.neo4j.core.GraphDatabase;
+import tech.raaf.structure.base.Context;
 import tech.raaf.structure.schema.TypeSchemaTest;
 import tech.raaf.structure.graph.Type;
 
@@ -12,10 +11,7 @@ import static org.junit.Assert.*;
 
 public class TypeRepositoryTest extends TypeSchemaTest {
 
-    @Autowired
-    TypeRepository typeRepository;
-    @Autowired
-    GraphDatabase graphDatabase;
+    private final TypeRepository typeRepository = Context.getTypeRepository();
 
     @Test
     public void findByNameAndUuid() throws Exception {
@@ -24,7 +20,6 @@ public class TypeRepositoryTest extends TypeSchemaTest {
         Type linuxByUuid = typeRepository.findByUuid(linuxByName.getUuid());
         assertNotNull(linuxByUuid);
         assertEquals(linuxByName.getUuid(), linuxByUuid.getUuid());
-        assertEquals(linuxByName.getId(), linuxByUuid.getId());
     }
 
     @Test

@@ -9,7 +9,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.parboiled.common.FileUtils;
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tech.raaf.structure.base.Configuration;
@@ -452,7 +452,11 @@ public class NaiveSorter {
                 final Path entityFileReferencePath = entityFilePath.getParent().resolve(fileObject.get(PATH).asText());
                 // read the file's contents and inject it into the file JSON object
                 if (entityFileReferencePath.toFile().exists()) {
-                    fileObject.put("content", FileUtils.readAllText(entityFileReferencePath.toFile()));
+                    try {
+                        fileObject.put("content", FileUtils.readFileToString(entityFileReferencePath.toFile(), "UTF-8"));
+                    } catch (IOException e) {
+                        throw new FileInjectionException("Couldn't read " + entityFileReferencePath.toString() + ".");
+                    }
                 } else if (fileObject.has(CONTENT)) {
                     // we can't read the file, but we already have some content. just use that data.
                     continue;

@@ -1,10 +1,12 @@
 package tech.raaf.structure.graph.repositories;
 
-import org.springframework.data.neo4j.annotation.Query;
-import org.springframework.data.neo4j.annotation.QueryResult;
-import org.springframework.data.repository.query.Param;
+import com.google.common.collect.ImmutableMap;
+import tech.raaf.structure.graph.Graph;
 import tech.raaf.structure.graph.Node;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -13,22 +15,15 @@ import java.util.Set;
  * @author Boy van Duuren <boy.van.duuren@raaftech.com>
  * @since 2014-11-26
  */
-public interface NodeRepository extends GenericRepository<Node> {
+public class NodeRepository extends GenericRepository<Node> {
 
-    @Query("MATCH (node:Node {uuid:{uuid}}) return node")
-    org.neo4j.graphdb.Node findGraphNodeByUuid(@Param("uuid") String uuid);
+    public NodeRepository() {
+        super("Node");
+    }
 
-    @Query("MATCH (node:Node {name: {0}}) return node")
-    Node findOneByName(String name);
-
-    @Query("MATCH (node:Node {name: {name}}) return node")
-    Set<Node> findByName(@Param("name") String name);
-
-    @Query("MATCH (node:Node {uuid:{uuid}}) return node")
-    Node findByUuid(@Param("uuid") String uuid);
-
-    @Query("MATCH (n) OPTIONAL MATCH (n)-[r]->() DELETE r, n")
-    void purge();
+    public void purge() {
+        Graph.query("MATCH (n) DETACH DELETE n");
+    }
 
     /**
      * Get all the ISA parents' names + a node's own name.
@@ -36,27 +31,36 @@ public interface NodeRepository extends GenericRepository<Node> {
      * @param uuid The uuid of the node.
      * @return The found names.
      */
-    @Query("MATCH (t{uuid:{uuid}}) " +
-            "WITH collect({id: id(t), name: t.name}) AS rows " +
-            "MATCH (n{uuid:{uuid}})-[:ISA*0..]->(t) " +
-            "WITH rows + collect({id: id(t), name: t.name}) AS allRows " +
-            "UNWIND allRows AS row " +
-            "WITH row ORDER BY row.id " +
-            "RETURN DISTINCT row.name")
-    Set<String> getTypeHierarchyForTypeUuid(@Param("uuid") String uuid);
+    public Set<String> getTypeHierarchyForTypeUuid(String uuid) {
+        final Set<String> names = new HashSet<>();
+        Graph.query("MATCH (n:Node {uuid: $uuid})-[:ISA*0..]->(t) RETURN DISTINCT t.name AS name",
+                ImmutableMap.of("uuid", uuid)).forEach(row -> names.add((String) row.get("name")));
+        return names;
+    }
 
-    @QueryResult
-    public class RelationshipTuple {
+    public static class RelationshipTuple {
         public String name;
         public String adjacentUuid;
     }
 
-    @Query("MATCH (entity{uuid:{uuid}})<-[r]-(adjacent) " +
-            "RETURN type(r), adjacent.uuid")
-    Set<RelationshipTuple> getIncomingRelationships(@Param("uuid") String uuid);
+    public Set<RelationshipTuple> getIncomingRelationships(String uuid) {
+        return tuples(Graph.query("MATCH (entity:Node {uuid: $uuid})<-[r]-(adjacent) " +
+                "RETURN type(r) AS name, adjacent.uuid AS adjacentUuid", ImmutableMap.of("uuid", uuid)));
+    }
 
-    @Query("MATCH (adjacent)<-[r]-(entity{uuid:{uuid}}) " +
-            "RETURN type(r), adjacent.uuid")
-    Set<RelationshipTuple> getOutgoingRelationships(@Param("uuid") String uuid);
+    public Set<RelationshipTuple> getOutgoingRelationships(String uuid) {
+        return tuples(Graph.query("MATCH (adjacent)<-[r]-(entity:Node {uuid: $uuid}) " +
+                "RETURN type(r) AS name, adjacent.uuid AS adjacentUuid", ImmutableMap.of("uuid", uuid)));
+    }
 
+    private static Set<RelationshipTuple> tuples(List<Map<String, Object>> rows) {
+        final Set<RelationshipTuple> tuples = new HashSet<>();
+        for (Map<String, Object> row : rows) {
+            final RelationshipTuple tuple = new RelationshipTuple();
+            tuple.name = (String) row.get("name");
+            tuple.adjacentUuid = (String) row.get("adjacentUuid");
+            tuples.add(tuple);
+        }
+        return tuples;
+    }
 }

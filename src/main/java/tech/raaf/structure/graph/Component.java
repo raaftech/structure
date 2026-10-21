@@ -6,12 +6,8 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
-import org.neo4j.graphdb.Direction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.annotation.Transient;
-import org.springframework.data.neo4j.annotation.Fetch;
-import org.springframework.data.neo4j.annotation.RelatedTo;
 import tech.raaf.structure.base.Context;
 import tech.raaf.structure.exceptions.JsonValidationException;
 import tech.raaf.structure.graph.repositories.InstanceRepository;
@@ -20,41 +16,22 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class Component extends Instance implements Groupable {
 
-    @RelatedTo(
-            type="HAS",
-            direction = Direction.OUTGOING,
-            elementClass = Component.class,
-            enforceTargetType = true
-    )
+    // The child components of a new component. A persisted component reads them from the graph.
     private Set<Component> components;
 
-    @RelatedTo(
-            type="HAS",
-            direction = Direction.INCOMING,
-            elementClass = Component.class,
-            enforceTargetType = true
-    )
-    @Fetch
-    private Set<Component> inComponent;
-
-    @RelatedTo(type="MEMBER_OF", direction= Direction.OUTGOING)
-    @Fetch
-    private Set<Group> memberOf;
-
-    @Transient
     private static final InstanceRepository instanceRepository = Context.getInstanceRepository();
 
-    @Transient
     private Logger log = LoggerFactory.getLogger(Component.class);
 
     /**
-     * No-arg constructor for Spring
+     * No-arg constructor for NodeMapper
      */
     public Component() {}
 
@@ -91,19 +68,19 @@ public class Component extends Instance implements Groupable {
         this(instanceData, TYPE_REPOSITORY.findByUuid(typeUuid));
     }
 
-    private Instance getFirstComponent() {
-        if (components == null) {
-            throw new IllegalArgumentException("Components set is empty.");
-        }
-
-        return components.iterator().next();
-    }
-
     public Set<Component> getComponents() {
-        if (components == null || components.isEmpty() || getFirstComponent().getName() == null) {
-            Graph.transaction(() -> Context.getNeo4jTemplate().fetch(components));
+        if (persisted) {
+            return related("-[:HAS]->(b:Component)");
+        }
+        if (components == null) {
+            components = new HashSet<>();
         }
         return components;
+    }
+
+    // The components that have this component
+    public Set<Component> getInComponent() {
+        return persisted ? related("<-[:HAS]-(b:Component)") : new HashSet<>();
     }
 
     /**
@@ -119,10 +96,7 @@ public class Component extends Instance implements Groupable {
     }
 
     public Set<Group> getMemberOf() {
-        if (memberOf == null) {
-            memberOf = new HashSet<>();
-        }
-        return memberOf;
+        return persisted ? related("-[:MEMBER_OF]->(b:Group)") : new HashSet<>();
     }
 
     /**
@@ -131,12 +105,25 @@ public class Component extends Instance implements Groupable {
      * @return this
      */
     public Component addComponent(Component component) {
-        if (components == null) {
-            components = new HashSet<>();
-        }
-        components.add(component);
+        getComponents().add(component);
 
         return this;
+    }
+
+    @Override
+    protected Entity toEntity() {
+        final Entity entity = super.toEntity();
+        if (!persisted && components != null && !components.isEmpty()) {
+            entity.addRelations("HAS", Direction.OUTGOING, components.stream()
+                    .map(c -> UUID.fromString(c.getUuid()))
+                    .collect(Collectors.toSet()));
+        }
+        return entity;
+    }
+
+    @Override
+    protected Set<Instance> getNewPeers() {
+        return !persisted && components != null ? new HashSet<>(components) : new HashSet<>();
     }
 
     /**
@@ -201,7 +188,7 @@ public class Component extends Instance implements Groupable {
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode result = mapper.createObjectNode();
         ObjectNode kvJson = result.putObject("data");
-        data.asMap().forEach((key, val) -> kvJson.put(key, val.toString()));
+        data.forEach((key, val) -> kvJson.put(key, val.toString()));
         ObjectNode componentsJson = mapper.createObjectNode();
         if (dimension > 1) {
             getComponents().forEach(component -> {
@@ -212,11 +199,12 @@ public class Component extends Instance implements Groupable {
         result.put("name", getName());
         result.put("uuid", getUuid());
         result.put("desc", getDesc());
-        result.put("instanceof", instanceOf.getUuid());
-        result.put("glyphId", Integer.toHexString(instanceOf.getGlyphId()));
+        result.put("instanceof", getInstanceOf().getUuid());
+        result.put("glyphId", Integer.toHexString(getInstanceOf().getGlyphId()));
         if (componentsJson.size() > 0) {
             result.set("components", componentsJson);
         }
+        final Set<Component> inComponent = getInComponent();
         if(!inComponent.isEmpty()) {
             result.put("incomponent", inComponent.toArray().toString());
         }
@@ -230,9 +218,9 @@ public class Component extends Instance implements Groupable {
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode result = mapper.createObjectNode();
 //        ObjectNode kvJson = result.putObject("data");
-        data.asMap().forEach((key, val) -> result.put(key, val.toString()));
+        data.forEach((key, val) -> result.put(key, val.toString()));
         ArrayNode componentsJson = mapper.createArrayNode();
-        components.forEach(component -> {
+        getComponents().forEach(component -> {
             ObjectNode componentNameUuid = mapper.createObjectNode();
             componentNameUuid.put("name", component.getName());
             componentNameUuid.put("uuid", component.getUuid());
@@ -242,11 +230,12 @@ public class Component extends Instance implements Groupable {
         result.put("name", getName());
         result.put("uuid", getUuid());
         result.put("desc", getDesc());
-        result.put("instanceof", instanceOf.getUuid());
-        result.put("glyphId", Integer.toHexString(instanceOf.getGlyphId()));
+        result.put("instanceof", getInstanceOf().getUuid());
+        result.put("glyphId", Integer.toHexString(getInstanceOf().getGlyphId()));
         if (componentsJson.size() > 0) {
             result.set("components", componentsJson);
         }
+        final Set<Component> inComponent = getInComponent();
         if(!inComponent.isEmpty()) {
             result.put("incomponent", inComponent.toArray().toString());
         }

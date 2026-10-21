@@ -75,8 +75,7 @@
 
         <!-- Core component versions -->
         <vertx.version>3.4.1</vertx.version>
-        <spring-data-neo4j.version>3.2.1.RELEASE</spring-data-neo4j.version>
-        <neo4j.version>2.1.8</neo4j.version>
+        <neo4j-java-driver.version>4.4.27</neo4j-java-driver.version>
         <jersey.version>1.9</jersey.version>
         <handlebars.version>2.2.3</handlebars.version>
 
@@ -97,7 +96,6 @@
 
         <!-- Test component versions -->
         <junit.version>4.12</junit.version>
-        <spring-test.version>4.1.9.RELEASE</spring-test.version>
 
         <!-- Maven plugin versions -->
         <maven.toolchains.plugin.version>3.2.0</maven.toolchains.plugin.version>
@@ -107,15 +105,6 @@
         <jacoco.plugin.version>0.8.11</jacoco.plugin.version>
         <jacoco.line.minimum>0.60</jacoco.line.minimum>
     </properties>
-
-    <repositories>
-        <!-- Serves org.neo4j:neo4j-cypher-dsl 2.0.1 for SDN, not on Central -->
-        <repository>
-            <id>xebia-nexus</id>
-            <name>Xebia Nexus</name>
-            <url>https://nexus.xebialabs.com/nexus/content/repositories/jboss-community</url>
-        </repository>
-    </repositories>
 
     <dependencies>
         <!-- Project dependencies -->
@@ -150,38 +139,10 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>org.springframework.data</groupId>
-            <artifactId>spring-data-neo4j</artifactId>
-            <version>${spring-data-neo4j.version}</version>
+            <groupId>org.neo4j.driver</groupId>
+            <artifactId>neo4j-java-driver</artifactId>
+            <version>${neo4j-java-driver.version}</version>
             <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.neo4j</groupId>
-            <artifactId>neo4j</artifactId>
-            <version>${neo4j.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.neo4j</groupId>
-                    <artifactId>neo4j-udc</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.neo4j</groupId>
-            <artifactId>neo4j-kernel</artifactId>
-            <version>${neo4j.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.neo4j.app</groupId>
-            <artifactId>neo4j-server</artifactId>
-            <version>${neo4j.version}</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.neo4j.app</groupId>
-            <artifactId>neo4j-server</artifactId>
-            <version>${neo4j.version}</version>
-            <classifier>static-web</classifier>
         </dependency>
         <dependency>
             <groupId>org.javassist</groupId>
@@ -256,12 +217,6 @@
             <groupId>org.jmockit</groupId>
             <artifactId>jmockit</artifactId>
             <version>${jmockit.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-test</artifactId>
-            <version>${spring-test.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>

@@ -16,7 +16,6 @@ import io.vertx.core.eventbus.Message;
 import io.vertx.core.json.JsonObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.annotation.Transient;
 import tech.raaf.structure.annotations.SchemaPath;
 import tech.raaf.structure.base.Configuration;
 import tech.raaf.structure.helper.JsonHelper;
@@ -41,19 +40,13 @@ public abstract class GenericActor extends AbstractVerticle {
     private Logger log = LoggerFactory.getLogger(GenericActor.class);
 
 
-    @Transient
     final URI schemaForRequest = URI.create("resource:/schema/base/request.schema.json");
-    @Transient
     final URI schemaForResponse = URI.create("resource:/schema/base/response.schema.json");
-    @Transient
     final URI schemaForManual = URI.create("resource:/schema/base/manual.schema.json");
     // used as a default schema in case we need to fallback on something
-    @Transient
     final URI fallbackSchema = URI.create("resource:/schema/base/args.schema.json");
 
-    @Transient
     Map<String, HandlerSchema> handlers = new HashMap<>();
-    @Transient
     protected ObjectMapper mapper = new ObjectMapper();
 
     // statusAddress is used to push notifications of events within Structure

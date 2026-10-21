@@ -7,17 +7,10 @@ import io.vertx.core.http.HttpServer;
 import io.vertx.ext.web.Router;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.neo4j.graphdb.Transaction;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.neo4j.core.GraphDatabase;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.AnnotationConfigContextLoader;
+import tech.raaf.structure.GraphTest;
 import tech.raaf.structure.base.Application;
 import tech.raaf.structure.base.Configuration;
 import tech.raaf.structure.base.Context;
-import tech.raaf.structure.base.SpringTestConfig;
 import tech.raaf.structure.bus.manager.SchemaManager;
 import tech.raaf.structure.graph.repositories.NodeRepository;
 import tech.raaf.structure.helper.JsonHelper;
@@ -29,9 +22,7 @@ import java.util.Optional;
 
 import static org.junit.Assert.*;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(loader = AnnotationConfigContextLoader.class, classes = SpringTestConfig.class)
-public class ProfileTest {
+public class ProfileTest extends GraphTest {
 
     private static final String webHost = "localhost";
     private static final int webPort = 8123;
@@ -50,27 +41,21 @@ public class ProfileTest {
         // One of the endpoints will be routed to SchemaManager, so instance it
         SchemaManager schemaManager = new SchemaManager();
         // Setup routes
-        router.route("/schemas/:schema").handler(schemaManager::getSchema);
+        router.route("/schemas/:schema").blockingHandler(schemaManager::getSchema, false);
         httpServer.requestHandler(router::accept).listen(Configuration.getWebPort(), Configuration.getWebHost());
         Application.init(vertx);
     }
 
-    @Autowired
-    NodeRepository nodeRepository;
-    @Autowired
-    GraphDatabase graphDatabase;
+    private final NodeRepository nodeRepository = Context.getNodeRepository();
     final ObjectMapper mapper = new ObjectMapper();
 
     @Test
     public void createProfile() throws Exception {
-        Transaction tx = graphDatabase.beginTx();
         final JsonNode profileJson = JsonHelper.jsonFromResource("profile.json");
         assertNotNull(profileJson);
 
         final Entity profileEntity = mapper.treeToValue(profileJson, Entity.class);
-        profileEntity.toGraph();
-        tx.success();
-        tx.close();
+        Graph.transaction(profileEntity::toGraph);
 
         Profile profile = (Profile) nodeRepository.findByUuid(profileEntity.getUuid());
         assertNotNull(profile);

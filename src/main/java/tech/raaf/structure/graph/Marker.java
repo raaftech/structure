@@ -1,11 +1,8 @@
 package tech.raaf.structure.graph;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.neo4j.graphdb.Direction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.neo4j.annotation.Fetch;
-import org.springframework.data.neo4j.annotation.RelatedTo;
 import tech.raaf.structure.base.Context;
 import tech.raaf.structure.exceptions.MarkerBuilderException;
 import tech.raaf.structure.graph.repositories.TypeRepository;
@@ -16,14 +13,9 @@ import static io.vertx.core.json.Json.mapper;
 
 public class Marker extends Instrument {
 
-    @RelatedTo(type="GIVES_CAPABILITY", direction = Direction.OUTGOING)
+    // The types of a new marker; save() writes them
     private Type capability;
-
-    @RelatedTo(type="APPLIES_TO", direction=Direction.OUTGOING)
-    @Fetch
     private Set<Type> appliesTo;
-
-    @RelatedTo(type="PROVIDED_BY", direction=Direction.OUTGOING)
     private Type providedBy;
 
     final static Logger log = LoggerFactory.getLogger(Marker.class);
@@ -97,7 +89,12 @@ public class Marker extends Instrument {
         }
     }
     public Marker() {
-        // empty constructor for Spring Data Neo4j
+        // empty constructor for NodeMapper
+    }
+
+    @Override
+    protected Entity toEntity() {
+        return toEntity(capability, appliesTo, providedBy);
     }
 
     private Marker(ObjectNode json, Type type) {

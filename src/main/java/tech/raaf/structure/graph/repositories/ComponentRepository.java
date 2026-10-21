@@ -1,17 +1,18 @@
 package tech.raaf.structure.graph.repositories;
 
-import org.springframework.data.neo4j.annotation.Query;
-import org.springframework.data.repository.query.Param;
+import com.google.common.collect.ImmutableMap;
 import tech.raaf.structure.graph.Component;
 
 import java.util.Set;
 
-public interface ComponentRepository extends GenericRepository<Component> {
+public class ComponentRepository extends GenericRepository<Component> {
 
-    @Query("MATCH (start {uuid:{uuid}})-[*1..]->(n:Instance)-[:ISA|INSTANCE_OF*1..]->({name:{type}}) RETURN n")
-    Set<Component> findChildrenByType(@Param("uuid") String uuid, @Param("type") String type);
+    public ComponentRepository() {
+        super("Component");
+    }
 
-    @Query("MATCH (n:Component) RETURN count(n)")
-    long count();
-
+    public Set<Component> findChildrenByType(String uuid, String type) {
+        return set("MATCH (start:Node {uuid: $uuid})-[*1..]->(n:Instance)-[:ISA|INSTANCE_OF*1..]->({name: $type}) " +
+                "RETURN DISTINCT n", ImmutableMap.of("uuid", uuid, "type", type));
+    }
 }

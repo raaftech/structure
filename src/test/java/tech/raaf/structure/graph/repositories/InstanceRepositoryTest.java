@@ -3,9 +3,7 @@ package tech.raaf.structure.graph.repositories;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.neo4j.core.GraphDatabase;
-import org.springframework.transaction.annotation.Transactional;
+import tech.raaf.structure.base.Context;
 import tech.raaf.structure.schema.TypeSchemaTest;
 import tech.raaf.structure.graph.Component;
 import tech.raaf.structure.graph.Group;
@@ -16,18 +14,14 @@ import static org.junit.Assert.*;
 
 public class InstanceRepositoryTest extends TypeSchemaTest {
 
-    @Autowired
-    InstanceRepository instanceRepository;
-    @Autowired
-    TypeRepository typeRepository;
-    @Autowired
-    GraphDatabase graphDatabase;
+    private final InstanceRepository instanceRepository = Context.getInstanceRepository();
+    private final TypeRepository typeRepository = Context.getTypeRepository();
 
-    private static Group group;
-    private static Component parent, child01, child02;
+    // GraphTest deletes the graph before each test, so make them again
+    private Group group;
+    private Component parent, child01, child02;
 
     @Before
-    @Transactional
     public void setUp() throws Exception {
         Type groupingType = typeRepository.findOneByName("Group");
         assertNotNull(groupingType);
@@ -35,40 +29,32 @@ public class InstanceRepositoryTest extends TypeSchemaTest {
         assertNotNull(parentType);
         Type childType = typeRepository.findOneByName("Linux");
         assertNotNull(childType);
-        if (group == null) {
-            group = new Group(
-                    mapper.createObjectNode()
-                            .put("name", "Group")
-                            .put("desc", "A description."),
-                    groupingType);
-        }
-        if (parent == null) {
-            parent = new Component(mapper.createObjectNode()
-                    .put("name", "parent")
-                    .put("desc", "Parent.")
-                    .put("ver", "1")
-                    .put("shortName", "parent")
-                    .put("longName", "parent"), parentType);
-            group.getGroupees().add(parent);
-        }
-        if (child01 == null) {
-            child01 = new Component(mapper.createObjectNode()
-                    .put("name", "child")
-                    .put("desc", "Child 01.")
-                    .put("ver", "1")
-                    .put("shortName", "child")
-                    .put("longName", "child"), childType);
-            parent.addComponent(child01);
-        }
-        if (child02 == null) {
-            child02 = new Component(mapper.createObjectNode()
-                    .put("name", "child")
-                    .put("desc", "Child 02.")
-                    .put("ver", "1")
-                    .put("shortName", "child")
-                    .put("longName", "child"), childType);
-            parent.addComponent(child02);
-        }
+        group = new Group(
+                mapper.createObjectNode()
+                        .put("name", "Group")
+                        .put("desc", "A description."),
+                groupingType);
+        parent = new Component(mapper.createObjectNode()
+                .put("name", "parent")
+                .put("desc", "Parent.")
+                .put("ver", "1")
+                .put("shortName", "parent")
+                .put("longName", "parent"), parentType);
+        group.getGroupees().add(parent);
+        child01 = new Component(mapper.createObjectNode()
+                .put("name", "child")
+                .put("desc", "Child 01.")
+                .put("ver", "1")
+                .put("shortName", "child")
+                .put("longName", "child"), childType);
+        parent.addComponent(child01);
+        child02 = new Component(mapper.createObjectNode()
+                .put("name", "child")
+                .put("desc", "Child 02.")
+                .put("ver", "1")
+                .put("shortName", "child")
+                .put("longName", "child"), childType);
+        parent.addComponent(child02);
         group.save();
     }
 

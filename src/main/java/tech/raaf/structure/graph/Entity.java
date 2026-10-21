@@ -8,17 +8,8 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import io.vertx.core.json.JsonObject;
 import org.apache.commons.lang3.tuple.Pair;
-import org.neo4j.graphdb.Direction;
-import org.neo4j.graphdb.Node;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.annotation.Transient;
-import org.springframework.data.neo4j.annotation.GraphId;
-import org.springframework.data.neo4j.annotation.Indexed;
-import org.springframework.data.neo4j.fieldaccess.DynamicProperties;
-import org.springframework.data.neo4j.fieldaccess.DynamicPropertiesContainer;
-import org.springframework.data.neo4j.support.Neo4jTemplate;
-import org.springframework.data.neo4j.support.index.IndexType;
 import tech.raaf.structure.base.Configuration;
 import tech.raaf.structure.base.Context;
 import tech.raaf.structure.bus.GenericActor;
@@ -47,33 +38,18 @@ import static io.vertx.core.json.Json.mapper;
 public class Entity {
 
     /* Logging object. */
-    @Transient
     private final static Logger log = LoggerFactory.getLogger(Entity.class);
 
     /* Entity repository. Used for querying the graph. */
     private NodeRepository nodeRepository = Context.getNodeRepository();
     private TypeRepository typeRepository = Context.getTypeRepository();
-    private Neo4jTemplate neo4jTemplate;
-
-    public void setNeo4jTemplate(Neo4jTemplate neo4jTemplate) {
-        this.neo4jTemplate = neo4jTemplate;
-    }
-
-    /* Internal graph database node id. */
-    @GraphId
-    private Long id;
-
     /* Main key value/pairs: bundle, type, name, desc, uuid. */
-    @Indexed(indexType = IndexType.FULLTEXT, indexName = "bundle")
     private String bundle;
 
-    @Indexed(indexType = IndexType.FULLTEXT, indexName = "name")
     private String name;
 
-    @Indexed(indexType = IndexType.FULLTEXT, indexName = "desc")
     private String desc;
 
-    @Indexed(indexType = IndexType.FULLTEXT, indexName = "uuid")
     private String uuid;
 
     /**
@@ -91,21 +67,19 @@ public class Entity {
     private String path;
 
     /* Dynamic property containers for inline data and files. */
-    private DynamicProperties data = new DynamicPropertiesContainer();
-    private DynamicProperties file = new DynamicPropertiesContainer();
+    private Map<String, Object> data = new HashMap<>();
+    private Map<String, Object> file = new HashMap<>();
 
     /* A holder for relations to be written by persistRelations().
      * From left to right, the triple should contain the relationship name,
      * the direction (incoming or outgoing) and the set of UUIDs
      * of the nodes that should be related by this relationship. */
-    @Transient
     private Set<Triple<String, String, Set<String>>> relations;
 
     /* Constraints are temporarily stored in this field. The field is a map from a string
      * to a list. The string of that map is the relation name that is constrainted. The list
      * contains tuples of Cardinality + UUID.
      */
-    @Transient
     private Map<String, List<Pair<Constraint.Cardinality, UUID>>> constraints;
 
     /*
@@ -123,15 +97,7 @@ public class Entity {
             "INSTANCE_OF", "APPLIES_TO", "GIVES_CAPABILITY"
     );
 
-    /* Empty constructor for Spring Data Neo4j's purposes. */
-    public Entity() {
-        this.neo4jTemplate = Context.getNeo4jTemplate();
-    }
-
-    // Allow construction of Entity with a specific neo4j template, for testing purposes
-    public Entity(Neo4jTemplate neo4jTemplate) {
-        this.neo4jTemplate = neo4jTemplate;
-    }
+    public Entity() {}
 
     /* Builders */
     public static class ResultBuilder {
@@ -257,15 +223,15 @@ public class Entity {
     }
 
     public Map<String, Object> getData() {
-        return data.asMap();
+        return data;
     }
 
     public Map<String, Object> getFiles() {
-        return file.asMap();
+        return file;
     }
 
     public Map<String, Object> getFile() {
-        return file.asMap();
+        return file;
     }
 
     public String[] getIdentity() {
@@ -322,11 +288,11 @@ public class Entity {
     }
 
     public void setData(Map<String, Object> map) {
-        this.data.setPropertiesFrom(map);
+        this.data = new HashMap<>(map);
     }
 
     public void setFile(Map<String, Object> map) {
-        this.file.setPropertiesFrom(map);
+        this.file = new HashMap<>(map);
     }
 
     public void setRelations(Set<Triple<String, String, Set<String>>> relations) {
@@ -418,23 +384,21 @@ public class Entity {
     }
 
 
+    // A uuid identifies an entity
     @Override
     public boolean equals(Object other) {
         if (this == other)
             return true;
 
-        if (id == null)
+        if (uuid == null || !(other instanceof Entity))
             return false;
 
-        if (!(other instanceof Entity))
-            return false;
-
-        return id.equals(((Entity) other).id);
+        return uuid.equals(((Entity) other).uuid);
     }
 
     @Override
     public int hashCode() {
-        return id == null ? System.identityHashCode(this) : id.hashCode();
+        return uuid == null ? System.identityHashCode(this) : uuid.hashCode();
     }
 
 
@@ -500,24 +464,24 @@ public class Entity {
         final List<String> conditions = new ArrayList<>();
         // The keys go into the query text, the values are parameters
         identityProperties.stream()
-                .filter(data::hasProperty)
+                .filter(data::containsKey)
                 .forEach(id -> {
                     final String param = "p" + params.size();
-                    conditions.add("n." + escape("data-" + id) + " = {" + param + "}");
-                    params.put(param, toPropertyValue(data.getProperty(id)));
+                    conditions.add("n." + Graph.escape("data-" + id) + " = $" + param);
+                    params.put(param, toPropertyValue(data.get(id)));
                 });
         // name is not part of the data map, but we can identify on it
         if (identityProperties.contains("name")) {
             final String param = "p" + params.size();
-            conditions.add("n.name = {" + param + "}");
+            conditions.add("n.name = $" + param);
             params.put(param, getName());
         }
 
-        final String query = "MATCH (n:" + escape("type:" + label) + ") " +
+        final String query = "MATCH (n:" + Graph.escape("type:" + label) + ") " +
                 (conditions.isEmpty() ? "" : "WHERE " + String.join(" AND ", conditions) + " ") +
                 "RETURN n.uuid AS uuid";
         final Set<String> duplicates = new HashSet<>();
-        neo4jTemplate.query(query, params).forEach(row -> duplicates.add((String) row.get("uuid")));
+        Graph.query(query, params).forEach(row -> duplicates.add((String) row.get("uuid")));
         return duplicates;
     }
 
@@ -597,20 +561,14 @@ public class Entity {
             }
         }
 
-        final List<String> classLabels = maybeClassLabels.get();
+        write(maybeClassLabels.get());
+    }
 
+    // Write this entity without validation; toGraph validates first
+    void write(List<String> classLabels) {
         final Set<String> oldLabels = persist();
         persistRelations();
         persistLabels(oldLabels, classLabels);
-    }
-
-    public Node getPersistentState() {
-        return nodeRepository.findGraphNodeByUuid(uuid);
-    }
-
-    // Put a label, relationship type or property key in backticks
-    static String escape(String name) {
-        return "`" + name.replace("`", "``") + "`";
     }
 
     // Property values must be primitives, strings or lists
@@ -624,10 +582,11 @@ public class Entity {
      *
      * @return The labels of the node before the write.
      */
+    @SuppressWarnings("unchecked")
     private Set<String> persist() {
         final Map<String, Object> properties = new HashMap<>();
-        data.asMap().forEach((key, value) -> properties.put("data-" + key, toPropertyValue(value)));
-        file.asMap().forEach((key, value) -> properties.put("file-" + key, value));
+        data.forEach((key, value) -> properties.put("data-" + key, toPropertyValue(value)));
+        file.forEach((key, value) -> properties.put("file-" + key, value));
         if (bundle != null) {
             properties.put("bundle", bundle);
         }
@@ -657,11 +616,11 @@ public class Entity {
         final Map<String, Object> params = new HashMap<>();
         params.put("uuid", uuid);
         final Set<String> oldLabels = new HashSet<>();
-        for (Map<String, Object> row : neo4jTemplate.query("MATCH (n:Node {uuid: {uuid}}) RETURN n", params)) {
-            final Node node = (Node) row.get("n");
-            node.getLabels().forEach(label -> oldLabels.add(label.name()));
+        for (Map<String, Object> row : Graph.query(
+                "MATCH (n:Node {uuid: $uuid}) RETURN labels(n) AS labels, keys(n) AS keys", params)) {
+            oldLabels.addAll((List<String>) row.get("labels"));
             // A null value removes the property
-            for (String key : node.getPropertyKeys()) {
+            for (String key : (List<String>) row.get("keys")) {
                 if (!properties.containsKey(key) && !key.equals("created") && !key.startsWith("kv-")) {
                     properties.put(key, null);
                 }
@@ -669,9 +628,9 @@ public class Entity {
         }
 
         params.put("props", properties);
-        neo4jTemplate.query("MERGE (n:Node {uuid: {uuid}}) " +
+        Graph.query("MERGE (n:Node {uuid: $uuid}) " +
                 "ON CREATE SET n.created = timestamp() " +
-                "SET n += {props}", params);
+                "SET n += $props", params);
         return oldLabels;
     }
 
@@ -701,22 +660,22 @@ public class Entity {
 
     /**
      * Given a name of a domain class that can be mapped to the graph, return the labels
-     * SDN needs to map onto objects of that class.
+     * that NodeMapper uses to map nodes onto objects of that class.
      *
      * @param nodeEntityName The name of the SDN mapped domain class.
-     * @return Optionally a list of labels needed by SDN.
+     * @return Optionally a list of class labels.
      */
-    private static Optional<List<String>> getClassLabels(String nodeEntityName) {
+    static Optional<List<String>> getClassLabels(String nodeEntityName) {
         // A map containing the labels needed per nodeEntityName
         Map<String, List<String>> labelsPerType = ImmutableMap.<String, List<String>>builder()
-                .put("Controller", ImmutableList.of("_Controller", "Controller", "Instrument", "Instance", "Node"))
-                .put("Marker", ImmutableList.of("_Marker", "Marker", "Instrument", "Instance", "Node"))
-                .put("Parser", ImmutableList.of("_Parser", "Parser", "Instrument", "Instance", "Node"))
-                .put("Component", ImmutableList.of("_Component", "Component", "Instance", "Node"))
-                .put("Profile", ImmutableList.of("_Profile", "Profile", "Instance", "Node"))
-                .put("Result", ImmutableList.of("_Result", "Result", "Instance", "Node"))
-                .put("Group", ImmutableList.of("_Group", "Group", "Instance", "Node"))
-                .put("Type", ImmutableList.of("_Type", "Type", "Node"))
+                .put("Controller", ImmutableList.of("Controller", "Instrument", "Instance", "Node"))
+                .put("Marker", ImmutableList.of("Marker", "Instrument", "Instance", "Node"))
+                .put("Parser", ImmutableList.of("Parser", "Instrument", "Instance", "Node"))
+                .put("Component", ImmutableList.of("Component", "Instance", "Node"))
+                .put("Profile", ImmutableList.of("Profile", "Instance", "Node"))
+                .put("Result", ImmutableList.of("Result", "Instance", "Node"))
+                .put("Group", ImmutableList.of("Group", "Instance", "Node"))
+                .put("Type", ImmutableList.of("Type", "Node"))
                 .build();
 
         return labelsPerType.containsKey(nodeEntityName) ?
@@ -746,12 +705,12 @@ public class Entity {
 
         final String remove = oldLabels.stream()
                 .filter(label -> !labels.contains(label))
-                .map(Entity::escape)
+                .map(Graph::escape)
                 .collect(Collectors.joining(":"));
         final String set = labels.stream()
-                .map(Entity::escape)
+                .map(Graph::escape)
                 .collect(Collectors.joining(":"));
-        neo4jTemplate.query("MATCH (n:Node {uuid: {uuid}}) " +
+        Graph.query("MATCH (n:Node {uuid: $uuid}) " +
                 (remove.isEmpty() ? "" : "REMOVE n:" + remove + " ") +
                 "SET n:" + set, ImmutableMap.of("uuid", uuid));
     }
@@ -813,15 +772,15 @@ public class Entity {
             types have a unique constraint on their names.
              */
             final boolean queryableByName = isQueryableByName.test(relation.getMiddle(), rname);
-            final String query = "MATCH (a:Node {uuid: {from}}), (b:Node {uuid: {to}}) " +
-                    "MERGE (a)-[:" + escape(rname) + "]->(b)";
+            final String query = "MATCH (a:Node {uuid: $from}), (b:Node {uuid: $to}) " +
+                    "MERGE (a)-[:" + Graph.escape(rname) + "]->(b)";
 
             relation.getRight().forEach(identifier -> {
                 final String peer = queryableByName && !GenericActor.isUuid(identifier) ?
                         typeRepository.findOneByName(identifier).getUuid() : identifier;
                 log.debug("Merging {} \"{}\" relation between \"{}\" and \"{}\"",
                         relation.getMiddle(), rname, uuid, peer);
-                neo4jTemplate.query(query, ImmutableMap.of(
+                Graph.query(query, ImmutableMap.of(
                         "from", outgoing ? uuid : peer,
                         "to", outgoing ? peer : uuid));
             });
@@ -830,9 +789,9 @@ public class Entity {
 
     private boolean doesPeerExist(String peerIdentifier, boolean queryableByName) {
         if (GenericActor.isUuid(peerIdentifier)) {
-            final String exists = "MATCH (n:Node {uuid: {uuid}}) RETURN count(n) AS count";
-            return ((Number) neo4jTemplate.query(exists, ImmutableMap.of("uuid", peerIdentifier))
-                    .single().get("count")).longValue() > 0;
+            final String exists = "MATCH (n:Node {uuid: $uuid}) RETURN count(n) AS count";
+            return ((Number) Graph.query(exists, ImmutableMap.of("uuid", peerIdentifier))
+                    .get(0).get("count")).longValue() > 0;
         } else if (queryableByName) {
             return typeRepository.findOneByName(peerIdentifier) != null;
         } else {

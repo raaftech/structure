@@ -8,10 +8,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tech.raaf.structure.annotations.SchemaPath;
 import tech.raaf.structure.base.Configuration;
-import tech.raaf.structure.graph.Graph;
 import tech.raaf.structure.bus.GenericActor;
 import tech.raaf.structure.graph.Entity;
-import tech.raaf.structure.graph.Instance;
 import tech.raaf.structure.graph.Result;
 import tech.raaf.structure.helper.ProcessRunner;
 
@@ -312,16 +310,8 @@ public class TaskManager extends GenericActor {
             }
             try {
                 Result result = resultBuilder.buildAndStore();
-                Instance origin = result.add(UUID.fromString(job.metadata.get("originUuid").asText()));
-                /*
-                result.add returns the origin instance. Saving the origin moves RESULTS to the new result.
-                buildAndStore() already stored the result, so the save does not cascade to it. Save the result
-                too, to write NEXT_RESULT from the previous result. One transaction keeps the chain whole.
-                 */
-                Graph.transaction(() -> {
-                    origin.save();
-                    result.save();
-                });
+                // Makes the result the head of the result chain of the origin, in one statement
+                result.add(UUID.fromString(job.metadata.get("originUuid").asText()));
                 log.info(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(task.toJson()));
             } catch (JsonProcessingException e) {
                 if (Configuration.isTraceModeOn()) {

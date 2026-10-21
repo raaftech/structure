@@ -8,11 +8,8 @@ import com.google.common.collect.ImmutableSet;
 import joptsimple.internal.Strings;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.neo4j.graphdb.Direction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.neo4j.annotation.Fetch;
-import org.springframework.data.neo4j.annotation.RelatedTo;
 import tech.raaf.structure.base.Configuration;
 import tech.raaf.structure.base.Context;
 import tech.raaf.structure.graph.repositories.TypeRepository;
@@ -48,24 +45,6 @@ public class Profile extends Instance {
     private static final TypeRepository typeRepository = Context.getTypeRepository();
     private static final Logger log = LoggerFactory.getLogger(Profile.class);
 
-    @RelatedTo(
-            type="APPLIES_TO",
-            direction= Direction.OUTGOING,
-            elementClass = Type.class,
-            enforceTargetType = true
-    )
-    @Fetch
-    private Type appliesTo;
-
-    @RelatedTo(
-            type="PROVIDED_BY",
-            direction=Direction.OUTGOING,
-            elementClass = Type.class,
-            enforceTargetType = true
-    )
-    @Fetch
-    private Type providedBy;
-
     public static class Builder {
         ObjectNode data;
         public Builder(ObjectNode data) {
@@ -79,7 +58,7 @@ public class Profile extends Instance {
     }
 
     public Profile() {
-        // empty constructor for Spring Data Neo4j
+        // empty constructor for NodeMapper
     }
 
     private Profile(ObjectNode data, Type profileType) {
@@ -87,7 +66,11 @@ public class Profile extends Instance {
     }
 
     public Type getAppliesTo() {
-        return appliesTo;
+        return relatedOne("-[:APPLIES_TO]->(b:Type)");
+    }
+
+    private Type getProvidedBy() {
+        return relatedOne("-[:PROVIDED_BY]->(b:Type)");
     }
 
     /**
@@ -184,7 +167,7 @@ public class Profile extends Instance {
      * @return See {@link Profile#asDetectionConsumable(String)}
      */
     public String asDetectionConsumable() {
-        return asDetectionConsumable(providedBy.getName());
+        return asDetectionConsumable(getProvidedBy().getName());
     }
 
     /**

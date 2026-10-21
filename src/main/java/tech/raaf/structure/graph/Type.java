@@ -8,17 +8,10 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import org.apache.commons.lang3.Validate;
+import com.google.common.collect.ImmutableMap;
 import org.apache.commons.lang3.tuple.Pair;
-import org.neo4j.graphdb.Direction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.annotation.Transient;
-import org.springframework.data.neo4j.annotation.Fetch;
-import org.springframework.data.neo4j.annotation.NodeEntity;
-import org.springframework.data.neo4j.annotation.RelatedTo;
-import org.springframework.data.neo4j.annotation.RelatedToVia;
-import org.springframework.data.neo4j.fieldaccess.DynamicProperties;
-import org.springframework.data.neo4j.fieldaccess.DynamicPropertiesContainer;
 import tech.raaf.structure.base.Configuration;
 import tech.raaf.structure.base.Context;
 import tech.raaf.structure.graph.repositories.TypeRepository;
@@ -40,33 +33,15 @@ import static io.vertx.core.json.Json.mapper;
  * @author Rubin Simons <rubin.simons@raaftech.com>
  * @since 2014-11-27
  */
-@NodeEntity
 public class Type extends Node {
 
     final static Logger log = LoggerFactory.getLogger(Type.class);
 
-    @RelatedTo(type="ISA", direction = Direction.OUTGOING, elementClass = Type.class, enforceTargetType = true)
-    private Type isa;
+    int glyphId;
+    boolean isAbstract;
 
-    @RelatedTo(type="ISA", direction = Direction.INCOMING, elementClass = Type.class, enforceTargetType = true)
-    @SuppressWarnings("unused")
-    private Set<Type> childIsaSet;
-
-    private int glyphId;
-    private boolean isAbstract;
-
-    @RelatedTo(type="PROVIDED_BY", direction = Direction.INCOMING, elementClass = Instrument.class, enforceTargetType = true)
-    @Fetch
-    private Set<Instrument> instruments;
-
-    @RelatedTo(type="IMPLEMENTS", direction = Direction.OUTGOING)
-    @Fetch
-    private Set<Type> implementsProtocols;
-
-    @RelatedToVia(type="CONSTRAINTS", direction = Direction.OUTGOING)
+    // The constraints of a new type. A persisted type reads them from the graph.
     private Set<Constraint> outgoingConstraints;
-    @RelatedToVia(type="CONSTRAINTS", direction = Direction.INCOMING)
-    private Set<Constraint> incomingConstraints;
 
     /*
     This field contains names of data properties that instances of this type can have.
@@ -75,16 +50,14 @@ public class Type extends Node {
     This way we can define what makes instances of a particular type unique.
     An example would be the `addr` data property of an `IpAddress` type.
      */
-    private Set<String> identity;
+    Set<String> identity;
 
-    public DynamicProperties kv = new DynamicPropertiesContainer();
+    Map<String, Object> kv = new HashMap<>();
 
     // isaUuid exists only to temporarily save a UUID of a Type's parent
     // in case the parent doesn't exist in the database yet.
-    @Transient
     private String isaUuid;
 
-    @Transient
     private TypeRepository typeRepository = Context.getTypeRepository();
 
     /****************/
@@ -137,27 +110,8 @@ public class Type extends Node {
     /* Public Methods */
     /******************/
 
-    @Override
-    public int hashCode() {
-        if (getId() != null) {
-            return getId().hashCode();
-        } else {
-            return super.hashCode();
-        }
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        return hashCode() == o.hashCode();
-    }
-
-
     public Set<Type> getChildIsaSet() {
-        Graph.transaction(() -> Context.getNeo4jTemplate().fetch(childIsaSet));
-        return childIsaSet;
+        return persisted ? related("<-[:ISA]-(b:Type)") : new HashSet<>();
     }
 
     /**
@@ -214,6 +168,19 @@ public class Type extends Node {
      * @return A tuple containing whether verification succeeded, and a set of that may
      * contain errors encountered during validation.
      */
+    // The own constraints of this type, in one direction
+    private Set<Constraint> getOwnConstraints(Direction direction) {
+        if (!persisted) {
+            return direction == Direction.OUTGOING && outgoingConstraints != null ?
+                    outgoingConstraints : new HashSet<>();
+        }
+        final String pattern = direction == Direction.OUTGOING ?
+                "(a:Type {uuid: $uuid})-[r:CONSTRAINTS]->(b:Type)" :
+                "(a:Type)-[r:CONSTRAINTS]->(b:Type {uuid: $uuid})";
+        return Constraint.fromRows(Graph.query("MATCH " + pattern + " " + Constraint.COLUMNS,
+                ImmutableMap.of("uuid", getUuid())));
+    }
+
     public Pair<Boolean, Set<EntityValidationError>> validateEntityToConstraints(Entity entity) {
         if (!entity.isInstance()) {
             throw new IllegalArgumentException(new EntityValidationError(500, getUuid(), getName(),
@@ -240,7 +207,7 @@ public class Type extends Node {
         generalizations of other constraints in the set, we don't want those so we remove them.
          */
         Set<Constraint> constraintsToValidateTo = getApplicableConstraints(
-                typeRepository.getInheritedOutgoingConstraints(getUuid()), outgoingConstraints);
+                typeRepository.getInheritedOutgoingConstraints(getUuid()), getOwnConstraints(Direction.OUTGOING));
 
         /*
         There are a few relationships that aren't inter-instance, but between instances and types.
@@ -337,7 +304,8 @@ public class Type extends Node {
      * @return The applicable outgoing constraints.
      */
     public Set<Constraint> getOutgoingConstraints() {
-        return getApplicableConstraints(typeRepository.getInheritedOutgoingConstraints(getUuid()), outgoingConstraints);
+        return getApplicableConstraints(typeRepository.getInheritedOutgoingConstraints(getUuid()),
+                getOwnConstraints(Direction.OUTGOING));
     }
 
     /**
@@ -345,17 +313,12 @@ public class Type extends Node {
      * @return The applicable incoming constraints.
      */
     public Set<Constraint> getIncomingConstraints() {
-        return getApplicableConstraints(typeRepository.getInheritedIncomingConstraints(getUuid()), incomingConstraints);
+        return getApplicableConstraints(typeRepository.getInheritedIncomingConstraints(getUuid()),
+                getOwnConstraints(Direction.INCOMING));
     }
 
     public Type getIsa() {
-        // Sometimes the parent isn't properly loaded from the database
-        // I don't know why exactly, and don't have time to find out. This is a workaround.
-        // TODO: find out what's going on here
-        if (isa == null || isa.getName() == null) {
-            Graph.transaction(() -> Context.getNeo4jTemplate().fetch(isa));
-        }
-        return isa;
+        return persisted ? relatedOne("-[:ISA]->(b:Type)") : null;
     }
 
     public Type setIsa(Type isa) {
@@ -384,7 +347,7 @@ public class Type extends Node {
         this.isaUuid = isaUuid;
     }
 
-    public DynamicProperties getKv() {
+    public Map<String, Object> getKv() {
         return kv;
     }
 
@@ -402,7 +365,7 @@ public class Type extends Node {
     }
 
     public Set<Instrument> getInstruments() {
-        return instruments;
+        return persisted ? related("<-[:PROVIDED_BY]-(b:Instrument)") : new HashSet<>();
     }
 
     public Type addImplementedProtocol(Type protocol) {
@@ -419,10 +382,8 @@ public class Type extends Node {
             return this;
         }
 
-        if (implementsProtocols == null) {
-            implementsProtocols = new HashSet<>();
-        }
-        implementsProtocols.add(protocol);
+        Graph.query("MATCH (a:Type {uuid: $uuid}), (b:Type {uuid: $protocol}) MERGE (a)-[:IMPLEMENTS]->(b)",
+                ImmutableMap.of("uuid", getUuid(), "protocol", protocol.getUuid()));
 
         return this;
     }
@@ -446,7 +407,7 @@ public class Type extends Node {
     }
 
     public boolean implementsProtocol(Type protocol) {
-        return implementsProtocols == null ? false : implementsProtocols.contains(protocol);
+        return protocol != null && related("-[:IMPLEMENTS]->(b:Type)").contains(protocol);
     }
 
     public boolean isOfType(String type) {
@@ -459,11 +420,6 @@ public class Type extends Node {
      */
     public boolean isAbstract() {
         return isAbstract;
-    }
-
-    public Type save() {
-        typeRepository.save(this);
-        return this;
     }
 
     public ObjectNode toJson() {

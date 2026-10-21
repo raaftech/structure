@@ -5,12 +5,8 @@ import com.fasterxml.jackson.databind.type.MapType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.google.common.io.Files;
 import org.apache.commons.lang3.Validate;
-import org.neo4j.graphdb.Direction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.annotation.Transient;
-import org.springframework.data.neo4j.annotation.Fetch;
-import org.springframework.data.neo4j.annotation.RelatedTo;
 import tech.raaf.structure.base.Configuration;
 import tech.raaf.structure.base.Context;
 import tech.raaf.structure.exceptions.ComponentBuilderException;
@@ -39,23 +35,11 @@ public class Controller extends Instrument {
     private static final String STATEMAP = "stateMap";
     private static final String TIMEALLOCATED = "timeAllocated";
 
-    @RelatedTo(type="GIVES_CAPABILITY", direction=Direction.OUTGOING)
-    @Fetch
+    // The types of a new controller. A persisted controller reads them from the graph.
     private Type capability;
-
-    @RelatedTo(type="APPLIES_TO", direction=Direction.OUTGOING)
-    @Fetch
     private Set<Type> appliesTo;
-
-    @RelatedTo(type="PRODUCED", direction=Direction.OUTGOING)
-    @Fetch
-    private Set<Result> results;
-
-    @RelatedTo(type="PROVIDED_BY", direction=Direction.OUTGOING)
-    @Fetch
     private Type providedBy;
 
-    @Transient
     private static TypeRepository typeRepository = Context.getTypeRepository();
 
     private static final Logger log = LoggerFactory.getLogger(Controller.class);
@@ -167,7 +151,7 @@ public class Controller extends Instrument {
     }
 
     public Controller() {
-        // empty constructor for Spring Data Neo4j
+        // empty constructor for NodeMapper
     }
 
     private Controller(ObjectNode json) {
@@ -193,23 +177,23 @@ public class Controller extends Instrument {
     }
 
     public Type getCapability() {
-        return capability;
+        return persisted ? relatedOne("-[:GIVES_CAPABILITY]->(b:Type)") : capability;
     }
 
     public Set<Type> getHandledTypes() {
-        return appliesTo;
+        return persisted ? related("-[:APPLIES_TO]->(b:Type)") : appliesTo;
     }
 
     public Optional<ObjectNode> getArguments() {
         Optional<ObjectNode> arguments = Optional.empty();
         // Check if we have an arguments property and it's not an empty string
         if (
-                data.hasProperty(ARGUMENTS) &&
-                !(Objects.equals("", data.getProperty(ARGUMENTS)))
+                data.containsKey(ARGUMENTS) &&
+                !(Objects.equals("", data.get(ARGUMENTS)))
         ) {
             // Try to map it to an ObjectNode and create an Optional of it.
             try {
-                arguments = Optional.of((ObjectNode) mapper.readTree((String) data.getProperty(ARGUMENTS)));
+                arguments = Optional.of((ObjectNode) mapper.readTree((String) data.get(ARGUMENTS)));
             } catch (IOException e) {
                 if (Configuration.isTraceModeOn()) {
                     log.error("Error while trying to get arguments object from " + getName());
@@ -231,8 +215,8 @@ public class Controller extends Instrument {
             } else {
                 extension = Optional.empty();
             }
-        } else if (data.hasProperty("extension")) {
-            extension = Optional.of((String) data.getProperty("extension"));
+        } else if (data.containsKey("extension")) {
+            extension = Optional.of((String) data.get("extension"));
         } else {
             extension = Optional.empty();
         }
@@ -246,23 +230,28 @@ public class Controller extends Instrument {
      * @return A long optional, containing the allocated time if it's available.
      */
     public Optional<Long> getTimeAllocated() {
-        return data.hasProperty(TIMEALLOCATED) ?
+        return data.containsKey(TIMEALLOCATED) ?
             // numerical types are inserted as doubles, so round it to a long
-            Optional.of(((Integer)data.getProperty(TIMEALLOCATED)).longValue()) :
+            Optional.of(((Number) data.get(TIMEALLOCATED)).longValue()) :
             Optional.empty();
     }
 
     public boolean isSubjectIsLocal() {
-        return  (boolean) data.getProperty(SUBJECTLOCAL);
+        return  (boolean) data.get(SUBJECTLOCAL);
     }
 
     public Type getProvidedBy() {
-        return providedBy;
+        return persisted ? relatedOne("-[:PROVIDED_BY]->(b:Type)") : providedBy;
+    }
+
+    @Override
+    protected Entity toEntity() {
+        return toEntity(capability, appliesTo, providedBy);
     }
 
     public Optional<String> getInterpreter() {
-        return data.hasProperty(INTERPRETER) ?
-                Optional.of((String) data.getProperty(INTERPRETER)) :
+        return data.containsKey(INTERPRETER) ?
+                Optional.of((String) data.get(INTERPRETER)) :
                 Optional.empty();
     }
 
@@ -276,9 +265,9 @@ public class Controller extends Instrument {
 
     public Optional<ObjectNode> getStateMapAsJson() {
         Optional<ObjectNode> maybeStateMap;
-        if (data.hasProperty(STATEMAP)) {
+        if (data.containsKey(STATEMAP)) {
             try {
-                maybeStateMap = Optional.of((ObjectNode) mapper.readTree((String) data.getProperty(STATEMAP)));
+                maybeStateMap = Optional.of((ObjectNode) mapper.readTree((String) data.get(STATEMAP)));
             } catch (IOException e) {
                 maybeStateMap = Optional.empty();
                 log.error("Error while deserializing statusmap of controller " + getName());
@@ -294,11 +283,11 @@ public class Controller extends Instrument {
 
     public Optional<Map<Integer, Result.State>> getStateMap() {
         Optional<Map<Integer, Result.State>> maybeStateMap;
-        if (data.hasProperty(STATEMAP)) {
+        if (data.containsKey(STATEMAP)) {
             TypeFactory typeFactory = mapper.getTypeFactory();
             MapType mapType = typeFactory.constructMapType(HashMap.class, Integer.class, Result.State.class);
             try {
-                maybeStateMap = Optional.of(mapper.readValue(data.getProperty(STATEMAP).toString(),
+                maybeStateMap = Optional.of(mapper.readValue(data.get(STATEMAP).toString(),
                             mapType));
             } catch (IOException e) {
                 maybeStateMap = Optional.empty();

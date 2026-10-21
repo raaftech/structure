@@ -3,9 +3,7 @@ package tech.raaf.structure.graph.repositories;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.neo4j.core.GraphDatabase;
-import org.springframework.transaction.annotation.Transactional;
+import tech.raaf.structure.base.Context;
 import tech.raaf.structure.schema.TypeSchemaTest;
 import tech.raaf.structure.graph.Component;
 import tech.raaf.structure.graph.Type;
@@ -18,18 +16,13 @@ import static org.junit.Assert.assertNotNull;
 
 public class ComponentRepositoryTest extends TypeSchemaTest {
 
-    @Autowired
-    ComponentRepository componentRepository;
-    @Autowired
-    TypeRepository typeRepository;
-    @Autowired
-    GraphDatabase graphDatabase;
+    private final ComponentRepository componentRepository = Context.getComponentRepository();
+    private final TypeRepository typeRepository = Context.getTypeRepository();
 
     private Type parentType;
     private Type childType;
 
     @Before
-    @Transactional
     public void setUp() throws Exception {
         parentType = typeRepository.findOneByName("Software");
         childType = typeRepository.findOneByName("Linux");

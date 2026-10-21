@@ -6,20 +6,9 @@ import com.google.common.collect.ImmutableSet;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
-import org.neo4j.graphdb.Direction;
-import org.neo4j.graphdb.Label;
-import org.neo4j.graphdb.Relationship;
-import org.neo4j.graphdb.Transaction;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.neo4j.core.GraphDatabase;
-import org.springframework.data.neo4j.support.Neo4jTemplate;
-import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.AnnotationConfigContextLoader;
-import org.springframework.transaction.annotation.Transactional;
-import tech.raaf.structure.base.SpringTestConfig;
+import com.google.common.collect.ImmutableMap;
+import tech.raaf.structure.GraphTest;
+import tech.raaf.structure.base.Context;
 import tech.raaf.structure.exceptions.EntityDeserializationException;
 import tech.raaf.structure.exceptions.JsonValidationException;
 import tech.raaf.structure.graph.repositories.NodeRepository;
@@ -32,11 +21,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 import static io.vertx.core.json.Json.mapper;
 import static junit.framework.TestCase.assertNull;
@@ -44,9 +34,7 @@ import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(loader = AnnotationConfigContextLoader.class, classes = SpringTestConfig.class)
-public class EntityTest {
+public class EntityTest extends GraphTest {
 
     // relationship names
     private static final String REL_ROOT = "root";
@@ -63,14 +51,8 @@ public class EntityTest {
     @Rule
     public ExpectedException exception = ExpectedException.none();
 
-    @Autowired
-    private NodeRepository nodeRepository;
-    @Autowired
-    private TypeRepository typeRepository;
-    @Autowired
-    private GraphDatabase graphDatabase;
-    @Autowired
-    private Neo4jTemplate neo4jTemplate;
+    private final NodeRepository nodeRepository = Context.getNodeRepository();
+    private final TypeRepository typeRepository = Context.getTypeRepository();
 
     private String createJson(String name, String desc, String meta, String file, String data) {
         if(data == null) return String.format("{\"name\": \"%s\", \"desc\": \"%s\",\"meta\": %s, \"file\": %s}", name, desc, meta, file);
@@ -96,8 +78,6 @@ public class EntityTest {
     }
 
     @Test
-    @Transactional
-    @Rollback
     public void testSimpleNodePersistence() {
         // create a new entity with name "generation 1" and labels Node and _Node
         Entity entity = new Entity();
@@ -115,9 +95,8 @@ public class EntityTest {
 //        assertEquals(entity, retrievedNode);
 
         // change the name of 'entity'
-        retrievedNode.setName("generation 2");
-        retrievedNode.setType("Component");
-        nodeRepository.save(retrievedNode);
+        Graph.query("MATCH (n:Node {uuid: $uuid}) SET n.name = $name",
+                ImmutableMap.of("uuid", retrievedNode.getUuid(), "name", "generation 2"));
 
         // make sure we can't find 'entity' in the db by it's old name anymore
         set1 = nodeRepository.findByName("generation 1");
@@ -130,9 +109,8 @@ public class EntityTest {
         retrievedNode = set2.iterator().next();
 //        assertEquals(entity, retrievedNode);
 
-        // make sure entity has only two labels, Node and _Node
-        org.neo4j.graphdb.Node node = entity.getPersistentState();
-        assertTrue(allLabelsMatch(node.getLabels(), "Node", "Type", "_Type", "type:generation_1"));
+        // make sure entity has only its class labels and its type label
+        assertTrue(allLabelsMatch(labels(entity.getUuid()), "Node", "Type", "type:generation_1"));
     }
 
     /**
@@ -142,11 +120,9 @@ public class EntityTest {
      * This test logs error messages because no relationships are defined for the test entity.
      */
     @Test
-    @Transactional
-    @Rollback
     public void testEntityUpdate() {
         final String uuid = UUID.randomUUID().toString();
-        Entity entity01 = new Entity(neo4jTemplate);
+        Entity entity01 = new Entity();
         entity01.setName("entity01");
         entity01.setUuid(uuid);
         entity01.setDesc("Test entity.");
@@ -154,14 +130,14 @@ public class EntityTest {
         entity01.toGraph();
 
         // Database should contain only one entity
-        assertEquals(1, StreamSupport.stream(nodeRepository.findAll().spliterator(), false).count());
+        assertEquals(1, nodeRepository.findAll().size());
 
         Node entity01Node = nodeRepository.findByUuid(uuid);
         assertNotNull(entity01Node);
         assertEquals(entity01.getName(), entity01Node.getName());
         assertEquals(entity01.getDesc(), entity01Node.getDesc());
 
-        Entity entity02 = new Entity(neo4jTemplate);
+        Entity entity02 = new Entity();
         entity02.setName("entity02");
         entity02.setUuid(uuid);
         entity02.setDesc("Test entity.");
@@ -169,16 +145,16 @@ public class EntityTest {
         entity02.toGraph();
 
         // Database should still only contain one entity
-        assertEquals(1, StreamSupport.stream(nodeRepository.findAll().spliterator(), false).count());
+        assertEquals(1, nodeRepository.findAll().size());
 
         Node entity02Node = nodeRepository.findByUuid(uuid);
         assertNotNull(entity02Node);
         assertEquals(entity02.getName(), entity02Node.getName());
         assertEquals(entity02.getDesc(), entity02Node.getDesc());
 
-        assertEquals(entity01Node.getId(), entity02Node.getId());
+        assertEquals(entity01Node.getUuid(), entity02Node.getUuid());
 
-        Entity entity03 = new Entity(neo4jTemplate);
+        Entity entity03 = new Entity();
         entity03.setName("entity03");
         entity03.setUuid(UUID.randomUUID().toString());
         entity03.setDesc("Test entity.");
@@ -186,12 +162,11 @@ public class EntityTest {
         entity03.toGraph();
 
         // Database should contain two entities
-        assertEquals(2, StreamSupport.stream(nodeRepository.findAll().spliterator(), false).count());
+        assertEquals(2, nodeRepository.findAll().size());
     }
 
     @Test
     public void testRootNodeCreationFromJson() throws Exception {
-        Transaction tx = graphDatabase.beginTx();
         final String bundlePath = "src/test/resources/bundles/simple";
         System.setProperty("bundlePath", bundlePath);
         final String rootFileLocation = bundlePath + "/root.type.json";
@@ -199,7 +174,6 @@ public class EntityTest {
 
         // deserialize root entity
         Entity rootNode = new ObjectMapper().readValue(getDataFromFile(rootFileLocation), Entity.class);
-        rootNode.setNeo4jTemplate(neo4jTemplate);
 
         // assert checks for simple fields
         final String rootUuid = "b1bc963a-19cc-4518-aecb-a35d028c49e3";
@@ -232,11 +206,8 @@ public class EntityTest {
         assertEquals(rootName, result.getName());
         assertEquals(rootDesc, result.getDesc());
 
-        // get the persisted state of the entity
-        org.neo4j.graphdb.Node node = rootNode.getPersistentState();
-
         // make sure the labels are correct
-        assertTrue(allLabelsMatch(node.getLabels(), "Node", "_Type", "Type", "type:Type"));
+        assertTrue(allLabelsMatch(labels(rootUuid), "Node", "Type", "type:Type"));
 
         System.out.println(typeRepository.findOneByName(rootName).toJson());
 
@@ -245,13 +216,10 @@ public class EntityTest {
         assertEquals(0, rootNode.getData().size());
 
         // get relationships
-        Set<Relationship> relationships = StreamSupport.stream(node.getRelationships().spliterator(), false)
-                .collect(Collectors.toSet());
-        assertEquals(0, relationships.size());
+        assertEquals(0, relationships(rootUuid).size());
 
         // deserialize component entity
         Entity componentNode = new ObjectMapper().readValue(getDataFromFile(componentFileLocation), Entity.class);
-        componentNode.setNeo4jTemplate(neo4jTemplate);
 
         // assert checks for simple fields
         final String componentUuid = "a79ce509-a021-4177-ae61-73abd01fb479";
@@ -281,17 +249,13 @@ public class EntityTest {
         assertEquals(componentName, result.getName());
         assertEquals(componentDesc, result.getDesc());
 
-        // get the persisted state of the entity
-        node = componentNode.getPersistentState();
-
         // check if an ISA exists between component and root
-        relationships = StreamSupport.stream(node.getRelationships().spliterator(), false)
-                .collect(Collectors.toSet());
+        List<Map<String, Object>> relationships = relationships(componentUuid);
         assertEquals(1, relationships.size());
-        Relationship relationship = relationships.iterator().next();
-        assertEquals(node, relationship.getStartNode());
-        assertEquals(rootNode.getPersistentState(), relationship.getEndNode());
-        assertEquals(REL_ISA, relationship.getType().name());
+        Map<String, Object> relationship = relationships.get(0);
+        assertEquals(componentUuid, relationship.get("start"));
+        assertEquals(rootUuid, relationship.get("end"));
+        assertEquals(REL_ISA, relationship.get("type"));
 
         // check if file contains 1 item and data is empty
         assertEquals(0, componentNode.getData().size());
@@ -309,11 +273,10 @@ public class EntityTest {
         assertTrue(dataSchema.has(ENTITY_FILE_CHECKSUM));
 
         // make sure the labels are correct
-        assertTrue(allLabelsMatch(node.getLabels(), "Node", "_Type", "Type", "type:Type", "type:Component"));
+        assertTrue(allLabelsMatch(labels(componentUuid), "Node", "Type", "type:Type", "type:Component"));
 
         // create a child of component called foo
         Entity componentChild = new Entity();
-        componentChild.setNeo4jTemplate(neo4jTemplate);
         Set<Triple<String, String, Set<String>>> rel = new HashSet<>();
         Set<String> uuids = new HashSet<>();
         uuids.add(componentUuid);
@@ -323,10 +286,8 @@ public class EntityTest {
         componentChild.setName("Foo");
         componentChild.toGraph();
 
-        assertTrue(allLabelsMatch(componentChild.getPersistentState().getLabels(), "Node", "_Type", "Type", "type:Type",
+        assertTrue(allLabelsMatch(labels(componentChild.getUuid()), "Node", "Type", "type:Type",
                "type:Component", "type:Foo"));
-        tx.failure();
-        tx.close();
     }
 
     /**
@@ -462,8 +423,6 @@ public class EntityTest {
     }
 
     @Test
-    @Transactional
-    @Rollback
     public void testAbstractType() throws Exception {
         String rootType = "  {" +
                 "    \"name\": \"Type\"," +
@@ -537,20 +496,30 @@ public class EntityTest {
         instanceEntity.toGraph();
     }
 
+    // The labels of a node in the graph
+    @SuppressWarnings("unchecked")
+    private static Set<String> labels(String uuid) {
+        return new HashSet<>((List<String>) Graph.query("MATCH (n:Node {uuid: $uuid}) RETURN labels(n) AS labels",
+                ImmutableMap.of("uuid", uuid)).get(0).get("labels"));
+    }
+
+    // The relationships of a node in the graph, in both directions
+    private static List<Map<String, Object>> relationships(String uuid) {
+        return Graph.query("MATCH (n:Node {uuid: $uuid})-[r]-() "
+                + "RETURN type(r) AS type, startNode(r).uuid AS start, endNode(r).uuid AS end",
+                ImmutableMap.of("uuid", uuid));
+    }
+
     /**
      * Check if a set of labels completely matches some strings
-     * @param labels The set of labels, usually provided by a neo4j backed node.
+     * @param labels The set of labels of a node.
      * @param keywords The strings to be matched
      * @return Are the names of the labels exactly the same as _all_ the given strings? Then true.
      */
-    private boolean allLabelsMatch(Iterable<Label> labels, String... keywords) {
+    private boolean allLabelsMatch(Set<String> labels, String... keywords) {
         final Set<String> match = Collections.unmodifiableSet(Stream.of(keywords).distinct().collect(Collectors.toSet()));
-        final Set<String> labelStrings = Collections.unmodifiableSet(
-                StreamSupport.stream(labels.spliterator(), true)
-                        .map(Label::name)
-                        .collect(Collectors.toSet()));
 
-        return match.size() == labelStrings.size() && labelStrings.stream().allMatch(match::contains);
+        return match.size() == labels.size() && labels.stream().allMatch(match::contains);
     }
 
     byte[] getDataFromFile(String fileLocation) throws IOException {

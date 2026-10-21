@@ -7,7 +7,6 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import com.google.common.collect.ImmutableMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tech.raaf.structure.base.Context;
 import tech.raaf.structure.helper.LambdaHelper;
 
 import java.io.IOException;
@@ -35,12 +34,11 @@ public class NodeSerializer extends StdSerializer<Node> {
     @Override
     public void serialize(Node value, JsonGenerator gen, SerializerProvider provider) throws IOException {
         // Sort by peer uuid, so that the output is the same each time
-        final String outgoing = "MATCH (a:Node {uuid: {uuid}})-[r]->(b) " +
+        final String outgoing = "MATCH (a:Node {uuid: $uuid})-[r]->(b) " +
                 "RETURN type(r) AS rel, b.uuid AS peer, r.forRelationship AS forRelationship, " +
                 "r.cardinality AS cardinality ORDER BY peer";
         final Map<String, List<Map<String, Object>>> relMap = new HashMap<>();
-        for (Map<String, Object> row : Context.getNeo4jTemplate().query(outgoing,
-                ImmutableMap.of("uuid", value.getUuid()))) {
+        for (Map<String, Object> row : Graph.query(outgoing, ImmutableMap.of("uuid", value.getUuid()))) {
             relMap.computeIfAbsent((String) row.get("rel"), k -> new ArrayList<>()).add(row);
         }
 

@@ -4,26 +4,24 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import io.vertx.core.DeploymentOptions;
-import org.neo4j.graphdb.Direction;
-import org.springframework.data.annotation.Transient;
-import org.springframework.data.neo4j.annotation.Fetch;
-import org.springframework.data.neo4j.annotation.NodeEntity;
-import org.springframework.data.neo4j.annotation.RelatedTo;
-import org.springframework.data.neo4j.fieldaccess.DynamicPropertiesContainer;
 import tech.raaf.structure.base.Configuration;
 import tech.raaf.structure.base.Context;
 import tech.raaf.structure.bus.InstanceActor;
 import tech.raaf.structure.graph.repositories.InstanceRepository;
-import tech.raaf.structure.graph.repositories.ResultRepository;
 import tech.raaf.structure.graph.repositories.TypeRepository;
 import tech.raaf.structure.helper.InstrumentRunner;
 import tech.raaf.structure.helper.JsonHelper;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -36,28 +34,15 @@ import static io.vertx.core.json.Json.mapper;
  * @author Rubin Simons <rubin.simons@raaftech.com>
  * @since 2014-11-27
  */
-@NodeEntity
 public abstract class Instance extends Node {
 
-    @RelatedTo(type="INSTANCE_OF", direction=Direction.OUTGOING)
-    @Fetch
+    // The type of a new instance. A persisted instance reads it from the graph.
     protected Type instanceOf;
 
-    @Transient
     protected static final InstanceRepository INSTANCE_REPOSITORY = Context.getInstanceRepository();
 
-    @Transient
     protected static final TypeRepository TYPE_REPOSITORY = Context.getTypeRepository();
 
-    @Transient
-    private static final ResultRepository resultRepository = Context.getResultRepository();
-
-    @RelatedTo(type="RESULTS", direction = Direction.OUTGOING)
-    @Fetch
-    private Result startOfResultChain;
-
-
-    @Transient
     JsonNode instanceData;
 
     /****************/
@@ -84,22 +69,18 @@ public abstract class Instance extends Node {
     /******************/
 
     public Type getInstanceOf() {
+        if (instanceOf == null && persisted) {
+            instanceOf = relatedOne("-[:INSTANCE_OF]->(b:Type)");
+        }
         return instanceOf;
     }
 
-    public void setInstanceOf(Type type) {
-        this.instanceOf = type;
-    }
-
     /**
-     * This method is transform JSON to DynamicProperties.
+     * This method is transform JSON to the data map.
      * @param properties The JSON to use for the properties.
      * @return The Instance setProperties was called on.
      */
     protected Instance setProperties(ObjectNode properties) {
-        if (data == null) {
-            data = new DynamicPropertiesContainer();
-        }
         boolean success = JsonHelper.validateToSchema(instanceOf.getSchema().getAsObjectNode(), properties);
         if (success) {
             // Name and desc are saved already, so we can remove those.
@@ -109,9 +90,9 @@ public abstract class Instance extends Node {
             while (iter.hasNext()) {
                 String key = iter.next();
                 if (properties.get(key).isObject()) {
-                    data.setProperty(key, properties.get(key));
+                    data.put(key, properties.get(key));
                 } else {
-                    data.setProperty(key, properties.get(key).asText());
+                    data.put(key, properties.get(key).asText());
                 }
             }
         } else {
@@ -153,31 +134,71 @@ public abstract class Instance extends Node {
         return type != null && isOfType(type.getName());
     }
 
-    // Get all the startOfResultChain belonging to this Instance
+    // Get the newest result of this Instance
     public Result getStartOfResultChain() {
-        return startOfResultChain;
+        return relatedOne("-[:RESULTS]->(b:Result)");
     }
 
+    /**
+     * Make a stored result the newest result of this instance. The
+     * previous newest result gets a NEXT_RESULT to the new one.
+     * @param result The result, which must be in the graph.
+     * @return This instance.
+     */
     public Instance addResult(Result result) {
-        if (startOfResultChain != null) {
-            startOfResultChain.setNext(result);
-        }
-        startOfResultChain = result;
-
+        Graph.query("MATCH (i:Node {uuid: $instance}), (new:Result {uuid: $result}) " +
+                "OPTIONAL MATCH (i)-[old:RESULTS]->(head:Result) " +
+                "DELETE old " +
+                "MERGE (i)-[:RESULTS]->(new) " +
+                "WITH head, new WHERE head IS NOT NULL " +
+                "MERGE (head)-[:NEXT_RESULT]->(new)",
+                ImmutableMap.of("instance", getUuid(), "result", result.getUuid()));
         return this;
     }
 
+    // An entity with the properties and relations of this instance
+    protected Entity toEntity() {
+        final Entity entity = new Entity();
+        entity.setUuid(getUuid());
+        entity.setName(getName());
+        entity.setDesc(getDesc());
+        entity.setBundle(getBundle());
+        entity.setPath(getPath());
+        entity.setChecksum(getChecksum());
+        entity.setData(data);
+        entity.setFile(file);
+        entity.addRelations("INSTANCE_OF", Direction.OUTGOING,
+                ImmutableSet.of(UUID.fromString(getInstanceOf().getUuid())));
+        return entity;
+    }
+
+    // The new instances that a save of this instance also saves
+    protected Set<Instance> getNewPeers() {
+        return Collections.emptySet();
+    }
+
+    // Write this instance, after its new peers, without validation
+    protected void write() {
+        for (Instance peer : getNewPeers()) {
+            if (!peer.isPersisted()) {
+                peer.save();
+            }
+        }
+        toEntity().write(Entity.getClassLabels(getClass().getSimpleName())
+                .orElseThrow(() -> new IllegalStateException("No labels for " + getClass().getSimpleName())));
+        persisted = true;
+    }
+
     public Instance save() {
-        boolean newNode = getId() == null || getId() < 0;
+        final boolean newNode = !persisted;
         Graph.transaction(() -> {
             if (newNode) {
                 if (!getInstanceOf().getSchema().validateJson(instanceData)) {
                     throw new RuntimeException("Can't create instanceNode, missing properties.");
                 }
-                getInstanceOf().getKv().asMap().entrySet().stream()
-                        .forEach(entry -> data.setProperty(entry.getKey(), entry.getValue()));
+                data.putAll(getInstanceOf().getKv());
             }
-            INSTANCE_REPOSITORY.save(this);
+            write();
             if (newNode && Context.getVertx() != null) {
                 final DeploymentOptions options = new DeploymentOptions()
                         .setWorker(true).setWorkerPoolName(Configuration.ACTOR_POOL);
@@ -196,7 +217,7 @@ public abstract class Instance extends Node {
         result.put("desc", getDesc());
         result.put("uuid", getUuid());
         result.put("_hierarchyPath", getInstanceOf().getHierarchyPath());
-        data.asMap().forEach((key, val) -> result.put(key, val.toString()));
+        data.forEach((key, val) -> result.put(key, val.toString()));
 
         return result;
     }
@@ -211,7 +232,7 @@ public abstract class Instance extends Node {
      * @return A list containing all elements of the JSON array coerced to type {@link T}.
      */
     protected <T> Optional<List<T>> dataArrayStringToList(String key, Function<JsonNode, T> map) {
-        final Object value = data.getProperty(key);
+        final Object value = data.get(key);
         final IllegalArgumentException exception = new IllegalArgumentException(
                 "Value belonging to \"" + key + "\" is not a JSON array.");
         if (value == null) {
@@ -237,7 +258,7 @@ public abstract class Instance extends Node {
      * @return Optionally the deserialized JsonNode, or empty if no value belongs to the key.
      */
     protected Optional<JsonNode> dataObjectToJsonNode(String key) {
-        final Object value = data.getProperty(key);
+        final Object value = data.get(key);
         final IllegalArgumentException exception = new IllegalArgumentException(
                 "Value belonging to \"" + key + "\" is not a JSON object.");
         if (value == null) {

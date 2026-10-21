@@ -1,15 +1,10 @@
 package tech.raaf.structure.graph.repositories;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.neo4j.core.GraphDatabase;
-import org.springframework.data.neo4j.support.Neo4jTemplate;
-import org.springframework.test.annotation.Rollback;
-import org.springframework.transaction.annotation.Transactional;
+import tech.raaf.structure.base.Context;
 import tech.raaf.structure.schema.TypeSchemaTest;
 import tech.raaf.structure.graph.*;
 
@@ -24,20 +19,11 @@ import static org.junit.Assert.*;
 
 public class InstrumentRepositoryTest extends TypeSchemaTest {
 
-    @Autowired
-    NodeRepository nodeRepository;
-    @Autowired
-    TypeRepository typeRepository;
-    @Autowired
-    InstrumentRepository instrumentRepository;
-    @Autowired
-    ComponentRepository componentRepository;
-    @Autowired
-    InstanceRepository instanceRepository;
-    @Autowired
-    Neo4jTemplate neo4jTemplate;
-    @Autowired
-    GraphDatabase graphDatabase;
+    private final NodeRepository nodeRepository = Context.getNodeRepository();
+    private final TypeRepository typeRepository = Context.getTypeRepository();
+    private final InstrumentRepository instrumentRepository = Context.getInstrumentRepository();
+    private final ComponentRepository componentRepository = Context.getComponentRepository();
+    private final InstanceRepository instanceRepository = Context.getInstanceRepository();
 
     private Group structure;
     private Group host1;
@@ -46,7 +32,6 @@ public class InstrumentRepositoryTest extends TypeSchemaTest {
     private Component host2OS;
 
     @Before
-    @Transactional
     public void setupComponents() throws IOException {
         // Create the simplest structure server representation
         Type groupingType = typeRepository.findOneByName("Group");
@@ -153,15 +138,6 @@ public class InstrumentRepositoryTest extends TypeSchemaTest {
         host2.save();
     }
 
-    @After
-    @Transactional
-    public void tearDown() throws Exception {
-        neo4jTemplate.query("MATCH (:Component)-[r]-() DELETE r", null);
-        neo4jTemplate.query("MATCH (n:Component) DELETE n", null);
-        neo4jTemplate.query("MATCH (:Group)-[r]-() DELETE r", null);
-        neo4jTemplate.query("MATCH (n:Group) DELETE n", null);
-    }
-
     @Test
     public void getInstrumentCapability() throws Exception {
         Type bsdRcInit = typeRepository.findOneByName("BsdrcInit");
@@ -191,8 +167,6 @@ public class InstrumentRepositoryTest extends TypeSchemaTest {
     }
 
     @Test
-    @Transactional
-    @Rollback
     public void getMatchingReceiveString() throws Exception {
         Controller sshSendString = (Controller) instrumentRepository.findOneByName("OpenSshClientSendString");
         assertNotNull(sshSendString);
@@ -220,8 +194,6 @@ public class InstrumentRepositoryTest extends TypeSchemaTest {
     }
 
     @Test
-    @Transactional
-    @Rollback
     public void purgeControllers() throws Exception {
         // get some counts so we can validate
         long nodeCount = StreamSupport.stream(nodeRepository.findAll().spliterator(), false).count();
@@ -258,7 +230,7 @@ public class InstrumentRepositoryTest extends TypeSchemaTest {
         Component hostSshServer = hostSshServers.iterator().next();
         assertNotNull(instrumentRepository.validateNonLocalInstrument(nonLocal.getUuid(), structure.getUuid(), hostSshServer.getUuid()));
 
-        instanceRepository.delete(nonLocal.getId());
+        instanceRepository.delete(nonLocal);
     }
 
     @Test
@@ -302,8 +274,6 @@ public class InstrumentRepositoryTest extends TypeSchemaTest {
     }
 
     @Test
-    @Transactional
-    @Rollback
     public void findRemoteControllers() throws Exception {
         // find the sshd belonging to host2
         final Component sshd = host2OS.getComponents().stream()

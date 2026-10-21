@@ -1,10 +1,9 @@
 package tech.raaf.structure.graph;
 
 import org.apache.commons.lang3.Validate;
-import org.neo4j.graphdb.Direction;
+import com.google.common.collect.ImmutableMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.neo4j.annotation.RelatedTo;
 import tech.raaf.structure.base.Context;
 import tech.raaf.structure.exceptions.IllegalEntityType;
 import tech.raaf.structure.graph.repositories.InstanceRepository;
@@ -35,10 +34,6 @@ public class Result extends Instance {
 
     final static Logger log = LoggerFactory.getLogger(Result.class);
 
-    @RelatedTo(type="NEXT_RESULT", direction = Direction.OUTGOING)
-    Result next;
-    @RelatedTo(type="NEXT_RESULT", direction = Direction.INCOMING)
-    Result previous;
     private static final InstanceRepository instanceRepository = Context.getInstanceRepository();
 
     /**
@@ -68,7 +63,7 @@ public class Result extends Instance {
         }
     }
 
-    // Empty constructor for Spring
+    // Empty constructor for NodeMapper
     public Result() {}
 
     /**
@@ -76,49 +71,49 @@ public class Result extends Instance {
      * @return The result this was called on.
      */
     public Result save() {
-        resultRepository.save(this);
+        Graph.transaction(this::write);
         return this;
     }
 
     public String getProcess() {
-        return (String) data.getProperty(PROCESS);
+        return (String) data.get(PROCESS);
     }
 
     public String getStdout() {
-        return (String) data.getProperty(STDOUT);
+        return (String) data.get(STDOUT);
     }
 
     public String getStderr() {
-        return (String) data.getProperty(STDERR);
+        return (String) data.get(STDERR);
     }
 
     public long getDate() {
-        return (long) data.getProperty(DATECREATED);
+        return ((Number) data.get(DATECREATED)).longValue();
     }
 
     public int getReturnCode() {
-        return (int) data.getProperty(RETURNCODE);
+        return ((Number) data.get(RETURNCODE)).intValue();
     }
 
     public String getTaskId() {
-        return (String) data.getProperty(TASKID);
+        return (String) data.get(TASKID);
     }
 
     public Result getNext() {
-        return next;
+        return relatedOne("-[:NEXT_RESULT]->(b:Result)");
     }
 
     public Optional<String> getUser() {
-        return data.hasProperty(USER) ?
-                Optional.of((String) data.getProperty(USER)) :
+        return data.containsKey(USER) ?
+                Optional.of((String) data.get(USER)) :
                 Optional.empty();
     }
 
     public Optional<State> getState() {
         final Optional<State> maybeState;
-        if (data.hasProperty(STATECODE)) {
-            maybeState = Optional.of(new Result.State((int) data.getProperty(STATECODE),
-                    (String) data.getProperty(STATEINTERPRETATION), (String) data.getProperty(STATEDESCRIPTION)));
+        if (data.containsKey(STATECODE)) {
+            maybeState = Optional.of(new Result.State(((Number) data.get(STATECODE)).intValue(),
+                    (String) data.get(STATEINTERPRETATION), (String) data.get(STATEDESCRIPTION)));
         } else {
             maybeState = Optional.empty();
         }
@@ -126,9 +121,9 @@ public class Result extends Instance {
     }
 
     public Result setNext(Result next) {
-        if (this.next == null) {
-            next.previous = this;
-            this.next = next;
+        if (getNext() == null) {
+            Graph.query("MATCH (a:Result {uuid: $from}), (b:Result {uuid: $to}) MERGE (a)-[:NEXT_RESULT]->(b)",
+                    ImmutableMap.of("from", getUuid(), "to", next.getUuid()));
         } else {
             throw new IllegalStateException("Can't set next result on \""
                     + getUuid() + "\", it already has one.");
@@ -137,7 +132,7 @@ public class Result extends Instance {
     }
 
     public Result getPrevious() {
-        return previous;
+        return relatedOne("<-[:NEXT_RESULT]-(b:Result)");
     }
 
     public List<Result> getThisAndNewer() {
@@ -146,7 +141,7 @@ public class Result extends Instance {
         Result head = this;
         do {
             results.add(head);
-            head = head.next;
+            head = head.getNext();
         } while (head != null);
 
         return results;
@@ -158,7 +153,7 @@ public class Result extends Instance {
         Result head = this;
         do {
             results.add(head);
-            head = head.previous;
+            head = head.getPrevious();
         } while (head != null);
 
         return results;

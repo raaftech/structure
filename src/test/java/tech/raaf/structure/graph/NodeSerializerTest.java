@@ -2,9 +2,7 @@ package tech.raaf.structure.graph;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.Test;
-import org.neo4j.graphdb.Transaction;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.neo4j.core.GraphDatabase;
+import tech.raaf.structure.base.Context;
 import tech.raaf.structure.schema.TypeSchemaTest;
 import tech.raaf.structure.graph.repositories.NodeRepository;
 import tech.raaf.structure.helper.Triple;
@@ -16,18 +14,13 @@ import static org.junit.Assert.*;
 
 public class NodeSerializerTest extends TypeSchemaTest {
 
-    @Autowired
-    NodeRepository nodeRepository;
-    @Autowired
-    GraphDatabase graphDatabase;
+    private final NodeRepository nodeRepository = Context.getNodeRepository();
 
     /*
      * Test serialization of a node, test the resulting json according to schema and property values
      */
     @Test
     public void testDeserializationSerialization() throws Exception {
-        Transaction tx = graphDatabase.beginTx();
-
         Node componentNode = nodeRepository.findOneByName("Linux");
         assertNotNull(componentNode);
 
@@ -57,7 +50,6 @@ public class NodeSerializerTest extends TypeSchemaTest {
         assertEquals("json", dataSchema.get("format").asText());
         assertEquals("../schemas/linux.schema.json", dataSchema.get("path").asText());
 
-        tx.close();
     }
 
     @Test
@@ -67,7 +59,6 @@ public class NodeSerializerTest extends TypeSchemaTest {
         cause issues during loading with NaiveSorter. For that reason we need to make sure
         one of the relationships is serialized as an incoming relationship.
          */
-        Transaction tx = graphDatabase.beginTx();
         Node bash = nodeRepository.findOneByName("Bash");
         Node bashInvoke = nodeRepository.findOneByName("BashInvoke");
 
@@ -84,6 +75,5 @@ public class NodeSerializerTest extends TypeSchemaTest {
         assertTrue(!bashObj.get("meta").get("relations").has("PROVIDED_BY"));
         assertTrue(bashInvokeObj.get("meta").get("relations").has("PROVIDED_BY"));
         assertEquals("outgoing", bashInvokeObj.get("meta").get("relations").get("PROVIDED_BY").get("direction").asText());
-        tx.close();
     }
 }

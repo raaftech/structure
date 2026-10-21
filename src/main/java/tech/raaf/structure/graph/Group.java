@@ -4,28 +4,21 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
-import org.neo4j.graphdb.Direction;
-import org.springframework.data.neo4j.annotation.Fetch;
-import org.springframework.data.neo4j.annotation.RelatedTo;
 import tech.raaf.structure.exceptions.JsonValidationException;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class Group extends Instance implements Groupable {
 
-    @RelatedTo(type="MEMBER_OF", direction= Direction.INCOMING)
-    @Fetch
+    // The members of a new group. A persisted group reads them from the graph.
     private Set<Groupable> groupees;
-
-    @RelatedTo(type="MEMBER_OF", direction= Direction.OUTGOING)
-    @Fetch
-    private Set<Group> memberOf;
 
     public Group() {}
 
@@ -54,6 +47,11 @@ public class Group extends Instance implements Groupable {
     }
 
     public Set<Groupable> getGroupees() {
+        if (persisted) {
+            final Set<Groupable> members = new HashSet<>();
+            this.<Node>related("<-[:MEMBER_OF]-(b)").forEach(n -> members.add((Groupable) n));
+            return Collections.unmodifiableSet(members);
+        }
         if (groupees == null) {
             groupees = new HashSet<>();
         }
@@ -61,22 +59,32 @@ public class Group extends Instance implements Groupable {
     }
 
     public Set<Group> getMemberOf() {
-        if (memberOf == null) {
-            memberOf = new HashSet<>();
-        }
-        return memberOf;
+        return persisted ? related("-[:MEMBER_OF]->(b:Group)") : new HashSet<>();
     }
 
+    // Add a member to a new group; save() writes the membership
     public void addMember(Groupable groupable) {
-        /*
-        If we're already a member of this group return. This is done because we
-        call `addMember` from `addToGroup` and `addToGroup` from `addMember`.
-         */
-        if (getMemberOf().contains(groupable)) {
-            return;
-        }
         getGroupees().add(groupable);
-        groupable.addToGroup(this);
+    }
+
+    @Override
+    protected Entity toEntity() {
+        final Entity entity = super.toEntity();
+        if (!persisted && groupees != null && !groupees.isEmpty()) {
+            entity.addRelations("MEMBER_OF", Direction.INCOMING, groupees.stream()
+                    .map(g -> UUID.fromString(((Node) g).getUuid()))
+                    .collect(Collectors.toSet()));
+        }
+        return entity;
+    }
+
+    @Override
+    protected Set<Instance> getNewPeers() {
+        final Set<Instance> peers = new HashSet<>();
+        if (!persisted && groupees != null) {
+            groupees.forEach(g -> peers.add((Instance) g));
+        }
+        return peers;
     }
 
 

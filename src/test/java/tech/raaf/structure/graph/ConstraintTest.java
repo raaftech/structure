@@ -7,7 +7,6 @@ import mockit.StrictExpectations;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.neo4j.graphdb.Direction;
 import tech.raaf.structure.base.Context;
 import tech.raaf.structure.graph.repositories.NodeRepository;
 import tech.raaf.structure.graph.repositories.TypeRepository;

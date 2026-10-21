@@ -7,19 +7,11 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
-import org.neo4j.graphdb.Transaction;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.neo4j.core.GraphDatabase;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.AnnotationConfigContextLoader;
+import tech.raaf.structure.GraphTest;
 import tech.raaf.structure.base.Configuration;
-import tech.raaf.structure.base.SpringTestConfig;
+import tech.raaf.structure.base.Context;
 import tech.raaf.structure.exceptions.IllegalEntityType;
-import tech.raaf.structure.graph.repositories.InstanceRepository;
 import tech.raaf.structure.graph.repositories.ResultRepository;
-import tech.raaf.structure.graph.repositories.TypeRepository;
 import tech.raaf.structure.helper.JsonHelper;
 
 import java.net.URI;
@@ -33,18 +25,9 @@ import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(loader = AnnotationConfigContextLoader.class, classes = SpringTestConfig.class)
-public class ResultTest {
+public class ResultTest extends GraphTest {
 
-    @Autowired
-    GraphDatabase graphDatabase;
-    @Autowired
-    InstanceRepository instanceRepository;
-    @Autowired
-    TypeRepository typeRepository;
-    @Autowired
-    ResultRepository resultRepository;
+    private final ResultRepository resultRepository = Context.getResultRepository();
     @Mocked
     JsonHelper jsonHelper;
 
@@ -108,11 +91,10 @@ public class ResultTest {
 
         Configuration.setSchemaNamespace(URI.create("http://localhost"));
 
-        Transaction tx = graphDatabase.beginTx();
-        rootEntity.toGraph();
-        resultEntity.toGraph();
-        tx.success();
-        tx.close();
+        Graph.transaction(() -> {
+            rootEntity.toGraph();
+            resultEntity.toGraph();
+        });
     }
 
     @Rule

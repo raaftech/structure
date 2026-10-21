@@ -1,13 +1,13 @@
 package tech.raaf.structure.graph.repositories;
 
-import org.springframework.data.neo4j.annotation.Query;
-import org.springframework.data.repository.query.Param;
+import com.google.common.collect.ImmutableMap;
 import tech.raaf.structure.graph.Component;
+import tech.raaf.structure.graph.Graph;
 import tech.raaf.structure.graph.Group;
 import tech.raaf.structure.graph.Instance;
+import tech.raaf.structure.graph.NodeMapper;
 
 import java.util.List;
-import java.util.Set;
 
 /**
  * Give a description of InstanceRepository here.
@@ -15,35 +15,34 @@ import java.util.Set;
  * @author Boy van Duuren <boy.van.duuren@raaftech.com>
  * @since 2015-01-14
  */
-public interface InstanceRepository extends GenericRepository<Instance> {
+public class InstanceRepository extends GenericRepository<Instance> {
 
-    @Override
-    @Query ("MATCH (node:Instance {uuid:{uuid}}) return node")
-    Instance findByUuid(@Param("uuid") String uuid);
+    public InstanceRepository() {
+        super("Instance");
+    }
 
-    @Override
-    @Query ("MATCH (node:Instance {name:{name}}) return node")
-    Set<Instance> findByName(@Param("name") String name);
-
-    @Override
-    @Query ("MATCH (node:Instance {name:{name}}) return node LIMIT 1")
-    Instance findOneByName(@Param("name") String name);
-
-    // Workaround, returning count(n) > 0 returns null when n is NULL.
     // This returns 0 if we're not of queried type, >0 if we are.
-    @Query ("MATCH (start {uuid:{uuid}})-[:INSTANCE_OF|ISA*1..]->(n{name:{type}}) " +
-            "RETURN count(n)")
-    int isOfType(@Param("uuid") String uuid, @Param("type") String type);
+    public int isOfType(String uuid, String type) {
+        return (int) number("MATCH (start:Node {uuid: $uuid})-[:INSTANCE_OF|ISA*1..]->(n {name: $type}) " +
+                "RETURN count(n) AS n", ImmutableMap.of("uuid", uuid, "type", type));
+    }
 
     // Get the root node of a component group
-    @Query ("MATCH (instance:Instance {uuid:{instanceUuid}})<-[*0..]-(n)-[:MEMBER_OF]->(grouping) " +
-            "RETURN grouping")
-    Group getStartOfComponentGroup(@Param("instanceUuid") String instanceUuid);
+    public Group getStartOfComponentGroup(String instanceUuid) {
+        return one("MATCH (instance:Instance {uuid: $uuid})<-[*0..]-()-[:MEMBER_OF]->(n) RETURN n LIMIT 1",
+                ImmutableMap.of("uuid", instanceUuid));
+    }
 
-    @Query ("MATCH (n:Instance) WHERE NOT (n)-[:INSTANCE_OF]->({name:\"Handler\"}) RETURN n ORDER BY id(n) DESC LIMIT {amount}")
-    List<Instance> getNLastCreated(@Param("amount") int amount);
+    // In creation sequence; nodes from the same millisecond sort by uuid
+    public List<Instance> getNLastCreated(int amount) {
+        return NodeMapper.mapAll(Graph.query("MATCH (n:Instance) " +
+                "WHERE NOT EXISTS { (n)-[:INSTANCE_OF]->({name: 'Handler'}) } " +
+                "RETURN n ORDER BY n.created DESC, n.uuid DESC LIMIT $amount",
+                ImmutableMap.of("amount", amount)), "n");
+    }
 
-    @Query ("MATCH (n:`type:DnsName` {`data-dnsname`: {0}}) RETURN n")
-    Component findDnsName(String hostname);
-
+    public Component findDnsName(String hostname) {
+        return one("MATCH (n:`type:DnsName` {`data-dnsname`: $hostname}) RETURN n LIMIT 1",
+                ImmutableMap.of("hostname", hostname));
+    }
 }

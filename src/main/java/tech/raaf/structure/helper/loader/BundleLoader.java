@@ -4,20 +4,13 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 import org.apache.commons.lang3.Validate;
-import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.neo4j.support.Neo4jTemplate;
-import org.springframework.data.neo4j.support.query.CypherQueryExecutor;
 import tech.raaf.structure.base.Configuration;
-import tech.raaf.structure.base.Context;
 import tech.raaf.structure.exceptions.EntityDeserializationException;
-import tech.raaf.structure.graph.Constraint;
 import tech.raaf.structure.graph.Entity;
-import tech.raaf.structure.graph.Type;
-import tech.raaf.structure.graph.repositories.TypeRepository;
+import tech.raaf.structure.graph.Graph;
 import tech.raaf.structure.helper.LambdaHelper;
-import tech.raaf.structure.helper.Triple;
 
 import java.nio.file.Path;
 import java.util.*;
@@ -33,8 +26,6 @@ public class BundleLoader {
     final private List<Entity> nonTypeEntities;
 
     private static final ObjectMapper mapper = new ObjectMapper();
-    private static final TypeRepository typeRepository = Context.getTypeRepository();
-    private static final Neo4jTemplate neo4jTemplate = Context.getNeo4jTemplate();
 
     private static final Logger log = LoggerFactory.getLogger(BundleLoader.class);
 
@@ -95,68 +86,25 @@ public class BundleLoader {
         return entityJson.path("meta").path("relations").has("INSTANCE_OF");
     }
 
-    /**
-     * THIS IS A WORKAROUND.
-     * SDN has a bug that doesn't allow a type to have a relationship to itself. However,
-     * when we manually create those in the graph they are mapped properly onto the resulting objects.
-     * So we use a hack for reflexive constraints: manually creating constraints where the
-     * beginning and end is the same.
-     */
-    private void createReflexiveConstraint(Type type, Constraint.Cardinality cardinality, String relName) {
-        final String createConstraintQuery = "MATCH (n {uuid:{uuid}}) " +
-                "CREATE (n)-[:CONSTRAINTS {__type__:\"Constraint\", forRelationship: {relName}, cardinality: {cardinality}}]->(n)";
-
-        Map<String, Object> params = ImmutableMap.of(
-                "uuid", type.getUuid(), "cardinality", cardinality.toString(), "relName", relName);
-
-        CypherQueryExecutor queryExecutor = neo4jTemplate.getInfrastructure().getCypherQueryExecutor();
-        queryExecutor.query(createConstraintQuery, null, params);
-    }
-
     private void persistTypeConstraints(Entity typeEntity) {
-        final Type type = typeRepository.findByUuid(typeEntity.getUuid());
-        Validate.notNull(type, "Can't find type with UUID " + typeEntity.getUuid());
-
         // We might not have constraints for this type
         if (!typeEntity.getConstraints().isPresent()) {
             return;
         }
 
-        Iterator<Map.Entry<String, List<Pair<Constraint.Cardinality, UUID>>>> constraintIter =
-                typeEntity.getConstraints().get().entrySet().iterator();
-
-        /*
-        Because SDN doesn't allow us to persist reflexive constraints we need to do two passes.
-        The first one is for the non-reflexive constraints, but we'll collect the reflexive constraints.
-         */
-        final Set<Triple<Type, Constraint.Cardinality, String>> reflexiveConstraints = new HashSet<>();
-
-        while(constraintIter.hasNext()) {
-            Map.Entry<String, List<Pair<Constraint.Cardinality, UUID>>> entry =  constraintIter.next();
-            final String relName = entry.getKey();
-
-            entry.getValue().stream()
-                    .filter(constraintData -> Objects.equals(type.getUuid(), constraintData.getRight().toString()))
-                    .forEach(constraintData -> reflexiveConstraints.add(Triple.of(type, constraintData.getLeft(), relName)));
-
-            entry.getValue().stream()
-                    .filter(constraintData -> !Objects.equals(type.getUuid(), constraintData.getRight().toString()))
-                    .forEach(constraintData -> {
-                            String target = constraintData.getRight().toString();
-                            Constraint.Cardinality cardinality = constraintData.getLeft();
-                            log.debug("Adding constraint for " + type.getUuid() + " to "  + target + ": " + relName + ", " + cardinality);
-                            type.addConstraint(typeRepository.findByUuid(target), cardinality, relName);
-                    });
-        }
-        /*
-        Persist the type. If we do this after we added the reflexive relationships, only
-        the non-reflexive will be persisted.
-         */
-        type.save();
-
-        // Iterate over the reflexive constraints and create them
-        reflexiveConstraints.forEach(constraint ->
-                createReflexiveConstraint(constraint.getLeft(), constraint.getMiddle(), constraint.getRight()));
+        // The statement also works when the constraint points to the type itself
+        final String constraint = "MATCH (a:Type {uuid: $from}), (b:Type {uuid: $to}) " +
+                "MERGE (a)-[c:CONSTRAINTS {forRelationship: $rel}]->(b) " +
+                "SET c.cardinality = $card " +
+                "RETURN count(c) AS count";
+        typeEntity.getConstraints().get().forEach((relName, constraints) -> constraints.forEach(pair -> {
+            final String target = pair.getRight().toString();
+            log.debug("Adding constraint for " + typeEntity.getUuid() + " to " + target + ": " + relName + ", " + pair.getLeft());
+            final List<Map<String, Object>> rows = Graph.query(constraint, ImmutableMap.of(
+                    "from", typeEntity.getUuid(), "to", target, "rel", relName, "card", pair.getLeft().toString()));
+            Validate.isTrue(((Number) rows.get(0).get("count")).longValue() > 0,
+                    "Can't find type " + typeEntity.getUuid() + " or " + target + " for constraint " + relName);
+        }));
     }
 
     /**
@@ -165,13 +113,11 @@ public class BundleLoader {
      * @param entity A type entity.
      */
     private void createEntityIndex(Entity entity) {
-        final String indexFormat = ":`type:" + entity.getName() + "`(`data-%s`)";
-        final String createIndexFormat = "CREATE INDEX ON %s";
-
-        CypherQueryExecutor queryExecutor = Context.getNeo4jTemplate().getInfrastructure().getCypherQueryExecutor();
+        final String createIndexFormat = "CREATE INDEX IF NOT EXISTS FOR (n:%s) ON (n.%s)";
 
         final Set<String> formatedIndices = Arrays.asList(entity.getIdentity()).stream()
-                .map(prop -> String.format(indexFormat, prop))
+                .map(prop -> String.format(createIndexFormat,
+                        Graph.escape("type:" + entity.getName()), Graph.escape("data-" + prop)))
                 .collect(Collectors.toSet());
 
         if (Arrays.asList(entity.getIdentity()).stream().anyMatch(index -> index.contains("`"))) {
@@ -179,10 +125,10 @@ public class BundleLoader {
                     "contain `, which is not allowed. Identity: " + String.join(",", entity.getIdentity()));
         }
 
+        // Each statement runs in its own transaction
         formatedIndices.stream()
                 .peek(index -> log.debug("Creating index {} ", index))
-                .map(index -> String.format(createIndexFormat, index))
-                .forEach(query -> queryExecutor.query(query, null, null));
+                .forEach(Graph::query);
     }
 
     /**
@@ -209,9 +155,11 @@ public class BundleLoader {
         nonTypeEntities.forEach(Entity::toGraph);
     }
 
+    // Schema changes and data writes need separate transactions
     public void load() {
-        loadTypes();
-        loadInstances();
+        Graph.transaction(this::loadTypes);
+        createIndices();
+        Graph.transaction(this::loadInstances);
     }
 
     /**

@@ -22,8 +22,6 @@ import org.apache.commons.cli.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.data.neo4j.support.query.CypherQueryExecutor;
 import tech.raaf.structure.bus.InstanceActor;
 import tech.raaf.structure.bus.TypeActor;
 import tech.raaf.structure.bus.manager.EntityManager;
@@ -34,6 +32,7 @@ import tech.raaf.structure.bus.manager.TaskManager;
 import tech.raaf.structure.bus.repository.Instances;
 import tech.raaf.structure.bus.repository.Nodes;
 import tech.raaf.structure.bus.repository.Types;
+import tech.raaf.structure.exceptions.GraphException;
 import tech.raaf.structure.graph.Component;
 import tech.raaf.structure.graph.Graph;
 import tech.raaf.structure.graph.Group;
@@ -62,7 +61,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 /**
  * The main application entry point.
@@ -202,16 +200,26 @@ public class Application {
         // Tell the user we're starting up.
         log.info("Structure is starting up..");
 
-        // Load Spring
-        log.debug("Setting up Spring's annotation aware application context..");
-        new AnnotationConfigApplicationContext(SpringConfig.class, ConverterConfig.class);
+        // Connect to the Neo4j server
+        final String neo4jUri = configuration.getConfiguration("neo4j-uri").orElse("bolt://localhost:7687");
+        final String neo4jUsername = configuration.getConfiguration("neo4j-username").orElse("neo4j");
+        // Only from the environment: other users can see command lines with ps
+        final String neo4jPassword = System.getenv("STRUCTURE_NEO4J_PASSWORD");
+        if (neo4jPassword == null) {
+            final String error = "Set the Neo4j password in STRUCTURE_NEO4J_PASSWORD";
+            handleUnrecoverableLoadingError(new IllegalStateException(error), 1, error);
+        }
+        log.info("Connecting to Neo4j at {}", neo4jUri);
+        try {
+            Graph.connect(neo4jUri, neo4jUsername, neo4jPassword);
+        } catch (GraphException e) {
+            handleUnrecoverableLoadingError(e, 1, "Can't connect to Neo4j at " + neo4jUri + ": " + e.getMessage());
+        }
 
-        // Add a shutdown hook so we always gracefully shutdown neo4j
-        // This is done to work around an issue where on the first node creation after an ungraceful
-        // shutdown constraints aren't enforced
+        // Close the connection to Neo4j when Structure stops
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            Context.getGraphDatabase().shutdown();
-            log.info("Database has gracefully shut down");
+            Graph.close();
+            log.info("Closed the connection to Neo4j");
         }));
 
         // Setup vertx with a maxWorkerExecuteTime of 5 minutes, in ns.
@@ -273,9 +281,7 @@ public class Application {
 
         // Setup indexes and constraints
         log.info("Creating indices.");
-        CypherQueryExecutor queryExecutor = Context.getNeo4jTemplate().getInfrastructure().getCypherQueryExecutor();
-        queryExecutor.query("CREATE CONSTRAINT ON (n:Type) ASSERT n.name IS UNIQUE", null, null);
-        queryExecutor.query("CREATE CONSTRAINT ON (n:Node) ASSERT n.uuid IS UNIQUE", null, null);
+        createSchema();
 
         // Initialize Configuration
         Configuration.init(configuration);
@@ -323,14 +329,19 @@ public class Application {
         log.info("Structure is running at {}", Configuration.getSchemaNamespace());
     }
 
+    // The constraints and indexes, each in its own transaction
+    public static void createSchema() {
+        Graph.query("CREATE CONSTRAINT type_name IF NOT EXISTS FOR (n:Type) REQUIRE n.name IS UNIQUE");
+        Graph.query("CREATE CONSTRAINT node_uuid IF NOT EXISTS FOR (n:Node) REQUIRE n.uuid IS UNIQUE");
+        Graph.query("CREATE INDEX node_name IF NOT EXISTS FOR (n:Node) ON (n.name)");
+    }
+
     public static void init(Vertx vertx) {
         final InstanceRepository instanceRepository = Context.getInstanceRepository();
         final TypeRepository typeRepository = Context.getTypeRepository();
 
         try {
-            BundleLoader bundleLoader = new BundleLoader();
-            Graph.transaction(bundleLoader::loadTypes);
-            Graph.transaction(bundleLoader::loadInstances);
+            new BundleLoader().load();
         } catch (Exception e) {
             handleUnrecoverableLoadingError(e, 1, "Unrecoverable error while loading bundles. Shutting down...");
         }
@@ -339,7 +350,7 @@ public class Application {
         log.debug("Deploying TypeActors..");
         try {
             final List<CompletableFuture<String>> deployments = Graph.transaction(() -> {
-                return StreamSupport.stream(typeRepository.findAll().spliterator(), false)
+                return typeRepository.findAll().stream()
                         .map(TypeActor::deploy)
                         .collect(Collectors.toList());
             });
@@ -352,7 +363,7 @@ public class Application {
         log.debug("Deploying InstanceActors..");
         try {
             final List<CompletableFuture<String>> deployments = Graph.transaction(() -> {
-                return StreamSupport.stream(instanceRepository.findAll().spliterator(), false)
+                return instanceRepository.findAll().stream()
                         .map(InstanceActor::deploy)
                         .collect(Collectors.toList());
             });

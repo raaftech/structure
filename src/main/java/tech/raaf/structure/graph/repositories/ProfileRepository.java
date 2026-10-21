@@ -1,23 +1,29 @@
 package tech.raaf.structure.graph.repositories;
 
-import org.springframework.data.neo4j.annotation.Query;
+import com.google.common.collect.ImmutableMap;
+import tech.raaf.structure.graph.Graph;
+import tech.raaf.structure.graph.NodeMapper;
 import tech.raaf.structure.graph.Profile;
 
 import java.util.List;
 
-public interface ProfileRepository extends GenericRepository<Profile> {
+public class ProfileRepository extends GenericRepository<Profile> {
 
-    // Used to purge all instruments from the database
-    @Query("MATCH (n:Profile) " +
-            "OPTIONAL MATCH (n)<-[r]->(m) " +
-            "DELETE r, n")
-    void purgeProfiles();
+    public ProfileRepository() {
+        super("Profile");
+    }
+
+    // Used to purge all profiles from the database
+    public void purgeProfiles() {
+        Graph.query("MATCH (n:Profile) DETACH DELETE n");
+    }
 
     // Return all profiles that apply to a type tree. They will be sorted ASC based on distance to the root type.
-    @Query("MATCH (start:Type {uuid:{0}})<-[:ISA*0..]-(child:Type)<-[:APPLIES_TO]-(profile:Profile), " +
-            "distanceToRoot = shortestPath((child)-[:ISA]->(t:Type {name:\"Type\"})) " +
-            "WITH distanceToRoot, profile ORDER BY length(distanceToRoot) ASC " +
-            "RETURN DISTINCT profile")
-    List<Profile> findAllProfilesForType(String typeUuid);
-
+    public List<Profile> findAllProfilesForType(String typeUuid) {
+        return NodeMapper.mapAll(Graph.query("MATCH (start:Type {uuid: $uuid})<-[:ISA*0..]-(child:Type)" +
+                "<-[:APPLIES_TO]-(profile:Profile) " +
+                "MATCH distanceToRoot = shortestPath((child)-[:ISA]->(t:Type {name: 'Type'})) " +
+                "WITH distanceToRoot, profile ORDER BY length(distanceToRoot) ASC " +
+                "RETURN DISTINCT profile AS n", ImmutableMap.of("uuid", typeUuid)), "n");
+    }
 }
