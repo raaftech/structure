@@ -256,8 +256,9 @@ MATCH (a:Node {uuid: $from}), (b:Node {uuid: $to})
 MERGE (a)-[:`REL`]->(b)
 ```
 
-`MERGE` replaces the check for an existing relationship. "undirected"
-makes two relationships, as today.
+`MERGE` replaces the check for an existing relationship. A relationship
+is "incoming" or "outgoing". The entity schema does not allow
+"undirected".
 
 Replace the SDN write calls:
 

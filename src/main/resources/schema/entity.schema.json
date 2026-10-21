@@ -182,8 +182,7 @@
       "type": "string",
       "enum": [
         "incoming",
-        "outgoing",
-        "undirected"
+        "outgoing"
       ]
     },
     "cardinality": {
