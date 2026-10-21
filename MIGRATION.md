@@ -73,7 +73,7 @@ The migration makes two changes to this format:
 ## Server facts (checked in October 2026)
 
 - Neo4j 2025.x and 2026.x accept Bolt 4.4. The Neo4j support table
-  lists driver 4.4 as compatible up to 2026.09. Neo4j can remove Bolt
+  lists driver 4.4 as compatible up to 2026.10. Neo4j can remove Bolt
   4.4 in a later release. There is no date for this.
 - New 2026.x installations set `db.query.default_language=CYPHER_25`.
   Existing installations keep their setting. All queries must be valid
@@ -259,8 +259,9 @@ adds the prefix `STRUCTURE_` to environment keys.
 | `neo4j-username` | `STRUCTURE_NEO4J_USERNAME` | `neo4j`                 |
 | `neo4j-password` | `STRUCTURE_NEO4J_PASSWORD` | None. It is necessary.  |
 
-Do not add a command line option for the password. Other users can see
-command lines with `ps`.
+Read the password only from the environment. Do not read it from the
+command line or from a system property. Other users can see command
+lines and `-D` options with `ps`.
 
 Unsafe mode no longer starts a web console or a remote shell.
 
@@ -374,18 +375,22 @@ RETURN badOut + count(i) = 0 AS safe
 ```
 
 `labelBasedTraversal` follows outgoing relationships through nodes that
-have one of the labels:
+have one of the labels. The start node does not need a label. Walk the
+graph breadth-first in Java with one query for each level:
 
 ```cypher
-MATCH p = (s:Node {uuid: $uuid})-[*0..]->(n)
-WHERE all(x IN tail(nodes(p)) WHERE any(l IN labels(x) WHERE l IN $labels))
-  AND ($includeStart OR n <> s)
+MATCH (a:Node)-->(n)
+WHERE a.uuid IN $frontier AND any(l IN labels(n) WHERE l IN $labels)
 RETURN DISTINCT n
 ```
 
-The Traversal API visited each node one time. Cypher examines all
-paths. Measure this query on a full graph. If it is slow, walk the
-graph breadth-first in Java with one query for each level.
+Keep a set of visited `uuid` values. The next frontier is the nodes of
+this level that are not in the set. Stop when the frontier is empty.
+Add the start node to the result only if `includeStart` is true.
+
+The Traversal API visited each node one time. This walk does the same.
+A single Cypher query with `[*0..]` examines all paths, which can be
+slow on a full graph.
 
 ### Queries
 
@@ -483,8 +488,10 @@ threads:
   `blockingHandler(schemaManager::getSchema, false)`. The handler
   queries the graph.
 
-A worker verticle handles one message at a time on one thread. Thus
-the thread-bound transaction of `Graph` works on worker threads.
+A worker verticle handles one message at a time. Two handler calls can
+run on different threads of the pool, but never at the same time. Each
+transaction starts and ends in one handler call. Thus the thread-bound
+transaction of `Graph` works on worker threads.
 
 The actors use the named pool and the `/schemas` route uses the default
 worker pool. Keep them apart. `Entity.toGraph()` validates data against
@@ -516,7 +523,9 @@ before the transport changes. Use the `{param}` syntax for now. Run
 2. Change `NodeSerializer` to read relationships with a query. It must
    not use `org.neo4j.graphdb.Node`.
 3. Change `Entity.persist`, `persistRelations` and `persistTypeLabels`
-   to Cypher through `CypherQueryExecutor`.
+   to Cypher through `CypherQueryExecutor`. SDN still reads the nodes
+   in this phase. Thus keep writing the `_` labels from
+   `getClassLabels`. Phase 3 removes them.
 4. Remove the `id()` ordering (see "Queries").
 5. Fix `HAS()` and the node patterns without parentheses.
 6. Replace `org.apache.commons.lang.*` with `org.apache.commons.lang3.*`.
@@ -549,6 +558,8 @@ steps on one branch.
    Today this rolls back the writes. With `Graph.transaction`, throw an
    exception to roll back.
 4. Change the domain classes and add `NodeMapper` (see "Mapping").
+   Remove the `_` labels from `getClassLabels`, `EntityTest` and
+   `StoreFormatTest`.
 5. Change the repositories to classes and update the syntax (see
    "Queries").
 6. Replace the SDN write calls (see "Writes").
@@ -560,8 +571,9 @@ steps on one branch.
      It runs `MATCH (n) DETACH DELETE n` before each test. Use separate
      variables, so that a test run cannot delete the data of a normal
      run by accident.
-   - Skip the database tests with `Assume` if the variables are not
-     set.
+   - `mvn verify` needs a test server. If the variables are not set,
+     the tests fail. Do not skip them, because the JaCoCo minimum and
+     the baseline (0 skipped) need all tests.
    - Remove the Spring runner from the 4 classes that use
      `SpringTestConfig`. Remove the other Spring annotations (see
      "Spring removal").
@@ -606,6 +618,8 @@ dependency and needs Docker.
 2. Remove `.mvn/jvm.config` if no dependency needs it.
 3. Update `README.md`. Structure needs a Neo4j server, reads the
    `STRUCTURE_NEO4J_*` variables and no longer serves port 7474.
+   `mvn verify` needs a test server and the `STRUCTURE_TEST_NEO4J_*`
+   variables.
 
 ## Embedded mode later
 
@@ -646,8 +660,7 @@ Vert.x 5. The rules in "Graph access" keep this change inside `Graph`:
 3. Replace the three `neo4j-*` configuration keys with one key for the
    database directory.
 4. The test base class opens a database in a temporary directory. The
-   tests then need no server, no `STRUCTURE_TEST_*` variables and no
-   `Assume`.
+   tests then need no server and no `STRUCTURE_TEST_*` variables.
 
 A `GraphNode` holds copies of the labels and the properties. Thus it
 stays valid after the transaction closes. An embedded `Node` does not.
