@@ -93,7 +93,7 @@ References:
 
 ## Baseline
 
-On the current code with JDK 1.8.0_504, `mvn test` runs 104 tests with
+On the current code with JDK 1.8.0_504, `mvn test` runs 111 tests with
 0 failures and 0 skipped. The migrated code must give the same result.
 
 ## Inventory
@@ -359,10 +359,18 @@ Replacements for `id()`:
 - `getTypeHierarchyForTypeUuid` returns a set. Remove the ordering.
 - `getHierarchyPath`: find the `ISA` path to the root type and join the
   names of `reverse(nodes(p))` with dots.
-- `getNLastCreated`: order by `n.created DESC`. The new `persist` sets
-  `created`.
-- `NodeSerializer` sorts relationships by internal id. Sort them by the
-  `uuid` of the peer.
+- `getNLastCreated`: order by `n.created DESC, n.uuid DESC`. The new
+  `persist` sets `created`. This changes the contract on purpose.
+  Today the result is in exact creation order. After the migration,
+  the order has a resolution of 1 ms, and nodes made in the same
+  millisecond sort by `uuid`. Only bulk loads make nodes this fast,
+  and the "recent instances" list in the UI does not need their exact
+  order. Change `OrderingTest.nLastCreated` in the same change: set
+  `created` on the test nodes, with at least two equal values, and
+  check the `(created, uuid)` order and the limit. The test must not
+  depend on the clock.
+- `NodeSerializer` sorts relationships by the `uuid` of the peer. Keep
+  this order when it reads relationships with a query.
 
 Indexes: SDN made legacy full-text indexes for the `@Indexed` fields.
 No query uses them. Do not make them again. Add

@@ -1,7 +1,12 @@
 Tests I suggest adding, in order of value
 
 1. Store-format tests on the raw graph. After the bundles load, query the labels, the data-*/file-*/kv-* properties and the relationship types of a few known nodes with Cypher, and compare them with fixed expected values. MIGRATION.md requires that this format does not change, and no test checks it now.
+   Status: done. StoreFormatTest checks the Bash type, the Controller type, the BashInvoke controller and LinuxProfile. The test found that the stored path was wrong. This is fixed in NaiveSorter and EntityDeserializer.
 2. Ordering tests. For getHierarchyPath, getNLastCreated and the NodeSerializer relationship order. These are the three places where the plan removes id(). Use more nodes than the default page size, so that an order that is correct by chance does not pass.
+   Status: done. OrderingTest compares the path of each bundle type with a walk up the ISA chain. It also checks getNLastCreated with 30 new groups and the serializer order with 60 relationships. NodeSerializer now sorts by peer uuid. The nLastCreated test checks the exact creation order of today. The migration changes this order to a resolution of 1 ms and changes the test with it (see MIGRATION.md).
 3. A bus round-trip test. Deploy the managers, Types, Instances and a few NodeActors on the test Vert.x instance. Then send real bus messages: one per address and msgh pair that the JS clients use, about 25 pairs. Assert that each reply passes response.schema.json and has no error. Write it as one parameterized test with a table of (address, msgh, payload) rows. This is the only test that covers handleMessage, the msgh dispatch, requestFilter and the repository wrappers (Types.getAll, Instances.putNode and nLastCreated), which are at 0% now. It would also catch the missing templates and node.component.* handlers I found earlier. Decide first if these get a fix or a known-failure mark.
+   Status: to do.
 4. Write-path tests through EntityManager. Cover group, ungroup (the plan rewrites it), specialize on a real instance (the current test only checks the "not an instance" error), and delete of a node that has relationships. The plan changes delete to DETACH DELETE. Write these just before the rewrite, so they record the old behavior.
+   Status: to do.
 5. TaskManager and the result chain. It has 0% coverage, and the plan rewrites origin.save(). Add a test that queues a task with a dummy controller and asserts the RESULTS/NEXT_RESULT order. Write this just before the rewrite.
+   Status: to do.
