@@ -117,7 +117,7 @@ module.exports = function (Entity) {
 
 //INSTRUMENTS
     Entity.getInstruments = function (uuid, callback) {
-        evBus.sendEvent(baseAddress(['node', 'component', uuid]), 'getInstruments', {})
+        evBus.sendEvent(baseAddress(['node', uuid]), 'getInstruments', {})
             .then((result) => callback(null, resultFetcher(result)))
             .catch((ex) => callback(ex));
     };
@@ -136,7 +136,7 @@ module.exports = function (Entity) {
         //FIXME find a beter way to do this
         if (instrumentName === 'IpAddressDiscover') args.timeAllocated = 600000;
 
-        evBus.sendEvent(baseAddress(['node', 'component', uuid]), 'runInstrument', args)
+        evBus.sendEvent(baseAddress(['node', uuid]), 'runInstrument', args)
             .then((result) => callback(null, resultFetcher(result)))
             .catch((ex) => callback(ex));
     };
