@@ -4,24 +4,20 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
-import org.neo4j.graphdb.Direction;
-import org.neo4j.graphdb.Relationship;
-import org.neo4j.graphdb.RelationshipType;
+import com.google.common.collect.ImmutableMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tech.raaf.structure.base.Context;
-import tech.raaf.structure.graph.repositories.NodeRepository;
 import tech.raaf.structure.helper.LambdaHelper;
 
 import java.io.IOException;
-import java.util.Comparator;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 import static io.vertx.core.json.Json.mapper;
 
@@ -30,27 +26,23 @@ import static io.vertx.core.json.Json.mapper;
  */
 public class NodeSerializer extends StdSerializer<Node> {
 
-    private final NodeRepository nodeRepository;
     private final Logger log = LoggerFactory.getLogger(NodeSerializer.class);
 
     public NodeSerializer() {
         super(Node.class);
-        nodeRepository = Context.getNodeRepository();
-    }
-
-    /**
-     * This constructor is used in tests, where Context.getNodeRepository() returns null.
-     * @param nodeRepository The NodeRepository to use (usually @Autowired from enclosing test).
-     */
-    public NodeSerializer(NodeRepository nodeRepository) {
-        super(Node.class);
-        this.nodeRepository = nodeRepository;
     }
 
     @Override
     public void serialize(Node value, JsonGenerator gen, SerializerProvider provider) throws IOException {
-        // we need the actual backing node as well so we can traverse relations in a class independent manner
-        org.neo4j.graphdb.Node graphNode = nodeRepository.findGraphNodeByUuid(value.getUuid());
+        // Sort by peer uuid, so that the output is the same each time
+        final String outgoing = "MATCH (a:Node {uuid: {uuid}})-[r]->(b) " +
+                "RETURN type(r) AS rel, b.uuid AS peer, r.forRelationship AS forRelationship, " +
+                "r.cardinality AS cardinality ORDER BY peer";
+        final Map<String, List<Map<String, Object>>> relMap = new HashMap<>();
+        for (Map<String, Object> row : Context.getNeo4jTemplate().query(outgoing,
+                ImmutableMap.of("uuid", value.getUuid()))) {
+            relMap.computeIfAbsent((String) row.get("rel"), k -> new ArrayList<>()).add(row);
+        }
 
         // start json
         gen.writeStartObject();
@@ -69,18 +61,10 @@ public class NodeSerializer extends StdSerializer<Node> {
         // start relations object, which should always exist
         gen.writeFieldName("relations");
         gen.writeStartObject();
-        // find all our outgoing relationships that aren't contained in our incomingRelationships exception list
-        Stream<Relationship> outgoingRelationshipsStream = StreamSupport.stream(
-                graphNode.getRelationships(Direction.OUTGOING).spliterator(), false);
-        Map<RelationshipType, List<Relationship>> relMap = outgoingRelationshipsStream
-                // sort by peer uuid, so that the output is the same each time
-                .sorted(Comparator.comparing(rel -> (String) rel.getEndNode().getProperty("uuid")))
-                .collect(Collectors.groupingBy(Relationship::getType));
-
         relMap.entrySet().stream()
                 .forEach(entry -> {
                     try {
-                        final String name = entry.getKey().name();
+                        final String name = entry.getKey();
 
                         /*
                         In case we come across a CONSTRAINTS relation return immediately.
@@ -103,9 +87,8 @@ public class NodeSerializer extends StdSerializer<Node> {
                         // write the uuids array
                         gen.writeFieldName("to");
                         gen.writeStartArray();
-                        List<Relationship> uuids = entry.getValue();
-                        uuids.stream()
-                                .map(rel -> (String) rel.getEndNode().getProperty("uuid"))
+                        entry.getValue().stream()
+                                .map(row -> (String) row.get("peer"))
                                 .forEach(uuid -> {
                                     try {
                                         gen.writeString(uuid);
@@ -128,25 +111,25 @@ public class NodeSerializer extends StdSerializer<Node> {
         gen.writeEndObject();
 
         // do we have constraints?
-        final Optional<List<Relationship>> maybeConstraints = relMap.entrySet().stream()
-                .filter(entry -> Objects.equals("CONSTRAINTS", entry.getKey().name()))
+        final Optional<List<Map<String, Object>>> maybeConstraints = relMap.entrySet().stream()
+                .filter(entry -> Objects.equals("CONSTRAINTS", entry.getKey()))
                 .map(Map.Entry::getValue)
                 .findFirst();
         if (maybeConstraints.isPresent()) {
             gen.writeFieldName("constraints");
             gen.writeStartObject();
 
-            final Map<String, List<Relationship>> constraints = maybeConstraints.get()
-                    .stream().collect(Collectors.groupingBy(rel -> rel.getProperty("forRelationship").toString()));
+            final Map<String, List<Map<String, Object>>> constraints = maybeConstraints.get()
+                    .stream().collect(Collectors.groupingBy(row -> row.get("forRelationship").toString()));
 
-            for (Map.Entry<String, List<Relationship>> pair: constraints.entrySet()) {
+            for (Map.Entry<String, List<Map<String, Object>>> pair: constraints.entrySet()) {
                 gen.writeFieldName(pair.getKey());
                 gen.writeStartArray();
 
-                for (Relationship rel: pair.getValue()) {
+                for (Map<String, Object> row: pair.getValue()) {
                     gen.writeStartObject();
-                    gen.writeStringField("cardinality", rel.getProperty("cardinality").toString());
-                    gen.writeStringField("to", rel.getEndNode().getProperty("uuid").toString());
+                    gen.writeStringField("cardinality", row.get("cardinality").toString());
+                    gen.writeStringField("to", row.get("peer").toString());
                     gen.writeEndObject();
                 }
 
