@@ -6,8 +6,6 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.Transaction;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.neo4j.annotation.Fetch;
 import org.springframework.data.neo4j.annotation.NodeEntity;
@@ -39,8 +37,6 @@ import static io.vertx.core.json.Json.mapper;
  */
 @NodeEntity
 public abstract class Instance extends Node {
-
-    private Logger log = LoggerFactory.getLogger(Instance.class);
 
     @RelatedTo(type="INSTANCE_OF", direction=Direction.OUTGOING)
     @Fetch

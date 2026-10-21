@@ -9,7 +9,6 @@ import io.vertx.core.logging.LoggerFactory;
 import tech.raaf.structure.annotations.SchemaPath;
 import tech.raaf.structure.base.Context;
 import tech.raaf.structure.bus.GenericActor;
-import tech.raaf.structure.graph.repositories.InstanceRepository;
 import tech.raaf.structure.graph.repositories.InstrumentRepository;
 
 import java.util.Iterator;
@@ -26,8 +25,6 @@ public class InstrumentManager extends GenericActor {
 
     private final static Logger log = LoggerFactory.getLogger(InstrumentManager.class);
     private final InstrumentRepository instrumentRepository = Context.getInstrumentRepository();
-    private final InstanceRepository instanceRepository = Context.getInstanceRepository();
-
     private void loadInstruments() {
         // TODO: entity, does throwing away + loading bundle recreate instruments?
 //        // Load all instruments

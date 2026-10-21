@@ -9,7 +9,6 @@ import tech.raaf.structure.base.Context;
 import tech.raaf.structure.exceptions.IllegalEntityType;
 import tech.raaf.structure.graph.repositories.InstanceRepository;
 import tech.raaf.structure.graph.repositories.ResultRepository;
-import tech.raaf.structure.graph.repositories.TypeRepository;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -40,8 +39,6 @@ public class Result extends Instance {
     Result next;
     @RelatedTo(type="NEXT_RESULT", direction = Direction.INCOMING)
     Result previous;
-
-    private static final TypeRepository typeRepository = Context.getTypeRepository();
     private static final InstanceRepository instanceRepository = Context.getInstanceRepository();
 
     /**

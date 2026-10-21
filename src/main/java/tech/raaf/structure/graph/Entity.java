@@ -28,7 +28,6 @@ import tech.raaf.structure.exceptions.IllegalEntityType;
 import tech.raaf.structure.exceptions.ResultBuilderException;
 import tech.raaf.structure.exceptions.TypeUnknownException;
 import tech.raaf.structure.graph.converters.JsonNodeWriter;
-import tech.raaf.structure.graph.repositories.InstanceRepository;
 import tech.raaf.structure.graph.repositories.NodeRepository;
 import tech.raaf.structure.graph.repositories.TypeRepository;
 import tech.raaf.structure.helper.JsonHelper;
@@ -58,7 +57,6 @@ public class Entity {
 
     /* Entity repository. Used for querying the graph. */
     private NodeRepository nodeRepository = Context.getNodeRepository();
-    private InstanceRepository instanceRepository = Context.getInstanceRepository();
     private TypeRepository typeRepository = Context.getTypeRepository();
     private Neo4jTemplate neo4jTemplate;
 

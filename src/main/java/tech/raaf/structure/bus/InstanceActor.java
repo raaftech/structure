@@ -23,8 +23,6 @@ public class InstanceActor extends NodeActor<Instance> {
     private static final InstanceRepository INSTANCE_REPOSITORY = Context.getInstanceRepository();
     private static final ComponentRepository componentRepository = Context.getComponentRepository();
     private static final InstrumentRepository instrumentRepository = Context.getInstrumentRepository();
-    private static final InstanceRepository instanceRepository = Context.getInstanceRepository();
-
 
     private Logger log = LoggerFactory.getLogger(InstanceActor.class);
 
@@ -127,8 +125,6 @@ public class InstanceActor extends NodeActor<Instance> {
 
                 Instance structure = INSTANCE_REPOSITORY.findByUuid(Context.getSelfIdentifier());
                 String originUuid = getNode().getUuid();
-                Instance startOfComponentGroup = INSTANCE_REPOSITORY.getStartOfComponentGroup(originUuid);
-
                 if (structure == null) {
                     result.put("error", "Couldn't find structure node.");
                     return response(request, result);

@@ -3,8 +3,6 @@ package tech.raaf.structure.bus;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import tech.raaf.structure.graph.Type;
 
 /**
@@ -16,8 +14,6 @@ import tech.raaf.structure.graph.Type;
 public class TypeActor extends NodeActor<Type> {
 
     private String hierarchyPath;
-
-    private Logger log = LoggerFactory.getLogger(TypeActor.class);
 
     public TypeActor(Type node) {
         super(node);

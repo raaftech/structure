@@ -117,8 +117,6 @@ public class NaiveSorter {
             }
         }
 
-        final ArrayNode result = new ObjectMapper().createArrayNode();
-
         ObjectNode inputCopy = input.deepCopy();
 
         // remove unwanted keys from JSON before calculating checksum
@@ -442,7 +440,6 @@ public class NaiveSorter {
             final Iterator<Map.Entry<String, JsonNode>> files = entityCopy.get(FILE).fields();
             while (files.hasNext()) {
                 final Map.Entry<String, JsonNode> file = files.next();
-                final String fileName = file.getKey();
                 final ObjectNode fileObject = (ObjectNode) file.getValue();
 
                 /* if the file declaration does not specify a path its contents are declared inline

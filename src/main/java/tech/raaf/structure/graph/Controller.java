@@ -30,7 +30,6 @@ public class Controller extends Instrument {
     private static final String SUBJECTLOCAL = "subjectIsLocal";
     private static final String TEMPLATE = "template";
     private static final String TEMPLATEFILE = "templateFile";
-    private static final String CONTENT = "content";
     private static final String SCRIPTFILE = "script";
     private static final String ARGUMENTS = "arguments";
     private static final String EXTENSION = "extension";

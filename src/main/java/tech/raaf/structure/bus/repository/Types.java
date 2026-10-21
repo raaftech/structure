@@ -4,8 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.neo4j.graphdb.Transaction;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import tech.raaf.structure.annotations.SchemaPath;
 import tech.raaf.structure.base.Context;
 import tech.raaf.structure.graph.Type;
@@ -16,8 +14,6 @@ import java.util.List;
 public class Types extends Repository<Type> {
 
     private TypeRepository repository;
-
-    private Logger log = LoggerFactory.getLogger(Types.class);
 
     public Types(TypeRepository repository) {
         super(repository);

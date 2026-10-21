@@ -8,8 +8,6 @@ import com.google.common.io.Files;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.factory.GraphDatabaseBuilder;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -33,8 +31,6 @@ import tech.raaf.structure.graph.repositories.*;
         excludeFilters = {@ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = SpringConfig.class)})
 @EnableNeo4jRepositories("tech.raaf.structure.graph.repositories")
 public class SpringTestConfig extends Neo4jConfiguration {
-
-    private static final Logger log = LoggerFactory.getLogger(SpringTestConfig.class);
 
     public SpringTestConfig() {
         setBasePackage("tech.raaf.structure.graph");
