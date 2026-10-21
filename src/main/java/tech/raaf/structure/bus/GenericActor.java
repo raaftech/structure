@@ -160,27 +160,6 @@ public abstract class GenericActor extends AbstractVerticle {
         }
     }
 
-    // Check if some string is valid JSON.
-    public boolean isValidJson(String body) {
-        try {
-            mapper.readTree(body);
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            
-            if (Configuration.isTraceModeOn()) {
-                e.printStackTrace();
-            }
-            
-        	return false;
-        }
-        return true;
-    }
-
-    // Check if a string is alpha-numeric.
-    public boolean isAlphaNumeric(String str) {
-        return str.matches("[0-9a-zA-Z]+");
-    }
-
     // Check if a string is a valid UUID.
     @SuppressWarnings("unused")
     public static boolean isUuid(String str) {
@@ -223,103 +202,6 @@ public abstract class GenericActor extends AbstractVerticle {
         eventBus.publish(statusAddress,
                 new JsonObject("{\"source\":\"" + this.getClass().getSimpleName() + "\", "
                         + "\"event\": \"" + event + "\", \"data\": " + new JsonObject(data.toString()) + "}"));
-    }
-
-    // Filter a given JsonNode body and enforce basic validity.
-    @SuppressWarnings("unused")
-    public JsonNode requestFilter(JsonNode body) {
-
-        // Bodies; original and sanitized.
-        JsonNode bodyRetrieved;
-        ObjectNode bodyFiltered = JsonNodeFactory.instance.objectNode();
-
-        // Defaults for msgh, args and error.
-        String msghDefault = "help";
-        String msghRetrieved;
-        String msghAlphaNumeric;
-        ObjectNode argsDefault = JsonNodeFactory.instance.objectNode();
-        JsonNode argsRetrieved;
-        ObjectNode errorDefault = JsonNodeFactory.instance.objectNode();
-
-        // Assumed validity (we're optimists).
-        Boolean valid = true;
-
-        // Validate bodyRetrieved, construct sanitized bodyFiltered.
-        try {
-            bodyRetrieved = validate(schemaForRequest, body);
-
-            // Verify if msgh field exists.
-            if (bodyRetrieved.has("msgh")) {
-                msghRetrieved = bodyRetrieved.get("msgh").asText();
-                // Verify if msgh is a alpha-numeric string.
-                if (isAlphaNumeric(msghRetrieved)) {
-                    msghAlphaNumeric = msghRetrieved;
-                    // Verify if msgh is an existing handler.
-                    if (handlers.containsKey(msghAlphaNumeric)) {
-                        bodyFiltered.put("msgh", msghRetrieved);
-                    } else {
-                        // Unknown message handler specified, replace msgh.
-                        log.error("Field \"msgh\" not a valid message handler: " + msghAlphaNumeric);
-                        valid = false;
-                        log.warn("Valid \"msgh\" values are: " + handlers.keySet().toString());
-                        log.warn("warn", "Setting \"msgh\" to default value: " + msghDefault);
-                        bodyFiltered.put("msgh", msghDefault);
-                    }
-                } else {
-                    // Invalid characters in msgh, replace msgh.
-                    log.warn("Field \"msgh\" contains invalid characters: " + msghRetrieved);
-                    valid = false;
-
-                    log.warn("Setting \"msgh\" to default value: " + msghDefault);
-                    bodyFiltered.put("msgh", msghDefault);
-                }
-            } else {
-                // Non-existing msgh, adding default msgh.
-                log.error("Field \"msgh\" not in JSON body");
-                valid = false;
-
-                log.warn("Setting \"msgh\" to default value: " + msghDefault);
-                bodyFiltered.put("msgh", msghDefault);
-            }
-
-            // Verify if args field exists.
-            if (bodyRetrieved.has("args")) {
-                argsRetrieved = bodyRetrieved.get("args");
-                // Verify if args is a json object.
-                if (isValidJson(argsRetrieved.toString())) {
-                    bodyFiltered.set("args", argsRetrieved);
-                } else {
-                    // Invalid args, replace args.
-                    log.error("Field \"args\" not of type JSON object: " + argsRetrieved);
-                    valid = false;
-
-                    log.warn("Setting \"args\" to empty JSON object: " + argsDefault);
-                    bodyFiltered.set("args", argsDefault);
-                }
-            } else {
-                // Non-existing args, which is ok, adding default args.
-                bodyFiltered.set("args", argsDefault);
-            }
-
-            // Set validity.
-            bodyFiltered.put("valid", valid);
-
-            // If an error occurred, copy the original body to error.
-            if (!valid) {
-                log.warn("Copying original request body to error object");
-                errorDefault.set("original-request", bodyRetrieved);
-                bodyFiltered.set("error", errorDefault);
-            }
-
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            
-            if (Configuration.isTraceModeOn()) {
-                e.printStackTrace();
-            }
-        }
-
-        return bodyFiltered;
     }
 
     // A public interface for MessageHandler objects.
@@ -387,6 +269,14 @@ public abstract class GenericActor extends AbstractVerticle {
         JsonObject body = (JsonObject)message.body();
         JsonNode request = convertFromJsonObject(body);
         JsonObject response;
+
+        // Without a valid msgh and args we can't dispatch, reply with an error
+        if (!isValidJson(schemaForRequest, request)) {
+            JsonNode error = JsonNodeFactory.instance.objectNode().put("error", "Request didn't validate against schema.");
+            message.reply(new JsonObject(validate(schemaForResponse, response(request, error)).toString()));
+            return;
+        }
+
         String msgh = request.get("msgh").asText();
         JsonNode args = request.get("args");
 
