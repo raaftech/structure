@@ -5,10 +5,10 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.vertx.core.Verticle;
 import io.vertx.core.eventbus.MessageConsumer;
 import org.apache.commons.lang3.Validate;
-import org.neo4j.graphdb.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tech.raaf.structure.base.Context;
+import tech.raaf.structure.graph.Graph;
 import tech.raaf.structure.graph.Entity;
 import tech.raaf.structure.graph.Instance;
 import tech.raaf.structure.graph.Node;
@@ -90,10 +90,8 @@ public abstract class NodeActor<T extends Node> extends GenericActor {
         return new MessageHandler() {
             @Override
             public JsonNode exec(JsonNode request) {
-                Transaction tx = Context.getGraphDatabase().beginTx();
-                final JsonNode response = response(request, mapper.createObjectNode().set("data", mapper.valueToTree(getNode())));
-                tx.close();
-                return response;
+                return Graph.transaction(() ->
+                        response(request, mapper.createObjectNode().set("data", mapper.valueToTree(getNode()))));
             }
 
             @Override

@@ -7,13 +7,13 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import org.neo4j.graphdb.Direction;
-import org.neo4j.graphdb.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.neo4j.support.Neo4jTemplate;
 import tech.raaf.structure.annotations.SchemaPath;
 import tech.raaf.structure.base.Configuration;
 import tech.raaf.structure.base.Context;
+import tech.raaf.structure.graph.Graph;
 import tech.raaf.structure.bus.GenericActor;
 import tech.raaf.structure.bus.NodeActor;
 import tech.raaf.structure.exceptions.EntityDeserializationException;
@@ -83,43 +83,40 @@ public class EntityManager extends GenericActor {
                 final ObjectNode result = mapper.createObjectNode();
                 final ArrayNode data = (ArrayNode) args.get("entities");
 
-                // Transform the received array to a stream
-                Transaction tx = Context.getGraphDatabase().beginTx();
                 try {
-                    List<Entity> entities = StreamSupport.stream(data.spliterator(), false)
-                            // If an object doesn't adhere to entity.schema.json, throw an exception
-                            .peek(json -> {
-                                if (!JsonHelper.validateToSchema(
-                                        URI.create("resource:/schema/entity.schema.json"), json)) {
-                                    throw new EntityDeserializationException("Received object does not validate against entity.schema.json");
-                                }
-                            })
-                            // Validation successful, cast to ObjectNode
-                            .map(json -> (ObjectNode) json)
-                            // Remove all the objects whose UUlD already exist in the database
-                            .filter(isNewEntity)
-                            // Map those objects to an Entity instance
-                            .map(json -> LambdaHelper.wrapWithExceptionPropagation(
-                                    () -> mapper.treeToValue(json, Entity.class)).get())
-                            .collect(Collectors.toList());
+                    List<String> newUuids = Graph.transaction(() -> {
+                        // Transform the received array to a stream
+                        List<Entity> entities = StreamSupport.stream(data.spliterator(), false)
+                                // If an object doesn't adhere to entity.schema.json, throw an exception
+                                .peek(json -> {
+                                    if (!JsonHelper.validateToSchema(
+                                            URI.create("resource:/schema/entity.schema.json"), json)) {
+                                        throw new EntityDeserializationException("Received object does not validate against entity.schema.json");
+                                    }
+                                })
+                                // Validation successful, cast to ObjectNode
+                                .map(json -> (ObjectNode) json)
+                                // Remove all the objects whose UUlD already exist in the database
+                                .filter(isNewEntity)
+                                // Map those objects to an Entity instance
+                                .map(json -> LambdaHelper.wrapWithExceptionPropagation(
+                                        () -> mapper.treeToValue(json, Entity.class)).get())
+                                .collect(Collectors.toList());
 
-                    List<String> newUuids = sortForCreation(entities).stream()
-                            // Persist them
-                            .peek(Entity::toGraph)
-                            // Deploy them as bus
-                            .peek(NodeActor::deploy)
-                            // Map to the new UUlD's
-                            .map(Entity::getUuid)
-                            // Collect
-                            .collect(Collectors.toList());
+                        return sortForCreation(entities).stream()
+                                // Persist them
+                                .peek(Entity::toGraph)
+                                // Deploy them as actors after the commit
+                                .peek(entity -> Graph.afterCommit(() -> NodeActor.deploy(entity)))
+                                // Map to the new UUlD's
+                                .map(Entity::getUuid)
+                                // Collect
+                                .collect(Collectors.toList());
+                    });
 
                     result.set("data", mapper.valueToTree(newUuids));
-                    tx.success();
                 } catch (Exception e) {
                     result.put(ERROR, e.getMessage());
-                    tx.failure();
-                } finally {
-                    tx.close();
                 }
 
                 return response(request, result);
@@ -157,24 +154,22 @@ public class EntityManager extends GenericActor {
                                 .collect(Collectors.toList())
                 );
 
-                Transaction tx = Context.getGraphDatabase().beginTx();
+                Graph.transaction(() -> {
+                    Node start = nodeRepository.findByUuid(startUuid);
 
-                Node start = nodeRepository.findByUuid(startUuid);
-
-                if (start != null) {
-                    try {
-                        ArrayNode data = result.putArray("data");
-                        labelBasedTraversal(labels, start, includeStart).stream()
-                                .map(mapper::valueToTree)
-                                .forEach(t -> data.add((JsonNode) t));
-                    } catch (EntitySerializationException e) {
-                        result.put(ERROR, e.getMessage());
+                    if (start != null) {
+                        try {
+                            ArrayNode data = result.putArray("data");
+                            labelBasedTraversal(labels, start, includeStart).stream()
+                                    .map(mapper::valueToTree)
+                                    .forEach(t -> data.add((JsonNode) t));
+                        } catch (EntitySerializationException e) {
+                            result.put(ERROR, e.getMessage());
+                        }
+                    } else {
+                        result.put(ERROR, "Couldn't find starting node.");
                     }
-                } else {
-                    result.put(ERROR, "Couldn't find starting node.");
-                }
-
-                tx.close();
+                });
 
                 return response(request, result);
             }
@@ -257,15 +252,12 @@ public class EntityManager extends GenericActor {
                             return response(request, result);
                         }
                     }
-                    Transaction tx = Context.getGraphDatabase().beginTx();
                     try {
                         final ArrayNode data = result.putArray("data");
+                        Graph.transaction(() -> updatedEntities.forEach(Entity::toGraph));
                         updatedEntities.stream()
-                                .peek(Entity::toGraph)
                                 .map(Entity::getUuid)
-                                .collect(Collectors.toList())
                                 .forEach(data::add);
-                        tx.success();
                     } catch (Exception exception) {
                         if (Configuration.isTraceModeOn()) {
                             exception.printStackTrace();
@@ -273,9 +265,6 @@ public class EntityManager extends GenericActor {
                         log.error(exception.getMessage());
                         // This overwrites any existing error property, which is ok.
                         result.put(ERROR, "Error while persisting updated entities to database.");
-                        tx.failure();
-                    } finally {
-                        tx.close();
                     }
                 }
 
@@ -313,21 +302,22 @@ public class EntityManager extends GenericActor {
                     result.put(ERROR, "Couldn't find node with UUID \"" + uuid + "\".");
                     return response(request, result);
                 }
-                Transaction tx = Context.getGraphDatabase().beginTx();
                 try {
-                    if (safeDeleteTraversal(labels, toDelete)) {
+                    final boolean deleted = Graph.transaction(() -> {
+                        if (!safeDeleteTraversal(labels, toDelete)) {
+                            return false;
+                        }
                         nodeRepository.delete(toDelete);
+                        return true;
+                    });
+                    if (deleted) {
                         result.put("data", toDelete.getUuid());
-                        tx.success();
                     } else {
                         result.put("error", "Couldn't delete entity.");
                     }
                 } catch (Exception e) {
                     result.put(ERROR, "Error while deleting node \"" + toDelete.getUuid() + "\", exception: "
                             + e.getMessage());
-                    tx.failure();
-                } finally {
-                    tx.close();
                 }
 
                 return response(request, result);
@@ -350,28 +340,25 @@ public class EntityManager extends GenericActor {
                 final String instanceUuid = args.get("instance").asText();
                 final String isaUuid = args.get("isa").asText();
 
-                Transaction tx = Context.getGraphDatabase().beginTx();
+                Graph.transaction(() -> {
+                    Instance instance = instanceRepository.findByUuid(instanceUuid);
+                    if (instance == null) {
+                        result.put(ERROR, "Could not find an instance with uuid " + instanceUuid);
+                        return;
+                    }
+                    Type instanceType = instance.getInstanceOf();
+                    Type isa = typeRepository.findByUuid(isaUuid);
 
-                Instance instance = instanceRepository.findByUuid(instanceUuid);
-                if(instance == null) {
-                    result.put(ERROR, "Could not find an instance with uuid "+instanceUuid);
-                    return response(request, result);
-                }
-                Type instanceType = instance.getInstanceOf();
-                Type isa = typeRepository.findByUuid(isaUuid);
-
-                if (isa == null) {
-                    result.put(ERROR, "Could not find a type with uuid " + isaUuid);
-                } else if (!instanceType.getChildIsaSet().contains(isa)) {
-                    result.put(ERROR, "Invalid specialization requested. Type [" + isa.getName() + "] is not in the specialization set of: [" + instanceType.getName() + "]");
-                } else {
-                    instance.setInstanceOf(isa);
-                    instance.save();
-                    tx.success();
-                    result.put("data", "Instance ["+instanceType.getName()+"] specialized to ["+isa.getName()+"]");
-                }
-
-                tx.close();
+                    if (isa == null) {
+                        result.put(ERROR, "Could not find a type with uuid " + isaUuid);
+                    } else if (!instanceType.getChildIsaSet().contains(isa)) {
+                        result.put(ERROR, "Invalid specialization requested. Type [" + isa.getName() + "] is not in the specialization set of: [" + instanceType.getName() + "]");
+                    } else {
+                        instance.setInstanceOf(isa);
+                        instance.save();
+                        result.put("data", "Instance [" + instanceType.getName() + "] specialized to [" + isa.getName() + "]");
+                    }
+                });
 
                 return response(request, result);
             }
@@ -406,29 +393,26 @@ public class EntityManager extends GenericActor {
                     return response(request, result);
                 }
 
-                Transaction tx = Context.getGraphDatabase().beginTx();
+                final Entity groupingEntity;
                 try {
-                    final String groupRelName = "MEMBER_OF";
-                    // The entity has only outgoing relations, so ask the group
-                    final boolean changed = !group.getGroupees().contains(groupee);
-                    Entity groupingEntity = mapper.treeToValue(mapper.valueToTree(group), Entity.class);
-                    groupingEntity.addRelations(groupRelName,
-                            Direction.INCOMING, ImmutableSet.of(UUID.fromString(groupeeUuid)));
-
-                    groupingEntity.toGraph();
-                    tx.success();
-
-                    result.set("data", mapper.createObjectNode().put("changed", changed));
+                    groupingEntity = mapper.treeToValue(mapper.valueToTree(group), Entity.class);
                 } catch (JsonProcessingException e) {
                     if (Configuration.isTraceModeOn()) {
                         e.printStackTrace();
                     }
                     log.error(e.getMessage());
                     result.put("error", e.getMessage());
-                    tx.failure();
-                } finally {
-                    tx.close();
+                    return response(request, result);
                 }
+                final String groupRelName = "MEMBER_OF";
+                // The entity has only outgoing relations, so ask the group
+                final boolean changed = !group.getGroupees().contains(groupee);
+                groupingEntity.addRelations(groupRelName,
+                        Direction.INCOMING, ImmutableSet.of(UUID.fromString(groupeeUuid)));
+
+                Graph.transaction(groupingEntity::toGraph);
+
+                result.set("data", mapper.createObjectNode().put("changed", changed));
 
                 return response(request, result);
             }
@@ -463,13 +447,13 @@ public class EntityManager extends GenericActor {
                     return response(request, result);
                 }
 
-                Transaction tx = Context.getGraphDatabase().beginTx();
-                final boolean changed = group.getGroupees().remove(groupee);
-                Context.getGroupingRepository().save(group);
-                tx.success();
+                final boolean changed = Graph.transaction(() -> {
+                    final boolean removed = group.getGroupees().remove(groupee);
+                    Context.getGroupingRepository().save(group);
+                    return removed;
+                });
 
                 result.set("data", mapper.createObjectNode().put("changed", changed));
-                tx.close();
 
                 return response(request, result);
             }

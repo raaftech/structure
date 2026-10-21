@@ -3,9 +3,8 @@ package tech.raaf.structure.bus.repository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.neo4j.graphdb.Transaction;
 import tech.raaf.structure.annotations.SchemaPath;
-import tech.raaf.structure.base.Context;
+import tech.raaf.structure.graph.Graph;
 import tech.raaf.structure.graph.Type;
 import tech.raaf.structure.graph.repositories.TypeRepository;
 
@@ -29,14 +28,14 @@ public class Types extends Repository<Type> {
                 final JsonNode args = request.get("args");
                 final String name = args.get("name").asText().toLowerCase();
 
-                Transaction tx = Context.getGraphDatabase().beginTx();
-                final Type found = repository.findOneByCaseInsensitiveName(name);
-                if (found != null) {
-                    result.put("data", mapper.valueToTree(found));
-                } else {
-                    result.put("error", "Couldn't find type with name " + name);
-                }
-                tx.close();
+                Graph.transaction(() -> {
+                    final Type found = repository.findOneByCaseInsensitiveName(name);
+                    if (found != null) {
+                        result.put("data", mapper.valueToTree(found));
+                    } else {
+                        result.put("error", "Couldn't find type with name " + name);
+                    }
+                });
 
                 return response(request, result);
             }
@@ -54,12 +53,10 @@ public class Types extends Repository<Type> {
             public JsonNode exec(JsonNode request) {
                 ObjectNode result = mapper.createObjectNode();
                 ArrayNode data = result.putArray("data");
-                Transaction tx = Context.getGraphDatabase().beginTx();
-                repository.getAll().stream()
+                Graph.transaction(() -> repository.getAll().stream()
                         .map(mapper::valueToTree)
                         .map(obj -> (ObjectNode) obj)
-                        .forEach(data::add);
-                tx.close();
+                        .forEach(data::add));
 
                 return response(request, result);
             }

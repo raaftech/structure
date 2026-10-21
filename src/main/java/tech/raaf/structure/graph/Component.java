@@ -7,7 +7,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import org.neo4j.graphdb.Direction;
-import org.neo4j.graphdb.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.annotation.Transient;
@@ -102,9 +101,7 @@ public class Component extends Instance implements Groupable {
 
     public Set<Component> getComponents() {
         if (components == null || components.isEmpty() || getFirstComponent().getName() == null) {
-            Transaction tx = Context.getGraphDatabase().beginTx();
-            Context.getNeo4jTemplate().fetch(components);
-            tx.close();
+            Graph.transaction(() -> Context.getNeo4jTemplate().fetch(components));
         }
         return components;
     }

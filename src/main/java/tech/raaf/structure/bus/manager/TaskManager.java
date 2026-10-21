@@ -4,12 +4,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.neo4j.graphdb.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tech.raaf.structure.annotations.SchemaPath;
 import tech.raaf.structure.base.Configuration;
 import tech.raaf.structure.base.Context;
+import tech.raaf.structure.graph.Graph;
 import tech.raaf.structure.bus.GenericActor;
 import tech.raaf.structure.graph.Entity;
 import tech.raaf.structure.graph.Instance;
@@ -309,11 +309,10 @@ public class TaskManager extends GenericActor {
                 buildAndStore() already stored the result, so the save does not cascade to it. Save the result
                 too, to write NEXT_RESULT from the previous result. One transaction keeps the chain whole.
                  */
-                try (Transaction tx = Context.getGraphDatabase().beginTx()) {
+                Graph.transaction(() -> {
                     origin.save();
                     result.save();
-                    tx.success();
-                }
+                });
                 log.info(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(task.toJson()));
             } catch (JsonProcessingException e) {
                 if (Configuration.isTraceModeOn()) {

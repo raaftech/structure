@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.neo4j.graphdb.Direction;
-import org.neo4j.graphdb.Transaction;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.neo4j.annotation.Fetch;
 import org.springframework.data.neo4j.annotation.NodeEntity;
@@ -168,27 +167,19 @@ public abstract class Instance extends Node {
 
     public Instance save() {
         boolean newNode = getId() == null || getId() < 0;
-        Transaction tx = Context.getGraphDatabase().beginTx();
-        if (newNode) {
-            if (getInstanceOf().getSchema().validateJson(instanceData)) {
+        Graph.transaction(() -> {
+            if (newNode) {
+                if (!getInstanceOf().getSchema().validateJson(instanceData)) {
+                    throw new RuntimeException("Can't create instanceNode, missing properties.");
+                }
                 getInstanceOf().getKv().asMap().entrySet().stream()
                         .forEach(entry -> data.setProperty(entry.getKey(), entry.getValue()));
-                INSTANCE_REPOSITORY.save(this);
-                tx.success();
-            } else {
-                tx.failure();
-                throw new RuntimeException("Can't create instanceNode, missing properties.");
             }
-        } else {
             INSTANCE_REPOSITORY.save(this);
-            tx.success();
-        }
-        tx.close();
-
-        if (newNode && Context.getVertx() != null) {
-            Context.getVertx().deployVerticle(
-                    new InstanceActor(this));
-        }
+            if (newNode && Context.getVertx() != null) {
+                Graph.afterCommit(() -> Context.getVertx().deployVerticle(new InstanceActor(this)));
+            }
+        });
 
         return this;
     }

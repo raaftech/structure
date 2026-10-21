@@ -10,7 +10,6 @@ import io.vertx.core.json.JsonObject;
 import org.apache.commons.lang3.tuple.Pair;
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.Node;
-import org.neo4j.graphdb.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.annotation.Transient;
@@ -225,11 +224,7 @@ public class Entity {
             entity.addRelations("INSTANCE_OF", Direction.OUTGOING, ImmutableSet.of(UUID.fromString(resultType.getUuid())));
             entity.setData(data);
 
-            // -_-
-            Transaction tx = Context.getGraphDatabase().beginTx();
-            entity.toGraph();
-            tx.success();
-            tx.close();
+            Graph.transaction(entity::toGraph);
 
             return Context.getResultRepository().findByUuid(entity.getUuid());
         }

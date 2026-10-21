@@ -19,7 +19,6 @@ import io.vertx.ext.web.handler.sockjs.SockJSHandler;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.neo4j.graphdb.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
@@ -36,6 +35,7 @@ import tech.raaf.structure.bus.repository.Instances;
 import tech.raaf.structure.bus.repository.Nodes;
 import tech.raaf.structure.bus.repository.Types;
 import tech.raaf.structure.graph.Component;
+import tech.raaf.structure.graph.Graph;
 import tech.raaf.structure.graph.Group;
 import tech.raaf.structure.graph.repositories.InstanceRepository;
 import tech.raaf.structure.graph.repositories.TypeRepository;
@@ -305,14 +305,14 @@ public class Application {
             Configuration.setSchemaNamespace(new URI(String.format("%s://%s:%s/",
                     scheme, Configuration.getWebHost(), Configuration.getWebPort())));
         } catch (URISyntaxException e) {
-            handleUnrecoverableLoadingError(null, e, 1, "Unrecoverable error while setting schema namespace");
+            handleUnrecoverableLoadingError(e, 1, "Unrecoverable error while setting schema namespace");
         }
         final HttpServer server = httpServer.requestHandler(router::accept);
         try {
             Application.<HttpServer>await(handler ->
                     server.listen(Configuration.getWebPort(), Configuration.getWebHost(), handler));
         } catch (InterruptedException | ExecutionException e) {
-            handleUnrecoverableLoadingError(null, e, 1, "Failed to start the web server: " + e.getMessage());
+            handleUnrecoverableLoadingError(e, 1, "Failed to start the web server: " + e.getMessage());
         }
 
         init(vertx);
@@ -323,48 +323,34 @@ public class Application {
         final InstanceRepository instanceRepository = Context.getInstanceRepository();
         final TypeRepository typeRepository = Context.getTypeRepository();
 
-        Transaction tx = Context.getGraphDatabase().beginTx();
         try {
             BundleLoader bundleLoader = new BundleLoader();
-            bundleLoader.loadTypes();
-            tx.success();
-            tx.close();
-
-            tx = Context.getGraphDatabase().beginTx();
-            bundleLoader.loadInstances();
-            tx.success();
+            Graph.transaction(bundleLoader::loadTypes);
+            Graph.transaction(bundleLoader::loadInstances);
         } catch (Exception e) {
-            handleUnrecoverableLoadingError(tx, e, 1, "Unrecoverable error while loading bundles. Shutting down...");
-        } finally {
-            tx.close();
+            handleUnrecoverableLoadingError(e, 1, "Unrecoverable error while loading bundles. Shutting down...");
         }
 
         // Deploy TypeActors.
         log.debug("Deploying TypeActors..");
-        tx = Context.getGraphDatabase().beginTx();
-
         try {
-            CompletableFuture.allOf(StreamSupport.stream(typeRepository.findAll().spliterator(), false)
-                    .map(TypeActor::deploy)
-                    .toArray(CompletableFuture<?>[]::new)).get();
+            CompletableFuture.allOf(Graph.transaction(() ->
+                    StreamSupport.stream(typeRepository.findAll().spliterator(), false)
+                            .map(TypeActor::deploy)
+                            .toArray(CompletableFuture<?>[]::new))).get();
         } catch (Exception e) {
-            handleUnrecoverableLoadingError(tx, e, 1, "Unrecoverable error while deploying TypeActors. Shutting down...");
-        } finally {
-            tx.close();
+            handleUnrecoverableLoadingError(e, 1, "Unrecoverable error while deploying TypeActors. Shutting down...");
         }
 
         // Deploy InstanceActors.
         log.debug("Deploying InstanceActors..");
-        tx = Context.getGraphDatabase().beginTx();
-
         try {
-            CompletableFuture.allOf(StreamSupport.stream(instanceRepository.findAll().spliterator(), false)
-                    .map(InstanceActor::deploy)
-                    .toArray(CompletableFuture<?>[]::new)).get();
+            CompletableFuture.allOf(Graph.transaction(() ->
+                    StreamSupport.stream(instanceRepository.findAll().spliterator(), false)
+                            .map(InstanceActor::deploy)
+                            .toArray(CompletableFuture<?>[]::new))).get();
         } catch (Exception e) {
-            handleUnrecoverableLoadingError(tx, e, 1, "Unrecoverable error while deploying InstanceActors. Shutting down...");
-        } finally {
-            tx.close();
+            handleUnrecoverableLoadingError(e, 1, "Unrecoverable error while deploying InstanceActors. Shutting down...");
         }
 
         final Optional<String> maybeHostname = getHostname();
@@ -381,7 +367,7 @@ public class Application {
             }
         } else {
             final String error = "Couldn't find own hostname";
-            handleUnrecoverableLoadingError(null, new IllegalStateException(error), 1, error);
+            handleUnrecoverableLoadingError(new IllegalStateException(error), 1, error);
         }
     }
 
@@ -392,7 +378,7 @@ public class Application {
             final String id = await(handler -> vertx.deployVerticle(verticle, options, handler));
             log.info("Deployed {} with id: {}", name, id);
         } catch (InterruptedException | ExecutionException e) {
-            handleUnrecoverableLoadingError(null, e, 1, "Failed to deploy " + name + ": " + e.getMessage());
+            handleUnrecoverableLoadingError(e, 1, "Failed to deploy " + name + ": " + e.getMessage());
         }
     }
 
@@ -433,14 +419,12 @@ public class Application {
 
     /**
      *
-     * @param tx The graphdb transaction context if available, otherwise set to null
      * @param e The exception object that was thrown
      * @param exitCode The System.exit code to terminate the Application with
      * @param message Extra message to print before shutting down
      */
-    private static void handleUnrecoverableLoadingError(Transaction tx, Exception e, int exitCode, String message) {
+    private static void handleUnrecoverableLoadingError(Exception e, int exitCode, String message) {
         if(Configuration.isTraceModeOn()) e.printStackTrace();
-        if(tx != null) tx.close();
         log.error(message);
         System.exit(exitCode);
     }
