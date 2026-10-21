@@ -93,8 +93,16 @@ References:
 
 ## Baseline
 
-On the current code with JDK 1.8.0_504, `mvn test` runs 119 tests with
-0 failures and 0 skipped. The migrated code must give the same result.
+On the current code with JDK 1.8.0_504, `mvn verify` runs 119 tests
+with 0 failures and 0 skipped. It also builds the fat jar and checks
+the line coverage with JaCoCo. The minimum is `jacoco.line.minimum`
+(0.60) in `pom.xml`. The coverage is 62% now. The migrated code must
+give the same result. The report is in `target/site/jacoco`.
+
+Maven runs the build and the tests with the JDK 8 from
+`~/.m2/toolchains.xml`. Maven itself can run on a newer JDK.
+`.mvn/jvm.config` lets it read `aspectjweaver-1.8.2.jar`, which newer
+JDKs reject without this setting.
 
 `TaskManagerTest.resultChain` can fail on Neo4j 2.1 when the machine is
 busy. Neo4j 2.1 lets a reader see a commit that is not fully applied,
@@ -108,12 +116,13 @@ this test must pass each time.
 | Embedded database      | `SpringConfig`, `SpringTestConfig`                              | 2 files                |
 | Spring context         | `Context`, `ConverterConfig`, `Application`                     | 3 files                |
 | Spring converters      | `graph/converters/*`, Spring `Converter` interface              | 8 files                |
-| `beginTx` transactions | `EntityManager` (7), `Application` (4), `Type` (2), `Types` (2) | 19 in main             |
-|                        | `Entity`, `Instance`, `Component`, `NodeActor` (1 each)         |                        |
-|                        | 6 test classes                                                  | 13 in tests            |
+| `beginTx` transactions | `EntityManager` (7), `Application` (4), `Type` (2), `Types` (2) | 20 in main             |
+|                        | `Entity`, `Instance`, `Component`, `NodeActor`, `TaskManager`   |                        |
+|                        | (1 each)                                                        |                        |
+|                        | 10 test classes                                                 | 29 in tests            |
 | SDN mapping            | 13 domain classes in `graph/`                                   | 26 relationship fields |
 | `DynamicProperties`    | `Node`, `Entity`, `Type`, `Instance`                            | 4 files                |
-| SDN repositories       | `graph/repositories/*`                                          | 9 files, 56 `@Query`   |
+| SDN repositories       | `graph/repositories/*`                                          | 9 files, 58 `@Query`   |
 | Inherited SDN methods  | `save`, `delete`, `findAll`, `count`, generated finders         | See "Queries"          |
 | Core API writes        | `Entity.persist`, `persistRelations`, `persistTypeLabels`       | 3 methods              |
 | Core API reads         | `NodeSerializer`, `NodeRepository.findGraphNodeByUuid`          | 2 files                |
@@ -121,7 +130,7 @@ this test must pass each time.
 | `CypherQueryExecutor`  | `Application`, `BundleLoader` (2), `Entity.findDuplicates`      | 4 sites                |
 | Verticle deploys       | `Application` (7), `NodeActor.deploy`, `Instance.save`          | 9 sites                |
 | `commons-lang` 2.4     | `Type`, `Constraint`, `ConfigurationProxy`                      | 3 files                |
-| Tests                  | 11 files import SDN or Neo4j. 4 of them use `SpringTestConfig`. | 11 files               |
+| Tests                  | 15 files import SDN or Neo4j. 4 of them use `SpringTestConfig`. | 15 files               |
 
 `commons-lang` 2.4 (`org.apache.commons.lang.*`) arrives only through
 `neo4j-server`. In total, 38 main files import Spring and 19 main files
@@ -457,7 +466,7 @@ for more than 2 seconds. Worker threads can run for 5 minutes
 
 In this phase, the current tests check the most difficult changes
 before the transport changes. Use the `{param}` syntax for now. Run
-`mvn test` after each step. The result must agree with the baseline.
+`mvn verify` after each step. The result must agree with the baseline.
 
 1. Replace the two Traversal API methods with Cypher (see
    "Traversals").
@@ -478,7 +487,7 @@ This change does not depend on the driver. Do it before the driver
 change, so that thread problems and server problems do not mix.
 
 1. Make the changes in "Threads".
-2. Run `mvn test`. The result must agree with the baseline.
+2. Run `mvn verify`. The result must agree with the baseline.
 3. Start Structure and use the frontend. Make sure that the log has no
    `has been blocked` warnings.
 
@@ -488,11 +497,11 @@ The application does not run between the steps of this phase. Do all
 steps on one branch.
 
 1. In `pom.xml`, remove `spring-data-neo4j`, `neo4j`, `neo4j-kernel`,
-   both `neo4j-server` artifacts, `spring-test` and the commented
-   `spring-data-neo4j-rest` block. Add `neo4j-java-driver` 4.4.27.
+   both `neo4j-server` artifacts, `spring-test` and the Xebia
+   repository. Add `neo4j-java-driver` 4.4.27.
 2. Add `Graph` and the configuration keys. Change `Context` and
    `Application` (see "Spring removal").
-3. Replace the 19 `beginTx` sites with `Graph.transaction`. At each
+3. Replace the 20 `beginTx` sites with `Graph.transaction`. At each
    site, look for writes followed by a close without `success()`.
    Today this rolls back the writes. With `Graph.transaction`, throw an
    exception to roll back.
@@ -513,7 +522,7 @@ steps on one branch.
    - Remove the Spring runner from the 4 classes that use
      `SpringTestConfig`. Remove the other Spring annotations (see
      "Spring removal").
-   - Replace the 13 `beginTx` sites in the tests. Replace the
+   - Replace the 29 `beginTx` sites in the tests. Replace the
      `getPersistentState()` assertions in `EntityTest` with queries.
 
 `neo4j-harness` is not an option, because the harness for 2025.x and
@@ -522,7 +531,7 @@ dependency and needs Docker.
 
 ### Phase 4: verify
 
-1. Run `mvn test` against 2026.10 with
+1. Run `mvn verify` against 2026.10 with
    `db.query.default_language=CYPHER_25`. Then run it with
    `CYPHER_5`. Both results must agree with the baseline.
 2. Run the tests one time with `bolt+s://` or `bolt+ssc://`.
@@ -546,7 +555,8 @@ dependency and needs Docker.
 1. Remove `jersey-core`, `jersey-server`, `persistence-api`,
    `validation-api` and `javassist` if the build compiles without them.
    No code uses them.
-2. Update `README.md`. Structure needs a Neo4j server, reads the
+2. Remove `.mvn/jvm.config` if no dependency needs it.
+3. Update `README.md`. Structure needs a Neo4j server, reads the
    `STRUCTURE_NEO4J_*` variables and no longer serves port 7474.
 
 ## Open decisions
@@ -557,7 +567,52 @@ dependency and needs Docker.
 - Specialize does not update the `type:` labels today. Decide if the
   new code adds the labels of the new type.
 - `BundleLoader.createIndices` has no callers. Call it after
-  `loadTypes` in its own transaction, or delete it.
+  `loadTypes` in its own transaction, or delete it (see "Unused and
+  unfinished code").
+
+## Unused and unfinished code
+
+The code below has no callers. The git history shows that it is not a
+left-over of a refactor. Keep it until a decision is made. If the
+migration keeps it, port it with the rest.
+
+Never used since it was written:
+
+- `NaiveSorter.getNode`, `arrayContains` and `setGlobPattern` (#211).
+  They do not use the graph.
+- `Result.getStdout`, `getStderr`, `getNext` and `getPrevious` (#51).
+  `getNext` and `getPrevious` read `@RelatedTo` fields. If they stay,
+  they become query getters (see "Mapping").
+- `Controller.getStateMap` and `Controller.Builder.addExitCodeToState`
+  (#55). The state map works through the bundles and
+  `getStateMapAsJson`. `getStateMap` reads the `data` map, so it
+  changes with `DynamicProperties`.
+
+Unfinished or disconnected features:
+
+- `BundleLoader.createIndices` (#266). It creates an index for the
+  identity properties of each type. Merge 67ed554b removed its call
+  from `Application` by accident, one day after #266. It runs
+  `CREATE INDEX ON :Label(prop)` through the SDN query executor.
+  Neo4j 5 does not accept this syntax. Use
+  `CREATE INDEX IF NOT EXISTS FOR (n:Label) ON (n.prop)`.
+- Protocol matching: `Type.findCommonProtocols`, `implementsProtocol`,
+  `addImplementedProtocol` and `TypeRepository.getCommonProtocols`
+  (#62, STR-35). The ssh, smb, samba and winexe bundles have
+  `IMPLEMENTS` relationships, but no code calls this logic. If it
+  stays, it adds one `@Query` and one `@RelatedTo` field to port.
+- `InstrumentManager`, with `Context.setInstrumentsLoaded`,
+  `getInstrumentsLoaded` and the `reloadInstruments` and
+  `removeInstruments` handlers (#16). The loading code is commented
+  out. It does not use the graph.
+- `EntityDeserializer.dataSchema`. Only a validation that is commented
+  out uses it.
+- `Actor`, an empty `Instance` subclass since #68. No type, bundle or
+  code uses it. It is in the SDN base package. Delete it, or keep it
+  as a plain class without mapping.
+- Bus handlers that no client sends: `InstanceActor.getComponentsByType`
+  (uses `ComponentRepository.findChildrenByType`) and
+  `TaskManager.taskStatus`.
 
 ## Risks
 
