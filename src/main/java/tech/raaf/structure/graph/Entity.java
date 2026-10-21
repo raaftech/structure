@@ -7,10 +7,10 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import io.vertx.core.json.JsonObject;
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.neo4j.graphdb.*;
+import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.Node;
+import org.neo4j.graphdb.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.annotation.Transient;
@@ -20,14 +20,12 @@ import org.springframework.data.neo4j.fieldaccess.DynamicProperties;
 import org.springframework.data.neo4j.fieldaccess.DynamicPropertiesContainer;
 import org.springframework.data.neo4j.support.Neo4jTemplate;
 import org.springframework.data.neo4j.support.index.IndexType;
-import org.springframework.data.neo4j.support.query.CypherQueryExecutor;
 import tech.raaf.structure.base.Configuration;
 import tech.raaf.structure.base.Context;
 import tech.raaf.structure.bus.GenericActor;
 import tech.raaf.structure.exceptions.IllegalEntityType;
 import tech.raaf.structure.exceptions.ResultBuilderException;
 import tech.raaf.structure.exceptions.TypeUnknownException;
-import tech.raaf.structure.graph.converters.JsonNodeWriter;
 import tech.raaf.structure.graph.repositories.NodeRepository;
 import tech.raaf.structure.graph.repositories.TypeRepository;
 import tech.raaf.structure.helper.JsonHelper;
@@ -37,8 +35,6 @@ import java.net.URI;
 import java.util.*;
 import java.util.function.BiPredicate;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 import static io.vertx.core.json.Json.mapper;
 
@@ -63,8 +59,6 @@ public class Entity {
     public void setNeo4jTemplate(Neo4jTemplate neo4jTemplate) {
         this.neo4jTemplate = neo4jTemplate;
     }
-
-    private Node persistedState;
 
     /* Internal graph database node id. */
     @GraphId
@@ -507,43 +501,29 @@ public class Entity {
      * for the given properties as this entity.
      */
     private Set<String> findDuplicates(String label, Set<String> identityProperties) {
-        final String propertyQueryPattern = "`data-%s`: %s";
-        final String completeQueryPattern = "MATCH (n:`type:%s` {%s}) RETURN n.uuid";
-        final String inQuotes = "\"%s\"";
-        final String dataProperties = identityProperties.stream()
-                .filter(id -> data.hasProperty(id))
-                .map(id -> Pair.of(id, data.getProperty(id)))
-                .map(pair -> pair.getRight() instanceof String ?
-                        Pair.of(pair.getLeft(),
-                                /*
-                                We'll need to escape because we don't want to end up with
-                                `data-foo`:"b"ar", but with `data-foo`:"b\"ar"
-                                 */
-                                String.format(inQuotes,
-                                        StringEscapeUtils.escapeJava((String) pair.getRight()))) :
-                        pair)
-                // We don't have to check for backticks in the identity names, bundleloader does that for us
-                .map(pair -> String.format(propertyQueryPattern, pair.getLeft(), pair.getRight()))
-                .collect(Collectors.joining(", "));
-
-        final String properties;
-        // add name property if we identify on that, edge case because it's not part of the data map
+        final Map<String, Object> params = new HashMap<>();
+        final List<String> conditions = new ArrayList<>();
+        // The keys go into the query text, the values are parameters
+        identityProperties.stream()
+                .filter(data::hasProperty)
+                .forEach(id -> {
+                    final String param = "p" + params.size();
+                    conditions.add("n." + escape("data-" + id) + " = {" + param + "}");
+                    params.put(param, toPropertyValue(data.getProperty(id)));
+                });
+        // name is not part of the data map, but we can identify on it
         if (identityProperties.contains("name")) {
-            final String nameProperty = String.format("`name`: \"%s\"", StringEscapeUtils.escapeJava(getName()));
-            if (dataProperties.length() > 0) {
-                properties = new StringBuilder(dataProperties).append(", ").append(nameProperty).toString();
-            } else {
-                properties = nameProperty;
-            }
-        } else {
-            properties = dataProperties;
+            final String param = "p" + params.size();
+            conditions.add("n.name = {" + param + "}");
+            params.put(param, getName());
         }
 
-        final String completeQuery = String.format(completeQueryPattern, label, properties);
-        CypherQueryExecutor queryExecutor = Context.getNeo4jTemplate().getInfrastructure().getCypherQueryExecutor();
-        Iterable<String> results = queryExecutor.query(completeQuery, String.class, null);
-
-        return StreamSupport.stream(results.spliterator(), false).collect(Collectors.toSet());
+        final String query = "MATCH (n:" + escape("type:" + label) + ") " +
+                (conditions.isEmpty() ? "" : "WHERE " + String.join(" AND ", conditions) + " ") +
+                "RETURN n.uuid AS uuid";
+        final Set<String> duplicates = new HashSet<>();
+        neo4jTemplate.query(query, params).forEach(row -> duplicates.add((String) row.get("uuid")));
+        return duplicates;
     }
 
     private String createErrorMessage(int code, String conflictUuid, String message) {
@@ -624,33 +604,35 @@ public class Entity {
 
         final List<String> classLabels = maybeClassLabels.get();
 
-        persist(classLabels.toArray(new String[classLabels.size()]));
-        Node node = getPersistentState();
-        persistRelations(node);
-        persistTypeLabels(node);
+        final Set<String> oldLabels = persist();
+        persistRelations();
+        persistLabels(oldLabels, classLabels);
     }
 
     public Node getPersistentState() {
-        return persistedState;
+        return nodeRepository.findGraphNodeByUuid(uuid);
+    }
+
+    // Put a label, relationship type or property key in backticks
+    static String escape(String name) {
+        return "`" + name.replace("`", "``") + "`";
+    }
+
+    // Property values must be primitives, strings or lists
+    private static Object toPropertyValue(Object value) {
+        return value instanceof JsonNode ? value.toString() : value;
     }
 
     /**
-     * Persist this entity to neo4j.
+     * Write the properties of this entity to the node. Remove the
+     * properties that the entity no longer has.
      *
-     * @param labels The labels SDN needs to map this node onto an object.
+     * @return The labels of the node before the write.
      */
-    private void persist(String... labels) {
-        final List<String> labelsToPersist = ImmutableList.copyOf(Arrays.asList(labels));
-
-        Map<String, Object> properties = new HashMap<>();
-        properties.putAll(data.asMap().entrySet().stream()
-                .map(entry -> new AbstractMap.SimpleEntry<>("data-".concat(entry.getKey()), entry.getValue()))
-                .map(entry -> new AbstractMap.SimpleEntry<>(entry.getKey(),
-                        entry.getValue() instanceof JsonNode ? new JsonNodeWriter().convert((JsonNode) entry.getValue()) : entry.getValue()))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
-        properties.putAll(file.asMap().entrySet().stream()
-                .map(entry -> new AbstractMap.SimpleEntry<>("file-".concat(entry.getKey()), entry.getValue()))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
+    private Set<String> persist() {
+        final Map<String, Object> properties = new HashMap<>();
+        data.asMap().forEach((key, value) -> properties.put("data-" + key, toPropertyValue(value)));
+        file.asMap().forEach((key, value) -> properties.put("file-" + key, value));
         if (bundle != null) {
             properties.put("bundle", bundle);
         }
@@ -670,21 +652,32 @@ public class Entity {
             properties.put("path", path);
         }
         if (identity != null) {
-            properties.put("identity", identity);
+            properties.put("identity", Arrays.asList(identity));
         }
         if (!isInstance()) {
             properties.put("isAbstract", isAbstract);
+            properties.put("glyphId", 0);
         }
 
-        /* we use neo4jTemplate.merge(...), which is basically getOrCreate(...). Now, if the entity
-        already existed, but has changed properties, we need to update them using Node.setProperty(...).
-        I did not find a way in the API to do this atomically, like "SET" would do in Cypher */
-        persistedState = neo4jTemplate.merge("Node", "uuid", uuid, properties, labelsToPersist);
-        properties.entrySet().stream().forEach(entry -> persistedState.setProperty(entry.getKey(), entry.getValue()));
-        persistedState.getLabels().forEach(label -> persistedState.removeLabel(label));
-        labelsToPersist.stream()
-                .map(DynamicLabel::label)
-                .forEach(persistedState::addLabel);
+        final Map<String, Object> params = new HashMap<>();
+        params.put("uuid", uuid);
+        final Set<String> oldLabels = new HashSet<>();
+        for (Map<String, Object> row : neo4jTemplate.query("MATCH (n:Node {uuid: {uuid}}) RETURN n", params)) {
+            final Node node = (Node) row.get("n");
+            node.getLabels().forEach(label -> oldLabels.add(label.name()));
+            // A null value removes the property
+            for (String key : node.getPropertyKeys()) {
+                if (!properties.containsKey(key) && !key.equals("created") && !key.startsWith("kv-")) {
+                    properties.put(key, null);
+                }
+            }
+        }
+
+        params.put("props", properties);
+        neo4jTemplate.query("MERGE (n:Node {uuid: {uuid}}) " +
+                "ON CREATE SET n.created = timestamp() " +
+                "SET n += {props}", params);
+        return oldLabels;
     }
 
     /**
@@ -735,26 +728,37 @@ public class Entity {
                 Optional.of(labelsPerType.get(nodeEntityName)) : Optional.empty();
     }
 
-    private void persistTypeLabels(Node node) {
-        /* Add labels as Neo4j labels. Node will be null if entity is not persisted. */
-        if (node != null && uuid != null) {
-            final Set<String> labels;
-            if (isInstance()) {
-                Optional<Type> maybeType = getInstanceOf();
-                if (maybeType.isPresent()) {
-                    labels = nodeRepository.getTypeHierarchyForTypeUuid(maybeType.get().getUuid());
-                } else {
-                    throw new TypeUnknownException(createErrorMessage(404, "", "Type for entity \"" + uuid + "\" doesn't exist"));
-                }
-            } else {
-                labels = nodeRepository.getTypeHierarchyForTypeUuid(uuid);
+    /**
+     * Replace the labels of the node with the class labels and the
+     * "type:" labels of the ISA path of its type.
+     *
+     * @param oldLabels   The labels of the node before the write.
+     * @param classLabels The class labels of this entity.
+     */
+    private void persistLabels(Set<String> oldLabels, List<String> classLabels) {
+        final String typeUuid;
+        if (isInstance()) {
+            Optional<Type> maybeType = getInstanceOf();
+            if (!maybeType.isPresent()) {
+                throw new TypeUnknownException(createErrorMessage(404, "", "Type for entity \"" + uuid + "\" doesn't exist"));
             }
-            labels.stream()
-                    .map(s -> "type:".concat(s))
-                    .forEach(label -> node.addLabel(DynamicLabel.label(label)));
+            typeUuid = maybeType.get().getUuid();
         } else {
-            log.error("Failed to persist labels for entity \"{}\". Are you sure the entity is in a persisted state?", name);
+            typeUuid = uuid;
         }
+        final List<String> labels = new ArrayList<>(classLabels);
+        nodeRepository.getTypeHierarchyForTypeUuid(typeUuid).forEach(name -> labels.add("type:" + name));
+
+        final String remove = oldLabels.stream()
+                .filter(label -> !labels.contains(label))
+                .map(Entity::escape)
+                .collect(Collectors.joining(":"));
+        final String set = labels.stream()
+                .map(Entity::escape)
+                .collect(Collectors.joining(":"));
+        neo4jTemplate.query("MATCH (n:Node {uuid: {uuid}}) " +
+                (remove.isEmpty() ? "" : "REMOVE n:" + remove + " ") +
+                "SET n:" + set, ImmutableMap.of("uuid", uuid));
     }
 
     /**
@@ -784,86 +788,56 @@ public class Entity {
         }
     }
 
-    private void persistRelations(Node node) {
-
-        /* Add relations. Node will be null if entity is not persisted. */
-        if (relations != null) {
-            // Returns whether a relationship with a given direction implies the the entity can be queried by name
-            BiPredicate<Direction, RelationshipType> isQueryableByName = (direction, relName) ->
-                    (Direction.OUTGOING.equals(direction) ?
-                            outgoingToType : incomingFromType).contains(relName.name());
-
-			/*
-             * Create a set of all peers of all relations for the purpose of
-			 * existence checking.
-			 */
-            final Stream<Triple<String, String, String>> flattenedRelationsStream =
-                    relations.stream().flatMap(triple -> triple.flatten());
-            final boolean peersExist = flattenedRelationsStream
-                    .map(triple -> Pair.of(
-                            triple.getRight(),
-                            isQueryableByName.test(Direction.valueOf(triple.getMiddle().toUpperCase()),
-                                    DynamicRelationshipType.withName(triple.getLeft())))
-                    )
-                    .allMatch(pair -> doesPeerExist(pair.getLeft(), pair.getRight()));
-
-            if (peersExist) {
-
-                relations.forEach((relation) -> {
-                    String rname = relation.getLeft();
-                    String direction = relation.getMiddle();
-                    Set<String> peers = relation.getRight();
-
-                    /*
-                    When a relation points towards a type it is possible to query that
-                    type by name as well as by uuid, which is the default. This is because
-                    types have a unique constraint on their names.
-                     */
-                    final boolean queryableByName = isQueryableByName.test(
-                            Direction.valueOf(direction.toUpperCase()), DynamicRelationshipType.withName(rname));
-
-                    peers.forEach((identifier) -> {
-                        final Node peer;
-                        if (queryableByName) {
-                            peer = GenericActor.isUuid(identifier) ?
-                                    nodeRepository.findGraphNodeByUuid(identifier) :
-                                    neo4jTemplate.getPersistentState(typeRepository.findOneByName(identifier));
-                        } else {
-                            peer = nodeRepository.findGraphNodeByUuid(identifier);
-                        }
-
-                        // check if this relationship already exists by getting al relationships with the same name and direction
-                        // and then checking if we have one to "peer".
-                        boolean relExists = StreamSupport.stream(node.getRelationships(Direction.valueOf(direction.toUpperCase()), (RelationshipType) () -> rname).spliterator(), false)
-                                .filter(r -> r.getOtherNode(node).getId() == peer.getId())
-                                .count() > 0;
-                        if (!relExists) {
-                            switch (direction) {
-                                case "incoming":
-                                    log.debug("Creating incoming \"{}\" relation from \"{}\" to \"{}\"", rname, (String) peer.getProperty("name"), name);
-                                    peer.createRelationshipTo(node, () -> rname);
-                                    break;
-                                case "outgoing":
-                                    log.debug("Creating outgoing \"{}\" relation from \"{}\" to \"{}\"", rname, name, (String) peer.getProperty("name"));
-                                    node.createRelationshipTo(peer, () -> rname);
-                            }
-                        }
-                    });
-
-                });
-            } else {
-                log.error("One of the peers that entity \"{}\" would be related to, does not exist in the graph", name);
-            }
-
-        } else {
+    private void persistRelations() {
+        if (relations == null) {
             log.error("Failed to persist relations for entity \"{}\". Are you sure the entity is in a persisted state?",
                     name);
+            return;
         }
+
+        // Returns whether a relationship with a given direction implies the the entity can be queried by name
+        BiPredicate<String, String> isQueryableByName = (direction, relName) ->
+                ("outgoing".equals(direction) ? outgoingToType : incomingFromType).contains(relName);
+
+        // Check that all peers of all relations exist
+        final boolean peersExist = relations.stream()
+                .flatMap(triple -> triple.<String>flatten())
+                .allMatch(triple -> doesPeerExist(triple.getRight(),
+                        isQueryableByName.test(triple.getMiddle(), triple.getLeft())));
+        if (!peersExist) {
+            log.error("One of the peers that entity \"{}\" would be related to, does not exist in the graph", name);
+            return;
+        }
+
+        relations.forEach(relation -> {
+            final String rname = relation.getLeft();
+            final boolean outgoing = "outgoing".equals(relation.getMiddle());
+            /*
+            When a relation points towards a type it is possible to query that
+            type by name as well as by uuid, which is the default. This is because
+            types have a unique constraint on their names.
+             */
+            final boolean queryableByName = isQueryableByName.test(relation.getMiddle(), rname);
+            final String query = "MATCH (a:Node {uuid: {from}}), (b:Node {uuid: {to}}) " +
+                    "MERGE (a)-[:" + escape(rname) + "]->(b)";
+
+            relation.getRight().forEach(identifier -> {
+                final String peer = queryableByName && !GenericActor.isUuid(identifier) ?
+                        typeRepository.findOneByName(identifier).getUuid() : identifier;
+                log.debug("Merging {} \"{}\" relation between \"{}\" and \"{}\"",
+                        relation.getMiddle(), rname, uuid, peer);
+                neo4jTemplate.query(query, ImmutableMap.of(
+                        "from", outgoing ? uuid : peer,
+                        "to", outgoing ? peer : uuid));
+            });
+        });
     }
 
     private boolean doesPeerExist(String peerIdentifier, boolean queryableByName) {
         if (GenericActor.isUuid(peerIdentifier)) {
-            return nodeRepository.findByUuid(peerIdentifier) != null;
+            final String exists = "MATCH (n:Node {uuid: {uuid}}) RETURN count(n) AS count";
+            return ((Number) neo4jTemplate.query(exists, ImmutableMap.of("uuid", peerIdentifier))
+                    .single().get("count")).longValue() > 0;
         } else if (queryableByName) {
             return typeRepository.findOneByName(peerIdentifier) != null;
         } else {

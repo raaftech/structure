@@ -233,6 +233,10 @@ public class EntityManagerTest extends TypeSchemaTest {
 
             // retrieve "Linux" from the graph again, check if it was indeed updated
             Assert.assertEquals(newName, nodeRepository.findByUuid(linuxType.getUuid()).getName());
+            // the update keeps the bundle and the path
+            Assert.assertEquals("linux", nodeRepository.findByUuid(linuxType.getUuid()).getBundle());
+            Assert.assertEquals("src/main/resources/bundles/linux/types/linux.type.json",
+                    nodeRepository.findByUuid(linuxType.getUuid()).getPath());
 
 
             /*

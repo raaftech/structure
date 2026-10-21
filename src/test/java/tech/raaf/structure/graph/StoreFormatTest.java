@@ -22,6 +22,7 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Checks the stored format of some nodes from the bundles. This format
@@ -48,14 +49,16 @@ public class StoreFormatTest extends TypeSchemaTest {
         Stored n = read(BASH);
         assertEquals(ImmutableSet.of("Node", "Type", "type:Type", "type:Component", "type:Software",
                 "type:Interpreter", "type:UnixShell", "type:Bash"), n.labels);
-        assertEquals(ImmutableSet.of("uuid", "name", "desc", "bundle", "path", "checksum", "isAbstract",
-                "file-dataSchema"), n.properties.keySet());
+        assertEquals(ImmutableSet.of("uuid", "name", "desc", "bundle", "path", "checksum", "created", "isAbstract",
+                "glyphId", "file-dataSchema"), n.properties.keySet());
         assertEquals(BASH, n.properties.get("uuid"));
         assertEquals("Bash", n.properties.get("name"));
         assertEquals("The Bourne Again Shell.", n.properties.get("desc"));
         assertEquals("bash", n.properties.get("bundle"));
         assertEquals(BUNDLES + "bash/bash.type.json", n.properties.get("path"));
         assertEquals(false, n.properties.get("isAbstract"));
+        assertEquals(0, n.properties.get("glyphId"));
+        assertTrue(n.properties.get("created") instanceof Long);
         assertFile(n, "file-dataSchema", "text", "json", "bash.schema.json");
         assertEquals(ImmutableSet.of("ISA -> 86168e4a-8c99-43c9-ad95-c8f88d96ac32"), n.outgoing);
     }
@@ -64,8 +67,7 @@ public class StoreFormatTest extends TypeSchemaTest {
     public void typeWithConstraint() throws Exception {
         Stored n = read(CONTROLLER);
         assertEquals(ImmutableSet.of("Node", "Type", "type:Type", "type:Instrument", "type:Controller"), n.labels);
-        // SDN writes glyphId when it saves a type that has constraints
-        assertEquals(ImmutableSet.of("uuid", "name", "desc", "bundle", "path", "checksum", "isAbstract",
+        assertEquals(ImmutableSet.of("uuid", "name", "desc", "bundle", "path", "checksum", "created", "isAbstract",
                 "glyphId", "file-dataSchema"), n.properties.keySet());
         assertEquals("Controller", n.properties.get("name"));
         assertEquals("core", n.properties.get("bundle"));
@@ -84,7 +86,8 @@ public class StoreFormatTest extends TypeSchemaTest {
         Stored n = read(BASH_INVOKE);
         assertEquals(ImmutableSet.of("Node", "Instance", "Instrument", "Controller", "type:Type",
                 "type:Instrument", "type:Controller"), n.labels);
-        assertEquals(ImmutableSet.of("uuid", "name", "desc", "bundle", "path", "checksum", "data-subjectIsLocal",
+        assertEquals(ImmutableSet.of("uuid", "name", "desc", "bundle", "path", "checksum", "created",
+                "data-subjectIsLocal",
                 "data-instrumentType", "data-arguments", "file-dataSchema", "file-templateFile"),
                 n.properties.keySet());
         assertEquals("BashInvoke", n.properties.get("name"));
@@ -109,7 +112,8 @@ public class StoreFormatTest extends TypeSchemaTest {
     public void profile() throws Exception {
         Stored n = read(LINUX_PROFILE);
         assertEquals(ImmutableSet.of("Node", "Instance", "Profile", "type:Type", "type:Profile"), n.labels);
-        assertEquals(ImmutableSet.of("uuid", "name", "desc", "bundle", "path", "checksum", "data-commands"),
+        assertEquals(ImmutableSet.of("uuid", "name", "desc", "bundle", "path", "checksum", "created",
+                "data-commands"),
                 n.properties.keySet());
         assertEquals("LinuxProfile", n.properties.get("name"));
         assertEquals("A profile that detects Linux.", n.properties.get("desc"));

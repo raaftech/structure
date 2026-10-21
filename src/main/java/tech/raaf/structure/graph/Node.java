@@ -35,6 +35,7 @@ public abstract class Node {
     @Indexed(indexType = IndexType.FULLTEXT, indexName = "description")
     protected String desc;
     protected String bundle;
+    protected String path;
     protected String type;
     protected String checksum;
     @GraphId
@@ -118,6 +119,10 @@ public abstract class Node {
 
     public String getBundle() {
         return bundle;
+    }
+
+    public String getPath() {
+        return path;
     }
 
     public Map<String, Object> getFiles() {

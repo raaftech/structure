@@ -57,6 +57,12 @@ public class NodeSerializer extends StdSerializer<Node> {
             gen.writeBooleanField("abstract", ((Type)value).isAbstract());
         }
         gen.writeStringField("checksum", value.getChecksum());
+        if (value.getBundle() != null) {
+            gen.writeStringField("bundle", value.getBundle());
+        }
+        if (value.getPath() != null) {
+            gen.writeStringField("path", value.getPath());
+        }
 
         // start relations object, which should always exist
         gen.writeFieldName("relations");
