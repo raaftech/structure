@@ -364,8 +364,9 @@ public class EntityManager extends GenericActor {
                 Type instanceType = instance.getInstanceOf();
                 Type isa = typeRepository.findByUuid(isaUuid);
 
-                boolean isValidSubType = instanceType.getChildIsaSet().contains(isa);
-                if (!isValidSubType) {
+                if (isa == null) {
+                    result.put(ERROR, "Could not find a type with uuid " + isaUuid);
+                } else if (!instanceType.getChildIsaSet().contains(isa)) {
                     result.put(ERROR, "Invalid specialization requested. Type [" + isa.getName() + "] is not in the specialization set of: [" + instanceType.getName() + "]");
                 } else {
                     instance.setInstanceOf(isa);
@@ -405,15 +406,17 @@ public class EntityManager extends GenericActor {
                     return response(request, result);
                 }
                 if (groupee == null) {
-                    result.put("error", "Group with UUlD \"" + groupingUuid + "\" not found.");
+                    result.put("error", "Node with UUlD \"" + groupeeUuid + "\" not found.");
                     return response(request, result);
                 }
 
                 Transaction tx = Context.getGraphDatabase().beginTx();
                 try {
                     final String groupRelName = "MEMBER_OF";
+                    // The entity has only outgoing relations, so ask the group
+                    final boolean changed = !group.getGroupees().contains(groupee);
                     Entity groupingEntity = mapper.treeToValue(mapper.valueToTree(group), Entity.class);
-                    boolean changed = groupingEntity.addRelations(groupRelName,
+                    groupingEntity.addRelations(groupRelName,
                             Direction.INCOMING, ImmutableSet.of(UUID.fromString(groupeeUuid)));
 
                     groupingEntity.toGraph();
@@ -460,7 +463,7 @@ public class EntityManager extends GenericActor {
                     return response(request, result);
                 }
                 if (groupee == null) {
-                    result.put("error", "Group with UUlD \"" + groupingUuid + "\" not found.");
+                    result.put("error", "Node with UUlD \"" + groupeeUuid + "\" not found.");
                     return response(request, result);
                 }
 
