@@ -93,8 +93,13 @@ References:
 
 ## Baseline
 
-On the current code with JDK 1.8.0_504, `mvn test` runs 118 tests with
+On the current code with JDK 1.8.0_504, `mvn test` runs 119 tests with
 0 failures and 0 skipped. The migrated code must give the same result.
+
+`TaskManagerTest.resultChain` can fail on Neo4j 2.1 when the machine is
+busy. Neo4j 2.1 lets a reader see a commit that is not fully applied,
+and the test reads the graph while `TaskManager` commits. On Neo4j 5
+this test must pass each time.
 
 ## Inventory
 
@@ -289,10 +294,10 @@ DETACH DELETE n
 The result chain keeps the relationship directions that SDN writes
 today: `(instance)-[:RESULTS]->(newest)` and
 `(older)-[:NEXT_RESULT]->(newer)`. `TaskManager` calls `origin.save()`
-and `result.save()`. Replace the two calls with one statement.
-`ResultBuilder.buildAndStore()` already writes the result node, so the
-statement must match it and not create it. `TaskManagerTest` checks
-the chain.
+and `result.save()` in one transaction. Replace the two calls with one
+statement. `ResultBuilder.buildAndStore()` already writes the result
+node, so the statement must match it and not create it.
+`TaskManagerTest` checks the chain.
 
 `Instrument.save()` and `Result.save()` override `Instance.save()`.
 They only write the node. For a new node, `Instance.save()` also checks
