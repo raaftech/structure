@@ -7,13 +7,13 @@ fi
 
 echo "Warn: will delete everything and load a clean data model.."
 echo "Press CTRL-C to abort within 10 seconds.."
-
+sleep 10
 
 echo "Cleaning: Graph Database.."
 cypher-shell 'MATCH (x) DETACH DELETE x'
 
-echo "Deleting: UUID Contraint.."
-cypher-shell 'DROP CONSTRAINT ObjectUuid'
+echo "Deleting: UUID Constraint.."
+cypher-shell 'DROP CONSTRAINT ObjectUuid IF EXISTS'
 
 echo "Loading: OpenPCF Base Model.."
 cypher-shell < org.openpcf.model.base.cql
