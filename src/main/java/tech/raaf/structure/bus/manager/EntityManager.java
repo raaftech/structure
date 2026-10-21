@@ -7,11 +7,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import org.neo4j.graphdb.Direction;
-import org.neo4j.graphdb.Label;
-import org.neo4j.graphdb.PathExpanders;
 import org.neo4j.graphdb.Transaction;
-import org.neo4j.graphdb.traversal.Evaluation;
-import org.neo4j.graphdb.traversal.TraversalDescription;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.neo4j.support.Neo4jTemplate;
@@ -498,29 +494,31 @@ public class EntityManager extends GenericActor {
      * @return A list containing every vertex that can be found by the traversal and, optionally, v_s.
      */
     List<Node> labelBasedTraversal(Set<String> labels, Node start, boolean includeStart) {
-        /*
-        This traversal description simply follows all outgoing edges of the start vertex, and tests
-        whether the end node's labels contains at least one label that is provided as an argument to this method.
-         */
-        TraversalDescription traversalDescription = Context.getGraphDatabase().traversalDescription()
-                .depthFirst()
-                .expand(PathExpanders.forDirection(Direction.OUTGOING))
-                .evaluator(path -> {
-                    if (path.length() == 0) {
-                        return includeStart ? Evaluation.INCLUDE_AND_CONTINUE : Evaluation.EXCLUDE_AND_CONTINUE;
-                    }
-                    final boolean include = StreamSupport.stream(path.endNode().getLabels().spliterator(), false)
-                            .map(Label::name)
-                            .anyMatch(labels::contains);
-                    return Evaluation.of(include, include);
-                });
-
-        // We'll need the org.neo4j.graphdb.Node counterpart of our "start" argument
-        org.neo4j.graphdb.Node startNode = neo4jTemplate.getPersistentState(start);
-        // Every vertex found by this traversal will be mapped to Node, collected, and returned
-        return StreamSupport.stream(traversalDescription.traverse(startNode).spliterator(), false)
-                .map(n -> neo4jTemplate.convert(n, Node.class))
-                .collect(Collectors.toList());
+        final String nextLevel = "MATCH (a:Node)-->(n) " +
+                "WHERE a.uuid IN {frontier} AND any(l IN labels(n) WHERE l IN {labels}) " +
+                "RETURN DISTINCT n";
+        final List<Node> found = new ArrayList<>();
+        if (includeStart) {
+            found.add(start);
+        }
+        // Go breadth-first, one query for each level of the graph
+        final Set<String> visited = new HashSet<>(Collections.singleton(start.getUuid()));
+        List<String> frontier = Collections.singletonList(start.getUuid());
+        while (!frontier.isEmpty()) {
+            final Map<String, Object> params = ImmutableMap.of(
+                    "frontier", frontier, "labels", new ArrayList<>(labels));
+            final List<String> next = new ArrayList<>();
+            for (Map<String, Object> row : neo4jTemplate.query(nextLevel, params)) {
+                final org.neo4j.graphdb.Node n = (org.neo4j.graphdb.Node) row.get("n");
+                final String uuid = (String) n.getProperty("uuid");
+                if (visited.add(uuid)) {
+                    next.add(uuid);
+                    found.add(neo4jTemplate.convert(n, Node.class));
+                }
+            }
+            frontier = next;
+        }
+        return found;
     }
 
     /**
@@ -536,38 +534,13 @@ public class EntityManager extends GenericActor {
      * @return True if we can safely delete v_s, false otherwise.
      */
     private boolean safeDeleteTraversal(List<String> labels, Node start) {
-        // We'll need the org.neo4j.graphdb.Node counterpart of our "start" argument
-        org.neo4j.graphdb.Node startNode = neo4jTemplate.getPersistentState(start);
-
-        TraversalDescription traversalDescription = Context.getGraphDatabase().traversalDescription()
-                .depthFirst()
-                .expand(PathExpanders.allTypesAndDirections())
-                .evaluator(path -> {
-                    if (path.length() == 0) {
-                        return Evaluation.EXCLUDE_AND_CONTINUE;
-                    }
-                    if (path.length() > 1) {
-                        return Evaluation.EXCLUDE_AND_PRUNE;
-                    }
-                    /*
-                     Check if we are at the start of an outgoing edge, or the end of one. In the first case
-                     we need to make sure we don't point to vertices of the same type, in the latter case we need to
-                     make sure there aren't any vertices pointing to us that aren't of the same type.
-                      */
-                    final boolean include;
-                    if (path.lastRelationship().getStartNode().getId() == startNode.getId()) {
-                        include = StreamSupport.stream(path.endNode().getLabels().spliterator(), false)
-                                .map(Label::name)
-                                .anyMatch(labels::contains);
-                    } else {
-                        include = !StreamSupport.stream(path.endNode().getLabels().spliterator(), false)
-                                .map(Label::name)
-                                .anyMatch(labels::contains);
-                    }
-                    return Evaluation.of(include, include);
-                });
-
-        return StreamSupport.stream(traversalDescription.traverse(startNode).spliterator(), false).count() == 0;
+        final String safe = "MATCH (s:Node {uuid: {uuid}}) " +
+                "OPTIONAL MATCH (s)-->(o) WHERE any(l IN labels(o) WHERE l IN {labels}) " +
+                "WITH s, count(o) AS badOut " +
+                "OPTIONAL MATCH (s)<--(i) WHERE none(l IN labels(i) WHERE l IN {labels}) " +
+                "RETURN badOut + count(i) = 0 AS safe";
+        final Map<String, Object> params = ImmutableMap.of("uuid", start.getUuid(), "labels", labels);
+        return (Boolean) neo4jTemplate.query(safe, params).single().get("safe");
     }
 
     /**
