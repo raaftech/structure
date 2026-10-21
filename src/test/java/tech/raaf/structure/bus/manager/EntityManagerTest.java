@@ -3,23 +3,32 @@ package tech.raaf.structure.bus.manager;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import org.junit.Assert;
 import org.junit.Test;
+import org.neo4j.graphdb.Direction;
+import org.neo4j.graphdb.DynamicRelationshipType;
+import org.neo4j.graphdb.GraphDatabaseService;
+import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.neo4j.core.GraphDatabase;
 import org.springframework.test.annotation.Rollback;
+import tech.raaf.structure.bus.GenericActor;
 import tech.raaf.structure.schema.TypeSchemaTest;
 import tech.raaf.structure.graph.Entity;
 import tech.raaf.structure.graph.Node;
 import tech.raaf.structure.graph.repositories.NodeRepository;
 import tech.raaf.structure.helper.loader.NaiveSorter;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static io.vertx.core.json.Json.mapper;
@@ -29,6 +38,13 @@ public class EntityManagerTest extends TypeSchemaTest {
 
     @Autowired private NodeRepository nodeRepository;
     @Autowired private GraphDatabase graphDatabase;
+    @Autowired private GraphDatabaseService graphDatabaseService;
+
+    private static final String OPERATING_SYSTEM = "f05e325e-1aee-4892-96e4-8bcd6e97c528";
+    private static final String UNIX_LIKE = "6a1eea8b-1462-4439-8c60-12edbee6c397";
+    private static final String LINUX = "a5613527-2f64-4481-83f2-80b0cb427e28";
+    private static final String COMPONENT_GROUP = "ee92c308-80f4-40b2-af3a-77d26cd99517";
+    private static final String OS_DATA = "{\"ver\": \"1\", \"shortName\": \"os\", \"longName\": \"Operating system\"}";
 
     @Test
     public void testTraversal() throws Exception {
@@ -310,30 +326,173 @@ public class EntityManagerTest extends TypeSchemaTest {
         return nodes.stream().map(Node::getName).collect(Collectors.toSet());
     }
 
+    // The tests below record the write path before the migration rewrites it
+
     @Test
-    @Rollback
     public void testSpecialize() throws Exception {
-        Transaction tx = graphDatabase.beginTx();
-        try {
-            //FIXME a true instance should be created. Not yet sure how.
+        try (Transaction tx = graphDatabaseService.beginTx()) {
             EntityManager entityManager = new EntityManager();
+            String os = instance(OPERATING_SYSTEM, OS_DATA);
+            Set<String> labels = labels(os);
 
-            ObjectNode message = mapper.createObjectNode();
-            message.put("msgh", "specialize");
-
-            ObjectNode args = message.putObject("args");
-            args.put("instance", "a5613527-2f64-4481-83f2-80b0cb427e28");
-            args.put("isa", "1e13acac-4efb-4e62-894d-812492f6c266");
-
-            System.out.println(message.toString());
-            JsonNode response = entityManager.specialize().exec(message);
-            ObjectNode result = (ObjectNode) response.get("result");
-            System.out.println(result.toString());
-
-            //for now should be false since we are trying to specialize a type instead of an instance
-            assertFalse(result.has("result"));
-        } finally {
-            tx.close();
+            ObjectNode result = exec(entityManager.specialize(), "specialize",
+                    mapper.createObjectNode().put("instance", os).put("isa", UNIX_LIKE));
+            assertFalse(result.toString(), result.has("error"));
+            assertEquals("Instance [OperatingSystem] specialized to [UnixLike]", result.get("data").asText());
+            assertEquals(ImmutableList.of("INSTANCE_OF -> " + UNIX_LIKE), outgoing(os));
+            // The type labels do not change, see the open decisions in MIGRATION.md
+            assertEquals(labels, labels(os));
         }
+    }
+
+    @Test
+    public void testSpecializeErrors() throws Exception {
+        try (Transaction tx = graphDatabaseService.beginTx()) {
+            EntityManager entityManager = new EntityManager();
+            String os = instance(OPERATING_SYSTEM, OS_DATA);
+
+            // Linux is a subtype of UnixLike, not a direct subtype of OperatingSystem
+            ObjectNode result = exec(entityManager.specialize(), "specialize",
+                    mapper.createObjectNode().put("instance", os).put("isa", LINUX));
+            assertEquals("Invalid specialization requested. Type [Linux] is not in the specialization set of: "
+                    + "[OperatingSystem]", result.get("error").asText());
+
+            String unknown = UUID.randomUUID().toString();
+            result = exec(entityManager.specialize(), "specialize",
+                    mapper.createObjectNode().put("instance", os).put("isa", unknown));
+            assertEquals("Could not find a type with uuid " + unknown, result.get("error").asText());
+
+            // A type is not an instance
+            result = exec(entityManager.specialize(), "specialize",
+                    mapper.createObjectNode().put("instance", LINUX).put("isa", OPERATING_SYSTEM));
+            assertEquals("Could not find an instance with uuid " + LINUX, result.get("error").asText());
+
+            assertEquals(ImmutableList.of("INSTANCE_OF -> " + OPERATING_SYSTEM), outgoing(os));
+        }
+    }
+
+    @Test
+    public void testGroupAndUngroup() throws Exception {
+        try (Transaction tx = graphDatabaseService.beginTx()) {
+            EntityManager entityManager = new EntityManager();
+            String host = instance(OPERATING_SYSTEM, OS_DATA);
+            String other = instance(OPERATING_SYSTEM, OS_DATA);
+            String group = instance(COMPONENT_GROUP, "{}");
+            ObjectNode args = mapper.createObjectNode().put("grouping", group).put("groupee", host);
+            List<String> member = ImmutableList.of("INSTANCE_OF -> " + OPERATING_SYSTEM, "MEMBER_OF -> " + group);
+
+            ObjectNode result = exec(entityManager.group(), "group", args);
+            assertEquals(result.toString(), true, result.path("data").path("changed").asBoolean());
+            assertEquals(member, outgoing(host));
+
+            // A second member does not remove the first
+            exec(entityManager.group(), "group", mapper.createObjectNode().put("grouping", group).put("groupee", other));
+            assertEquals(member, outgoing(host));
+            assertEquals(member, outgoing(other));
+
+            // A second group adds no relationship
+            result = exec(entityManager.group(), "group", args);
+            assertEquals(member, outgoing(host));
+            assertEquals(result.toString(), false, result.path("data").path("changed").asBoolean());
+
+            result = exec(entityManager.ungroup(), "ungroup", args);
+            assertEquals(result.toString(), true, result.path("data").path("changed").asBoolean());
+            assertEquals(ImmutableList.of("INSTANCE_OF -> " + OPERATING_SYSTEM), outgoing(host));
+            assertEquals(ImmutableList.of("INSTANCE_OF -> " + COMPONENT_GROUP), outgoing(group));
+
+            result = exec(entityManager.ungroup(), "ungroup", args);
+            assertEquals(result.toString(), false, result.path("data").path("changed").asBoolean());
+        }
+    }
+
+    @Test
+    public void testGroupErrors() throws Exception {
+        try (Transaction tx = graphDatabaseService.beginTx()) {
+            EntityManager entityManager = new EntityManager();
+            String host = instance(OPERATING_SYSTEM, OS_DATA);
+            String group = instance(COMPONENT_GROUP, "{}");
+            String unknown = UUID.randomUUID().toString();
+
+            for (GenericActor.MessageHandler handler : ImmutableList.of(entityManager.group(), entityManager.ungroup())) {
+                ObjectNode result = exec(handler, "group",
+                        mapper.createObjectNode().put("grouping", unknown).put("groupee", host));
+                assertEquals("Group with UUlD \"" + unknown + "\" not found.", result.get("error").asText());
+                result = exec(handler, "group",
+                        mapper.createObjectNode().put("grouping", group).put("groupee", unknown));
+                assertEquals("Node with UUlD \"" + unknown + "\" not found.", result.get("error").asText());
+            }
+            assertEquals(ImmutableList.of("INSTANCE_OF -> " + OPERATING_SYSTEM), outgoing(host));
+        }
+    }
+
+    @Test
+    public void testDeleteWithRelationships() throws Exception {
+        try (Transaction tx = graphDatabaseService.beginTx()) {
+            EntityManager entityManager = new EntityManager();
+            String host = instance(OPERATING_SYSTEM, OS_DATA);
+            String peer = instance(OPERATING_SYSTEM, OS_DATA);
+            nodeRepository.findGraphNodeByUuid(peer).createRelationshipTo(
+                    nodeRepository.findGraphNodeByUuid(host), DynamicRelationshipType.withName("RUNS_ON"));
+
+            // The labels that rest/common/models/instance.js sends
+            ObjectNode result = exec(entityManager.delete(), "delete", deleteArgs(host, "Instance"));
+            assertEquals(result.toString(), host, result.path("data").asText());
+            assertNull(nodeRepository.findGraphNodeByUuid(host));
+            assertEquals(ImmutableList.of("INSTANCE_OF -> " + OPERATING_SYSTEM), outgoing(peer));
+        }
+    }
+
+    @Test
+    public void testDeleteNonEmptyGroup() throws Exception {
+        try (Transaction tx = graphDatabaseService.beginTx()) {
+            EntityManager entityManager = new EntityManager();
+            String host = instance(OPERATING_SYSTEM, OS_DATA);
+            String group = instance(COMPONENT_GROUP, "{}");
+            exec(entityManager.group(), "group", mapper.createObjectNode().put("grouping", group).put("groupee", host));
+
+            // The labels that rest/common/models/group.js sends. A member
+            // without the Group label makes the delete unsafe.
+            ObjectNode result = exec(entityManager.delete(), "delete", deleteArgs(group, "Group"));
+            assertEquals("Couldn't delete entity.", result.get("error").asText());
+            assertEquals(ImmutableList.of("INSTANCE_OF -> " + OPERATING_SYSTEM, "MEMBER_OF -> " + group),
+                    outgoing(host));
+        }
+    }
+
+    private static ObjectNode exec(GenericActor.MessageHandler handler, String msgh, ObjectNode args) {
+        ObjectNode message = mapper.createObjectNode().put("msgh", msgh);
+        message.set("args", args);
+        return (ObjectNode) handler.exec(message).get("result");
+    }
+
+    private static ObjectNode deleteArgs(String uuid, String label) {
+        ObjectNode args = mapper.createObjectNode().put("uuid", uuid).put("includeStart", true);
+        args.putArray("labels").add(label);
+        return args;
+    }
+
+    // Makes an instance of the type isa and returns its uuid
+    private static String instance(String isa, String data) throws Exception {
+        String uuid = UUID.randomUUID().toString();
+        mapper.readValue(String.format("{\"name\": \"write-%s\", \"desc\": \"A write path test node.\", "
+                + "\"meta\": {\"uuid\": \"%s\", \"relations\": {\"INSTANCE_OF\": {\"direction\": \"outgoing\", "
+                + "\"to\": [\"%s\"]}}}, \"data\": %s}", uuid, uuid, isa, data), Entity.class).toGraph();
+        return uuid;
+    }
+
+    // The outgoing relationships of a node in the raw graph, sorted
+    private List<String> outgoing(String uuid) {
+        List<String> outgoing = new ArrayList<>();
+        for (Relationship r : nodeRepository.findGraphNodeByUuid(uuid).getRelationships(Direction.OUTGOING)) {
+            outgoing.add(r.getType().name() + " -> " + r.getEndNode().getProperty("uuid"));
+        }
+        Collections.sort(outgoing);
+        return outgoing;
+    }
+
+    private Set<String> labels(String uuid) {
+        Set<String> labels = new HashSet<>();
+        nodeRepository.findGraphNodeByUuid(uuid).getLabels().forEach(l -> labels.add(l.name()));
+        return labels;
     }
 }
