@@ -151,15 +151,6 @@ public abstract class GenericActor extends AbstractVerticle {
         return response;
     }
 
-    // Get a string value from the argument object.
-    public String getArgs(JsonNode args, String key, String fallback) {
-        if (args.has(key)) {
-            return args.get(key).asText();
-        } else {
-            return fallback;
-        }
-    }
-
     // Check if a string is a valid UUID.
     @SuppressWarnings("unused")
     public static boolean isUuid(String str) {

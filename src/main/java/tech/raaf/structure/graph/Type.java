@@ -321,20 +321,6 @@ public class Type extends Node {
         return Pair.of(errors.isEmpty(), ImmutableSet.copyOf(errors));
     }
 
-    public Type setDescriptor(String key, String valueType, boolean required, String description, String defaultValue,
-                              String pattern) {
-        Type parentNode = getIsa();
-        if (parentNode != null && parentNode.getSchema().containsProperty(key)) {
-            throw new RuntimeException("Can't override parent schema.");
-        } else {
-            getSchema().addProperty(key, valueType, required, description)
-                    .setDefault(defaultValue)
-                    .setPattern(pattern);
-        }
-
-        return this;
-    }
-
     public Set<Type> findCommonProtocols(Instance subject) {
         return typeRepository.getCommonProtocols(this.getUuid(), subject.getUuid());
     }
@@ -404,10 +390,6 @@ public class Type extends Node {
         return this;
     }
 
-    public String getIsaUuid() {
-        return isaUuid;
-    }
-
     public void setIsaUuid(String isaUuid) {
         this.isaUuid = isaUuid;
     }
@@ -427,15 +409,6 @@ public class Type extends Node {
             }
         }
         return schema;
-    }
-
-    public Type addInstrument(Instrument instrument) {
-        if (instruments == null) {
-            instruments = new HashSet<>();
-        }
-        instruments.add(instrument);
-
-        return this;
     }
 
     public Set<Instrument> getInstruments() {

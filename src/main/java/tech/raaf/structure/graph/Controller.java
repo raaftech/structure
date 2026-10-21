@@ -201,15 +201,6 @@ public class Controller extends Instrument {
         return appliesTo;
     }
 
-    // Add a handled type to a controller
-    public Controller addHandledType(Type type) {
-        if (appliesTo == null) {
-            appliesTo = new HashSet<>();
-        }
-        appliesTo.add(type);
-        return this;
-    }
-
     public Optional<ObjectNode> getArguments() {
         Optional<ObjectNode> arguments = Optional.empty();
         // Check if we have an arguments property and it's not an empty string

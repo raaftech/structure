@@ -86,24 +86,8 @@ public class Profile extends Instance {
         super(data, profileType);
     }
 
-    public void setAppliesTo(Type appliesTo) {
-        if (this.appliesTo == null) {
-            this.appliesTo = appliesTo;
-        } else {
-            throw new IllegalStateException("Can't set appliesTo, already set.");
-        }
-    }
-
     public Type getAppliesTo() {
         return appliesTo;
-    }
-
-    public void setProvidedBy(Type providedBy) {
-        if (this.providedBy == null) {
-            this.providedBy = providedBy;
-        } else {
-            throw new IllegalStateException("Can't set providedBy, already set.");
-        }
     }
 
     /**
