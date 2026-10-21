@@ -163,10 +163,11 @@ public final class Graph {
     }
 
     public static void connect(String uri, String user, String password) {
+        driver = GraphDatabase.driver(uri, AuthTokens.basic(user, password));
         try {
-            driver = GraphDatabase.driver(uri, AuthTokens.basic(user, password));
             driver.verifyConnectivity();
         } catch (Neo4jException e) {
+            driver.close();
             throw new GraphException(e);
         }
     }
@@ -638,10 +639,24 @@ before the transport changes. Use the `{param}` syntax for now. Run
 3. Change `Entity.persist`, `persistRelations` and `persistTypeLabels`
    to Cypher through `CypherQueryExecutor`. SDN still reads the nodes
    in this phase. Thus keep the `_` labels from `getClassLabels`.
-4. Remove the `id()` sequence (see "Queries").
-5. Correct `HAS()` and the node patterns without parentheses.
-6. Replace `org.apache.commons.lang.*` with `org.apache.commons.lang3.*`.
+4. Correct `HAS()` and the node patterns without parentheses.
+5. Replace `org.apache.commons.lang.*` with `org.apache.commons.lang3.*`.
    Declare `commons-lang3` in `pom.xml`.
+6. Add `Graph` and `GraphException` with only `transaction` and
+   `afterCommit`. `Graph` gets the `GraphDatabaseService` from
+   `SpringConfig` and binds an embedded `Transaction`. SDN calls in the
+   work use this transaction. Replace the 20 `beginTx` sites in main
+   with `Graph.transaction`. At each site, look for writes followed by
+   a close without `success()`. Now this rolls back the writes. With
+   `Graph.transaction`, throw an exception to roll back. Some sites
+   return before `close()`, for example specialize in `EntityManager`.
+   `Graph.transaction` closes the transaction on all paths. Put each
+   `catch` that calls `tx.failure()` outside `Graph.transaction` (see
+   "Graph access"). The baseline tests check these rules before the
+   driver change.
+
+Do not remove the `id()` sequence in this phase. SDN `save()` writes
+nodes without `created`, and `ORDER BY ... DESC` puts `null` first.
 
 If a statement does not operate on Neo4j 2.1, do that step in Phase 3.
 
@@ -663,21 +678,17 @@ steps on one branch.
 1. In `pom.xml`, remove `spring-data-neo4j`, `neo4j`, `neo4j-kernel`,
    the two `neo4j-server` artifacts, `spring-test` and the Xebia
    repository. Add `neo4j-java-driver` 4.4.27.
-2. Add `Graph`, `GraphNode`, `GraphException` and the configuration
-   keys. Change `Context` and `Application` (see "Spring removal").
-3. Replace the 20 `beginTx` sites with `Graph.transaction`. At each
-   site, look for writes followed by a close without `success()`. Now
-   this rolls back the writes. With `Graph.transaction`, throw an
-   exception to roll back. Some sites return before `close()`, for
-   example specialize in `EntityManager`. `Graph.transaction` closes
-   the transaction on all paths. Put each `catch` that calls
-   `tx.failure()` outside `Graph.transaction` (see "Graph access").
-4. Change the domain classes and add `NodeMapper` (see "Mapping").
+2. Change `Graph` to the driver (see "Graph access"). Add `GraphNode`
+   and the configuration keys. Change `Context` and `Application` (see
+   "Spring removal").
+3. Change the domain classes and add `NodeMapper` (see "Mapping").
    Remove the `_` labels from `getClassLabels`, `EntityTest` and
    `StoreFormatTest`.
-5. Change the repositories to classes and update the syntax (see
+4. Change the repositories to classes and update the syntax (see
    "Queries").
-6. Replace the SDN write calls (see "Writes").
+5. Replace the SDN write calls (see "Writes").
+6. Remove the `id()` sequence (see "Queries"). Now all nodes have
+   `created`.
 7. Run the schema statements (constraints and indexes) in their own
    transactions, before the data loads. Call
    `BundleLoader.createIndices` after `loadTypes`, also in its own
@@ -685,8 +696,10 @@ steps on one branch.
    properties, and these indexes make this fast.
 8. Change the tests:
    - Add a test base class. It connects `Graph` to
-     `STRUCTURE_TEST_NEO4J_URI` with `STRUCTURE_TEST_NEO4J_PASSWORD`.
-     It runs `MATCH (n) DETACH DELETE n` before each test. Community
+     `STRUCTURE_TEST_NEO4J_URI` with `STRUCTURE_TEST_NEO4J_USERNAME`
+     (default `neo4j`) and `STRUCTURE_TEST_NEO4J_PASSWORD`. It runs the
+     schema statements one time, as `Application` does. It runs
+     `MATCH (n) DETACH DELETE n` before each test. Community
      Edition has one user database. Thus the test server must not be
      the server of a normal run.
    - `mvn verify` must have a test server. If the variables are not
