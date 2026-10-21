@@ -19,6 +19,7 @@ Java driver.
 | SDN artifacts | Remove the `_` labels (`_Type`, `_Component`, ...) and the `__type__` relationship property. |
 | Existing data | Do not migrate `target/structure.db`. Structure loads the bundles at startup.                |
 | Out of scope  | The JS code in `rest/` and `cmd/`, `doc/cypher`, the Dockerfile, Java and Vert.x upgrades.   |
+| Backend seam  | Only `Graph` uses the driver API. See "Embedded mode later".                                 |
 
 The driver has its own shaded Netty. Thus it does not conflict with the
 Netty 4.1.8 of Vert.x 3.4.1. Use `bolt+ssc://` for a self-signed
@@ -178,17 +179,50 @@ public final class Graph {
     }
 
     // Use the bound transaction if there is one, else auto-commit.
-    public static List<Record> query(String cypher, Map<String, Object> params) {
+    public static List<Map<String, Object>> query(String cypher, Map<String, Object> params) {
         Transaction tx = bound.get();
         if (tx != null) {
-            return tx.run(cypher, params).list();
+            return rows(tx.run(cypher, params));
         }
         try (Session session = driver.session()) {
-            return session.run(cypher, params).list();
+            return rows(session.run(cypher, params));
         }
+    }
+
+    private static List<Map<String, Object>> rows(Result result) {
+        List<Map<String, Object>> rows = new ArrayList<>();
+        for (Record record : result.list()) {
+            rows.add((Map<String, Object>) plain(record.asMap()));
+        }
+        return rows;
+    }
+
+    // Convert driver values to plain Java values and GraphNode.
+    private static Object plain(Object value) {
+        if (value instanceof Node) {
+            Node node = (Node) value;
+            Set<String> labels = new HashSet<>();
+            node.labels().forEach(labels::add);
+            return new GraphNode(labels, node.asMap());
+        }
+        if (value instanceof Entity || value instanceof Path) {
+            throw new IllegalArgumentException("Return nodes or values only");
+        }
+        if (value instanceof List) {
+            return ((List<?>) value).stream().map(Graph::plain).collect(toList());
+        }
+        if (value instanceof Map) {
+            Map<String, Object> map = new LinkedHashMap<>();
+            ((Map<String, ?>) value).forEach((k, v) -> map.put(k, plain(v)));
+            return map;
+        }
+        return value;
     }
 }
 ```
+
+`GraphNode` is a small class in `tech.raaf.structure.base` with two
+fields: `Set<String> labels` and `Map<String, Object> properties`.
 
 Rules:
 
@@ -203,6 +237,15 @@ Rules:
   again.
 - A bound transaction stays on its thread. All `beginTx` sites today
   run on one thread. Keep it that way.
+- Only `Graph` imports `org.neo4j`. Other classes, also the tests, use
+  `Graph.transaction`, `Graph.query`, `GraphNode` and plain values.
+  Then a change to embedded Neo4j changes only `Graph`.
+- Queries return nodes, primitives, strings, lists and maps. Do not
+  return relationships or paths. Return their properties or their nodes
+  as columns, for example `type(r) AS rel, b.uuid AS peer`.
+- Do not catch driver exceptions outside `Graph`. If a caller must
+  handle an error, for example a constraint violation, `Graph` throws
+  its own exception type for it.
 
 ### Configuration
 
@@ -223,7 +266,7 @@ Unsafe mode no longer starts a web console or a remote shell.
 
 ### Mapping
 
-- Add `NodeMapper`. It makes a domain object from a driver `Node`. It
+- Add `NodeMapper`. It makes a domain object from a `GraphNode`. It
   selects the class from the labels in this order: `Controller`,
   `Marker`, `Parser`, `Component`, `Profile`, `Result`, `Group`,
   `Type`. This is the same table as `Entity.getClassLabels`.
@@ -524,6 +567,8 @@ steps on one branch.
      "Spring removal").
    - Replace the 29 `beginTx` sites in the tests. Replace the
      `getPersistentState()` assertions in `EntityTest` with queries.
+   - The tests use only `Graph`, `GraphNode` and plain values. They do
+     not import `org.neo4j`.
 
 `neo4j-harness` is not an option, because the harness for 2025.x and
 later needs a newer Java. Testcontainers is possible, but it adds a
@@ -544,11 +589,14 @@ dependency and needs Docker.
    - A controller run adds a `Result` at the head of the result chain.
    - The frontend shows types and instances.
 4. Compare the startup time and the bundle load time with the old
-   build. Each lazy getter now makes a network call.
+   build. Each lazy getter now makes a network call. Write the times in
+   this file. They are the reference for a later change to embedded
+   mode.
 5. Make sure that `mvn dependency:tree` shows no `org.springframework`
    and no `org.neo4j` artifact other than the driver.
 6. Make sure that the log has no `has been blocked` warnings for
    event-loop threads during step 3.
+7. Make sure that `grep -rl org.neo4j src` shows only `Graph.java`.
 
 ### Phase 5: clean up
 
@@ -558,6 +606,58 @@ dependency and needs Docker.
 2. Remove `.mvn/jvm.config` if no dependency needs it.
 3. Update `README.md`. Structure needs a Neo4j server, reads the
    `STRUCTURE_NEO4J_*` variables and no longer serves port 7474.
+
+## Embedded mode later
+
+Embedded Neo4j 2026.x is faster than a server. A test on one machine,
+with one thread, Java 21 and the same Cypher on both sides, gave these
+median times for one query in one transaction:
+
+| Operation | Embedded      | Server over Bolt on localhost |
+|-----------|---------------|-------------------------------|
+| Read      | 31 µs         | 430 µs                        |
+| Write     | 400 to 600 µs | 1100 to 1800 µs               |
+
+Most of the write time is the commit to disk. With batches of 1000
+nodes, embedded is 1.3 to 3 times faster.
+
+Structure cannot use embedded Neo4j 2026.x now:
+
+- Neo4j 2026.x needs Java 21.
+- `org.neo4j:neo4j` brings Netty 4.2 without shading, through
+  `netty-common` and `neo4j-bolt`. Vert.x 3.4.1 needs Netty 4.1.8. One
+  class path cannot hold both. Vert.x 5 uses Netty 4.2.
+- The embedded artifacts add approximately 230 jars and 150 MB to the
+  fat jar. The shade plugin must merge `META-INF/services`.
+
+Thus do the change to embedded mode after an upgrade to Java 21 and
+Vert.x 5. The rules in "Graph access" keep this change inside `Graph`:
+
+1. In `pom.xml`, replace the driver with `org.neo4j:neo4j`.
+2. Change `Graph`:
+   - `connect` opens a `DatabaseManagementService` on a directory.
+     `close` shuts it down.
+   - The bound transaction is an `org.neo4j.graphdb.Transaction`.
+   - `query` without a bound transaction runs in its own transaction.
+   - `plain` makes a `GraphNode` from an `org.neo4j.graphdb.Node`. It
+     also converts Java arrays to lists, because embedded Neo4j returns
+     list properties as arrays.
+   - Map the embedded exceptions to the exception types of `Graph`.
+3. Replace the three `neo4j-*` configuration keys with one key for the
+   database directory.
+4. The test base class opens a database in a temporary directory. The
+   tests then need no server, no `STRUCTURE_TEST_*` variables and no
+   `Assume`.
+
+A `GraphNode` holds copies of the labels and the properties. Thus it
+stays valid after the transaction closes. An embedded `Node` does not.
+
+The worker threads from Phase 2 can stay. For Neo4j Browser or
+`cypher-shell`, enable the Bolt connector of the embedded database on
+localhost.
+
+Embedded Community Edition is GPLv3, as Neo4j 2.1.8 is today. The
+driver is Apache 2.0.
 
 ## Open decisions
 
@@ -618,7 +718,8 @@ Unfinished or disconnected features:
 
 - Neo4j can remove Bolt 4.4. Then you need Java 17 and driver 5.x or
   6.x. The API change is small: `readTransaction` and
-  `writeTransaction` become `executeRead` and `executeWrite`.
+  `writeTransaction` become `executeRead` and `executeWrite`. Embedded
+  mode is also possible then (see "Embedded mode later").
 - Each lazy getter is a network round trip. Constraint validation and
   instrument lookup call many getters.
 - The code can depend on SDN behaviour that is not written down, for
