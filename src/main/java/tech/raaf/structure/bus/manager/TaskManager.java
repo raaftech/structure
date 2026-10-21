@@ -301,14 +301,15 @@ public class TaskManager extends GenericActor {
                 resultBuilder.error(reason);
             }
             try {
-                Result result = resultBuilder.build();
+                Result result = resultBuilder.buildAndStore();
                 Instance origin = result.add(UUID.fromString(job.metadata.get("originUuid").asText()));
                 /*
-                result.add returns the origin instance, on which we want to save the result
-                We save the origin itself, which will cause the save to propagate to the result chain.
-                If we would just save the result, it won't update the head of the result list to the latest result.
+                result.add returns the origin instance. Saving the origin moves RESULTS to the new result.
+                buildAndStore() already stored the result, so the save does not cascade to it. Save the result
+                too, to write NEXT_RESULT from the previous result.
                  */
                 origin.save();
+                result.save();
                 log.info(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(task.toJson()));
             } catch (JsonProcessingException e) {
                 if (Configuration.isTraceModeOn()) {

@@ -124,7 +124,7 @@ public class ResultTest {
         String taskId = UUID.randomUUID().toString();
 
         Result res = new Entity.ResultBuilder().process("test.exe").taskId(taskId)
-                .stdout("stdout").stderr("stderr").returnCode(0).build();
+                .stdout("stdout").stderr("stderr").returnCode(0).buildAndStore();
         res.save();
 
 
@@ -143,28 +143,28 @@ public class ResultTest {
                 .stdout("1")
                 .stderr("1")
                 .returnCode(1)
-                .build();
+                .buildAndStore();
         Result r2 = new Entity.ResultBuilder()
                 .process("2")
                 .taskId(UUID.randomUUID().toString())
                 .stdout("2")
                 .stderr("2")
                 .returnCode(2)
-                .build();
+                .buildAndStore();
         Result r3 = new Entity.ResultBuilder()
                 .process("3")
                 .taskId(UUID.randomUUID().toString())
                 .stdout("3")
                 .stderr("3")
                 .returnCode(3)
-                .build();
+                .buildAndStore();
         Result r4 = new Entity.ResultBuilder()
                 .process("4")
                 .taskId(UUID.randomUUID().toString())
                 .stdout("4")
                 .stderr("4")
                 .returnCode(4)
-                .build();
+                .buildAndStore();
 
         r1.setNext(r2);
         r2.setNext(r3);
@@ -188,28 +188,28 @@ public class ResultTest {
                 .stdout("1")
                 .stderr("1")
                 .returnCode(1)
-                .build();
+                .buildAndStore();
         Result r2 = new Entity.ResultBuilder()
                 .process("2")
                 .taskId(UUID.randomUUID().toString())
                 .stdout("2")
                 .stderr("2")
                 .returnCode(2)
-                .build();
+                .buildAndStore();
         Result r3 = new Entity.ResultBuilder()
                 .process("3")
                 .taskId(UUID.randomUUID().toString())
                 .stdout("3")
                 .stderr("3")
                 .returnCode(3)
-                .build();
+                .buildAndStore();
         Result r4 = new Entity.ResultBuilder()
                 .process("4")
                 .taskId(UUID.randomUUID().toString())
                 .stdout("4")
                 .stderr("4")
                 .returnCode(4)
-                .build();
+                .buildAndStore();
 
         r1.setNext(r2);
         r2.setNext(r3);
@@ -233,28 +233,28 @@ public class ResultTest {
                 .stdout("1")
                 .stderr("1")
                 .returnCode(1)
-                .build();
+                .buildAndStore();
         Result r2 = new Entity.ResultBuilder()
                 .process("2")
                 .taskId(UUID.randomUUID().toString())
                 .stdout("2")
                 .stderr("2")
                 .returnCode(2)
-                .build();
+                .buildAndStore();
         Result r3 = new Entity.ResultBuilder()
                 .process("3")
                 .taskId(UUID.randomUUID().toString())
                 .stdout("3")
                 .stderr("3")
                 .returnCode(3)
-                .build();
+                .buildAndStore();
         Result r4 = new Entity.ResultBuilder()
                 .process("4")
                 .taskId(UUID.randomUUID().toString())
                 .stdout("4")
                 .stderr("4")
                 .returnCode(4)
-                .build();
+                .buildAndStore();
 
         r1.setNext(r2);
         thrown.expect(IllegalStateException.class);
@@ -284,7 +284,7 @@ public class ResultTest {
                 .stderr("1")
                 .returnCode(1)
                 .state(new Result.State(0, "OK", "Test"))
-                .build();
+                .buildAndStore();
 
         assertTrue(result.getState().isPresent());
         assertFalse(result.getUser().isPresent());
@@ -304,14 +304,14 @@ public class ResultTest {
                 .stdout("1")
                 .stderr("1")
                 .returnCode(1)
-                .build();
+                .buildAndStore();
         Result r2 = new Entity.ResultBuilder()
                 .process("2")
                 .taskId(UUID.randomUUID().toString())
                 .stdout("2")
                 .stderr("2")
                 .returnCode(2)
-                .build();
+                .buildAndStore();
 
         thrown.expect(IllegalEntityType.class);
         r1.addResult(r2);

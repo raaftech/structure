@@ -192,7 +192,7 @@ public class Entity {
             return this;
         }
 
-        public Result build() throws JsonProcessingException {
+        public Result buildAndStore() throws JsonProcessingException {
             if (process == null || taskId == null) {
                 log.error("Error while building Result");
                 throw new ResultBuilderException("Not all required parameters were set.");
