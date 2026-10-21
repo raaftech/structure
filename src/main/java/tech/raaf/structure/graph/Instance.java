@@ -76,48 +76,9 @@ public abstract class Instance extends Node {
         this.instanceOf = instanceOf;
     }
 
-    public Instance(String name, String desc, Type instanceOf, String uuid) {
-        super(name, desc, uuid);
-        this.instanceOf = instanceOf;
-    }
-
-    public Instance(String name, String desc, String instanceOfUuid) {
-        super(name, desc);
-
-        Type instanceOf = TYPE_REPOSITORY.findByUuid(instanceOfUuid);
-        if (instanceOf != null) {
-            this.instanceOf = TYPE_REPOSITORY.findByUuid(instanceOfUuid);
-        } else {
-            throw new RuntimeException("ERROR: can't create Instance, UUID " + instanceOfUuid + " unknown.");
-        }
-    }
-
-    public Instance(String name, String desc, String instanceOfUuid, String uuid) {
-        super(name, desc, uuid);
-
-        Type instanceOf = TYPE_REPOSITORY.findByUuid(instanceOfUuid);
-        if (instanceOf != null) {
-            this.instanceOf = TYPE_REPOSITORY.findByUuid(instanceOfUuid);
-        } else {
-            throw new RuntimeException("ERROR: can't create Instance, UUID " + instanceOfUuid + " unknown.");
-        }
-    }
-
     public Instance(ObjectNode json, Type isa) {
         this(json.get("name").asText(), json.get("desc").asText(), isa);
         instanceData = json.deepCopy();
-        setProperties(json);
-    }
-
-    public Instance(ObjectNode json, String isa) {
-        this(json.get("name").asText(), json.get("desc").asText(), isa);
-        instanceData = json.deepCopy();
-        setProperties(json);
-    }
-
-    public Instance(ObjectNode json, Type isa,
-                    String uuid) {
-        this(json.get("name").asText(), json.get("desc").asText(), isa, uuid);
         setProperties(json);
     }
 
@@ -131,15 +92,6 @@ public abstract class Instance extends Node {
 
     public void setInstanceOf(Type type) {
         this.instanceOf = type;
-    }
-
-    public String getProperty(String key) {
-        Object property = data.getProperty(key);
-        if (property == null) {
-            return null;
-        } else {
-            return property.toString();
-        }
     }
 
     /**

@@ -13,10 +13,6 @@ public abstract class Instrument extends Instance {
         super(json, type);
     }
 
-    public Instrument(ObjectNode json, String isa) {
-        super(json, isa);
-    }
-
     public int getWeight() {
         return data.hasProperty(WEIGHT) ? (int)data.getProperty(WEIGHT) : 0;
     }
