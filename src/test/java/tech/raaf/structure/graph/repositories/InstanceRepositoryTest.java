@@ -85,6 +85,13 @@ public class InstanceRepositoryTest extends TypeSchemaTest {
     @Test
     public void isOfType() throws Exception {
         assertTrue(instanceRepository.isOfType(parent.getUuid(), "Software") > 0);
+        // Linux reaches Software through UnixLike and OperatingSystem
+        assertTrue(child01.isOfType("Linux"));
+        assertTrue(child01.isOfType("Software"));
+        assertTrue(child01.isOfType(typeRepository.findOneByName("Component")));
+        assertFalse(child01.isOfType("Interpreter"));
+        assertFalse(parent.isOfType("Linux"));
+        assertFalse(child01.isOfType((Type) null));
     }
 
     @Test
