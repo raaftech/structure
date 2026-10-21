@@ -394,7 +394,7 @@ public class EntityManager extends GenericActor {
                 final JsonNode args = request.get("args");
                 final ObjectNode result = mapper.createObjectNode();
 
-                final String groupingUuid = args.get("group").asText();
+                final String groupingUuid = args.get("grouping").asText();
                 final String groupeeUuid = args.get("groupee").asText();
 
                 final Group group = Context.getGroupingRepository().findByUuid(groupingUuid);
@@ -449,7 +449,7 @@ public class EntityManager extends GenericActor {
                 final JsonNode args = request.get("args");
                 final ObjectNode result = mapper.createObjectNode();
 
-                final String groupingUuid = args.get("group").asText();
+                final String groupingUuid = args.get("grouping").asText();
                 final String groupeeUuid = args.get("groupee").asText();
 
                 final Group group = Context.getGroupingRepository().findByUuid(groupingUuid);
