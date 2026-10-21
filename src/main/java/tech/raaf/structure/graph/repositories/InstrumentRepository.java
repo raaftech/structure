@@ -28,7 +28,7 @@ public interface InstrumentRepository extends GenericRepository<Instrument> {
 
     // Find the sendString (client) controllers of the common protocols of an agent and subject
     @Query ("MATCH (commander:Group {uuid:{structureUuid}})<-[:MEMBER_OF]-()-[*..]->(:Instance)-[:INSTANCE_OF]->(client)-[:ISA*0..]->()-[:IMPLEMENTS]->" +
-            "protocol" +
+            "(protocol)" +
             "<-[:IMPLEMENTS]-()<-[:ISA*0..]-(server)<-[:INSTANCE_OF]-(:Instance)<-[*..]-()-[:MEMBER_OF]->(subject:Group{uuid:{subjectUuid}})," +
             "(client)-[:ISA*0..]->({name:\"Client\"})," +
             "(server)-[:ISA*0..]->({name:\"Service\"})," +
@@ -38,7 +38,7 @@ public interface InstrumentRepository extends GenericRepository<Instrument> {
 
     // Find the sendFile (client) controllers of the common protocols of an agent and subject
     @Query ("MATCH (commander:Group {uuid:{structureUuid}})<-[:MEMBER_OF]-()-[*..]->(:Instance)-[:INSTANCE_OF]->(client:Type)-[:ISA*0..]->(:Type)-[:IMPLEMENTS]->" +
-            "protocol" +
+            "(protocol)" +
             "<-[:IMPLEMENTS]-(:Type)<-[:ISA*0..]-(server:Type)<-[:INSTANCE_OF]-(:Instance)<-[*..]-()-[:MEMBER_OF]->(subject:Group {uuid:{subjectUuid}})," +
             "(client)-[:ISA*0..]->({name:\"Client\"})," +
             "(server)-[:ISA*0..]->({name:\"Service\"})," +

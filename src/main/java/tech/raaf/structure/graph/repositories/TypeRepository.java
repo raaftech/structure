@@ -45,7 +45,7 @@ public interface TypeRepository extends GenericRepository<Type> {
     // This query finds common protocols between two (groups of) Instances.
     // This can be used to find ways to setup a connection between two computers.
     @Query ("MATCH (commander {uuid:{commanderUuid}})-[*0..]->(:Instance)-[:INSTANCE_OF]->(client)-[:ISA*0..]->()-[:IMPLEMENTS]->" +
-            "protocol" +
+            "(protocol)" +
             "<-[:IMPLEMENTS]-()<-[:ISA*0..]-(server)<-[:INSTANCE_OF]-(:Instance)<-[*0..]-(subject{uuid:{subjectUuid}})," +
             "(client)-[:ISA*0..]->({name:\"Client\"})," +
             "(server)-[:ISA*0..]->({name:\"Server\"})" +
@@ -82,7 +82,7 @@ public interface TypeRepository extends GenericRepository<Type> {
 
     // Check if one of the parents of a node has an identity property
     @Query("MATCH ({uuid: {0}})-[:ISA*..]->(p) " +
-            "RETURN reduce(init = false, n IN COLLECT(p)| init OR HAS(n.identity)) AS hasIdentity")
+            "RETURN reduce(init = false, n IN COLLECT(p)| init OR n.identity IS NOT NULL) AS hasIdentity")
     boolean inheritsIdentity(String uuid);
 
     @Query("MATCH (n:Type) RETURN count(n)")
