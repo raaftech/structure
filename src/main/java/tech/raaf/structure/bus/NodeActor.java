@@ -16,6 +16,7 @@ import tech.raaf.structure.graph.Type;
 import tech.raaf.structure.graph.repositories.NodeRepository;
 
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 public abstract class NodeActor<T extends Node> extends GenericActor {
 
@@ -39,7 +40,7 @@ public abstract class NodeActor<T extends Node> extends GenericActor {
         primaryConsumerAddress = startOfAddress + uuid;
     }
 
-    private Logger log = LoggerFactory.getLogger(NodeActor.class);
+    private static final Logger log = LoggerFactory.getLogger(NodeActor.class);
 
     @Override
     public void start() {
@@ -147,16 +148,29 @@ public abstract class NodeActor<T extends Node> extends GenericActor {
      * A helper method to deploy NodeActors. Given a type it will deploy
      * a TypeActor, otherwise an InstanceActor.
      * @param node The node to deploy an bus for.
+     * @return The deployment ID, available when the deployment is done.
      */
-    public static void deploy(Node node) {
+    public static CompletableFuture<String> deploy(Node node) {
+        final CompletableFuture<String> deploymentId = new CompletableFuture<>();
         final String address = startOfAddress + node.getUuid();
         // Make sure we deploy only once
-        if (Context.getVertx().sharedData().getLocalMap(SHAREDMAP_ID).get(address) == null) {
-            final Verticle verticle = node instanceof Type ?
-                    new TypeActor((Type) node) :
-                    new InstanceActor((Instance) node);
-            Context.getVertx().deployVerticle(verticle);
+        final Object deployed = Context.getVertx().sharedData().getLocalMap(SHAREDMAP_ID).get(address);
+        if (deployed != null) {
+            deploymentId.complete((String) deployed);
+            return deploymentId;
         }
+        final Verticle verticle = node instanceof Type ?
+                new TypeActor((Type) node) :
+                new InstanceActor((Instance) node);
+        Context.getVertx().deployVerticle(verticle, ar -> {
+            if (ar.succeeded()) {
+                deploymentId.complete(ar.result());
+            } else {
+                log.error("Failed to deploy actor for \"{}\"", node.getUuid(), ar.cause());
+                deploymentId.completeExceptionally(ar.cause());
+            }
+        });
+        return deploymentId;
     }
 
 }

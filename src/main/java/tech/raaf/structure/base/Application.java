@@ -1,7 +1,10 @@
 package tech.raaf.structure.base;
 
 import ch.qos.logback.classic.Level;
+import io.vertx.core.AsyncResult;
 import io.vertx.core.DeploymentOptions;
+import io.vertx.core.Handler;
+import io.vertx.core.Verticle;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.http.HttpServer;
@@ -24,7 +27,10 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.data.neo4j.support.query.CypherQueryExecutor;
 import tech.raaf.structure.bus.InstanceActor;
 import tech.raaf.structure.bus.TypeActor;
+import tech.raaf.structure.bus.manager.EntityManager;
+import tech.raaf.structure.bus.manager.InstrumentManager;
 import tech.raaf.structure.bus.manager.SchemaManager;
+import tech.raaf.structure.bus.manager.StructureManager;
 import tech.raaf.structure.bus.manager.TaskManager;
 import tech.raaf.structure.bus.repository.Instances;
 import tech.raaf.structure.bus.repository.Nodes;
@@ -51,6 +57,9 @@ import java.security.KeyStore;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.function.Consumer;
 import java.util.stream.StreamSupport;
 
 /**
@@ -212,8 +221,8 @@ public class Application {
 
         // Enable bridging on /eventbus, and add some in- and outbound permissions.
         BridgeOptions bridgeOptions = new BridgeOptions()
-                .addInboundPermitted(new PermittedOptions().setAddressRegex("com\\.raaftech\\.structure\\..*"))
-                .addOutboundPermitted(new PermittedOptions().setAddressRegex("com\\.raaftech\\.structure\\..*"));
+                .addInboundPermitted(new PermittedOptions().setAddressRegex("tech\\.raaf\\.structure\\..*"))
+                .addOutboundPermitted(new PermittedOptions().setAddressRegex("tech\\.raaf\\.structure\\..*"));
 
         // Setup httpServer, router and sockJs.
         // If we don't have a self signed certificate we were passed a keystore
@@ -268,54 +277,18 @@ public class Application {
         // Initialize Configuration
         Configuration.init(configuration);
 
-        // Deploy our main actors.
-        vertx.deployVerticle("StructureManager", ar -> {
-            if (ar.succeeded()) {
-                log.info("Deployed StructureManager with id: {}", ar.result());
-            }
-        });
-        vertx.deployVerticle("InstrumentManager", new DeploymentOptions().setWorker(false), ar -> {
-            if (ar.succeeded()) {
-                log.info("Deployed InstrumentManager with id: {}", ar.result());
-            }
-        });
-        vertx.deployVerticle("EntityManager", ar -> {
-            if (ar.succeeded()) {
-                log.info("Deployed EntityManager with id: {}", ar.result());
-            }
-        });
+        // Deploy our main actors. Structure stops if one of them fails.
+        deploy(vertx, new StructureManager(), new DeploymentOptions());
+        deploy(vertx, new InstrumentManager(), new DeploymentOptions().setWorker(false));
+        deploy(vertx, new EntityManager(), new DeploymentOptions());
 
         final int jobpool = Integer.parseInt(configuration.getConfiguration("jobpool").orElse("50"));
-        vertx.deployVerticle(new TaskManager(jobpool), ar -> {
-            if (ar.succeeded()) {
-                log.info("Deployed TaskManager with id: {}", ar.result());
-            }
-        });
+        deploy(vertx, new TaskManager(jobpool), new DeploymentOptions());
 
         // Deploy interfaces to the NodeRepositories.
-        vertx.deployVerticle(new Nodes(Context.getNodeRepository()), ar -> {
-            if (ar.succeeded()) {
-                log.info("Deployed NodeRepository with id: {}", ar.result());
-            }
-        });
-        vertx.deployVerticle(new Instances(Context.getInstanceRepository()), ar -> {
-            if (ar.succeeded()) {
-                log.info("Deployed InstanceRepository with id: {}", ar.result());
-            }
-        });
-        vertx.deployVerticle(new Types(Context.getTypeRepository()), ar -> {
-            if (ar.succeeded()) {
-                log.info("Deployed TypeRepository with id: {}", ar.result());
-            }
-        });
-
-        // Wait a second so debug messages are done
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            log.error(e.getMessage());
-            throw e;
-        }
+        deploy(vertx, new Nodes(Context.getNodeRepository()), new DeploymentOptions());
+        deploy(vertx, new Instances(Context.getInstanceRepository()), new DeploymentOptions());
+        deploy(vertx, new Types(Context.getTypeRepository()), new DeploymentOptions());
 
         // Open up the http server and send a friendly message telling the user we're done.
         Configuration.setWebHost(configuration.getConfiguration("webHost").orElse("localhost"));
@@ -334,7 +307,13 @@ public class Application {
         } catch (URISyntaxException e) {
             handleUnrecoverableLoadingError(null, e, 1, "Unrecoverable error while setting schema namespace");
         }
-        httpServer.requestHandler(router::accept).listen(Configuration.getWebPort(), Configuration.getWebHost());
+        final HttpServer server = httpServer.requestHandler(router::accept);
+        try {
+            Application.<HttpServer>await(handler ->
+                    server.listen(Configuration.getWebPort(), Configuration.getWebHost(), handler));
+        } catch (InterruptedException | ExecutionException e) {
+            handleUnrecoverableLoadingError(null, e, 1, "Failed to start the web server: " + e.getMessage());
+        }
 
         init(vertx);
         log.info("Structure is running at {}", Configuration.getSchemaNamespace());
@@ -365,8 +344,9 @@ public class Application {
         tx = Context.getGraphDatabase().beginTx();
 
         try {
-            StreamSupport.stream(typeRepository.findAll().spliterator(), false)
-                    .forEach(TypeActor::deploy);
+            CompletableFuture.allOf(StreamSupport.stream(typeRepository.findAll().spliterator(), false)
+                    .map(TypeActor::deploy)
+                    .toArray(CompletableFuture<?>[]::new)).get();
         } catch (Exception e) {
             handleUnrecoverableLoadingError(tx, e, 1, "Unrecoverable error while deploying TypeActors. Shutting down...");
         } finally {
@@ -378,8 +358,9 @@ public class Application {
         tx = Context.getGraphDatabase().beginTx();
 
         try {
-            StreamSupport.stream(instanceRepository.findAll().spliterator(), false)
-                    .forEach(InstanceActor::deploy);
+            CompletableFuture.allOf(StreamSupport.stream(instanceRepository.findAll().spliterator(), false)
+                    .map(InstanceActor::deploy)
+                    .toArray(CompletableFuture<?>[]::new)).get();
         } catch (Exception e) {
             handleUnrecoverableLoadingError(tx, e, 1, "Unrecoverable error while deploying InstanceActors. Shutting down...");
         } finally {
@@ -402,6 +383,31 @@ public class Application {
             final String error = "Couldn't find own hostname";
             handleUnrecoverableLoadingError(null, new IllegalStateException(error), 1, error);
         }
+    }
+
+    // Deploy a verticle and wait for it. Stop Structure if it fails.
+    private static void deploy(Vertx vertx, Verticle verticle, DeploymentOptions options) {
+        final String name = verticle.getClass().getSimpleName();
+        try {
+            final String id = await(handler -> vertx.deployVerticle(verticle, options, handler));
+            log.info("Deployed {} with id: {}", name, id);
+        } catch (InterruptedException | ExecutionException e) {
+            handleUnrecoverableLoadingError(null, e, 1, "Failed to deploy " + name + ": " + e.getMessage());
+        }
+    }
+
+    // Start an asynchronous Vert.x call and wait for its result.
+    private static <T> T await(Consumer<Handler<AsyncResult<T>>> call)
+            throws InterruptedException, ExecutionException {
+        final CompletableFuture<T> result = new CompletableFuture<>();
+        call.accept(ar -> {
+            if (ar.succeeded()) {
+                result.complete(ar.result());
+            } else {
+                result.completeExceptionally(ar.cause());
+            }
+        });
+        return result.get();
     }
 
     private static Optional<String> getHostname() {
