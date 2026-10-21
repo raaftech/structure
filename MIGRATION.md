@@ -15,7 +15,7 @@ Java driver.
 | Connection    | Bolt on port 7687. Plain: `bolt://localhost:7687`. TLS: `bolt+s://` or `bolt+ssc://`.        |
 | Spring        | Remove. Spring is in the build only for SDN.                                                 |
 | Data model    | The Structure source is the authority. `doc/cypher` is historical. Do not use it.            |
-| Stored format | Keep `uuid`, `name`, `desc`, `data-*`, `file-*`, `kv-*`, the class labels and `type:<Name>`. |
+| Stored format | Keep the format. See "Stored format" below for the full list and the two changes.            |
 | SDN artifacts | Remove the `_` labels (`_Type`, `_Component`, ...) and the `__type__` relationship property. |
 | Existing data | Do not migrate `target/structure.db`. Structure loads the bundles at startup.                |
 | Out of scope  | The JS code in `rest/` and `cmd/`, `doc/cypher`, the Dockerfile, Java and Vert.x upgrades.   |
@@ -30,6 +30,44 @@ Ports 7474 (HTTP) and 7473 (HTTPS) serve Neo4j Browser and the HTTP
 Query API. The driver does not use them. Neo4j Browser on the server
 replaces the web console and the remote shell that unsafe mode starts
 today.
+
+## Stored format
+
+Each node has these labels:
+
+- The class labels, for example `Controller`, `Instrument`, `Instance`
+  and `Node`.
+- `type:<Name>` for each type in the `ISA` path of the node's type, from
+  `type:Type` down. A type node gets the labels of its own path.
+
+Each node has these properties:
+
+| Property     | On                  | Value                                                             |
+|--------------|---------------------|-------------------------------------------------------------------|
+| `uuid`       | All nodes           | String.                                                           |
+| `name`       | All nodes           | String.                                                           |
+| `desc`       | All nodes           | String.                                                           |
+| `bundle`     | All nodes           | Name of the bundle. `core` if the JSON has no bundle.             |
+| `checksum`   | All nodes           | SHA-1 of the entity JSON.                                         |
+| `path`       | Nodes from a bundle | Path of the bundle file. Run-time nodes have no `path`.           |
+| `isAbstract` | Types               | Boolean.                                                          |
+| `glyphId`    | Types               | Integer. See the changes below.                                   |
+| `data-*`     | Nodes with data     | Primitive, or a JSON string for objects and arrays.               |
+| `file-*`     | Nodes with files    | JSON string: `encoding`, `format`, `path`, `content`, `checksum`. |
+| `kv-*`       | Types               | `Instance.save` reads it. No bundle writes it today.              |
+
+`CONSTRAINTS` relationships have the properties `forRelationship` and
+`cardinality`. Other relationships have no properties.
+
+The migration makes two changes to this format:
+
+- `created`: the new `persist` sets it on each new node. See "Writes".
+- `glyphId`: today SDN writes it only on types that have constraints,
+  because only `BundleLoader` calls `type.save()` for those. The value
+  is always 0. The new `persist` writes it on each type.
+
+`StoreFormatTest` checks this format. Change its expected values for
+`created` and `glyphId` in the same change as the new `persist`.
 
 ## Server facts (checked in October 2026)
 
