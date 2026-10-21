@@ -105,7 +105,7 @@ public class Entity {
 
     /* A holder for relations to be written by persistRelations().
      * From left to right, the triple should contain the relationship name,
-     * the direction (incoming, outgoing, undirected) and the set of UUIDs
+     * the direction (incoming or outgoing) and the set of UUIDs
      * of the nodes that should be related by this relationship. */
     @Transient
     private Set<Triple<String, String, Set<String>>> relations;
@@ -837,7 +837,7 @@ public class Entity {
                         // check if this relationship already exists by getting al relationships with the same name and direction
                         // and then checking if we have one to "peer".
                         boolean relExists = StreamSupport.stream(node.getRelationships(Direction.valueOf(direction.toUpperCase()), (RelationshipType) () -> rname).spliterator(), false)
-                                .filter(r -> r.getEndNode().getId() == peer.getId())
+                                .filter(r -> r.getOtherNode(node).getId() == peer.getId())
                                 .count() > 0;
                         if (!relExists) {
                             switch (direction) {
@@ -847,11 +847,6 @@ public class Entity {
                                     break;
                                 case "outgoing":
                                     log.debug("Creating outgoing \"{}\" relation from \"{}\" to \"{}\"", rname, name, (String) peer.getProperty("name"));
-                                    node.createRelationshipTo(peer, () -> rname);
-                                    break;
-                                case "undirected":
-                                    log.debug("Creating undirected \"{}\" relation between \"{}\" and \"{}\"", rname, name, (String) peer.getProperty("name"));
-                                    peer.createRelationshipTo(node, () -> rname);
                                     node.createRelationshipTo(peer, () -> rname);
                             }
                         }
