@@ -8,36 +8,31 @@ Java driver.
 
 ## Decisions
 
-| Topic         | Decision                                                                                     |
-|---------------|----------------------------------------------------------------------------------------------|
-| Driver        | `org.neo4j.driver:neo4j-java-driver:4.4.27`. Java 8 bytecode. Netty is shaded (see below).   |
-| Java, Vert.x  | No change: Java 8, Vert.x 3.4.1.                                                             |
-| Connection    | Bolt on port 7687. Plain: `bolt://localhost:7687`. TLS: `bolt+s://` or `bolt+ssc://`.        |
-| Spring        | Remove. Spring is in the build only for SDN.                                                 |
-| Data model    | The Structure source is the authority. `doc/cypher` is historical. Do not use it.            |
-| Stored format | Keep the format. See "Stored format" below for the full list and the two changes.            |
-| SDN artifacts | Remove the `_` labels (`_Type`, `_Component`, ...) and the `__type__` relationship property. |
-| Existing data | Do not migrate `target/structure.db`. Structure loads the bundles at startup.                |
-| Out of scope  | The JS code in `rest/` and `cmd/`, `doc/cypher`, the Dockerfile, Java and Vert.x upgrades.   |
-| Backend seam  | Only `Graph` uses the driver API. See "Embedded mode later".                                 |
+| Topic         | Decision                                                                                       |
+|---------------|------------------------------------------------------------------------------------------------|
+| Driver        | `org.neo4j.driver:neo4j-java-driver:4.4.27`. Java 8 bytecode. Its Netty is shaded.             |
+| Java, Vert.x  | No change: Java 8, Vert.x 3.4.1.                                                               |
+| Connection    | Bolt on port 7687. Plain: `bolt://`. TLS: `bolt+s://`, or `bolt+ssc://` for self-signed certs. |
+| Spring        | Remove. Spring is in the build only for SDN.                                                   |
+| Data model    | The Structure source is the reference. `doc/cypher` is historical. Do not use it.              |
+| Stored format | Keep it, with two changes. See "Stored format".                                                |
+| SDN artifacts | Remove the `_` labels (`_Type`, `_Component`, ...) and the `__type__` relationship property.   |
+| Old data      | Do not migrate `target/structure.db`. Structure loads the bundles at startup.                  |
+| Out of scope  | The JS code in `rest/` and `cmd/`, `doc/cypher`, the Dockerfile, Java and Vert.x upgrades.     |
+| Backend seam  | Only `Graph` uses the driver API. See "Graph access".                                          |
 
-The driver has its own shaded Netty. Thus it does not conflict with the
-Netty 4.1.8 of Vert.x 3.4.1. Use `bolt+ssc://` for a self-signed
-certificate. The class labels are `Node`, `Type`, `Instance`,
-`Component`, `Group`, `Profile`, `Result`, `Instrument`, `Controller`,
-`Marker` and `Parser`.
-
-Ports 7474 (HTTP) and 7473 (HTTPS) serve Neo4j Browser and the HTTP
-Query API. The driver does not use them. Neo4j Browser on the server
-replaces the web console and the remote shell that unsafe mode starts
-today.
+The shaded Netty of the driver does not conflict with the Netty 4.1.8
+of Vert.x 3.4.1. Ports 7474 (HTTP) and 7473 (HTTPS) serve Neo4j Browser
+and the HTTP Query API. The driver does not use them.
 
 ## Stored format
 
 Each node has these labels:
 
-- The class labels, for example `Controller`, `Instrument`, `Instance`
-  and `Node`.
+- Its class labels. Each node has `Node` and one or more of `Type`,
+  `Instance`, `Component`, `Group`, `Profile`, `Result`, `Instrument`,
+  `Controller`, `Marker` and `Parser`. For example, a controller has
+  `Controller`, `Instrument`, `Instance` and `Node`.
 - `type:<Name>` for each type in the `ISA` path of the node's type, from
   `type:Type` down. A type node gets the labels of its own path.
 
@@ -50,22 +45,23 @@ Each node has these properties:
 | `desc`       | All nodes           | String.                                                           |
 | `bundle`     | All nodes           | Name of the bundle. `core` if the JSON has no bundle.             |
 | `checksum`   | All nodes           | SHA-1 of the entity JSON.                                         |
+| `created`    | All nodes           | Milliseconds after 1970-01-01 UTC. New, see below.                |
 | `path`       | Nodes from a bundle | Path of the bundle file. Run-time nodes have no `path`.           |
 | `isAbstract` | Types               | Boolean.                                                          |
-| `glyphId`    | Types               | Integer. See the changes below.                                   |
+| `glyphId`    | Types               | Integer. The value is always 0. See below.                        |
 | `data-*`     | Nodes with data     | Primitive, or a JSON string for objects and arrays.               |
 | `file-*`     | Nodes with files    | JSON string: `encoding`, `format`, `path`, `content`, `checksum`. |
-| `kv-*`       | Types               | `Instance.save` reads it. No bundle writes it today.              |
+| `kv-*`       | Types               | `Instance.save` reads it. No bundle writes it now.                |
 
 `CONSTRAINTS` relationships have the properties `forRelationship` and
 `cardinality`. Other relationships have no properties.
 
 The migration makes two changes to this format:
 
-- `created`: the new `persist` sets it on each new node. See "Writes".
-- `glyphId`: today SDN writes it only on types that have constraints,
-  because only `BundleLoader` calls `type.save()` for those. The value
-  is always 0. The new `persist` writes it on each type.
+- `created` is new. The new `persist` sets it when it makes a node.
+- `glyphId`: now SDN writes it only on types with constraints, because
+  only `BundleLoader` calls `type.save()` for those types. The new
+  `persist` writes it on each type.
 
 `StoreFormatTest` checks this format. Change its expected values for
 `created` and `glyphId` in the same change as the new `persist`.
@@ -73,18 +69,20 @@ The migration makes two changes to this format:
 ## Server facts (checked in October 2026)
 
 - Neo4j 2025.x and 2026.x accept Bolt 4.4. The Neo4j support table
-  lists driver 4.4 as compatible up to 2026.10. Neo4j can remove Bolt
-  4.4 in a later release. There is no date for this.
+  lists driver 4.4 as compatible up to 2026.10. A later release can
+  remove Bolt 4.4. There is no date for this.
 - New 2026.x installations set `db.query.default_language=CYPHER_25`.
-  Existing installations keep their setting. All queries must be valid
+  Upgraded installations keep their setting. All queries must be valid
   in Cypher 5 and in Cypher 25.
 - `id()` is deprecated. Do not use it. The order of internal ids is not
   the creation order.
 - Driver 4.4 API: `session.beginTransaction`, `session.readTransaction`,
-  `session.writeTransaction`. Nodes have `id()` only. If you need a
-  string id, return `elementId(n)` from Cypher.
+  `session.writeTransaction`. A driver `Node` has only the numeric
+  `id()`. For a string id, return `elementId(n)` from Cypher.
 - Neo4j does not accept schema changes and data writes in one
   transaction.
+- If a query fails in an explicit transaction, the transaction rolls
+  back. The driver then rejects each query in that transaction.
 
 References:
 
@@ -97,18 +95,17 @@ References:
 On the current code with JDK 1.8.0_504, `mvn verify` runs 119 tests
 with 0 failures and 0 skipped. It also builds the fat jar and checks
 the line coverage with JaCoCo. The minimum is `jacoco.line.minimum`
-(0.60) in `pom.xml`. The coverage is 62% now. The migrated code must
-give the same result. The report is in `target/site/jacoco`.
+(0.60) in `pom.xml`, and the coverage is now 62%. The report is in
+`target/site/jacoco`. The migrated code must give the same result.
 
 Maven runs the build and the tests with the JDK 8 from
-`~/.m2/toolchains.xml`. Maven itself can run on a newer JDK.
-`.mvn/jvm.config` lets it read `aspectjweaver-1.8.2.jar`, which newer
-JDKs reject without this setting.
+`~/.m2/toolchains.xml`. Maven itself can run on a newer JDK. Newer JDKs
+reject `aspectjweaver-1.8.2.jar`. `.mvn/jvm.config` lets Maven read it.
 
 `TaskManagerTest.resultChain` can fail on Neo4j 2.1 when the machine is
-busy. Neo4j 2.1 lets a reader see a commit that is not fully applied,
-and the test reads the graph while `TaskManager` commits. On Neo4j 5
-this test must pass each time.
+busy. The test reads the graph while `TaskManager` commits, and Neo4j
+2.1 lets a reader see a commit that is not fully applied. On Neo4j
+2026.10 this test must pass each time.
 
 ## Inventory
 
@@ -131,9 +128,9 @@ this test must pass each time.
 | `CypherQueryExecutor`  | `Application`, `BundleLoader` (2), `Entity.findDuplicates`      | 4 sites                |
 | Verticle deploys       | `Application` (7), `NodeActor.deploy`, `Instance.save`          | 9 sites                |
 | `commons-lang` 2.4     | `Type`, `Constraint`, `ConfigurationProxy`                      | 3 files                |
-| Tests                  | 15 files import SDN or Neo4j. 4 of them use `SpringTestConfig`. | 15 files               |
+| Tests                  | Import SDN or Neo4j. 4 of them use `SpringTestConfig`.          | 15 files               |
 
-`commons-lang` 2.4 (`org.apache.commons.lang.*`) arrives only through
+`commons-lang` 2.4 (`org.apache.commons.lang.*`) comes only through
 `neo4j-server`. In total, 38 main files import Spring and 19 main files
 import `org.neo4j`.
 
@@ -142,16 +139,27 @@ import `org.neo4j`.
 ### Graph access
 
 Add one class, `tech.raaf.structure.base.Graph`. It holds the `Driver`
-and binds a transaction to the current thread. Nested calls join the
+and binds a transaction to the current thread. Nested calls use the
 bound transaction. Thus a read in a transaction sees the uncommitted
-writes of that transaction, as with embedded Neo4j today. The current
-code needs this. For example, `EntityManager` writes a list of entities
-in order, and each `toGraph()` reads the entities written before it.
+writes of that transaction, as with embedded Neo4j now. The current
+code uses this. For example, `EntityManager` writes a list of entities
+in sequence, and each `toGraph()` reads the entities written before it.
 
 ```java
 public final class Graph {
     private static Driver driver;
-    private static final ThreadLocal<Transaction> bound = new ThreadLocal<>();
+    private static final ThreadLocal<Bound> bound = new ThreadLocal<>();
+
+    // The transaction of a thread, its state and its commit actions.
+    private static final class Bound {
+        final Transaction tx;
+        final List<Runnable> afterCommit = new ArrayList<>();
+        boolean failed;
+
+        Bound(Transaction tx) {
+            this.tx = tx;
+        }
+    }
 
     public static void connect(String uri, String user, String password) {
         driver = GraphDatabase.driver(uri, AuthTokens.basic(user, password));
@@ -162,27 +170,58 @@ public final class Graph {
         driver.close();
     }
 
-    // Run work in a transaction on this thread; nested calls join it.
+    // Run work in a transaction on this thread; nested calls use it.
     public static <T> T transaction(Supplier<T> work) {
-        if (bound.get() != null) {
-            return work.get();
+        Bound outer = bound.get();
+        if (outer != null) {
+            try {
+                return work.get();
+            } catch (RuntimeException e) {
+                outer.failed = true;
+                throw e;
+            }
         }
+        T result;
+        List<Runnable> actions;
         try (Session session = driver.session();
              Transaction tx = session.beginTransaction()) {
-            bound.set(tx);
-            T result = work.get();
+            Bound b = new Bound(tx);
+            bound.set(b);
+            result = work.get();
+            if (b.failed) {
+                throw new GraphException("Nested transaction failed");
+            }
             tx.commit();
-            return result;
+            actions = b.afterCommit;
         } finally {
             bound.remove();
+        }
+        actions.forEach(Runnable::run);
+        return result;
+    }
+
+    public static void transaction(Runnable work) {
+        transaction(() -> {
+            work.run();
+            return null;
+        });
+    }
+
+    // Run action after the commit, or now if there is no transaction.
+    public static void afterCommit(Runnable action) {
+        Bound b = bound.get();
+        if (b == null) {
+            action.run();
+        } else {
+            b.afterCommit.add(action);
         }
     }
 
     // Use the bound transaction if there is one, else auto-commit.
     public static List<Map<String, Object>> query(String cypher, Map<String, Object> params) {
-        Transaction tx = bound.get();
-        if (tx != null) {
-            return rows(tx.run(cypher, params));
+        Bound b = bound.get();
+        if (b != null) {
+            return rows(b.tx.run(cypher, params));
         }
         try (Session session = driver.session()) {
             return rows(session.run(cypher, params));
@@ -221,31 +260,40 @@ public final class Graph {
 }
 ```
 
-`GraphNode` is a small class in `tech.raaf.structure.base` with two
-fields: `Set<String> labels` and `Map<String, Object> properties`.
+`GraphNode` and `GraphException` are small classes in
+`tech.raaf.structure.base`. `GraphNode` has two fields:
+`Set<String> labels` and `Map<String, Object> properties`. It holds
+copies, thus it stays valid after the transaction closes.
 
 Rules:
 
 - Send all values as parameters. Put only labels and relationship types
-  in the query text. Put them in backticks and double each backtick in
-  the name. This also fixes `Entity.findDuplicates`, which puts values
-  into the query text today.
-- An exception in `work` rolls back the transaction.
+  in the query text. Put them in backticks, and double each backtick in
+  the name. This also corrects `Entity.findDuplicates`, which now puts
+  values into the query text.
+- An exception in the work rolls back the transaction. If nested work
+  throws an exception, `Graph` marks the outer transaction as failed.
+  The outer transaction then rolls back, also if a caller catches the
+  exception. Neo4j 2.1 does the same after `tx.failure()` in a nested
+  transaction.
+- `Graph` changes driver exceptions to `GraphException`. Do not catch
+  driver exceptions outside `Graph`.
+- Catch a `GraphException` only outside `Graph.transaction`. After a
+  failed query, the driver rejects each query in the transaction.
+- Use `Graph.afterCommit` for side effects, for example verticle
+  deploys. Then a rollback does not deploy an actor, and the new actor
+  can read the committed node.
 - The driver does not retry explicit transactions. This is the same as
-  today. Do not use `writeTransaction` around work with side effects,
-  for example verticle deploys, because the driver can run the work
-  again.
-- A bound transaction stays on its thread. All `beginTx` sites today
-  run on one thread. Keep it that way.
-- Only `Graph` imports `org.neo4j`. Other classes, also the tests, use
-  `Graph.transaction`, `Graph.query`, `GraphNode` and plain values.
-  Then a change to embedded Neo4j changes only `Graph`.
+  now. Do not use `writeTransaction`, because the driver can run the
+  work again.
+- A bound transaction stays on its thread. All `beginTx` sites now run
+  on one thread. Keep it that way.
+- Only `Graph` imports `org.neo4j`. Other classes and the tests use
+  `Graph`, `GraphNode`, `GraphException` and plain values. Then a
+  change to embedded Neo4j changes only `Graph`.
 - Queries return nodes, primitives, strings, lists and maps. Do not
   return relationships or paths. Return their properties or their nodes
   as columns, for example `type(r) AS rel, b.uuid AS peer`.
-- Do not catch driver exceptions outside `Graph`. If a caller must
-  handle an error, for example a constraint violation, `Graph` throws
-  its own exception type for it.
 
 ### Configuration
 
@@ -259,26 +307,25 @@ adds the prefix `STRUCTURE_` to environment keys.
 | `neo4j-username` | `STRUCTURE_NEO4J_USERNAME` | `neo4j`                 |
 | `neo4j-password` | `STRUCTURE_NEO4J_PASSWORD` | None. It is necessary.  |
 
-Read the password only from the environment. Do not read it from the
-command line or from a system property. Other users can see command
-lines and `-D` options with `ps`.
+Read the password only from the environment. Other users can see
+command lines and `-D` options with `ps`.
 
-Unsafe mode no longer starts a web console or a remote shell.
+Unsafe mode no longer starts a web console or a remote shell. Use Neo4j
+Browser on the server.
 
 ### Mapping
 
 - Add `NodeMapper`. It makes a domain object from a `GraphNode`. It
-  selects the class from the labels in this order: `Controller`,
+  selects the class from the labels in this sequence: `Controller`,
   `Marker`, `Parser`, `Component`, `Profile`, `Result`, `Group`,
-  `Type`. This is the same table as `Entity.getClassLabels`.
+  `Type`. `Entity.getClassLabels` uses the same table.
 - Replace `DynamicProperties` with `Map<String, Object>`. The mapper
   fills the maps from the `data-`, `file-` and `kv-` properties.
 - The driver returns integers as `Long`. Convert them for `int` fields,
   for example `glyphId`.
 - Replace each `@RelatedTo` and `@RelatedToVia` field with a getter
-  that runs a query. `@Fetch` loading stops. This also removes the
-  `fetch()` work-arounds in `Type.getIsa`, `Type.getChildIsaSet` and
-  `Component`.
+  that runs a query. Remove `@Fetch` and the `fetch()` calls in
+  `Type.getIsa`, `Type.getChildIsaSet` and `Component`.
 - Map `Constraint` from rows of `(a)-[r:CONSTRAINTS]->(b)`: `a.uuid`,
   `b.uuid`, `r.forRelationship` and `r.cardinality`.
 - Use `uuid` for `equals` and `hashCode`. Remove the `@GraphId` fields.
@@ -291,8 +338,8 @@ Unsafe mode no longer starts a web console or a remote shell.
 
 ### Writes
 
-Use one write path for nodes. `Entity.persist` first reads the current
-state, if the node exists:
+Use one write path for nodes. If the node is in the database,
+`Entity.persist` first reads its current state:
 
 ```cypher
 MATCH (n:Node {uuid: $uuid})
@@ -307,21 +354,22 @@ ON CREATE SET n.created = timestamp()
 SET n += $props
 ```
 
-Add each key from the read that is not in `$props` to `$props` with
-the value `null`, except `created` and the `kv-*` keys. `SET n += $props`
-removes the keys with a `null` value. Today `persist` never removes a
-property. Thus a key that an update or a changed bundle removes stays on
-the node, and the next read returns it. The `update` handler sends the
-full entity and its checksum, so the old keys are a defect.
+Before the write, add each key from the read that is not in `$props`,
+with the value `null`. Do not add `created` and the `kv-*` keys.
+`SET n += $props` removes the keys with a `null` value. The current
+`persist` never removes a property. Thus a key that an update or a
+changed bundle removes stays on the node, and the next read returns it.
+This is an error, because the `update` handler sends the full entity
+and its checksum.
 
-Then replace the labels with a second statement in the same
-transaction: `REMOVE` the labels from the read that are not in the new
-list, and `SET` the new list. This includes the `type:` labels. Today
-`persist` removes all labels and `persistTypeLabels` adds them again.
-Make the label lists from escaped names.
+Then, in the same transaction, replace the labels with a second
+statement. `REMOVE` the labels from the read that are not in the new
+list, and `SET` the new list. This applies to the `type:` labels too.
+Make the label lists from escaped names. The current `persist` removes
+all labels, and `persistTypeLabels` adds them again.
 
-Property values must be primitives, strings or lists. Convert
-`JsonNode` values to strings, as `JsonNodeWriter` does today.
+Property values must be primitives, strings or lists. Change `JsonNode`
+values to strings with `toString()`, as `JsonNodeWriter` does now.
 
 Change `persistRelations` to one `MERGE` for each relationship:
 
@@ -330,9 +378,8 @@ MATCH (a:Node {uuid: $from}), (b:Node {uuid: $to})
 MERGE (a)-[:`REL`]->(b)
 ```
 
-`MERGE` replaces the check for an existing relationship. A relationship
-is "incoming" or "outgoing". The entity schema does not allow
-"undirected".
+`MERGE` replaces the current check for a duplicate relationship. The
+entity schema accepts only "incoming" and "outgoing" relationships.
 
 Replace the SDN write calls:
 
@@ -361,20 +408,21 @@ DETACH DELETE n
 ```
 
 The result chain keeps the relationship directions that SDN writes
-today: `(instance)-[:RESULTS]->(newest)` and
+now: `(instance)-[:RESULTS]->(newest)` and
 `(older)-[:NEXT_RESULT]->(newer)`. `TaskManager` calls `origin.save()`
 and `result.save()` in one transaction. Replace the two calls with one
 statement. `ResultBuilder.buildAndStore()` already writes the result
-node, so the statement must match it and not create it.
+node, thus the statement must match it and not create it.
 `TaskManagerTest` checks the chain.
 
 `Instrument.save()` and `Result.save()` override `Instance.save()`.
 They only write the node. For a new node, `Instance.save()` also checks
 the data against the type schema, copies the `kv` values of the type
 and deploys an `InstanceActor`. Thus results and instruments get no
-actor. Tests call the overrides directly (`ResultTest`,
-`InstrumentRepositoryTest`). Keep the three methods. Change only their
-bodies to the new write path, so that this difference stays.
+actor. `ResultTest` and `InstrumentRepositoryTest` call the overrides
+directly. Keep the three methods, and change only their bodies to the
+new write path. In `Instance.save()`, remove `tx.failure()` and keep
+the exception after it. Deploy the actor with `Graph.afterCommit`.
 
 ### Traversals
 
@@ -391,8 +439,8 @@ RETURN badOut + count(i) = 0 AS safe
 ```
 
 `labelBasedTraversal` follows outgoing relationships through nodes that
-have one of the labels. The start node does not need a label. Walk the
-graph breadth-first in Java with one query for each level:
+have one of the labels. The start node can have no label from the list. Go
+through the graph breadth-first in Java, with one query for each level:
 
 ```cypher
 MATCH (a:Node)-->(n)
@@ -404,16 +452,16 @@ Keep a set of visited `uuid` values. The next frontier is the nodes of
 this level that are not in the set. Stop when the frontier is empty.
 Add the start node to the result only if `includeStart` is true.
 
-The Traversal API visited each node one time. This walk does the same.
-A single Cypher query with `[*0..]` examines all paths, which can be
-slow on a full graph.
+The Traversal API visits each node one time, and this walk does the
+same. A single Cypher query with `[*0..]` examines all paths. On a full
+graph, this can be slow.
 
 ### Queries
 
-Change each repository interface to a class with the same method names.
-Then the callers do not change. Also write the inherited methods that
-the code uses: `findByUuid`, `findByName` and `findOneByName` for each
-label, `findAll` for `Type` and `Instance`, `count` and `delete`.
+Change each repository interface to a class with the same method names,
+so that the callers do not change. Also write the inherited methods
+that the code uses: `findByUuid`, `findByName` and `findOneByName` for
+each label, `findAll` for `Type` and `Instance`, `count` and `delete`.
 
 Change the syntax:
 
@@ -440,21 +488,20 @@ The node patterns without parentheses are in `getCompatibleSendString`,
 
 Replacements for `id()`:
 
-- `getTypeHierarchyForTypeUuid` returns a set. Remove the ordering.
+- `getTypeHierarchyForTypeUuid` returns a set. Remove the `ORDER BY`.
 - `getHierarchyPath`: find the `ISA` path to the root type and join the
   names of `reverse(nodes(p))` with dots.
-- `getNLastCreated`: order by `n.created DESC, n.uuid DESC`. The new
-  `persist` sets `created`. This changes the contract on purpose.
-  Today the result is in exact creation order. After the migration,
-  the order has a resolution of 1 ms, and nodes made in the same
-  millisecond sort by `uuid`. Only bulk loads make nodes this fast,
-  and the "recent instances" list in the UI does not need their exact
-  order. Change `OrderingTest.nLastCreated` in the same change: set
-  `created` on the test nodes, with at least two equal values, and
-  check the `(created, uuid)` order and the limit. The test must not
-  depend on the clock.
+- `getNLastCreated`: order by `n.created DESC, n.uuid DESC`. This
+  changes the contract. Now the result is in exact creation sequence.
+  After the migration, the resolution is 1 ms, and nodes from the same
+  millisecond sort by `uuid`. Only bulk loads make nodes this fast. The
+  "recent instances" list in the UI does not use their exact sequence.
+- Change `OrderingTest.nLastCreated` in the same change. Set `created`
+  on the test nodes, with a minimum of two equal values. Check the
+  `(created, uuid)` sequence and the limit. The test must not use the
+  clock.
 - `NodeSerializer` sorts relationships by the `uuid` of the peer. Keep
-  this order when it reads relationships with a query.
+  this sequence when it reads relationships with a query.
 
 Indexes: SDN made legacy full-text indexes for the `@Indexed` fields.
 No query uses them. Do not make them again. Add
@@ -463,8 +510,8 @@ because many queries find nodes by name.
 
 ### Spring removal
 
-After Phase 3, no Spring artifact is in the build. Spring arrives only
-through `spring-data-neo4j` and `spring-test`.
+Spring comes only through `spring-data-neo4j` and `spring-test`. After
+Phase 3, the build has no Spring artifact.
 
 - `Context` keeps its static getters. It makes the repository objects
   itself. Remove `@Component` and `ApplicationContextAware`.
@@ -473,21 +520,15 @@ through `spring-data-neo4j` and `spring-test`.
   calls `Graph.close()`.
 - Delete `SpringConfig`, `SpringTestConfig` and `ConverterConfig`.
 - Delete the 8 classes in `graph/converters`. They implement Spring's
-  `Converter` interface. In `Entity.persist`, replace
-  `new JsonNodeWriter().convert(x)` with `x.toString()`.
-- In the tests, replace the `@Autowired` fields with the `Context`
-  getters. Remove `@Transactional` and `@Rollback` from the 6 test
-  classes that use them. Spring rolls back each test today. The new
-  test base class clears the database before each test.
+  `Converter` interface.
 
 ### Threads
 
-All actors are standard verticles today. Their handlers run on
-event-loop threads and call the database synchronously. With embedded
-Neo4j, a call takes microseconds. With a server, each query is a
-network round trip. While a handler waits, its event loop cannot serve
-the SockJS bridge or HTTP requests. Move all database work to worker
-threads:
+All actors are now standard verticles. Their handlers run on event-loop
+threads and call the database synchronously. With embedded Neo4j, a
+call takes microseconds. With a server, each query is a network round
+trip. While a handler waits, its event loop cannot serve the SockJS
+bridge or HTTP requests. Move all database calls to worker threads:
 
 - Deploy each verticle that uses the graph as a worker on a named pool:
   `new DeploymentOptions().setWorker(true).setWorkerPoolName("structure-actors")`.
@@ -497,32 +538,31 @@ threads:
   `InstrumentManager` does not use the graph. It can stay a standard
   verticle.
 - Move the `setPeriodic` call in the `TaskManager` constructor to
-  `start()`. A timer made in the constructor runs on an event-loop
-  context, not on the worker context of the verticle. The timer
-  handlers write results to the graph.
+  `start()`. A timer that the constructor makes runs on an event-loop
+  context. The timer handlers write results to the graph.
 - Change the `/schemas/:schema` route to
   `blockingHandler(schemaManager::getSchema, false)`. The handler
   queries the graph.
 - Pass `ordered = false` to `executeBlocking` at 3 sites:
   `InstanceActor.runController` and the `selfDiscovery` and reinit
   handlers of `StructureManager`. On a worker context, ordered blocking
-  code and the message handlers use one task queue. Thus an ordered call
-  stops all messages to the verticle until it ends. A controller run can
-  take minutes. With `false`, the blocking code runs on a different
-  thread of the pool, at the same time as the handlers. This is safe
-  now: the blocking code uses only fields that `start()` sets and the
-  repositories, which have no state.
+  code and the message handlers use one task queue. Thus an ordered
+  call stops all messages to the verticle until it ends, and a
+  controller run can take minutes. With `false`, the blocking code runs
+  on a different thread of the pool, at the same time as the handlers.
+  This is safe now. The blocking code uses only fields that `start()`
+  sets, and the repositories, which have no state.
 
 A worker verticle handles one message at a time. Two handler calls can
 run on different threads of the pool, but never at the same time. Each
 transaction starts and ends in one handler call. Thus the thread-bound
 transaction of `Graph` works on worker threads.
 
-The actors use the named pool and the `/schemas` route uses the default
-worker pool. Keep them apart. `Entity.toGraph()` validates data against
-the `/schemas` URL of Structure itself. With one shared pool, the
-actors can use all threads and wait for schema requests that cannot
-start.
+The actors use the named pool, and the `/schemas` route uses the
+default worker pool. Keep them separate. `Entity.toGraph()` validates
+data against the `/schemas` URL of Structure itself. With one shared
+pool, the actors can use all threads and wait for schema requests that
+cannot start.
 
 Vert.x logs `Thread ... has been blocked` when an event loop is blocked
 for more than 2 seconds. Worker threads can run for 5 minutes
@@ -533,7 +573,7 @@ for more than 2 seconds. Worker threads can run for 5 minutes
 ### Phase 0: prepare
 
 1. Start a Neo4j 2026.10 server for development. Community Edition is
-   sufficient. Set a password.
+   enough. Set a password.
 2. For TLS tests, configure the Bolt SSL policy
    (`dbms.ssl.policy.bolt.*`) and set `server.bolt.tls_level`.
 
@@ -549,19 +589,18 @@ before the transport changes. Use the `{param}` syntax for now. Run
    not use `org.neo4j.graphdb.Node`.
 3. Change `Entity.persist`, `persistRelations` and `persistTypeLabels`
    to Cypher through `CypherQueryExecutor`. SDN still reads the nodes
-   in this phase. Thus keep writing the `_` labels from
-   `getClassLabels`. Phase 3 removes them.
-4. Remove the `id()` ordering (see "Queries").
-5. Fix `HAS()` and the node patterns without parentheses.
+   in this phase. Thus keep the `_` labels from `getClassLabels`.
+4. Remove the `id()` sequence (see "Queries").
+5. Correct `HAS()` and the node patterns without parentheses.
 6. Replace `org.apache.commons.lang.*` with `org.apache.commons.lang3.*`.
    Declare `commons-lang3` in `pom.xml`.
 
-If a statement does not work on Neo4j 2.1, do that step in Phase 3.
+If a statement does not operate on Neo4j 2.1, do that step in Phase 3.
 
-### Phase 2: move database work off the event loop (on embedded Neo4j)
+### Phase 2: move database calls off the event loop (on embedded Neo4j)
 
-This change does not depend on the driver. Do it before the driver
-change, so that thread problems and server problems do not mix.
+This change does not use the driver. Do it before the driver change,
+so that thread problems and server problems do not mix.
 
 1. Make the changes in "Threads".
 2. Run `mvn verify`. The result must agree with the baseline.
@@ -574,14 +613,16 @@ The application does not run between the steps of this phase. Do all
 steps on one branch.
 
 1. In `pom.xml`, remove `spring-data-neo4j`, `neo4j`, `neo4j-kernel`,
-   both `neo4j-server` artifacts, `spring-test` and the Xebia
+   the two `neo4j-server` artifacts, `spring-test` and the Xebia
    repository. Add `neo4j-java-driver` 4.4.27.
-2. Add `Graph` and the configuration keys. Change `Context` and
-   `Application` (see "Spring removal").
+2. Add `Graph`, `GraphNode`, `GraphException` and the configuration
+   keys. Change `Context` and `Application` (see "Spring removal").
 3. Replace the 20 `beginTx` sites with `Graph.transaction`. At each
-   site, look for writes followed by a close without `success()`.
-   Today this rolls back the writes. With `Graph.transaction`, throw an
-   exception to roll back.
+   site, look for writes followed by a close without `success()`. Now
+   this rolls back the writes. With `Graph.transaction`, throw an
+   exception to roll back. Some sites return before `close()`, for
+   example specialize in `EntityManager`. `Graph.transaction` closes
+   the transaction on all paths.
 4. Change the domain classes and add `NodeMapper` (see "Mapping").
    Remove the `_` labels from `getClassLabels`, `EntityTest` and
    `StoreFormatTest`.
@@ -593,42 +634,40 @@ steps on one branch.
 8. Change the tests:
    - Add a test base class. It connects `Graph` to
      `STRUCTURE_TEST_NEO4J_URI` with `STRUCTURE_TEST_NEO4J_PASSWORD`.
-     It runs `MATCH (n) DETACH DELETE n` before each test. Use separate
-     variables, so that a test run cannot delete the data of a normal
-     run by accident.
-   - `mvn verify` needs a test server. If the variables are not set,
-     the tests fail. Do not skip them, because the JaCoCo minimum and
-     the baseline (0 skipped) need all tests.
+     It runs `MATCH (n) DETACH DELETE n` before each test. The separate
+     variables prevent a test run from deleting the data of a normal run.
+   - `mvn verify` must have a test server. If the variables are not
+     set, the tests fail. Do not skip them, because the JaCoCo minimum
+     and the baseline (0 skipped) count all tests.
    - Remove the Spring runner from the 4 classes that use
-     `SpringTestConfig`. Remove the other Spring annotations (see
-     "Spring removal").
+     `SpringTestConfig`. Remove `@Transactional` and `@Rollback` from
+     the 6 classes that use them. The base class replaces the Spring
+     rollback. Replace the `@Autowired` fields with the `Context`
+     getters.
    - Replace the 29 `beginTx` sites in the tests. Replace the
      `getPersistentState()` assertions in `EntityTest` with queries.
-   - The tests use only `Graph`, `GraphNode` and plain values. They do
-     not import `org.neo4j`.
 
-`neo4j-harness` is not an option, because the harness for 2025.x and
-later needs a newer Java. Testcontainers is possible, but it adds a
-dependency and needs Docker.
+You cannot use `neo4j-harness`, because the harness for 2025.x and
+later must have a newer Java. Testcontainers is possible, but it adds a
+dependency and Docker.
 
 ### Phase 4: verify
 
 1. Run `mvn verify` against 2026.10 with
    `db.query.default_language=CYPHER_25`. Then run it with
-   `CYPHER_5`. Both results must agree with the baseline.
+   `CYPHER_5`. The two results must agree with the baseline.
 2. Run the tests one time with `bolt+s://` or `bolt+ssc://`.
 3. Start Structure on an empty database. Check these items:
    - The bundles load. `SHOW CONSTRAINTS` and `SHOW INDEXES` show the
      new schema.
    - Self-discovery finds the host group.
-   - Entity create, update, delete, group, ungroup and specialize work
-     on the event bus.
+   - Entity create, update, delete, group, ungroup and specialize
+     operate correctly on the event bus.
    - A controller run adds a `Result` at the head of the result chain.
    - The frontend shows types and instances.
 4. Compare the startup time and the bundle load time with the old
-   build. Each lazy getter now makes a network call. Write the times in
-   this file. They are the reference for a later change to embedded
-   mode.
+   build. Write the times in this file. They are the reference for a
+   later change to embedded mode.
 5. Make sure that `mvn dependency:tree` shows no `org.springframework`
    and no `org.neo4j` artifact other than the driver.
 6. Make sure that the log has no `has been blocked` warnings for
@@ -640,17 +679,17 @@ dependency and needs Docker.
 1. Remove `jersey-core`, `jersey-server`, `persistence-api`,
    `validation-api` and `javassist` if the build compiles without them.
    No code uses them.
-2. Remove `.mvn/jvm.config` if no dependency needs it.
-3. Update `README.md`. Structure needs a Neo4j server, reads the
+2. Remove `.mvn/jvm.config` if no dependency uses it.
+3. Update `README.md`. Structure must have a Neo4j server, reads the
    `STRUCTURE_NEO4J_*` variables and no longer serves port 7474.
-   `mvn verify` needs a test server and the `STRUCTURE_TEST_NEO4J_*`
+   `mvn verify` must have a test server and the `STRUCTURE_TEST_NEO4J_*`
    variables.
 
 ## Embedded mode later
 
 Embedded Neo4j 2026.x is faster than a server. A test on one machine,
-with one thread, Java 21 and the same Cypher on both sides, gave these
-median times for one query in one transaction:
+with one thread, Java 21 and the same Cypher on the two sides, gave
+these median times for one query in one transaction:
 
 | Operation | Embedded      | Server over Bolt on localhost |
 |-----------|---------------|-------------------------------|
@@ -662,10 +701,10 @@ nodes, embedded is 1.3 to 3 times faster.
 
 Structure cannot use embedded Neo4j 2026.x now:
 
-- Neo4j 2026.x needs Java 21.
+- Neo4j 2026.x must have Java 21.
 - `org.neo4j:neo4j` brings Netty 4.2 without shading, through
-  `netty-common` and `neo4j-bolt`. Vert.x 3.4.1 needs Netty 4.1.8. One
-  class path cannot hold both. Vert.x 5 uses Netty 4.2.
+  `netty-common` and `neo4j-bolt`. Vert.x 3.4.1 must have Netty 4.1.8.
+  One class path cannot hold the two versions. Vert.x 5 uses Netty 4.2.
 - The embedded artifacts add approximately 230 jars and 150 MB to the
   fat jar. The shade plugin must merge `META-INF/services`.
 
@@ -681,43 +720,40 @@ Vert.x 5. The rules in "Graph access" keep this change inside `Graph`:
    - `plain` makes a `GraphNode` from an `org.neo4j.graphdb.Node`. It
      also converts Java arrays to lists, because embedded Neo4j returns
      list properties as arrays.
-   - Map the embedded exceptions to the exception types of `Graph`.
+   - Change the embedded exceptions to `GraphException`.
 3. Replace the three `neo4j-*` configuration keys with one key for the
    database directory.
-4. The test base class opens a database in a temporary directory. The
-   tests then need no server and no `STRUCTURE_TEST_*` variables.
-
-A `GraphNode` holds copies of the labels and the properties. Thus it
-stays valid after the transaction closes. An embedded `Node` does not.
+4. The test base class opens a database in a temporary directory. Then
+   the tests do not use a server or the `STRUCTURE_TEST_*` variables.
 
 The worker threads from Phase 2 can stay. For Neo4j Browser or
 `cypher-shell`, enable the Bolt connector of the embedded database on
 localhost.
 
-Embedded Community Edition is GPLv3, as Neo4j 2.1.8 is today. The
-driver is Apache 2.0.
+Embedded Community Edition is GPLv3, as Neo4j 2.1.8 is now. The driver
+is Apache 2.0.
 
-## Open decisions
+## Open questions
 
 - `Entity.toGraph()` in `Instances.putNode` adds schema and constraint
   validation that the SDN path did not do. Accept this, or write a
   minimal path for `putNode`.
-- Specialize does not update the `type:` labels today. Decide if the
-  new code adds the labels of the new type. If it does, it must also
-  remove the `type:` labels of the old type. A call to `toGraph()` after
-  the new `INSTANCE_OF` does both (see "Writes"), but it also checks
-  the data against the schema of the new type.
+- Specialize does not update the `type:` labels now. Decide if the new
+  code adds the labels of the new type. If it does, it must also remove
+  the `type:` labels of the old type. A call to `toGraph()` after the
+  new `INSTANCE_OF` does the two changes (see "Writes"). But it also
+  checks the data against the schema of the new type.
 - `BundleLoader.createIndices` has no callers. Call it after
   `loadTypes` in its own transaction, or delete it (see "Unused and
   unfinished code").
 
 ## Unused and unfinished code
 
-The code below has no callers. The git history shows that it is not a
-left-over of a refactor. Keep it until a decision is made. If the
-migration keeps it, port it with the rest.
+The code below has no callers. The git history shows that a refactor
+did not cause this. Keep it until there is a decision. If the migration
+keeps it, port it with the rest.
 
-Never used since it was written:
+Never used:
 
 - `NaiveSorter.getNode`, `arrayContains` and `setGlobPattern` (#211).
   They do not use the graph.
@@ -725,30 +761,29 @@ Never used since it was written:
   `getNext` and `getPrevious` read `@RelatedTo` fields. If they stay,
   they become query getters (see "Mapping").
 - `Controller.getStateMap` and `Controller.Builder.addExitCodeToState`
-  (#55). The state map works through the bundles and
-  `getStateMapAsJson`. `getStateMap` reads the `data` map, so it
+  (#55). The state map operates through the bundles and
+  `getStateMapAsJson`. `getStateMap` reads the `data` map, thus it
   changes with `DynamicProperties`.
 
 Unfinished or disconnected features:
 
-- `BundleLoader.createIndices` (#266). It creates an index for the
-  identity properties of each type. Merge 67ed554b removed its call
-  from `Application` by accident, one day after #266. It runs
-  `CREATE INDEX ON :Label(prop)` through the SDN query executor.
-  Neo4j 5 does not accept this syntax. Use
-  `CREATE INDEX IF NOT EXISTS FOR (n:Label) ON (n.prop)`.
-- Protocol matching: `Type.findCommonProtocols`, `implementsProtocol`,
-  `addImplementedProtocol` and `TypeRepository.getCommonProtocols`
-  (#62, STR-35). The ssh, smb, samba and winexe bundles have
-  `IMPLEMENTS` relationships, but no code calls this logic. If it
-  stays, it adds one `@Query` and one `@RelatedTo` field to port.
+- `BundleLoader.createIndices` (#266). It makes an index for the
+  identity properties of each type. Merge 67ed554b, one day after #266,
+  removed its call from `Application` in error. Its `CREATE INDEX`
+  statement is in `createEntityIndex` (see "Queries").
+- Protocol compatibility: `Type.findCommonProtocols`,
+  `implementsProtocol`, `addImplementedProtocol` and
+  `TypeRepository.getCommonProtocols` (#62, STR-35). The ssh, smb,
+  samba and winexe bundles have `IMPLEMENTS` relationships, but no code
+  calls this logic. If it stays, it adds one `@Query` and one
+  `@RelatedTo` field to port.
 - `InstrumentManager`, with `Context.setInstrumentsLoaded`,
   `getInstrumentsLoaded` and the `reloadInstruments` and
-  `removeInstruments` handlers (#16). The loading code is commented
-  out. It does not use the graph.
+  `removeInstruments` handlers (#16). The load code is commented out.
+  It does not use the graph.
 - `EntityDeserializer.dataSchema`. Only a validation that is commented
   out uses it.
-- `Actor`, an empty `Instance` subclass since #68. No type, bundle or
+- `Actor`, an empty `Instance` subclass from #68. No type, bundle or
   code uses it. It is in the SDN base package. Delete it, or keep it
   as a plain class without mapping.
 - Bus handlers that no client sends: `InstanceActor.getComponentsByType`
@@ -757,22 +792,22 @@ Unfinished or disconnected features:
 
 ## Risks
 
-- Neo4j can remove Bolt 4.4. Then you need Java 17 and driver 5.x or
-  6.x. The API change is small: `readTransaction` and
-  `writeTransaction` become `executeRead` and `executeWrite`. Embedded
-  mode is also possible then (see "Embedded mode later").
+- Neo4j can remove Bolt 4.4 (see "Server facts"). Then Java 17 and
+  driver 5.x or 6.x are necessary. The API change is small:
+  `readTransaction` and `writeTransaction` become `executeRead` and
+  `executeWrite`. Embedded mode is then also possible.
 - Each lazy getter is a network round trip. Constraint validation and
   instrument lookup call many getters.
-- The code can depend on SDN behaviour that is not written down, for
-  example the order of returned sets. The baseline tests find some of
-  this. The checks in Phase 4 find more.
-- Long `executeBlocking` work in an actor, for example
+- The code can use SDN operation that is not documented, for example
+  the sequence of returned sets. The baseline tests find some of this,
+  and the checks in Phase 4 find more.
+- Long `executeBlocking` code in an actor, for example
   `InstanceActor.runController`, uses a thread of the actor pool. If
   actors wait for threads, make the pool larger with
   `setWorkerPoolSize`.
 - With `ordered = false`, the handlers and the blocking code of an
-  actor can run at the same time. A new field that both use must be
+  actor can run at the same time. A new field that the two use must be
   safe for more than one thread.
 - `StructureManager`, `InstrumentManager` and `EntityManager` did not
-  run from 2018 until the fix of the package rename. They can contain
-  other old defects.
+  run from 2018 until the correction of the package rename. They can
+  contain other old errors.
