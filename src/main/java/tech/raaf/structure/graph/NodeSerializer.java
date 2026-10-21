@@ -14,6 +14,7 @@ import tech.raaf.structure.graph.repositories.NodeRepository;
 import tech.raaf.structure.helper.LambdaHelper;
 
 import java.io.IOException;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -72,12 +73,8 @@ public class NodeSerializer extends StdSerializer<Node> {
         Stream<Relationship> outgoingRelationshipsStream = StreamSupport.stream(
                 graphNode.getRelationships(Direction.OUTGOING).spliterator(), false);
         Map<RelationshipType, List<Relationship>> relMap = outgoingRelationshipsStream
-                .sorted((a, b) -> {
-                    // sort this stream based on the graphId of the relationships (ascending)
-                    // we do this to ensure the serialized relationship order is the same as in the source of the entity
-                    return a.getId() < b.getId() ? -1 :
-                            a.getId() > b.getId() ? 1 : 0;
-                })
+                // sort by peer uuid, so that the output is the same each time
+                .sorted(Comparator.comparing(rel -> (String) rel.getEndNode().getProperty("uuid")))
                 .collect(Collectors.groupingBy(Relationship::getType));
 
         relMap.entrySet().stream()

@@ -24,9 +24,9 @@ import java.util.TreeMap;
 import static org.junit.Assert.assertEquals;
 
 /**
- * Checks the stored format of some nodes from the bundles. MIGRATION.md
- * requires that this format does not change. The test ignores the SDN
- * artifacts that the migration removes: the "_" labels and "__type__".
+ * Checks the stored format of some nodes from the bundles. This format
+ * must not change. The test ignores the SDN artifacts: the "_" labels
+ * and "__type__".
  */
 public class StoreFormatTest extends TypeSchemaTest {
 
