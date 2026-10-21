@@ -101,6 +101,7 @@
         <spring-test.version>4.1.9.RELEASE</spring-test.version>
 
         <!-- Maven plugin versions -->
+        <maven.toolchains.plugin.version>3.2.0</maven.toolchains.plugin.version>
         <maven.compiler.plugin.version>3.3</maven.compiler.plugin.version>
         <maven.shade.plugin.version>2.4.3</maven.shade.plugin.version>
         <maven.resources.plugin.version>3.0.1</maven.resources.plugin.version>
@@ -344,6 +345,27 @@
         </testResources>
 
         <plugins>
+            <!-- Build and test with the JDK from ~/.m2/toolchains.xml -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-toolchains-plugin</artifactId>
+                <version>${maven.toolchains.plugin.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>toolchain</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <toolchains>
+                        <jdk>
+                            <version>${java.source-target.version}</version>
+                        </jdk>
+                    </toolchains>
+                </configuration>
+            </plugin>
+
             <!-- Compiler setup -->
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
