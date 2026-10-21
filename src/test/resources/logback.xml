@@ -21,7 +21,6 @@
 	</root>
 
     <logger name="ch.qos" level="WARN"/>
-    <logger name="com.sun.jersey" level="WARN"/>
     <logger name="io.netty" level="WARN"/>
     <!-- <logger name="io.vertx" level="WARN"/> -->
     <logger name="org.eclipse" level="WARN"/>
