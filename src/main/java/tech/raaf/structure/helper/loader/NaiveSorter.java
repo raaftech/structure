@@ -93,6 +93,16 @@ public class NaiveSorter {
         return node;
     }
 
+    private ObjectNode putPath(ObjectNode node, Path path) {
+        if (node.has(META)) {
+            ((ObjectNode) node.get(META)).put(PATH, path.toString());
+        } else {
+            node.putObject(META).put(PATH, path.toString());
+        }
+
+        return node;
+    }
+
     public enum ChecksumAlgorithm { MD5, SHA1 }
     private static Map<String, List<String>> checksumPropertyFilter = ImmutableMap.of(
             META, ImmutableList.of("checksum", "bundle", "path"),
@@ -357,12 +367,12 @@ public class NaiveSorter {
                         final String entityChecksum = calculateChecksum(injectFileReferences(token, jsonFilePath), ChecksumAlgorithm.SHA1);
                         checksumToFiles.put(entityChecksum, jsonFilePath);
                         checksumToUuid.put(entityChecksum, token.get(META).get(UUID).asText());
-                        unsorted.add(putBundleName(putChecksum((ObjectNode) token, entityChecksum), fromBundle));
+                        unsorted.add(putPath(putBundleName(putChecksum((ObjectNode) token, entityChecksum), fromBundle), jsonFilePath));
                     }
                 } else { // single token
                     final String entityChecksum = calculateChecksum(injectFileReferences(jsonFile, jsonFilePath), ChecksumAlgorithm.SHA1);
                     checksumToFiles.put(entityChecksum, jsonFilePath);
-                    unsorted.add(putBundleName(putChecksum((ObjectNode) jsonFile, entityChecksum), fromBundle));
+                    unsorted.add(putPath(putBundleName(putChecksum((ObjectNode) jsonFile, entityChecksum), fromBundle), jsonFilePath));
                 }
             }
         } catch (IOException e) {

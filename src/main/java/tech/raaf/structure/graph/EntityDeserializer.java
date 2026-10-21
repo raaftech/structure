@@ -55,7 +55,6 @@ public class EntityDeserializer extends StdDeserializer<Entity> {
     private JsonNode relationsJson;
     private JsonNode dataSchema;
 
-    private File path;
     private String checksum;
 
     private Set<Triple<String, String, Set<String>>> relations;
@@ -179,17 +178,11 @@ public class EntityDeserializer extends StdDeserializer<Entity> {
                 entity.setBundle("core");
             }
 
-            /* Handle path within meta if existent, else construct. */
+            /* Handle path within meta if existent. The bundle loader injects it. */
             if (metaJson.has("path")) {
-                path = pathHelper(new File(metaJson.get("path").asText()));
-                log.debug("Setting path from JSON data to \"{}\"", path.toString());
-                entity.setPath(path.toString());
-            } else {
-                // this situation should not occur usually, because the entityloader will inject the file paths
-                path = pathHelper(new File(name.toLowerCase() + "."+
-                        (isInstance ? "instance" : "type") + ".json"));
-                log.debug("Constructed path from name and type as \"{}\"", path.toString());
-                entity.setPath(path.toString());
+                final String path = metaJson.get("path").asText();
+                log.debug("Setting path from JSON data to \"{}\"", path);
+                entity.setPath(path);
             }
 
             /* Handle checksum within meta if existent, else create. */
