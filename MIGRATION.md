@@ -205,7 +205,7 @@ public final class Graph {
             node.labels().forEach(labels::add);
             return new GraphNode(labels, node.asMap());
         }
-        if (value instanceof Entity || value instanceof Path) {
+        if (value instanceof Relationship || value instanceof Path) {
             throw new IllegalArgumentException("Return nodes or values only");
         }
         if (value instanceof List) {
@@ -291,7 +291,15 @@ Unsafe mode no longer starts a web console or a remote shell.
 
 ### Writes
 
-Use one write path for nodes. Change `Entity.persist` to:
+Use one write path for nodes. `Entity.persist` first reads the current
+state, if the node exists:
+
+```cypher
+MATCH (n:Node {uuid: $uuid})
+RETURN labels(n) AS labels, keys(n) AS keys
+```
+
+Then it writes the properties:
 
 ```cypher
 MERGE (n:Node {uuid: $uuid})
@@ -299,13 +307,21 @@ ON CREATE SET n.created = timestamp()
 SET n += $props
 ```
 
-Then set the labels with a second statement in the same transaction.
-Make the label list from escaped names.
+Add each key from the read that is not in `$props` to `$props` with
+the value `null`, except `created` and the `kv-*` keys. `SET n += $props`
+removes the keys with a `null` value. Today `persist` never removes a
+property. Thus a key that an update or a changed bundle removes stays on
+the node, and the next read returns it. The `update` handler sends the
+full entity and its checksum, so the old keys are a defect.
 
-`SET n += $props` keeps the properties that are not in `$props`. This
-is the same as today. Property values must be primitives, strings or
-lists. Convert `JsonNode` values to strings, as `JsonNodeWriter` does
-today.
+Then replace the labels with a second statement in the same
+transaction: `REMOVE` the labels from the read that are not in the new
+list, and `SET` the new list. This includes the `type:` labels. Today
+`persist` removes all labels and `persistTypeLabels` adds them again.
+Make the label lists from escaped names.
+
+Property values must be primitives, strings or lists. Convert
+`JsonNode` values to strings, as `JsonNodeWriter` does today.
 
 Change `persistRelations` to one `MERGE` for each relationship:
 
@@ -487,6 +503,15 @@ threads:
 - Change the `/schemas/:schema` route to
   `blockingHandler(schemaManager::getSchema, false)`. The handler
   queries the graph.
+- Pass `ordered = false` to `executeBlocking` at 3 sites:
+  `InstanceActor.runController` and the `selfDiscovery` and reinit
+  handlers of `StructureManager`. On a worker context, ordered blocking
+  code and the message handlers use one task queue. Thus an ordered call
+  stops all messages to the verticle until it ends. A controller run can
+  take minutes. With `false`, the blocking code runs on a different
+  thread of the pool, at the same time as the handlers. This is safe
+  now: the blocking code uses only fields that `start()` sets and the
+  repositories, which have no state.
 
 A worker verticle handles one message at a time. Two handler calls can
 run on different threads of the pool, but never at the same time. Each
@@ -678,7 +703,10 @@ driver is Apache 2.0.
   validation that the SDN path did not do. Accept this, or write a
   minimal path for `putNode`.
 - Specialize does not update the `type:` labels today. Decide if the
-  new code adds the labels of the new type.
+  new code adds the labels of the new type. If it does, it must also
+  remove the `type:` labels of the old type. A call to `toGraph()` after
+  the new `INSTANCE_OF` does both (see "Writes"), but it also checks
+  the data against the schema of the new type.
 - `BundleLoader.createIndices` has no callers. Call it after
   `loadTypes` in its own transaction, or delete it (see "Unused and
   unfinished code").
@@ -742,6 +770,9 @@ Unfinished or disconnected features:
   `InstanceActor.runController`, uses a thread of the actor pool. If
   actors wait for threads, make the pool larger with
   `setWorkerPoolSize`.
+- With `ordered = false`, the handlers and the blocking code of an
+  actor can run at the same time. A new field that both use must be
+  safe for more than one thread.
 - `StructureManager`, `InstrumentManager` and `EntityManager` did not
   run from 2018 until the fix of the package rename. They can contain
   other old defects.
