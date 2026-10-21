@@ -8,7 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tech.raaf.structure.annotations.SchemaPath;
 import tech.raaf.structure.base.Configuration;
-import tech.raaf.structure.base.Context;
 import tech.raaf.structure.graph.Graph;
 import tech.raaf.structure.bus.GenericActor;
 import tech.raaf.structure.graph.Entity;
@@ -141,14 +140,24 @@ public class TaskManager extends GenericActor {
     // The default timeout for a job.
     private final static long defaultJobTime = 3000L;
 
+    // The maximum number of jobs that run at the same time.
+    private final int maxConcurrentProcesses;
+
     /**
-     * The constructor creates a periodic task that polls the queue.
+     * Create a TaskManager. Its start method creates a periodic task that polls the queue.
      * @param maxConcurrentProcesses Size of the job pool.
      */
     public TaskManager(int maxConcurrentProcesses) {
         log.info("Constructing TaskManager with a job pool of size " + maxConcurrentProcesses + ".");
+        this.maxConcurrentProcesses = maxConcurrentProcesses;
+    }
+
+    // Start the timer here, so that it runs on the context of this verticle
+    @Override
+    public void start() {
+        super.start();
         // The timer that takes jobs from the queue and runs them.
-        Context.getVertx().setPeriodic(100L, id -> {
+        vertx.setPeriodic(100L, id -> {
             // Do we have room to run some jobs?
             if (runningJobs.size() < maxConcurrentProcesses) {
                 // For every free spot in the running jobs list...

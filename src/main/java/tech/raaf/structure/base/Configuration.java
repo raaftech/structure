@@ -26,7 +26,7 @@ public enum Configuration {
 	INSTANCE;
 
 	private static final Logger log = LoggerFactory.getLogger(Configuration.class);
-    private static final String BUNDLESEPARATOR = ",";
+	private static final String BUNDLESEPARATOR = ",";
 	private static final Path fallbackBundlePath = Paths.get("src/main/resources/bundles");
 
 	private static boolean initialized = false; 
@@ -38,6 +38,8 @@ public enum Configuration {
 	private static Set<Path> bundlePaths = new HashSet<>();
 	private static ConfigurationProxy configurationProxy;
 	static final String bundlePathProperty = "bundles";
+	// The worker pool of the actors that use the graph
+	public static final String ACTOR_POOL = "structure-actors";
 
 	public static boolean isTraceModeOn() {
 		return traceMode;

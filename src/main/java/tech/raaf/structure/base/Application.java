@@ -56,10 +56,12 @@ import java.nio.file.Paths;
 import java.security.KeyStore;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 /**
@@ -256,7 +258,8 @@ public class Application {
         // Setup routes
         router.route("/eventbus/*").handler(sockJsHandler);
         router.route("/bundles/*").handler(StaticHandler.create().setWebRoot("src/main/resources/bundles/"));
-        router.route("/schemas/:schema").handler(schemaManager::getSchema);
+        // The schema handler queries the graph, so it must not run on the event loop
+        router.route("/schemas/:schema").blockingHandler(schemaManager::getSchema, false);
         router.route("/*").handler(StaticHandler.create().setWebRoot("src/main/resources/webroot/"));
 
 
@@ -278,17 +281,18 @@ public class Application {
         Configuration.init(configuration);
 
         // Deploy our main actors. Structure stops if one of them fails.
-        deploy(vertx, new StructureManager(), new DeploymentOptions());
+        // The actors that use the graph run on worker threads.
+        deploy(vertx, new StructureManager(), new DeploymentOptions().setWorker(true).setWorkerPoolName(Configuration.ACTOR_POOL));
         deploy(vertx, new InstrumentManager(), new DeploymentOptions().setWorker(false));
-        deploy(vertx, new EntityManager(), new DeploymentOptions());
+        deploy(vertx, new EntityManager(), new DeploymentOptions().setWorker(true).setWorkerPoolName(Configuration.ACTOR_POOL));
 
         final int jobpool = Integer.parseInt(configuration.getConfiguration("jobpool").orElse("50"));
-        deploy(vertx, new TaskManager(jobpool), new DeploymentOptions());
+        deploy(vertx, new TaskManager(jobpool), new DeploymentOptions().setWorker(true).setWorkerPoolName(Configuration.ACTOR_POOL));
 
         // Deploy interfaces to the NodeRepositories.
-        deploy(vertx, new Nodes(Context.getNodeRepository()), new DeploymentOptions());
-        deploy(vertx, new Instances(Context.getInstanceRepository()), new DeploymentOptions());
-        deploy(vertx, new Types(Context.getTypeRepository()), new DeploymentOptions());
+        deploy(vertx, new Nodes(Context.getNodeRepository()), new DeploymentOptions().setWorker(true).setWorkerPoolName(Configuration.ACTOR_POOL));
+        deploy(vertx, new Instances(Context.getInstanceRepository()), new DeploymentOptions().setWorker(true).setWorkerPoolName(Configuration.ACTOR_POOL));
+        deploy(vertx, new Types(Context.getTypeRepository()), new DeploymentOptions().setWorker(true).setWorkerPoolName(Configuration.ACTOR_POOL));
 
         // Open up the http server and send a friendly message telling the user we're done.
         Configuration.setWebHost(configuration.getConfiguration("webHost").orElse("localhost"));
@@ -334,10 +338,12 @@ public class Application {
         // Deploy TypeActors.
         log.debug("Deploying TypeActors..");
         try {
-            CompletableFuture.allOf(Graph.transaction(() ->
-                    StreamSupport.stream(typeRepository.findAll().spliterator(), false)
-                            .map(TypeActor::deploy)
-                            .toArray(CompletableFuture<?>[]::new))).get();
+            final List<CompletableFuture<String>> deployments = Graph.transaction(() -> {
+                return StreamSupport.stream(typeRepository.findAll().spliterator(), false)
+                        .map(TypeActor::deploy)
+                        .collect(Collectors.toList());
+            });
+            CompletableFuture.allOf(deployments.toArray(new CompletableFuture<?>[0])).get();
         } catch (Exception e) {
             handleUnrecoverableLoadingError(e, 1, "Unrecoverable error while deploying TypeActors. Shutting down...");
         }
@@ -345,10 +351,12 @@ public class Application {
         // Deploy InstanceActors.
         log.debug("Deploying InstanceActors..");
         try {
-            CompletableFuture.allOf(Graph.transaction(() ->
-                    StreamSupport.stream(instanceRepository.findAll().spliterator(), false)
-                            .map(InstanceActor::deploy)
-                            .toArray(CompletableFuture<?>[]::new))).get();
+            final List<CompletableFuture<String>> deployments = Graph.transaction(() -> {
+                return StreamSupport.stream(instanceRepository.findAll().spliterator(), false)
+                        .map(InstanceActor::deploy)
+                        .collect(Collectors.toList());
+            });
+            CompletableFuture.allOf(deployments.toArray(new CompletableFuture<?>[0])).get();
         } catch (Exception e) {
             handleUnrecoverableLoadingError(e, 1, "Unrecoverable error while deploying InstanceActors. Shutting down...");
         }

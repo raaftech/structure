@@ -63,6 +63,7 @@ public final class Graph {
         return result;
     }
 
+    // Eclipse picks this overload for () -> expr; use { return expr; }
     public static void transaction(Runnable work) {
         transaction(() -> {
             work.run();

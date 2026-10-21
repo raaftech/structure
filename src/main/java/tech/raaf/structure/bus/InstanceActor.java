@@ -324,6 +324,7 @@ public class InstanceActor extends NodeActor<Instance> {
     private UUID runController(Controller controller, UUID taskId, JsonNode args) throws InstrumentExecutionException {
         final ObjectNode arguments = (ObjectNode) args.get("arguments");
         // Check if there is a timeAllocation field specified. If so, get the value there. Else the default value is used.
+        // Unordered, so that a long run does not stop the message handlers
         vertx.executeBlocking(future -> {
             if (args.has("timeAllocated")) {
                 getNode().runController(controller, arguments, taskId.toString(), args.get("timeAllocated").asLong());
@@ -331,7 +332,7 @@ public class InstanceActor extends NodeActor<Instance> {
                 getNode().runController(controller, arguments, taskId.toString());
             }
             future.complete();
-        }, res -> {
+        }, false, res -> {
             if (res.failed()) {
                 if (Configuration.isTraceModeOn()) {
                     res.cause().printStackTrace();

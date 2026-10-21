@@ -4,12 +4,14 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import io.vertx.core.DeploymentOptions;
 import org.neo4j.graphdb.Direction;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.neo4j.annotation.Fetch;
 import org.springframework.data.neo4j.annotation.NodeEntity;
 import org.springframework.data.neo4j.annotation.RelatedTo;
 import org.springframework.data.neo4j.fieldaccess.DynamicPropertiesContainer;
+import tech.raaf.structure.base.Configuration;
 import tech.raaf.structure.base.Context;
 import tech.raaf.structure.bus.InstanceActor;
 import tech.raaf.structure.graph.repositories.InstanceRepository;
@@ -177,7 +179,9 @@ public abstract class Instance extends Node {
             }
             INSTANCE_REPOSITORY.save(this);
             if (newNode && Context.getVertx() != null) {
-                Graph.afterCommit(() -> Context.getVertx().deployVerticle(new InstanceActor(this)));
+                final DeploymentOptions options = new DeploymentOptions()
+                        .setWorker(true).setWorkerPoolName(Configuration.ACTOR_POOL);
+                Graph.afterCommit(() -> Context.getVertx().deployVerticle(new InstanceActor(this), options));
             }
         });
 

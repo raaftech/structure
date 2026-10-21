@@ -84,10 +84,11 @@ public class StructureManager extends GenericActor {
                 log.info("Purged database");
 
                 // Then reinit
+                // Unordered, so that the reinit does not stop the message handlers
                 vertx.executeBlocking(future -> {
                     Application.init(vertx);
                     future.complete();
-                }, res -> {
+                }, false, res -> {
                     publishStatus("structureReinitialization", mapper.createObjectNode().put("data", "finished"));
                     log.info("Successfully reinitialized the database");
                 });
@@ -113,11 +114,13 @@ public class StructureManager extends GenericActor {
                 final ObjectNode result = mapper.createObjectNode();
                 final String token = args.get("token").asText();
 
+                // Unordered, so that the discovery does not stop the message handlers
                 vertx.executeBlocking(
                         future -> {
                             selfDiscovery(token);
                             future.complete();
                 },
+                        false,
                         resultHandler -> {
                             if (resultHandler.failed()) {
                                 resultHandler.cause().printStackTrace();

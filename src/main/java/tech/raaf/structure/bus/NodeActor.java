@@ -2,11 +2,13 @@ package tech.raaf.structure.bus;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Verticle;
 import io.vertx.core.eventbus.MessageConsumer;
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import tech.raaf.structure.base.Configuration;
 import tech.raaf.structure.base.Context;
 import tech.raaf.structure.graph.Graph;
 import tech.raaf.structure.graph.Entity;
@@ -90,8 +92,9 @@ public abstract class NodeActor<T extends Node> extends GenericActor {
         return new MessageHandler() {
             @Override
             public JsonNode exec(JsonNode request) {
-                return Graph.transaction(() ->
-                        response(request, mapper.createObjectNode().set("data", mapper.valueToTree(getNode()))));
+                return Graph.transaction(() -> {
+                    return response(request, mapper.createObjectNode().set("data", mapper.valueToTree(getNode())));
+                });
             }
 
             @Override
@@ -160,7 +163,9 @@ public abstract class NodeActor<T extends Node> extends GenericActor {
         final Verticle verticle = node instanceof Type ?
                 new TypeActor((Type) node) :
                 new InstanceActor((Instance) node);
-        Context.getVertx().deployVerticle(verticle, ar -> {
+        final DeploymentOptions options = new DeploymentOptions()
+                .setWorker(true).setWorkerPoolName(Configuration.ACTOR_POOL);
+        Context.getVertx().deployVerticle(verticle, options, ar -> {
             if (ar.succeeded()) {
                 deploymentId.complete(ar.result());
             } else {
