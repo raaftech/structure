@@ -1,18 +1,18 @@
 {
-    "$schema": "http://json-schema.org/draft-04/schema#",
-    "description": "Schema for the Instance repository's putNode method.",
-    "type": "object",
-    "additionalProperties": true,
-    "properties": {
-        "node":  {
-            "$ref": "../../common.schema.json#/definitions/uuid"
-        },
-        "name": {
-            "type": "string"
-        },
-        "desc": {
-			"type": "string"
-        }
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Schema for the Instance repository's putNode method.",
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "node": {
+      "$ref": "../../common.schema.json#/definitions/uuid"
     },
-    "required": [ "node", "name", "desc" ]
+    "name": {
+      "type": "string"
+    },
+    "desc": {
+      "type": "string"
+    }
+  },
+  "required": ["node", "name", "desc"]
 }

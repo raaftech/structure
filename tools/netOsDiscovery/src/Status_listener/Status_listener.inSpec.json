@@ -1,15 +1,15 @@
 {
-    "type": "object",
-    "required": ["event","source"],
-    "properties": {
-        "source": {
-            "type": "string",
-            "pattern": "TaskManager"
-        },
-        "event": {
-            "type": "string",
-            "pattern": "taskFinished"
-        }
+  "type": "object",
+  "required": ["event", "source"],
+  "properties": {
+    "source": {
+      "type": "string",
+      "pattern": "TaskManager"
     },
-    "additionalProperties": true
+    "event": {
+      "type": "string",
+      "pattern": "taskFinished"
+    }
+  },
+  "additionalProperties": true
 }

@@ -1,22 +1,20 @@
 {
-    "name": "Scm",
-    "desc": "The Windows Service Control Manager.",
-    "meta": {
-        "uuid": "198435e1-cf1d-4d0a-9fb8-c760b5e8ac2b",
-        "relations": {
-            "ISA": {
-                "direction": "outgoing",
-                "to": [
-                    "c3008eec-b454-4ef6-bf7e-0bd92c13d3c3"
-                ]
-            }
-        }
-    },
-    "file": {
-        "dataSchema": {
-            "encoding": "text",
-            "format": "json",
-            "path": "scm.schema.json"
-        }
+  "name": "Scm",
+  "desc": "The Windows Service Control Manager.",
+  "meta": {
+    "uuid": "198435e1-cf1d-4d0a-9fb8-c760b5e8ac2b",
+    "relations": {
+      "ISA": {
+        "direction": "outgoing",
+        "to": ["c3008eec-b454-4ef6-bf7e-0bd92c13d3c3"]
+      }
     }
+  },
+  "file": {
+    "dataSchema": {
+      "encoding": "text",
+      "format": "json",
+      "path": "scm.schema.json"
+    }
+  }
 }

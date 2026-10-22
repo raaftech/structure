@@ -13,15 +13,13 @@ import tech.raaf.structure.helper.classification.tree.InternalNode;
  */
 public class BranchNodeJson extends BranchNode<JsonNode> {
 
-    public BranchNodeJson(InternalNode<JsonNode> parent, String key, String value) {
-        super(parent,
-                json -> {
-                    if (json.has(key)) {
-                        return json.get(key).asText().matches(value);
-                    } else {
-                        return false;
-                    }
-                });
-    }
-
+  public BranchNodeJson(InternalNode<JsonNode> parent, String key, String value) {
+    super(parent, json -> {
+      if (json.has(key)) {
+        return json.get(key).asText().matches(value);
+      } else {
+        return false;
+      }
+    });
+  }
 }

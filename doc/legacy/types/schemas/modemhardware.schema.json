@@ -17,9 +17,5 @@
       "$ref": "type.schema.json#/properties/desc"
     }
   },
-  "required": [
-    "name",
-    "desc",
-    "baudRate"
-  ]
+  "required": ["name", "desc", "baudRate"]
 }

@@ -14,43 +14,42 @@ import java.util.function.Function;
  */
 public class LeafNode<T> extends Node<T> {
 
-    private InternalNode<T> parent;
-    private Function<Set<T>, Set<T>> selection;
-    private Terminal success;
-    private Terminal failure;
+  private InternalNode<T> parent;
+  private Function<Set<T>, Set<T>> selection;
+  private Terminal success;
+  private Terminal failure;
 
-    /**
-     * Our constructor.
-     * @param parent The parent of this LeafNode.
-     * @param success Terminal used when the selection produced results.
-     * @param failure Terminal used when the selection produces null or an empty set.
-     * @param selection A function implementing the selection.
-     */
-    @SuppressWarnings("unchecked")
-    public LeafNode(InternalNode<T> parent, Terminal success, Terminal failure, Function<Set<T>, Set<T>> selection) {
-        this.parent = parent;
-        this.selection = selection;
-        this.success = success;
-        this.failure = failure;
-        parent.addChild(this);
+  /**
+   * Our constructor.
+   * @param parent The parent of this LeafNode.
+   * @param success Terminal used when the selection produced results.
+   * @param failure Terminal used when the selection produces null or an empty set.
+   * @param selection A function implementing the selection.
+   */
+  @SuppressWarnings("unchecked")
+  public LeafNode(InternalNode<T> parent, Terminal success, Terminal failure, Function<Set<T>, Set<T>> selection) {
+    this.parent = parent;
+    this.selection = selection;
+    this.success = success;
+    this.failure = failure;
+    parent.addChild(this);
+  }
+
+  /**
+   * Apply our selection to data passed to us.
+   * If this results in null or an empty set, pass the original input to
+   * the failure terminal, else pass the selection to the success terminal.
+   * @param input
+   */
+  @Override
+  @SuppressWarnings("unchecked")
+  public void consumeInput(Set<T> input) {
+    Set<T> selectedSet = selection.apply(input);
+
+    if (selectedSet == null || selectedSet.size() == 0) {
+      failure.consumeInput(input);
+    } else {
+      success.consumeInput(selectedSet);
     }
-
-    /**
-     * Apply our selection to data passed to us.
-     * If this results in null or an empty set, pass the original input to
-     * the failure terminal, else pass the selection to the success terminal.
-     * @param input
-     */
-    @Override
-    @SuppressWarnings("unchecked")
-    public void consumeInput(Set<T> input) {
-        Set<T> selectedSet = selection.apply(input);
-
-        if (selectedSet == null || selectedSet.size() == 0) {
-            failure.consumeInput(input);
-        } else {
-            success.consumeInput(selectedSet);
-        }
-    }
-
+  }
 }

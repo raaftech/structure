@@ -18,9 +18,5 @@
       "description": "Is this capability for internal use?"
     }
   },
-  "required": [
-    "name",
-    "desc",
-    "system"
-  ]
+  "required": ["name", "desc", "system"]
 }

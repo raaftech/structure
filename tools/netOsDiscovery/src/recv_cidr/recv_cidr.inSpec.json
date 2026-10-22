@@ -1,25 +1,25 @@
 {
-	"type": "object",
-	"properties": {
-		"cidr": {
-			"type": "string",
-			"pattern": "^([0-9]{1,3}\\.){3}[0-9]{1,3}(\/([0-9]|[1-2][0-9]|3[0-2]))?$"
-		},
-		"api": {
-			"type": "object",
-			"required": ["server","port"],
-			"additionalProperties": false,
-			"properties": {
-				"server": {"type": "string"},
-				"port": {"type": "integer"},
-				"email": {"type": "string"},
-				"pwd": {"type": "string"}
-			}
-		},
-		"nmap": {
-			"type": "string"
-		}
-	},
-	"required": ["cidr", "api"],
-	"additionalProperties": false
+  "type": "object",
+  "properties": {
+    "cidr": {
+      "type": "string",
+      "pattern": "^([0-9]{1,3}\\.){3}[0-9]{1,3}(\/([0-9]|[1-2][0-9]|3[0-2]))?$"
+    },
+    "api": {
+      "type": "object",
+      "required": ["server", "port"],
+      "additionalProperties": false,
+      "properties": {
+        "server": { "type": "string" },
+        "port": { "type": "integer" },
+        "email": { "type": "string" },
+        "pwd": { "type": "string" }
+      }
+    },
+    "nmap": {
+      "type": "string"
+    }
+  },
+  "required": ["cidr", "api"],
+  "additionalProperties": false
 }

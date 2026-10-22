@@ -59,9 +59,7 @@
       "patternProperties": {
         "^[a-zA-Z0-9]+$": {
           "additionalProperties": false,
-          "required": [
-            "value"
-          ],
+          "required": ["value"],
           "properties": {
             "canBeUserSupplied": {
               "type": "boolean",
@@ -87,14 +85,10 @@
               },
               "oneOf": [
                 {
-                  "required": [
-                    "option"
-                  ]
+                  "required": ["option"]
                 },
                 {
-                  "required": [
-                    "index"
-                  ]
+                  "required": ["index"]
                 }
               ]
             },
@@ -110,10 +104,7 @@
                   "pattern": "^\\w+(\\.\\w+)+|string$"
                 },
                 "matches": {
-                  "type": [
-                    "object",
-                    "string"
-                  ]
+                  "type": ["object", "string"]
                 },
                 "defaultValue": {
                   "type": "string"
@@ -129,29 +120,18 @@
                   "default": "fail"
                 }
               },
-              "required": [
-                "from",
-                "type"
-              ]
+              "required": ["from", "type"]
             }
           }
         }
       }
     }
   },
-  "required": [
-    "name",
-    "desc",
-    "subjectIsLocal"
-  ],
+  "required": ["name", "desc", "subjectIsLocal"],
   "definitions": {
     "state": {
       "type": "object",
-      "required": [
-        "code",
-        "interpretation",
-        "description"
-      ],
+      "required": ["code", "interpretation", "description"],
       "properties": {
         "code": {
           "type": "integer",

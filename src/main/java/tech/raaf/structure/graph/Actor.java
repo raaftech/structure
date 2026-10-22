@@ -1,6 +1,3 @@
 package tech.raaf.structure.graph;
 
-public class Actor extends Instance {
-
-
-}
+public class Actor extends Instance {}

@@ -1,30 +1,28 @@
 {
-    "name": "Result",
-    "desc": "A result from an operation.",
-    "meta": {
-        "uuid": "f3498c02-58c6-486b-87c6-9d54607fdb12",
-        "relations": {
-            "ISA": {
-                "direction": "outgoing",
-                "to": [
-                    "b1bc963a-19cc-4518-aecb-a35d028c49e3"
-                ]
-            }
-        },
-        "constraints": {
-            "NEXT_RESULT": [
-                {
-                    "cardinality": "OPTIONAL_TO_ONE",
-                    "to": "f3498c02-58c6-486b-87c6-9d54607fdb12"
-                }
-            ]
-        }
+  "name": "Result",
+  "desc": "A result from an operation.",
+  "meta": {
+    "uuid": "f3498c02-58c6-486b-87c6-9d54607fdb12",
+    "relations": {
+      "ISA": {
+        "direction": "outgoing",
+        "to": ["b1bc963a-19cc-4518-aecb-a35d028c49e3"]
+      }
     },
-    "file": {
-        "dataSchema": {
-            "encoding": "text",
-            "format": "json",
-            "path": "../schema/result.schema.json"
+    "constraints": {
+      "NEXT_RESULT": [
+        {
+          "cardinality": "OPTIONAL_TO_ONE",
+          "to": "f3498c02-58c6-486b-87c6-9d54607fdb12"
         }
+      ]
     }
+  },
+  "file": {
+    "dataSchema": {
+      "encoding": "text",
+      "format": "json",
+      "path": "../schema/result.schema.json"
+    }
+  }
 }

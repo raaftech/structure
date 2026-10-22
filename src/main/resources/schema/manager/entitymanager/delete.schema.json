@@ -14,5 +14,5 @@
       "type": "boolean"
     }
   },
-  "required": [ "labels", "uuid" ]
+  "required": ["labels", "uuid"]
 }

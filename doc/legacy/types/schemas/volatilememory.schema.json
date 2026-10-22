@@ -20,10 +20,5 @@
       "description": "Memory speed in Hz."
     }
   },
-  "required": [
-    "name",
-    "desc",
-    "memSizeKb",
-    "memClockHz"
-  ]
+  "required": ["name", "desc", "memSizeKb", "memClockHz"]
 }

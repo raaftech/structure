@@ -1,5 +1,3 @@
 package tech.raaf.structure.graph;
 
-public class Parser extends Instrument {
-
-}
+public class Parser extends Instrument {}

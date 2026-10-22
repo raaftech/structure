@@ -21,10 +21,5 @@
       "description": "A media access control address."
     }
   },
-  "required": [
-    "name",
-    "desc",
-    "macAddr",
-    "speedKbit"
-  ]
+  "required": ["name", "desc", "macAddr", "speedKbit"]
 }

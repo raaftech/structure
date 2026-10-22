@@ -1,8 +1,8 @@
 {
-    "name": "list",
-    "synopsis": {
-        "msgh": "list",
-        "args": {},
-    },
-    "description": "The list handler lists Actors on the bus by their address(es)."
+  "name": "list",
+  "synopsis": {
+    "msgh": "list",
+    "args": {}
+  },
+  "description": "The list handler lists Actors on the bus by their address(es)."
 }

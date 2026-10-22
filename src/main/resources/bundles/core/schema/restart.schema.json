@@ -16,9 +16,5 @@
       "$ref": "capability.schema.json#/properties/signature"
     }
   },
-  "required": [
-    "name",
-    "desc",
-    "system"
-  ]
+  "required": ["name", "desc", "system"]
 }

@@ -1,22 +1,22 @@
 {
-    "type": "object",
-    "required": ["currentIp","entity"],
-    "properties": {
-        "currentIp": {
-            "type": "object",
-            "required": ["hostname","ip","openPorts"],
-            "properties": {
-                "hostname": {},
-                "ip": {"type": "string"},
-                "openPorts": {
-                    "type": "array"
-                }
-            },
-            "additionalProperties": false
-        },
-        "entity": {
-            "type": "object"
+  "type": "object",
+  "required": ["currentIp", "entity"],
+  "properties": {
+    "currentIp": {
+      "type": "object",
+      "required": ["hostname", "ip", "openPorts"],
+      "properties": {
+        "hostname": {},
+        "ip": { "type": "string" },
+        "openPorts": {
+          "type": "array"
         }
+      },
+      "additionalProperties": false
     },
-    "additionalProperties": false
+    "entity": {
+      "type": "object"
+    }
+  },
+  "additionalProperties": false
 }

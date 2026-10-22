@@ -14,9 +14,5 @@
       "$ref": "type.schema.json#/properties/desc"
     }
   },
-  "required": [
-    "name",
-    "desc",
-    "emailAddress"
-  ]
+  "required": ["name", "desc", "emailAddress"]
 }

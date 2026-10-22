@@ -12,5 +12,5 @@
       "minimum": 0
     }
   },
-  "required": [ "taskId", "jobId" ]
+  "required": ["taskId", "jobId"]
 }

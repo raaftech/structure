@@ -13,9 +13,5 @@
       "$ref": "type.schema.json#/properties/desc"
     }
   },
-  "required": [
-    "name",
-    "desc",
-    "cidr"
-  ]
+  "required": ["name", "desc", "cidr"]
 }

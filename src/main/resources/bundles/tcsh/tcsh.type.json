@@ -1,22 +1,20 @@
 {
-    "name": "Tcsh",
-    "desc": "The TENEX C Shell.",
-    "meta": {
-        "uuid": "bb3e3458-391d-4c75-8857-4a08be7e5905",
-        "relations": {
-            "ISA": {
-                "direction": "outgoing",
-                "to": [
-                    "86168e4a-8c99-43c9-ad95-c8f88d96ac32"
-                ]
-            }
-        }
-    },
-    "file": {
-        "dataSchema": {
-            "encoding": "text",
-            "format": "json",
-            "path": "tcsh.schema.json"
-        }
+  "name": "Tcsh",
+  "desc": "The TENEX C Shell.",
+  "meta": {
+    "uuid": "bb3e3458-391d-4c75-8857-4a08be7e5905",
+    "relations": {
+      "ISA": {
+        "direction": "outgoing",
+        "to": ["86168e4a-8c99-43c9-ad95-c8f88d96ac32"]
+      }
     }
+  },
+  "file": {
+    "dataSchema": {
+      "encoding": "text",
+      "format": "json",
+      "path": "tcsh.schema.json"
+    }
+  }
 }

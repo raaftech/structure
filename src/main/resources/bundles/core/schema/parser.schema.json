@@ -16,9 +16,5 @@
       "$ref": "instrument.schema.json#/properties/filePath"
     }
   },
-  "required": [
-    "name",
-    "desc",
-    "filePath"
-  ]
+  "required": ["name", "desc", "filePath"]
 }

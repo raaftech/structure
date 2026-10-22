@@ -5,12 +5,11 @@ package tech.raaf.structure.exceptions;
  */
 public class TypeUnknownException extends RuntimeException {
 
-    /**
-     * The default constructor.
-     * @param message The message to show.
-     */
-    public TypeUnknownException(String message) {
-        super(message);
-    }
-
+  /**
+   * The default constructor.
+   * @param message The message to show.
+   */
+  public TypeUnknownException(String message) {
+    super(message);
+  }
 }

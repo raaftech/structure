@@ -18,10 +18,5 @@
       "$ref": "type.schema.json#/properties/desc"
     }
   },
-  "required": [
-    "name",
-    "desc",
-    "addr",
-    "port"
-  ]
+  "required": ["name", "desc", "addr", "port"]
 }

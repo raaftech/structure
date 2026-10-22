@@ -1,22 +1,20 @@
- {
-    "name": "Systemd",
-    "desc": "Systemd Service Manager.",
-    "meta": {
-      "uuid": "0c189a0e-6b78-4177-832d-5d9b35b8a6af",
-      "relations": {
-        "ISA": {
-          "direction": "outgoing",
-          "to": [
-            "c3008eec-b454-4ef6-bf7e-0bd92c13d3c3"
-          ]
-        }
-      }
-    },
-    "file": {
-      "dataSchema": {
-        "encoding": "text",
-        "format": "json",
-        "path": "systemd.schema.json"
+{
+  "name": "Systemd",
+  "desc": "Systemd Service Manager.",
+  "meta": {
+    "uuid": "0c189a0e-6b78-4177-832d-5d9b35b8a6af",
+    "relations": {
+      "ISA": {
+        "direction": "outgoing",
+        "to": ["c3008eec-b454-4ef6-bf7e-0bd92c13d3c3"]
       }
     }
+  },
+  "file": {
+    "dataSchema": {
+      "encoding": "text",
+      "format": "json",
+      "path": "systemd.schema.json"
+    }
   }
+}

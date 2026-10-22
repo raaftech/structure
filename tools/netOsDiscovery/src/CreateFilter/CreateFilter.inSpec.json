@@ -1,21 +1,21 @@
 {
-    "type": "object",
-    "required": ["ips", "db"],
-    "properties": {
-        "ips": {
-            "type": "array",
-            "minItems": 1,
-            "items": {
-                "type": "object"
-            }
-        },
-        "db": {
-            "type": "array",
-            "minItems": 1,
-            "items": {
-                "type": "object"
-            }
-        }
+  "type": "object",
+  "required": ["ips", "db"],
+  "properties": {
+    "ips": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object"
+      }
     },
-    "additionalProperties": true
+    "db": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object"
+      }
+    }
+  },
+  "additionalProperties": true
 }

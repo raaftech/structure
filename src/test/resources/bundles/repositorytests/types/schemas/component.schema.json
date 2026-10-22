@@ -13,8 +13,5 @@
       "$ref": "type.schema.json#/properties/desc"
     }
   },
-  "required": [
-    "name",
-    "desc"
-  ]
+  "required": ["name", "desc"]
 }

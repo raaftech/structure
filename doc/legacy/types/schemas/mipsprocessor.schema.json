@@ -28,13 +28,5 @@
       "$ref": "type.schema.json#/properties/desc"
     }
   },
-  "required": [
-    "name",
-    "desc",
-    "cacheSizeKb",
-    "cpuCoreCount",
-    "cpuClockHz",
-    "smtEnabled",
-    "bits"
-  ]
+  "required": ["name", "desc", "cacheSizeKb", "cpuCoreCount", "cpuClockHz", "smtEnabled", "bits"]
 }

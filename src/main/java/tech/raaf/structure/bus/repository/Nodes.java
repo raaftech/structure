@@ -5,8 +5,7 @@ import tech.raaf.structure.graph.repositories.NodeRepository;
 
 public class Nodes extends Repository<Node> {
 
-    public Nodes(NodeRepository repository) {
-        super(repository);
-    }
-
+  public Nodes(NodeRepository repository) {
+    super(repository);
+  }
 }

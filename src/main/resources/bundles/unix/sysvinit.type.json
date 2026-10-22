@@ -1,22 +1,20 @@
- {
-    "name": "SysvInit",
-    "desc": "SysV Init Service Manager.",
-    "meta": {
-      "uuid": "608bfaf1-9edc-4609-b5cd-56d8aeff8174",
-      "relations": {
-        "ISA": {
-          "direction": "outgoing",
-          "to": [
-            "c3008eec-b454-4ef6-bf7e-0bd92c13d3c3"
-          ]
-        }
-      }
-    },
-    "file": {
-      "dataSchema": {
-        "encoding": "text",
-        "format": "json",
-        "path": "sysvinit.schema.json"
+{
+  "name": "SysvInit",
+  "desc": "SysV Init Service Manager.",
+  "meta": {
+    "uuid": "608bfaf1-9edc-4609-b5cd-56d8aeff8174",
+    "relations": {
+      "ISA": {
+        "direction": "outgoing",
+        "to": ["c3008eec-b454-4ef6-bf7e-0bd92c13d3c3"]
       }
     }
+  },
+  "file": {
+    "dataSchema": {
+      "encoding": "text",
+      "format": "json",
+      "path": "sysvinit.schema.json"
+    }
   }
+}

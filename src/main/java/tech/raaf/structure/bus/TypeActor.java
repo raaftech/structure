@@ -8,98 +8,100 @@ import tech.raaf.structure.graph.Type;
 /**
  * Give a description of TypeActor here.
  *
- * @author Boy van Duuren <boy.van.duuren@raaftech.com>
+ * @author Boy van Duuren <boy@raaf.tech>
  * @since 2015-08-12
  */
 public class TypeActor extends NodeActor<Type> {
 
-    private String hierarchyPath;
+  private String hierarchyPath;
 
-    public TypeActor(Type node) {
-        super(node);
-        this.hierarchyPath = node.getHierarchyPath();
-    }
+  public TypeActor(Type node) {
+    super(node);
+    this.hierarchyPath = node.getHierarchyPath();
+  }
 
-    @Override
-    protected String getSecondaryAddress() {
-        return hierarchyPath;
-    }
+  @Override
+  protected String getSecondaryAddress() {
+    return hierarchyPath;
+  }
 
-    // Next methods are exposed on the eventbus
+  // Next methods are exposed on the eventbus
 
-    // Get the hierarchical path of the Type
-    public MessageHandler getPath() {
-        return new MessageHandler() {
-            @Override
-            public JsonNode exec(JsonNode request) {
-                ObjectNode result = mapper.createObjectNode();
-                result.put("data", hierarchyPath);
-                return response(request, result);
-            }
+  // Get the hierarchical path of the Type
+  public MessageHandler getPath() {
+    return new MessageHandler() {
+      @Override
+      public JsonNode exec(JsonNode request) {
+        ObjectNode result = mapper.createObjectNode();
+        result.put("data", hierarchyPath);
+        return response(request, result);
+      }
 
-            @Override
-            public JsonNode help(JsonNode request) {
-                return null;
-            }
-        };
-    }
+      @Override
+      public JsonNode help(JsonNode request) {
+        return null;
+      }
+    };
+  }
 
-    // Get the Type's schema
-    public MessageHandler getSchema() {
-        return new MessageHandler() {
-            @Override
-            public JsonNode exec(JsonNode request) {
-                ObjectNode result = mapper.createObjectNode();
-                result.set("data", getNode().getSchema().getAsObjectNode());
-                return response(request, result);
-            }
+  // Get the Type's schema
+  public MessageHandler getSchema() {
+    return new MessageHandler() {
+      @Override
+      public JsonNode exec(JsonNode request) {
+        ObjectNode result = mapper.createObjectNode();
+        result.set("data", getNode().getSchema().getAsObjectNode());
+        return response(request, result);
+      }
 
-            @Override
-            public JsonNode help(JsonNode request) {
-                return null;
-            }
-        };
-    }
+      @Override
+      public JsonNode help(JsonNode request) {
+        return null;
+      }
+    };
+  }
 
-    // Get an array of all the types one level below
-    @SuppressWarnings("unused")
-    public MessageHandler getSubtypes() {
-        return new MessageHandler() {
-            @Override
-            public JsonNode exec(JsonNode request) {
-                ObjectNode result = mapper.createObjectNode();
-                ArrayNode data = result.putArray("data");
+  // Get an array of all the types one level below
+  @SuppressWarnings("unused")
+  public MessageHandler getSubtypes() {
+    return new MessageHandler() {
+      @Override
+      public JsonNode exec(JsonNode request) {
+        ObjectNode result = mapper.createObjectNode();
+        ArrayNode data = result.putArray("data");
 
-                getNode().getChildIsaSet().stream()
-                        .forEach(child -> data.add(child.toJson()));
+        getNode()
+          .getChildIsaSet()
+          .stream()
+          .forEach(child -> data.add(child.toJson()));
 
-                return response(request, result);
-            }
+        return response(request, result);
+      }
 
-            @Override
-            public JsonNode help(JsonNode request) {
-                return null;
-            }
-        };
-    }
+      @Override
+      public JsonNode help(JsonNode request) {
+        return null;
+      }
+    };
+  }
 
-     // Get all the incoming and outgoing constraints for a type.
-    public MessageHandler getConstraints() {
-        return new MessageHandler() {
-            @Override
-            public JsonNode exec(JsonNode request) {
-                ObjectNode result = mapper.createObjectNode();
-                ObjectNode data = result.putObject("data");
-                data.set("incoming", mapper.valueToTree(getNode().getIncomingConstraints()));
-                data.set("outgoing", mapper.valueToTree(getNode().getOutgoingConstraints()));
+  // Get all the incoming and outgoing constraints for a type.
+  public MessageHandler getConstraints() {
+    return new MessageHandler() {
+      @Override
+      public JsonNode exec(JsonNode request) {
+        ObjectNode result = mapper.createObjectNode();
+        ObjectNode data = result.putObject("data");
+        data.set("incoming", mapper.valueToTree(getNode().getIncomingConstraints()));
+        data.set("outgoing", mapper.valueToTree(getNode().getOutgoingConstraints()));
 
-                return response(request, result);
-            }
+        return response(request, result);
+      }
 
-            @Override
-            public JsonNode help(JsonNode request) {
-                return null;
-            }
-        };
-    }
+      @Override
+      public JsonNode help(JsonNode request) {
+        return null;
+      }
+    };
+  }
 }

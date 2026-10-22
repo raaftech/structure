@@ -7,18 +7,17 @@ import java.util.Set;
  * added to a group.
  */
 public interface Groupable {
+  /**
+   * Returns the groups this groupable is member of.
+   * @return See description.
+   */
+  Set<Group> getMemberOf();
 
-    /**
-     * Returns the groups this groupable is member of.
-     * @return See description.
-     */
-     Set<Group> getMemberOf();
-
-    /**
-     * Add a groupable entity to a group.
-     * @param group The group to be added to.
-     */
-    default void addToGroup(Group group) {
-        group.addMember(this);
-    }
+  /**
+   * Add a groupable entity to a group.
+   * @param group The group to be added to.
+   */
+  default void addToGroup(Group group) {
+    group.addMember(this);
+  }
 }

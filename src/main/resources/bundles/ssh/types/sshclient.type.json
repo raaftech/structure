@@ -1,29 +1,24 @@
 {
-    "name": "SshClient",
-    "desc": "A generic SSH Client.",
-    "meta": {
-        "uuid": "dce98afb-1a42-48af-8b4b-ab9d08b3b5dc",
-        "relations": {
-            "ISA": {
-                "direction": "outgoing",
-                "to": [
-                    "8f371b1b-52a3-4409-be70-9cd947bec8dd"
-                ]
-            },
-            "IMPLEMENTS": {
-                "direction": "outgoing",
-                "to": [
-                    "000b0fd3-a121-4194-a441-0857abca490d",
-                    "07b23795-140f-4a72-9c86-e1d3b86cd149"
-                ]
-            }
-        }
-    },
-    "file": {
-        "dataSchema": {
-            "encoding": "text",
-            "format": "json",
-            "path": "../schema/sshclient.schema.json"
-        }
+  "name": "SshClient",
+  "desc": "A generic SSH Client.",
+  "meta": {
+    "uuid": "dce98afb-1a42-48af-8b4b-ab9d08b3b5dc",
+    "relations": {
+      "ISA": {
+        "direction": "outgoing",
+        "to": ["8f371b1b-52a3-4409-be70-9cd947bec8dd"]
+      },
+      "IMPLEMENTS": {
+        "direction": "outgoing",
+        "to": ["000b0fd3-a121-4194-a441-0857abca490d", "07b23795-140f-4a72-9c86-e1d3b86cd149"]
+      }
     }
+  },
+  "file": {
+    "dataSchema": {
+      "encoding": "text",
+      "format": "json",
+      "path": "../schema/sshclient.schema.json"
+    }
+  }
 }

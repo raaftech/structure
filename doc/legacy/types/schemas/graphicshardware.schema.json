@@ -73,8 +73,5 @@
       "description": "Texture fillrate, in texels per second."
     }
   },
-  "required": [
-    "name",
-    "desc"
-  ]
+  "required": ["name", "desc"]
 }

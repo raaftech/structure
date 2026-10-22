@@ -10,13 +10,12 @@ import java.util.Set;
  */
 public class RootNode<T> extends InternalNode<T> {
 
-    /**
-     * Pass input to RootNode's children.
-     * @param input Data entities contained in a set.
-     */
-    @Override
-    public void consumeInput(Set<T> input) {
-        children.parallelStream().forEach(node -> node.consumeInput(input));
-    }
-
+  /**
+   * Pass input to RootNode's children.
+   * @param input Data entities contained in a set.
+   */
+  @Override
+  public void consumeInput(Set<T> input) {
+    children.parallelStream().forEach(node -> node.consumeInput(input));
+  }
 }

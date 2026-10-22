@@ -9,6 +9,5 @@ import java.util.Set;
  */
 public abstract class Node<T> {
 
-    public abstract void consumeInput(Set<T> input);
-
+  public abstract void consumeInput(Set<T> input);
 }

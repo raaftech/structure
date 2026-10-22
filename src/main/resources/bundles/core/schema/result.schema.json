@@ -53,11 +53,5 @@
       "type": "string"
     }
   },
-  "required": [
-    "name",
-    "desc",
-    "task",
-    "process",
-    "dateCreated"
-  ]
+  "required": ["name", "desc", "task", "process", "dateCreated"]
 }

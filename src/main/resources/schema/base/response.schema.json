@@ -1,25 +1,25 @@
 {
-    "$schema": "http://json-schema.org/draft-04/schema#",
-    "description": "Schema for Structure responses to requests.",
-    "type": "object",
-    "required": [ "request", "result"],
-    "properties": {
-        "request": {
-            "type": "object"
-        },
-        "result": {
-            "type": "object"
-        },
-        "stats": {
-            "type": "object"
-        },
-        "error": {
-            "type": "object"
-        },
-        "exit": {
-            "type": "integer",
-            "minimum": 0,
-            "maximum": 255
-        }
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Schema for Structure responses to requests.",
+  "type": "object",
+  "required": ["request", "result"],
+  "properties": {
+    "request": {
+      "type": "object"
+    },
+    "result": {
+      "type": "object"
+    },
+    "stats": {
+      "type": "object"
+    },
+    "error": {
+      "type": "object"
+    },
+    "exit": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 255
     }
+  }
 }

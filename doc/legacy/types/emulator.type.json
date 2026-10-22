@@ -8,9 +8,7 @@
       "relations": {
         "ISA": {
           "direction": "outgoing",
-          "uuids": [
-            "59aeae81-9741-4986-b9c2-931504cfc9e3"
-          ]
+          "uuids": ["59aeae81-9741-4986-b9c2-931504cfc9e3"]
         }
       }
     },
@@ -34,9 +32,7 @@
       "relations": {
         "ISA": {
           "direction": "outgoing",
-          "uuids": [
-            "59aeae81-9741-4986-b9c2-931504cfc9e3"
-          ]
+          "uuids": ["59aeae81-9741-4986-b9c2-931504cfc9e3"]
         }
       }
     },
@@ -60,9 +56,7 @@
       "relations": {
         "ISA": {
           "direction": "outgoing",
-          "uuids": [
-            "59aeae81-9741-4986-b9c2-931504cfc9e3"
-          ]
+          "uuids": ["59aeae81-9741-4986-b9c2-931504cfc9e3"]
         }
       }
     },

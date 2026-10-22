@@ -19,10 +19,5 @@
       "$ref": "type.schema.json#/properties/desc"
     }
   },
-  "required": [
-    "name",
-    "desc",
-    "addr",
-    "reachable"
-  ]
+  "required": ["name", "desc", "addr", "reachable"]
 }

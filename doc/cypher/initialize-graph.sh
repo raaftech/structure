@@ -16,54 +16,54 @@ echo "Deleting: UUID Constraint.."
 cypher-shell 'DROP CONSTRAINT ObjectUuid IF EXISTS'
 
 echo "Loading: OpenPCF Base Model.."
-cypher-shell < org.openpcf.model.base.cql
+cypher-shell <org.openpcf.model.base.cql
 
 echo "Loading: OpenPCF CloudSystems.."
-cypher-shell < org.openpcf.model.cloudsystems.cql
+cypher-shell <org.openpcf.model.cloudsystems.cql
 
 echo "Loading: OpenPCF Emulators.."
-cypher-shell < org.openpcf.model.emulators.cql
+cypher-shell <org.openpcf.model.emulators.cql
 
 echo "Loading: OpenPCF Hypervisors.."
-cypher-shell < org.openpcf.model.hypervisors.cql
+cypher-shell <org.openpcf.model.hypervisors.cql
 
 echo "Loading: OpenPCF Interpreters.."
-cypher-shell < org.openpcf.model.interpreters.cql
+cypher-shell <org.openpcf.model.interpreters.cql
 
 echo "Loading: OpenPCF Operating Systems.."
-cypher-shell < org.openpcf.model.operatingsystems.cql
+cypher-shell <org.openpcf.model.operatingsystems.cql
 
 echo "Loading: OpenPCF Package Managers.."
-cypher-shell < org.openpcf.model.packagemanagers.cql
+cypher-shell <org.openpcf.model.packagemanagers.cql
 
 echo "Loading: OpenPCF Service Managers.."
-cypher-shell < org.openpcf.model.servicemanagers.cql
+cypher-shell <org.openpcf.model.servicemanagers.cql
 
 echo "Loading: OpenPCF Services.."
-cypher-shell < org.openpcf.model.services.cql
+cypher-shell <org.openpcf.model.services.cql
 
 echo "Loading: RAAF CloudSystems.."
-cypher-shell < com.raaftech.model.cloudsystems.cql
+cypher-shell <com.raaftech.model.cloudsystems.cql
 
 echo "Loading: RAAF Emulators.."
-cypher-shell < com.raaftech.model.emulators.cql
+cypher-shell <com.raaftech.model.emulators.cql
 
 echo "Loading: RAAF Hypervisors.."
-cypher-shell < com.raaftech.model.hypervisors.cql
+cypher-shell <com.raaftech.model.hypervisors.cql
 
 echo "Loading: RAAF Interpreters.."
-cypher-shell < com.raaftech.model.interpreters.cql
+cypher-shell <com.raaftech.model.interpreters.cql
 
 echo "Loading: RAAF Operating Systems.."
-cypher-shell < com.raaftech.model.operatingsystems.cql
+cypher-shell <com.raaftech.model.operatingsystems.cql
 
 echo "Loading: RAAF Package Managers.."
-cypher-shell < com.raaftech.model.packagemanagers.cql
+cypher-shell <com.raaftech.model.packagemanagers.cql
 
 echo "Loading: RAAF Service Managers.."
-cypher-shell < com.raaftech.model.servicemanagers.cql
+cypher-shell <com.raaftech.model.servicemanagers.cql
 
 echo "Loading: RAAF Services.."
-cypher-shell < com.raaftech.model.services.cql
+cypher-shell <com.raaftech.model.services.cql
 
 echo -e "\nDone!"

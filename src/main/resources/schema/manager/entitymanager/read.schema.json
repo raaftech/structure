@@ -17,5 +17,5 @@
       "type": "boolean"
     }
   },
-  "required": [ "labels", "start" ]
+  "required": ["labels", "start"]
 }

@@ -11,5 +11,5 @@
       "type": "array"
     }
   },
-  "required": [ "entities" ]
+  "required": ["entities"]
 }

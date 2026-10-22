@@ -1,12 +1,12 @@
 {
-	"instanceUuid": "c846ac82-e943-4fcb-adca-92de7a8a3ad3",
-	"typeName": "Python2x",
-	"token": "HQUPKnFph2Cp1PxANcBEWq0W5EifeKEysGjmCWFVadX4LBXdu0kvMJFkuawNLjIh",
-	"data": {
-		"name": "Python2xInterpreter",
-		"desc": "Python2x interpreter",
-		"ver": "1",
-		"shortName": "python",
-		"longName": "python"
-	}
+  "instanceUuid": "c846ac82-e943-4fcb-adca-92de7a8a3ad3",
+  "typeName": "Python2x",
+  "token": "HQUPKnFph2Cp1PxANcBEWq0W5EifeKEysGjmCWFVadX4LBXdu0kvMJFkuawNLjIh",
+  "data": {
+    "name": "Python2xInterpreter",
+    "desc": "Python2x interpreter",
+    "ver": "1",
+    "shortName": "python",
+    "longName": "python"
+  }
 }

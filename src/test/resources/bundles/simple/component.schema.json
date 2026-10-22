@@ -12,8 +12,5 @@
       "description": "The description of this node."
     }
   },
-  "required": [
-    "name",
-    "desc"
-  ]
+  "required": ["name", "desc"]
 }

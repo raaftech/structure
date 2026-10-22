@@ -8,9 +8,7 @@
       "relations": {
         "ISA": {
           "direction": "outgoing",
-          "uuids": [
-            "e2b8b9ee-b66f-4252-8fba-4fb172f741bc"
-          ]
+          "uuids": ["e2b8b9ee-b66f-4252-8fba-4fb172f741bc"]
         }
       }
     },
@@ -34,9 +32,7 @@
       "relations": {
         "ISA": {
           "direction": "outgoing",
-          "uuids": [
-            "e2b8b9ee-b66f-4252-8fba-4fb172f741bc"
-          ]
+          "uuids": ["e2b8b9ee-b66f-4252-8fba-4fb172f741bc"]
         }
       }
     },
@@ -60,9 +56,7 @@
       "relations": {
         "ISA": {
           "direction": "outgoing",
-          "uuids": [
-            "e2b8b9ee-b66f-4252-8fba-4fb172f741bc"
-          ]
+          "uuids": ["e2b8b9ee-b66f-4252-8fba-4fb172f741bc"]
         }
       }
     },
@@ -86,9 +80,7 @@
       "relations": {
         "ISA": {
           "direction": "outgoing",
-          "uuids": [
-            "e2b8b9ee-b66f-4252-8fba-4fb172f741bc"
-          ]
+          "uuids": ["e2b8b9ee-b66f-4252-8fba-4fb172f741bc"]
         }
       }
     },
@@ -112,9 +104,7 @@
       "relations": {
         "ISA": {
           "direction": "outgoing",
-          "uuids": [
-            "e2b8b9ee-b66f-4252-8fba-4fb172f741bc"
-          ]
+          "uuids": ["e2b8b9ee-b66f-4252-8fba-4fb172f741bc"]
         }
       }
     },
@@ -138,9 +128,7 @@
       "relations": {
         "ISA": {
           "direction": "outgoing",
-          "uuids": [
-            "e2b8b9ee-b66f-4252-8fba-4fb172f741bc"
-          ]
+          "uuids": ["e2b8b9ee-b66f-4252-8fba-4fb172f741bc"]
         }
       }
     },
@@ -164,9 +152,7 @@
       "relations": {
         "ISA": {
           "direction": "outgoing",
-          "uuids": [
-            "e2b8b9ee-b66f-4252-8fba-4fb172f741bc"
-          ]
+          "uuids": ["e2b8b9ee-b66f-4252-8fba-4fb172f741bc"]
         }
       }
     },
@@ -190,9 +176,7 @@
       "relations": {
         "ISA": {
           "direction": "outgoing",
-          "uuids": [
-            "e2b8b9ee-b66f-4252-8fba-4fb172f741bc"
-          ]
+          "uuids": ["e2b8b9ee-b66f-4252-8fba-4fb172f741bc"]
         }
       }
     },
@@ -216,9 +200,7 @@
       "relations": {
         "ISA": {
           "direction": "outgoing",
-          "uuids": [
-            "e2b8b9ee-b66f-4252-8fba-4fb172f741bc"
-          ]
+          "uuids": ["e2b8b9ee-b66f-4252-8fba-4fb172f741bc"]
         }
       }
     },
@@ -242,9 +224,7 @@
       "relations": {
         "ISA": {
           "direction": "outgoing",
-          "uuids": [
-            "e2b8b9ee-b66f-4252-8fba-4fb172f741bc"
-          ]
+          "uuids": ["e2b8b9ee-b66f-4252-8fba-4fb172f741bc"]
         }
       }
     },
@@ -268,9 +248,7 @@
       "relations": {
         "ISA": {
           "direction": "outgoing",
-          "uuids": [
-            "e2b8b9ee-b66f-4252-8fba-4fb172f741bc"
-          ]
+          "uuids": ["e2b8b9ee-b66f-4252-8fba-4fb172f741bc"]
         }
       }
     },

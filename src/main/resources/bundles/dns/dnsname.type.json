@@ -1,23 +1,21 @@
 {
-    "name": "DnsName",
-    "desc": "Either a short name or a fully-qualified domain name.",
-    "meta": {
-        "uuid": "99c0da37-3599-418d-8ecc-de36d37ae9f4",
-        "relations": {
-            "ISA": {
-                "direction": "outgoing",
-                "to": [
-                    "3f4a43f7-b558-4bf0-ba7e-66b99cffaf16"
-                ]
-            }
-        },
-        "identity": "dnsname"
+  "name": "DnsName",
+  "desc": "Either a short name or a fully-qualified domain name.",
+  "meta": {
+    "uuid": "99c0da37-3599-418d-8ecc-de36d37ae9f4",
+    "relations": {
+      "ISA": {
+        "direction": "outgoing",
+        "to": ["3f4a43f7-b558-4bf0-ba7e-66b99cffaf16"]
+      }
     },
-    "file": {
-        "dataSchema": {
-            "encoding": "text",
-            "format": "json",
-            "path": "dnsname.schema.json"
-        }
+    "identity": "dnsname"
+  },
+  "file": {
+    "dataSchema": {
+      "encoding": "text",
+      "format": "json",
+      "path": "dnsname.schema.json"
     }
+  }
 }

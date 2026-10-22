@@ -1,9 +1,9 @@
 {
-    "type": "object",
-    "required": ["entity","specialized"],
-    "properties": {
-        "entity": {"type": "string"},
-        "specialized": {}
-    },
-    "additionalProperties": false
+  "type": "object",
+  "required": ["entity", "specialized"],
+  "properties": {
+    "entity": { "type": "string" },
+    "specialized": {}
+  },
+  "additionalProperties": false
 }

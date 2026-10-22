@@ -27,7 +27,7 @@
       "additionalProperties": false
     }
   },
-  "required": [ "capability" ],
+  "required": ["capability"],
   "definitions": {
     "uuid": {
       "type": "string",

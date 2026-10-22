@@ -1,48 +1,55 @@
-          <h1 class="page-header">Dashboard</h1>
+<h1 class="page-header">Dashboard</h1>
 
-          <div class="row placeholders">
-            <div class="col-xs-6 col-sm-3 placeholder">
-              <span data-glyphid="é" class="strglyph strglyph-byid sg-lg"></span>
-              <h4>Types</h4>
-              <span class="text-muted">All types</span>
-            </div>
-            <div class="col-xs-6 col-sm-3 placeholder">
-              <span data-glyphid="_" class="strglyph strglyph-byid sg-lg"></span>
-              <h4>Groups</h4>
-              <span class="text-muted">All groups</span>
-            </div>
-            <div class="col-xs-6 col-sm-3 placeholder">
-              <span data-glyphid="æ" class="strglyph strglyph-byid sg-lg"></span>
-              <h4>Teams</h4>
-              <span class="text-muted">All teams</span>
-            </div>
-            <div class="col-xs-6 col-sm-3 placeholder">
-              <span data-glyphid="B" class="strglyph strglyph-byid sg-lg"></span>
-              <h4>Config</h4>
-              <span class="text-muted">All settings</span>
-            </div>
-          </div>
-          
-          <h2 class="sub-header">Instances</h2>
-          <div ng-controller="instanceCtrl" ng-init="getNInstances(10)">
-            <div>
-              <div class="table-responsive">
-                <table class="table list">
-                  <thead>
-                    <tr>
-                      <th class="col-xs-4"><span ng-class="open"></span>Title</th>
-                      <th class="col-xs-4">Description</th>
-                      <th class="col-xs-4">UUID</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr ng-repeat="instance in instances" ng-mouseenter="menuButton = true" ng-mouseleave="menuButton = false">
-                      <td>{{instance.name}}</td>
-                      <td>{{instance.desc}}</td>
-                      <td><list-item-hover-menu ng-show="menuButton" uuid="{{instance.uuid}}" nodetype="{{instance._nodeType}}"></list-item-hover-menu>{{instance.uuid}}</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
+<div class="row placeholders">
+  <div class="col-xs-6 col-sm-3 placeholder">
+    <span data-glyphid="é" class="strglyph strglyph-byid sg-lg"></span>
+    <h4>Types</h4>
+    <span class="text-muted">All types</span>
+  </div>
+  <div class="col-xs-6 col-sm-3 placeholder">
+    <span data-glyphid="_" class="strglyph strglyph-byid sg-lg"></span>
+    <h4>Groups</h4>
+    <span class="text-muted">All groups</span>
+  </div>
+  <div class="col-xs-6 col-sm-3 placeholder">
+    <span data-glyphid="æ" class="strglyph strglyph-byid sg-lg"></span>
+    <h4>Teams</h4>
+    <span class="text-muted">All teams</span>
+  </div>
+  <div class="col-xs-6 col-sm-3 placeholder">
+    <span data-glyphid="B" class="strglyph strglyph-byid sg-lg"></span>
+    <h4>Config</h4>
+    <span class="text-muted">All settings</span>
+  </div>
+</div>
+
+<h2 class="sub-header">Instances</h2>
+<div ng-controller="instanceCtrl" ng-init="getNInstances(10)">
+  <div>
+    <div class="table-responsive">
+      <table class="table list">
+        <thead>
+          <tr>
+            <th class="col-xs-4"><span ng-class="open"></span>Title</th>
+            <th class="col-xs-4">Description</th>
+            <th class="col-xs-4">UUID</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="instance in instances" ng-mouseenter="menuButton = true" ng-mouseleave="menuButton = false">
+            <td>{{instance.name}}</td>
+            <td>{{instance.desc}}</td>
+            <td>
+              <list-item-hover-menu
+                ng-show="menuButton"
+                uuid="{{instance.uuid}}"
+                nodetype="{{instance._nodeType}}"
+              ></list-item-hover-menu
+              >{{instance.uuid}}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

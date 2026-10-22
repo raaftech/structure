@@ -22,11 +22,5 @@
       "description": "The full descriptive name of the Software."
     }
   },
-  "required": [
-    "name",
-    "desc",
-    "ver",
-    "shortName",
-    "longName"
-  ]
+  "required": ["name", "desc", "ver", "shortName", "longName"]
 }

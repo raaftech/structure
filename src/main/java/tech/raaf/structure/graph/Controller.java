@@ -1,9 +1,13 @@
 package tech.raaf.structure.graph;
 
+import static io.vertx.core.json.Json.mapper;
+
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.type.MapType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.google.common.io.Files;
+import java.io.IOException;
+import java.util.*;
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,314 +16,330 @@ import tech.raaf.structure.base.Context;
 import tech.raaf.structure.exceptions.ComponentBuilderException;
 import tech.raaf.structure.graph.repositories.TypeRepository;
 
-import java.io.IOException;
-import java.util.*;
-
-import static io.vertx.core.json.Json.mapper;
-
 public class Controller extends Instrument {
 
-    private static final String NAME = "name";
-    private static final String DESC = "desc";
-    private static final String UUID = "uuid";
-    private static final String FILELOCATION = "filePath";
-    private static final String SUBJECTLOCAL = "subjectIsLocal";
-    private static final String TEMPLATE = "template";
-    private static final String TEMPLATEFILE = "templateFile";
-    private static final String SCRIPTFILE = "script";
-    private static final String ARGUMENTS = "arguments";
-    private static final String EXTENSION = "extension";
-    private static final String RESULTPARSER = "resultParser";
-    private static final String WEIGHT = "weight";
-    private static final String INTERPRETER = "interpreter";
-    private static final String STATEMAP = "stateMap";
-    private static final String TIMEALLOCATED = "timeAllocated";
+  private static final String NAME = "name";
+  private static final String DESC = "desc";
+  private static final String UUID = "uuid";
+  private static final String FILELOCATION = "filePath";
+  private static final String SUBJECTLOCAL = "subjectIsLocal";
+  private static final String TEMPLATE = "template";
+  private static final String TEMPLATEFILE = "templateFile";
+  private static final String SCRIPTFILE = "script";
+  private static final String ARGUMENTS = "arguments";
+  private static final String EXTENSION = "extension";
+  private static final String RESULTPARSER = "resultParser";
+  private static final String WEIGHT = "weight";
+  private static final String INTERPRETER = "interpreter";
+  private static final String STATEMAP = "stateMap";
+  private static final String TIMEALLOCATED = "timeAllocated";
 
-    // The types of a new controller. A persisted controller reads them from the graph.
+  // The types of a new controller. A persisted controller reads them from the graph.
+  private Type capability;
+  private Set<Type> appliesTo;
+  private Type providedBy;
+
+  private static TypeRepository typeRepository = Context.getTypeRepository();
+
+  private static final Logger log = LoggerFactory.getLogger(Controller.class);
+
+  public static class Builder {
+
+    // required fields
     private Type capability;
     private Set<Type> appliesTo;
     private Type providedBy;
+    private Map<Integer, Result.State> exitCodeToState = new HashMap<>();
 
-    private static TypeRepository typeRepository = Context.getTypeRepository();
+    ObjectNode json = mapper.createObjectNode();
 
-    private static final Logger log = LoggerFactory.getLogger(Controller.class);
+    public Builder() {}
 
-    public static class Builder {
-        // required fields
-        private Type capability;
-        private Set<Type> appliesTo;
-        private Type providedBy;
-        private Map<Integer, Result.State> exitCodeToState = new HashMap<>();
-
-        ObjectNode json = mapper.createObjectNode();
-
-        public Builder() {}
-
-        // required setters
-        public Builder name(String name) {
-            json.put(NAME, name);
-            return this;
-        }
-        public Builder desc(String desc) {
-            json.put(DESC, desc);
-            return this;
-        }
-        public Builder capability(Type capability) {
-            this.capability = capability;
-            return this;
-        }
-        public Builder capability(String capabilityUuid) {
-            capability(typeRepository.findOneByName(capabilityUuid));
-            return this;
-        }
-        public Builder filePath(String filePath) {
-            json.put(FILELOCATION, filePath);
-            return this;
-        }
-        public Builder handles(Set<Type> handles) {
-            this.appliesTo = handles;
-            return this;
-        }
-        public Builder providedBy(Type providedBy) {
-            this.providedBy = providedBy;
-            return this;
-        }
-        public Builder providedBy(String providedByUuid) {
-            providedBy(typeRepository.findOneByName(providedByUuid));
-            return this;
-        }
-        public Builder subjectIsLocal(boolean subjectIsLocal) {
-            json.put(SUBJECTLOCAL, subjectIsLocal);
-            return this;
-        }
-        public Builder template(String template) {
-            json.put(TEMPLATE, template);
-            return this;
-        }
-        // optional setters
-        public Builder uuid(String uuid) {
-            json.put(UUID, uuid);
-            return this;
-        }
-        public Builder arguments(String arguments) {
-            json.put(ARGUMENTS, arguments);
-            return this;
-        }
-        public Builder extension(String extension) {
-            json.put(EXTENSION, extension);
-            return this;
-        }
-        public Builder parser(Parser parser) {
-            json.put(RESULTPARSER, parser.getUuid());
-            return this;
-        }
-        public Builder weight(int weight) {
-            json.put(WEIGHT, weight);
-            return this;
-        }
-        public Builder interpreter(Type interpreter) {
-            if (interpreter.isOfType("Interpreter")) {
-                json.put(INTERPRETER, interpreter.getName());
-                return this;
-            } else {
-                throw new IllegalArgumentException("Given type is not an interpreter.");
-            }
-        }
-        public Builder addExitCodeToState(int exitCode, Result.State state) {
-            Validate.inclusiveBetween(0, 255, exitCode);
-            Validate.notNull(state);
-            exitCodeToState.put(exitCode, state);
-            return this;
-        }
-
-        public Controller build() {
-            if (!json.has(NAME) || !json.has(DESC) || capability == null || !json.has(FILELOCATION)
-                    || appliesTo == null || providedBy == null || !json.has(SUBJECTLOCAL)) {
-                log.error("Error while building Controller instrument.");
-                throw new ComponentBuilderException("Not all required parameters were set.");
-            }
-            if (!exitCodeToState.isEmpty()) {
-                json.put(STATEMAP, mapper.valueToTree(exitCodeToState));
-            }
-            Controller controller =  new Controller(json);
-            controller.capability = capability;
-            controller.appliesTo = appliesTo;
-            controller.providedBy = providedBy;
-            return controller;
-        }
-
+    // required setters
+    public Builder name(String name) {
+      json.put(NAME, name);
+      return this;
     }
 
-    public Controller() {
-        // empty constructor for NodeMapper
+    public Builder desc(String desc) {
+      json.put(DESC, desc);
+      return this;
     }
 
-    private Controller(ObjectNode json) {
-        super(json, typeRepository.findOneByName("Controller"));
+    public Builder capability(Type capability) {
+      this.capability = capability;
+      return this;
     }
 
-    // Set the capability of a Controller instance
-    public void setCapability(Type capability) {
-        // Check argument for correctness
-        if (capability.isOfType("Capability")) {
-            this.capability = capability;
-        } else {
-            log.error("Can't set capability of controller " + getName() + " to " + capability.getName()
-                    + " because it's not a capability.");
-            throw new IllegalArgumentException("Illegal argument for setCapability()");
+    public Builder capability(String capabilityUuid) {
+      capability(typeRepository.findOneByName(capabilityUuid));
+      return this;
+    }
+
+    public Builder filePath(String filePath) {
+      json.put(FILELOCATION, filePath);
+      return this;
+    }
+
+    public Builder handles(Set<Type> handles) {
+      this.appliesTo = handles;
+      return this;
+    }
+
+    public Builder providedBy(Type providedBy) {
+      this.providedBy = providedBy;
+      return this;
+    }
+
+    public Builder providedBy(String providedByUuid) {
+      providedBy(typeRepository.findOneByName(providedByUuid));
+      return this;
+    }
+
+    public Builder subjectIsLocal(boolean subjectIsLocal) {
+      json.put(SUBJECTLOCAL, subjectIsLocal);
+      return this;
+    }
+
+    public Builder template(String template) {
+      json.put(TEMPLATE, template);
+      return this;
+    }
+
+    // optional setters
+    public Builder uuid(String uuid) {
+      json.put(UUID, uuid);
+      return this;
+    }
+
+    public Builder arguments(String arguments) {
+      json.put(ARGUMENTS, arguments);
+      return this;
+    }
+
+    public Builder extension(String extension) {
+      json.put(EXTENSION, extension);
+      return this;
+    }
+
+    public Builder parser(Parser parser) {
+      json.put(RESULTPARSER, parser.getUuid());
+      return this;
+    }
+
+    public Builder weight(int weight) {
+      json.put(WEIGHT, weight);
+      return this;
+    }
+
+    public Builder interpreter(Type interpreter) {
+      if (interpreter.isOfType("Interpreter")) {
+        json.put(INTERPRETER, interpreter.getName());
+        return this;
+      } else {
+        throw new IllegalArgumentException("Given type is not an interpreter.");
+      }
+    }
+
+    public Builder addExitCodeToState(int exitCode, Result.State state) {
+      Validate.inclusiveBetween(0, 255, exitCode);
+      Validate.notNull(state);
+      exitCodeToState.put(exitCode, state);
+      return this;
+    }
+
+    public Controller build() {
+      if (
+        !json.has(NAME) ||
+        !json.has(DESC) ||
+        capability == null ||
+        !json.has(FILELOCATION) ||
+        appliesTo == null ||
+        providedBy == null ||
+        !json.has(SUBJECTLOCAL)
+      ) {
+        log.error("Error while building Controller instrument.");
+        throw new ComponentBuilderException("Not all required parameters were set.");
+      }
+      if (!exitCodeToState.isEmpty()) {
+        json.put(STATEMAP, mapper.valueToTree(exitCodeToState));
+      }
+      Controller controller = new Controller(json);
+      controller.capability = capability;
+      controller.appliesTo = appliesTo;
+      controller.providedBy = providedBy;
+      return controller;
+    }
+  }
+
+  public Controller() {
+    // empty constructor for NodeMapper
+  }
+
+  private Controller(ObjectNode json) {
+    super(json, typeRepository.findOneByName("Controller"));
+  }
+
+  // Set the capability of a Controller instance
+  public void setCapability(Type capability) {
+    // Check argument for correctness
+    if (capability.isOfType("Capability")) {
+      this.capability = capability;
+    } else {
+      log.error(
+        "Can't set capability of controller " +
+          getName() +
+          " to " +
+          capability.getName() +
+          " because it's not a capability."
+      );
+      throw new IllegalArgumentException("Illegal argument for setCapability()");
+    }
+  }
+
+  // Set the capability of a controller instance
+  public void setCapability(String capabilityUuid) {
+    Type foundCapability = typeRepository.findByUuid(capabilityUuid);
+    setCapability(foundCapability);
+  }
+
+  public Type getCapability() {
+    return persisted ? relatedOne("-[:GIVES_CAPABILITY]->(b:Type)") : capability;
+  }
+
+  public Set<Type> getHandledTypes() {
+    return persisted ? related("-[:APPLIES_TO]->(b:Type)") : appliesTo;
+  }
+
+  public Optional<ObjectNode> getArguments() {
+    Optional<ObjectNode> arguments = Optional.empty();
+    // Check if we have an arguments property and it's not an empty string
+    if (data.containsKey(ARGUMENTS) && !Objects.equals("", data.get(ARGUMENTS))) {
+      // Try to map it to an ObjectNode and create an Optional of it.
+      try {
+        arguments = Optional.of((ObjectNode) mapper.readTree((String) data.get(ARGUMENTS)));
+      } catch (IOException e) {
+        if (Configuration.isTraceModeOn()) {
+          log.error("Error while trying to get arguments object from " + getName());
+          e.printStackTrace();
         }
+      }
+    }
+    return arguments;
+  }
+
+  public Optional<String> getExtension() {
+    final Optional<String> extension;
+    final Optional<ObjectNode> maybeTemplate = getFile(TEMPLATEFILE);
+
+    if (maybeTemplate.isPresent()) {
+      final ObjectNode template = maybeTemplate.get();
+      if (template.has("path")) {
+        extension = Optional.of(Files.getFileExtension(template.get("path").asText()));
+      } else {
+        extension = Optional.empty();
+      }
+    } else if (data.containsKey("extension")) {
+      extension = Optional.of((String) data.get("extension"));
+    } else {
+      extension = Optional.empty();
     }
 
-    // Set the capability of a controller instance
-    public void setCapability(String capabilityUuid) {
-        Type foundCapability = typeRepository.findByUuid(capabilityUuid);
-        setCapability(foundCapability);
-    }
+    return extension;
+  }
 
-    public Type getCapability() {
-        return persisted ? relatedOne("-[:GIVES_CAPABILITY]->(b:Type)") : capability;
-    }
+  /**
+   * A controller may have an allocated time, which means its process will
+   * be killed when that time is exceeded.
+   * @return A long optional, containing the allocated time if it's available.
+   */
+  public Optional<Long> getTimeAllocated() {
+    return data.containsKey(TIMEALLOCATED)
+      ? // numerical types are inserted as doubles, so round it to a long
+        Optional.of(((Number) data.get(TIMEALLOCATED)).longValue())
+      : Optional.empty();
+  }
 
-    public Set<Type> getHandledTypes() {
-        return persisted ? related("-[:APPLIES_TO]->(b:Type)") : appliesTo;
-    }
+  public boolean isSubjectIsLocal() {
+    return (boolean) data.get(SUBJECTLOCAL);
+  }
 
-    public Optional<ObjectNode> getArguments() {
-        Optional<ObjectNode> arguments = Optional.empty();
-        // Check if we have an arguments property and it's not an empty string
-        if (
-                data.containsKey(ARGUMENTS) &&
-                !(Objects.equals("", data.get(ARGUMENTS)))
-        ) {
-            // Try to map it to an ObjectNode and create an Optional of it.
-            try {
-                arguments = Optional.of((ObjectNode) mapper.readTree((String) data.get(ARGUMENTS)));
-            } catch (IOException e) {
-                if (Configuration.isTraceModeOn()) {
-                    log.error("Error while trying to get arguments object from " + getName());
-                    e.printStackTrace();
-                }
-            }
+  public Type getProvidedBy() {
+    return persisted ? relatedOne("-[:PROVIDED_BY]->(b:Type)") : providedBy;
+  }
+
+  @Override
+  protected Entity toEntity() {
+    return toEntity(capability, appliesTo, providedBy);
+  }
+
+  public Optional<String> getInterpreter() {
+    return data.containsKey(INTERPRETER) ? Optional.of((String) data.get(INTERPRETER)) : Optional.empty();
+  }
+
+  public Optional<String> getScriptContent() {
+    return getFileContent(SCRIPTFILE);
+  }
+
+  public Optional<String> getTemplateContent() {
+    return getFileContent(TEMPLATEFILE);
+  }
+
+  public Optional<ObjectNode> getStateMapAsJson() {
+    Optional<ObjectNode> maybeStateMap;
+    if (data.containsKey(STATEMAP)) {
+      try {
+        maybeStateMap = Optional.of((ObjectNode) mapper.readTree((String) data.get(STATEMAP)));
+      } catch (IOException e) {
+        maybeStateMap = Optional.empty();
+        log.error("Error while deserializing statusmap of controller " + getName());
+        if (Configuration.isTraceModeOn()) {
+          e.printStackTrace();
         }
-        return arguments;
+      }
+    } else {
+      maybeStateMap = Optional.empty();
     }
+    return maybeStateMap;
+  }
 
-    public Optional<String> getExtension() {
-        final Optional<String> extension;
-        final Optional<ObjectNode> maybeTemplate = getFile(TEMPLATEFILE);
-
-        if (maybeTemplate.isPresent()) {
-            final ObjectNode template = maybeTemplate.get();
-            if (template.has("path")) {
-                extension = Optional.of(Files.getFileExtension(template.get("path").asText()));
-            } else {
-                extension = Optional.empty();
-            }
-        } else if (data.containsKey("extension")) {
-            extension = Optional.of((String) data.get("extension"));
-        } else {
-            extension = Optional.empty();
+  public Optional<Map<Integer, Result.State>> getStateMap() {
+    Optional<Map<Integer, Result.State>> maybeStateMap;
+    if (data.containsKey(STATEMAP)) {
+      TypeFactory typeFactory = mapper.getTypeFactory();
+      MapType mapType = typeFactory.constructMapType(HashMap.class, Integer.class, Result.State.class);
+      try {
+        maybeStateMap = Optional.of(mapper.readValue(data.get(STATEMAP).toString(), mapType));
+      } catch (IOException e) {
+        maybeStateMap = Optional.empty();
+        if (Configuration.isTraceModeOn()) {
+          e.printStackTrace();
         }
-
-        return extension;
+      }
+    } else {
+      maybeStateMap = Optional.empty();
     }
 
-    /**
-     * A controller may have an allocated time, which means its process will
-     * be killed when that time is exceeded.
-     * @return A long optional, containing the allocated time if it's available.
-     */
-    public Optional<Long> getTimeAllocated() {
-        return data.containsKey(TIMEALLOCATED) ?
-            // numerical types are inserted as doubles, so round it to a long
-            Optional.of(((Number) data.get(TIMEALLOCATED)).longValue()) :
-            Optional.empty();
+    return maybeStateMap;
+  }
+
+  public ObjectNode toJson() {
+    ObjectNode json = super.toJson();
+
+    json.put(SUBJECTLOCAL, isSubjectIsLocal());
+    Optional<String> templateContent = getTemplateContent();
+    if (templateContent.isPresent()) {
+      json.put(TEMPLATE, templateContent.get());
+    }
+    Optional<String> extension = getExtension();
+    if (extension.isPresent()) {
+      json.put(EXTENSION, extension.get());
+    }
+    Optional<ObjectNode> arguments = getArguments();
+    if (arguments.isPresent()) {
+      json.put(ARGUMENTS, arguments.get());
     }
 
-    public boolean isSubjectIsLocal() {
-        return  (boolean) data.get(SUBJECTLOCAL);
-    }
-
-    public Type getProvidedBy() {
-        return persisted ? relatedOne("-[:PROVIDED_BY]->(b:Type)") : providedBy;
-    }
-
-    @Override
-    protected Entity toEntity() {
-        return toEntity(capability, appliesTo, providedBy);
-    }
-
-    public Optional<String> getInterpreter() {
-        return data.containsKey(INTERPRETER) ?
-                Optional.of((String) data.get(INTERPRETER)) :
-                Optional.empty();
-    }
-
-    public Optional<String> getScriptContent() {
-        return getFileContent(SCRIPTFILE);
-    }
-
-    public Optional<String> getTemplateContent() {
-        return getFileContent(TEMPLATEFILE);
-    }
-
-    public Optional<ObjectNode> getStateMapAsJson() {
-        Optional<ObjectNode> maybeStateMap;
-        if (data.containsKey(STATEMAP)) {
-            try {
-                maybeStateMap = Optional.of((ObjectNode) mapper.readTree((String) data.get(STATEMAP)));
-            } catch (IOException e) {
-                maybeStateMap = Optional.empty();
-                log.error("Error while deserializing statusmap of controller " + getName());
-                if (Configuration.isTraceModeOn()) {
-                    e.printStackTrace();
-                }
-            }
-        } else {
-            maybeStateMap = Optional.empty();
-        }
-        return maybeStateMap;
-    }
-
-    public Optional<Map<Integer, Result.State>> getStateMap() {
-        Optional<Map<Integer, Result.State>> maybeStateMap;
-        if (data.containsKey(STATEMAP)) {
-            TypeFactory typeFactory = mapper.getTypeFactory();
-            MapType mapType = typeFactory.constructMapType(HashMap.class, Integer.class, Result.State.class);
-            try {
-                maybeStateMap = Optional.of(mapper.readValue(data.get(STATEMAP).toString(),
-                            mapType));
-            } catch (IOException e) {
-                maybeStateMap = Optional.empty();
-                if (Configuration.isTraceModeOn()) {
-                    e.printStackTrace();
-                }
-            }
-        } else {
-            maybeStateMap = Optional.empty();
-        }
-
-        return maybeStateMap;
-    }
-
-    public ObjectNode toJson() {
-        ObjectNode json = super.toJson();
-
-        json.put(SUBJECTLOCAL, isSubjectIsLocal());
-        Optional<String> templateContent = getTemplateContent();
-        if (templateContent.isPresent()) {
-            json.put(TEMPLATE, templateContent.get());
-        }
-        Optional<String> extension = getExtension();
-        if (extension.isPresent()) {
-            json.put(EXTENSION, extension.get());
-        }
-        Optional<ObjectNode> arguments = getArguments();
-        if (arguments.isPresent()) {
-            json.put(ARGUMENTS, arguments.get());
-        }
-
-        return json;
-    }
-
+    return json;
+  }
 }

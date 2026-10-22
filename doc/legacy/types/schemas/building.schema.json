@@ -29,11 +29,5 @@
       "$ref": "type.schema.json#/properties/desc"
     }
   },
-  "required": [
-    "name",
-    "desc",
-    "city",
-    "streetAddress",
-    "country"
-  ]
+  "required": ["name", "desc", "city", "streetAddress", "country"]
 }

@@ -1,18 +1,18 @@
 {
-	"type": "object",
-	"required": ["api"],
-	"properties": {
-		"api": {
-			"type": "object",
-			"required": ["server","port"],
-			"additionalProperties": false,
-			"properties": {
-				"server": {"type": "string"},
-				"port": {"type": "integer"},
-				"email": {"type": "string"},
-				"pwd": {"type": "string"}
-			}
-		}
-	},
-	"additionalProperties": true
+  "type": "object",
+  "required": ["api"],
+  "properties": {
+    "api": {
+      "type": "object",
+      "required": ["server", "port"],
+      "additionalProperties": false,
+      "properties": {
+        "server": { "type": "string" },
+        "port": { "type": "integer" },
+        "email": { "type": "string" },
+        "pwd": { "type": "string" }
+      }
+    }
+  },
+  "additionalProperties": true
 }

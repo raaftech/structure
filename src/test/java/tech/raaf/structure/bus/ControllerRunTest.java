@@ -1,9 +1,18 @@
 package tech.raaf.structure.bus;
 
+import static io.vertx.core.json.Json.mapper;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableMap;
 import io.vertx.core.json.JsonObject;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,16 +24,6 @@ import tech.raaf.structure.graph.Group;
 import tech.raaf.structure.graph.repositories.TypeRepository;
 import tech.raaf.structure.schema.TypeSchemaTest;
 
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-
-import static io.vertx.core.json.Json.mapper;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
 /**
  * Runs a controller on an instance through its actor, as the frontend
  * does, and checks the result in the graph. The ping controller is not
@@ -32,104 +31,122 @@ import static org.junit.Assert.fail;
  */
 public class ControllerRunTest extends TypeSchemaTest {
 
-    private static final String PING = "be5d22bd-7588-4d76-bb78-08d7767ae240";
-    private static final String NODE = "tech.raaf.structure.bus.node.";
+  private static final String PING = "be5d22bd-7588-4d76-bb78-08d7767ae240";
+  private static final String NODE = "tech.raaf.structure.bus.node.";
 
-    private final TypeRepository typeRepository = Context.getTypeRepository();
+  private final TypeRepository typeRepository = Context.getTypeRepository();
 
-    // Each TaskManager starts a timer on the shared queue, so deploy one
-    private static boolean deployed = false;
+  // Each TaskManager starts a timer on the shared queue, so deploy one
+  private static boolean deployed = false;
 
-    @Before
-    public void deploy() throws Exception {
-        if (deployed) {
-            return;
+  @Before
+  public void deploy() throws Exception {
+    if (deployed) {
+      return;
+    }
+    CompletableFuture<String> id = new CompletableFuture<>();
+    Context.getVertx().deployVerticle(new TaskManager(1), ar -> {
+      if (ar.succeeded()) {
+        id.complete(ar.result());
+      } else {
+        id.completeExceptionally(ar.cause());
+      }
+    });
+    id.get();
+    deployed = true;
+  }
+
+  @After
+  public void reset() {
+    Context.setSelfGroup(null);
+    Context.setSelfIdentifier(null);
+  }
+
+  @Test
+  public void pingAddsResult() throws Exception {
+    // Structure runs on a host that has iputils and the address
+    Group structure = new Group(
+      json("{\"name\": \"Computer\", \"desc\": \"The Structure host.\"}"),
+      typeRepository.findOneByName("Group")
+    );
+    Component host = new Component(
+      json(
+        "{\"name\": \"Generic Linux\", \"desc\": \"A generic Linux distro\", " +
+          "\"longName\": \"Generic Linux\", \"shortName\": \"genericlinux\", \"ver\": \"unknown\"}"
+      ),
+      typeRepository.findOneByName("Linux")
+    );
+    Component iputils = new Component(
+      json(
+        "{\"name\": \"Iputils\", \"desc\": \"Iputils.\", " +
+          "\"longName\": \"Iputils\", \"shortName\": \"iputils\", \"ver\": \"unknown\"}"
+      ),
+      typeRepository.findOneByName("Iputils")
+    );
+    Component address = new Component(
+      json(
+        "{\"name\": \"localhost\", \"desc\": \"The loopback address.\", " +
+          "\"addr\": \"127.0.0.1\", \"reachable\": true}"
+      ),
+      typeRepository.findOneByName("Ipv4Address")
+    );
+    host.addComponent(iputils).addComponent(address);
+    structure.addMember(host);
+    structure.save();
+    Context.setSelfGroup(structure);
+    Context.setSelfIdentifier(structure.getUuid());
+
+    NodeActor.deploy(address).get();
+    ObjectNode args = mapper.createObjectNode().put("instrument", PING);
+    args.putObject("arguments").put("count", "1");
+    JsonNode reply = send(NODE + address.getUuid(), "runInstrument", args);
+    assertFalse(reply.toString(), reply.path("result").has("error"));
+    String task = reply.path("result").path("data").asText();
+
+    Map<String, Object> result = awaitHead(address.getUuid(), task);
+    assertTrue(result.toString(), ((String) result.get("data-process")).startsWith("ping "));
+    assertTrue(result.toString(), ((String) result.get("data-process")).endsWith(" 127.0.0.1"));
+    assertEquals(task, result.get("data-task"));
+    // The ping can fail on a machine without ping, so check only that it ran to an end
+    assertTrue(result.toString(), result.containsKey("data-stateCode") || result.containsKey("data-error"));
+  }
+
+  private static ObjectNode json(String json) throws Exception {
+    return (ObjectNode) mapper.readTree(json);
+  }
+
+  private static JsonNode send(String address, String msgh, ObjectNode args) throws Exception {
+    ObjectNode message = mapper.createObjectNode().put("msgh", msgh);
+    message.set("args", args);
+    CompletableFuture<Object> reply = new CompletableFuture<>();
+    Context.getVertx()
+      .eventBus()
+      .send(address, new JsonObject(message.toString()), ar -> {
+        if (ar.succeeded()) {
+          reply.complete(ar.result().body());
+        } else {
+          reply.completeExceptionally(ar.cause());
         }
-        CompletableFuture<String> id = new CompletableFuture<>();
-        Context.getVertx().deployVerticle(new TaskManager(1), ar -> {
-            if (ar.succeeded()) {
-                id.complete(ar.result());
-            } else {
-                id.completeExceptionally(ar.cause());
-            }
-        });
-        id.get();
-        deployed = true;
+      });
+    return mapper.readTree(reply.get().toString());
+  }
+
+  // The TaskManager timer writes the result, so poll the graph
+  @SuppressWarnings("unchecked")
+  private static Map<String, Object> awaitHead(String origin, String task) throws Exception {
+    long deadline = System.currentTimeMillis() + 30000;
+    while (System.currentTimeMillis() < deadline) {
+      List<Map<String, Object>> rows = Graph.query(
+        "MATCH (:Node {uuid: $uuid})-[:RESULTS]->(r:Result) " +
+          "WHERE r.`data-task` = $task RETURN properties(r) AS properties",
+        ImmutableMap.of("uuid", origin, "task", task)
+      );
+      if (!rows.isEmpty()) {
+        return (Map<String, Object>) rows.get(0).get("properties");
+      }
+      Thread.sleep(100);
     }
-
-    @After
-    public void reset() {
-        Context.setSelfGroup(null);
-        Context.setSelfIdentifier(null);
-    }
-
-    @Test
-    public void pingAddsResult() throws Exception {
-        // Structure runs on a host that has iputils and the address
-        Group structure = new Group(json("{\"name\": \"Computer\", \"desc\": \"The Structure host.\"}"),
-                typeRepository.findOneByName("Group"));
-        Component host = new Component(json("{\"name\": \"Generic Linux\", \"desc\": \"A generic Linux distro\", "
-                + "\"longName\": \"Generic Linux\", \"shortName\": \"genericlinux\", \"ver\": \"unknown\"}"),
-                typeRepository.findOneByName("Linux"));
-        Component iputils = new Component(json("{\"name\": \"Iputils\", \"desc\": \"Iputils.\", "
-                + "\"longName\": \"Iputils\", \"shortName\": \"iputils\", \"ver\": \"unknown\"}"),
-                typeRepository.findOneByName("Iputils"));
-        Component address = new Component(json("{\"name\": \"localhost\", \"desc\": \"The loopback address.\", "
-                + "\"addr\": \"127.0.0.1\", \"reachable\": true}"),
-                typeRepository.findOneByName("Ipv4Address"));
-        host.addComponent(iputils).addComponent(address);
-        structure.addMember(host);
-        structure.save();
-        Context.setSelfGroup(structure);
-        Context.setSelfIdentifier(structure.getUuid());
-
-        NodeActor.deploy(address).get();
-        ObjectNode args = mapper.createObjectNode().put("instrument", PING);
-        args.putObject("arguments").put("count", "1");
-        JsonNode reply = send(NODE + address.getUuid(), "runInstrument", args);
-        assertFalse(reply.toString(), reply.path("result").has("error"));
-        String task = reply.path("result").path("data").asText();
-
-        Map<String, Object> result = awaitHead(address.getUuid(), task);
-        assertTrue(result.toString(), ((String) result.get("data-process")).startsWith("ping "));
-        assertTrue(result.toString(), ((String) result.get("data-process")).endsWith(" 127.0.0.1"));
-        assertEquals(task, result.get("data-task"));
-        // The ping can fail on a machine without ping, so check only that it ran to an end
-        assertTrue(result.toString(), result.containsKey("data-stateCode") || result.containsKey("data-error"));
-    }
-
-    private static ObjectNode json(String json) throws Exception {
-        return (ObjectNode) mapper.readTree(json);
-    }
-
-    private static JsonNode send(String address, String msgh, ObjectNode args) throws Exception {
-        ObjectNode message = mapper.createObjectNode().put("msgh", msgh);
-        message.set("args", args);
-        CompletableFuture<Object> reply = new CompletableFuture<>();
-        Context.getVertx().eventBus().send(address, new JsonObject(message.toString()), ar -> {
-            if (ar.succeeded()) {
-                reply.complete(ar.result().body());
-            } else {
-                reply.completeExceptionally(ar.cause());
-            }
-        });
-        return mapper.readTree(reply.get().toString());
-    }
-
-    // The TaskManager timer writes the result, so poll the graph
-    @SuppressWarnings("unchecked")
-    private static Map<String, Object> awaitHead(String origin, String task) throws Exception {
-        long deadline = System.currentTimeMillis() + 30000;
-        while (System.currentTimeMillis() < deadline) {
-            List<Map<String, Object>> rows = Graph.query("MATCH (:Node {uuid: $uuid})-[:RESULTS]->(r:Result) "
-                    + "WHERE r.`data-task` = $task RETURN properties(r) AS properties",
-                    ImmutableMap.of("uuid", origin, "task", task));
-            if (!rows.isEmpty()) {
-                return (Map<String, Object>) rows.get(0).get("properties");
-            }
-            Thread.sleep(100);
-        }
-        fail("No result for task " + task);
-        return null;
-    }
+    fail("No result for task " + task);
+    return null;
+  }
 }

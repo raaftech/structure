@@ -7,27 +7,19 @@
     "relations": {
       "PROVIDED_BY": {
         "direction": "outgoing",
-        "uuids": [
-          "300beaaf-5b4c-48b1-be5b-a5fe3fa547b2"
-        ]
+        "uuids": ["300beaaf-5b4c-48b1-be5b-a5fe3fa547b2"]
       },
       "APPLIES_TO": {
         "direction": "outgoing",
-        "uuids": [
-          "3fb4603b-281e-47c0-b338-768ea05d4660"
-        ]
+        "uuids": ["3fb4603b-281e-47c0-b338-768ea05d4660"]
       },
       "GIVES_CAPABILITY": {
         "direction": "outgoing",
-        "uuids": [
-          "347ca5da-db19-4d98-9fed-60e72d5d6bba"
-        ]
+        "uuids": ["347ca5da-db19-4d98-9fed-60e72d5d6bba"]
       },
       "INSTANCE_OF": {
         "direction": "outgoing",
-        "uuids": [
-          "f482204e-7d63-45ca-96c9-10a7cc2783da"
-        ]
+        "uuids": ["f482204e-7d63-45ca-96c9-10a7cc2783da"]
       }
     }
   },

@@ -1,13 +1,12 @@
-Structure REPL
-=========
-How to run
-----------
+# Structure REPL
+
+## How to run
+
     From the directory where scli.js lives do:
 
     npm i
     optionally run: npm test
     npm start
-
 
 Environment variable:
 
@@ -20,20 +19,18 @@ NEO4JURL=http://localhost:7474
 STRUCTURE_NEO4J_USERNAME=neo4j
 STRUCTURE_NEO4J_PASSWORD has no default; the neo commands need it
 
-
 ## Notes:
 
-* type help inside the REPL for the available commands
-* the REPL supports tab-completion (even for options to a command)
-* the REPL supports persistent history
-  * subsequently arrow-up is a relevant key ;)
-
+- type help inside the REPL for the available commands
+- the REPL supports tab-completion (even for options to a command)
+- the REPL supports persistent history
+  - subsequently arrow-up is a relevant key ;)
 
 ## Testing
 
 make sure the following npm modules are installed globally:
 
-* npm i tape tap-spec -g
+- npm i tape tap-spec -g
 
 then run:
 

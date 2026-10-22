@@ -1,98 +1,90 @@
 [
-    {
-        "name": "Instrument",
-        "desc": "A representation of a software instrument that gives end user function.",
-        "meta": {
-            "uuid": "14dbfbfa-b50a-466f-8539-55d5d3f15e4a",
-            "relations": {
-                "ISA": {
-                    "direction": "outgoing",
-                    "to": [
-                        "b1bc963a-19cc-4518-aecb-a35d028c49e3"
-                    ]
-                }
-            }
-        },
-        "file": {
-            "dataSchema": {
-                "encoding": "text",
-                "format": "json",
-                "path": "../schema/instrument.schema.json"
-            }
+  {
+    "name": "Instrument",
+    "desc": "A representation of a software instrument that gives end user function.",
+    "meta": {
+      "uuid": "14dbfbfa-b50a-466f-8539-55d5d3f15e4a",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "to": ["b1bc963a-19cc-4518-aecb-a35d028c49e3"]
         }
+      }
     },
-    {
-        "name": "Controller",
-        "desc": "An implementation of an instrument that gives 'behavior'.",
-        "meta": {
-            "uuid": "f482204e-7d63-45ca-96c9-10a7cc2783da",
-            "relations": {
-                "ISA": {
-                    "direction": "outgoing",
-                    "to": [
-                        "14dbfbfa-b50a-466f-8539-55d5d3f15e4a"
-                    ]
-                }
-            },
-            "constraints": {
-                "PRODUCED": [
-                    {
-                        "cardinality": "OPTIONAL_TO_MANY",
-                        "to": "f3498c02-58c6-486b-87c6-9d54607fdb12"
-                    }
-                ]
-            }
-        },
-        "file": {
-            "dataSchema": {
-                "encoding": "text",
-                "format": "json",
-                "path": "../schema/controller.schema.json"
-            }
-        }
-    },
-    {
-        "name": "Marker",
-        "desc": "Markers are considered 'system' instruments that help us build send<->receive paths.",
-        "meta": {
-            "uuid": "24702e44-8769-4aea-903d-9e1164f99e5b",
-            "relations": {
-                "ISA": {
-                    "direction": "outgoing",
-                    "to": [
-                        "14dbfbfa-b50a-466f-8539-55d5d3f15e4a"
-                    ]
-                }
-            }
-        },
-        "file": {
-            "dataSchema": {
-                "encoding": "text",
-                "format": "json",
-                "path": "../schema/marker.schema.json"
-            }
-        }
-    },
-    {
-        "name": "Parser",
-        "desc": "An instrument that parses raw results from controllers into graphable data.",
-        "meta": {
-            "uuid": "b5fa636c-1067-45ac-b027-ade2797bef6f",
-            "relations": {
-                "ISA": {
-                    "direction": "outgoing",
-                    "to": [
-                        "14dbfbfa-b50a-466f-8539-55d5d3f15e4a"
-                    ]
-                }
-            }
-        },
-        "file": {
-            "dataSchema": {
-                "encoding": "text",
-                "format": "json",
-                "path": "../schema/parser.schema.json"
-            }
-        }
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "../schema/instrument.schema.json"
+      }
     }
+  },
+  {
+    "name": "Controller",
+    "desc": "An implementation of an instrument that gives 'behavior'.",
+    "meta": {
+      "uuid": "f482204e-7d63-45ca-96c9-10a7cc2783da",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "to": ["14dbfbfa-b50a-466f-8539-55d5d3f15e4a"]
+        }
+      },
+      "constraints": {
+        "PRODUCED": [
+          {
+            "cardinality": "OPTIONAL_TO_MANY",
+            "to": "f3498c02-58c6-486b-87c6-9d54607fdb12"
+          }
+        ]
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "../schema/controller.schema.json"
+      }
+    }
+  },
+  {
+    "name": "Marker",
+    "desc": "Markers are considered 'system' instruments that help us build send<->receive paths.",
+    "meta": {
+      "uuid": "24702e44-8769-4aea-903d-9e1164f99e5b",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "to": ["14dbfbfa-b50a-466f-8539-55d5d3f15e4a"]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "../schema/marker.schema.json"
+      }
+    }
+  },
+  {
+    "name": "Parser",
+    "desc": "An instrument that parses raw results from controllers into graphable data.",
+    "meta": {
+      "uuid": "b5fa636c-1067-45ac-b027-ade2797bef6f",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "to": ["14dbfbfa-b50a-466f-8539-55d5d3f15e4a"]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "../schema/parser.schema.json"
+      }
+    }
+  }
 ]

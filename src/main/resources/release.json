@@ -1,9 +1,9 @@
 {
-    "release": {
-        "name": "Structure",
-        "version": "${project.version}",
-        "copyright": "Copyright © 2003-2017 RAAF Technology bv",
-        "license": "RAAF Technology Proprietary Software License v1",
-        "description": "Vert.x and Neo4j application to manage computing environments."
-    }
+  "release": {
+    "name": "Structure",
+    "version": "${project.version}",
+    "copyright": "Copyright © 2008-2026 RAAF Technology bv",
+    "license": "RAAF Technology Proprietary Software License v1",
+    "description": "Vert.x and Neo4j application to manage computing environments."
+  }
 }

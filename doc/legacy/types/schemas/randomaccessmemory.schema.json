@@ -19,10 +19,5 @@
       "$ref": "volatilememory.schema.json#/properties/memClockHz"
     }
   },
-  "required": [
-    "name",
-    "desc",
-    "memSizeKb",
-    "memClockHz"
-  ]
+  "required": ["name", "desc", "memSizeKb", "memClockHz"]
 }

@@ -1,442 +1,402 @@
 [
-    {
-        "name": "Capability",
-        "desc": "A software component gives capabilities to its parent or to siblings.",
-        "meta": {
-            "uuid": "916e04a9-c773-4eaf-9c08-450016426e5a",
-            "relations": {
-                "ISA": {
-                    "direction": "outgoing",
-                    "to": [
-                        "b1bc963a-19cc-4518-aecb-a35d028c49e3"
-                    ]
-                }
-            }
-        },
-        "file": {
-            "dataSchema": {
-                "encoding": "text",
-                "format": "json",
-                "path": "../schema/capability.schema.json"
-            }
+  {
+    "name": "Capability",
+    "desc": "A software component gives capabilities to its parent or to siblings.",
+    "meta": {
+      "uuid": "916e04a9-c773-4eaf-9c08-450016426e5a",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "to": ["b1bc963a-19cc-4518-aecb-a35d028c49e3"]
         }
+      }
     },
-    {
-        "name": "State",
-        "desc": "A capability that makes it possible to state-check.",
-        "meta": {
-            "uuid": "b3cfd296-1090-43c0-ac2e-00e5d7fe7779",
-            "relations": {
-                "ISA": {
-                    "direction": "outgoing",
-                    "to": [
-                        "916e04a9-c773-4eaf-9c08-450016426e5a"
-                    ]
-                }
-            }
-        },
-        "file": {
-            "dataSchema": {
-                "encoding": "text",
-                "format": "json",
-                "path": "../schema/state.schema.json"
-            }
-        }
-    },
-    {
-        "name": "Stop",
-        "desc": "A capability that makes it possible to stop something.",
-        "meta": {
-            "uuid": "632ca701-2648-4df5-87ee-a41d3d1ef3da",
-            "relations": {
-                "ISA": {
-                    "direction": "outgoing",
-                    "to": [
-                        "916e04a9-c773-4eaf-9c08-450016426e5a"
-                    ]
-                }
-            }
-        },
-        "file": {
-            "dataSchema": {
-                "encoding": "text",
-                "format": "json",
-                "path": "../schema/stop.schema.json"
-            }
-        }
-    },
-    {
-        "name": "Start",
-        "desc": "A capability that makes it possible to stop something.",
-        "meta": {
-            "uuid": "347ca5da-db19-4d98-9fed-60e72d5d6bba",
-            "relations": {
-                "ISA": {
-                    "direction": "outgoing",
-                    "to": [
-                        "916e04a9-c773-4eaf-9c08-450016426e5a"
-                    ]
-                }
-            }
-        },
-        "file": {
-            "dataSchema": {
-                "encoding": "text",
-                "format": "json",
-                "path": "../schema/start.schema.json"
-            }
-        }
-    },
-    {
-        "name": "Restart",
-        "desc": "A capability that makes it possible to restart something.",
-        "meta": {
-            "uuid": "cc558715-63dc-4162-95a4-9c51792c7953",
-            "relations": {
-                "ISA": {
-                    "direction": "outgoing",
-                    "to": [
-                        "916e04a9-c773-4eaf-9c08-450016426e5a"
-                    ]
-                }
-            }
-        },
-        "file": {
-            "dataSchema": {
-                "encoding": "text",
-                "format": "json",
-                "path": "../schema/restart.schema.json"
-            }
-        }
-    },
-    {
-        "name": "Create",
-        "desc": "Create a (selection of) adjacent entities. Can create children or parents.",
-        "meta": {
-            "uuid": "b0995f9f-90af-4066-9d00-6b7b33f9a19b",
-            "relations": {
-                "ISA": {
-                    "direction": "outgoing",
-                    "to": [
-                        "916e04a9-c773-4eaf-9c08-450016426e5a"
-                    ]
-                }
-            }
-        },
-        "file": {
-            "dataSchema": {
-                "encoding": "text",
-                "format": "json",
-                "path": "../schema/create.schema.json"
-            }
-        }
-    },
-    {
-        "name": "Destroy",
-        "desc": "Destroy self or (selection of) adjacent entities (recursively). Can only destroy children, not parents.",
-        "meta": {
-            "uuid": "cdb08b91-5998-4f7c-9b82-b345b8052ecd",
-            "relations": {
-                "ISA": {
-                    "direction": "outgoing",
-                    "to": [
-                        "916e04a9-c773-4eaf-9c08-450016426e5a"
-                    ]
-                }
-            }
-        },
-        "file": {
-            "dataSchema": {
-                "encoding": "text",
-                "format": "json",
-                "path": "../schema/destroy.schema.json"
-            }
-        }
-    },
-    {
-        "name": "Execute",
-        "desc": "A capability that makes it possible to run commands.",
-        "meta": {
-            "uuid": "76fb3116-d4a8-459a-b62b-a2641bcb7e7d",
-            "relations": {
-                "ISA": {
-                    "direction": "outgoing",
-                    "to": [
-                        "916e04a9-c773-4eaf-9c08-450016426e5a"
-                    ]
-                }
-            }
-        },
-        "file": {
-            "dataSchema": {
-                "encoding": "text",
-                "format": "json",
-                "path": "../schema/execute.schema.json"
-            }
-        }
-    },
-    {
-        "name": "Detect",
-        "desc": "A capability that makes it possible for a component to detect itself.",
-        "meta": {
-            "uuid": "3c170a27-05ee-4999-97d4-e7cc9135cb96",
-            "relations": {
-                "ISA": {
-                    "direction": "outgoing",
-                    "to": [
-                        "916e04a9-c773-4eaf-9c08-450016426e5a"
-                    ]
-                }
-            }
-        },
-        "file": {
-            "dataSchema": {
-                "encoding": "text",
-                "format": "json",
-                "path": "../schema/detect.schema.json"
-            }
-        }
-    },
-    {
-        "name": "List",
-        "desc": "A capability that makes it possible to list adjacent entities that are children of the current entity.",
-        "meta": {
-            "uuid": "61cde9d0-3aa2-4951-aaa8-79e5656dac41",
-            "relations": {
-                "ISA": {
-                    "direction": "outgoing",
-                    "to": [
-                        "916e04a9-c773-4eaf-9c08-450016426e5a"
-                    ]
-                }
-            }
-        },
-        "file": {
-            "dataSchema": {
-                "encoding": "text",
-                "format": "json",
-                "path": "../schema/list.schema.json"
-            }
-        }
-    },
-    {
-        "name": "Identify",
-        "desc": "A capability that makes it possible to identify (version, name, etc) something.",
-        "meta": {
-            "uuid": "ca49051c-d7d1-45fa-b327-0f4dca810897",
-            "relations": {
-                "ISA": {
-                    "direction": "outgoing",
-                    "to": [
-                        "916e04a9-c773-4eaf-9c08-450016426e5a"
-                    ]
-                }
-            }
-        },
-        "file": {
-            "dataSchema": {
-                "encoding": "text",
-                "format": "json",
-                "path": "../schema/identify.schema.json"
-            }
-        }
-    },
-    {
-        "name": "SendString",
-        "desc": "A capability that makes it possible to send a string over a protocol.",
-        "meta": {
-            "uuid": "64ca8ff9-8071-4933-95d0-bbacb97bd4a8",
-            "relations": {
-                "ISA": {
-                    "direction": "outgoing",
-                    "to": [
-                        "916e04a9-c773-4eaf-9c08-450016426e5a"
-                    ]
-                }
-            }
-        },
-        "file": {
-            "dataSchema": {
-                "encoding": "text",
-                "format": "json",
-                "path": "../schema/sendstring.schema.json"
-            }
-        }
-    },
-    {
-        "name": "ReceiveString",
-        "desc": "A capability that makes it possible to receive a string over a protocol.",
-        "meta": {
-            "uuid": "8292da1f-75de-41d6-a8fb-cdcca6700ad9",
-            "relations": {
-                "ISA": {
-                    "direction": "outgoing",
-                    "to": [
-                        "916e04a9-c773-4eaf-9c08-450016426e5a"
-                    ]
-                }
-            }
-        },
-        "file": {
-            "dataSchema": {
-                "encoding": "text",
-                "format": "json",
-                "path": "../schema/receivestring.schema.json"
-            }
-        }
-    },
-    {
-        "name": "SendFile",
-        "desc": "A capability that makes it possible to send a file over a protocol.",
-        "meta": {
-            "uuid": "371d336a-d328-4468-9b0f-40877bb5b646",
-            "relations": {
-                "ISA": {
-                    "direction": "outgoing",
-                    "to": [
-                        "916e04a9-c773-4eaf-9c08-450016426e5a"
-                    ]
-                }
-            }
-        },
-        "file": {
-            "dataSchema": {
-                "encoding": "text",
-                "format": "json",
-                "path": "../schema/sendfile.schema.json"
-            }
-        }
-    },
-    {
-        "name": "ReceiveFile",
-        "desc": "A capability that makes it possible to receive a file over a protocol.",
-        "meta": {
-            "uuid": "f2ba58a6-0934-4f0e-b9cf-1a7430a3fa7a",
-            "relations": {
-                "ISA": {
-                    "direction": "outgoing",
-                    "to": [
-                        "916e04a9-c773-4eaf-9c08-450016426e5a"
-                    ]
-                }
-            }
-        },
-        "file": {
-            "dataSchema": {
-                "encoding": "text",
-                "format": "json",
-                "path": "../schema/receivefile.schema.json"
-            }
-        }
-    },
-    {
-        "name": "Invoke",
-        "desc": "A capability that makes it possible to invoke a command to execute.",
-        "meta": {
-            "uuid": "4251040d-f05c-4711-8094-59ce773a8c35",
-            "relations": {
-                "ISA": {
-                    "direction": "outgoing",
-                    "to": [
-                        "916e04a9-c773-4eaf-9c08-450016426e5a"
-                    ]
-                }
-            }
-        },
-        "file": {
-            "dataSchema": {
-                "encoding": "text",
-                "format": "json",
-                "path": "../schema/invoke.schema.json"
-            }
-        }
-    },
-    {
-        "name": "Verify",
-        "desc": "A capability that verifies if the current type of the entity is correct. Should return true or false.",
-        "meta": {
-            "uuid": "0a76202b-a6dc-4fe0-91b6-02953c5b7536",
-            "relations": {
-                "ISA": {
-                    "direction": "outgoing",
-                    "to": [
-                        "916e04a9-c773-4eaf-9c08-450016426e5a"
-                    ]
-                }
-            }
-        },
-        "file": {
-            "dataSchema": {
-                "encoding": "text",
-                "format": "json",
-                "path": "../schema/verify.schema.json"
-            }
-        }
-    },
-    {
-        "name": "Show",
-        "desc": "A capability that prints a (entity.schema.json compliant) representation of itself. The data returned is exactly what is currently in the graph, not neccessarily what is true out there.",
-        "meta": {
-            "uuid": "09cc6320-8565-41f7-bdc4-f1950d649be6",
-            "relations": {
-                "ISA": {
-                    "direction": "outgoing",
-                    "to": [
-                        "916e04a9-c773-4eaf-9c08-450016426e5a"
-                    ]
-                }
-            }
-        },
-        "file": {
-            "dataSchema": {
-                "encoding": "text",
-                "format": "json",
-                "path": "../schema/show.schema.json"
-            }
-        }
-    },
-    {
-        "name": "Update",
-        "desc": "This capability gathers the verify routine of the current Type and all ancestor types of that Type and runs them; for the ones that return true, select the most-specialized Type and run Identify.  Use that data to Update the current entity. Update in this case means: adjust instanceOf Type relation and update Node properties with identified data.",
-        "meta": {
-            "uuid": "f66d5a2d-5697-4f9f-8e35-2417668ba773",
-            "relations": {
-                "ISA": {
-                    "direction": "outgoing",
-                    "to": [
-                        "916e04a9-c773-4eaf-9c08-450016426e5a"
-                    ]
-                }
-            }
-        },
-        "file": {
-            "dataSchema": {
-                "encoding": "text",
-                "format": "json",
-                "path": "../schema/update.schema.json"
-            }
-        }
-    },
-    {
-        "name": "Guess",
-        "desc": "Sometimes you cannot actually detect a thing from where you are. Let's take for example an Ipv4Address type. An Ipv4Address might have constraints that say: \"has, outgoing, to Ipv4Listener\" and \"has, incoming, from OperatingSystem\". The listeners you can actually detect, but the operating system you cannot, but you can guess! A guess is the same as a detect but it returns a much more abstract instance of something. In our case, we would return an instance of OperatingSystem and relate it according to the constraints rules. The neat thing is that that instance actually becomes a new path to traverse to further discover the topology of the system (probably you would recurse to that instance of a very abstract operating system and ask it to verify and update itself, thus providing you with the more correct truth. See verify, show and update capabilities for more details).",
-        "meta": {
-            "uuid": "2d427cde-5fcd-425e-91ef-b660f009581f",
-            "relations": {
-                "ISA": {
-                    "direction": "outgoing",
-                    "to": [
-                        "916e04a9-c773-4eaf-9c08-450016426e5a"
-                    ]
-                }
-            }
-        },
-        "file": {
-            "dataSchema": {
-                "encoding": "text",
-                "format": "json",
-                "path": "../schema/guess.schema.json"
-            }
-        }
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "../schema/capability.schema.json"
+      }
     }
+  },
+  {
+    "name": "State",
+    "desc": "A capability that makes it possible to state-check.",
+    "meta": {
+      "uuid": "b3cfd296-1090-43c0-ac2e-00e5d7fe7779",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "to": ["916e04a9-c773-4eaf-9c08-450016426e5a"]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "../schema/state.schema.json"
+      }
+    }
+  },
+  {
+    "name": "Stop",
+    "desc": "A capability that makes it possible to stop something.",
+    "meta": {
+      "uuid": "632ca701-2648-4df5-87ee-a41d3d1ef3da",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "to": ["916e04a9-c773-4eaf-9c08-450016426e5a"]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "../schema/stop.schema.json"
+      }
+    }
+  },
+  {
+    "name": "Start",
+    "desc": "A capability that makes it possible to stop something.",
+    "meta": {
+      "uuid": "347ca5da-db19-4d98-9fed-60e72d5d6bba",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "to": ["916e04a9-c773-4eaf-9c08-450016426e5a"]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "../schema/start.schema.json"
+      }
+    }
+  },
+  {
+    "name": "Restart",
+    "desc": "A capability that makes it possible to restart something.",
+    "meta": {
+      "uuid": "cc558715-63dc-4162-95a4-9c51792c7953",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "to": ["916e04a9-c773-4eaf-9c08-450016426e5a"]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "../schema/restart.schema.json"
+      }
+    }
+  },
+  {
+    "name": "Create",
+    "desc": "Create a (selection of) adjacent entities. Can create children or parents.",
+    "meta": {
+      "uuid": "b0995f9f-90af-4066-9d00-6b7b33f9a19b",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "to": ["916e04a9-c773-4eaf-9c08-450016426e5a"]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "../schema/create.schema.json"
+      }
+    }
+  },
+  {
+    "name": "Destroy",
+    "desc": "Destroy self or (selection of) adjacent entities (recursively). Can only destroy children, not parents.",
+    "meta": {
+      "uuid": "cdb08b91-5998-4f7c-9b82-b345b8052ecd",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "to": ["916e04a9-c773-4eaf-9c08-450016426e5a"]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "../schema/destroy.schema.json"
+      }
+    }
+  },
+  {
+    "name": "Execute",
+    "desc": "A capability that makes it possible to run commands.",
+    "meta": {
+      "uuid": "76fb3116-d4a8-459a-b62b-a2641bcb7e7d",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "to": ["916e04a9-c773-4eaf-9c08-450016426e5a"]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "../schema/execute.schema.json"
+      }
+    }
+  },
+  {
+    "name": "Detect",
+    "desc": "A capability that makes it possible for a component to detect itself.",
+    "meta": {
+      "uuid": "3c170a27-05ee-4999-97d4-e7cc9135cb96",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "to": ["916e04a9-c773-4eaf-9c08-450016426e5a"]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "../schema/detect.schema.json"
+      }
+    }
+  },
+  {
+    "name": "List",
+    "desc": "A capability that makes it possible to list adjacent entities that are children of the current entity.",
+    "meta": {
+      "uuid": "61cde9d0-3aa2-4951-aaa8-79e5656dac41",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "to": ["916e04a9-c773-4eaf-9c08-450016426e5a"]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "../schema/list.schema.json"
+      }
+    }
+  },
+  {
+    "name": "Identify",
+    "desc": "A capability that makes it possible to identify (version, name, etc) something.",
+    "meta": {
+      "uuid": "ca49051c-d7d1-45fa-b327-0f4dca810897",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "to": ["916e04a9-c773-4eaf-9c08-450016426e5a"]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "../schema/identify.schema.json"
+      }
+    }
+  },
+  {
+    "name": "SendString",
+    "desc": "A capability that makes it possible to send a string over a protocol.",
+    "meta": {
+      "uuid": "64ca8ff9-8071-4933-95d0-bbacb97bd4a8",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "to": ["916e04a9-c773-4eaf-9c08-450016426e5a"]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "../schema/sendstring.schema.json"
+      }
+    }
+  },
+  {
+    "name": "ReceiveString",
+    "desc": "A capability that makes it possible to receive a string over a protocol.",
+    "meta": {
+      "uuid": "8292da1f-75de-41d6-a8fb-cdcca6700ad9",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "to": ["916e04a9-c773-4eaf-9c08-450016426e5a"]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "../schema/receivestring.schema.json"
+      }
+    }
+  },
+  {
+    "name": "SendFile",
+    "desc": "A capability that makes it possible to send a file over a protocol.",
+    "meta": {
+      "uuid": "371d336a-d328-4468-9b0f-40877bb5b646",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "to": ["916e04a9-c773-4eaf-9c08-450016426e5a"]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "../schema/sendfile.schema.json"
+      }
+    }
+  },
+  {
+    "name": "ReceiveFile",
+    "desc": "A capability that makes it possible to receive a file over a protocol.",
+    "meta": {
+      "uuid": "f2ba58a6-0934-4f0e-b9cf-1a7430a3fa7a",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "to": ["916e04a9-c773-4eaf-9c08-450016426e5a"]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "../schema/receivefile.schema.json"
+      }
+    }
+  },
+  {
+    "name": "Invoke",
+    "desc": "A capability that makes it possible to invoke a command to execute.",
+    "meta": {
+      "uuid": "4251040d-f05c-4711-8094-59ce773a8c35",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "to": ["916e04a9-c773-4eaf-9c08-450016426e5a"]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "../schema/invoke.schema.json"
+      }
+    }
+  },
+  {
+    "name": "Verify",
+    "desc": "A capability that verifies if the current type of the entity is correct. Should return true or false.",
+    "meta": {
+      "uuid": "0a76202b-a6dc-4fe0-91b6-02953c5b7536",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "to": ["916e04a9-c773-4eaf-9c08-450016426e5a"]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "../schema/verify.schema.json"
+      }
+    }
+  },
+  {
+    "name": "Show",
+    "desc": "A capability that prints a (entity.schema.json compliant) representation of itself. The data returned is exactly what is currently in the graph, not neccessarily what is true out there.",
+    "meta": {
+      "uuid": "09cc6320-8565-41f7-bdc4-f1950d649be6",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "to": ["916e04a9-c773-4eaf-9c08-450016426e5a"]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "../schema/show.schema.json"
+      }
+    }
+  },
+  {
+    "name": "Update",
+    "desc": "This capability gathers the verify routine of the current Type and all ancestor types of that Type and runs them; for the ones that return true, select the most-specialized Type and run Identify.  Use that data to Update the current entity. Update in this case means: adjust instanceOf Type relation and update Node properties with identified data.",
+    "meta": {
+      "uuid": "f66d5a2d-5697-4f9f-8e35-2417668ba773",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "to": ["916e04a9-c773-4eaf-9c08-450016426e5a"]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "../schema/update.schema.json"
+      }
+    }
+  },
+  {
+    "name": "Guess",
+    "desc": "Sometimes you cannot actually detect a thing from where you are. Let's take for example an Ipv4Address type. An Ipv4Address might have constraints that say: \"has, outgoing, to Ipv4Listener\" and \"has, incoming, from OperatingSystem\". The listeners you can actually detect, but the operating system you cannot, but you can guess! A guess is the same as a detect but it returns a much more abstract instance of something. In our case, we would return an instance of OperatingSystem and relate it according to the constraints rules. The neat thing is that that instance actually becomes a new path to traverse to further discover the topology of the system (probably you would recurse to that instance of a very abstract operating system and ask it to verify and update itself, thus providing you with the more correct truth. See verify, show and update capabilities for more details).",
+    "meta": {
+      "uuid": "2d427cde-5fcd-425e-91ef-b660f009581f",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "to": ["916e04a9-c773-4eaf-9c08-450016426e5a"]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "../schema/guess.schema.json"
+      }
+    }
+  }
 ]

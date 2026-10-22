@@ -16,9 +16,5 @@
       "$ref": "type.schema.json#/properties/desc"
     }
   },
-  "required": [
-    "name",
-    "desc",
-    "memSizeKb"
-  ]
+  "required": ["name", "desc", "memSizeKb"]
 }

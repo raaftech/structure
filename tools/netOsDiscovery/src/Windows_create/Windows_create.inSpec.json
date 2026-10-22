@@ -1,11 +1,11 @@
 {
-    "type": "object",
-    "required": ["data","db","token","api"],
-    "properties": {
-        "data": {"type": "object"},
-        "db": {"type": "array"},
-        "token": {"type": "string"},
-        "api": {"type": "object"}
-    },
-    "additionalProperties": false
+  "type": "object",
+  "required": ["data", "db", "token", "api"],
+  "properties": {
+    "data": { "type": "object" },
+    "db": { "type": "array" },
+    "token": { "type": "string" },
+    "api": { "type": "object" }
+  },
+  "additionalProperties": false
 }

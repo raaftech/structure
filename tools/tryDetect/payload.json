@@ -1,11 +1,11 @@
 {
-	"instanceUuid": "10e6723e-91c9-41a0-b19f-aa1186b25d3f",
-	"typeName": "Ipv4Address",
-	"token": "HQUPKnFph2Cp1PxANcBEWq0W5EifeKEysGjmCWFVadX4LBXdu0kvMJFkuawNLjIh",
-	"data": {
-		"name": "BOHR",
-		"addr": "172.17.1.82",
-		"desc": "My description",
-		"reachable": true
-	}
+  "instanceUuid": "10e6723e-91c9-41a0-b19f-aa1186b25d3f",
+  "typeName": "Ipv4Address",
+  "token": "HQUPKnFph2Cp1PxANcBEWq0W5EifeKEysGjmCWFVadX4LBXdu0kvMJFkuawNLjIh",
+  "data": {
+    "name": "BOHR",
+    "addr": "172.17.1.82",
+    "desc": "My description",
+    "reachable": true
+  }
 }

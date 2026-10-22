@@ -1,9 +1,9 @@
-Structure
-=========
+# Structure
 
 Need to explain stuff here.
 
 ### Quick notes on how to run
+
 Structure needs a Neo4j server. The tests need a second server: they
 delete all its data.
 
@@ -26,6 +26,7 @@ to `neo4j`. Use Neo4j Browser on the server to look at the graph. Neo4j
 needs passwords of 8 or more characters.
 
 ### Test server
+
 To run the tests next to a server on port 7687, start a second Neo4j
 from the same installation with its own home and configuration. Change
 `/etc/neo4j` to the `conf` directory of your installation.

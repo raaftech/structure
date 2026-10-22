@@ -12,19 +12,19 @@ import java.util.Set;
  */
 public final class GraphNode {
 
-    private final Set<String> labels;
-    private final Map<String, Object> properties;
+  private final Set<String> labels;
+  private final Map<String, Object> properties;
 
-    public GraphNode(Set<String> labels, Map<String, Object> properties) {
-        this.labels = Collections.unmodifiableSet(new HashSet<>(labels));
-        this.properties = Collections.unmodifiableMap(new HashMap<>(properties));
-    }
+  public GraphNode(Set<String> labels, Map<String, Object> properties) {
+    this.labels = Collections.unmodifiableSet(new HashSet<>(labels));
+    this.properties = Collections.unmodifiableMap(new HashMap<>(properties));
+  }
 
-    public Set<String> getLabels() {
-        return labels;
-    }
+  public Set<String> getLabels() {
+    return labels;
+  }
 
-    public Map<String, Object> getProperties() {
-        return properties;
-    }
+  public Map<String, Object> getProperties() {
+    return properties;
+  }
 }

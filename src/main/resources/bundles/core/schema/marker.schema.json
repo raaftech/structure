@@ -22,8 +22,5 @@
       "$ref": "instrument.schema.json#/properties/subjectIsLocal"
     }
   },
-  "required": [
-    "name",
-    "desc"
-  ]
+  "required": ["name", "desc"]
 }

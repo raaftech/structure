@@ -1,73 +1,75 @@
 @font-face {
-    font-family: 'Structure Fill Glyph';
-    src: url('structure-fill/StructureFill.eot');
-    src: url('structure-fill/StructureFill.eot?#iefix') format('embedded-opentype'),
-         url('structure-fill/StructureFill.woff2') format('woff2'),
-         url('structure-fill/StructureFill.woff') format('woff'),
-         url('structure-fill/StructureFill.ttf') format('truetype'),
-         url('structure-fill/StructureFill.svg') format('svg');
+  font-family: "Structure Fill Glyph";
+  src: url("structure-fill/StructureFill.eot");
+  src:
+    url("structure-fill/StructureFill.eot?#iefix") format("embedded-opentype"),
+    url("structure-fill/StructureFill.woff2") format("woff2"),
+    url("structure-fill/StructureFill.woff") format("woff"),
+    url("structure-fill/StructureFill.ttf") format("truetype"),
+    url("structure-fill/StructureFill.svg") format("svg");
 }
 
 @font-face {
-    font-family: 'Structure Outline Glyph';
-    src: url('structure-outline/StructureOutline.eot');
-    src: url('structure-outline/StructureOutline.eot?#iefix') format('embedded-opentype'),
-         url('structure-outline/StructureOutline.woff2') format('woff2'),
-         url('structure-outline/StructureOutline.woff') format('woff'),
-         url('structure-outline/StructureOutline.ttf') format('truetype'),
-         url('structure-outline/StructureOutline.svg') format('svg');
+  font-family: "Structure Outline Glyph";
+  src: url("structure-outline/StructureOutline.eot");
+  src:
+    url("structure-outline/StructureOutline.eot?#iefix") format("embedded-opentype"),
+    url("structure-outline/StructureOutline.woff2") format("woff2"),
+    url("structure-outline/StructureOutline.woff") format("woff"),
+    url("structure-outline/StructureOutline.ttf") format("truetype"),
+    url("structure-outline/StructureOutline.svg") format("svg");
 }
 
 .strglyph {
-    position: relative;
-    top: 1px;
-    display: inline-block;
-    font-family: 'Structure Fill Glyph';
-    font-style: normal;
-    font-weight: normal;
-    line-height: 1;
+  position: relative;
+  top: 1px;
+  display: inline-block;
+  font-family: "Structure Fill Glyph";
+  font-style: normal;
+  font-weight: normal;
+  line-height: 1;
 
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .strglyph-outline {
-    position: relative;
-    top: 1px;
-    display: inline-block;
-    font-family: 'Structure Outline Glyph';
-    font-style: normal;
-    font-weight: normal;
-    line-height: 1;
+  position: relative;
+  top: 1px;
+  display: inline-block;
+  font-family: "Structure Outline Glyph";
+  font-style: normal;
+  font-weight: normal;
+  line-height: 1;
 
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .sg-xs {
-    font-size: 1.4em;
+  font-size: 1.4em;
 }
 
 .sg-sm {
-    font-size: 2em;
+  font-size: 2em;
 }
 
 .sg-md {
-    font-size: 4em;
+  font-size: 4em;
 }
 
 .sg-lg {
-    font-size: 7em;
+  font-size: 7em;
 }
 
 .sg-xl {
-    font-size: 12em;
+  font-size: 12em;
 }
 
 .sg-xxl {
-    font-size: 20em;
+  font-size: 20em;
 }
 
 .strglyph-byid:before {
-    content: attr(data-glyphid);
+  content: attr(data-glyphid);
 }

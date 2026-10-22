@@ -1,22 +1,20 @@
 {
-    "name": "Protocol",
-    "desc": "A protocol.",
-    "meta": {
-        "uuid": "db0c3c65-52fd-4dec-907c-6c8a669e88f3",
-        "relations": {
-            "ISA": {
-                "direction": "outgoing",
-                "to": [
-                    "b1bc963a-19cc-4518-aecb-a35d028c49e3"
-                ]
-            }
-        }
-    },
-    "file": {
-        "dataSchema": {
-            "encoding": "text",
-            "format": "json",
-            "path": "../schema/protocol.schema.json"
-        }
+  "name": "Protocol",
+  "desc": "A protocol.",
+  "meta": {
+    "uuid": "db0c3c65-52fd-4dec-907c-6c8a669e88f3",
+    "relations": {
+      "ISA": {
+        "direction": "outgoing",
+        "to": ["b1bc963a-19cc-4518-aecb-a35d028c49e3"]
+      }
     }
+  },
+  "file": {
+    "dataSchema": {
+      "encoding": "text",
+      "format": "json",
+      "path": "../schema/protocol.schema.json"
+    }
+  }
 }

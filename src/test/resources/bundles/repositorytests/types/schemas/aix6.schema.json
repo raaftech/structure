@@ -22,11 +22,5 @@
       "$ref": "software.schema.json#/properties/longName"
     }
   },
-  "required": [
-    "name",
-    "desc",
-    "ver",
-    "shortName",
-    "longName"
-  ]
+  "required": ["name", "desc", "ver", "shortName", "longName"]
 }

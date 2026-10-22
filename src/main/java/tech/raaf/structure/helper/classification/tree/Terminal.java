@@ -9,23 +9,22 @@ import java.util.function.Consumer;
  */
 public class Terminal<T> extends Node<T> {
 
-    private Consumer<Set<T>> consumer;
+  private Consumer<Set<T>> consumer;
 
-    /**
-     * Our constructor.
-     * @param consumer The action to execute when consuming input.
-     */
-    public Terminal(Consumer<Set<T>> consumer) {
-        this.consumer = consumer;
-    }
+  /**
+   * Our constructor.
+   * @param consumer The action to execute when consuming input.
+   */
+  public Terminal(Consumer<Set<T>> consumer) {
+    this.consumer = consumer;
+  }
 
-    /**
-     * Run consumer on the input.
-     * @param input
-     */
-    @Override
-    public void consumeInput(Set<T> input) {
-        consumer.accept(input);
-    }
-
+  /**
+   * Run consumer on the input.
+   * @param input
+   */
+  @Override
+  public void consumeInput(Set<T> input) {
+    consumer.accept(input);
+  }
 }

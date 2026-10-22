@@ -9,16 +9,15 @@ import java.util.Set;
  */
 public abstract class InternalNode<T> extends Node<T> {
 
-    protected Set<Node<T>> children = new HashSet<>();
+  protected Set<Node<T>> children = new HashSet<>();
 
-    /**
-     * Add a child to the children set.
-     * @param child The child to be added.
-     * @return The object addChild is called on.
-     */
-    public InternalNode<T> addChild(Node<T> child) {
-        children.add(child);
-        return this;
-    }
-
+  /**
+   * Add a child to the children set.
+   * @param child The child to be added.
+   * @return The object addChild is called on.
+   */
+  public InternalNode<T> addChild(Node<T> child) {
+    children.add(child);
+    return this;
+  }
 }

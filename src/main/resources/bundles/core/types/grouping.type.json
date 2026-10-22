@@ -1,58 +1,54 @@
 [
-    {
-        "name": "Group",
-        "desc": "A group of references to things.",
-        "meta": {
-            "uuid": "5f1eb7c5-ec5e-4563-be6a-fc50774fc374",
-            "relations": {
-                "ISA": {
-                    "direction": "outgoing",
-                    "to": [
-                        "b1bc963a-19cc-4518-aecb-a35d028c49e3"
-                    ]
-                }
-            },
-            "identity" : "name"
-        },
-        "file": {
-            "dataSchema": {
-                "encoding": "text",
-                "format": "json",
-                "path": "../schema/grouping.schema.json"
-            }
+  {
+    "name": "Group",
+    "desc": "A group of references to things.",
+    "meta": {
+      "uuid": "5f1eb7c5-ec5e-4563-be6a-fc50774fc374",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "to": ["b1bc963a-19cc-4518-aecb-a35d028c49e3"]
         }
+      },
+      "identity": "name"
     },
-    {
-        "name": "ComponentGroup",
-        "desc": "A group for organizing references to components.",
-        "meta": {
-            "uuid": "ee92c308-80f4-40b2-af3a-77d26cd99517",
-            "relations": {
-                "ISA": {
-                    "direction": "outgoing",
-                    "to": [
-                        "5f1eb7c5-ec5e-4563-be6a-fc50774fc374"
-                    ]
-                }
-            },
-            "constraints": {
-                "MEMBER_OF": [
-                    {
-                        "cardinality": "OPTIONAL_TO_MANY",
-                        "to": "ee92c308-80f4-40b2-af3a-77d26cd99517"
-                    }
-                ]
-            }
-        },
-        "data": {
-            "glyphId": 62
-        },
-        "file": {
-            "dataSchema": {
-                "encoding": "text",
-                "format": "json",
-                "path": "../schema/componentgroup.schema.json"
-            }
-        }
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "../schema/grouping.schema.json"
+      }
     }
+  },
+  {
+    "name": "ComponentGroup",
+    "desc": "A group for organizing references to components.",
+    "meta": {
+      "uuid": "ee92c308-80f4-40b2-af3a-77d26cd99517",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "to": ["5f1eb7c5-ec5e-4563-be6a-fc50774fc374"]
+        }
+      },
+      "constraints": {
+        "MEMBER_OF": [
+          {
+            "cardinality": "OPTIONAL_TO_MANY",
+            "to": "ee92c308-80f4-40b2-af3a-77d26cd99517"
+          }
+        ]
+      }
+    },
+    "data": {
+      "glyphId": 62
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "../schema/componentgroup.schema.json"
+      }
+    }
+  }
 ]

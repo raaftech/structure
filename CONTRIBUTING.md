@@ -1,5 +1,4 @@
-Contributing to Structure
-=========================
+# Contributing to Structure
 
 When working on Structure there are a few rules to follow regarding the creation
 of new issues, branches, merges, etc. We have these rules to make sure we keep
@@ -14,8 +13,7 @@ We have a few scripts that should be installed in your local Structure
 repository. See
 [hooks](https://github.com/raaftech/scripts/tree/master/python/hooks).
 
-Issues
-------
+## Issues
 
 Work on Structure always begins with an issue in the issue tracker. If there is
 no issue for the work you want to do yet, please create one.
@@ -45,8 +43,7 @@ their use.
 When a new issue has been created, it'll always be referred to by the ID Github
 generated for it.
 
-Branches
---------
+## Branches
 
 The Structure repository has three different types of branches, these are the
 `master` branch, `issue` branches, and `release` branches.
@@ -64,20 +61,20 @@ Every commit in the `master` branch should start with the issue ID, followed by
 a colon, and a short description, e.g. "#20: Added CONTRIBUTING documentation".
 Please follow the following rules regarding commit messages:
 
-* Start the subject with the issue ID in the form "#ID: "
-* The commit subject should be about _what_ changed
-* Keep the subject line short, 50-75 is ideal (`git log` doesn't line wrap)
-* Capitalize the subject
-* Do not end the subject with a period
-* Line wrap the body at 80 characters
-* The body should explain the _why+how_ of your commit
+- Start the subject with the issue ID in the form "#ID: "
+- The commit subject should be about _what_ changed
+- Keep the subject line short, 50-75 is ideal (`git log` doesn't line wrap)
+- Capitalize the subject
+- Do not end the subject with a period
+- Line wrap the body at 80 characters
+- The body should explain the _why+how_ of your commit
 
 Because commits start with a '#', and this is the default character git uses to
 denote a comment, you might have some trouble with the first rule. This can be
 fixed using `git config --local core.commentchar \!`.
 
 When you accidentally broke `master`, you're expected to clean up your broken
-commit. If you use *squashed commits* (which you should, I'll come back to this
+commit. If you use _squashed commits_ (which you should, I'll come back to this
 later) this is as simple as `git revert <hash>`. When you notice someone else
 broke `master`, you might revert their commit and notify them, or if they broke
 it more thoroughly ask them to fix it themselves.
@@ -92,7 +89,7 @@ directly.
 The same rules for commit message apply in issue branches, except for the first
 rule, which is changed to:
 
-* Never start the subject with the issue master
+- Never start the subject with the issue master
 
 ### release branches
 
@@ -116,16 +113,16 @@ stadium we might introduce `hotfix` branches, but not yet.
 
 Issue branches will contain a lot of small commits and history. The history is
 fine, but the small commits isn't for master. They make broken states in master
-*way* harder to fix, because someone needs to figure out which commits depend on
+_way_ harder to fix, because someone needs to figure out which commits depend on
 each other, and it'll just lead to a big mess.
 
 Introducing "merge commits". When you are done with your issue branch you can
 merge it with master using a merge commit.
 
-``` 
-git checkout master 
-git merge --squash issue/20 
-git commit 
+```
+git checkout master
+git merge --squash issue/20
+git commit
 ```
 
 Please don't use `git commit -m` after a merge squash. If you use `git commit`

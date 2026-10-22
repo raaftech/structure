@@ -5,12 +5,11 @@ package tech.raaf.structure.exceptions;
  */
 public class JsonValidationException extends RuntimeException {
 
-    /**
-     * The constructor.
-     * @param message The message to be given along with the exception.
-     */
-    public JsonValidationException(String message) {
-        super(message);
-    }
-
+  /**
+   * The constructor.
+   * @param message The message to be given along with the exception.
+   */
+  public JsonValidationException(String message) {
+    super(message);
+  }
 }

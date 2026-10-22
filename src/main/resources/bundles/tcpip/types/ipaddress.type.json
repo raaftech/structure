@@ -1,55 +1,51 @@
 [
-    {
-        "name": "IpAddress",
-        "desc": "An IP address (address only, can be assigned to a network interface).",
-        "meta": {
-            "uuid": "299001a6-1091-4c0d-87be-c512af03e179",
-            "relations": {
-                "ISA": {
-                    "direction": "outgoing",
-                    "to": [
-                        "3f4a43f7-b558-4bf0-ba7e-66b99cffaf16"
-                    ]
-                }
-            },
-            "constraints": {
-                "HAS": [
-                    {
-                        "cardinality": "OPTIONAL_TO_MANY",
-                        "to": "99c0da37-3599-418d-8ecc-de36d37ae9f4"
-                    }
-                ]
-            },
-            "identity": "addr"
-        },
-        "file": {
-            "dataSchema": {
-                "encoding": "text",
-                "format": "json",
-                "path": "../schema/ipaddress.schema.json"
-            }
+  {
+    "name": "IpAddress",
+    "desc": "An IP address (address only, can be assigned to a network interface).",
+    "meta": {
+      "uuid": "299001a6-1091-4c0d-87be-c512af03e179",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "to": ["3f4a43f7-b558-4bf0-ba7e-66b99cffaf16"]
         }
+      },
+      "constraints": {
+        "HAS": [
+          {
+            "cardinality": "OPTIONAL_TO_MANY",
+            "to": "99c0da37-3599-418d-8ecc-de36d37ae9f4"
+          }
+        ]
+      },
+      "identity": "addr"
     },
-    {
-        "name": "Ipv4Address",
-        "desc": "An IPv4 address (address only, can be assigned to a network interface).",
-        "meta": {
-            "uuid": "f7fbe917-9d49-4df5-95f6-6e132067a424",
-            "relations": {
-                "ISA": {
-                    "direction": "outgoing",
-                    "to": [
-                        "299001a6-1091-4c0d-87be-c512af03e179"
-                    ]
-                }
-            }
-        },
-        "file": {
-            "dataSchema": {
-                "encoding": "text",
-                "format": "json",
-                "path": "../schema/ipv4address.schema.json"
-            }
-        }
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "../schema/ipaddress.schema.json"
+      }
     }
+  },
+  {
+    "name": "Ipv4Address",
+    "desc": "An IPv4 address (address only, can be assigned to a network interface).",
+    "meta": {
+      "uuid": "f7fbe917-9d49-4df5-95f6-6e132067a424",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "to": ["299001a6-1091-4c0d-87be-c512af03e179"]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "../schema/ipv4address.schema.json"
+      }
+    }
+  }
 ]

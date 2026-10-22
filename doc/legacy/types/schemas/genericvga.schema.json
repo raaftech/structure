@@ -58,8 +58,5 @@
       "$ref": "graphicshardware.schema.json#/properties/texelRatesPerSec"
     }
   },
-  "required": [
-    "name",
-    "desc"
-  ]
+  "required": ["name", "desc"]
 }

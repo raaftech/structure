@@ -2,11 +2,7 @@
   "$schema": "http://json-schema.org/draft-04/schema#",
   "description": "Schema for Structure entities.",
   "type": "object",
-  "required": [
-    "name",
-    "desc",
-    "meta"
-  ],
+  "required": ["name", "desc", "meta"],
   "additionalProperties": false,
   "properties": {
     "name": {
@@ -22,10 +18,7 @@
       "type": "object",
       "patternProperties": {
         "^[a-zA-Z]+$": {
-          "required": [
-            "encoding",
-            "format"
-          ],
+          "required": ["encoding", "format"],
           "additionalProperties": false,
           "properties": {
             "path": {
@@ -47,14 +40,10 @@
           },
           "anyOf": [
             {
-              "required": [
-                "path"
-              ]
+              "required": ["path"]
             },
             {
-              "required": [
-                "content"
-              ]
+              "required": ["content"]
             }
           ]
         }
@@ -63,9 +52,7 @@
     },
     "meta": {
       "type": "object",
-      "required": [
-        "relations"
-      ],
+      "required": ["relations"],
       "additionalProperties": false,
       "properties": {
         "uuid": {
@@ -135,29 +122,22 @@
           "type": "object",
           "properties": {
             "relations": {
-              "required": [
-                "ISA"
-              ]
+              "required": ["ISA"]
             }
           }
         },
-          "properties": {
-            "file": {
-              "properties": {
-                "dataSchema": {
-                  "type": "object"
-                }
-              },
-              "required": [
-                "dataSchema"
-              ]
-            }
+        "properties": {
+          "file": {
+            "properties": {
+              "dataSchema": {
+                "type": "object"
+              }
+            },
+            "required": ["dataSchema"]
           }
+        }
       },
-      "required": [
-        "meta",
-        "file"
-      ]
+      "required": ["meta", "file"]
     },
     {
       "properties": {
@@ -168,9 +148,7 @@
           "type": "object",
           "properties": {
             "relations": {
-              "required": [
-                "INSTANCE_OF"
-              ]
+              "required": ["INSTANCE_OF"]
             }
           }
         }
@@ -180,25 +158,14 @@
   "definitions": {
     "direction": {
       "type": "string",
-      "enum": [
-        "incoming",
-        "outgoing"
-      ]
+      "enum": ["incoming", "outgoing"]
     },
     "cardinality": {
       "type": "string",
-      "enum": [
-        "OPTIONAL_TO_ONE",
-        "OPTIONAL_TO_MANY",
-        "REQUIRED_TO_ONE",
-        "REQUIRED_TO_MANY"
-      ]
+      "enum": ["OPTIONAL_TO_ONE", "OPTIONAL_TO_MANY", "REQUIRED_TO_ONE", "REQUIRED_TO_MANY"]
     },
     "constraint": {
-      "required": [
-        "to",
-        "cardinality"
-      ],
+      "required": ["to", "cardinality"],
       "additionalProperties": false,
       "properties": {
         "to": {
@@ -220,18 +187,11 @@
     },
     "format": {
       "type": "string",
-      "enum": [
-        "json",
-        "hbs",
-        "script"
-      ]
+      "enum": ["json", "hbs", "script"]
     },
     "encoding": {
       "type": "string",
-      "enum": [
-        "base64",
-        "text"
-      ]
+      "enum": ["base64", "text"]
     }
   }
 }

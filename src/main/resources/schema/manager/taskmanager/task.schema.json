@@ -8,5 +8,5 @@
       "$ref": "../../common.schema.json#/definitions/uuid"
     }
   },
-  "required": [ "taskId" ]
+  "required": ["taskId"]
 }

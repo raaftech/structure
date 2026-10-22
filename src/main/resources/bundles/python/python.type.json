@@ -1,46 +1,42 @@
 [
-    {
-        "name": "Python",
-        "desc": "The Python interpreter.",
-        "meta": {
-            "uuid": "4d0d4e1a-dc1a-462e-8388-c3f63cf4565a",
-            "relations": {
-                "ISA": {
-                    "direction": "outgoing",
-                    "to": [
-                        "d047f415-734c-4bd3-92b9-d68d5521ce69"
-                    ]
-                }
-            }
-        },
-        "file": {
-            "dataSchema": {
-                "encoding": "text",
-                "format": "json",
-                "path": "python.schema.json"
-            }
+  {
+    "name": "Python",
+    "desc": "The Python interpreter.",
+    "meta": {
+      "uuid": "4d0d4e1a-dc1a-462e-8388-c3f63cf4565a",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "to": ["d047f415-734c-4bd3-92b9-d68d5521ce69"]
         }
+      }
     },
-    {
-        "name": "Python2x",
-        "desc": "The Python interpreter.",
-        "meta": {
-            "uuid": "b6f5296b-28b9-4825-950d-402b7e5d968c",
-            "relations": {
-                "ISA": {
-                    "direction": "outgoing",
-                    "to": [
-                        "4d0d4e1a-dc1a-462e-8388-c3f63cf4565a"
-                    ]
-                }
-            }
-        },
-        "file": {
-            "dataSchema": {
-                "encoding": "text",
-                "format": "json",
-                "path": "python.schema.json"
-            }
-        }
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "python.schema.json"
+      }
     }
+  },
+  {
+    "name": "Python2x",
+    "desc": "The Python interpreter.",
+    "meta": {
+      "uuid": "b6f5296b-28b9-4825-950d-402b7e5d968c",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "to": ["4d0d4e1a-dc1a-462e-8388-c3f63cf4565a"]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "python.schema.json"
+      }
+    }
+  }
 ]

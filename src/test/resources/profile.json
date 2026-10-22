@@ -6,18 +6,16 @@
     "relations": {
       "INSTANCE_OF": {
         "direction": "outgoing",
-        "to": [
-          "c970f6d3-4898-4596-bfac-9d6d1f6b2541"
-        ]
+        "to": ["c970f6d3-4898-4596-bfac-9d6d1f6b2541"]
       }
     }
   },
   "data": {
-    "providedBy":"thismakesnosense",
+    "providedBy": "thismakesnosense",
     "appliesTo": "alsonomakesense",
-    "packageNames": [ "foo", "bar" ],
-    "serviceNames": [ "service01", "service02" ],
-    "ports": [ 80, 21 ],
+    "packageNames": ["foo", "bar"],
+    "serviceNames": ["service01", "service02"],
+    "ports": [80, 21],
     "commands": {
       "foo": {
         "command": "bar",
@@ -29,10 +27,10 @@
       }
     },
     "directories": {
-      "logDirectories": [ "/some/path", "/some/other_path" ]
+      "logDirectories": ["/some/path", "/some/other_path"]
     },
     "files": {
-      "logFiles": [ "some_file" ]
+      "logFiles": ["some_file"]
     }
   }
 }

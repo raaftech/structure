@@ -6,21 +6,15 @@
     "relations": {
       "INSTANCE_OF": {
         "direction": "outgoing",
-        "to": [
-          "c970f6d3-4898-4596-bfac-9d6d1f6b2541"
-        ]
+        "to": ["c970f6d3-4898-4596-bfac-9d6d1f6b2541"]
       },
       "APPLIES_TO": {
         "direction": "outgoing",
-        "to": [
-          "08f72fd1-5c26-4f34-954f-ead04c7234db"
-        ]
+        "to": ["08f72fd1-5c26-4f34-954f-ead04c7234db"]
       },
       "PROVIDED_BY": {
         "direction": "outgoing",
-        "to": [
-          "08f72fd1-5c26-4f34-954f-ead04c7234db"
-        ]
+        "to": ["08f72fd1-5c26-4f34-954f-ead04c7234db"]
       }
     }
   },

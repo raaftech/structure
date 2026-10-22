@@ -1,6 +1,10 @@
 package tech.raaf.structure.graph;
 
+import static org.junit.Assert.*;
+
 import com.google.common.collect.ImmutableSet;
+import java.util.Set;
+import java.util.UUID;
 import mockit.Expectations;
 import mockit.Mocked;
 import mockit.StrictExpectations;
@@ -12,323 +16,359 @@ import tech.raaf.structure.graph.repositories.NodeRepository;
 import tech.raaf.structure.graph.repositories.TypeRepository;
 import tech.raaf.structure.helper.Triple;
 
-import java.util.Set;
-import java.util.UUID;
-
-import static org.junit.Assert.*;
-
 public class ConstraintTest {
 
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
+  @Rule
+  public ExpectedException thrown = ExpectedException.none();
 
-    @Mocked
-    Context context;
-    @Mocked
-    NodeRepository nodeRepository;
+  @Mocked
+  Context context;
 
-    // Every successful report should have isSuccess set to true and contain no error
-    private boolean successfulReport(Constraint.ValidationReport report) {
-        return report.isSuccess() && !report.getError().isPresent();
-    }
+  @Mocked
+  NodeRepository nodeRepository;
 
-    // Every unsuccessful report should have isSuccess set to false and contain errors
-    private boolean unsuccessfulReport(Constraint.ValidationReport report) {
-        return !report.isSuccess() && report.getError().isPresent();
-    }
+  // Every successful report should have isSuccess set to true and contain no error
+  private boolean successfulReport(Constraint.ValidationReport report) {
+    return report.isSuccess() && !report.getError().isPresent();
+  }
 
-    /*
-     * Verify the cases where constraint verification fails or succeeds because of
-     * the cardinality.
-     */
-    @Test
-    public void testCardinalities(
-            @Mocked Type start,
-            @Mocked Type end,
-            @Mocked Entity entity,
-            @Mocked Instance instance1,
-            @Mocked Instance instance2,
-            @Mocked NodeRepository nodeRepository
-    ) throws Exception {
+  // Every unsuccessful report should have isSuccess set to false and contain errors
+  private boolean unsuccessfulReport(Constraint.ValidationReport report) {
+    return !report.isSuccess() && report.getError().isPresent();
+  }
 
-        final String relationshipName = "TEST_REL";
+  /*
+   * Verify the cases where constraint verification fails or succeeds because of
+   * the cardinality.
+   */
+  @Test
+  public void testCardinalities(
+    @Mocked Type start,
+    @Mocked Type end,
+    @Mocked Entity entity,
+    @Mocked Instance instance1,
+    @Mocked Instance instance2,
+    @Mocked NodeRepository nodeRepository
+  ) throws Exception {
+    final String relationshipName = "TEST_REL";
 
-        Constraint constraintOptionalToOne = new Constraint(start, end,
-                Constraint.Cardinality.OPTIONAL_TO_ONE, relationshipName);
-        Constraint constraintOptionalToMany = new Constraint(start, end,
-                Constraint.Cardinality.OPTIONAL_TO_MANY, relationshipName);
-        Constraint constraintRequiredToMany = new Constraint(start, end,
-                Constraint.Cardinality.REQUIRED_TO_MANY, relationshipName);
-        Constraint constraintRequiredToOne = new Constraint(start, end,
-                Constraint.Cardinality.REQUIRED_TO_ONE, relationshipName);
+    Constraint constraintOptionalToOne = new Constraint(
+      start,
+      end,
+      Constraint.Cardinality.OPTIONAL_TO_ONE,
+      relationshipName
+    );
+    Constraint constraintOptionalToMany = new Constraint(
+      start,
+      end,
+      Constraint.Cardinality.OPTIONAL_TO_MANY,
+      relationshipName
+    );
+    Constraint constraintRequiredToMany = new Constraint(
+      start,
+      end,
+      Constraint.Cardinality.REQUIRED_TO_MANY,
+      relationshipName
+    );
+    Constraint constraintRequiredToOne = new Constraint(
+      start,
+      end,
+      Constraint.Cardinality.REQUIRED_TO_ONE,
+      relationshipName
+    );
 
-        new Expectations() {{
-            // Constraint validation only works on instances
-            entity.isInstance();
-            result = true;
+    new Expectations() {
+      {
+        // Constraint validation only works on instances
+        entity.isInstance();
+        result = true;
 
-            entity.getRelations();
-            /*
-            This set represents two "SOME_OTHER_REL" relationships to random UUIDs,
-            but no relationships to the relationship under constraint.
-             */
-            result = ImmutableSet.of(
-                    new Triple<String, String, Set<String>>("SOME_OTHER_REL", Direction.OUTGOING.toString(), ImmutableSet.of(
-                            UUID.randomUUID().toString(),
-                            UUID.randomUUID().toString()
-                    ))
-            );
-        }};
+        entity.getRelations();
+        /*
+          This set represents two "SOME_OTHER_REL" relationships to random UUIDs,
+          but no relationships to the relationship under constraint.
+        */
+        result = ImmutableSet.of(
+          new Triple<String, String, Set<String>>(
+            "SOME_OTHER_REL",
+            Direction.OUTGOING.toString(),
+            ImmutableSet.of(UUID.randomUUID().toString(), UUID.randomUUID().toString())
+          )
+        );
+      }
+    };
 
-        assertTrue(successfulReport(constraintOptionalToOne.validateConstraint(entity)));
-        assertTrue(successfulReport(constraintOptionalToMany.validateConstraint(entity)));
-        assertTrue(unsuccessfulReport(constraintRequiredToMany.validateConstraint(entity)));
-        assertTrue(unsuccessfulReport(constraintRequiredToOne.validateConstraint(entity)));
+    assertTrue(successfulReport(constraintOptionalToOne.validateConstraint(entity)));
+    assertTrue(successfulReport(constraintOptionalToMany.validateConstraint(entity)));
+    assertTrue(unsuccessfulReport(constraintRequiredToMany.validateConstraint(entity)));
+    assertTrue(unsuccessfulReport(constraintRequiredToOne.validateConstraint(entity)));
 
+    // Now test the case where we only have one related node
+    new Expectations() {
+      {
+        entity.getRelations();
+        // This set represents one node related by the relationship under constraint
+        UUID uuid = UUID.randomUUID();
+        result = ImmutableSet.of(
+          new Triple<String, String, Set<String>>(
+            relationshipName,
+            Direction.OUTGOING.toString(),
+            ImmutableSet.of(uuid.toString())
+          )
+        );
 
-        // Now test the case where we only have one related node
-        new Expectations() {{
-            entity.getRelations();
-            // This set represents one node related by the relationship under constraint
-            UUID uuid = UUID.randomUUID();
-            result = ImmutableSet.of(
-                    new Triple<String, String, Set<String>>(relationshipName, Direction.OUTGOING.toString(), ImmutableSet.of(
-                            uuid.toString()
-                    ))
-            );
+        nodeRepository.findByUuid(uuid.toString());
+        result = instance1;
+        instance1.isOfType(end);
+        result = true;
+      }
+    };
 
-            nodeRepository.findByUuid(uuid.toString());
-            result = instance1;
-            instance1.isOfType(end);
-            result = true;
-        }};
+    assertTrue(successfulReport(constraintOptionalToOne.validateConstraint(entity)));
+    assertTrue(successfulReport(constraintOptionalToMany.validateConstraint(entity)));
+    assertTrue(successfulReport(constraintRequiredToMany.validateConstraint(entity)));
+    assertTrue(successfulReport(constraintRequiredToOne.validateConstraint(entity)));
 
-        assertTrue(successfulReport(constraintOptionalToOne.validateConstraint(entity)));
-        assertTrue(successfulReport(constraintOptionalToMany.validateConstraint(entity)));
-        assertTrue(successfulReport(constraintRequiredToMany.validateConstraint(entity)));
-        assertTrue(successfulReport(constraintRequiredToOne.validateConstraint(entity)));
+    // Now test the case where we only have two related nodes
+    new Expectations() {
+      {
+        entity.getRelations();
+        // This set represents one node related by the relationship under constraint
+        UUID firstUuid = UUID.randomUUID();
+        UUID secondUuid = UUID.randomUUID();
+        result = ImmutableSet.of(
+          new Triple<String, String, Set<String>>(
+            relationshipName,
+            Direction.OUTGOING.toString(),
+            ImmutableSet.of(firstUuid.toString(), secondUuid.toString())
+          )
+        );
 
+        nodeRepository.findByUuid(firstUuid.toString());
+        result = instance1;
+        nodeRepository.findByUuid(secondUuid.toString());
+        result = instance2;
+        instance1.isOfType(end);
+        result = true;
+        instance2.isOfType(end);
+        result = true;
+        instance1.getUuid();
+        result = firstUuid.toString();
+        instance2.getUuid();
+        result = secondUuid.toString();
+      }
+    };
 
-        // Now test the case where we only have two related nodes
-        new Expectations() {{
-            entity.getRelations();
-            // This set represents one node related by the relationship under constraint
-            UUID firstUuid = UUID.randomUUID();
-            UUID secondUuid = UUID.randomUUID();
-            result = ImmutableSet.of(
-                    new Triple<String, String, Set<String>>(relationshipName, Direction.OUTGOING.toString(), ImmutableSet.of(
-                            firstUuid.toString(), secondUuid.toString()
-                    ))
-            );
+    assertTrue(unsuccessfulReport(constraintOptionalToOne.validateConstraint(entity)));
+    assertTrue(successfulReport(constraintOptionalToMany.validateConstraint(entity)));
+    assertTrue(successfulReport(constraintRequiredToMany.validateConstraint(entity)));
+    assertTrue(unsuccessfulReport(constraintRequiredToOne.validateConstraint(entity)));
+  }
 
-            nodeRepository.findByUuid(firstUuid.toString());
-            result = instance1;
-            nodeRepository.findByUuid(secondUuid.toString());
-            result = instance2;
-            instance1.isOfType(end);
-            result = true;
-            instance2.isOfType(end);
-            result = true;
-            instance1.getUuid();
-            result = firstUuid.toString();
-            instance2.getUuid();
-            result = secondUuid.toString();
-        }};
+  /**
+   * Verify the case where the cardinality check passes, and we want to check
+   * whether the related nodes are of the proper types.
+   */
+  @Test
+  public void testTypeConstraint(
+    @Mocked Type start,
+    @Mocked Type end,
+    @Mocked Entity entity,
+    @Mocked Instance node1,
+    @Mocked Instance node2
+  ) throws Exception {
+    final String relationshipName = "TEST_REL";
 
-        assertTrue(unsuccessfulReport(constraintOptionalToOne.validateConstraint(entity)));
-        assertTrue(successfulReport(constraintOptionalToMany.validateConstraint(entity)));
-        assertTrue(successfulReport(constraintRequiredToMany.validateConstraint(entity)));
-        assertTrue(unsuccessfulReport(constraintRequiredToOne.validateConstraint(entity)));
-    }
+    final UUID firstUuid = UUID.randomUUID();
+    final UUID secondUuid = UUID.randomUUID();
 
-    /**
-     * Verify the case where the cardinality check passes, and we want to check
-     * whether the related nodes are of the proper types.
-     */
-    @Test
-    public void testTypeConstraint(
-            @Mocked Type start,
-            @Mocked Type end,
-            @Mocked Entity entity,
-            @Mocked Instance node1,
-            @Mocked Instance node2
-    ) throws Exception {
+    Constraint constraintRequiredToMany = new Constraint(
+      start,
+      end,
+      Constraint.Cardinality.REQUIRED_TO_MANY,
+      relationshipName
+    );
 
-        final String relationshipName = "TEST_REL";
+    new Expectations() {
+      {
+        // Constraint validation only works on instances
+        entity.isInstance();
+        result = true;
 
-        final UUID firstUuid = UUID.randomUUID();
-        final UUID secondUuid = UUID.randomUUID();
+        entity.getRelations();
+        /*
+          This set represents two relationships to previously generated UUIDs using the
+          relationship under constraint.
+        */
+        result = ImmutableSet.of(
+          new Triple<String, String, Set<String>>(
+            relationshipName,
+            Direction.OUTGOING.toString(),
+            ImmutableSet.of(firstUuid.toString(), secondUuid.toString())
+          )
+        );
 
-        Constraint constraintRequiredToMany = new Constraint(start, end,
-                Constraint.Cardinality.REQUIRED_TO_MANY, relationshipName);
+        // Return mocked nodes from the mocked repository
+        nodeRepository.findByUuid(firstUuid.toString());
+        result = node1;
+        nodeRepository.findByUuid(secondUuid.toString());
+        result = node2;
 
-        new Expectations() {{
-            // Constraint validation only works on instances
-            entity.isInstance();
-            result = true;
+        node1.isOfType(end);
+        result = true;
+        node2.isOfType(end);
+        result = true;
+      }
+    };
 
-            entity.getRelations();
-            /*
-            This set represents two relationships to previously generated UUIDs using the
-            relationship under constraint.
-             */
-            result = ImmutableSet.of(
-                    new Triple<String, String, Set<String>>(relationshipName, Direction.OUTGOING.toString(), ImmutableSet.of(
-                            firstUuid.toString(), secondUuid.toString()
-                    ))
-            );
+    // Both related nodes are of the proper (sub)type, so verification is true
+    assertTrue(successfulReport(constraintRequiredToMany.validateConstraint(entity)));
+  }
 
-            // Return mocked nodes from the mocked repository
-            nodeRepository.findByUuid(firstUuid.toString());
-            result = node1;
-            nodeRepository.findByUuid(secondUuid.toString());
-            result = node2;
+  /*
+   * Test the case where an entity has relationships to a node that doesn't
+   * exist in the graph. This should fail the verification.
+   */
+  @Test
+  public void testNonExistingNode(@Mocked Type start, @Mocked Type end, @Mocked Entity entity, @Mocked Instance node)
+    throws Exception {
+    final String relationshipName = "TEST_REL";
 
-            node1.isOfType(end);
-            result = true;
-            node2.isOfType(end);
-            result = true;
-        }};
+    final UUID firstUuid = UUID.randomUUID();
+    final UUID secondUuid = UUID.randomUUID();
 
-        // Both related nodes are of the proper (sub)type, so verification is true
-        assertTrue(successfulReport(constraintRequiredToMany.validateConstraint(entity)));
-    }
+    Constraint constraintRequiredToMany = new Constraint(
+      start,
+      end,
+      Constraint.Cardinality.REQUIRED_TO_MANY,
+      relationshipName
+    );
 
-    /*
-     * Test the case where an entity has relationships to a node that doesn't
-     * exist in the graph. This should fail the verification.
-     */
-    @Test
-    public void testNonExistingNode(
-            @Mocked Type start,
-            @Mocked Type end,
-            @Mocked Entity entity,
-            @Mocked Instance node
-    ) throws Exception {
+    new Expectations() {
+      {
+        // Constraint validation only works on instances
+        entity.isInstance();
+        result = true;
 
-        final String relationshipName = "TEST_REL";
+        entity.getRelations();
+        /*
+          This set represents two relationships to previously generated UUIDs using the
+          relationship under constraint.
+        */
+        result = ImmutableSet.of(
+          new Triple<String, String, Set<String>>(
+            relationshipName,
+            Direction.OUTGOING.toString(),
+            ImmutableSet.of(firstUuid.toString(), secondUuid.toString())
+          )
+        );
 
-        final UUID firstUuid = UUID.randomUUID();
-        final UUID secondUuid = UUID.randomUUID();
+        // One of these will be null, meaning no node with that UUID exists in the db
+        nodeRepository.findByUuid(firstUuid.toString());
+        result = node;
+        nodeRepository.findByUuid(secondUuid.toString());
+        result = null;
+      }
+    };
 
-        Constraint constraintRequiredToMany = new Constraint(start, end,
-                Constraint.Cardinality.REQUIRED_TO_MANY, relationshipName);
+    // Because one node can't be found, the verification fails
+    assertTrue(unsuccessfulReport(constraintRequiredToMany.validateConstraint(entity)));
+  }
 
-        new Expectations() {{
-            // Constraint validation only works on instances
-            entity.isInstance();
-            result = true;
+  // Test whether specialization method works
+  @Test
+  public void isSpecialization(
+    @Mocked Type start,
+    @Mocked Type end01,
+    @Mocked Type end02,
+    @Mocked TypeRepository typeRepository
+  ) throws Exception {
+    Constraint constraint1 = new Constraint(start, end01, Constraint.Cardinality.OPTIONAL_TO_MANY, "SOME_REL");
+    Constraint constraint2 = new Constraint(start, end02, Constraint.Cardinality.OPTIONAL_TO_MANY, "SOME_REL");
 
-            entity.getRelations();
-            /*
-            This set represents two relationships to previously generated UUIDs using the
-            relationship under constraint.
-             */
-            result = ImmutableSet.of(
-                    new Triple<String, String, Set<String>>(relationshipName, Direction.OUTGOING.toString(), ImmutableSet.of(
-                            firstUuid.toString(), secondUuid.toString()
-                    ))
-            );
+    // end02 subtypes end01
+    new StrictExpectations() {
+      {
+        end02.isOfType(anyString);
+        result = true;
+      }
+    };
+    assertTrue(constraint1.isSpecialization(constraint2));
 
-            // One of these will be null, meaning no node with that UUID exists in the db
-            nodeRepository.findByUuid(firstUuid.toString());
-            result = node;
-            nodeRepository.findByUuid(secondUuid.toString());
-            result = null;
-        }};
+    // end02 doesn't subtype end01
+    new StrictExpectations() {
+      {
+        end02.isOfType(anyString);
+        result = false;
+      }
+    };
+    assertFalse(constraint1.isSpecialization(constraint2));
 
-        // Because one node can't be found, the verification fails
-        assertTrue(unsuccessfulReport(constraintRequiredToMany.validateConstraint(entity)));
-    }
+    // Check with a stricter cardinality on constraint1. This fails before type checks, so no need for expectations
+    constraint1 = new Constraint(start, end01, Constraint.Cardinality.REQUIRED_TO_ONE, "SOME_REL");
+    assertFalse(constraint1.isSpecialization(constraint2));
 
-    // Test whether specialization method works
-    @Test
-    public void isSpecialization(
-            @Mocked Type start,
-            @Mocked Type end01,
-            @Mocked Type end02,
-            @Mocked TypeRepository typeRepository
-    ) throws Exception {
-        Constraint constraint1 = new Constraint(start, end01, Constraint.Cardinality.OPTIONAL_TO_MANY, "SOME_REL");
-        Constraint constraint2 = new Constraint(start, end02, Constraint.Cardinality.OPTIONAL_TO_MANY, "SOME_REL");
+    // Check with a different rel name. This fails before type checks, so no need for expectations
+    constraint1 = new Constraint(start, end01, Constraint.Cardinality.OPTIONAL_TO_MANY, "OTHER_REL");
+    assertFalse(constraint1.isSpecialization(constraint2));
 
-        // end02 subtypes end01
-        new StrictExpectations() {{
-            end02.isOfType(anyString);
-            result = true;
-        }};
-        assertTrue(constraint1.isSpecialization(constraint2));
+    // Make constraint2 the same, but with a stricter cardinality
+    constraint2 = new Constraint(start, end02, Constraint.Cardinality.REQUIRED_TO_MANY, "OTHER_REL");
+    // end02 does subtype end01
+    new StrictExpectations() {
+      {
+        end02.isOfType(anyString);
+        result = true;
+      }
+    };
+    assertTrue(constraint1.isSpecialization(constraint2));
+  }
 
-        // end02 doesn't subtype end01
-        new StrictExpectations() {{
-            end02.isOfType(anyString);
-            result = false;
-        }};
-        assertFalse(constraint1.isSpecialization(constraint2));
+  /*
+   * Make sure cardinality enum is ordered properly
+   */
+  @Test
+  public void testCardinalityOrdering() throws Exception {
+    assertTrue(Constraint.Cardinality.OPTIONAL_TO_MANY.ordinal() < Constraint.Cardinality.OPTIONAL_TO_ONE.ordinal());
+    assertTrue(Constraint.Cardinality.OPTIONAL_TO_ONE.ordinal() < Constraint.Cardinality.REQUIRED_TO_MANY.ordinal());
+    assertTrue(Constraint.Cardinality.REQUIRED_TO_MANY.ordinal() < Constraint.Cardinality.REQUIRED_TO_ONE.ordinal());
+  }
 
-        // Check with a stricter cardinality on constraint1. This fails before type checks, so no need for expectations
-        constraint1 = new Constraint(start, end01, Constraint.Cardinality.REQUIRED_TO_ONE, "SOME_REL");
-        assertFalse(constraint1.isSpecialization(constraint2));
+  /*
+   * Test running a constraint verification on a type, this results in an exception.
+   */
+  @Test
+  public void testVerificationOnType(@Mocked Type type, @Mocked Entity entity) throws Exception {
+    Constraint constraint = new Constraint(type, type, Constraint.Cardinality.OPTIONAL_TO_MANY, "TEST_REL");
 
-        // Check with a different rel name. This fails before type checks, so no need for expectations
-        constraint1 = new Constraint(start, end01, Constraint.Cardinality.OPTIONAL_TO_MANY, "OTHER_REL");
-        assertFalse(constraint1.isSpecialization(constraint2));
+    thrown.expect(IllegalArgumentException.class);
+    constraint.validateConstraint(entity);
+  }
 
-        // Make constraint2 the same, but with a stricter cardinality
-        constraint2 = new Constraint(start, end02, Constraint.Cardinality.REQUIRED_TO_MANY, "OTHER_REL");
-        // end02 does subtype end01
-        new StrictExpectations() {{
-            end02.isOfType(anyString);
-            result = true;
-        }};
-        assertTrue(constraint1.isSpecialization(constraint2));
-    }
+  @Test
+  public void testEqualsAndHashCode(@Mocked Type start, @Mocked Type end) {
+    // These constraints are the same
+    Constraint constraint1 = new Constraint(start, end, Constraint.Cardinality.OPTIONAL_TO_MANY, "SOME_REL");
+    Constraint constraint2 = new Constraint(start, end, Constraint.Cardinality.OPTIONAL_TO_MANY, "SOME_REL");
+    assertEquals(constraint1, constraint2);
+    assertEquals(constraint1.hashCode(), constraint2.hashCode());
 
-    /*
-     * Make sure cardinality enum is ordered properly
-     */
-    @Test
-    public void testCardinalityOrdering() throws Exception {
-        assertTrue(Constraint.Cardinality.OPTIONAL_TO_MANY.ordinal() < Constraint.Cardinality.OPTIONAL_TO_ONE.ordinal());
-        assertTrue(Constraint.Cardinality.OPTIONAL_TO_ONE.ordinal() < Constraint.Cardinality.REQUIRED_TO_MANY.ordinal());
-        assertTrue(Constraint.Cardinality.REQUIRED_TO_MANY.ordinal() < Constraint.Cardinality.REQUIRED_TO_ONE.ordinal());
-    }
+    // Constraint2 now differs from constraint1 by relationship name
+    constraint2 = new Constraint(start, end, Constraint.Cardinality.OPTIONAL_TO_MANY, "SOME_OTHER_REL");
+    assertNotEquals(constraint1, constraint2);
 
-    /*
-     * Test running a constraint verification on a type, this results in an exception.
-     */
-    @Test
-    public void testVerificationOnType(@Mocked Type type, @Mocked Entity entity) throws Exception {
-        Constraint constraint = new Constraint(type, type, Constraint.Cardinality.OPTIONAL_TO_MANY, "TEST_REL");
+    // Constraint2 now different from constraint1 because the begin node is different
+    constraint2 = new Constraint(end, end, Constraint.Cardinality.OPTIONAL_TO_MANY, "SOME_REL");
+    assertNotEquals(constraint1, constraint2);
 
-        thrown.expect(IllegalArgumentException.class);
-        constraint.validateConstraint(entity);
-    }
+    // Constraint2 now different from constraint1 because the end node is different
+    constraint2 = new Constraint(start, start, Constraint.Cardinality.OPTIONAL_TO_MANY, "SOME_REL");
+    assertNotEquals(constraint1, constraint2);
 
-    @Test
-    public void testEqualsAndHashCode(@Mocked Type start, @Mocked Type end) {
-        // These constraints are the same
-        Constraint constraint1 = new Constraint(start, end, Constraint.Cardinality.OPTIONAL_TO_MANY, "SOME_REL");
-        Constraint constraint2 = new Constraint(start, end, Constraint.Cardinality.OPTIONAL_TO_MANY, "SOME_REL");
-        assertEquals(constraint1, constraint2);
-        assertEquals(constraint1.hashCode(), constraint2.hashCode());
+    // Constraint2 now different from constraint1 because the cardinality different
+    constraint2 = new Constraint(start, end, Constraint.Cardinality.OPTIONAL_TO_ONE, "SOME_REL");
+    assertNotEquals(constraint1, constraint2);
 
-        // Constraint2 now differs from constraint1 by relationship name
-        constraint2 = new Constraint(start, end, Constraint.Cardinality.OPTIONAL_TO_MANY, "SOME_OTHER_REL");
-        assertNotEquals(constraint1, constraint2);
-
-        // Constraint2 now different from constraint1 because the begin node is different
-        constraint2 = new Constraint(end, end, Constraint.Cardinality.OPTIONAL_TO_MANY, "SOME_REL");
-        assertNotEquals(constraint1, constraint2);
-
-        // Constraint2 now different from constraint1 because the end node is different
-        constraint2 = new Constraint(start, start, Constraint.Cardinality.OPTIONAL_TO_MANY, "SOME_REL");
-        assertNotEquals(constraint1, constraint2);
-
-        // Constraint2 now different from constraint1 because the cardinality different
-        constraint2 = new Constraint(start, end, Constraint.Cardinality.OPTIONAL_TO_ONE, "SOME_REL");
-        assertNotEquals(constraint1, constraint2);
-
-        assertNotEquals(constraint1.hashCode(), constraint2.hashCode());
-    }
+    assertNotEquals(constraint1.hashCode(), constraint2.hashCode());
+  }
 }

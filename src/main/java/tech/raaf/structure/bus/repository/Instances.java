@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tech.raaf.structure.annotations.SchemaPath;
@@ -17,106 +18,107 @@ import tech.raaf.structure.graph.Type;
 import tech.raaf.structure.graph.repositories.InstanceRepository;
 import tech.raaf.structure.graph.repositories.TypeRepository;
 
-import java.util.UUID;
-
 public class Instances extends Repository<Instance> {
 
-    private InstanceRepository repository;
-    private final static TypeRepository TYPE_REPOSITORY = Context.getTypeRepository();
+  private InstanceRepository repository;
+  private static final TypeRepository TYPE_REPOSITORY = Context.getTypeRepository();
 
-    private Logger log = LoggerFactory.getLogger(Instances.class);
+  private Logger log = LoggerFactory.getLogger(Instances.class);
 
-    public Instances(InstanceRepository repository) {
-        super(repository);
-        this.repository = repository;
-    }
+  public Instances(InstanceRepository repository) {
+    super(repository);
+    this.repository = repository;
+  }
 
+  /**
+   * Query the last N Instances, filtering out Instances that are instruments.
+   * @return A data array containing the last N created Instances. If we don't have N nodes, then return
+   * as many as we have.
+   */
+  @SchemaPath("resource:/schema/repository/instances/nLastCreated.schema.json")
+  @SuppressWarnings("unused")
+  public MessageHandler nLastCreated() {
+    return new MessageHandler() {
+      @Override
+      public JsonNode exec(JsonNode request) {
+        ObjectNode result = mapper.createObjectNode();
+        ObjectNode args = (ObjectNode) request.get("args");
+        int n = args.get("amount").asInt();
 
-    /**
-     * Query the last N Instances, filtering out Instances that are instruments.
-     * @return A data array containing the last N created Instances. If we don't have N nodes, then return
-     * as many as we have.
-     */
-    @SchemaPath("resource:/schema/repository/instances/nLastCreated.schema.json")
-    @SuppressWarnings("unused")
-    public MessageHandler nLastCreated() {
-        return new MessageHandler() {
-            @Override
-            public JsonNode exec(JsonNode request) {
-                ObjectNode result = mapper.createObjectNode();
-                ObjectNode args = (ObjectNode)request.get("args");
-                int n = args.get("amount").asInt();
+        ArrayNode data = result.putArray("data");
+        repository.getNLastCreated(n).stream().map(Instance::toJson).forEach(data::add);
 
-                ArrayNode data = result.putArray("data");
-                repository.getNLastCreated(n).stream()
-                        .map(Instance::toJson)
-                        .forEach(data::add);
+        return response(request, result);
+      }
 
-                return response(request, result);
-            }
+      @Override
+      public JsonNode help(JsonNode request) {
+        return null;
+      }
+    };
+  }
 
-            @Override
-            public JsonNode help(JsonNode request) {
-                return null;
-            }
-        };
-    }
-    /**
-     * Persist an Instance to the database.
-     * @return A JSON object containing the UUID of the new Instance
-     * or an error field if something went wrong.
-     */
-    @SchemaPath("resource:/schema/repository/instances/putNode.schema.json")
-    @SuppressWarnings("unused")
-    public MessageHandler putNode() {
-        return new MessageHandler() {
-            @Override
-            public JsonNode exec(JsonNode request) {
-                ObjectNode result = mapper.createObjectNode();
-                ObjectNode args = (ObjectNode)request.get("args");
-                String isa = args.get("node").asText();
-                Type type = TYPE_REPOSITORY.findByUuid(isa);
-                // Remove the node field so it won't interfere with the Type schema.
-                args.remove("node");
+  /**
+   * Persist an Instance to the database.
+   * @return A JSON object containing the UUID of the new Instance
+   * or an error field if something went wrong.
+   */
+  @SchemaPath("resource:/schema/repository/instances/putNode.schema.json")
+  @SuppressWarnings("unused")
+  public MessageHandler putNode() {
+    return new MessageHandler() {
+      @Override
+      public JsonNode exec(JsonNode request) {
+        ObjectNode result = mapper.createObjectNode();
+        ObjectNode args = (ObjectNode) request.get("args");
+        String isa = args.get("node").asText();
+        Type type = TYPE_REPOSITORY.findByUuid(isa);
+        // Remove the node field so it won't interfere with the Type schema.
+        args.remove("node");
 
-                try {
-                    if (type.isOfType("Component")) {
-                        // The entity write path checks the data and the constraints
-                        final String uuid = UUID.randomUUID().toString();
-                        final ObjectNode json = mapper.createObjectNode()
-                                .put("name", args.path("name").asText())
-                                .put("desc", args.path("desc").asText());
-                        json.putObject("meta").put("uuid", uuid).putObject("relations")
-                                .putObject("INSTANCE_OF").put("direction", "outgoing")
-                                .putArray("to").add(type.getUuid());
-                        json.set("data", args.deepCopy());
-                        final Entity entity = mapper.treeToValue(json, Entity.class);
-                        Graph.transaction(() -> {
-                            entity.toGraph();
-                            Graph.afterCommit(() -> NodeActor.deploy(entity));
-                        });
-                        result.put("data", uuid);
-                    } else {
-                        // TODO: add support for other Instances
-                    }
-                } catch (RuntimeException | JsonProcessingException e) {
-                    log.error(e.getMessage());
+        try {
+          if (type.isOfType("Component")) {
+            // The entity write path checks the data and the constraints
+            final String uuid = UUID.randomUUID().toString();
+            final ObjectNode json = mapper
+              .createObjectNode()
+              .put("name", args.path("name").asText())
+              .put("desc", args.path("desc").asText());
+            json
+              .putObject("meta")
+              .put("uuid", uuid)
+              .putObject("relations")
+              .putObject("INSTANCE_OF")
+              .put("direction", "outgoing")
+              .putArray("to")
+              .add(type.getUuid());
+            json.set("data", args.deepCopy());
+            final Entity entity = mapper.treeToValue(json, Entity.class);
+            Graph.transaction(() -> {
+              entity.toGraph();
+              Graph.afterCommit(() -> NodeActor.deploy(entity));
+            });
+            result.put("data", uuid);
+          } else {
+            // TODO: add support for other Instances
+          }
+        } catch (RuntimeException | JsonProcessingException e) {
+          log.error(e.getMessage());
 
-                    if (Configuration.isTraceModeOn()) {
-                        e.printStackTrace();
-                    }
-                    
-                    result.put("error", e.getMessage());
-                }
+          if (Configuration.isTraceModeOn()) {
+            e.printStackTrace();
+          }
 
-                return response(request, result);
-            }
+          result.put("error", e.getMessage());
+        }
 
-            @Override
-            public JsonNode help(JsonNode request) {
-                return null;
-            }
-        };
-    }
+        return response(request, result);
+      }
 
+      @Override
+      public JsonNode help(JsonNode request) {
+        return null;
+      }
+    };
+  }
 }

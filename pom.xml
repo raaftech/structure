@@ -1,368 +1,376 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+<?xml version="1.0" encoding="UTF-8" ?>
+<project
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"
+>
+  <modelVersion>4.0.0</modelVersion>
 
-    <groupId>tech.raaf</groupId>
-    <artifactId>structure</artifactId>
-    <packaging>jar</packaging>
-    <version>0.9.0-SNAPSHOT</version>
-    <name>Structure</name>
+  <groupId>tech.raaf</groupId>
+  <artifactId>structure</artifactId>
+  <packaging>jar</packaging>
+  <version>0.9.0-SNAPSHOT</version>
+  <name>Structure</name>
 
-    <description>
-        Vert.x and Neo4j application to manage computing environments.
-    </description>
+  <description>Vert.x and Neo4j application to manage computing environments.</description>
 
-    <url>http://raaf.tech/structure.html</url>
+  <url>http://raaf.tech/structure.html</url>
 
-    <organization>
-        <name>RAAF Technology</name>
-        <url>http://raaf.tech/</url>
-    </organization>
+  <organization>
+    <name>RAAF Technology</name>
+    <url>http://raaf.tech/</url>
+  </organization>
 
-    <scm>
-        <url>https://github.com/raaftech/structure</url>
-        <connection>https://github.com/raaftech/structure.git</connection>
-        <developerConnection>git@github.com:raaftech/structure.git</developerConnection>
-    </scm>
+  <scm>
+    <url>https://github.com/raaftech/structure</url>
+    <connection>https://github.com/raaftech/structure.git</connection>
+    <developerConnection>git@github.com:raaftech/structure.git</developerConnection>
+  </scm>
 
-    <issueManagement>
-        <system>Structure Issues</system>
-        <url>https://github.com/raaftech/structure/issues</url>
-    </issueManagement>
+  <issueManagement>
+    <system>Structure Issues</system>
+    <url>https://github.com/raaftech/structure/issues</url>
+  </issueManagement>
 
-    <ciManagement>
-        <system>Structure Pipelines</system>
-        <url>https://github.com/raaftech/structure/pipelines</url>
-    </ciManagement>
+  <ciManagement>
+    <system>Structure Pipelines</system>
+    <url>https://github.com/raaftech/structure/pipelines</url>
+  </ciManagement>
 
-    <developers>
-        <developer>
-            <id>rubin</id>
-            <email>rubin@raaf.tech</email>
-            <name>Rubin Simons</name>
-            <organization>RAAF Technology</organization>
-            <organizationUrl>http://raaf.tech/</organizationUrl>
-        </developer>
-        <developer>
-            <id>freek</id>
-            <email>freek@raaf.tech</email>
-            <name>Freek Alleman</name>
-            <organization>RAAF Technology</organization>
-            <organizationUrl>http://raaf.tech/</organizationUrl>
-        </developer>
-        <developer>
-            <id>stephan</id>
-            <email>stephan@raaf.tech</email>
-            <name>Stephan Kaffa</name>
-            <organization>RAAF Technology</organization>
-            <organizationUrl>http://raaf.tech/</organizationUrl>
-        </developer>
-        <developer>
-            <id>jasper</id>
-            <email>jasper@raaf.tech</email>
-            <name>Jasper Spoel</name>
-            <organization>RAAF Technology</organization>
-            <organizationUrl>http://raaf.tech/</organizationUrl>
-        </developer>
-    </developers>
+  <developers>
+    <developer>
+      <id>rubin</id>
+      <email>rubin@raaf.tech</email>
+      <name>Rubin Simons</name>
+      <organization>RAAF Technology</organization>
+      <organizationUrl>http://raaf.tech/</organizationUrl>
+    </developer>
+    <developer>
+      <id>freek</id>
+      <email>freek@raaf.tech</email>
+      <name>Freek Alleman</name>
+      <organization>RAAF Technology</organization>
+      <organizationUrl>http://raaf.tech/</organizationUrl>
+    </developer>
+    <developer>
+      <id>stephan</id>
+      <email>stephan@raaf.tech</email>
+      <name>Stephan Kaffa</name>
+      <organization>RAAF Technology</organization>
+      <organizationUrl>http://raaf.tech/</organizationUrl>
+    </developer>
+    <developer>
+      <id>jasper</id>
+      <email>jasper@raaf.tech</email>
+      <name>Jasper Spoel</name>
+      <organization>RAAF Technology</organization>
+      <organizationUrl>http://raaf.tech/</organizationUrl>
+    </developer>
+    <developer>
+      <id>boy</id>
+      <email>boy@raaf.tech</email>
+      <name>Boy van Duuren</name>
+      <organization>RAAF Technology</organization>
+      <organizationUrl>http://raaf.tech/</organizationUrl>
+    </developer>
+  </developers>
 
-    <properties>
-        <!-- Generic settings -->
-        <java.source-target.version>1.8</java.source-target.version>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <main.class>tech.raaf.structure.base.Application</main.class>
+  <properties>
+    <!-- Generic settings -->
+    <java.source-target.version>1.8</java.source-target.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <main.class>tech.raaf.structure.base.Application</main.class>
 
-        <!-- Core component versions -->
-        <vertx.version>3.4.1</vertx.version>
-        <neo4j-java-driver.version>4.4.27</neo4j-java-driver.version>
-        <handlebars.version>2.2.3</handlebars.version>
+    <!-- Core component versions -->
+    <vertx.version>3.4.1</vertx.version>
+    <neo4j-java-driver.version>4.4.27</neo4j-java-driver.version>
+    <handlebars.version>2.2.3</handlebars.version>
 
-        <!-- Helper component versions -->
-        <json-schema-validator.version>2.2.6</json-schema-validator.version>
-        <commons-io.version>1.3.2</commons-io.version>
-        <commons-cli.version>1.3.1</commons-cli.version>
-        <commons-codec.version>1.10</commons-codec.version>
-        <commons-lang3.version>3.1</commons-lang3.version>
-        <logback.version>1.1.7</logback.version>
-        <slf4j.version>1.7.21</slf4j.version>
-        <jmockit.version>1.30</jmockit.version>
+    <!-- Helper component versions -->
+    <json-schema-validator.version>2.2.6</json-schema-validator.version>
+    <commons-io.version>1.3.2</commons-io.version>
+    <commons-cli.version>1.3.1</commons-cli.version>
+    <commons-codec.version>1.10</commons-codec.version>
+    <commons-lang3.version>3.1</commons-lang3.version>
+    <logback.version>1.1.7</logback.version>
+    <slf4j.version>1.7.21</slf4j.version>
+    <jmockit.version>1.30</jmockit.version>
 
-        <!-- Test component versions -->
-        <junit.version>4.12</junit.version>
+    <!-- Test component versions -->
+    <junit.version>4.12</junit.version>
 
-        <!-- Maven plugin versions -->
-        <maven.toolchains.plugin.version>3.2.0</maven.toolchains.plugin.version>
-        <maven.compiler.plugin.version>3.3</maven.compiler.plugin.version>
-        <maven.shade.plugin.version>2.4.3</maven.shade.plugin.version>
-        <maven.surefire.plugin.version>2.19.1</maven.surefire.plugin.version>
-        <jacoco.plugin.version>0.8.11</jacoco.plugin.version>
-        <jacoco.line.minimum>0.60</jacoco.line.minimum>
-    </properties>
+    <!-- Maven plugin versions -->
+    <maven.toolchains.plugin.version>3.2.0</maven.toolchains.plugin.version>
+    <maven.compiler.plugin.version>3.3</maven.compiler.plugin.version>
+    <maven.shade.plugin.version>2.4.3</maven.shade.plugin.version>
+    <maven.surefire.plugin.version>2.19.1</maven.surefire.plugin.version>
+    <jacoco.plugin.version>0.8.11</jacoco.plugin.version>
+    <jacoco.line.minimum>0.60</jacoco.line.minimum>
+  </properties>
 
-    <dependencies>
-        <!-- Project dependencies -->
-        <dependency>
-            <groupId>io.vertx</groupId>
-            <artifactId>vertx-core</artifactId>
-            <version>${vertx.version}</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.vertx</groupId>
-            <artifactId>vertx-web</artifactId>
-            <version>${vertx.version}</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.github.fge</groupId>
-            <artifactId>json-schema-validator</artifactId>
-            <version>${json-schema-validator.version}</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.neo4j.driver</groupId>
-            <artifactId>neo4j-java-driver</artifactId>
-            <version>${neo4j-java-driver.version}</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-            <version>${commons-io.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>commons-cli</groupId>
-            <artifactId>commons-cli</artifactId>
-            <version>${commons-cli.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>commons-codec</groupId>
-            <artifactId>commons-codec</artifactId>
-            <version>${commons-codec.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-            <version>${commons-lang3.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>${logback.version}</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>${slf4j.version}</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>jul-to-slf4j</artifactId>
-            <version>${slf4j.version}</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.github.jknack</groupId>
-            <artifactId>handlebars</artifactId>
-            <version>${handlebars.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.github.jknack</groupId>
-            <artifactId>handlebars-jackson2</artifactId>
-            <version>${handlebars.version}</version>
-        </dependency>
+  <dependencies>
+    <!-- Project dependencies -->
+    <dependency>
+      <groupId>io.vertx</groupId>
+      <artifactId>vertx-core</artifactId>
+      <version>${vertx.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.vertx</groupId>
+      <artifactId>vertx-web</artifactId>
+      <version>${vertx.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.github.fge</groupId>
+      <artifactId>json-schema-validator</artifactId>
+      <version>${json-schema-validator.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.neo4j.driver</groupId>
+      <artifactId>neo4j-java-driver</artifactId>
+      <version>${neo4j-java-driver.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <version>${commons-io.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-cli</groupId>
+      <artifactId>commons-cli</artifactId>
+      <version>${commons-cli.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-codec</groupId>
+      <artifactId>commons-codec</artifactId>
+      <version>${commons-codec.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <version>${commons-lang3.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+      <version>${logback.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>${slf4j.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jul-to-slf4j</artifactId>
+      <version>${slf4j.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.github.jknack</groupId>
+      <artifactId>handlebars</artifactId>
+      <version>${handlebars.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.github.jknack</groupId>
+      <artifactId>handlebars-jackson2</artifactId>
+      <version>${handlebars.version}</version>
+    </dependency>
 
-        <!--Test dependencies -->
-        <dependency>
-            <groupId>org.jmockit</groupId>
-            <artifactId>jmockit</artifactId>
-            <version>${jmockit.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>${junit.version}</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
+    <!--Test dependencies -->
+    <dependency>
+      <groupId>org.jmockit</groupId>
+      <artifactId>jmockit</artifactId>
+      <version>${jmockit.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>${junit.version}</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
 
-    <build>
-        <finalName>structure-${project.version}-trunk</finalName>
+  <build>
+    <finalName>structure-${project.version}-trunk</finalName>
 
-        <directory>target</directory>
+    <directory>target</directory>
 
-        <outputDirectory>target/classes</outputDirectory>
-        <testOutputDirectory>target/test-classes</testOutputDirectory>
+    <outputDirectory>target/classes</outputDirectory>
+    <testOutputDirectory>target/test-classes</testOutputDirectory>
 
-        <sourceDirectory>src/main/java</sourceDirectory>
-        <testSourceDirectory>src/test/java</testSourceDirectory>
+    <sourceDirectory>src/main/java</sourceDirectory>
+    <testSourceDirectory>src/test/java</testSourceDirectory>
 
-        <resources>
-            <resource>
-                <directory>src/main/resources</directory>
-                <filtering>true</filtering>
-                <includes>
-                    <include>release.json</include>
-                </includes>
-            </resource>
-            <resource>
-                <directory>src/main/resources</directory>
-                <filtering>false</filtering>
-                <excludes>
-                    <exclude>release.json</exclude>
-                </excludes>
-            </resource>
-        </resources>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>true</filtering>
+        <includes>
+          <include>release.json</include>
+        </includes>
+      </resource>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>false</filtering>
+        <excludes>
+          <exclude>release.json</exclude>
+        </excludes>
+      </resource>
+    </resources>
 
-        <testResources>
-            <testResource>
-                <directory>src/test/resources</directory>
-            </testResource>
-        </testResources>
+    <testResources>
+      <testResource>
+        <directory>src/test/resources</directory>
+      </testResource>
+    </testResources>
 
-        <plugins>
-            <!-- Build and test with the JDK from ~/.m2/toolchains.xml -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-toolchains-plugin</artifactId>
-                <version>${maven.toolchains.plugin.version}</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>toolchain</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <toolchains>
-                        <jdk>
-                            <version>${java.source-target.version}</version>
-                        </jdk>
-                    </toolchains>
-                </configuration>
-            </plugin>
+    <plugins>
+      <!-- Build and test with the JDK from ~/.m2/toolchains.xml -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-toolchains-plugin</artifactId>
+        <version>${maven.toolchains.plugin.version}</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>toolchain</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <toolchains>
+            <jdk>
+              <version>${java.source-target.version}</version>
+            </jdk>
+          </toolchains>
+        </configuration>
+      </plugin>
 
-            <!-- Compiler setup -->
-            <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>${maven.compiler.plugin.version}</version>
-                <configuration>
-                    <source>${java.source-target.version}</source>
-                    <target>${java.source-target.version}</target>
-                    <useIncrementalCompilation>false</useIncrementalCompilation>
-                    <compilerArgs>
-                        <arg>-Xlint:all</arg>
-                    </compilerArgs>
-                </configuration>
-            </plugin>
+      <!-- Compiler setup -->
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>${maven.compiler.plugin.version}</version>
+        <configuration>
+          <source>${java.source-target.version}</source>
+          <target>${java.source-target.version}</target>
+          <useIncrementalCompilation>false</useIncrementalCompilation>
+          <compilerArgs>
+            <arg>-Xlint:all</arg>
+          </compilerArgs>
+        </configuration>
+      </plugin>
 
-            <!-- Surefire plugin setup -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>${maven.surefire.plugin.version}</version>
-                <configuration>
-                    <forkCount>1</forkCount>
-                    <reuseForks>false</reuseForks>
-                </configuration>
-            </plugin>
+      <!-- Surefire plugin setup -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>${maven.surefire.plugin.version}</version>
+        <configuration>
+          <forkCount>1</forkCount>
+          <reuseForks>false</reuseForks>
+        </configuration>
+      </plugin>
 
-            <!-- Coverage: report on test, minimum line coverage on verify -->
-            <plugin>
-                <groupId>org.jacoco</groupId>
-                <artifactId>jacoco-maven-plugin</artifactId>
-                <version>${jacoco.plugin.version}</version>
-                <executions>
-                    <execution>
-                        <id>prepare-agent</id>
-                        <goals>
-                            <goal>prepare-agent</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>report</id>
-                        <phase>test</phase>
-                        <goals>
-                            <goal>report</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>check</id>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                        <configuration>
-                            <rules>
-                                <rule>
-                                    <element>BUNDLE</element>
-                                    <limits>
-                                        <limit>
-                                            <counter>LINE</counter>
-                                            <value>COVEREDRATIO</value>
-                                            <minimum>${jacoco.line.minimum}</minimum>
-                                        </limit>
-                                    </limits>
-                                </rule>
-                            </rules>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+      <!-- Coverage: report on test, minimum line coverage on verify -->
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <version>${jacoco.plugin.version}</version>
+        <executions>
+          <execution>
+            <id>prepare-agent</id>
+            <goals>
+              <goal>prepare-agent</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>report</id>
+            <phase>test</phase>
+            <goals>
+              <goal>report</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>check</id>
+            <goals>
+              <goal>check</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <rule>
+                  <element>BUNDLE</element>
+                  <limits>
+                    <limit>
+                      <counter>LINE</counter>
+                      <value>COVEREDRATIO</value>
+                      <minimum>${jacoco.line.minimum}</minimum>
+                    </limit>
+                  </limits>
+                </rule>
+              </rules>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
 
-            <!-- Create fat executable jar -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>${maven.shade.plugin.version}</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                        <configuration>
-                            <filters>
-                                <filter>
-                                    <artifact>*:*</artifact>
-                                    <excludes>
-                                        <exclude>**/logging.properties</exclude>
-                                        <exclude>**/log4j.properties</exclude>
-                                        <exclude>**/log4j.xml</exclude>
-                                        <exclude>META-INF/*.SF</exclude>
-                                        <exclude>META-INF/*.DSA</exclude>
-                                        <exclude>META-INF/*.RSA</exclude>
-                                    </excludes>
-                                </filter>
-                            </filters>
-                            <transformers>
-                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <manifestEntries>
-                                        <Main-Class>${main.class}</Main-Class>
-                                    </manifestEntries>
-                                </transformer>
-                                <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
-                                    <resource>META-INF/services/io.vertx.core.spi.VerticleFactory</resource>
-                                </transformer>
-                            </transformers>
-                            <artifactSet>
-                                <!-- By default all the deps go into the fat jar, but we don't need some so we can exclude
+      <!-- Create fat executable jar -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>${maven.shade.plugin.version}</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <filters>
+                <filter>
+                  <artifact>*:*</artifact>
+                  <excludes>
+                    <exclude>**/logging.properties</exclude>
+                    <exclude>**/log4j.properties</exclude>
+                    <exclude>**/log4j.xml</exclude>
+                    <exclude>META-INF/*.SF</exclude>
+                    <exclude>META-INF/*.DSA</exclude>
+                    <exclude>META-INF/*.RSA</exclude>
+                  </excludes>
+                </filter>
+              </filters>
+              <transformers>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                  <manifestEntries>
+                    <Main-Class>${main.class}</Main-Class>
+                  </manifestEntries>
+                </transformer>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                  <resource>META-INF/services/io.vertx.core.spi.VerticleFactory</resource>
+                </transformer>
+              </transformers>
+              <artifactSet>
+                <!-- By default all the deps go into the fat jar, but we don't need some so we can exclude
                                     them here -->
-                                <excludes>
-                                    <exclude>io.vertx:codegen</exclude>
-                                    <exclude>junit:junit</exclude>
-                                    <exclude>org.mvel:mvel2</exclude>
-                                    <exclude>log4j:log4j</exclude>
-                                </excludes>
-                            </artifactSet>
-                            <outputFile>${project.build.directory}/${project.artifactId}-${project.version}-fat.jar</outputFile>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
+                <excludes>
+                  <exclude>io.vertx:codegen</exclude>
+                  <exclude>junit:junit</exclude>
+                  <exclude>org.mvel:mvel2</exclude>
+                  <exclude>log4j:log4j</exclude>
+                </excludes>
+              </artifactSet>
+              <outputFile>${project.build.directory}/${project.artifactId}-${project.version}-fat.jar</outputFile>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 </project>

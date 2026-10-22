@@ -8,9 +8,7 @@
       "relations": {
         "ISA": {
           "direction": "outgoing",
-          "uuids": [
-            "3fb4603b-281e-47c0-b338-768ea05d4660"
-          ]
+          "uuids": ["3fb4603b-281e-47c0-b338-768ea05d4660"]
         }
       }
     },
@@ -26,7 +24,6 @@
     }
   },
 
-
   {
     "type": "Type",
     "name": "TelnetServer",
@@ -36,15 +33,11 @@
       "relations": {
         "ISA": {
           "direction": "outgoing",
-          "uuids": [
-            "3fb4603b-281e-47c0-b338-768ea05d4660"
-          ]
+          "uuids": ["3fb4603b-281e-47c0-b338-768ea05d4660"]
         },
         "IMPLEMENTS": {
           "direction": "outgoing",
-          "uuids": [
-            "27fc7ed2-beb3-41c8-aa69-900ad7bb989f"
-          ]
+          "uuids": ["27fc7ed2-beb3-41c8-aa69-900ad7bb989f"]
         }
       }
     },

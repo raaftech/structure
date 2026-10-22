@@ -1,22 +1,20 @@
 {
-    "name": "Bash",
-    "desc": "The Bourne Again Shell.",
-    "meta": {
-        "uuid": "6d467b28-449f-498c-9ca5-8660f522897f",
-        "relations": {
-            "ISA": {
-                "direction": "outgoing",
-                "to": [
-                    "86168e4a-8c99-43c9-ad95-c8f88d96ac32"
-                ]
-            }
-        }
-    },
-    "file": {
-        "dataSchema": {
-            "encoding": "text",
-            "format": "json",
-            "path": "bash.schema.json"
-        }
+  "name": "Bash",
+  "desc": "The Bourne Again Shell.",
+  "meta": {
+    "uuid": "6d467b28-449f-498c-9ca5-8660f522897f",
+    "relations": {
+      "ISA": {
+        "direction": "outgoing",
+        "to": ["86168e4a-8c99-43c9-ad95-c8f88d96ac32"]
+      }
     }
+  },
+  "file": {
+    "dataSchema": {
+      "encoding": "text",
+      "format": "json",
+      "path": "bash.schema.json"
+    }
+  }
 }

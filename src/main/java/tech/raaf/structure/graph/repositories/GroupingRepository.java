@@ -1,20 +1,21 @@
 package tech.raaf.structure.graph.repositories;
 
 import com.google.common.collect.ImmutableMap;
+import java.util.Set;
 import tech.raaf.structure.graph.Group;
 import tech.raaf.structure.graph.Instance;
 
-import java.util.Set;
-
 public class GroupingRepository extends GenericRepository<Group> {
 
-    public GroupingRepository() {
-        super("Group");
-    }
+  public GroupingRepository() {
+    super("Group");
+  }
 
-    public Set<Instance> getChildrenOfType(String groupUuid, String typeName) {
-        return set("MATCH (:Group {uuid: $uuid})<-[:MEMBER_OF]-()-[*1..]->(n:Instance)" +
-                "-[:INSTANCE_OF|ISA*1..]->(:Type {name: $name}) RETURN DISTINCT n",
-                ImmutableMap.of("uuid", groupUuid, "name", typeName));
-    }
+  public Set<Instance> getChildrenOfType(String groupUuid, String typeName) {
+    return set(
+      "MATCH (:Group {uuid: $uuid})<-[:MEMBER_OF]-()-[*1..]->(n:Instance)" +
+        "-[:INSTANCE_OF|ISA*1..]->(:Type {name: $name}) RETURN DISTINCT n",
+      ImmutableMap.of("uuid", groupUuid, "name", typeName)
+    );
+  }
 }

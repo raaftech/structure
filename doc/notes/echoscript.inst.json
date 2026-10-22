@@ -7,27 +7,19 @@
     "relations": {
       "HAS_INSTRUMENT": {
         "direction": "incoming",
-        "uuids": [
-          "6d467b28-449f-498c-9ca5-8660f522897f"
-        ]
+        "uuids": ["6d467b28-449f-498c-9ca5-8660f522897f"]
       },
       "HANDLES": {
         "direction": "outgoing",
-        "uuids": [
-          "6d467b28-449f-498c-9ca5-8660f522897f"
-        ]
+        "uuids": ["6d467b28-449f-498c-9ca5-8660f522897f"]
       },
       "GIVES_CAPABILITY": {
         "direction": "outgoing",
-        "uuids": [
-          "347ca5da-db19-4d98-9fed-60e72d5d6bba"
-        ]
+        "uuids": ["347ca5da-db19-4d98-9fed-60e72d5d6bba"]
       },
       "INSTANCE_OF": {
         "direction": "outgoing",
-        "uuids": [
-          "f482204e-7d63-45ca-96c9-10a7cc2783da"
-        ]
+        "uuids": ["f482204e-7d63-45ca-96c9-10a7cc2783da"]
       }
     }
   },

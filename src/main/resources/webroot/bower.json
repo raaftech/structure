@@ -5,15 +5,11 @@
     "Rubin Simons <rubin@raaf.tech>",
     "Freek Alleman <freek@raaf.tech>",
     "Stephan Kaffa <stephan@raaf.tech>",
-    "Jasper Spoel <jasper@raaf.tech>"
+    "Jasper Spoel <jasper@raaf.tech>",
+    "Boy van Duuren <boy@raaf.tech>"
   ],
   "license": "Proprietary",
-  "ignore": [
-    "**/.*",
-    "node_modules",
-    "bower_components",
-    "vendors"
-  ],
+  "ignore": ["**/.*", "node_modules", "bower_components", "vendors"],
   "dependencies": {
     "angular-animate": "1.4.14",
     "angular-bootstrap": "2.2.0",

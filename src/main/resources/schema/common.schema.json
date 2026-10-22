@@ -40,7 +40,7 @@
       }
     },
     "stringOrStringArray": {
-      "type": [ "string", "array" ],
+      "type": ["string", "array"],
       "minItems": 1,
       "items": {
         "type": "string"

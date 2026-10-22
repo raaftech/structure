@@ -1,89 +1,97 @@
 <div ng-controller="typeCtrl">
-    <pageslide ps-open="showDetails"
-               ps-auto-close="true"
-               ps-side="top"
-               ps-push="true"
-               ps-size="{{showSize}}"
-               ps-click-outside="false"
-               ps-class="panelDetails">
-        <div class="col-sm-12 main detailed-info">
-            <div class="basic">
-                <div class="body">
-                    <show-icon glyphid="{{type.glyphId}}" size="sg-xl"></show-icon>
-                    <div class="text-block">
-                        <h1>{{type.name}}</h1>
-                        <p>{{type.desc}}</p>
-                        <p>
-                            <button type="button" class="btn button-str" ng-click="editType(type.uuid); openPanelRight();">Edit</button>
-                            <button type="button" class="btn button-transparent" ng-click="closeDetailedInfo()">...</button>
-                        </p>
-                    </div>
-                </div>
-            </div>
-            <div class="detail">
-                <ul>
-                    <h2>Details</h2>
-                    <li><label>Name</label>{{type.name}}</li>
-                    <li><label>Description</label>{{type.desc}}</li>
-                    <li><label>UUID</label>{{type.uuid}}</li>
-                    <li><label>ISA</label>{{isa.name}}</li>
-                </ul>
-            </div>
+  <pageslide
+    ps-open="showDetails"
+    ps-auto-close="true"
+    ps-side="top"
+    ps-push="true"
+    ps-size="{{showSize}}"
+    ps-click-outside="false"
+    ps-class="panelDetails"
+  >
+    <div class="col-sm-12 main detailed-info">
+      <div class="basic">
+        <div class="body">
+          <show-icon glyphid="{{type.glyphId}}" size="sg-xl"></show-icon>
+          <div class="text-block">
+            <h1>{{type.name}}</h1>
+            <p>{{type.desc}}</p>
+            <p>
+              <button type="button" class="btn button-str" ng-click="editType(type.uuid); openPanelRight();">
+                Edit
+              </button>
+              <button type="button" class="btn button-transparent" ng-click="closeDetailedInfo()">...</button>
+            </p>
+          </div>
         </div>
-    </pageslide>
-    <pageslide ps-open="panelRight"
-               ps-auto-close="true"
-               ps-body-class="true"
-               ps-size="{{panelRightSize}}"
-               ps-click-outside="false"
-               ps-class="panelRight">
-        <div class="modal-header">
-            <h3 class="modal-title" ng-click="closePanelRight()">
-                <show-icon glyphid="{{model.glyphId}}" size="sg-xs"></show-icon>
-                {{model.name}}
-            </h3>
-        </div>
-        <div class="modal-body">
-            <uib-tabset active="active">
-                <uib-tab index="0" heading="Form">
-                    <form name="editTypeForm"
-                          sf-schema="schema"
-                          sf-form="form"
-                          sf-model="model"
-                          ng-submit="saveType(editTypeForm)"></form>
-                </uib-tab>
-                <uib-tab index="1" heading="Schema"><pre>{{schema | json}}</pre></uib-tab>
-            </uib-tabset>
-        </div>
-    </pageslide>
-    <script type="text/ng-template" id="nodeTree">
-        <div class="row" ng-init="topMenuButton = false" ng-mouseenter="topMenuButton = true" ng-mouseleave="topMenuButton = false">
-            <div class="col-xs-4" ng-click="getType(node.uuid); detailedInfo();">
-                <span ng-class="
-                          {
-                              'open': (node.children != [] && node.nodes.length > 0),
-                              'closed': (node.children != '[]' && (node.nodes.length == 0 || !node.nodes))
-                          }"
-                      ng-click="$event.stopPropagation(); getChildren(node)"></span>
-                <show-icon glyphid="{{node.glyphId}}" size="sg-xs"></show-icon>
-                {{node.name}}
-            </div>
-            <div class="col-xs-4 wrap-text" ng-click="getType(node.uuid); detailedInfo();">{{node.desc}}</div>
-            <div class="col-xs-4 wrap-text" ng-click="getType(node.uuid); detailedInfo();">{{node.uuid}}</div>
-            <list-item-hover-menu-types ng-show="topMenuButton" uuid="{{node.uuid}}"></list-item-hover-menu-types>
-        </div>
-        <ul ng-if="node.nodes" class="list-group list" ng-show="node.nodes.length > 0">
-            <li ng-repeat="node in node.nodes | orderBy: 'name'" ng-include="'nodeTree'" class="list-group-item"></li>
+      </div>
+      <div class="detail">
+        <ul>
+          <h2>Details</h2>
+          <li><label>Name</label>{{type.name}}</li>
+          <li><label>Description</label>{{type.desc}}</li>
+          <li><label>UUID</label>{{type.uuid}}</li>
+          <li><label>ISA</label>{{isa.name}}</li>
         </ul>
-    </script>
-    <ul class="list-group list">
-        <li class="list-group-item header">
-            <div class="row">
-                <div class="col-xs-4">Name</div>
-                <div class="col-xs-4">Description</div>
-                <div class="col-xs-4">UUID</div>
-            </div>
-        </li>
-        <li ng-repeat="node in nodes | orderBy: 'name'" ng-include="'nodeTree'" class="list-group-item"></li>
+      </div>
+    </div>
+  </pageslide>
+  <pageslide
+    ps-open="panelRight"
+    ps-auto-close="true"
+    ps-body-class="true"
+    ps-size="{{panelRightSize}}"
+    ps-click-outside="false"
+    ps-class="panelRight"
+  >
+    <div class="modal-header">
+      <h3 class="modal-title" ng-click="closePanelRight()">
+        <show-icon glyphid="{{model.glyphId}}" size="sg-xs"></show-icon>
+        {{model.name}}
+      </h3>
+    </div>
+    <div class="modal-body">
+      <uib-tabset active="active">
+        <uib-tab index="0" heading="Form">
+          <form
+            name="editTypeForm"
+            sf-schema="schema"
+            sf-form="form"
+            sf-model="model"
+            ng-submit="saveType(editTypeForm)"
+          ></form>
+        </uib-tab>
+        <uib-tab index="1" heading="Schema"><pre>{{schema | json}}</pre></uib-tab>
+      </uib-tabset>
+    </div>
+  </pageslide>
+  <script type="text/ng-template" id="nodeTree">
+    <div class="row" ng-init="topMenuButton = false" ng-mouseenter="topMenuButton = true" ng-mouseleave="topMenuButton = false">
+        <div class="col-xs-4" ng-click="getType(node.uuid); detailedInfo();">
+            <span ng-class="
+                      {
+                          'open': (node.children != [] && node.nodes.length > 0),
+                          'closed': (node.children != '[]' && (node.nodes.length == 0 || !node.nodes))
+                      }"
+                  ng-click="$event.stopPropagation(); getChildren(node)"></span>
+            <show-icon glyphid="{{node.glyphId}}" size="sg-xs"></show-icon>
+            {{node.name}}
+        </div>
+        <div class="col-xs-4 wrap-text" ng-click="getType(node.uuid); detailedInfo();">{{node.desc}}</div>
+        <div class="col-xs-4 wrap-text" ng-click="getType(node.uuid); detailedInfo();">{{node.uuid}}</div>
+        <list-item-hover-menu-types ng-show="topMenuButton" uuid="{{node.uuid}}"></list-item-hover-menu-types>
+    </div>
+    <ul ng-if="node.nodes" class="list-group list" ng-show="node.nodes.length > 0">
+        <li ng-repeat="node in node.nodes | orderBy: 'name'" ng-include="'nodeTree'" class="list-group-item"></li>
     </ul>
+  </script>
+  <ul class="list-group list">
+    <li class="list-group-item header">
+      <div class="row">
+        <div class="col-xs-4">Name</div>
+        <div class="col-xs-4">Description</div>
+        <div class="col-xs-4">UUID</div>
+      </div>
+    </li>
+    <li ng-repeat="node in nodes | orderBy: 'name'" ng-include="'nodeTree'" class="list-group-item"></li>
+  </ul>
 </div>

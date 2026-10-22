@@ -6,7 +6,7 @@
   "scripts": {
     "test": ""
   },
-  "author": "Black Orchid",
+  "author": "Jasper Spoel <jasper@raaf.tech>",
   "license": "ISC",
   "dependencies": {
     "ramda": "^0.24.1",

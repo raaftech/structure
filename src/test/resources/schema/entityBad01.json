@@ -6,9 +6,7 @@
     "relations": {
       "ISA": {
         "direction": "outgoing",
-        "to": [
-          "b1bc963a-19cc-4518-aecb-a35d028c49e3"
-        ]
+        "to": ["b1bc963a-19cc-4518-aecb-a35d028c49e3"]
       }
     },
     "constraints": {

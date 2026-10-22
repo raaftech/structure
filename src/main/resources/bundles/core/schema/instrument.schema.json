@@ -2,12 +2,7 @@
   "additionalProperties": false,
   "$schema": "http://json-schema.org/schema#",
   "description": "Schema for Structure instruments.",
-  "required": [
-    "name",
-    "desc",
-    "instrumentType",
-    "subjectIsLocal"
-  ],
+  "required": ["name", "desc", "instrumentType", "subjectIsLocal"],
   "type": "object",
   "properties": {
     "name": {

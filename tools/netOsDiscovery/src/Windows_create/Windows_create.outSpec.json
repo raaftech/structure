@@ -1,9 +1,9 @@
 {
-    "type": "object",
-    "required": ["computer","result"],
-    "properties": {
-        "computer": {"type": "array"},
-        "result": {}
-    },
-    "additionalProperties": false
+  "type": "object",
+  "required": ["computer", "result"],
+  "properties": {
+    "computer": { "type": "array" },
+    "result": {}
+  },
+  "additionalProperties": false
 }

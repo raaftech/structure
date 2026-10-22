@@ -49,21 +49,21 @@ cd /usr/src/winexe/source
 # build gnutls
 cd /usr/src/$GNUTLS_NAME
 ./configure --disable-shared --enable-static && make
-GNUTLS_STATICLIB=`readlink -f $(dirname $(find -name libgnutls.a))`
+GNUTLS_STATICLIB=$(readlink -f $(dirname $(find -name libgnutls.a)))
 # build libgcrypt
 cd /usr/src/$LIBGCRYPT_NAME
 ./configure --disable-shared --enable-static && make
-LIBGCRYPT_STATICLIB=`readlink -f $(dirname $(find -name libgcrypt.a))`
+LIBGCRYPT_STATICLIB=$(readlink -f $(dirname $(find -name libgcrypt.a)))
 # build libgpg-error
 cd /usr/src/$LIBGPGERROR_NAME
 ./configure --disable-shared --enable-static && make
-LIBGPGERROR_STATICLIB=`readlink -f $(dirname $(find -name libgpg-error.a))`
+LIBGPGERROR_STATICLIB=$(readlink -f $(dirname $(find -name libgpg-error.a)))
 # build winexe static
 cd /usr/src/winexe/source/build/
 /usr/bin/gcc -pthread winexe.c.6.o svcinstall.c.6.o async.c.6.o winexesvc32_exe.c.6.o winexesvc64_exe.c.6.o \
-             -o /usr/src/winexe/source/build/winexe-static \
-             -Wl-Bstatic -L/usr/src/winexe/source/smb_static/build -lsmb_static \
-             -lbsd -lz -lresolv -lrt \
-             -Wl-Bdynamic -ldl -L$GNUTLS_STATICLIB -lgnutls \
-             -L$LIBGCRYPT_STATICLIB -lgcrypt \
-             -L$LIBGPGERROR_STATICLIB -lgpg-error
+  -o /usr/src/winexe/source/build/winexe-static \
+  -Wl-Bstatic -L/usr/src/winexe/source/smb_static/build -lsmb_static \
+  -lbsd -lz -lresolv -lrt \
+  -Wl-Bdynamic -ldl -L$GNUTLS_STATICLIB -lgnutls \
+  -L$LIBGCRYPT_STATICLIB -lgcrypt \
+  -L$LIBGPGERROR_STATICLIB -lgpg-error

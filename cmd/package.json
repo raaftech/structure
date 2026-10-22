@@ -12,7 +12,7 @@
     "cli",
     "structure"
   ],
-  "author": "Black Orchid",
+  "author": "Jasper Spoel <jasper@raaf.tech>",
   "license": "ISC",
   "dependencies": {
     "cli-color": "^1.1.0",

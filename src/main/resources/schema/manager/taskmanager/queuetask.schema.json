@@ -43,18 +43,18 @@
                 "additionalProperties": false
               }
             },
-            "required": [ "instrument", "originName", "originUuid", "capability" ]
+            "required": ["instrument", "originName", "originUuid", "capability"]
           }
         },
-        "required": [ "command" ]
+        "required": ["command"]
       }
     }
   },
-  "required": [ "jobs" ],
+  "required": ["jobs"],
   "definitions": {
     "state": {
       "type": "object",
-      "required": [ "code", "interpretation", "description" ],
+      "required": ["code", "interpretation", "description"],
       "properties": {
         "code": {
           "type": "integer",
