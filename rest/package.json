@@ -17,7 +17,6 @@
     "loopback": "^2.22.0",
     "loopback-boot": "^2.6.5",
     "loopback-component-explorer": "^2.4.0",
-    "loopback-connector-sqlite": "^1.4.5",
     "loopback-datasource-juggler": "^2.39.0",
     "neo4j": "^2.0.0-RC2",
     "node-fetch": "^1.7.2",

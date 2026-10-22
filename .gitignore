@@ -17,7 +17,7 @@ cmd/payloads
 cmd/tui.cache
 generatedscripts
 rest/client/js/vendors
-rest/credentials.sqlite
+rest/credentials.json
 rest/node_modules
 src/main/resources/webroot/js/vendors
 structure.iml
