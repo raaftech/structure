@@ -21,7 +21,7 @@ RUN rm -rf /var/lib/apt/lists/*
 ENV STRUCTURE_HOME=/opt/structure/
 ENV STRUCTURE_BUNDLES=${STRUCTURE_HOME}/bundles/
 
-COPY target/structure-0.9.0-SNAPSHOT-fat.jar ${STRUCTURE_HOME}/structure.jar
+COPY target/structure-0.10.0-fat.jar ${STRUCTURE_HOME}/structure.jar
 COPY rest ${STRUCTURE_HOME}/rest
 RUN cd ${STRUCTURE_HOME}/rest ; rm -rf node_modules; npm i; cd ${STRUCTURE_HOME}
 COPY tools ${STRUCTURE_HOME}/tools

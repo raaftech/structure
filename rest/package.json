@@ -1,6 +1,6 @@
 {
   "name": "structure-web",
-  "version": "1.0.0",
+  "version": "0.10.0",
   "main": "server/server.js",
   "scripts": {
     "lint": "eslint .",

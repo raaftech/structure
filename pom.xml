@@ -9,7 +9,7 @@
   <groupId>tech.raaf</groupId>
   <artifactId>structure</artifactId>
   <packaging>jar</packaging>
-  <version>0.9.0-SNAPSHOT</version>
+  <version>0.10.0</version>
   <name>Structure</name>
 
   <description>Vert.x and Neo4j application to manage computing environments.</description>
