@@ -8,10 +8,23 @@ const getId = R.path(['meta','uuid']);
 const getRelations = R.path(['meta','relations']);
 const notNil = R.compose(R.not, R.isNil);
 
+/**
+ * Function to create a relation object as used in bundle files
+ * @param {String} name
+ * @param {String} direction  outgoing or incoming
+ * @param {[String]} uuids list of uuids
+ * @returns {Object} An object as required in bundle files
+ */
 function createRelation(name, direction, uuids) {
-    return R.objOf(name, R.zipObj(['direction', 'uuids'], [direction, uuids]));
+    return R.objOf(name, R.zipObj(['direction', 'to'], [direction, uuids]));
 }
 
+/**
+ * Function to create an instance of a base-type with the data property set to the data parameter
+ * @param {Entity} baseType
+ * @param {Object} data
+ * @returns {Entity} An object that is an instance of the baseType parameter.
+ */
 function createInstance(baseType, data) {
     let relation = createRelation('INSTANCE_OF', 'outgoing',[getId(baseType)]);
     let instantiate = R.pipe(
@@ -23,17 +36,26 @@ function createInstance(baseType, data) {
     let instance = instantiate(baseType);
     instance.meta.relations = R.omit(['ISA','CONSTRAINTS','IMPLEMENTS'], getRelations(instance));
     instance.meta.relations = R.merge(getRelations(instance), relation);
+    instance.meta = R.omit(['constraints'], instance.meta);
     return instance;
 }
 
+/**
+ * Relate two instances of entities
+ * @param {Entity} entity Entity to create the relation for
+ * @param {String} relationName The name of the relation to create
+ * @param {String} direction outgoing or incoming
+ * @param {Entity} relatedEntity The entity the relation will point to
+ * @returns {[entity, relatedEntity]} A pair of entities with the new relation set
+ */
 function relateEntity(entity, relationName, direction, relatedEntity) {
     if(notNil(entity.meta.relations[relationName])) {
-        entity.meta.relations[relationName].uuids.push(getId(relatedEntity));
+        entity.meta.relations[relationName].to.push(getId(relatedEntity));
     } else {
         let rel = createRelation(relationName, direction,[getId(relatedEntity)]);
         entity.meta.relations = R.merge(getRelations(entity), rel);
     }
-    
+
     return [entity, relatedEntity];
 }
 
@@ -50,7 +72,7 @@ function updateEntity(propPath, value, entity) {
 }
 
 function getInstanceOfUuid(instance) {
-    let uuidPath = R.path(['meta','relations','INSTANCE_OF','uuids']);
+    let uuidPath = R.path(['meta','relations','INSTANCE_OF','to']);
     let id = R.compose(R.head, uuidPath);
     let hasUuid = R.compose(R.not, R.isNil, uuidPath);
     let predicate = R.ifElse(hasUuid,id,R.always(undefined));
@@ -68,9 +90,10 @@ function findTypeByUuid(typeDb, uuid) {
 }
 
 function findTypeByFuzzyNameMatch(typeDb, name) {
+    const THRESHOLD = 0.5;
     const matcher = new FuzzyMatching(R.pluck('name',typeDb));
     const condition = R.ifElse(
-                            R.pipe(R.prop('distance'), R.lte(0.5)),
+                            R.pipe(R.prop('distance'), R.lte(THRESHOLD)),
                             R.prop('value'),
                             R.always(name)
                           );
@@ -79,13 +102,19 @@ function findTypeByFuzzyNameMatch(typeDb, name) {
     return R.defaultTo(null, entity);
 }
 
+/**
+ * Fetches the type hierarchy for a given instance
+ * @param {[Entity]} typeDb List of available types in structure
+ * @param {Entity} instance Type instance to calculate the type hierarchy for
+ * @returns {[Entity]} An ordered list of entities, representing the type hierarchy for the given instance
+ */
 function getTypeHierarchy(typeDb, instance) {
     let getType = R.curry(findTypeByUuid) (typeDb);
-    let getIsaType = R.compose(getType, R.head, R.path(['meta','relations','ISA','uuids']));
+    let getIsaType = R.compose(getType, R.head, R.path(['meta','relations','ISA','to']));
     let getFirstType = R.compose(getIsaType,R.head);
     let hasISA = R.compose(notNil, R.path(['meta','relations','ISA']));
     let whileCondition = R.compose(hasISA, R.head);
-    let getInstanceOfType = R.compose(getType, R.head, R.path(['meta','relations','INSTANCE_OF','uuids']));
+    let getInstanceOfType = R.compose(getType, R.head, R.path(['meta','relations','INSTANCE_OF','to']));
 
     let hierarchy = [getInstanceOfType(instance)];
     while(whileCondition(hierarchy)) {
@@ -95,8 +124,14 @@ function getTypeHierarchy(typeDb, instance) {
     return hierarchy;
 }
 
+/**
+ *
+ * @param {[Entity]} typeDb List of available types in structure
+ * @param {String} uuid UUID of a type to fetch the list of children for
+ * @returns {[Entity]} A list of child nodes for the given uuid
+ */
 function getChildren(typeDb, uuid) {
-    let isaPath = R.path(['meta','relations','ISA','uuids']);
+    let isaPath = R.path(['meta','relations','ISA','to']);
     let isChild = R.compose(R.equals(uuid), R.head, isaPath);
     return R.filter(item => {
         if(notNil(isaPath(item))) {
