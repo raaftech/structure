@@ -100,13 +100,13 @@ public class Instances extends Repository<Instance> {
                         // TODO: add support for other Instances
                     }
                 } catch (RuntimeException | JsonProcessingException e) {
-                	log.error(e.getMessage());
+                    log.error(e.getMessage());
 
-        			if (Configuration.isTraceModeOn()) {
-        				e.printStackTrace();
-        			}
-        			
-        			result.put("error", e.getMessage());
+                    if (Configuration.isTraceModeOn()) {
+                        e.printStackTrace();
+                    }
+                    
+                    result.put("error", e.getMessage());
                 }
 
                 return response(request, result);

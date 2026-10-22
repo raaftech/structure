@@ -449,12 +449,12 @@ public class Type extends Node {
                 json.put("children", mapper.writeValueAsString(childIsaUuids));
             }
         } catch (JsonProcessingException e) {
-        	log.error(e.getMessage());
+            log.error(e.getMessage());
 
-			if (Configuration.isTraceModeOn()) {
-				e.printStackTrace();
-			}
-		}
+            if (Configuration.isTraceModeOn()) {
+                e.printStackTrace();
+            }
+        }
 
         json.put("_nodeType", getNodeType());
 

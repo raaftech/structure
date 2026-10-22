@@ -197,11 +197,11 @@ public class InstanceActor extends NodeActor<Instance> {
                         runController(instrument, taskId, args);
                         result.put("data", taskId.toString());
                     } catch (InstrumentExecutionException e) {
-                    	log.error(e.getMessage());
-            			if (Configuration.isTraceModeOn()) {
-            				e.printStackTrace();
-            			}
-            			result.put("error", e.getMessage());
+                        log.error(e.getMessage());
+                        if (Configuration.isTraceModeOn()) {
+                            e.printStackTrace();
+                        }
+                        result.put("error", e.getMessage());
                     }
                 } else {
                     result.put("error", "Couldn't find instrument.");

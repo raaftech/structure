@@ -69,7 +69,7 @@ public class EntityDeserializer extends StdDeserializer<Entity> {
         super(Entity.class);
     }
 
-	@Override
+    @Override
     @SuppressWarnings("unchecked")
     public Entity deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
         log.info("Creating entity from JSON data");
@@ -218,7 +218,7 @@ public class EntityDeserializer extends StdDeserializer<Entity> {
                         log.debug("Writing JSON object with name \"{}\" to file object", key);
                         file.put(key, value.toString());
                     } else if (value.has("path")) {
-                    	File filePath = pathHelper(new File(value.get("path").asText()));
+                        File filePath = pathHelper(new File(value.get("path").asText()));
 
                         if (filePath.exists() && !filePath.isDirectory()) {
                             switch (encoding) {

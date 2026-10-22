@@ -131,12 +131,12 @@ public class JsonSchemaBuilder {
         try {
             property = new JsonSchemaBuilder(properties.putObject(name));
         } catch (ProcessingException e) {
-        	log.error(e.getMessage());
+            log.error(e.getMessage());
 
-			if (Configuration.isTraceModeOn()) {
-				e.printStackTrace();
-			}
-			
+            if (Configuration.isTraceModeOn()) {
+                e.printStackTrace();
+            }
+            
             // TODO: Explicit return null?
             return null;
         }
@@ -148,9 +148,9 @@ public class JsonSchemaBuilder {
             
             log.error(e.getMessage());
 
-			if (Configuration.isTraceModeOn()) {
-				e.printStackTrace();
-			}
+            if (Configuration.isTraceModeOn()) {
+                e.printStackTrace();
+            }
             
             throw e;
         }
@@ -254,13 +254,13 @@ public class JsonSchemaBuilder {
         try {
             item = new JsonSchemaBuilder(items.putObject(name));
         } catch (ProcessingException e) {
-        	log.error(e.getMessage());
+            log.error(e.getMessage());
 
-			if (Configuration.isTraceModeOn()) {
-				e.printStackTrace();
-			}
-			
-			// TODO: Explicit return null?
+            if (Configuration.isTraceModeOn()) {
+                e.printStackTrace();
+            }
+            
+            // TODO: Explicit return null?
             return null;
         }
         try {
@@ -270,10 +270,10 @@ public class JsonSchemaBuilder {
             
             log.error(e.getMessage());
 
-			if (Configuration.isTraceModeOn()) {
-				e.printStackTrace();
-			}
-			
+            if (Configuration.isTraceModeOn()) {
+                e.printStackTrace();
+            }
+            
             throw e;
         }
         if (req) {
