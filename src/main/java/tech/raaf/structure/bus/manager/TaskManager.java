@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tech.raaf.structure.annotations.SchemaPath;
 import tech.raaf.structure.base.Configuration;
+import tech.raaf.structure.base.Context;
 import tech.raaf.structure.bus.GenericActor;
 import tech.raaf.structure.graph.Entity;
 import tech.raaf.structure.graph.Result;
@@ -280,12 +281,8 @@ public class TaskManager extends GenericActor {
                 } else {
                     resultBuilder.error("Couldn't retrieve exit code, process was never run.");
                 }
-                if (jobResult.stdout.isPresent()) {
-                    resultBuilder.stderr(jobResult.stderr.get());
-                }
-                if (jobResult.stderr.isPresent()) {
-                    resultBuilder.stdout(jobResult.stdout.get());
-                }
+                jobResult.stdout.ifPresent(resultBuilder::stdout);
+                jobResult.stderr.ifPresent(resultBuilder::stderr);
                 /*
                 If this job was provided with a stateMap, see if we can map the exit code to a specific state.
                 In case the exit code is unknown, the state will be set to an error state "UNKNOWN".
@@ -308,14 +305,20 @@ public class TaskManager extends GenericActor {
                 String reason = job.metadata.has("error") ? job.metadata.get("error").asText() : "Job was cancelled for an unknown reason.";
                 resultBuilder.error(reason);
             }
-            try {
-                Result result = resultBuilder.buildAndStore();
-                // Makes the result the head of the result chain of the origin, in one statement
-                result.add(UUID.fromString(job.metadata.get("originUuid").asText()));
-                log.info(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(task.toJson()));
-            } catch (JsonProcessingException e) {
-                if (Configuration.isTraceModeOn()) {
-                    e.printStackTrace();
+            final String originUuid = job.metadata.path("originUuid").asText();
+            if (Context.getInstanceRepository().findByUuid(originUuid) == null) {
+                // Nothing can reach a result without an origin
+                log.warn("Origin \"{}\" of task {} not found, result not stored", originUuid, task.id);
+            } else {
+                try {
+                    Result result = resultBuilder.buildAndStore();
+                    // Makes the result the head of the result chain of the origin, in one statement
+                    result.add(UUID.fromString(originUuid));
+                    log.info(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(task.toJson()));
+                } catch (JsonProcessingException e) {
+                    if (Configuration.isTraceModeOn()) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }

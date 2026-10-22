@@ -115,6 +115,19 @@ public class TaskManagerTest extends TypeSchemaTest {
         assertFalse(result.containsKey("data-error"));
     }
 
+    // The pool has one process, so the second task finishes after the first
+    @Test
+    public void unknownOrigin() throws Exception {
+        String lost = UUID.randomUUID().toString();
+        queue(lost, UUID.randomUUID().toString(), NO_SUCH_COMMAND, mapper.createObjectNode());
+        String origin = origin();
+        String task = UUID.randomUUID().toString();
+        queue(task, origin, NO_SUCH_COMMAND, mapper.createObjectNode());
+        awaitHead(origin, task);
+
+        assertEquals(0, count("MATCH (r:Result {`data-task`: $uuid}) RETURN count(r) AS n", lost));
+    }
+
     private String origin() throws Exception {
         String uuid = UUID.randomUUID().toString();
         mapper.readValue(String.format("{\"name\": \"task-origin\", \"desc\": \"Origin.\", "
