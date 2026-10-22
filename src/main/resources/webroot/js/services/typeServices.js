@@ -17,7 +17,7 @@ angular.module("structureApp")
             },
 
             getChildren: function(uuid) {
-                return vertxEventBusService.send("tech.raaf.structure.bus.node.type." + uuid,
+                return vertxEventBusService.send("tech.raaf.structure.bus.node." + uuid,
                     {
                         "msgh": "getSubtypes",
                         "args": {}
@@ -28,7 +28,7 @@ angular.module("structureApp")
             },
 
             getIsaChildren: function(uuid) {
-                return vertxEventBusService.send("tech.raaf.structure.bus.node.type." + uuid,
+                return vertxEventBusService.send("tech.raaf.structure.bus.node." + uuid,
                     {
                         "msgh": "getSubtypes",
                         "args": {}
