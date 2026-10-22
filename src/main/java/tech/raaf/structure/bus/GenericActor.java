@@ -277,9 +277,16 @@ public abstract class GenericActor extends AbstractVerticle {
                 schema = fallbackSchema;
             }
             if (isValidJson(schema, args)) {
+                JsonNode result;
+                try {
+                    result = handlerAndSchema.handler.exec(request);
+                } catch (Exception e) {
+                    // Reply with the error, else the client waits until its timeout
+                    log.error("Handler {} failed", msgh, e);
+                    result = response(request, JsonNodeFactory.instance.objectNode().put("error", e.toString()));
+                }
                 // Response! Convert "Jackson JsonNode" to "Vert.x JsonObject".
-                response = new JsonObject(
-                        validate(schemaForResponse, handlerAndSchema.handler.exec(request)).toString());
+                response = new JsonObject(validate(schemaForResponse, result).toString());
             } else {
                 JsonNode error = JsonNodeFactory.instance.objectNode().put("error", "Arguments didn't validate against schema.");
                 response = new JsonObject(validate(schemaForResponse, response(request, error)).toString());
