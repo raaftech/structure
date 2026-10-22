@@ -5,8 +5,7 @@ angular.module("structureApp")
         $scope.numberOfTasks = '...';
         $scope.numberOfJobs = '...';
 
-        $scope.testManager = function() {
-            taskManagerSrvs.addTestData();
+        $scope.init = function() {
             taskManagerSrvs.queueStatus($scope);
             taskManagerSrvs.liveStatus($scope);
         };
