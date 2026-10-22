@@ -19,7 +19,6 @@
     "eventsource": "^0.2.2",
     "fuzzy-matching": "^0.4.3",
     "json-schema-validator": "^1.0.0",
-    "neo4j": "^2.0.0-RC2",
     "node-fetch": "^1.6.3",
     "ramda": "^0.23.0",
     "sprintf-js": "^1.0.3",

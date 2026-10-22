@@ -17,6 +17,8 @@ RESTHOST=localhost
 RESTPORT=3000
 EVENTBUS=http://localhost:8080/eventbus
 NEO4JURL=http://localhost:7474
+STRUCTURE_NEO4J_USERNAME=neo4j
+STRUCTURE_NEO4J_PASSWORD has no default; the neo commands need it
 
 
 ## Notes:

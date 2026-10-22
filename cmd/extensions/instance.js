@@ -1,7 +1,6 @@
 'use strict';
 
 const vorpal = require('vorpal')();
-const neo4j = require('neo4j');
 const R = require('ramda');
 const util = require('util');
 const path = require('path');

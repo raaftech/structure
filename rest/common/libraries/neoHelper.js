@@ -1,23 +1,32 @@
 'use strict';
 
 const R = require('ramda');
-const neo4j = require('neo4j');
 
 const neoUrl = R.defaultTo('http://localhost:7474', process.env.NEO4JURL);
-const db = new neo4j.GraphDatabase(neoUrl);
+const username = R.defaultTo('neo4j', process.env.STRUCTURE_NEO4J_USERNAME);
+const password = R.defaultTo('', process.env.STRUCTURE_NEO4J_PASSWORD);
+const auth = 'Basic ' + Buffer.from(username + ':' + password).toString('base64');
 
 /*
-    Wrapper function that makes direct cypher queries to neo4j possible in a
-    Promise based way
+    Sends a cypher query to the Neo4j Query API. Returns a Promise of a list
+    of rows, with one property for each returned column.
     @param query The cypher query
  */
 const cypher = (query) => {
-    return new Promise((resolve, reject) => {
-        db.cypher({query: query}, function(error, queryResult) {
-            if(error) reject(error);
-            else resolve(queryResult);
+    return fetch(neoUrl + '/db/neo4j/query/v2', {
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+            'Authorization': auth,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({statement: query})
+    })
+        .then(response => response.json())
+        .then(json => {
+            if (json.errors) throw new Error(R.pluck('message', json.errors).join('; '));
+            return R.map(R.zipObj(json.data.fields), json.data.values);
         });
-    });
 };
 
 module.exports = {

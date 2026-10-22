@@ -1,29 +1,13 @@
 'use strict';
 
-const neo4j = require('neo4j');
 const R = require('ramda');
 const util = require('util');
 const path = require('path');
 const clc = require('cli-color');
 const helper = require(path.join(__dirname, '..','helper'));
 const graphLib = require(path.join(__dirname, '..', 'graphLib'));
+const cypher = require(path.join(__dirname, '..', 'neoHelper')).cypher;
 
-const neoUrl = R.defaultTo('http://localhost:7474', process.env.NEO4JURL);
-const db = new neo4j.GraphDatabase(neoUrl);
-
-/*
-    Wrapper function that makes direct cypher queries to neo4j possible in a
-    Promise based way
-    @param query The cypher query
- */
-const cypher = (query) => {
-    return new Promise((resolve, reject) => {
-        db.cypher({query: query}, function(error, queryResult) {
-            if(error) reject(error);
-            else resolve(queryResult);
-        });
-    });
-};
 /*
     Wrapper function for vorpal.prompt, Promise based.
     @param vorp The vorpal instance
@@ -40,22 +24,14 @@ const prompt = (vorp, question) => {
     Fetches all known Grouping instances from structure
  */
 const getAllGroups = () => {
-    return new Promise((resolve, reject) => {
-        let q = 'match (n:Group) return n';
-        db.cypher({query: q}, function(error, queryResult) {
-            if(error) { reject(error); }
-            else {
-                let toTupleList = data => {
-                    return {
-                        name: data.n.properties.name,
-                        uuid: data.n.properties.uuid
-                    };
-                };
+    let toTupleList = data => {
+        return {
+            name: data.n.properties.name,
+            uuid: data.n.properties.uuid
+        };
+    };
 
-                resolve(R.map(toTupleList, queryResult));
-            }
-        });
-    });
+    return cypher('match (n:Group) return n').then(R.map(toTupleList));
 };
 
 /*
@@ -156,7 +132,7 @@ module.exports = function(vorpal, options) {
                     })
                     .then(answer => {
                         selectedGroup = R.find(R.propEq('name', answer.groupName), allGroups);
-                        let query = util.format('match (n:Group {name: "%s"})<-[MEMBER_OF]-(children:Instance) return children',answer.groupName);
+                        let query = util.format('match (n:Group {name: "%s"})<-[:MEMBER_OF]-(children:Instance) return children',answer.groupName);
                         return cypher(query);
                     })
                     .then(children => {
@@ -223,7 +199,7 @@ module.exports = function(vorpal, options) {
                     return prompt(self, q);
                 })
                 .then(answer => {
-                    let query = util.format('match (n:Group {name: "%s"})<-[MEMBER_OF]-(children:Instance) return children',answer.groupName);
+                    let query = util.format('match (n:Group {name: "%s"})<-[:MEMBER_OF]-(children:Instance) return children',answer.groupName);
                     return cypher(query);
                 })
                 .then(result => {
