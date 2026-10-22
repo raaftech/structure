@@ -26,20 +26,11 @@ angular.module("structureApp",
             .when("/environment", {
                 templateUrl: "js/views/environment.html"
             })
-            .when("/names-and-glyphs", {
-                templateUrl: "js/views/namesAndGlyphs.html"
-            })
             .when("/search", {
                 templateUrl: "js/views/search.html"
             })
             .when("/task-manager", {
                 templateUrl: "js/views/taskManager.html"
-            })
-            .when("/templates", {
-                templateUrl: "js/views/templates.html"
-            })
-            .when("/templates-old", {
-                templateUrl: "js/views/templatesOld.html"
             })
             .when("/types", {
                 templateUrl: "js/views/types.html"

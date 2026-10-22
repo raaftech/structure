@@ -44,7 +44,6 @@
     <script src="js/controllers/modalTypeControllers.js"></script>
     <script src="js/controllers/searchController.js"></script>
     <script src="js/controllers/searchResultController.js"></script>
-    <script src="js/controllers/templatesControllers.js"></script>
     <script src="js/controllers/debugControllers.js"></script>
     <script src="js/controllers/instanceControllers.js"></script>
     <script src="js/controllers/taskManagerControllers.js"></script>
@@ -60,12 +59,10 @@
     <script src="js/directives/showIcon.js"></script>
 
     <script src="js/services/typeServices.js" type="text/javascript"></script>
-    <script src="js/services/templateServices.js" type="text/javascript"></script>
     <script src="js/services/searchServices.js" type="text/javascript"></script>
     <script src="js/services/instanceServices.js" type="text/javascript"></script>
     <script src="js/services/taskManagerServices.js" type="text/javascript"></script>
     <script src="js/services/uuidServices.js" type="text/javascript"></script>
-    <script src="js/services/iconServices.js" type="text/javascript"></script>
   </head>
 
   <body>
@@ -86,7 +83,6 @@
           <ul class="nav navbar-nav navbar-right">
             <li ng-class="navClass('dashboard')"><a href="#dashboard" ng-click="routeReload()">Dashboard</a></li>
             <li ng-class="navClass('types')"><a href="#types" ng-click="routeReload()">Types</a></li>
-            <li ng-class="navClass('templates')"><a href="#templates" ng-click="routeReload()">Templates</a></li>
             <li ng-class="navClass('environment')"><a href="#environment" ng-click="routeReload()">Environment</a></li>
             <li ng-class="navClass('task-manager')"><a href="#task-manager" ng-click="routeReload()">Tasks</a></li>
             <li ng-class="navClass('settings')"><a href="#settings" ng-click="routeReload()">Settings</a></li>

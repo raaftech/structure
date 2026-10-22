@@ -1,7 +1,7 @@
 angular.module("structureApp")
     .controller("debugCtrl", function($scope, $timeout, vertxEventBus, vertxEventBusService) {
 
-        // newTemplate is used to create the new Template via the eventbus
+        // The address and the JSON text of the message to send
         $scope.message = { };
 
         $scope.sendMessage = function() {
