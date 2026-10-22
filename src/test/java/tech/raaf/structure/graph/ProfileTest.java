@@ -19,22 +19,16 @@ import java.net.URI;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 import static org.junit.Assert.*;
 
 public class ProfileTest extends GraphTest {
 
-    private static final String webHost = "localhost";
-    private static final int webPort = 8123;
-    private static final URI schemaNS = URI.create(String.format("http://%s:%d/schemas/", webHost, webPort));
-
     @Before
-    public void setup() {
+    public void setup() throws Exception {
         final Vertx vertx = Vertx.vertx();
         Configuration.init();
-        Configuration.setWebHost("localhost");
-        Configuration.setWebPort(8123);
-        Configuration.setSchemaNamespace(schemaNS);
         Context.setVertx(vertx);
         HttpServer httpServer = vertx.createHttpServer();
         Router router = Router.router(vertx);
@@ -42,7 +36,20 @@ public class ProfileTest extends GraphTest {
         SchemaManager schemaManager = new SchemaManager();
         // Setup routes
         router.route("/schemas/:schema").blockingHandler(schemaManager::getSchema, false);
-        httpServer.requestHandler(router::accept).listen(Configuration.getWebPort(), Configuration.getWebHost());
+
+        // Port 0 lets the system choose a free port
+        final CompletableFuture<HttpServer> listening = new CompletableFuture<>();
+        httpServer.requestHandler(router::accept).listen(0, "localhost", ar -> {
+            if (ar.succeeded()) {
+                listening.complete(ar.result());
+            } else {
+                listening.completeExceptionally(ar.cause());
+            }
+        });
+        final int port = listening.get().actualPort();
+        Configuration.setWebHost("localhost");
+        Configuration.setWebPort(port);
+        Configuration.setSchemaNamespace(URI.create("http://localhost:" + port + "/schemas/"));
         Application.init(vertx);
     }
 
