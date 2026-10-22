@@ -41,6 +41,3 @@ neo4j start
 STRUCTURE_TEST_NEO4J_URI=bolt://localhost:7688 STRUCTURE_TEST_NEO4J_PASSWORD=structure mvn verify
 neo4j stop
 ```
-
-Neo4j does not accept a key two times in its configuration, thus
-change the keys with `sed` and do not append them.
