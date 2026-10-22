@@ -89,10 +89,7 @@ public class Instances extends Repository<Instance> {
                         json.putObject("meta").put("uuid", uuid).putObject("relations")
                                 .putObject("INSTANCE_OF").put("direction", "outgoing")
                                 .putArray("to").add(type.getUuid());
-                        final ObjectNode data = args.deepCopy();
-                        data.remove("name");
-                        data.remove("desc");
-                        json.set("data", data);
+                        json.set("data", args.deepCopy());
                         final Entity entity = mapper.treeToValue(json, Entity.class);
                         Graph.transaction(() -> {
                             entity.toGraph();
