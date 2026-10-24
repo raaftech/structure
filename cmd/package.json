@@ -13,7 +13,7 @@
     "structure"
   ],
   "author": "Jasper Spoel <jasper@raaf.tech>",
-  "license": "ISC",
+  "license": "AGPL-3.0-only",
   "dependencies": {
     "cli-color": "^1.1.0",
     "eventsource": "^0.2.2",

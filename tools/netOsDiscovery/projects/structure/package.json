@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Jasper Spoel <jasper@raaf.tech>",
-  "license": "ISC",
+  "license": "AGPL-3.0-only",
   "dependencies": {
     "eventsource": "^1.0.4",
     "fuzzy-matching": "^0.4.3",

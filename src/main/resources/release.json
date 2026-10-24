@@ -3,7 +3,7 @@
     "name": "Structure",
     "version": "${project.version}",
     "copyright": "Copyright © 2008-2026 RAAF Technology bv",
-    "license": "RAAF Technology Proprietary Software License v1",
+    "license": "AGPL-3.0-only",
     "description": "Vert.x and Neo4j application to manage computing environments."
   }
 }

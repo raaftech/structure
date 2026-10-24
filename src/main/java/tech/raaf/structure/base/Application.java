@@ -78,7 +78,6 @@ public class Application {
   /**
    * This is Structure's start of execution point.
    */
-  @SuppressWarnings("resource")
   public static void main(String[] args) throws InterruptedException {
     // The self signed certificate for the vertx webserver
     SelfSignedCertificate selfSignedCertificate = null;

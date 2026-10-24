@@ -9,7 +9,7 @@
     "start": "node bootstrap.js"
   },
   "author": "Jasper Spoel <jasper@raaf.tech>",
-  "license": "ISC",
+  "license": "AGPL-3.0-only",
   "dependencies": {
     "command-line-args": "^3.0.4",
     "command-line-usage": "^3.0.8",

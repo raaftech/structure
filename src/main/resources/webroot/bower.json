@@ -8,7 +8,7 @@
     "Jasper Spoel <jasper@raaf.tech>",
     "Boy van Duuren <boy@raaf.tech>"
   ],
-  "license": "Proprietary",
+  "license": "AGPL-3.0-only",
   "ignore": ["**/.*", "node_modules", "bower_components", "vendors"],
   "dependencies": {
     "angular-animate": "1.4.14",
