@@ -1,0 +1,8 @@
+# Commits to skip in git blame. Enable with:
+# git config blame.ignoreRevsFile .git-blame-ignore-revs
+
+# Change tabs to spaces in the Java sources
+0d2d605ecb6afe8acfdde872c13f0ed62bbc1bfd
+
+# Added .editorconfig, applied rules, updated copyright, cleaned up author tags
+c5494d1cce17a38a6ebe3b6f84b181f67dda118e
