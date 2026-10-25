@@ -18,7 +18,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import tech.raaf.structure.GraphTest;
-import tech.raaf.structure.base.Configuration;
 import tech.raaf.structure.base.Context;
 import tech.raaf.structure.exceptions.IllegalEntityType;
 import tech.raaf.structure.graph.repositories.ResultRepository;
@@ -93,7 +92,7 @@ public class ResultTest extends GraphTest {
     Entity rootEntity = mapper.readValue(rootType, Entity.class);
     Entity resultEntity = mapper.readValue(resultType, Entity.class);
 
-    Configuration.setSchemaNamespace(URI.create("http://localhost"));
+    Context.setSchemaNamespace(URI.create("http://localhost"));
 
     Graph.transaction(() -> {
       rootEntity.toGraph();

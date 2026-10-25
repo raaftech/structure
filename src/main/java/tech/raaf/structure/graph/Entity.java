@@ -16,7 +16,6 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tech.raaf.structure.base.Configuration;
 import tech.raaf.structure.base.Context;
 import tech.raaf.structure.bus.GenericActor;
 import tech.raaf.structure.exceptions.IllegalEntityType;
@@ -558,7 +557,7 @@ public class Entity {
       }
 
       final String schemaUriPattern = "/schemas/%s.schema.json";
-      final URI schemaUri = Configuration.getSchemaNamespace().resolve(
+      final URI schemaUri = Context.getSchemaNamespace().resolve(
         String.format(schemaUriPattern, instanceOf.getName().toLowerCase())
       );
       final Map<String, Object> data = new HashMap(getData());

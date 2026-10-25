@@ -16,7 +16,6 @@ import org.junit.Before;
 import org.junit.Test;
 import tech.raaf.structure.GraphTest;
 import tech.raaf.structure.base.Application;
-import tech.raaf.structure.base.Configuration;
 import tech.raaf.structure.base.Context;
 import tech.raaf.structure.bus.manager.SchemaManager;
 import tech.raaf.structure.graph.repositories.NodeRepository;
@@ -27,7 +26,6 @@ public class ProfileTest extends GraphTest {
   @Before
   public void setup() throws Exception {
     final Vertx vertx = Vertx.vertx();
-    Configuration.init();
     Context.setVertx(vertx);
     HttpServer httpServer = vertx.createHttpServer();
     Router router = Router.router(vertx);
@@ -46,9 +44,7 @@ public class ProfileTest extends GraphTest {
       }
     });
     final int port = listening.get().actualPort();
-    Configuration.setWebHost("localhost");
-    Configuration.setWebPort(port);
-    Configuration.setSchemaNamespace(URI.create("http://localhost:" + port + "/schemas/"));
+    Context.setSchemaNamespace(URI.create("http://localhost:" + port + "/schemas/"));
     Application.init(vertx);
   }
 

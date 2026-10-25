@@ -15,13 +15,11 @@ import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Path;
 import java.util.*;
-import java.util.stream.Collectors;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tech.raaf.structure.base.Configuration;
 import tech.raaf.structure.exceptions.EntityDeserializationException;
 import tech.raaf.structure.exceptions.JsonValidationException;
 import tech.raaf.structure.helper.JsonHelper;
@@ -381,37 +379,6 @@ public class EntityDeserializer extends StdDeserializer<Entity> {
     File filePath = givenFilePath;
     if (!filePath.isAbsolute()) {
       log.debug("Relative path specified for file \"{}\"", filePath.getName());
-
-      Set<String> bundlePathStrings;
-
-      if (Configuration.getBundlePaths() == null) {
-        log.debug("Bundle path property not set, triggering configuration initialization");
-        Configuration.init();
-      }
-
-      bundlePathStrings = Configuration.getBundlePaths()
-        .stream()
-        .map(p -> p.toString())
-        .collect(Collectors.toSet());
-
-      if (bundlePathStrings.size() == 0) {
-        log.debug(
-          "Path helper could not find any bundle paths to search in. Will return File object without adjustment!"
-        );
-      }
-
-      // for (String bundlePathString : bundlePathStrings) {
-      //   File bundlePath = new File(bundlePathString);
-      //   log.debug("Searching \"{}\" for \"{}\"", bundlePath, filePath.getPath() );
-      //   File possiblePath = new File(
-      //     bundlePath.getPath() + File.separator + bundle + File.separator + filePath.getPath()
-      //   );
-      //   if (possiblePath.exists() && !possiblePath.isDirectory()) {
-      //     log.debug("Found: " + possiblePath);
-      //     filePath = possiblePath;
-      //     break;
-      //   }
-      // }
       Path relativePathForSchema = NaiveSorter.checksumToFiles.get(checksum);
       if (relativePathForSchema != null) {
         filePath = new File(relativePathForSchema.getParent().toString() + File.separator + givenFilePath);

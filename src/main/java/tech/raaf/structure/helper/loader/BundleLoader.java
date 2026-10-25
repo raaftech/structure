@@ -4,12 +4,14 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tech.raaf.structure.base.Configuration;
+import tech.raaf.structure.base.Configuration.Setting;
 import tech.raaf.structure.exceptions.EntityDeserializationException;
 import tech.raaf.structure.graph.Entity;
 import tech.raaf.structure.graph.Graph;
@@ -34,7 +36,7 @@ public class BundleLoader {
    * because of cyclic dependencies.
    */
   public BundleLoader() throws Exception {
-    this(Configuration.getBundlePaths());
+    this(Configuration.get(Setting.BUNDLE_PATH).stream().map(Paths::get).collect(Collectors.toSet()));
   }
 
   /**

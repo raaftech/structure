@@ -9,13 +9,12 @@ import io.vertx.core.shareddata.LocalMap;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tech.raaf.structure.annotations.SchemaPath;
 import tech.raaf.structure.base.Application;
 import tech.raaf.structure.base.Configuration;
+import tech.raaf.structure.base.Configuration.Setting;
 import tech.raaf.structure.base.Context;
 import tech.raaf.structure.bus.GenericActor;
 import tech.raaf.structure.bus.NodeActor;
@@ -181,15 +180,7 @@ public class StructureManager extends GenericActor {
     Component host = Context.getInstanceRepository().findDnsName(Context.getHostname());
     if (host == null) {
       log.info("Structure is not registered in the database, now discovering itself");
-      /*
-        We should properly retrieve the location of ext/util/bootstrap. For now assume work directory
-        contains the ext/util dir.
-      */
-      final Optional<String> maybeStructureHome = Configuration.getConfigurationProxy().getConfiguration("home");
-      final String bootstrapRelativeLocation = "ext/util/bootstrap/main.js";
-      final Path bootstrapLocation = maybeStructureHome.isPresent()
-        ? Paths.get(maybeStructureHome.get()).resolve(bootstrapRelativeLocation)
-        : Paths.get("").resolve(bootstrapRelativeLocation).toAbsolutePath();
+      final Path bootstrapLocation = Configuration.get(Setting.HOME).resolve("ext/util/bootstrap/main.js");
       if (!Files.exists(bootstrapLocation)) {
         final String error = "Bootstrap program not found at location \"" + bootstrapLocation + "\"";
         log.error(error);

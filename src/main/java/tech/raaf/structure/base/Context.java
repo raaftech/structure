@@ -1,6 +1,7 @@
 package tech.raaf.structure.base;
 
 import io.vertx.core.Vertx;
+import java.net.URI;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +35,8 @@ public class Context {
   private static String selfIdentifier = null;
   // The Grouping representing the server Structure is running on
   private static Group structure;
+  // The base URI of the schemas that Structure serves
+  private static URI schemaNamespace;
 
   public static void setHostname(String hostname) {
     if (Context.hostname == null) {
@@ -65,6 +68,14 @@ public class Context {
    */
   public static Group getSelfGroup() {
     return structure;
+  }
+
+  public static URI getSchemaNamespace() {
+    return schemaNamespace;
+  }
+
+  public static void setSchemaNamespace(URI schemaNamespace) {
+    Context.schemaNamespace = schemaNamespace;
   }
 
   public static NodeRepository getNodeRepository() {
