@@ -1,1 +1,1 @@
-node tools/networkDiscovery/netdisco.js -c {{{ ipnetwork.cidr }}} -t {{{ token }}}
+node ext/util/net-discovery/main.js -c {{{ ipnetwork.cidr }}} -t {{{ token }}}

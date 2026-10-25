@@ -2,10 +2,9 @@
 
 ## How to run
 
-    From the directory where scli.js lives do:
+    From the directory where main.js lives do:
 
     npm i
-    optionally run: npm test
     npm start
 
 Environment variable:
@@ -25,13 +24,3 @@ STRUCTURE_NEO4J_PASSWORD has no default; the neo commands need it
 - the REPL supports tab-completion (even for options to a command)
 - the REPL supports persistent history
   - subsequently arrow-up is a relevant key ;)
-
-## Testing
-
-make sure the following npm modules are installed globally:
-
-- npm i tape tap-spec -g
-
-then run:
-
-npm test

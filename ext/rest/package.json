@@ -1,11 +1,9 @@
 {
-  "name": "structure-web",
+  "name": "rest",
   "version": "0.10.0",
   "main": "server/server.js",
   "scripts": {
-    "lint": "eslint .",
-    "start": "node server/server.js",
-    "posttest": "npm run lint && nsp check"
+    "start": "node server/server.js"
   },
   "dependencies": {
     "compression": "^1.0.3",
@@ -26,15 +24,10 @@
     "uuid": "^3.1.0",
     "vertx3-eventbus-client": "^3.3.3"
   },
-  "devDependencies": {
-    "eslint": "^2.13.1",
-    "eslint-config-loopback": "^4.0.0",
-    "nsp": "^2.1.0"
-  },
   "repository": {
     "type": "",
     "url": ""
   },
   "license": "AGPL-3.0-only",
-  "description": "structure-web"
+  "description": "Structure REST interface"
 }

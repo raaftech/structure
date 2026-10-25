@@ -1,6 +1,9 @@
 # Dockerfile to create an image containing Structure
 # and the REST interface to it. We'll expose just the
 # REST interface.
+#
+# Build from the repository root:
+# docker build -f doc/legacy/docker/Dockerfile .
 
 FROM openjdk:8-jre
 
@@ -22,13 +25,13 @@ ENV STRUCTURE_HOME=/opt/structure/
 ENV STRUCTURE_BUNDLES=${STRUCTURE_HOME}/bundles/
 
 COPY target/structure-0.10.0-fat.jar ${STRUCTURE_HOME}/structure.jar
-COPY rest ${STRUCTURE_HOME}/rest
-RUN cd ${STRUCTURE_HOME}/rest ; rm -rf node_modules; npm i; cd ${STRUCTURE_HOME}
-COPY tools ${STRUCTURE_HOME}/tools
+COPY ext/rest ${STRUCTURE_HOME}/ext/rest
+RUN cd ${STRUCTURE_HOME}/ext/rest ; rm -rf node_modules; npm i; cd ${STRUCTURE_HOME}
+COPY ext/util ${STRUCTURE_HOME}/ext/util
 COPY src/main/resources/bundles ${STRUCTURE_HOME}/bundles/raaf
-COPY docker/bin/winexe-x86_64 /usr/bin/winexe
-COPY docker/service/structure /etc/service/structure/run
-COPY docker/service/rest /etc/service/rest/run
+COPY doc/legacy/docker/bin/winexe-x86_64 /usr/bin/winexe
+COPY doc/legacy/docker/service/structure /etc/service/structure/run
+COPY doc/legacy/docker/service/rest /etc/service/rest/run
 
 ADD https://raw.githubusercontent.com/fabric8io-images/java/master/images/jboss/openjdk8/jdk/container-limits /opt/container-limits
 RUN chmod 755 /opt/container-limits

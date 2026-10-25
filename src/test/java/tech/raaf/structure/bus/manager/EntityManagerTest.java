@@ -433,7 +433,7 @@ public class EntityManagerTest extends TypeSchemaTest {
       ImmutableMap.of("peer", peer, "host", host)
     );
 
-    // The labels that rest/common/models/instance.js sends
+    // The labels that ext/rest/common/models/instance.js sends
     ObjectNode result = exec(entityManager.delete(), "delete", deleteArgs(host, "Instance"));
     assertEquals(result.toString(), host, result.path("data").asText());
     assertNull(nodeRepository.findByUuid(host));
@@ -447,7 +447,7 @@ public class EntityManagerTest extends TypeSchemaTest {
     String group = instance(COMPONENT_GROUP, "{}");
     exec(entityManager.group(), "group", mapper.createObjectNode().put("grouping", group).put("groupee", host));
 
-    // The labels that rest/common/models/group.js sends. A member
+    // The labels that ext/rest/common/models/group.js sends. A member
     // without the Group label makes the delete unsafe.
     ObjectNode result = exec(entityManager.delete(), "delete", deleteArgs(group, "Group"));
     assertEquals("Couldn't delete entity.", result.get("error").asText());

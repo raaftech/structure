@@ -182,11 +182,11 @@ public class StructureManager extends GenericActor {
     if (host == null) {
       log.info("Structure is not registered in the database, now discovering itself");
       /*
-        We should properly retrieve the location of tools/bootstrap. For now assume work directory
-        contains the tools dir.
+        We should properly retrieve the location of ext/util/bootstrap. For now assume work directory
+        contains the ext/util dir.
       */
       final Optional<String> maybeStructureHome = Configuration.getConfigurationProxy().getConfiguration("home");
-      final String bootstrapRelativeLocation = "tools/bootstrap/bootstrap.js";
+      final String bootstrapRelativeLocation = "ext/util/bootstrap/main.js";
       final Path bootstrapLocation = maybeStructureHome.isPresent()
         ? Paths.get(maybeStructureHome.get()).resolve(bootstrapRelativeLocation)
         : Paths.get("").resolve(bootstrapRelativeLocation).toAbsolutePath();

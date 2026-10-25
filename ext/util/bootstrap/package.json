@@ -1,12 +1,10 @@
 {
-  "name": "combi",
+  "name": "bootstrap",
   "version": "0.10.0",
-  "description": "",
-  "main": "app.js",
+  "description": "Structure bootstrap, discovers the Structure host with Ansible",
+  "main": "main.js",
   "scripts": {
-    "lint": "jshint *.js",
-    "test": "jshint **.js && cd tests ; tape ansibleLibTest.js | tspec && tape nmapTests.js | tspec",
-    "start": "node bootstrap.js"
+    "start": "node main.js"
   },
   "author": "Jasper Spoel <jasper@raaf.tech>",
   "license": "AGPL-3.0-only",
@@ -18,8 +16,5 @@
     "node-fetch": "^1.6.3",
     "ramda": "^0.23.0",
     "uuid": "^3.0.1"
-  },
-  "devDependencies": {
-    "tape": "^4.6.3"
   }
 }

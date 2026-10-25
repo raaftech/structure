@@ -1,1 +1,1 @@
-node tools/osDiscovery/osDiscovery.js -i {{{ ipaddress.addr }}} -t {{{ token }}}
+node ext/util/os-discovery/main.js -i {{{ ipaddress.addr }}} -t {{{ token }}}

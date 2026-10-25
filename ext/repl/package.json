@@ -1,11 +1,10 @@
 {
-  "name": "scli",
+  "name": "repl",
   "version": "0.10.0",
   "description": "Structure cli/repl",
-  "main": "scli.js",
+  "main": "main.js",
   "scripts": {
-    "test": "tape tests/helperTest.js | tspec",
-    "start": "node scli.js"
+    "start": "node main.js"
   },
   "keywords": [
     "repl",
@@ -24,8 +23,5 @@
     "sprintf-js": "^1.0.3",
     "uuid": "^3.0.1",
     "vorpal": "^1.12.0"
-  },
-  "devDependencies": {
-    "tape": "^4.6.2"
   }
 }

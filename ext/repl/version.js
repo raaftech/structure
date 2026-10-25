@@ -8,8 +8,8 @@ const path = require("path");
 const { execFileSync } = require("child_process");
 const { parseArgs } = require("util");
 
-const root = path.resolve(__dirname, "..");
-const usage = "Usage: node cmd/version.js -g | -s <version>";
+const root = path.resolve(__dirname, "../..");
+const usage = "Usage: node ext/repl/version.js -g | -s <version>";
 
 // Finds the version in group 2 of re, between groups 1 and 3.
 const pattern = (re) => ({
@@ -39,7 +39,7 @@ const files = execFileSync("git", ["ls-files", "*package.json", "*package-lock.j
 
 const targets = [
   ["pom.xml", pattern(/^(  <version>)([^<]+)(<\/version>)$/m)],
-  ["Dockerfile", pattern(/(target\/structure-)(\S+)(-fat\.jar)/)],
+  ["doc/legacy/docker/Dockerfile", pattern(/(target\/structure-)(\S+)(-fat\.jar)/)],
   ...files.map((file) => [file, file.endsWith("package-lock.json") ? lock : json]),
 ];
 
