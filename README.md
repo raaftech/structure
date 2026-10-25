@@ -90,6 +90,33 @@ keystore at each start. To make a new certificate, for example after
 you change `https-host` or `rest-host`, delete the keystore.
 `mvn clean` also deletes it.
 
+### REST server and REPL
+
+The REST server in `ext/rest` and the REPL in `ext/repl` connect to
+Structure over HTTPS, so they must trust `target/structure.crt`. They
+read their settings from `target/structure.json`, so start Structure
+first. Then start the REST server:
+
+```bash
+export NODE_EXTRA_CA_CERTS=$PWD/target/structure.crt
+cd ext/rest
+npm install
+npm start
+```
+
+And in another terminal, the REPL:
+
+```bash
+export NODE_EXTRA_CA_CERTS=$PWD/target/structure.crt
+cd ext/repl
+npm install
+npm start
+```
+
+The REST server listens at `rest-host` and `rest-port`, and the REPL
+connects to it there. Structure starts `ext/util/bootstrap` itself,
+with `NODE_EXTRA_CA_CERTS` set to its certificate.
+
 ### Testing
 
 The tests read the Neo4j settings with the prefix `test.structure`, for

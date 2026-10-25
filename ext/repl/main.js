@@ -28,8 +28,8 @@ let validator;
 init();
 
 function init() {
-  rest = new RestConnector(R.defaultTo("localhost", process.env.RESTHOST), R.defaultTo(3000, process.env.RESTPORT));
-  validator = new SchemaValidator(R.defaultTo("http://localhost:8080/schemas/", process.env.SCHEMAHOST));
+  rest = new RestConnector(helper.config()["rest-host"], helper.config()["rest-port"]);
+  validator = new SchemaValidator(helper.structureUrl("schemas/"));
   answerCache.init();
   if (answerCache.get("structure", "token") !== "") {
     rest.setToken(answerCache.get("structure", "token"));

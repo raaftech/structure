@@ -1,6 +1,8 @@
 "use strict";
 
 const R = require("ramda");
+const fs = require("fs");
+const path = require("path");
 const uuidV4 = require("uuid");
 const Structure = require("./subgraph");
 
@@ -17,6 +19,31 @@ function getEventBusAddress(initial, parts) {
 function getResultData(path, result) {
   //return R.path(['body', 'result', 'data'])(result);
   return R.path(path)(result);
+}
+
+/*
+  The settings of the running Structure, from the file that Structure
+  writes at each start
+*/
+let settings = null;
+function config() {
+  if (settings === null) {
+    const file = path.join(__dirname, "..", "..", "..", "..", "target", "structure.json");
+    try {
+      settings = JSON.parse(fs.readFileSync(file, "utf8"));
+    } catch (error) {
+      throw new Error("Can't read the settings of Structure, start Structure first: " + error.message);
+    }
+  }
+  return settings;
+}
+
+/*
+  The URL of a path on Structure
+  @param endpoint The path, for example "eventbus"
+*/
+function structureUrl(endpoint) {
+  return "https://" + config()["https-host"] + ":" + config()["https-port"] + "/" + endpoint;
 }
 
 function stringify(json) {
@@ -67,6 +94,8 @@ module.exports = {
   getEventBusAddress: R.curry(getEventBusAddress),
   getResultData: R.curry(getResultData),
   stringify: stringify,
+  config: config,
+  structureUrl: structureUrl,
   entity2Graph: entity2Graph,
   createInstance: createInstance,
   json2Entity: json2Entity,

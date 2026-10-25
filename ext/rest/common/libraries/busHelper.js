@@ -7,7 +7,7 @@ const helper = require(path.join(__dirname, "helper"));
 
 class BusHelper {
   constructor(ebUrl) {
-    this.eventBusUrl = R.defaultTo("http://localhost:8080/eventbus", ebUrl);
+    this.eventBusUrl = R.defaultTo(helper.structureUrl("eventbus"), ebUrl);
     this.eb = new EventBus(this.eventBusUrl);
     this.intervalId = 0;
     const self = this;
