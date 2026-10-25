@@ -21,6 +21,7 @@ import tech.raaf.structure.bus.NodeActor;
 import tech.raaf.structure.graph.Component;
 import tech.raaf.structure.graph.Group;
 import tech.raaf.structure.graph.repositories.*;
+import tech.raaf.structure.helper.KeystoreHelper;
 import tech.raaf.structure.helper.ProcessRunner;
 import tech.raaf.structure.helper.loader.BundleLoader;
 
@@ -189,6 +190,9 @@ public class StructureManager extends GenericActor {
       ProcessRunner runner = new ProcessRunner(
         "node ".concat(bootstrapLocation.toString()).concat(" -c -h " + Context.getHostname() + " -t " + token)
       );
+      // The bootstrap program connects to the REST server over HTTPS
+      final Path crt = KeystoreHelper.crt(Configuration.get(Setting.JKS_FILE));
+      runner.environment().put("NODE_EXTRA_CA_CERTS", crt.toString());
       try {
         runner.run();
         int scriptFinishedWaitCycles = 0;

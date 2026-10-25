@@ -7,10 +7,13 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.security.GeneralSecurityException;
+import java.security.Key;
 import java.security.KeyStore;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
@@ -31,14 +34,19 @@ public final class KeystoreHelper {
 
   /**
    * Make a JKS keystore with a self-signed certificate for localhost and
-   * the given host, and export the certificate to structure.crt in the
-   * directory of the keystore. Only the owner can read the keystore.
+   * the given hosts. Export the certificate to structure.crt and the key
+   * to structure.key, in the directory of the keystore. Only the owner
+   * can read the keystore and the key.
    */
-  public static void make(Path jks, String password, String host) throws IOException, InterruptedException {
+  public static void make(Path jks, String password, String... hosts)
+    throws IOException, InterruptedException, GeneralSecurityException {
     Files.createDirectories(jks.toAbsolutePath().getParent());
-    final String san = "localhost".equals(host)
-      ? "dns:localhost"
-      : "dns:localhost," + (host.matches("[\\d.]+|.*:.*") ? "ip:" : "dns:") + host;
+    final StringBuilder san = new StringBuilder("dns:localhost");
+    for (String host : new LinkedHashSet<>(Arrays.asList(hosts))) {
+      if (!"localhost".equals(host)) {
+        san.append(host.matches("[\\d.]+|.*:.*") ? ",ip:" : ",dns:").append(host);
+      }
+    }
     keytool(
       password,
       "-genkeypair",
@@ -62,6 +70,13 @@ public final class KeystoreHelper {
       PASS
     );
     Files.setPosixFilePermissions(jks, PosixFilePermissions.fromString("rw-------"));
+    final Key key = load(jks, password.toCharArray()).getKey(ALIAS, password.toCharArray());
+    final String pem = Base64.getMimeEncoder(64, new byte[] { '\n' }).encodeToString(key.getEncoded());
+    Files.createFile(key(jks), PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString("rw-------")));
+    Files.write(
+      key(jks),
+      ("-----BEGIN PRIVATE KEY-----\n" + pem + "\n-----END PRIVATE KEY-----\n").getBytes("US-ASCII")
+    );
     keytool(
       password,
       "-exportcert",
@@ -80,6 +95,11 @@ public final class KeystoreHelper {
   // The certificate file that make exports
   public static Path crt(Path jks) {
     return jks.toAbsolutePath().resolveSibling("structure.crt");
+  }
+
+  // The key file that make exports
+  public static Path key(Path jks) {
+    return jks.toAbsolutePath().resolveSibling("structure.key");
   }
 
   /**

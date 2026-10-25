@@ -1,5 +1,6 @@
 package tech.raaf.structure.helper;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
 import io.vertx.core.Vertx;
@@ -11,10 +12,12 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.PosixFilePermissions;
+import java.security.KeyStore;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import org.apache.commons.io.IOUtils;
@@ -39,9 +42,28 @@ public class KeystoreHelperTest {
   public void make() throws Exception {
     // Also makes the missing directory
     final Path jks = folder.getRoot().toPath().resolve("target/structure.jks");
-    KeystoreHelper.make(jks, "changeit", "structure.example");
+    KeystoreHelper.make(jks, "changeit", "structure.example", "rest.example", "localhost", "structure.example");
     assertEquals("rw-------", PosixFilePermissions.toString(Files.getPosixFilePermissions(jks)));
-    assertEquals(Arrays.asList(Arrays.asList(2, "localhost"), Arrays.asList(2, "structure.example")), names(jks));
+    assertEquals(
+      Arrays.asList(
+        Arrays.asList(2, "localhost"),
+        Arrays.asList(2, "structure.example"),
+        Arrays.asList(2, "rest.example")
+      ),
+      names(jks)
+    );
+    // The exported key is the key in the keystore
+    final Path key = KeystoreHelper.key(jks);
+    assertEquals("rw-------", PosixFilePermissions.toString(Files.getPosixFilePermissions(key)));
+    final String pem = new String(Files.readAllBytes(key), "US-ASCII");
+    final KeyStore keystore = KeyStore.getInstance("JKS");
+    try (InputStream stream = Files.newInputStream(jks)) {
+      keystore.load(stream, "changeit".toCharArray());
+    }
+    assertArrayEquals(
+      keystore.getKey("structure", "changeit".toCharArray()).getEncoded(),
+      Base64.getMimeDecoder().decode(pem.replaceAll("-----[A-Z ]+-----", ""))
+    );
   }
 
   @Test

@@ -79,14 +79,16 @@ java -cp /etc/structure:target/structure-0.10.0-fat.jar tech.raaf.structure.base
 
 Structure always uses HTTPS, with the keystore in `jks-file`. If the
 keystore does not exist, Structure makes it with `keytool`. The
-keystore then has a self-signed certificate for `localhost` and
-`https-host`. Structure also exports the certificate to `structure.crt`
-in the directory of the keystore. Clients can trust this certificate,
-for example with `curl --cacert target/structure.crt` or
+keystore then has a self-signed certificate for `localhost`,
+`https-host` and `rest-host`. Structure also exports the certificate to
+`structure.crt`, and the key to `structure.key`, in the directory of
+the keystore. The REST server in `ext/rest` uses the same key and
+certificate. Clients can trust this certificate, for example with
+`curl --cacert target/structure.crt` or
 `NODE_EXTRA_CA_CERTS=target/structure.crt`. Structure uses the same
 keystore at each start. To make a new certificate, for example after
-you change `https-host`, delete the keystore. `mvn clean` also deletes
-it.
+you change `https-host` or `rest-host`, delete the keystore.
+`mvn clean` also deletes it.
 
 ### Testing
 
