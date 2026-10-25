@@ -1,13 +1,20 @@
 "use strict";
 
 const R = require("ramda");
+const fs = require("fs");
+const path = require("path");
 const cmd = require("command-line-args");
 const getUsage = require("command-line-usage");
 const nmapLib = require("./nmapLib");
 const Helper = require("./helper");
 const RestConnector = require("./restConnector");
 
-const rest = new RestConnector("localhost", 3000);
+// The settings of the running Structure, from the file that Structure
+// writes at each start
+const settings = JSON.parse(
+  fs.readFileSync(path.join(__dirname, "..", "..", "..", "target", "structure.json"), "utf8"),
+);
+const rest = new RestConnector(settings["rest-host"], settings["rest-port"]);
 const log = (x) => console.log(JSON.stringify(x, undefined, 2));
 
 const optionDefs = [

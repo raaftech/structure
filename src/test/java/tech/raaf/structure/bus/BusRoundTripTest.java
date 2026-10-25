@@ -8,8 +8,6 @@ import io.vertx.core.Verticle;
 import io.vertx.core.eventbus.DeliveryOptions;
 import io.vertx.core.json.JsonObject;
 import java.net.URI;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -19,7 +17,6 @@ import java.util.concurrent.ExecutionException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import tech.raaf.structure.base.Configuration;
 import tech.raaf.structure.base.Context;
 import tech.raaf.structure.bus.manager.EntityManager;
 import tech.raaf.structure.bus.manager.StructureManager;
@@ -47,7 +44,6 @@ public class BusRoundTripTest extends TypeSchemaTest {
   private static final String UNIX_LIKE = "6a1eea8b-1462-4439-8c60-12edbee6c397";
   private static final String COMPONENT_GROUP = "ee92c308-80f4-40b2-af3a-77d26cd99517";
   private static final URI RESPONSE = URI.create("resource:/schema/base/response.schema.json");
-  private static final Path BUNDLES = Paths.get("src/main/resources/bundles/");
 
   private final String host = UUID.randomUUID().toString();
   private final String group = UUID.randomUUID().toString();
@@ -57,7 +53,6 @@ public class BusRoundTripTest extends TypeSchemaTest {
   public void deploy() throws Exception {
     // Application sets these, status and reload need them
     Context.setHostname("bus-test-host");
-    Configuration.getBundlePaths().add(BUNDLES);
     for (Verticle verticle : Arrays.asList(
       new EntityManager(),
       new StructureManager(),
@@ -88,7 +83,6 @@ public class BusRoundTripTest extends TypeSchemaTest {
 
   @After
   public void reset() {
-    Configuration.getBundlePaths().remove(BUNDLES);
     Context.setSelfGroup(null);
     Context.setSelfIdentifier(null);
   }

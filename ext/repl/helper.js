@@ -2,6 +2,7 @@
 
 const R = require("ramda");
 const fs = require("fs");
+const path = require("path");
 const treeify = require("./treeify");
 
 /*
@@ -50,6 +51,31 @@ function getResultData(result) {
   return R.path(["body", "result", "data"])(result);
 }
 
+/*
+  The settings of the running Structure, from the file that Structure
+  writes at each start
+*/
+let settings = null;
+function config() {
+  if (settings === null) {
+    const file = path.join(__dirname, "..", "..", "target", "structure.json");
+    try {
+      settings = JSON.parse(fs.readFileSync(file, "utf8"));
+    } catch (error) {
+      throw new Error("Can't read the settings of Structure, start Structure first: " + error.message);
+    }
+  }
+  return settings;
+}
+
+/*
+  The URL of a path on Structure
+  @param endpoint The path, for example "eventbus"
+*/
+function structureUrl(endpoint) {
+  return "https://" + config()["https-host"] + ":" + config()["https-port"] + "/" + endpoint;
+}
+
 function stringify(json) {
   return JSON.stringify(json, undefined, 2);
 }
@@ -81,6 +107,8 @@ module.exports = {
   getEventBusAddress: getEventBusAddress,
   getCommonFields: getCommonFields,
   stringify: stringify,
+  config: config,
+  structureUrl: structureUrl,
   readJsonFile: readJsonFile,
   treePrint: R.curry(treePrint),
   genericAuthCommandHandler: genericAuthCommandHandler,

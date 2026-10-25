@@ -1,6 +1,8 @@
 "use strict";
 
 const R = require("ramda");
+const fs = require("fs");
+const path = require("path");
 const cmd = require("command-line-args");
 const getUsage = require("command-line-usage");
 const ansibleLib = require("./ansibleLib");
@@ -34,7 +36,12 @@ const sections = [
   },
 ];
 const usage = getUsage(sections);
-const rest = new RestConnector("localhost", 3000); //FIXME fetch from env. vars
+// The settings of the running Structure, from the file that Structure
+// writes at each start
+const settings = JSON.parse(
+  fs.readFileSync(path.join(__dirname, "..", "..", "..", "target", "structure.json"), "utf8"),
+);
+const rest = new RestConnector(settings["rest-host"], settings["rest-port"]);
 rest.setToken(options.token);
 
 const log = (x) => console.log(JSON.stringify(x, undefined, 2));

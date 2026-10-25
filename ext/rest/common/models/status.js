@@ -2,8 +2,10 @@
 
 const EventBus = require("vertx3-eventbus-client");
 const R = require("ramda");
+const path = require("path");
+const helper = require(path.join(__dirname, "..", "libraries", "helper"));
 
-const eventBusUrl = R.defaultTo("http://localhost:8080/eventbus", process.env.EVENTBUS);
+const eventBusUrl = helper.structureUrl("eventbus");
 let eb = new EventBus(eventBusUrl);
 let intervalId = 0;
 const notNil = R.compose(R.not, R.isNil);

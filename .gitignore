@@ -2,6 +2,9 @@
 **/._.DS_Store
 **/id_dsa*
 **/id_rsa*
+**/node_modules
+**/vendors
+**/*.iml
 .idea
 .classpath
 .factorypath
@@ -12,17 +15,7 @@
 .vscode
 structure.db
 target
-ext/repl/node_modules
 ext/repl/payloads
 ext/repl/tui.cache
 generatedscripts
-ext/rest/client/js/vendors
 ext/rest/credentials.json
-ext/rest/node_modules
-src/main/resources/webroot/js/vendors
-structure.iml
-ext/util/bootstrap/node_modules
-ext/util/net-discovery/node_modules
-ext/util/os-discovery/node_modules
-doc/legacy/orbit/tryDetect/projects/structure/node_modules
-web/js/vendors

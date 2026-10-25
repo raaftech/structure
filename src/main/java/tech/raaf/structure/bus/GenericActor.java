@@ -9,6 +9,7 @@ import com.github.fge.jsonschema.core.report.ProcessingReport;
 import com.github.fge.jsonschema.main.JsonSchema;
 import com.github.fge.jsonschema.main.JsonSchemaFactory;
 import io.vertx.core.AbstractVerticle;
+import io.vertx.core.DeploymentOptions;
 import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.json.JsonObject;
@@ -48,6 +49,13 @@ public abstract class GenericActor extends AbstractVerticle {
   // statusAddress is used to push notifications of events within Structure
   // that the GUI may be interested about.
   private static final String statusAddress = "tech.raaf.structure.bus.status";
+  // The worker pool of the actors that use the graph
+  private static final String POOL = "structure-actors";
+
+  // Options to deploy an actor that uses the graph
+  public static DeploymentOptions worker() {
+    return new DeploymentOptions().setWorker(true).setWorkerPoolName(POOL);
+  }
 
   class HandlerSchema {
 

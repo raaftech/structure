@@ -8,7 +8,6 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
-import io.vertx.core.DeploymentOptions;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Iterator;
@@ -19,8 +18,8 @@ import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
-import tech.raaf.structure.base.Configuration;
 import tech.raaf.structure.base.Context;
+import tech.raaf.structure.bus.GenericActor;
 import tech.raaf.structure.bus.InstanceActor;
 import tech.raaf.structure.graph.repositories.InstanceRepository;
 import tech.raaf.structure.graph.repositories.TypeRepository;
@@ -203,10 +202,7 @@ public abstract class Instance extends Node {
       }
       write();
       if (newNode && Context.getVertx() != null) {
-        final DeploymentOptions options = new DeploymentOptions()
-          .setWorker(true)
-          .setWorkerPoolName(Configuration.ACTOR_POOL);
-        Graph.afterCommit(() -> Context.getVertx().deployVerticle(new InstanceActor(this), options));
+        Graph.afterCommit(() -> Context.getVertx().deployVerticle(new InstanceActor(this), GenericActor.worker()));
       }
     });
 

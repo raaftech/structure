@@ -180,7 +180,6 @@ public class EntityTest extends GraphTest {
   @Test
   public void testRootNodeCreationFromJson() throws Exception {
     final String bundlePath = "src/test/resources/bundles/simple";
-    System.setProperty("bundlePath", bundlePath);
     final String rootFileLocation = bundlePath + "/root.type.json";
     final String componentFileLocation = bundlePath + "/component.type.json";
 

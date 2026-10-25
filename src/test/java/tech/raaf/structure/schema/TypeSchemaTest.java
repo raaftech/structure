@@ -10,7 +10,6 @@ import java.nio.file.Paths;
 import java.util.concurrent.CompletableFuture;
 import org.junit.Before;
 import tech.raaf.structure.GraphTest;
-import tech.raaf.structure.base.Configuration;
 import tech.raaf.structure.base.Context;
 import tech.raaf.structure.bus.manager.SchemaManager;
 import tech.raaf.structure.helper.loader.BundleLoader;
@@ -47,7 +46,7 @@ public abstract class TypeSchemaTest extends GraphTest {
       });
 
       // Set the schema namespace to the http endpoint that we exposed before
-      Configuration.setSchemaNamespace(URI.create("http://localhost:" + listening.get().actualPort()));
+      Context.setSchemaNamespace(URI.create("http://localhost:" + listening.get().actualPort()));
 
       httpUp = true;
     }

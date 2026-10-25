@@ -57,10 +57,6 @@ public class NaiveSorter {
 
   private String globPattern = "**/*.{type,inst}.json";
 
-  public NaiveSorter() {
-    bundlePaths = Configuration.getBundlePaths();
-  }
-
   public NaiveSorter(Set<Path> bundlePaths) {
     this.bundlePaths = bundlePaths;
   }

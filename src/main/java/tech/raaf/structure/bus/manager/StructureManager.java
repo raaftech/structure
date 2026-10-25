@@ -9,19 +9,19 @@ import io.vertx.core.shareddata.LocalMap;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tech.raaf.structure.annotations.SchemaPath;
 import tech.raaf.structure.base.Application;
 import tech.raaf.structure.base.Configuration;
+import tech.raaf.structure.base.Configuration.Setting;
 import tech.raaf.structure.base.Context;
 import tech.raaf.structure.bus.GenericActor;
 import tech.raaf.structure.bus.NodeActor;
 import tech.raaf.structure.graph.Component;
 import tech.raaf.structure.graph.Group;
 import tech.raaf.structure.graph.repositories.*;
+import tech.raaf.structure.helper.KeystoreHelper;
 import tech.raaf.structure.helper.ProcessRunner;
 import tech.raaf.structure.helper.loader.BundleLoader;
 
@@ -181,15 +181,7 @@ public class StructureManager extends GenericActor {
     Component host = Context.getInstanceRepository().findDnsName(Context.getHostname());
     if (host == null) {
       log.info("Structure is not registered in the database, now discovering itself");
-      /*
-        We should properly retrieve the location of ext/util/bootstrap. For now assume work directory
-        contains the ext/util dir.
-      */
-      final Optional<String> maybeStructureHome = Configuration.getConfigurationProxy().getConfiguration("home");
-      final String bootstrapRelativeLocation = "ext/util/bootstrap/main.js";
-      final Path bootstrapLocation = maybeStructureHome.isPresent()
-        ? Paths.get(maybeStructureHome.get()).resolve(bootstrapRelativeLocation)
-        : Paths.get("").resolve(bootstrapRelativeLocation).toAbsolutePath();
+      final Path bootstrapLocation = Configuration.get(Setting.HOME).resolve("ext/util/bootstrap/main.js");
       if (!Files.exists(bootstrapLocation)) {
         final String error = "Bootstrap program not found at location \"" + bootstrapLocation + "\"";
         log.error(error);
@@ -198,6 +190,9 @@ public class StructureManager extends GenericActor {
       ProcessRunner runner = new ProcessRunner(
         "node ".concat(bootstrapLocation.toString()).concat(" -c -h " + Context.getHostname() + " -t " + token)
       );
+      // The bootstrap program connects to the REST server over HTTPS
+      final Path crt = KeystoreHelper.crt(Configuration.get(Setting.JKS_FILE));
+      runner.environment().put("NODE_EXTRA_CA_CERTS", crt.toString());
       try {
         runner.run();
         int scriptFinishedWaitCycles = 0;

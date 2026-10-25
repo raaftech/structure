@@ -3,6 +3,8 @@ package tech.raaf.structure;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import tech.raaf.structure.base.Application;
+import tech.raaf.structure.base.Configuration;
+import tech.raaf.structure.base.Configuration.Setting;
 import tech.raaf.structure.graph.Graph;
 
 /**
@@ -12,6 +14,8 @@ import tech.raaf.structure.graph.Graph;
  */
 public abstract class GraphTest {
 
+  // The name prefix of the test settings
+  private static final String PREFIX = "test.structure";
   private static boolean connected = false;
 
   @BeforeClass
@@ -19,15 +23,15 @@ public abstract class GraphTest {
     if (connected) {
       return;
     }
-    final String uri = System.getenv("STRUCTURE_TEST_NEO4J_URI");
-    final String password = System.getenv("STRUCTURE_TEST_NEO4J_PASSWORD");
-    if (uri == null || password == null) {
+    final String uri = Configuration.get(PREFIX, Setting.NEO4J_BOLT_URI);
+    if (uri.equals(Configuration.get(Setting.NEO4J_BOLT_URI))) {
       throw new IllegalStateException(
-        "Set STRUCTURE_TEST_NEO4J_URI and STRUCTURE_TEST_NEO4J_PASSWORD. " + "The tests delete all data on that server."
+        "Set TEST_STRUCTURE_NEO4J_BOLT_URI to a server other than " +
+          uri +
+          ". The tests delete all data on that server."
       );
     }
-    final String username = System.getenv("STRUCTURE_TEST_NEO4J_USERNAME");
-    Graph.connect(uri, username == null ? "neo4j" : username, password);
+    Graph.connect(uri, Configuration.get(PREFIX, Setting.NEO4J_USER), Configuration.get(PREFIX, Setting.NEO4J_PASS));
     Application.createSchema();
     connected = true;
   }

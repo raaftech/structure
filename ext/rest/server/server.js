@@ -1,94 +1,40 @@
 "use strict";
 
-const R = require("ramda");
 const loopback = require("loopback");
 const boot = require("loopback-boot");
 const path = require("path");
-const pem = require("pem");
 const https = require("https");
 const fs = require("fs");
 const BusHelper = require(path.join(__dirname, "..", "common", "libraries", "busHelper"));
+const helper = require(path.join(__dirname, "..", "common", "libraries", "helper"));
 
 const app = (module.exports = loopback());
 
-const eventBusUrl = R.defaultTo("http://localhost:8080/eventbus", process.env.EVENTBUS);
+const eventBusUrl = helper.structureUrl("eventbus");
 app.eventBus = new BusHelper(eventBusUrl);
 
-/**
- * Check whether we find a ssl key and certificate at a file location[0]. If they are available
- * use them to setup the https server. If we don't find them, generate a certificate and use that
- * to setup the https server.
- *
- * [0]: File location is passed with env key "STRUCTURE_SSLDIR", or we default to "/opt/structure/ssl".
- *
- * @returns {Promise} An object containing a `cert` and `key` if successful, an error string otherwise.
- */
-const getSSL = () => {
-  return new Promise((resolve, reject) => {
-    const sslDir = R.defaultTo("/opt/structure/ssl", process.env.STRUCTURE_SSLDIR);
-    const sslKey = sslDir + "/" + "structure.key";
-    const sslCrt = sslDir + "/" + "structure.pem";
+app.start = function () {
+  // The key and certificate of Structure, next to its keystore
+  const settings = helper.config();
+  const directory = path.dirname(settings["jks-file"]);
+  const ssl = {
+    key: fs.readFileSync(path.join(directory, "structure.key")),
+    cert: fs.readFileSync(path.join(directory, "structure.crt")),
+  };
+  const server = https.createServer(ssl, app);
+  server.listen(settings["rest-port"], settings["rest-host"], function () {
+    const baseUrl = "https://" + settings["rest-host"] + ":" + settings["rest-port"];
+    app.emit("started", baseUrl);
 
-    const fileReadable = (fileLocation) => {
-      try {
-        fs.accessSync(fileLocation, fs.constants.R_OK);
-      } catch (ex) {
-        return false;
-      }
-      return true;
-    };
+    console.log("Using eventbus url: %s", eventBusUrl);
+    console.log("Web server listening at: %s", baseUrl);
 
-    let generateSSL = !(fileReadable(sslKey) && fileReadable(sslCrt));
-
-    let sslObj = {};
-    if (generateSSL) {
-      console.log("Couldn't find %s or %s, generating certificate.", sslKey, sslCrt);
-      pem.createCertificate({ days: 1000, selfSigned: true }, (err, keys) => {
-        if (err) {
-          reject("Error while generating self-signed certificate " + "exiting.");
-        }
-        console.log("Generated self-signed certificate.");
-        sslObj.key = keys.serviceKey;
-        sslObj.cert = keys.certificate;
-
-        resolve(sslObj);
-      });
-    } else {
-      console.log('Using certificate at location "' + sslCrt + '".');
-      sslObj.key = fs.readFileSync(sslKey).toString();
-      sslObj.cert = fs.readFileSync(sslCrt).toString();
-
-      resolve(sslObj);
+    if (app.get("loopback-component-explorer")) {
+      let explorerPath = app.get("loopback-component-explorer").mountPath;
+      console.log("Browse your REST API at %s%s", baseUrl, explorerPath);
     }
   });
-};
-
-app.start = function () {
-  getSSL()
-    .then((ssl) => {
-      const server = https.createServer(ssl, app);
-      server.listen(app.get("port"), function () {
-        var baseUrl = "https://" + app.get("host") + ":" + app.get("port");
-        app.emit("started", baseUrl);
-
-        if (R.isNil(process.env.EVENTBUS)) {
-          console.log("Environment variable EVENTBUS not set, using default...");
-        }
-
-        console.log("Using eventbus url: %s", eventBusUrl);
-        console.log("Web server listening at: %s", baseUrl);
-
-        if (app.get("loopback-component-explorer")) {
-          let explorerPath = app.get("loopback-component-explorer").mountPath;
-          console.log("Browse your REST API at %s%s", baseUrl, explorerPath);
-        }
-      });
-      return server;
-    })
-    .catch((ex) => {
-      console.log(ex);
-      process.exit(1);
-    });
+  return server;
 };
 
 // Bootstrap the application, configure models, datasources and middleware.

@@ -4,3 +4,6 @@ root = true
 indent_style = space
 indent_size = 2
 max_line_length = 120
+
+[*.md]
+max_line_length = 80

@@ -13,6 +13,7 @@ import java.nio.file.attribute.FileAttribute;
 import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import org.slf4j.Logger;
@@ -68,6 +69,11 @@ public class ProcessRunner {
     }
 
     return processResult;
+  }
+
+  // The environment of the process; change it before run
+  public Map<String, String> environment() {
+    return processBuilder.environment();
   }
 
   public String getCommand() {

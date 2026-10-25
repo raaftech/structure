@@ -7,16 +7,15 @@
     npm i
     npm start
 
-Environment variable:
+The REPL reads the settings of Structure, such as the hosts and ports of
+Structure and the REST server, and the Neo4j user and password, from
+../../target/structure.json. Structure writes this file at each start, so start
+Structure first.
 
-(these are the defaults):
+Structure and the REST server have the self-signed certificate of Structure. To
+trust it, set NODE_EXTRA_CA_CERTS to structure.crt:
 
-RESTHOST=localhost
-RESTPORT=3000
-EVENTBUS=http://localhost:8080/eventbus
-NEO4JURL=http://localhost:7474
-STRUCTURE_NEO4J_USERNAME=neo4j
-STRUCTURE_NEO4J_PASSWORD has no default; the neo commands need it
+    NODE_EXTRA_CA_CERTS=../../target/structure.crt npm start
 
 ## Notes:
 

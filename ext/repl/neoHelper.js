@@ -2,10 +2,7 @@
 
 const R = require("ramda");
 
-const neoUrl = R.defaultTo("http://localhost:7474", process.env.NEO4JURL);
-const username = R.defaultTo("neo4j", process.env.STRUCTURE_NEO4J_USERNAME);
-const password = R.defaultTo("", process.env.STRUCTURE_NEO4J_PASSWORD);
-const auth = "Basic " + Buffer.from(username + ":" + password).toString("base64");
+const helper = require("./helper");
 
 /*
   Sends a cypher query to the Neo4j Query API. Returns a Promise of a list
@@ -13,7 +10,9 @@ const auth = "Basic " + Buffer.from(username + ":" + password).toString("base64"
   @param query The cypher query
 */
 const cypher = (query) => {
-  return fetch(neoUrl + "/db/neo4j/query/v2", {
+  const settings = helper.config();
+  const auth = "Basic " + Buffer.from(settings["neo4j-user"] + ":" + settings["neo4j-pass"]).toString("base64");
+  return fetch(settings["neo4j-http-uri"] + "/db/neo4j/query/v2", {
     method: "POST",
     headers: {
       Accept: "application/json",

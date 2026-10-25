@@ -18,6 +18,7 @@ import java.util.Iterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tech.raaf.structure.base.Configuration;
+import tech.raaf.structure.base.Context;
 import tech.raaf.structure.bus.manager.SchemaManager;
 
 /**
@@ -166,10 +167,10 @@ public class JsonHelper {
     try {
       JsonSchemaFactory jsonSchemaFactory;
 
-      if (Configuration.getSchemaNamespace() != null) {
+      if (Context.getSchemaNamespace() != null) {
         final URI nameSpaceURI;
         if (customNamespace == null) {
-          nameSpaceURI = Configuration.getSchemaNamespace().resolve("/schemas/");
+          nameSpaceURI = Context.getSchemaNamespace().resolve("/schemas/");
         } else {
           nameSpaceURI = customNamespace;
         }

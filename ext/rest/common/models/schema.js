@@ -1,11 +1,11 @@
 "use strict";
 
-const R = require("ramda");
 const path = require("path");
 const SchemaValidator = require(path.join(__dirname, "..", "libraries", "SchemaValidator"));
+const helper = require(path.join(__dirname, "..", "libraries", "helper"));
 
 module.exports = function (Schema) {
-  const validator = new SchemaValidator(R.defaultTo("http://localhost:8080/schemas/", process.env.SCHEMAHOST));
+  const validator = new SchemaValidator(helper.structureUrl("schemas/"));
 
   Schema.getSchema = function (typeName, callback) {
     validator
