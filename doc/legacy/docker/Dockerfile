@@ -29,7 +29,7 @@ COPY ext/rest ${STRUCTURE_HOME}/ext/rest
 RUN cd ${STRUCTURE_HOME}/ext/rest ; rm -rf node_modules; npm i; cd ${STRUCTURE_HOME}
 COPY ext/util ${STRUCTURE_HOME}/ext/util
 COPY src/main/resources/bundles ${STRUCTURE_HOME}/bundles/raaf
-COPY doc/legacy/docker/bin/winexe-x86_64 /usr/bin/winexe
+# winexe is no longer in the repository, see bin/README.md
 COPY doc/legacy/docker/service/structure /etc/service/structure/run
 COPY doc/legacy/docker/service/rest /etc/service/rest/run
 
