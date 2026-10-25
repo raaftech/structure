@@ -31,9 +31,9 @@ import org.apache.commons.cli.ParseException;
  * the environment, the system properties, config.properties on the
  * class path, and the default of the setting.
  *
- * From the name neo4j-uri and the prefix structure follow the option
- * --neo4j-uri, the environment variable STRUCTURE_NEO4J_URI and the
- * property structure.neo4j.uri.
+ * From the name neo4j-bolt-uri and the prefix structure follow the
+ * option --neo4j-bolt-uri, the environment variable
+ * STRUCTURE_NEO4J_BOLT_URI and the property structure.neo4j.bolt.uri.
  *
  * @author Freek Alleman <freek@raaf.tech>
  * @since 2016-09-30
@@ -82,7 +82,7 @@ public final class Configuration {
   /**
    * Get the value of a setting, with a different name prefix for the
    * environment variable and the property. For example, the tests use
-   * test.structure, which reads TEST_STRUCTURE_NEO4J_URI.
+   * test.structure, which reads TEST_STRUCTURE_NEO4J_BOLT_URI.
    * @throws IllegalArgumentException when the value is missing or not valid.
    */
   public static <T> T get(String prefix, Setting<T> setting) {
@@ -242,11 +242,11 @@ public final class Configuration {
       "changeit",
       "Keystore password"
     );
-    public static final Setting<String> NEO4J_URI = new Setting<>(
-      "neo4j-uri",
+    public static final Setting<String> NEO4J_BOLT_URI = new Setting<>(
+      "neo4j-bolt-uri",
       Type.TEXT,
       "bolt://localhost:7687",
-      "Neo4j server"
+      "Neo4j Bolt server"
     );
     public static final Setting<String> NEO4J_USER = new Setting<>("neo4j-user", Type.TEXT, "neo4j", "Neo4j user");
     public static final Setting<String> NEO4J_PASS = new Setting<>("neo4j-pass", Type.TEXT, null, "Neo4j password");
@@ -288,7 +288,7 @@ public final class Configuration {
         HOME,
         JKS_FILE,
         JKS_PASS,
-        NEO4J_URI,
+        NEO4J_BOLT_URI,
         NEO4J_USER,
         NEO4J_PASS,
         HTTPS_HOST,

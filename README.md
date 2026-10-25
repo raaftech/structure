@@ -10,7 +10,7 @@ delete all its data.
 ```bash
 java -version # Needs to be Java 8.x
 git clone git@github.com:raaftech/structure.git
-export TEST_STRUCTURE_NEO4J_URI=bolt://localhost:7688 TEST_STRUCTURE_NEO4J_PASS=structure
+export TEST_STRUCTURE_NEO4J_BOLT_URI=bolt://localhost:7688 TEST_STRUCTURE_NEO4J_PASS=structure
 mvn package
 cd src/main/resources/webroot
 bower install
@@ -29,11 +29,11 @@ Each setting has a command line option, an environment variable and a
 property. Structure reads the value of a setting from these sources,
 highest priority first:
 
-1. the command line option, for example `--neo4j-uri`;
-2. the environment variable, for example `STRUCTURE_NEO4J_URI`;
-3. the system property, for example `-Dstructure.neo4j.uri`;
+1. the command line option, for example `--neo4j-bolt-uri`;
+2. the environment variable, for example `STRUCTURE_NEO4J_BOLT_URI`;
+3. the system property, for example `-Dstructure.neo4j.bolt.uri`;
 4. the key in `config.properties` on the class path, for example
-   `structure.neo4j.uri`;
+   `structure.neo4j.bolt.uri`;
 5. the default.
 
 | Option             | Environment variable       | Property                   | Default                       | Description                                                  |
@@ -45,7 +45,7 @@ highest priority first:
 | `--home`           | `STRUCTURE_HOME`           | `structure.home`           | working directory             | Structure home directory                                     |
 | `--jks-file`       | `STRUCTURE_JKS_FILE`       | `structure.jks.file`       | `<home>/target/structure.jks` | JKS keystore for HTTPS, relative to home; made if missing    |
 | `--jks-pass`       | `STRUCTURE_JKS_PASS`       | `structure.jks.pass`       | `changeit`                    | Keystore password                                            |
-| `--neo4j-uri`      | `STRUCTURE_NEO4J_URI`      | `structure.neo4j.uri`      | `bolt://localhost:7687`       | Neo4j server                                                 |
+| `--neo4j-bolt-uri` | `STRUCTURE_NEO4J_BOLT_URI` | `structure.neo4j.bolt.uri` | `bolt://localhost:7687`       | Neo4j Bolt server                                            |
 | `--neo4j-user`     | `STRUCTURE_NEO4J_USER`     | `structure.neo4j.user`     | `neo4j`                       | Neo4j user                                                   |
 | `--neo4j-pass`     | `STRUCTURE_NEO4J_PASS`     | `structure.neo4j.pass`     | required                      | Neo4j password                                               |
 | `--https-host`     | `STRUCTURE_HTTPS_HOST`     | `structure.https.host`     | `localhost`                   | HTTPS server host; also used in schema URIs                  |
@@ -83,10 +83,10 @@ it.
 ### Testing
 
 The tests read the Neo4j settings with the prefix `test.structure`, for
-example `TEST_STRUCTURE_NEO4J_URI` or `test.structure.neo4j.uri`. They
-use the same defaults as a normal run. The tests delete all data on
-their server, so they stop if `TEST_STRUCTURE_NEO4J_URI` is the same as
-the URI of a normal run.
+example `TEST_STRUCTURE_NEO4J_BOLT_URI` or
+`test.structure.neo4j.bolt.uri`. They use the same defaults as a normal
+run. The tests delete all data on their server, so they stop if
+`TEST_STRUCTURE_NEO4J_BOLT_URI` is the same as the URI of a normal run.
 
 To run the tests next to a server on port 7687, start a second Neo4j
 from the same installation with its own home and configuration. Change
@@ -100,6 +100,6 @@ sed -e 's/^#\?server.bolt.listen_address=.*/server.bolt.listen_address=localhost
     /etc/neo4j/neo4j.conf > $NEO4J_CONF/neo4j.conf
 neo4j-admin dbms set-initial-password structure
 neo4j start
-TEST_STRUCTURE_NEO4J_URI=bolt://localhost:7688 TEST_STRUCTURE_NEO4J_PASS=structure mvn verify
+TEST_STRUCTURE_NEO4J_BOLT_URI=bolt://localhost:7688 TEST_STRUCTURE_NEO4J_PASS=structure mvn verify
 neo4j stop
 ```

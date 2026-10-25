@@ -23,10 +23,12 @@ public abstract class GraphTest {
     if (connected) {
       return;
     }
-    final String uri = Configuration.get(PREFIX, Setting.NEO4J_URI);
-    if (uri.equals(Configuration.get(Setting.NEO4J_URI))) {
+    final String uri = Configuration.get(PREFIX, Setting.NEO4J_BOLT_URI);
+    if (uri.equals(Configuration.get(Setting.NEO4J_BOLT_URI))) {
       throw new IllegalStateException(
-        "Set TEST_STRUCTURE_NEO4J_URI to a server other than " + uri + ". The tests delete all data on that server."
+        "Set TEST_STRUCTURE_NEO4J_BOLT_URI to a server other than " +
+          uri +
+          ". The tests delete all data on that server."
       );
     }
     Graph.connect(uri, Configuration.get(PREFIX, Setting.NEO4J_USER), Configuration.get(PREFIX, Setting.NEO4J_PASS));

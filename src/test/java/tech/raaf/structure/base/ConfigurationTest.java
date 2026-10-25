@@ -31,13 +31,13 @@ public class ConfigurationTest {
 
   @Test
   public void names() throws Exception {
-    assertEquals("structure.neo4j.uri", Configuration.property("structure", Setting.NEO4J_URI));
-    assertEquals("STRUCTURE_NEO4J_URI", Configuration.variable("structure", Setting.NEO4J_URI));
-    assertEquals("test.structure.neo4j.uri", Configuration.property("test.structure", Setting.NEO4J_URI));
-    assertEquals("TEST_STRUCTURE_NEO4J_URI", Configuration.variable("test.structure", Setting.NEO4J_URI));
+    assertEquals("structure.neo4j.bolt.uri", Configuration.property("structure", Setting.NEO4J_BOLT_URI));
+    assertEquals("STRUCTURE_NEO4J_BOLT_URI", Configuration.variable("structure", Setting.NEO4J_BOLT_URI));
+    assertEquals("test.structure.neo4j.bolt.uri", Configuration.property("test.structure", Setting.NEO4J_BOLT_URI));
+    assertEquals("TEST_STRUCTURE_NEO4J_BOLT_URI", Configuration.variable("test.structure", Setting.NEO4J_BOLT_URI));
     assertEquals(
-      singletonMap("neo4j-uri", "bolt://other"),
-      Configuration.parse(new String[] { "--neo4j-uri", "bolt://other" })
+      singletonMap("neo4j-bolt-uri", "bolt://other"),
+      Configuration.parse(new String[] { "--neo4j-bolt-uri", "bolt://other" })
     );
   }
 
@@ -65,12 +65,12 @@ public class ConfigurationTest {
   public void prefix() {
     final Configuration configuration = new Configuration(
       NONE,
-      singletonMap("TEST_STRUCTURE_NEO4J_URI", "bolt://test"),
+      singletonMap("TEST_STRUCTURE_NEO4J_BOLT_URI", "bolt://test"),
       new Properties(),
-      properties("structure.neo4j.uri", "bolt://normal")
+      properties("structure.neo4j.bolt.uri", "bolt://normal")
     );
-    assertEquals("bolt://test", configuration.resolve("test.structure", Setting.NEO4J_URI));
-    assertEquals("bolt://normal", configuration.resolve("structure", Setting.NEO4J_URI));
+    assertEquals("bolt://test", configuration.resolve("test.structure", Setting.NEO4J_BOLT_URI));
+    assertEquals("bolt://normal", configuration.resolve("structure", Setting.NEO4J_BOLT_URI));
   }
 
   @Test

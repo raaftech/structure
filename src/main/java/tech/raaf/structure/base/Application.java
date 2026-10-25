@@ -121,7 +121,7 @@ public class Application {
     log.info("Structure is starting up..");
 
     // Connect to the Neo4j server
-    final String neo4jUri = Configuration.get(Setting.NEO4J_URI);
+    final String neo4jUri = Configuration.get(Setting.NEO4J_BOLT_URI);
     log.info("Connecting to Neo4j at {}", neo4jUri);
     try {
       Graph.connect(neo4jUri, Configuration.get(Setting.NEO4J_USER), Configuration.get(Setting.NEO4J_PASS));
