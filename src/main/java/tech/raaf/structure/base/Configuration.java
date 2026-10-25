@@ -228,6 +228,20 @@ public final class Configuration {
       System.getProperty("user.dir"),
       "Structure home directory"
     );
+    // A relative path is relative to home
+    public static final Setting<Path> JKS_FILE = new Setting<>(
+      "jks-file",
+      Type.PATH,
+      "target/structure.jks",
+      "JKS keystore for HTTPS, relative to home; made if missing",
+      file -> Configuration.get(HOME).resolve(file)
+    );
+    public static final Setting<String> JKS_PASS = new Setting<>(
+      "jks-pass",
+      Type.TEXT,
+      "changeit",
+      "Keystore password"
+    );
     public static final Setting<String> NEO4J_URI = new Setting<>(
       "neo4j-uri",
       Type.TEXT,
@@ -236,17 +250,17 @@ public final class Configuration {
     );
     public static final Setting<String> NEO4J_USER = new Setting<>("neo4j-user", Type.TEXT, "neo4j", "Neo4j user");
     public static final Setting<String> NEO4J_PASS = new Setting<>("neo4j-pass", Type.TEXT, null, "Neo4j password");
-    public static final Setting<String> HTTP_HOST = new Setting<>(
-      "http-host",
+    public static final Setting<String> HTTPS_HOST = new Setting<>(
+      "https-host",
       Type.TEXT,
       "localhost",
-      "HTTP server host; also used in schema URIs"
+      "HTTPS server host; also used in schema URIs"
     );
-    public static final Setting<Integer> HTTP_PORT = new Setting<>(
-      "http-port",
+    public static final Setting<Integer> HTTPS_PORT = new Setting<>(
+      "https-port",
       Type.INTEGER,
-      "8080",
-      "HTTP server port"
+      "8443",
+      "HTTPS server port"
     );
     // Vert.x takes nanoseconds
     public static final Setting<Long> WORKER_TIMEOUT = new Setting<>(
@@ -272,11 +286,13 @@ public final class Configuration {
         UNSAFE,
         BUNDLE_PATH,
         HOME,
+        JKS_FILE,
+        JKS_PASS,
         NEO4J_URI,
         NEO4J_USER,
         NEO4J_PASS,
-        HTTP_HOST,
-        HTTP_PORT,
+        HTTPS_HOST,
+        HTTPS_PORT,
         WORKER_TIMEOUT,
         JOB_POOL
       )

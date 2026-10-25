@@ -1,0 +1,85 @@
+package tech.raaf.structure.helper;
+
+import static org.junit.Assert.assertEquals;
+
+import io.vertx.core.Vertx;
+import io.vertx.core.http.HttpServer;
+import io.vertx.core.http.HttpServerOptions;
+import io.vertx.core.net.JksOptions;
+import java.io.InputStream;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.attribute.PosixFilePermissions;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import org.apache.commons.io.IOUtils;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
+
+public class KeystoreHelperTest {
+
+  @Rule
+  public final TemporaryFolder folder = new TemporaryFolder();
+
+  // The subject alternative names of the exported certificate
+  private List<List<?>> names(Path jks) throws Exception {
+    try (InputStream stream = Files.newInputStream(KeystoreHelper.crt(jks))) {
+      final X509Certificate crt = (X509Certificate) CertificateFactory.getInstance("X.509").generateCertificate(stream);
+      return new ArrayList<>(crt.getSubjectAlternativeNames());
+    }
+  }
+
+  @Test
+  public void make() throws Exception {
+    // Also makes the missing directory
+    final Path jks = folder.getRoot().toPath().resolve("target/structure.jks");
+    KeystoreHelper.make(jks, "changeit", "structure.example");
+    assertEquals("rw-------", PosixFilePermissions.toString(Files.getPosixFilePermissions(jks)));
+    assertEquals(Arrays.asList(Arrays.asList(2, "localhost"), Arrays.asList(2, "structure.example")), names(jks));
+  }
+
+  @Test
+  public void makeForAddress() throws Exception {
+    final Path jks = folder.getRoot().toPath().resolve("structure.jks");
+    KeystoreHelper.make(jks, "changeit", "10.0.0.1");
+    assertEquals(Arrays.asList(Arrays.asList(2, "localhost"), Arrays.asList(7, "10.0.0.1")), names(jks));
+  }
+
+  @Test
+  public void trust() throws Exception {
+    final Path jks = folder.getRoot().toPath().resolve("structure.jks");
+    KeystoreHelper.make(jks, "changeit", "localhost");
+    KeystoreHelper.trust(jks, "changeit");
+    final Vertx vertx = Vertx.vertx();
+    try {
+      final CompletableFuture<HttpServer> listening = new CompletableFuture<>();
+      vertx
+        .createHttpServer(
+          new HttpServerOptions()
+            .setSsl(true)
+            .setKeyStoreOptions(new JksOptions().setPath(jks.toString()).setPassword("changeit"))
+        )
+        .requestHandler(request -> request.response().end("ok"))
+        .listen(0, "localhost", ar -> {
+          if (ar.succeeded()) {
+            listening.complete(ar.result());
+          } else {
+            listening.completeExceptionally(ar.cause());
+          }
+        });
+      // The default trust and host name check accept the certificate
+      final URL url = new URL("https://localhost:" + listening.get().actualPort() + "/");
+      try (InputStream stream = url.openStream()) {
+        assertEquals("ok", IOUtils.toString(stream));
+      }
+    } finally {
+      vertx.close();
+    }
+  }
+}

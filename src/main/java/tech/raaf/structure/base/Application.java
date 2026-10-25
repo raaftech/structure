@@ -8,6 +8,8 @@ import io.vertx.core.Verticle;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.http.HttpServer;
+import io.vertx.core.http.HttpServerOptions;
+import io.vertx.core.net.JksOptions;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.StaticHandler;
 import io.vertx.ext.web.handler.sockjs.BridgeOptions;
@@ -16,6 +18,9 @@ import io.vertx.ext.web.handler.sockjs.SockJSHandler;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.security.GeneralSecurityException;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -44,6 +49,7 @@ import tech.raaf.structure.graph.Graph;
 import tech.raaf.structure.graph.Group;
 import tech.raaf.structure.graph.repositories.InstanceRepository;
 import tech.raaf.structure.graph.repositories.TypeRepository;
+import tech.raaf.structure.helper.KeystoreHelper;
 import tech.raaf.structure.helper.ProcessRunner;
 import tech.raaf.structure.helper.loader.BundleLoader;
 
@@ -91,6 +97,21 @@ public class Application {
       log.info("UNSAFE mode enabled");
     }
 
+    // Make the keystore if it is missing, and trust its certificates
+    final Path jks = Configuration.get(Setting.JKS_FILE);
+    final String jksPass = Configuration.get(Setting.JKS_PASS);
+    final String host = Configuration.get(Setting.HTTPS_HOST);
+    final int port = Configuration.get(Setting.HTTPS_PORT);
+    try {
+      if (!Files.exists(jks)) {
+        KeystoreHelper.make(jks, jksPass, host);
+        log.info("Made keystore {}; clients can trust {}", jks, KeystoreHelper.crt(jks));
+      }
+      KeystoreHelper.trust(jks, jksPass);
+    } catch (IOException | GeneralSecurityException e) {
+      handleUnrecoverableLoadingError(e, 1, "Can't use keystore " + jks + ": " + e.getMessage());
+    }
+
     Vertx vertx;
     HttpServer httpServer;
     Router router;
@@ -127,7 +148,11 @@ public class Application {
       .addOutboundPermitted(new PermittedOptions().setAddressRegex("tech\\.raaf\\.structure\\..*"));
 
     // Setup httpServer, router and sockJs.
-    httpServer = vertx.createHttpServer();
+    httpServer = vertx.createHttpServer(
+      new HttpServerOptions()
+        .setSsl(true)
+        .setKeyStoreOptions(new JksOptions().setPath(jks.toString()).setPassword(jksPass))
+    );
     sockJsHandler = SockJSHandler.create(vertx);
     sockJsHandler.bridge(bridgeOptions);
     router = Router.router(vertx);
@@ -165,11 +190,9 @@ public class Application {
     deploy(vertx, new Instances(Context.getInstanceRepository()), GenericActor.worker());
     deploy(vertx, new Types(Context.getTypeRepository()), GenericActor.worker());
 
-    // Open up the http server and send a friendly message telling the user we're done.
-    final String host = Configuration.get(Setting.HTTP_HOST);
-    final int port = Configuration.get(Setting.HTTP_PORT);
+    // Open up the https server and send a friendly message telling the user we're done.
     try {
-      Context.setSchemaNamespace(new URI(String.format("http://%s:%s/", host, port)));
+      Context.setSchemaNamespace(new URI(String.format("https://%s:%s/", host, port)));
     } catch (URISyntaxException e) {
       handleUnrecoverableLoadingError(e, 1, "Unrecoverable error while setting schema namespace");
     }

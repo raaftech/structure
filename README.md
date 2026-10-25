@@ -17,7 +17,7 @@ bower install
 cd -
 export STRUCTURE_NEO4J_PASS=structure
 java -jar target/structure-*-fat.jar --log-level debug --unsafe
-curl http://localhost:8080/eventbus # Vert.x Socks.js bridge.
+curl --cacert target/structure.crt https://localhost:8443/eventbus # Vert.x Socks.js bridge.
 ```
 
 Use Neo4j Browser on the server to look at the graph. Neo4j needs
@@ -36,20 +36,22 @@ highest priority first:
    `structure.neo4j.uri`;
 5. the default.
 
-| Option             | Environment variable       | Property                   | Default                      | Description                                                  |
-| ------------------ | -------------------------- | -------------------------- | ---------------------------- | ------------------------------------------------------------ |
-| `--help`           | `STRUCTURE_HELP`           | `structure.help`           |                              | Print usage and exit                                         |
-| `--log-level`      | `STRUCTURE_LOG_LEVEL`      | `structure.log.level`      | `info`                       | `info`, `debug` or `trace`; `trace` also prints stack traces |
-| `--unsafe`         | `STRUCTURE_UNSAFE`         | `structure.unsafe`         |                              | Allow all event bus addresses                                |
-| `--bundle-path`    | `STRUCTURE_BUNDLE_PATH`    | `structure.bundle.path`    | `src/main/resources/bundles` | Comma-separated bundle paths                                 |
-| `--home`           | `STRUCTURE_HOME`           | `structure.home`           | working directory            | Structure home directory                                     |
-| `--neo4j-uri`      | `STRUCTURE_NEO4J_URI`      | `structure.neo4j.uri`      | `bolt://localhost:7687`      | Neo4j server                                                 |
-| `--neo4j-user`     | `STRUCTURE_NEO4J_USER`     | `structure.neo4j.user`     | `neo4j`                      | Neo4j user                                                   |
-| `--neo4j-pass`     | `STRUCTURE_NEO4J_PASS`     | `structure.neo4j.pass`     | required                     | Neo4j password                                               |
-| `--http-host`      | `STRUCTURE_HTTP_HOST`      | `structure.http.host`      | `localhost`                  | HTTP server host; also used in schema URIs                   |
-| `--http-port`      | `STRUCTURE_HTTP_PORT`      | `structure.http.port`      | `8080`                       | HTTP server port                                             |
-| `--worker-timeout` | `STRUCTURE_WORKER_TIMEOUT` | `structure.worker.timeout` | `300`                        | Maximum worker run time, in seconds                          |
-| `--job-pool`       | `STRUCTURE_JOB_POOL`       | `structure.job.pool`       | 4 × CPU cores                | Maximum number of jobs that run at the same time             |
+| Option             | Environment variable       | Property                   | Default                       | Description                                                  |
+| ------------------ | -------------------------- | -------------------------- | ----------------------------- | ------------------------------------------------------------ |
+| `--help`           | `STRUCTURE_HELP`           | `structure.help`           |                               | Print usage and exit                                         |
+| `--log-level`      | `STRUCTURE_LOG_LEVEL`      | `structure.log.level`      | `info`                        | `info`, `debug` or `trace`; `trace` also prints stack traces |
+| `--unsafe`         | `STRUCTURE_UNSAFE`         | `structure.unsafe`         |                               | Allow all event bus addresses                                |
+| `--bundle-path`    | `STRUCTURE_BUNDLE_PATH`    | `structure.bundle.path`    | `src/main/resources/bundles`  | Comma-separated bundle paths                                 |
+| `--home`           | `STRUCTURE_HOME`           | `structure.home`           | working directory             | Structure home directory                                     |
+| `--jks-file`       | `STRUCTURE_JKS_FILE`       | `structure.jks.file`       | `<home>/target/structure.jks` | JKS keystore for HTTPS, relative to home; made if missing    |
+| `--jks-pass`       | `STRUCTURE_JKS_PASS`       | `structure.jks.pass`       | `changeit`                    | Keystore password                                            |
+| `--neo4j-uri`      | `STRUCTURE_NEO4J_URI`      | `structure.neo4j.uri`      | `bolt://localhost:7687`       | Neo4j server                                                 |
+| `--neo4j-user`     | `STRUCTURE_NEO4J_USER`     | `structure.neo4j.user`     | `neo4j`                       | Neo4j user                                                   |
+| `--neo4j-pass`     | `STRUCTURE_NEO4J_PASS`     | `structure.neo4j.pass`     | required                      | Neo4j password                                               |
+| `--https-host`     | `STRUCTURE_HTTPS_HOST`     | `structure.https.host`     | `localhost`                   | HTTPS server host; also used in schema URIs                  |
+| `--https-port`     | `STRUCTURE_HTTPS_PORT`     | `structure.https.port`     | `8443`                        | HTTPS server port                                            |
+| `--worker-timeout` | `STRUCTURE_WORKER_TIMEOUT` | `structure.worker.timeout` | `300`                         | Maximum worker run time, in seconds                          |
+| `--job-pool`       | `STRUCTURE_JOB_POOL`       | `structure.job.pool`       | 4 × CPU cores                 | Maximum number of jobs that run at the same time             |
 
 `--help` and `--unsafe` are flags. On the command line they have no
 value. In the other sources, their value is `true` or `false`.
@@ -64,6 +66,19 @@ outside the jar, put its directory first on the class path:
 ```bash
 java -cp /etc/structure:target/structure-0.10.0-fat.jar tech.raaf.structure.base.Application
 ```
+
+### HTTPS
+
+Structure always uses HTTPS, with the keystore in `jks-file`. If the
+keystore does not exist, Structure makes it with `keytool`. The
+keystore then has a self-signed certificate for `localhost` and
+`https-host`. Structure also exports the certificate to `structure.crt`
+in the directory of the keystore. Clients can trust this certificate,
+for example with `curl --cacert target/structure.crt` or
+`NODE_EXTRA_CA_CERTS=target/structure.crt`. Structure uses the same
+keystore at each start. To make a new certificate, for example after
+you change `https-host`, delete the keystore. `mvn clean` also deletes
+it.
 
 ### Testing
 
