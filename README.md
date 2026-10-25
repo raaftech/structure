@@ -1,33 +1,130 @@
 # Structure
 
-Need to explain stuff here.
+### Building
 
-### Quick notes on how to run
+To build Structure, you need Java 8, Maven, Node.js with npm, and Bower. Maven
+builds with the JDK 8 using `~/.m2/toolchains.xml`:
 
-Structure needs a Neo4j server. The tests need a second server: they
-delete all its data.
-
-```bash
-java -version # Needs to be Java 8.x
-git clone git@github.com:raaftech/structure.git
-export TEST_STRUCTURE_NEO4J_BOLT_URI=bolt://localhost:7688 TEST_STRUCTURE_NEO4J_PASS=structure
-mvn package
-cd src/main/resources/webroot
-bower install
-cd -
-export STRUCTURE_NEO4J_PASS=structure
-java -jar target/structure-*-fat.jar --log-level debug --unsafe
-curl --cacert target/structure.crt https://localhost:8443/eventbus # Vert.x Socks.js bridge.
+```xml
+<toolchains>
+  <toolchain>
+    <type>jdk</type>
+    <provides><version>1.8</version></provides>
+    <configuration><jdkHome>/usr/lib/jvm/java-8-openjdk</jdkHome></configuration>
+  </toolchain>
+</toolchains>
 ```
 
-Use Neo4j Browser on the server to look at the graph. Neo4j needs
-passwords of 8 or more characters.
+Build the jar without the tests, which need a running Neo4j server of their own
+(see Testing). The below will result in `target/structure-0.10.0-fat.jar`:
+
+```bash
+mvn package -DskipTests
+```
+
+Then get the libraries of the web frontend and of the tools in `ext`:
+
+```bash
+(cd src/main/resources/webroot && bower install)
+for dir in ext/rest ext/repl ext/util/*/; do (cd $dir && npm install); done
+```
+
+### Running
+
+Structure needs a Neo4j server, version 5.19 or later for the Query API that the
+tools in `ext` use. Neo4j needs passwords of 8 or more characters. Set the
+password once, then start Neo4j:
+
+```bash
+neo4j-admin dbms set-initial-password structure
+neo4j start
+```
+
+Start Structure from the root of the repository. It needs Java 8; with a later
+`java`, use the one of a JDK 8.
+
+```bash
+export STRUCTURE_NEO4J_PASS=structure
+java -jar target/structure-0.10.0-fat.jar --log-level debug --unsafe
+```
+
+Structure always uses HTTPS. At the first start, it makes the keystore
+`target/structure.jks`, with a self-signed certificate for `localhost`,
+`https-host` and `rest-host`. It exports the certificate to
+`target/structure.crt` and the key to `target/structure.key`. Clients trust this
+certificate with `curl --cacert` or `NODE_EXTRA_CA_CERTS`. To make a new
+certificate, for example after you change `https-host` or `rest-host`, delete
+the keystore. `mvn clean` also deletes it.
+
+Start the REST server in a second terminal. It listens at `rest-host` and
+`rest-port`, with the key and certificate of Structure:
+
+```bash
+export NODE_EXTRA_CA_CERTS=$PWD/target/structure.crt
+cd ext/rest && npm start
+```
+
+Start the REPL in a third terminal, and type `help` for its commands:
+
+```bash
+export NODE_EXTRA_CA_CERTS=$PWD/target/structure.crt
+cd ext/repl && npm start
+```
+
+Structure starts `ext/util/bootstrap` itself, with `NODE_EXTRA_CA_CERTS` set to
+its certificate. Some requests to try:
+
+```bash
+# The names of all types, from the REST server
+curl -s --cacert target/structure.crt https://localhost:3443/api/Entities | jq -r '.[].name'
+
+# One type, by name
+curl -s --cacert target/structure.crt https://localhost:3443/api/Entities/name/Linux | jq '{name, desc}'
+
+# The five newest instances
+curl -s --cacert target/structure.crt https://localhost:3443/api/Instances/last/5 | jq -r '.[].name'
+
+# The JSON schema of a type, from Structure
+curl -s --cacert target/structure.crt https://localhost:8443/schemas/linux.schema.json | jq .
+
+# The number of types in the graph, from the Neo4j Query API
+curl -s -u neo4j:structure -H 'Content-Type: application/json' \
+  -d '{"statement": "MATCH (t:Type) RETURN count(t)"}' \
+  http://localhost:7474/db/neo4j/query/v2 | jq .data.values
+```
+
+### Testing
+
+`mvn verify` runs the tests, and checks that line coverage is 60% or higher.
+Tests read the Neo4j settings with the prefix `test.structure`, for example,
+`TEST_STRUCTURE_NEO4J_BOLT_URI` or `test.structure.neo4j.bolt.uri`. They use the
+same defaults as a normal run. The tests delete all data on their Neo4j server,
+so, as a safeguard, they refuse to run if `TEST_STRUCTURE_NEO4J_BOLT_URI` is the
+same as the URI of a normal run.
+
+To run the tests next to a server on port 7687, start a second Neo4j from the
+same installation with its own home and configuration. Change `/etc/neo4j` to
+the `conf` directory of your installation:
+
+```bash
+export NEO4J_HOME=/tmp/structure-neo4j NEO4J_CONF=/tmp/structure-neo4j/conf
+mkdir -p $NEO4J_CONF
+sed -e 's/^#\?server.bolt.listen_address=.*/server.bolt.listen_address=localhost:7688/' \
+    -e 's/^#\?server.http.enabled=.*/server.http.enabled=false/' \
+    /etc/neo4j/neo4j.conf > $NEO4J_CONF/neo4j.conf
+neo4j-admin dbms set-initial-password structure
+neo4j start
+export TEST_STRUCTURE_NEO4J_BOLT_URI=bolt://localhost:7688
+export TEST_STRUCTURE_NEO4J_PASS=structure
+mvn verify
+neo4j stop
+```
 
 ### Settings
 
-Each setting has a command line option, an environment variable and a
-property. Structure reads the value of a setting from these sources,
-highest priority first:
+Each setting has a command line option, an environment variable and a property.
+Structure reads the value of a setting from these sources, highest priority
+first:
 
 1. the command line option, for example `--neo4j-bolt-uri`;
 2. the environment variable, for example `STRUCTURE_NEO4J_BOLT_URI`;
@@ -56,87 +153,20 @@ highest priority first:
 | `--worker-timeout` | `STRUCTURE_WORKER_TIMEOUT` | `structure.worker.timeout` | `300`                         | Maximum worker run time, in seconds                          |
 | `--job-pool`       | `STRUCTURE_JOB_POOL`       | `structure.job.pool`       | 4 × CPU cores                 | Maximum number of jobs that run at the same time             |
 
-`--help` and `--unsafe` are flags. On the command line they have no
-value. In the other sources, their value is `true` or `false`.
-Structure prints the usage and stops if it does not know an option, or
-if a setting has no valid value.
+`--help` and `--unsafe` are flags. On the command line they have no value. In
+the other sources, their value is `true` or `false`. Structure prints the usage
+and stops if it does not know an option, or if a setting has no valid value.
 
 At each start, Structure writes the value of each setting to
-`<home>/target/structure.json`. The tools in `ext/repl` and `ext/rest`
-read their settings from this file, so start Structure first. Only the
-owner can read the file, as it has the passwords.
+`<home>/target/structure.json`. The tools in `ext/repl` and `ext/rest` read
+their settings from this file, so start Structure first. Only the owner can read
+the file, as it has the passwords.
 
-Other users can see command lines with `ps`. Thus, give passwords in
-the environment or in `config.properties`. Do not commit passwords in
-`src/main/resources/config.properties`. To use a `config.properties`
-outside the jar, put its directory first on the class path:
+Since users can see command lines with `ps`, prefer to give passwords in the
+environment or in `config.properties`. Do not commit passwords in
+`src/main/resources/config.properties`. To use a `config.properties` outside the
+jar, put its directory first on the class path:
 
 ```bash
 java -cp /etc/structure:target/structure-0.10.0-fat.jar tech.raaf.structure.base.Application
-```
-
-### HTTPS
-
-Structure always uses HTTPS, with the keystore in `jks-file`. If the
-keystore does not exist, Structure makes it with `keytool`. The
-keystore then has a self-signed certificate for `localhost`,
-`https-host` and `rest-host`. Structure also exports the certificate to
-`structure.crt`, and the key to `structure.key`, in the directory of
-the keystore. The REST server in `ext/rest` uses the same key and
-certificate. Clients can trust this certificate, for example with
-`curl --cacert target/structure.crt` or
-`NODE_EXTRA_CA_CERTS=target/structure.crt`. Structure uses the same
-keystore at each start. To make a new certificate, for example after
-you change `https-host` or `rest-host`, delete the keystore.
-`mvn clean` also deletes it.
-
-### REST server and REPL
-
-The REST server in `ext/rest` and the REPL in `ext/repl` connect to
-Structure over HTTPS, so they must trust `target/structure.crt`. They
-read their settings from `target/structure.json`, so start Structure
-first. Then start the REST server:
-
-```bash
-export NODE_EXTRA_CA_CERTS=$PWD/target/structure.crt
-cd ext/rest
-npm install
-npm start
-```
-
-And in another terminal, the REPL:
-
-```bash
-export NODE_EXTRA_CA_CERTS=$PWD/target/structure.crt
-cd ext/repl
-npm install
-npm start
-```
-
-The REST server listens at `rest-host` and `rest-port`, and the REPL
-connects to it there. Structure starts `ext/util/bootstrap` itself,
-with `NODE_EXTRA_CA_CERTS` set to its certificate.
-
-### Testing
-
-The tests read the Neo4j settings with the prefix `test.structure`, for
-example `TEST_STRUCTURE_NEO4J_BOLT_URI` or
-`test.structure.neo4j.bolt.uri`. They use the same defaults as a normal
-run. The tests delete all data on their server, so they stop if
-`TEST_STRUCTURE_NEO4J_BOLT_URI` is the same as the URI of a normal run.
-
-To run the tests next to a server on port 7687, start a second Neo4j
-from the same installation with its own home and configuration. Change
-`/etc/neo4j` to the `conf` directory of your installation.
-
-```bash
-export NEO4J_HOME=/tmp/structure-neo4j NEO4J_CONF=/tmp/structure-neo4j/conf
-mkdir -p $NEO4J_CONF
-sed -e 's/^#\?server.bolt.listen_address=.*/server.bolt.listen_address=localhost:7688/' \
-    -e 's/^#\?server.http.enabled=.*/server.http.enabled=false/' \
-    /etc/neo4j/neo4j.conf > $NEO4J_CONF/neo4j.conf
-neo4j-admin dbms set-initial-password structure
-neo4j start
-TEST_STRUCTURE_NEO4J_BOLT_URI=bolt://localhost:7688 TEST_STRUCTURE_NEO4J_PASS=structure mvn verify
-neo4j stop
 ```
