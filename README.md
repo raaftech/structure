@@ -46,10 +46,13 @@ highest priority first:
 | `--jks-file`       | `STRUCTURE_JKS_FILE`       | `structure.jks.file`       | `<home>/target/structure.jks` | JKS keystore for HTTPS, relative to home; made if missing    |
 | `--jks-pass`       | `STRUCTURE_JKS_PASS`       | `structure.jks.pass`       | `changeit`                    | Keystore password                                            |
 | `--neo4j-bolt-uri` | `STRUCTURE_NEO4J_BOLT_URI` | `structure.neo4j.bolt.uri` | `bolt://localhost:7687`       | Neo4j Bolt server                                            |
+| `--neo4j-http-uri` | `STRUCTURE_NEO4J_HTTP_URI` | `structure.neo4j.http.uri` | `http://localhost:7474`       | Neo4j Query API, for the tools in ext                        |
 | `--neo4j-user`     | `STRUCTURE_NEO4J_USER`     | `structure.neo4j.user`     | `neo4j`                       | Neo4j user                                                   |
 | `--neo4j-pass`     | `STRUCTURE_NEO4J_PASS`     | `structure.neo4j.pass`     | required                      | Neo4j password                                               |
 | `--https-host`     | `STRUCTURE_HTTPS_HOST`     | `structure.https.host`     | `localhost`                   | HTTPS server host; also used in schema URIs                  |
 | `--https-port`     | `STRUCTURE_HTTPS_PORT`     | `structure.https.port`     | `8443`                        | HTTPS server port                                            |
+| `--rest-host`      | `STRUCTURE_REST_HOST`      | `structure.rest.host`      | `localhost`                   | Host of the REST server in ext/rest                          |
+| `--rest-port`      | `STRUCTURE_REST_PORT`      | `structure.rest.port`      | `3443`                        | Port of the REST server in ext/rest                          |
 | `--worker-timeout` | `STRUCTURE_WORKER_TIMEOUT` | `structure.worker.timeout` | `300`                         | Maximum worker run time, in seconds                          |
 | `--job-pool`       | `STRUCTURE_JOB_POOL`       | `structure.job.pool`       | 4 × CPU cores                 | Maximum number of jobs that run at the same time             |
 
@@ -57,6 +60,11 @@ highest priority first:
 value. In the other sources, their value is `true` or `false`.
 Structure prints the usage and stops if it does not know an option, or
 if a setting has no valid value.
+
+At each start, Structure writes the value of each setting to
+`<home>/target/structure.json`. The tools in `ext/repl` and `ext/rest`
+read their settings from this file, so start Structure first. Only the
+owner can read the file, as it has the passwords.
 
 Other users can see command lines with `ps`. Thus, give passwords in
 the environment or in `config.properties`. Do not commit passwords in

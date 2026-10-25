@@ -112,6 +112,13 @@ public class Application {
       handleUnrecoverableLoadingError(e, 1, "Can't use keystore " + jks + ": " + e.getMessage());
     }
 
+    // The tools in ext read the settings from a file
+    try {
+      Configuration.write();
+    } catch (IOException e) {
+      handleUnrecoverableLoadingError(e, 1, "Can't write the settings: " + e.getMessage());
+    }
+
     Vertx vertx;
     HttpServer httpServer;
     Router router;

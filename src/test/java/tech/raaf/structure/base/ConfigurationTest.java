@@ -5,18 +5,28 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.attribute.PosixFilePermissions;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
 import org.apache.commons.cli.ParseException;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import tech.raaf.structure.base.Configuration.Setting;
 
 public class ConfigurationTest {
 
   private static final Map<String, String> NONE = Collections.emptyMap();
+
+  @Rule
+  public final TemporaryFolder folder = new TemporaryFolder();
 
   private static Properties properties(String key, String value) {
     final Properties properties = new Properties();
@@ -133,6 +143,25 @@ public class ConfigurationTest {
       Paths.get("/etc/structure.jks"),
       file("structure.jks.file", "/etc/structure.jks").resolve("structure", Setting.JKS_FILE)
     );
+  }
+
+  @Test
+  public void write() throws Exception {
+    final Path file = folder.getRoot().toPath().resolve("target/structure.json");
+    final Map<String, String> environment = singletonMap("STRUCTURE_NEO4J_PASS", "secret");
+    new Configuration(NONE, environment, new Properties(), new Properties()).write(file);
+    assertEquals("rw-------", PosixFilePermissions.toString(Files.getPosixFilePermissions(file)));
+    final JsonNode json = new ObjectMapper().readTree(file.toFile());
+    assertFalse(json.has("help"));
+    assertEquals("secret", json.get("neo4j-pass").asText());
+    assertEquals("http://localhost:7474", json.get("neo4j-http-uri").asText());
+    assertEquals(8443, json.get("https-port").asInt());
+    assertEquals(3443, json.get("rest-port").asInt());
+    assertEquals(
+      Configuration.get(Setting.HOME).resolve("target/structure.jks").toString(),
+      json.get("jks-file").asText()
+    );
+    assertEquals("src/main/resources/bundles", json.get("bundle-path").get(0).asText());
   }
 
   @Test(expected = ParseException.class)

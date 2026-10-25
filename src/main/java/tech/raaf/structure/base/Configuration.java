@@ -1,13 +1,17 @@
 package tech.raaf.structure.base;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.attribute.PosixFilePermissions;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -97,6 +101,29 @@ public final class Configuration {
     for (Setting<?> setting : Setting.ALL) {
       get(setting);
     }
+  }
+
+  /**
+   * Write the value of each setting to target/structure.json in home,
+   * for the tools in ext. Only the owner can read the file, as it has
+   * the passwords.
+   */
+  public static void write() throws IOException {
+    current.write(get(Setting.HOME).resolve("target/structure.json"));
+  }
+
+  void write(Path file) throws IOException {
+    final Map<String, Object> values = new LinkedHashMap<>();
+    for (Setting<?> setting : Setting.ALL) {
+      if (setting != Setting.HELP) {
+        final Object value = resolve(PREFIX, setting);
+        values.put(setting.name, value instanceof Path ? value.toString() : value);
+      }
+    }
+    Files.createDirectories(file.toAbsolutePath().getParent());
+    Files.deleteIfExists(file);
+    Files.createFile(file, PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString("rw-------")));
+    new ObjectMapper().writerWithDefaultPrettyPrinter().writeValue(file.toFile(), values);
   }
 
   // True when the log level is trace
@@ -248,6 +275,12 @@ public final class Configuration {
       "bolt://localhost:7687",
       "Neo4j Bolt server"
     );
+    public static final Setting<String> NEO4J_HTTP_URI = new Setting<>(
+      "neo4j-http-uri",
+      Type.TEXT,
+      "http://localhost:7474",
+      "Neo4j Query API, for the tools in ext"
+    );
     public static final Setting<String> NEO4J_USER = new Setting<>("neo4j-user", Type.TEXT, "neo4j", "Neo4j user");
     public static final Setting<String> NEO4J_PASS = new Setting<>("neo4j-pass", Type.TEXT, null, "Neo4j password");
     public static final Setting<String> HTTPS_HOST = new Setting<>(
@@ -261,6 +294,18 @@ public final class Configuration {
       Type.INTEGER,
       "8443",
       "HTTPS server port"
+    );
+    public static final Setting<String> REST_HOST = new Setting<>(
+      "rest-host",
+      Type.TEXT,
+      "localhost",
+      "Host of the REST server in ext/rest"
+    );
+    public static final Setting<Integer> REST_PORT = new Setting<>(
+      "rest-port",
+      Type.INTEGER,
+      "3443",
+      "Port of the REST server in ext/rest"
     );
     // Vert.x takes nanoseconds
     public static final Setting<Long> WORKER_TIMEOUT = new Setting<>(
@@ -289,10 +334,13 @@ public final class Configuration {
         JKS_FILE,
         JKS_PASS,
         NEO4J_BOLT_URI,
+        NEO4J_HTTP_URI,
         NEO4J_USER,
         NEO4J_PASS,
         HTTPS_HOST,
         HTTPS_PORT,
+        REST_HOST,
+        REST_PORT,
         WORKER_TIMEOUT,
         JOB_POOL
       )
