@@ -40,9 +40,6 @@ import org.apache.commons.cli.ParseException;
  */
 public final class Configuration {
 
-  // The worker pool of the actors that use the graph
-  public static final String ACTOR_POOL = "structure-actors";
-
   // The name prefix of the settings of a normal run
   private static final String PREFIX = "structure";
   private static final Properties FILE = load("/config.properties");

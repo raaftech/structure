@@ -27,6 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 import tech.raaf.structure.base.Configuration.Setting;
+import tech.raaf.structure.bus.GenericActor;
 import tech.raaf.structure.bus.InstanceActor;
 import tech.raaf.structure.bus.TypeActor;
 import tech.raaf.structure.bus.manager.EntityManager;
@@ -153,40 +154,16 @@ public class Application {
 
     // Deploy our main actors. Structure stops if one of them fails.
     // The actors that use the graph run on worker threads.
-    deploy(
-      vertx,
-      new StructureManager(),
-      new DeploymentOptions().setWorker(true).setWorkerPoolName(Configuration.ACTOR_POOL)
-    );
+    deploy(vertx, new StructureManager(), GenericActor.worker());
     deploy(vertx, new InstrumentManager(), new DeploymentOptions().setWorker(false));
-    deploy(
-      vertx,
-      new EntityManager(),
-      new DeploymentOptions().setWorker(true).setWorkerPoolName(Configuration.ACTOR_POOL)
-    );
+    deploy(vertx, new EntityManager(), GenericActor.worker());
 
-    deploy(
-      vertx,
-      new TaskManager(Configuration.get(Setting.JOB_POOL)),
-      new DeploymentOptions().setWorker(true).setWorkerPoolName(Configuration.ACTOR_POOL)
-    );
+    deploy(vertx, new TaskManager(Configuration.get(Setting.JOB_POOL)), GenericActor.worker());
 
     // Deploy interfaces to the NodeRepositories.
-    deploy(
-      vertx,
-      new Nodes(Context.getNodeRepository()),
-      new DeploymentOptions().setWorker(true).setWorkerPoolName(Configuration.ACTOR_POOL)
-    );
-    deploy(
-      vertx,
-      new Instances(Context.getInstanceRepository()),
-      new DeploymentOptions().setWorker(true).setWorkerPoolName(Configuration.ACTOR_POOL)
-    );
-    deploy(
-      vertx,
-      new Types(Context.getTypeRepository()),
-      new DeploymentOptions().setWorker(true).setWorkerPoolName(Configuration.ACTOR_POOL)
-    );
+    deploy(vertx, new Nodes(Context.getNodeRepository()), GenericActor.worker());
+    deploy(vertx, new Instances(Context.getInstanceRepository()), GenericActor.worker());
+    deploy(vertx, new Types(Context.getTypeRepository()), GenericActor.worker());
 
     // Open up the http server and send a friendly message telling the user we're done.
     final String host = Configuration.get(Setting.HTTP_HOST);

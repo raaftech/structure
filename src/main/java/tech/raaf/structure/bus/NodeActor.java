@@ -2,7 +2,6 @@ package tech.raaf.structure.bus;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Verticle;
 import io.vertx.core.eventbus.MessageConsumer;
 import java.util.UUID;
@@ -10,7 +9,6 @@ import java.util.concurrent.CompletableFuture;
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tech.raaf.structure.base.Configuration;
 import tech.raaf.structure.base.Context;
 import tech.raaf.structure.graph.Entity;
 import tech.raaf.structure.graph.Graph;
@@ -159,10 +157,7 @@ public abstract class NodeActor<T extends Node> extends GenericActor {
       return deploymentId;
     }
     final Verticle verticle = node instanceof Type ? new TypeActor((Type) node) : new InstanceActor((Instance) node);
-    final DeploymentOptions options = new DeploymentOptions()
-      .setWorker(true)
-      .setWorkerPoolName(Configuration.ACTOR_POOL);
-    Context.getVertx().deployVerticle(verticle, options, ar -> {
+    Context.getVertx().deployVerticle(verticle, worker(), ar -> {
       if (ar.succeeded()) {
         deploymentId.complete(ar.result());
       } else {
