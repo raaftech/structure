@@ -40,12 +40,15 @@ neo4j-admin dbms set-initial-password structure
 neo4j start
 ```
 
-Start Structure from the root of the repository. It needs Java 8; with a later
-`java`, use the one of a JDK 8.
+Start Structure from the root of the repository. Currently, Structure needs
+Java 8. If your system has a later version of Java installed as default, you can
+simply point `JAVA_HOME` at an installed JDK 8 and use the `java` binary from
+that location:
 
 ```bash
+export JAVA_HOME=/usr/lib/jvm/java-8-openjdk
 export STRUCTURE_NEO4J_PASS=structure
-java -jar target/structure-0.10.0-fat.jar --log-level debug --unsafe
+"${JAVA_HOME}/bin/java" -jar target/structure-0.10.0-fat.jar --log-level debug --unsafe
 ```
 
 Structure always uses HTTPS. At the first start, it makes the keystore
