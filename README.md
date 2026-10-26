@@ -16,7 +16,7 @@ builds with JDK 8 using `~/.m2/toolchains.xml`:
 ```
 
 Build the jar without the tests, which need a running Neo4j server of their own
-(see Testing). The below will result in `target/structure-0.10.0-fat.jar`:
+(see Testing). The below will result in `target/structure-*-fat.jar`:
 
 ```bash
 mvn package -DskipTests
@@ -48,7 +48,7 @@ has a later version of Java installed as default, you can simply point
 ```bash
 export JAVA_HOME=/usr/lib/jvm/java-8-openjdk
 export STRUCTURE_NEO4J_PASS=structure
-"${JAVA_HOME}/bin/java" -jar target/structure-0.10.0-fat.jar --log-level debug --unsafe
+"${JAVA_HOME}/bin/java" -jar target/structure-*-fat.jar --log-level debug --unsafe
 ```
 
 Structure always uses HTTPS. At the first start, it makes the keystore
@@ -167,10 +167,10 @@ and stops if it does not know an option, or if a setting has no valid value.
 Structure finds its files in its own home directory, which is a directory two
 levels above where the jar file is. Some examples:
 
-| Jar                                               | Structure's home  | Mode        |
-| ------------------------------------------------- | ----------------- | ----------- |
-| `~/src/structure/target/structure-0.10.0-fat.jar` | `~/src/structure` | development |
-| `/opt/structure/lib/structure.jar`                | `/opt/structure`  | release     |
+| Jar                                          | Structure's home  | Mode        |
+| -------------------------------------------- | ----------------- | ----------- |
+| `~/src/structure/target/structure-*-fat.jar` | `~/src/structure` | development |
+| `/opt/structure/lib/structure.jar`           | `/opt/structure`  | release     |
 
 Structure runs in development mode when it runs from a build in this repository.
 It checks all of these to determine if it is running from within a development

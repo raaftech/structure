@@ -1,6 +1,6 @@
 {
   "name": "net-discovery",
-  "version": "0.10.0",
+  "version": "0.10.1",
   "description": "Structure network discovery with nmap",
   "main": "main.js",
   "scripts": {
