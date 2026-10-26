@@ -2,10 +2,10 @@
 
 const path = require("path");
 const SchemaValidator = require(path.join(__dirname, "..", "libraries", "SchemaValidator"));
-const helper = require(path.join(__dirname, "..", "libraries", "helper"));
+const settings = require(path.join(__dirname, "..", "libraries", "settings"));
 
 module.exports = function (Schema) {
-  const validator = new SchemaValidator(helper.structureUrl("schemas/"));
+  const validator = new SchemaValidator(settings.structureUrl("schemas/"));
 
   Schema.getSchema = function (typeName, callback) {
     validator

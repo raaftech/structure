@@ -21,6 +21,7 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.GeneralSecurityException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -97,7 +98,7 @@ public class Application {
       log.info("UNSAFE mode enabled");
     }
 
-    // Make the keystore if it is missing, and trust its certificates
+    // Make the keystore if it is missing, and trust its certificates.
     final Path jks = Configuration.get(Setting.JKS_FILE);
     final String jksPass = Configuration.get(Setting.JKS_PASS);
     final String host = Configuration.get(Setting.HTTPS_HOST);
@@ -112,7 +113,7 @@ public class Application {
       handleUnrecoverableLoadingError(e, 1, "Can't use keystore " + jks + ": " + e.getMessage());
     }
 
-    // The tools in ext read the settings from a file
+    // The tools in ext read the settings from a file.
     try {
       Configuration.write();
     } catch (IOException e) {
@@ -125,7 +126,15 @@ public class Application {
     SockJSHandler sockJsHandler;
 
     // Tell the user we're starting up.
-    log.info("Structure is starting up..");
+    log.info(
+      "Structure is starting in {} ({} mode)",
+      Configuration.get(Setting.HOME),
+      Configuration.isDevEnv() ? "development" : "release"
+    );
+    logDirectories("Valid", "configuration", Configuration.configDirectories());
+    logDirectories("Active", "configuration", Configuration.activeConfigDirectories());
+    logDirectories("Valid", "state", Configuration.stateDirectories());
+    logDirectories("Active", "state", Collections.singletonList(Configuration.get(Setting.STATE_DIR)));
 
     // Connect to the Neo4j server
     final String neo4jUri = Configuration.get(Setting.NEO4J_BOLT_URI);
@@ -145,6 +154,8 @@ public class Application {
     );
 
     // Setup vertx with the maximum worker run time, in ns.
+    // Vert.x caches files in state-dir, not in the working directory.
+    System.setProperty("vertx.cacheDirBase", Configuration.get(Setting.STATE_DIR).resolve("vertx").toString());
     vertx = Vertx.vertx(new VertxOptions().setMaxWorkerExecuteTime(Configuration.get(Setting.WORKER_TIMEOUT)));
 
     Context.setVertx(vertx);
@@ -167,10 +178,10 @@ public class Application {
     SchemaManager schemaManager = new SchemaManager();
     // Setup routes
     router.route("/eventbus/*").handler(sockJsHandler);
-    router.route("/bundles/*").handler(StaticHandler.create().setWebRoot("src/main/resources/bundles/"));
+    router.route("/bundles/*").handler(files(Configuration.resources().resolve("bundles")));
     // The schema handler queries the graph, so it must not run on the event loop
     router.route("/schemas/:schema").blockingHandler(schemaManager::getSchema, false);
-    router.route("/*").handler(StaticHandler.create().setWebRoot("src/main/resources/webroot/"));
+    router.route("/*").handler(files(Configuration.resources().resolve("webroot")));
 
     // If we're in unsafe mode allow direct access to everything
     // on the eventbus and serve the debug page.
@@ -212,6 +223,21 @@ public class Application {
 
     init(vertx);
     log.info("Structure is running at {}", Context.getSchemaNamespace());
+  }
+
+  // A handler that serves the files in a directory.
+  private static StaticHandler files(Path directory) {
+    return StaticHandler.create().setAllowRootFileSystemAccess(true).setWebRoot(directory.toString());
+  }
+
+  // Log directories, as "Valid state directory is x" or "...are x, y".
+  private static void logDirectories(String which, String kind, List<Path> directories) {
+    final String list = directories.stream().map(Path::toString).collect(Collectors.joining(", "));
+    if (directories.size() == 1) {
+      log.info("{} {} directory is {}", which, kind, list);
+    } else if (directories.size() > 1) {
+      log.info("{} {} directories are {}", which, kind, list);
+    }
   }
 
   // The constraints and indexes, each in its own transaction

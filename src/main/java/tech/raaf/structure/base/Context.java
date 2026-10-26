@@ -35,7 +35,7 @@ public class Context {
   private static String selfIdentifier = null;
   // The Grouping representing the server Structure is running on
   private static Group structure;
-  // The base URI of the schemas that Structure serves
+  // The base URI of the schemas that Structure serves.
   private static URI schemaNamespace;
 
   public static void setHostname(String hostname) {

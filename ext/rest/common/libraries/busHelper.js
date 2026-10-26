@@ -4,10 +4,11 @@ const EventBus = require("vertx3-eventbus-client");
 const R = require("ramda");
 const path = require("path");
 const helper = require(path.join(__dirname, "helper"));
+const settings = require(path.join(__dirname, "settings"));
 
 class BusHelper {
   constructor(ebUrl) {
-    this.eventBusUrl = R.defaultTo(helper.structureUrl("eventbus"), ebUrl);
+    this.eventBusUrl = R.defaultTo(settings.structureUrl("eventbus"), ebUrl);
     this.eb = new EventBus(this.eventBusUrl);
     this.intervalId = 0;
     const self = this;

@@ -11,11 +11,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.PosixFilePermissions;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import org.apache.commons.cli.ParseException;
+import org.junit.Assume;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -34,7 +37,7 @@ public class ConfigurationTest {
     return properties;
   }
 
-  // A configuration with one key in config.properties
+  // A configuration with one key in a settings file.
   private static Configuration file(String key, String value) {
     return new Configuration(NONE, NONE, new Properties(), properties(key, value));
   }
@@ -105,10 +108,41 @@ public class ConfigurationTest {
       Paths.get("/opt/structure"),
       file("structure.home", "/opt/structure").resolve("structure", Setting.HOME)
     );
+    final Path home = Configuration.get(Setting.HOME);
     assertEquals(
-      Arrays.asList("a", "b"),
-      file("structure.bundle.path", " a, b ,,").resolve("structure", Setting.BUNDLE_PATH)
+      Arrays.asList(home.resolve("a").toString(), "/b"),
+      file("structure.bundle.path", " a, /b ,,").resolve("structure", Setting.BUNDLE_PATH)
     );
+  }
+
+  @Test
+  public void home() {
+    assertEquals(Paths.get("/repo"), Configuration.homeOf(Paths.get("/repo/target/structure.jar")));
+    assertEquals(Paths.get("/repo"), Configuration.homeOf(Paths.get("/repo/target/classes")));
+    assertEquals(Paths.get("/opt/structure"), Configuration.homeOf(Paths.get("/opt/structure/lib/structure.jar")));
+    // The tests run in development mode, from target/classes.
+    final Path home = Configuration.get(Setting.HOME);
+    assertEquals(Paths.get("").toAbsolutePath(), home);
+    assertEquals(home.resolve("src/main/resources"), Configuration.resources());
+    assertEquals(
+      Paths.get("/opt/structure"),
+      file("structure.home", "/opt/x/../structure").resolve("structure", Setting.HOME)
+    );
+  }
+
+  @Test
+  public void isDevEnv() throws Exception {
+    final Path repo = folder.newFolder("repo").toPath();
+    final Path jar = repo.resolve("target/structure.jar");
+    // A pom.xml alone is not enough.
+    Files.createFile(repo.resolve("pom.xml"));
+    assertFalse(Configuration.isDevEnv(jar, repo));
+    Files.createDirectories(repo.resolve("src/main/java"));
+    assertTrue(Configuration.isDevEnv(jar, repo));
+    assertTrue(Configuration.isDevEnv(repo.resolve("target/classes"), repo));
+    // The code must be in target.
+    assertFalse(Configuration.isDevEnv(repo.resolve("lib/structure.jar"), repo));
+    assertFalse(Configuration.isDevEnv(Paths.get("/opt/structure/lib/structure.jar"), Paths.get("/opt/structure")));
   }
 
   @Test(expected = IllegalArgumentException.class)
@@ -128,13 +162,22 @@ public class ConfigurationTest {
 
   @Test
   public void modifiers() {
-    // The modifier also applies to the default
+    // The modifier also applies to the default.
     assertEquals(Long.valueOf(300000000000L), file("structure.other", "").resolve("structure", Setting.WORKER_TIMEOUT));
     assertEquals(
       Long.valueOf(1000000000L),
       file("structure.worker.timeout", "1").resolve("structure", Setting.WORKER_TIMEOUT)
     );
-    // A relative keystore path is relative to home
+    // A relative state-dir is relative to home, and in development mode,
+    // the default is target in home.
+    final Path home = Configuration.get(Setting.HOME);
+    assertEquals(home.resolve("target"), file("structure.other", "").resolve("structure", Setting.STATE_DIR));
+    assertEquals(home.resolve("state"), file("structure.state.dir", "state").resolve("structure", Setting.STATE_DIR));
+    assertEquals(
+      Paths.get("/var/lib/structure"),
+      file("structure.state.dir", "/var/lib/structure").resolve("structure", Setting.STATE_DIR)
+    );
+    // A relative keystore path is relative to state-dir.
     assertEquals(
       Configuration.get(Setting.HOME).resolve("target/structure.jks"),
       file("structure.other", "").resolve("structure", Setting.JKS_FILE)
@@ -161,7 +204,72 @@ public class ConfigurationTest {
       Configuration.get(Setting.HOME).resolve("target/structure.jks").toString(),
       json.get("jks-file").asText()
     );
-    assertEquals("src/main/resources/bundles", json.get("bundle-path").get(0).asText());
+    assertEquals(
+      Configuration.get(Setting.HOME).resolve("src/main/resources/bundles").toString(),
+      json.get("bundle-path").get(0).asText()
+    );
+  }
+
+  @Test
+  public void load() throws Exception {
+    final Path system = folder.newFile("system.properties").toPath();
+    final Path user = folder.newFile("user.properties").toPath();
+    Files.write(system, Arrays.asList("structure.https.port=9443", "structure.rest.port=9444"));
+    Files.write(user, Arrays.asList("structure.https.port=10443"));
+    // A later file has priority, and a missing file is no error.
+    final Path missing = folder.getRoot().toPath().resolve("missing.properties");
+    final List<Path> read = new ArrayList<>();
+    final Properties properties = Configuration.load(Arrays.asList(system, user, missing), read);
+    assertEquals("10443", properties.getProperty("structure.https.port"));
+    assertEquals("9444", properties.getProperty("structure.rest.port"));
+    assertEquals(Arrays.asList(system, user), read);
+  }
+
+  @Test
+  public void files() {
+    final Path home = Paths.get("/opt/structure");
+    assertEquals(
+      Collections.singletonList(home.resolve("src/main/resources/config.properties")),
+      Configuration.files(true, home)
+    );
+    final List<Path> release = Configuration.files(false, home);
+    assertEquals(Paths.get("/etc/structure/config.properties"), release.get(0));
+    assertEquals(home.resolve("etc/config.properties"), release.get(1));
+    assertTrue(release.get(2).endsWith("structure/config.properties"));
+  }
+
+  @Test
+  public void stateDirectories() {
+    final Path home = Paths.get("/opt/structure");
+    assertEquals(Collections.singletonList(home.resolve("target")), Configuration.stateDirectories(true, home));
+    final List<Path> release = Configuration.stateDirectories(false, home);
+    assertEquals(Paths.get("/var/lib/structure"), release.get(0));
+    assertEquals(home.resolve("var"), release.get(1));
+    assertTrue(release.get(2).endsWith("structure"));
+  }
+
+  @Test
+  public void releaseStateDir() throws Exception {
+    // A writable /var/lib/structure on this machine would come first.
+    Assume.assumeFalse(Files.isWritable(Paths.get("/var/lib/structure")));
+    // Without var in home, the default is structure in $XDG_STATE_HOME.
+    final Path home = folder.newFolder("opt").toPath();
+    assertTrue(Configuration.releaseStateDir(home).endsWith("structure"));
+    // With a var in home that we can write to, the default is that var.
+    Files.createDirectory(home.resolve("var"));
+    assertEquals(home.resolve("var"), Configuration.releaseStateDir(home));
+  }
+
+  @Test
+  public void homeOverride() throws Exception {
+    // With another home, Structure reads etc/config.properties there, but
+    // a settings file can not set home.
+    final Path home = folder.newFolder("other").toPath();
+    Files.createDirectory(home.resolve("etc"));
+    Files.write(home.resolve("etc/config.properties"), Arrays.asList("structure.https.port=9555", "structure.home=/x"));
+    final Configuration configuration = Configuration.create(singletonMap("home", home.toString()));
+    assertEquals(home, configuration.resolve("structure", Setting.HOME));
+    assertEquals(Integer.valueOf(9555), configuration.resolve("structure", Setting.HTTPS_PORT));
   }
 
   @Test(expected = ParseException.class)

@@ -3,6 +3,7 @@ const vorpal = require("vorpal")();
 const R = require("ramda");
 const util = require("util");
 const helper = require("./helper");
+const settings = require("./settings");
 const clc = require("cli-color");
 const treeify = require("./treeify");
 const fs = require("fs");
@@ -28,8 +29,8 @@ let validator;
 init();
 
 function init() {
-  rest = new RestConnector(helper.config()["rest-host"], helper.config()["rest-port"]);
-  validator = new SchemaValidator(helper.structureUrl("schemas/"));
+  rest = new RestConnector(settings.config()["rest-host"], settings.config()["rest-port"]);
+  validator = new SchemaValidator(settings.structureUrl("schemas/"));
   answerCache.init();
   if (answerCache.get("structure", "token") !== "") {
     rest.setToken(answerCache.get("structure", "token"));

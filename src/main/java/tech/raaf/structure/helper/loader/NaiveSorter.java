@@ -23,6 +23,7 @@ import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tech.raaf.structure.base.Configuration;
+import tech.raaf.structure.base.Configuration.Setting;
 import tech.raaf.structure.base.Context;
 import tech.raaf.structure.bus.GenericActor;
 import tech.raaf.structure.exceptions.FileInjectionException;
@@ -58,7 +59,9 @@ public class NaiveSorter {
   private String globPattern = "**/*.{type,inst}.json";
 
   public NaiveSorter(Set<Path> bundlePaths) {
-    this.bundlePaths = bundlePaths;
+    // Relative to home, never to the working directory.
+    final Path home = Configuration.get(Setting.HOME);
+    this.bundlePaths = bundlePaths == null ? null : bundlePaths.stream().map(home::resolve).collect(Collectors.toSet());
   }
 
   /**
@@ -88,7 +91,14 @@ public class NaiveSorter {
     return node;
   }
 
-  private ObjectNode putPath(ObjectNode node, Path path) {
+  private ObjectNode putPath(ObjectNode node, Path file) {
+    // Never absolute, so that the graph stays valid when Structure moves:
+    // relative to home, or else to the bundle path of the file.
+    final Path home = Configuration.get(Setting.HOME);
+    final Path base = file.startsWith(home)
+      ? home
+      : bundlePaths.stream().filter(file::startsWith).findFirst().orElse(file.getParent());
+    final Path path = base.relativize(file);
     if (node.has(META)) {
       ((ObjectNode) node.get(META)).put(PATH, path.toString());
     } else {

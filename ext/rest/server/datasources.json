@@ -5,7 +5,6 @@
   },
   "users": {
     "name": "users",
-    "connector": "memory",
-    "file": "./credentials.json"
+    "connector": "memory"
   }
 }

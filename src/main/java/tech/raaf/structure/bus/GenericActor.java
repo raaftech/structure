@@ -49,10 +49,10 @@ public abstract class GenericActor extends AbstractVerticle {
   // statusAddress is used to push notifications of events within Structure
   // that the GUI may be interested about.
   private static final String statusAddress = "tech.raaf.structure.bus.status";
-  // The worker pool of the actors that use the graph
+  // The worker pool of the actors that use the graph.
   private static final String POOL = "structure-actors";
 
-  // Options to deploy an actor that uses the graph
+  // Options to deploy an actor that uses the graph.
   public static DeploymentOptions worker() {
     return new DeploymentOptions().setWorker(true).setWorkerPoolName(POOL);
   }

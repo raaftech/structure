@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.FileAttribute;
 import java.nio.file.attribute.PosixFilePermission;
@@ -19,6 +20,7 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tech.raaf.structure.base.Configuration;
+import tech.raaf.structure.base.Configuration.Setting;
 
 /**
  * @author Boy van Duuren <boy@raaf.tech>
@@ -71,7 +73,7 @@ public class ProcessRunner {
     return processResult;
   }
 
-  // The environment of the process; change it before run
+  // The environment of the process; change it before run.
   public Map<String, String> environment() {
     return processBuilder.environment();
   }
@@ -105,8 +107,16 @@ public class ProcessRunner {
     tempOut.deleteOnExit();
     tempErr.deleteOnExit();
 
+    // Run in state-dir, never in the working directory of Structure.
+    final Path directory = Configuration.get(Setting.STATE_DIR);
+    Files.createDirectories(directory);
+
     // Setup our ProcessBuilder, redirecting stdout and stderr to our TempFiles
-    processBuilder.command(tokenizeCommand(command)).redirectOutput(tempOut).redirectError(tempErr);
+    processBuilder
+      .command(tokenizeCommand(command))
+      .directory(directory.toFile())
+      .redirectOutput(tempOut)
+      .redirectError(tempErr);
     process = processBuilder.start();
   }
 

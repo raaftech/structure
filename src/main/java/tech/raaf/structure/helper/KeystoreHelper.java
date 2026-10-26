@@ -25,9 +25,9 @@ import org.apache.commons.io.IOUtils;
  */
 public final class KeystoreHelper {
 
-  // The alias of the key in the keystore that make creates
+  // The alias of the key in the keystore that make creates.
   private static final String ALIAS = "structure";
-  // The environment variable that gives keytool the password
+  // The environment variable that gives keytool the password.
   private static final String PASS = "KEYTOOL_PASS";
 
   private KeystoreHelper() {}
@@ -92,12 +92,12 @@ public final class KeystoreHelper {
     );
   }
 
-  // The certificate file that make exports
+  // The certificate file that make exports.
   public static Path crt(Path jks) {
     return jks.toAbsolutePath().resolveSibling("structure.crt");
   }
 
-  // The key file that make exports
+  // The key file that make exports.
   public static Path key(Path jks) {
     return jks.toAbsolutePath().resolveSibling("structure.key");
   }
@@ -127,7 +127,7 @@ public final class KeystoreHelper {
     return store;
   }
 
-  // Run the keytool of this JVM, with the password in its environment
+  // Run the keytool of this JVM, with the password in its environment.
   private static void keytool(String password, String... args) throws IOException, InterruptedException {
     final List<String> command = new ArrayList<>();
     command.add(Paths.get(System.getProperty("java.home"), "bin", "keytool").toString());
@@ -135,7 +135,7 @@ public final class KeystoreHelper {
     final ProcessBuilder builder = new ProcessBuilder(command).redirectErrorStream(true);
     builder.environment().put(PASS, password);
     final Process process = builder.start();
-    // No input, so keytool fails if it prompts
+    // No input, so keytool fails if it prompts.
     process.getOutputStream().close();
     final String output = IOUtils.toString(process.getInputStream());
     if (process.waitFor() != 0) {
