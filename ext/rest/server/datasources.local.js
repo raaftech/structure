@@ -1,6 +1,6 @@
 "use strict";
 
-// The REST server keeps its users in the state-dir of Structure
+// The REST server keeps its users in the state-dir of Structure.
 const path = require("path");
 const settings = require(path.join(__dirname, "..", "..", "settings"));
 

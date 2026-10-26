@@ -81,7 +81,7 @@ public class JsonHelper {
   public static JsonNode jsonFromFile(String file, boolean via) {
     JsonNode result = null;
     try {
-      // Relative to home, never to the working directory
+      // Relative to home, never to the working directory.
       result = mapper.readTree(Configuration.get(Setting.HOME).resolve(file).toFile());
     } catch (IOException e) {
       if (Configuration.isTraceModeOn()) {

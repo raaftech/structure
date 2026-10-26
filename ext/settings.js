@@ -9,17 +9,19 @@ const fs = require("fs");
 const os = require("os");
 const path = require("path");
 
-// Home is the parent of ext
+// Home is the parent of ext.
 const home = path.join(__dirname, "..");
 
-// True in a Maven source tree, as in Structure
+// True in a Maven source tree, as in Structure.
 const isDevEnv = () =>
   fs.existsSync(path.join(home, "pom.xml")) && fs.existsSync(path.join(home, "src", "main", "java"));
 
 /*
   The state-dir of Structure: STRUCTURE_STATE_DIR if it is set, relative
-  to home; else target in a source tree; else structure in
-  $XDG_STATE_HOME, which is ~/.local/state by default.
+  to home; else target in a source tree; else the first of
+  /var/lib/structure and var in home that has a structure.json that we
+  can read; else structure in $XDG_STATE_HOME, which is ~/.local/state
+  by default.
 */
 const stateDir = () => {
   if (process.env.STRUCTURE_STATE_DIR) {
@@ -28,12 +30,21 @@ const stateDir = () => {
   if (isDevEnv()) {
     return path.join(home, "target");
   }
-  return path.join(process.env.XDG_STATE_HOME || path.join(os.homedir(), ".local", "state"), "structure");
+  const readable = (directory) => {
+    try {
+      fs.accessSync(path.join(directory, "structure.json"), fs.constants.R_OK);
+      return true;
+    } catch (error) {
+      return false;
+    }
+  };
+  const found = ["/var/lib/structure", path.join(home, "var")].find(readable);
+  return found || path.join(process.env.XDG_STATE_HOME || path.join(os.homedir(), ".local", "state"), "structure");
 };
 
 let settings = null;
 
-// The settings, as Structure wrote them at its last start
+// The settings, as Structure wrote them at its last start.
 const config = () => {
   if (settings === null) {
     const file = path.join(stateDir(), "structure.json");
@@ -47,8 +58,8 @@ const config = () => {
 };
 
 /*
-  The URL of a path on Structure
-  @param endpoint The path, for example "eventbus"
+  The URL of a path on Structure.
+  @param endpoint The path, for example "eventbus".
 */
 const structureUrl = (endpoint) => "https://" + config()["https-host"] + ":" + config()["https-port"] + "/" + endpoint;
 

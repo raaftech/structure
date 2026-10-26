@@ -14,7 +14,7 @@ const eventBusUrl = settings.structureUrl("eventbus");
 app.eventBus = new BusHelper(eventBusUrl);
 
 app.start = function () {
-  // The key and certificate of Structure, next to its keystore
+  // The key and certificate of Structure, next to its keystore.
   const config = settings.config();
   const directory = path.dirname(config["jks-file"]);
   const ssl = {

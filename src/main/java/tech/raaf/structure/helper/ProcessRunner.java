@@ -73,7 +73,7 @@ public class ProcessRunner {
     return processResult;
   }
 
-  // The environment of the process; change it before run
+  // The environment of the process; change it before run.
   public Map<String, String> environment() {
     return processBuilder.environment();
   }
@@ -107,7 +107,7 @@ public class ProcessRunner {
     tempOut.deleteOnExit();
     tempErr.deleteOnExit();
 
-    // Run in state-dir, never in the working directory of Structure
+    // Run in state-dir, never in the working directory of Structure.
     final Path directory = Configuration.get(Setting.STATE_DIR);
     Files.createDirectories(directory);
 

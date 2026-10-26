@@ -30,7 +30,7 @@ public class KeystoreHelperTest {
   @Rule
   public final TemporaryFolder folder = new TemporaryFolder();
 
-  // The subject alternative names of the exported certificate
+  // The subject alternative names of the exported certificate.
   private List<List<?>> names(Path jks) throws Exception {
     try (InputStream stream = Files.newInputStream(KeystoreHelper.crt(jks))) {
       final X509Certificate crt = (X509Certificate) CertificateFactory.getInstance("X.509").generateCertificate(stream);
@@ -40,7 +40,7 @@ public class KeystoreHelperTest {
 
   @Test
   public void make() throws Exception {
-    // Also makes the missing directory
+    // Also makes the missing directory.
     final Path jks = folder.getRoot().toPath().resolve("target/structure.jks");
     KeystoreHelper.make(jks, "changeit", "structure.example", "rest.example", "localhost", "structure.example");
     assertEquals("rw-------", PosixFilePermissions.toString(Files.getPosixFilePermissions(jks)));
@@ -52,7 +52,7 @@ public class KeystoreHelperTest {
       ),
       names(jks)
     );
-    // The exported key is the key in the keystore
+    // The exported key is the key in the keystore.
     final Path key = KeystoreHelper.key(jks);
     assertEquals("rw-------", PosixFilePermissions.toString(Files.getPosixFilePermissions(key)));
     final String pem = new String(Files.readAllBytes(key), "US-ASCII");
@@ -95,7 +95,7 @@ public class KeystoreHelperTest {
             listening.completeExceptionally(ar.cause());
           }
         });
-      // The default trust and host name check accept the certificate
+      // The default trust and host name check accept the certificate.
       final URL url = new URL("https://localhost:" + listening.get().actualPort() + "/");
       try (InputStream stream = url.openStream()) {
         assertEquals("ok", IOUtils.toString(stream));

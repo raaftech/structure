@@ -97,7 +97,7 @@ public class NaiveSorterTest {
 
   @Test
   public void storesRelativePaths(@Mocked Context context) throws Exception {
-    // A relative bundle path is relative to home, and so is the stored path
+    // A relative bundle path is relative to home, and so is the stored path.
     final List<JsonNode> inHome = new NaiveSorter(
       Collections.singleton(Paths.get("src/main/resources/bundles"))
     ).readAllJson();
@@ -105,7 +105,7 @@ public class NaiveSorterTest {
     for (JsonNode node : inHome) {
       assertTrue(node.get("meta").get("path").asText().startsWith("src/main/resources/bundles/"));
     }
-    // Outside home, the stored path is relative to the bundle path
+    // Outside home, the stored path is relative to the bundle path.
     final Path outside = folder.getRoot().toPath();
     final Path simple = Configuration.get(Setting.HOME).resolve("src/test/resources/bundles/simple");
     FileUtils.copyDirectory(simple.toFile(), outside.resolve("simple").toFile());

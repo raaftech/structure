@@ -17,3 +17,4 @@ structure.db
 target
 ext/repl/payloads
 generatedscripts
+src/main/resources/config.properties

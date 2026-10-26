@@ -14,7 +14,7 @@ import tech.raaf.structure.graph.Graph;
  */
 public abstract class GraphTest {
 
-  // The name prefix of the test settings
+  // The name prefix of the test settings.
   private static final String PREFIX = "test.structure";
   private static boolean connected = false;
 

@@ -377,7 +377,7 @@ public class EntityDeserializer extends StdDeserializer<Entity> {
     return entity;
   }
 
-  // A relative path is relative to the bundle file, or else to home
+  // A relative path is relative to the bundle file, or else to home.
   private File pathHelper(File givenFilePath) {
     File filePath = givenFilePath;
     if (!filePath.isAbsolute()) {
