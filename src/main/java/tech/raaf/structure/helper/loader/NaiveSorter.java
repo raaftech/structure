@@ -23,6 +23,7 @@ import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tech.raaf.structure.base.Configuration;
+import tech.raaf.structure.base.Configuration.Setting;
 import tech.raaf.structure.base.Context;
 import tech.raaf.structure.bus.GenericActor;
 import tech.raaf.structure.exceptions.FileInjectionException;
@@ -88,7 +89,10 @@ public class NaiveSorter {
     return node;
   }
 
-  private ObjectNode putPath(ObjectNode node, Path path) {
+  private ObjectNode putPath(ObjectNode node, Path file) {
+    // Relative to home, so that the path is the same on each machine
+    final Path home = Configuration.get(Setting.HOME);
+    final Path path = file.isAbsolute() && file.startsWith(home) ? home.relativize(file) : file;
     if (node.has(META)) {
       ((ObjectNode) node.get(META)).put(PATH, path.toString());
     } else {

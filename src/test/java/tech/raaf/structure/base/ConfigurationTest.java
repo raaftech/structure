@@ -34,7 +34,7 @@ public class ConfigurationTest {
     return properties;
   }
 
-  // A configuration with one key in config.properties
+  // A configuration with one key in a settings file
   private static Configuration file(String key, String value) {
     return new Configuration(NONE, NONE, new Properties(), properties(key, value));
   }
@@ -105,10 +105,41 @@ public class ConfigurationTest {
       Paths.get("/opt/structure"),
       file("structure.home", "/opt/structure").resolve("structure", Setting.HOME)
     );
+    final Path home = Configuration.get(Setting.HOME);
     assertEquals(
-      Arrays.asList("a", "b"),
-      file("structure.bundle.path", " a, b ,,").resolve("structure", Setting.BUNDLE_PATH)
+      Arrays.asList(home.resolve("a").toString(), "/b"),
+      file("structure.bundle.path", " a, /b ,,").resolve("structure", Setting.BUNDLE_PATH)
     );
+  }
+
+  @Test
+  public void home() {
+    assertEquals(Paths.get("/repo"), Configuration.homeOf(Paths.get("/repo/target/structure.jar")));
+    assertEquals(Paths.get("/repo"), Configuration.homeOf(Paths.get("/repo/target/classes")));
+    assertEquals(Paths.get("/opt/structure"), Configuration.homeOf(Paths.get("/opt/structure/lib/structure.jar")));
+    // The tests run in development mode, from target/classes
+    final Path home = Configuration.get(Setting.HOME);
+    assertEquals(Paths.get("").toAbsolutePath(), home);
+    assertEquals(home.resolve("src/main/resources"), Configuration.resources());
+    assertEquals(
+      Paths.get("/opt/structure"),
+      file("structure.home", "/opt/x/../structure").resolve("structure", Setting.HOME)
+    );
+  }
+
+  @Test
+  public void isDevEnv() throws Exception {
+    final Path repo = folder.newFolder("repo").toPath();
+    final Path jar = repo.resolve("target/structure.jar");
+    // A pom.xml alone is not enough
+    Files.createFile(repo.resolve("pom.xml"));
+    assertFalse(Configuration.isDevEnv(jar));
+    Files.createDirectories(repo.resolve("src/main/java"));
+    assertTrue(Configuration.isDevEnv(jar));
+    assertTrue(Configuration.isDevEnv(repo.resolve("target/classes")));
+    // The code must be in target
+    assertFalse(Configuration.isDevEnv(repo.resolve("lib/structure.jar")));
+    assertFalse(Configuration.isDevEnv(Paths.get("/opt/structure/lib/structure.jar")));
   }
 
   @Test(expected = IllegalArgumentException.class)
@@ -161,7 +192,23 @@ public class ConfigurationTest {
       Configuration.get(Setting.HOME).resolve("target/structure.jks").toString(),
       json.get("jks-file").asText()
     );
-    assertEquals("src/main/resources/bundles", json.get("bundle-path").get(0).asText());
+    assertEquals(
+      Configuration.get(Setting.HOME).resolve("src/main/resources/bundles").toString(),
+      json.get("bundle-path").get(0).asText()
+    );
+  }
+
+  @Test
+  public void load() throws Exception {
+    final Path system = folder.newFile("system.properties").toPath();
+    final Path user = folder.newFile("user.properties").toPath();
+    Files.write(system, Arrays.asList("structure.https.port=9443", "structure.rest.port=9444"));
+    Files.write(user, Arrays.asList("structure.https.port=10443"));
+    // A later file has priority, and a missing file is no error
+    final Path missing = folder.getRoot().toPath().resolve("missing.properties");
+    final Properties properties = Configuration.load(Arrays.asList(system, user, missing));
+    assertEquals("10443", properties.getProperty("structure.https.port"));
+    assertEquals("9444", properties.getProperty("structure.rest.port"));
   }
 
   @Test(expected = ParseException.class)

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -32,8 +33,8 @@ import org.apache.commons.cli.ParseException;
 /**
  * The settings of Structure. {@link #get(Setting)} reads the value of a
  * setting from these sources, highest priority first: the command line,
- * the environment, the system properties, config.properties on the
- * class path, and the default of the setting.
+ * the environment, the system properties, the settings files (see
+ * {@link #load(List)}), and the default of the setting.
  *
  * From the name neo4j-bolt-uri and the prefix structure follow the
  * option --neo4j-bolt-uri, the environment variable
@@ -44,9 +45,19 @@ import org.apache.commons.cli.ParseException;
  */
 public final class Configuration {
 
-  // The name prefix of the settings of a normal run
+  // The default name prefix of the settings.
   private static final String PREFIX = "structure";
-  private static final Properties FILE = load("/config.properties");
+
+  // The jar of Structure (or target/classes in the tests).
+  private static final Path JAR = jar();
+
+  // Are we in a development environment?
+  private static final boolean DEV_ENV = isDevEnv(JAR);
+
+  // Construct our properties object from known property files.
+  private static final Properties FILE = load(files());
+
+  // Construct our configuration object.
   private static Configuration current = new Configuration(
     Collections.emptyMap(),
     System.getenv(),
@@ -100,6 +111,45 @@ public final class Configuration {
   public static void check() {
     for (Setting<?> setting : Setting.ALL) {
       get(setting);
+    }
+  }
+
+  // True in development mode
+  public static boolean isDevEnv() {
+    return DEV_ENV;
+  }
+
+  /**
+   * The directory of the bundles and the webroot: src/main/resources in
+   * home in development mode, and home in release mode.
+   */
+  public static Path resources() {
+    return DEV_ENV ? get(Setting.HOME).resolve("src/main/resources") : get(Setting.HOME);
+  }
+
+  // The parent of the directory of the jar: <repo> for <repo>/target/x.jar
+  static Path homeOf(Path jar) {
+    final Path directory = jar.toAbsolutePath().getParent();
+    return directory.getParent() == null ? directory : directory.getParent();
+  }
+
+  // True when the jar is in target/ of home, and home has a pom.xml file
+  // and a src/main/java directory
+  static boolean isDevEnv(Path jar) {
+    final Path home = homeOf(jar);
+    return (
+      jar.toAbsolutePath().getParent().equals(home.resolve("target")) &&
+      Files.isRegularFile(home.resolve("pom.xml")) &&
+      Files.isDirectory(home.resolve("src/main/java"))
+    );
+  }
+
+  // The jar of Structure, or target/classes in the tests
+  private static Path jar() {
+    try {
+      return Paths.get(Configuration.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+    } catch (URISyntaxException e) {
+      throw new IllegalStateException(e);
     }
   }
 
@@ -211,11 +261,31 @@ public final class Configuration {
     return options;
   }
 
-  private static Properties load(String resource) {
+  // The settings files outside the jar, lowest priority first
+  static List<Path> files() {
+    final String config = System.getenv("XDG_CONFIG_HOME");
+    final Path user =
+      config == null || config.isEmpty() ? Paths.get(System.getProperty("user.home"), ".config") : Paths.get(config);
+    return Arrays.asList(Paths.get("/etc/structure/config.properties"), user.resolve("structure/config.properties"));
+  }
+
+  /**
+   * Read the settings files: config.properties on the class path if it
+   * exists, then the given files that we can read. A later file has
+   * priority over an earlier one.
+   */
+  static Properties load(List<Path> files) {
     final Properties properties = new Properties();
-    try (InputStream stream = Configuration.class.getResourceAsStream(resource)) {
+    try (InputStream stream = Configuration.class.getResourceAsStream("/config.properties")) {
       if (stream != null) {
         properties.load(stream);
+      }
+      for (Path file : files) {
+        if (Files.isRegularFile(file) && Files.isReadable(file)) {
+          try (InputStream input = Files.newInputStream(file)) {
+            properties.load(input);
+          }
+        }
       }
     } catch (IOException e) {
       throw new UncheckedIOException(e);
@@ -243,17 +313,24 @@ public final class Configuration {
       "false",
       "Allow all event bus addresses"
     );
+    // A relative path is relative to home
     public static final Setting<List<String>> BUNDLE_PATH = new Setting<>(
       "bundle-path",
       Type.LIST,
-      "src/main/resources/bundles",
-      "Comma-separated bundle paths"
+      DEV_ENV ? "src/main/resources/bundles" : "bundles",
+      "Comma-separated bundle paths, relative to home",
+      paths ->
+        paths
+          .stream()
+          .map(path -> Configuration.get(Setting.HOME).resolve(path).toString())
+          .collect(Collectors.toList())
     );
     public static final Setting<Path> HOME = new Setting<>(
       "home",
       Type.PATH,
-      System.getProperty("user.dir"),
-      "Structure home directory"
+      homeOf(JAR).toString(),
+      "Structure home directory",
+      home -> home.toAbsolutePath().normalize()
     );
     // A relative path is relative to home
     public static final Setting<Path> JKS_FILE = new Setting<>(

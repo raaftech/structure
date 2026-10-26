@@ -40,10 +40,10 @@ neo4j-admin dbms set-initial-password structure
 neo4j start
 ```
 
-Start Structure from the root of the repository. Currently, Structure needs
-Java 8. If your system has a later version of Java installed as default, you can
-simply point `JAVA_HOME` at an installed JDK 8 and use the `java` binary from
-that location:
+Start Structure. It starts from any directory, but the commands here run from
+the root of the repository. Currently, Structure needs Java 8. If your system
+has a later version of Java installed as default, you can simply point
+`JAVA_HOME` at an installed JDK 8 and use the `java` binary from that location:
 
 ```bash
 export JAVA_HOME=/usr/lib/jvm/java-8-openjdk
@@ -132,8 +132,11 @@ first:
 1. the command line option, for example `--neo4j-bolt-uri`;
 2. the environment variable, for example `STRUCTURE_NEO4J_BOLT_URI`;
 3. the system property, for example `-Dstructure.neo4j.bolt.uri`;
-4. the key in `config.properties` on the class path, for example
-   `structure.neo4j.bolt.uri`;
+4. the key in a settings file, for example `structure.neo4j.bolt.uri`. Structure
+   reads `config.properties` on the class path if it exists, then
+   `/etc/structure/config.properties`, then
+   `$XDG_CONFIG_HOME/structure/config.properties` (default
+   `~/.config/structure/config.properties`). A later file has priority;
 5. the default.
 
 | Option             | Environment variable       | Property                   | Default                       | Description                                                  |
@@ -141,8 +144,8 @@ first:
 | `--help`           | `STRUCTURE_HELP`           | `structure.help`           |                               | Print usage and exit                                         |
 | `--log-level`      | `STRUCTURE_LOG_LEVEL`      | `structure.log.level`      | `info`                        | `info`, `debug` or `trace`; `trace` also prints stack traces |
 | `--unsafe`         | `STRUCTURE_UNSAFE`         | `structure.unsafe`         |                               | Allow all event bus addresses                                |
-| `--bundle-path`    | `STRUCTURE_BUNDLE_PATH`    | `structure.bundle.path`    | `src/main/resources/bundles`  | Comma-separated bundle paths                                 |
-| `--home`           | `STRUCTURE_HOME`           | `structure.home`           | working directory             | Structure home directory                                     |
+| `--bundle-path`    | `STRUCTURE_BUNDLE_PATH`    | `structure.bundle.path`    | see below                     | Comma-separated bundle paths, relative to home               |
+| `--home`           | `STRUCTURE_HOME`           | `structure.home`           | see below                     | Structure home directory                                     |
 | `--jks-file`       | `STRUCTURE_JKS_FILE`       | `structure.jks.file`       | `<home>/target/structure.jks` | JKS keystore for HTTPS, relative to home; made if missing    |
 | `--jks-pass`       | `STRUCTURE_JKS_PASS`       | `structure.jks.pass`       | `changeit`                    | Keystore password                                            |
 | `--neo4j-bolt-uri` | `STRUCTURE_NEO4J_BOLT_URI` | `structure.neo4j.bolt.uri` | `bolt://localhost:7687`       | Neo4j Bolt server                                            |
@@ -156,6 +159,19 @@ first:
 | `--worker-timeout` | `STRUCTURE_WORKER_TIMEOUT` | `structure.worker.timeout` | `300`                         | Maximum worker run time, in seconds                          |
 | `--job-pool`       | `STRUCTURE_JOB_POOL`       | `structure.job.pool`       | 4 × CPU cores                 | Maximum number of jobs that run at the same time             |
 
+Structure has two modes. The mode tells Structure where its files are:
+
+- **Development mode**: Structure runs from this repository, for example
+  `target/structure-0.10.0-fat.jar`. Home is the repository. The bundles and the
+  webroot are in `src/main/resources`.
+- **Release mode**: Structure runs from an installation, for example
+  `/opt/structure/lib/structure.jar`. Home is `/opt/structure`. The bundles and
+  the webroot are in home.
+
+Home is always the parent of the directory of the jar. Development mode needs
+all of these: the jar is in `target` in home, and home has a `pom.xml` file and
+a `src/main/java` directory. Relative paths in settings are relative to home.
+
 `--help` and `--unsafe` are flags. On the command line they have no value. In
 the other sources, their value is `true` or `false`. Structure prints the usage
 and stops if it does not know an option, or if a setting has no valid value.
@@ -166,10 +182,4 @@ their settings from this file, so start Structure first. Only the owner can read
 the file, as it has the passwords.
 
 Since users can see command lines with `ps`, prefer to give passwords in the
-environment or in `config.properties`. Do not commit passwords in
-`src/main/resources/config.properties`. To use a `config.properties` outside the
-jar, put its directory first on the class path:
-
-```bash
-java -cp /etc/structure:target/structure-0.10.0-fat.jar tech.raaf.structure.base.Application
-```
+environment or in a settings file that only you can read.

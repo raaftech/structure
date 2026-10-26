@@ -125,7 +125,11 @@ public class Application {
     SockJSHandler sockJsHandler;
 
     // Tell the user we're starting up.
-    log.info("Structure is starting up..");
+    log.info(
+      "Structure is starting in {} ({} mode)",
+      Configuration.get(Setting.HOME),
+      Configuration.isDevEnv() ? "development" : "release"
+    );
 
     // Connect to the Neo4j server
     final String neo4jUri = Configuration.get(Setting.NEO4J_BOLT_URI);
@@ -167,10 +171,10 @@ public class Application {
     SchemaManager schemaManager = new SchemaManager();
     // Setup routes
     router.route("/eventbus/*").handler(sockJsHandler);
-    router.route("/bundles/*").handler(StaticHandler.create().setWebRoot("src/main/resources/bundles/"));
+    router.route("/bundles/*").handler(files(Configuration.resources().resolve("bundles")));
     // The schema handler queries the graph, so it must not run on the event loop
     router.route("/schemas/:schema").blockingHandler(schemaManager::getSchema, false);
-    router.route("/*").handler(StaticHandler.create().setWebRoot("src/main/resources/webroot/"));
+    router.route("/*").handler(files(Configuration.resources().resolve("webroot")));
 
     // If we're in unsafe mode allow direct access to everything
     // on the eventbus and serve the debug page.
@@ -212,6 +216,11 @@ public class Application {
 
     init(vertx);
     log.info("Structure is running at {}", Context.getSchemaNamespace());
+  }
+
+  // A handler that serves the files in a directory
+  private static StaticHandler files(Path directory) {
+    return StaticHandler.create().setAllowRootFileSystemAccess(true).setWebRoot(directory.toString());
   }
 
   // The constraints and indexes, each in its own transaction
