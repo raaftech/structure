@@ -21,7 +21,6 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.GeneralSecurityException;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -131,10 +130,13 @@ public class Application {
       Configuration.get(Setting.HOME),
       Configuration.isDevEnv() ? "development" : "release"
     );
-    logDirectories("Valid", "configuration", Configuration.configDirectories());
-    logDirectories("Active", "configuration", Configuration.activeConfigDirectories());
-    logDirectories("Valid", "state", Configuration.stateDirectories());
-    logDirectories("Active", "state", Collections.singletonList(Configuration.get(Setting.STATE_DIR)));
+    log.info("State directory is {}", Configuration.get(Setting.STATE_DIR));
+    if (!Configuration.loadedFiles().isEmpty()) {
+      log.info(
+        "Loaded configuration from {}",
+        Configuration.loadedFiles().stream().map(Path::toString).collect(Collectors.joining(", "))
+      );
+    }
 
     // Connect to the Neo4j server
     final String neo4jUri = Configuration.get(Setting.NEO4J_BOLT_URI);
@@ -228,16 +230,6 @@ public class Application {
   // A handler that serves the files in a directory.
   private static StaticHandler files(Path directory) {
     return StaticHandler.create().setAllowRootFileSystemAccess(true).setWebRoot(directory.toString());
-  }
-
-  // Log directories, as "Valid state directory is x" or "...are x, y".
-  private static void logDirectories(String which, String kind, List<Path> directories) {
-    final String list = directories.stream().map(Path::toString).collect(Collectors.joining(", "));
-    if (directories.size() == 1) {
-      log.info("{} {} directory is {}", which, kind, list);
-    } else if (directories.size() > 1) {
-      log.info("{} {} directories are {}", which, kind, list);
-    }
   }
 
   // The constraints and indexes, each in its own transaction

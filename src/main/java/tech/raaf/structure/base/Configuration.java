@@ -64,12 +64,11 @@ public final class Configuration {
   private final Properties system;
   private final Properties file;
 
-  // The settings files that Structure looked for, and the ones it read.
-  private final List<Path> locations;
-  private final List<Path> read;
+  // The settings files that Structure loaded.
+  private final List<Path> loadedFiles;
 
   Configuration(Map<String, String> arguments, Map<String, String> environment, Properties system, Properties file) {
-    this(arguments, environment, system, file, Collections.emptyList(), Collections.emptyList());
+    this(arguments, environment, system, file, Collections.emptyList());
   }
 
   private Configuration(
@@ -77,15 +76,13 @@ public final class Configuration {
     Map<String, String> environment,
     Properties system,
     Properties file,
-    List<Path> locations,
-    List<Path> read
+    List<Path> loadedFiles
   ) {
     this.arguments = arguments;
     this.environment = environment;
     this.system = system;
     this.file = file;
-    this.locations = locations;
-    this.read = read;
+    this.loadedFiles = loadedFiles;
   }
 
   /**
@@ -114,11 +111,10 @@ public final class Configuration {
       PREFIX,
       Setting.HOME
     );
-    final List<Path> locations = files(isDevEnv(JAR, home), home);
-    final List<Path> read = new ArrayList<>();
-    final Properties files = load(locations, read);
+    final List<Path> loadedFiles = new ArrayList<>();
+    final Properties files = load(files(isDevEnv(JAR, home), home), loadedFiles);
     files.remove(property(PREFIX, Setting.HOME));
-    return new Configuration(arguments, environment, System.getProperties(), files, locations, read);
+    return new Configuration(arguments, environment, System.getProperties(), files, loadedFiles);
   }
 
   /**
@@ -149,19 +145,9 @@ public final class Configuration {
     }
   }
 
-  // The directories where Structure looks for settings files.
-  public static List<Path> configDirectories() {
-    return current().locations.stream().map(Path::getParent).collect(Collectors.toList());
-  }
-
-  // The directories of the settings files that Structure read.
-  public static List<Path> activeConfigDirectories() {
-    return current().read.stream().map(Path::getParent).distinct().collect(Collectors.toList());
-  }
-
-  // The directories from which state-dir gets its default.
-  public static List<Path> stateDirectories() {
-    return stateDirectories(isDevEnv(), get(Setting.HOME));
+  // The settings files that Structure loaded, lowest priority first.
+  public static List<Path> loadedFiles() {
+    return current().loadedFiles;
   }
 
   // True in development mode.
@@ -369,9 +355,9 @@ public final class Configuration {
    * Read the settings files: config.properties on the class path if it
    * exists, then the given files that we can read (see files). A later
    * file has priority over an earlier one. Adds each of the given files
-   * that it reads to read.
+   * that it loads to loadedFiles.
    */
-  static Properties load(List<Path> files, List<Path> read) {
+  static Properties load(List<Path> files, List<Path> loadedFiles) {
     final Properties properties = new Properties();
     try {
       final URL resource = Configuration.class.getResource("/config.properties");
@@ -385,7 +371,7 @@ public final class Configuration {
           try (InputStream stream = Files.newInputStream(file)) {
             properties.load(stream);
           }
-          read.add(file);
+          loadedFiles.add(file);
         }
       }
     } catch (IOException e) {

@@ -218,11 +218,11 @@ public class ConfigurationTest {
     Files.write(user, Arrays.asList("structure.https.port=10443"));
     // A later file has priority, and a missing file is no error.
     final Path missing = folder.getRoot().toPath().resolve("missing.properties");
-    final List<Path> read = new ArrayList<>();
-    final Properties properties = Configuration.load(Arrays.asList(system, user, missing), read);
+    final List<Path> loadedFiles = new ArrayList<>();
+    final Properties properties = Configuration.load(Arrays.asList(system, user, missing), loadedFiles);
     assertEquals("10443", properties.getProperty("structure.https.port"));
     assertEquals("9444", properties.getProperty("structure.rest.port"));
-    assertEquals(Arrays.asList(system, user), read);
+    assertEquals(Arrays.asList(system, user), loadedFiles);
   }
 
   @Test
