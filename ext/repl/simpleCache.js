@@ -2,6 +2,11 @@
 
 const R = require("ramda");
 const fs = require("fs");
+const path = require("path");
+const settings = require("../settings");
+
+// The cache is in the state-dir of Structure
+const file = () => path.join(settings.config()["state-dir"], "tui.cache");
 
 class SimpleCache {
   constructor() {
@@ -33,11 +38,11 @@ class SimpleCache {
       (file) => JSON.parse(fs.readFileSync(file, { encoding: "utf8" })),
       (file) => self.cache,
     );
-    this.cache = load("tui.cache");
+    this.cache = load(file());
   }
 
   save() {
-    fs.writeFileSync("tui.cache", JSON.stringify(this.cache), { encoding: "utf8" });
+    fs.writeFileSync(file(), JSON.stringify(this.cache), { encoding: "utf8" });
   }
 }
 

@@ -2,7 +2,7 @@
 
 const R = require("ramda");
 
-const helper = require("./helper");
+const settings = require("../../../settings");
 
 /*
   Sends a cypher query to the Neo4j Query API. Returns a Promise of a list
@@ -10,9 +10,9 @@ const helper = require("./helper");
   @param query The cypher query
 */
 const cypher = (query) => {
-  const settings = helper.config();
-  const auth = "Basic " + Buffer.from(settings["neo4j-user"] + ":" + settings["neo4j-pass"]).toString("base64");
-  return fetch(settings["neo4j-http-uri"] + "/db/neo4j/query/v2", {
+  const config = settings.config();
+  const auth = "Basic " + Buffer.from(config["neo4j-user"] + ":" + config["neo4j-pass"]).toString("base64");
+  return fetch(config["neo4j-http-uri"] + "/db/neo4j/query/v2", {
     method: "POST",
     headers: {
       Accept: "application/json",

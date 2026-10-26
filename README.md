@@ -185,9 +185,12 @@ the other sources, their value is `true` or `false`. Structure prints the usage
 and stops if it does not know an option, or if a setting has no valid value.
 
 At each start, Structure writes the value of each setting to `structure.json` in
-`state-dir`. The tools in `ext/repl` and `ext/rest` read their settings from
-this file, so start Structure first. Only the owner can read the file, as it has
-the passwords.
+`state-dir`. The tools in `ext` read their settings from this file, so start
+Structure first. Only the owner can read the file, as it has the passwords. The
+tools find `state-dir` with the same defaults as Structure: `target` in this
+repository, else `$XDG_STATE_HOME/structure`. If Structure uses another
+`state-dir`, set `STRUCTURE_STATE_DIR` for the tools too. The REST server keeps
+its users in `state-dir`, and the REPL its cache.
 
 Since users can see command lines with `ps`, prefer to give passwords in the
 environment or in a settings file that only you can read.

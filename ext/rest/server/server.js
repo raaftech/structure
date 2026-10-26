@@ -6,24 +6,24 @@ const path = require("path");
 const https = require("https");
 const fs = require("fs");
 const BusHelper = require(path.join(__dirname, "..", "common", "libraries", "busHelper"));
-const helper = require(path.join(__dirname, "..", "common", "libraries", "helper"));
+const settings = require(path.join(__dirname, "..", "..", "settings"));
 
 const app = (module.exports = loopback());
 
-const eventBusUrl = helper.structureUrl("eventbus");
+const eventBusUrl = settings.structureUrl("eventbus");
 app.eventBus = new BusHelper(eventBusUrl);
 
 app.start = function () {
   // The key and certificate of Structure, next to its keystore
-  const settings = helper.config();
-  const directory = path.dirname(settings["jks-file"]);
+  const config = settings.config();
+  const directory = path.dirname(config["jks-file"]);
   const ssl = {
     key: fs.readFileSync(path.join(directory, "structure.key")),
     cert: fs.readFileSync(path.join(directory, "structure.crt")),
   };
   const server = https.createServer(ssl, app);
-  server.listen(settings["rest-port"], settings["rest-host"], function () {
-    const baseUrl = "https://" + settings["rest-host"] + ":" + settings["rest-port"];
+  server.listen(config["rest-port"], config["rest-host"], function () {
+    const baseUrl = "https://" + config["rest-host"] + ":" + config["rest-port"];
     app.emit("started", baseUrl);
 
     console.log("Using eventbus url: %s", eventBusUrl);

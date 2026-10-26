@@ -190,8 +190,10 @@ public class StructureManager extends GenericActor {
       ProcessRunner runner = new ProcessRunner(
         "node ".concat(bootstrapLocation.toString()).concat(" -c -h " + Context.getHostname() + " -t " + token)
       );
-      // The bootstrap program connects to the REST server over HTTPS
+      // The bootstrap program reads structure.json in state-dir, and
+      // connects to the REST server over HTTPS
       final Path crt = KeystoreHelper.crt(Configuration.get(Setting.JKS_FILE));
+      runner.environment().put("STRUCTURE_STATE_DIR", Configuration.get(Setting.STATE_DIR).toString());
       runner.environment().put("NODE_EXTRA_CA_CERTS", crt.toString());
       try {
         runner.run();

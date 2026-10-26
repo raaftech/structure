@@ -32,9 +32,11 @@ https://[rest-host]:[rest-port]/explorer
 
 The server reads the settings of Structure, such as `rest-host` and `rest-port`
 (default `localhost` and `3443`), the host and port of Structure, and the Neo4j
-user and password, from `../../target/structure.json`. Structure writes this
-file at each start, so start Structure first. The server uses the key and the
-certificate of Structure, `structure.key` and `structure.crt`.
+user and password, from `structure.json` in the `state-dir` of Structure (see
+the README of Structure). Structure writes this file at each start, so start
+Structure first. The server uses the key and the certificate of Structure,
+`structure.key` and `structure.crt`, and keeps its users in `credentials.json`
+in the same `state-dir`.
 
 ## Environment
 

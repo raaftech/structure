@@ -16,6 +16,4 @@
 structure.db
 target
 ext/repl/payloads
-ext/repl/tui.cache
 generatedscripts
-ext/rest/credentials.json

@@ -9,8 +9,9 @@
 
 The REPL reads the settings of Structure, such as the hosts and ports of
 Structure and the REST server, and the Neo4j user and password, from
-../../target/structure.json. Structure writes this file at each start, so start
-Structure first.
+structure.json in the state-dir of Structure (see the README of Structure).
+Structure writes this file at each start, so start Structure first. The REPL
+keeps its cache, tui.cache, in the same state-dir.
 
 Structure and the REST server have the self-signed certificate of Structure. To
 trust it, set NODE_EXTRA_CA_CERTS to structure.crt:
