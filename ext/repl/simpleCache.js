@@ -3,7 +3,7 @@
 const R = require("ramda");
 const fs = require("fs");
 const path = require("path");
-const settings = require("../settings");
+const settings = require("./settings");
 
 // The cache is in the state-dir of Structure.
 const file = () => path.join(settings.config()["state-dir"], "tui.cache");

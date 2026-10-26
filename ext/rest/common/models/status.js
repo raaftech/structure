@@ -3,7 +3,7 @@
 const EventBus = require("vertx3-eventbus-client");
 const R = require("ramda");
 const path = require("path");
-const settings = require(path.join(__dirname, "..", "..", "..", "settings"));
+const settings = require(path.join(__dirname, "..", "libraries", "settings"));
 
 const eventBusUrl = settings.structureUrl("eventbus");
 let eb = new EventBus(eventBusUrl);

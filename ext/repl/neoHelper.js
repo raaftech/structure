@@ -2,7 +2,7 @@
 
 const R = require("ramda");
 
-const settings = require("../settings");
+const settings = require("./settings");
 
 /*
   Sends a cypher query to the Neo4j Query API. Returns a Promise of a list

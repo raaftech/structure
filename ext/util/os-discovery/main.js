@@ -8,7 +8,7 @@ const ansibleLib = require("./ansibleLib");
 const Helper = require("./helper");
 const RestConnector = require("./restConnector");
 
-const settings = require(path.join(__dirname, "..", "..", "settings")).config();
+const settings = require(path.join(__dirname, "settings")).config();
 const rest = new RestConnector(settings["rest-host"], settings["rest-port"]);
 const log = (x) => console.log(JSON.stringify(x, undefined, 2));
 

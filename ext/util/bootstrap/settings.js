@@ -2,15 +2,16 @@
 
 /*
   The settings of the running Structure, for the tools in ext. Structure
-  writes them at each start to structure.json in its state-dir.
+  writes them at each start to structure.json in its state-dir. Each tool
+  in ext has a copy of this file; only the path to home differs.
 */
 
 const fs = require("fs");
 const os = require("os");
 const path = require("path");
 
-// Home is the parent of ext.
-const home = path.join(__dirname, "..");
+// The home of Structure, the parent of ext.
+const home = path.join(__dirname, "..", "..", "..");
 
 // True in a Maven source tree, as in Structure.
 const isDevEnv = () =>

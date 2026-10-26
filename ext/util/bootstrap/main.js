@@ -35,7 +35,7 @@ const sections = [
   },
 ];
 const usage = getUsage(sections);
-const settings = require(path.join(__dirname, "..", "..", "settings")).config();
+const settings = require(path.join(__dirname, "settings")).config();
 const rest = new RestConnector(settings["rest-host"], settings["rest-port"]);
 rest.setToken(options.token);
 

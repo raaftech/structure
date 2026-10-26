@@ -4,7 +4,7 @@ const EventBus = require("vertx3-eventbus-client");
 const R = require("ramda");
 const path = require("path");
 const helper = require(path.join(__dirname, "helper"));
-const settings = require(path.join(__dirname, "..", "..", "..", "settings"));
+const settings = require(path.join(__dirname, "settings"));
 
 class BusHelper {
   constructor(ebUrl) {

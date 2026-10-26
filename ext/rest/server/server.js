@@ -6,7 +6,7 @@ const path = require("path");
 const https = require("https");
 const fs = require("fs");
 const BusHelper = require(path.join(__dirname, "..", "common", "libraries", "busHelper"));
-const settings = require(path.join(__dirname, "..", "..", "settings"));
+const settings = require(path.join(__dirname, "..", "common", "libraries", "settings"));
 
 const app = (module.exports = loopback());
 
