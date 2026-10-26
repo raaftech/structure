@@ -3,17 +3,30 @@ package tech.raaf.structure.helper.loader;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.io.ByteArrayInputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 import mockit.Mocked;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.io.FileUtils;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
+import tech.raaf.structure.base.Configuration;
+import tech.raaf.structure.base.Configuration.Setting;
 import tech.raaf.structure.base.Context;
 
 public class NaiveSorterTest {
+
+  @Rule
+  public final TemporaryFolder folder = new TemporaryFolder();
 
   private final ObjectMapper mapper = new ObjectMapper();
 
@@ -80,5 +93,26 @@ public class NaiveSorterTest {
         NaiveSorter.calculateChecksum(b, NaiveSorter.ChecksumAlgorithm.SHA1)
       )
     );
+  }
+
+  @Test
+  public void storesRelativePaths(@Mocked Context context) throws Exception {
+    // A relative bundle path is relative to home, and so is the stored path
+    final List<JsonNode> inHome = new NaiveSorter(
+      Collections.singleton(Paths.get("src/main/resources/bundles"))
+    ).readAllJson();
+    assertFalse(inHome.isEmpty());
+    for (JsonNode node : inHome) {
+      assertTrue(node.get("meta").get("path").asText().startsWith("src/main/resources/bundles/"));
+    }
+    // Outside home, the stored path is relative to the bundle path
+    final Path outside = folder.getRoot().toPath();
+    final Path simple = Configuration.get(Setting.HOME).resolve("src/test/resources/bundles/simple");
+    FileUtils.copyDirectory(simple.toFile(), outside.resolve("simple").toFile());
+    final List<JsonNode> elsewhere = new NaiveSorter(Collections.singleton(outside)).readAllJson();
+    assertFalse(elsewhere.isEmpty());
+    for (JsonNode node : elsewhere) {
+      assertTrue(node.get("meta").get("path").asText().startsWith("simple/"));
+    }
   }
 }

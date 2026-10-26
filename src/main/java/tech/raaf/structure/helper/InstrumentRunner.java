@@ -15,7 +15,6 @@ import io.vertx.core.json.JsonObject;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
@@ -26,6 +25,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tech.raaf.structure.base.Configuration;
+import tech.raaf.structure.base.Configuration.Setting;
 import tech.raaf.structure.base.Context;
 import tech.raaf.structure.graph.*;
 import tech.raaf.structure.graph.repositories.GroupingRepository;
@@ -52,7 +52,8 @@ public class InstrumentRunner {
   private final Group agent;
   private final ObjectNode arguments;
 
-  private final String workingDirectory = getCurrentWorkingDirectory() + "/target/generated-scripts/";
+  private final String workingDirectory =
+    Configuration.get(Setting.STATE_DIR).resolve("generated-scripts") + File.separator;
   // Set timeout of transport to 10000ms
   private static final Optional<Long> transportTimeout = Optional.of(10000L);
 
@@ -748,15 +749,6 @@ public class InstrumentRunner {
 
     arguments.put("payloadDirectory", workingDirectory);
     arguments.put("payloadFileName", scriptFilename);
-  }
-
-  /**
-   * Get the current working directory of the java process.
-   *
-   * @return The current working directory.
-   */
-  private String getCurrentWorkingDirectory() {
-    return Paths.get("").toAbsolutePath().toString();
   }
 
   /**

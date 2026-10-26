@@ -165,7 +165,16 @@ public class ConfigurationTest {
       Long.valueOf(1000000000L),
       file("structure.worker.timeout", "1").resolve("structure", Setting.WORKER_TIMEOUT)
     );
-    // A relative keystore path is relative to home
+    // A relative state-dir is relative to home, and in development mode,
+    // the default is target in home
+    final Path home = Configuration.get(Setting.HOME);
+    assertEquals(home.resolve("target"), file("structure.other", "").resolve("structure", Setting.STATE_DIR));
+    assertEquals(home.resolve("state"), file("structure.state.dir", "state").resolve("structure", Setting.STATE_DIR));
+    assertEquals(
+      Paths.get("/var/lib/structure"),
+      file("structure.state.dir", "/var/lib/structure").resolve("structure", Setting.STATE_DIR)
+    );
+    // A relative keystore path is relative to state-dir
     assertEquals(
       Configuration.get(Setting.HOME).resolve("target/structure.jks"),
       file("structure.other", "").resolve("structure", Setting.JKS_FILE)

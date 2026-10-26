@@ -284,6 +284,10 @@
         <configuration>
           <forkCount>1</forkCount>
           <reuseForks>false</reuseForks>
+          <!-- The tests make their own Vert.x, with its file cache in target -->
+          <systemPropertyVariables>
+            <vertx.cacheDirBase>${project.build.directory}/vertx</vertx.cacheDirBase>
+          </systemPropertyVariables>
         </configuration>
       </plugin>
 

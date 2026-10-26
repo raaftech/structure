@@ -149,6 +149,8 @@ public class Application {
     );
 
     // Setup vertx with the maximum worker run time, in ns.
+    // Vert.x caches files in state-dir, not in the working directory
+    System.setProperty("vertx.cacheDirBase", Configuration.get(Setting.STATE_DIR).resolve("vertx").toString());
     vertx = Vertx.vertx(new VertxOptions().setMaxWorkerExecuteTime(Configuration.get(Setting.WORKER_TIMEOUT)));
 
     Context.setVertx(vertx);

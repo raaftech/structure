@@ -52,12 +52,13 @@ export STRUCTURE_NEO4J_PASS=structure
 ```
 
 Structure always uses HTTPS. At the first start, it makes the keystore
-`target/structure.jks`, with a self-signed certificate for `localhost`,
-`https-host` and `rest-host`. It exports the certificate to
-`target/structure.crt` and the key to `target/structure.key`. Clients trust this
-certificate with `curl --cacert` or `NODE_EXTRA_CA_CERTS`. To make a new
-certificate, for example after you change `https-host` or `rest-host`, delete
-the keystore. `mvn clean` also deletes it.
+`structure.jks` in `state-dir`, which is `target` in development mode. The
+keystore has a self-signed certificate for `localhost`, `https-host` and
+`rest-host`. Structure exports the certificate to `structure.crt` and the key to
+`structure.key`, next to the keystore. Clients trust this certificate with
+`curl --cacert` or `NODE_EXTRA_CA_CERTS`. To make a new certificate, for example
+after you change `https-host` or `rest-host`, delete the keystore. `mvn clean`
+also deletes it.
 
 Start the REST server in a second terminal. It listens at `rest-host` and
 `rest-port`, with the key and certificate of Structure:
@@ -139,34 +140,41 @@ first:
    `~/.config/structure/config.properties`). A later file has priority;
 5. the default.
 
-| Option             | Environment variable       | Property                   | Default                       | Description                                                  |
-| ------------------ | -------------------------- | -------------------------- | ----------------------------- | ------------------------------------------------------------ |
-| `--help`           | `STRUCTURE_HELP`           | `structure.help`           |                               | Print usage and exit                                         |
-| `--log-level`      | `STRUCTURE_LOG_LEVEL`      | `structure.log.level`      | `info`                        | `info`, `debug` or `trace`; `trace` also prints stack traces |
-| `--unsafe`         | `STRUCTURE_UNSAFE`         | `structure.unsafe`         |                               | Allow all event bus addresses                                |
-| `--bundle-path`    | `STRUCTURE_BUNDLE_PATH`    | `structure.bundle.path`    | see below                     | Comma-separated bundle paths, relative to home               |
-| `--home`           | `STRUCTURE_HOME`           | `structure.home`           | see below                     | Structure home directory                                     |
-| `--jks-file`       | `STRUCTURE_JKS_FILE`       | `structure.jks.file`       | `<home>/target/structure.jks` | JKS keystore for HTTPS, relative to home; made if missing    |
-| `--jks-pass`       | `STRUCTURE_JKS_PASS`       | `structure.jks.pass`       | `changeit`                    | Keystore password                                            |
-| `--neo4j-bolt-uri` | `STRUCTURE_NEO4J_BOLT_URI` | `structure.neo4j.bolt.uri` | `bolt://localhost:7687`       | Neo4j Bolt server                                            |
-| `--neo4j-http-uri` | `STRUCTURE_NEO4J_HTTP_URI` | `structure.neo4j.http.uri` | `http://localhost:7474`       | Neo4j Query API, for the tools in ext                        |
-| `--neo4j-user`     | `STRUCTURE_NEO4J_USER`     | `structure.neo4j.user`     | `neo4j`                       | Neo4j user                                                   |
-| `--neo4j-pass`     | `STRUCTURE_NEO4J_PASS`     | `structure.neo4j.pass`     | required                      | Neo4j password                                               |
-| `--https-host`     | `STRUCTURE_HTTPS_HOST`     | `structure.https.host`     | `localhost`                   | HTTPS server host; also used in schema URIs                  |
-| `--https-port`     | `STRUCTURE_HTTPS_PORT`     | `structure.https.port`     | `8443`                        | HTTPS server port                                            |
-| `--rest-host`      | `STRUCTURE_REST_HOST`      | `structure.rest.host`      | `localhost`                   | Host of the REST server in ext/rest                          |
-| `--rest-port`      | `STRUCTURE_REST_PORT`      | `structure.rest.port`      | `3443`                        | Port of the REST server in ext/rest                          |
-| `--worker-timeout` | `STRUCTURE_WORKER_TIMEOUT` | `structure.worker.timeout` | `300`                         | Maximum worker run time, in seconds                          |
-| `--job-pool`       | `STRUCTURE_JOB_POOL`       | `structure.job.pool`       | 4 × CPU cores                 | Maximum number of jobs that run at the same time             |
+| Option             | Environment variable       | Property                   | Default                 | Description                                                      |
+| ------------------ | -------------------------- | -------------------------- | ----------------------- | ---------------------------------------------------------------- |
+| `--help`           | `STRUCTURE_HELP`           | `structure.help`           |                         | Print usage and exit                                             |
+| `--log-level`      | `STRUCTURE_LOG_LEVEL`      | `structure.log.level`      | `info`                  | `info`, `debug` or `trace`; `trace` also prints stack traces     |
+| `--unsafe`         | `STRUCTURE_UNSAFE`         | `structure.unsafe`         |                         | Allow all event bus addresses                                    |
+| `--bundle-path`    | `STRUCTURE_BUNDLE_PATH`    | `structure.bundle.path`    | see below               | Comma-separated bundle paths, relative to home                   |
+| `--home`           | `STRUCTURE_HOME`           | `structure.home`           | see below               | Structure home directory                                         |
+| `--state-dir`      | `STRUCTURE_STATE_DIR`      | `structure.state.dir`      | see below               | Directory of the files that Structure writes, relative to home   |
+| `--jks-file`       | `STRUCTURE_JKS_FILE`       | `structure.jks.file`       | `structure.jks`         | JKS keystore for HTTPS, relative to `state-dir`; made if missing |
+| `--jks-pass`       | `STRUCTURE_JKS_PASS`       | `structure.jks.pass`       | `changeit`              | Keystore password                                                |
+| `--neo4j-bolt-uri` | `STRUCTURE_NEO4J_BOLT_URI` | `structure.neo4j.bolt.uri` | `bolt://localhost:7687` | Neo4j Bolt server                                                |
+| `--neo4j-http-uri` | `STRUCTURE_NEO4J_HTTP_URI` | `structure.neo4j.http.uri` | `http://localhost:7474` | Neo4j Query API, for the tools in ext                            |
+| `--neo4j-user`     | `STRUCTURE_NEO4J_USER`     | `structure.neo4j.user`     | `neo4j`                 | Neo4j user                                                       |
+| `--neo4j-pass`     | `STRUCTURE_NEO4J_PASS`     | `structure.neo4j.pass`     | required                | Neo4j password                                                   |
+| `--https-host`     | `STRUCTURE_HTTPS_HOST`     | `structure.https.host`     | `localhost`             | HTTPS server host; also used in schema URIs                      |
+| `--https-port`     | `STRUCTURE_HTTPS_PORT`     | `structure.https.port`     | `8443`                  | HTTPS server port                                                |
+| `--rest-host`      | `STRUCTURE_REST_HOST`      | `structure.rest.host`      | `localhost`             | Host of the REST server in ext/rest                              |
+| `--rest-port`      | `STRUCTURE_REST_PORT`      | `structure.rest.port`      | `3443`                  | Port of the REST server in ext/rest                              |
+| `--worker-timeout` | `STRUCTURE_WORKER_TIMEOUT` | `structure.worker.timeout` | `300`                   | Maximum worker run time, in seconds                              |
+| `--job-pool`       | `STRUCTURE_JOB_POOL`       | `structure.job.pool`       | 4 × CPU cores           | Maximum number of jobs that run at the same time                 |
 
 Structure has two modes. The mode tells Structure where its files are:
 
 - **Development mode**: Structure runs from this repository, for example
   `target/structure-0.10.0-fat.jar`. Home is the repository. The bundles and the
-  webroot are in `src/main/resources`.
+  webroot are in `src/main/resources`. The default of `state-dir` is `target`.
 - **Release mode**: Structure runs from an installation, for example
   `/opt/structure/lib/structure.jar`. Home is `/opt/structure`. The bundles and
-  the webroot are in home.
+  the webroot are in home. The default of `state-dir` is
+  `$XDG_STATE_HOME/structure`, or `~/.local/state/structure`. A system service
+  can set `STRUCTURE_STATE_DIR=/var/lib/structure`.
+
+In `state-dir`, Structure writes the keystore, `structure.json`, the generated
+scripts and the file cache of Vert.x, and runs its commands. Structure never
+uses the working directory.
 
 Home is always the parent of the directory of the jar. Development mode needs
 all of these: the jar is in `target` in home, and home has a `pom.xml` file and
@@ -176,10 +184,10 @@ a `src/main/java` directory. Relative paths in settings are relative to home.
 the other sources, their value is `true` or `false`. Structure prints the usage
 and stops if it does not know an option, or if a setting has no valid value.
 
-At each start, Structure writes the value of each setting to
-`<home>/target/structure.json`. The tools in `ext/repl` and `ext/rest` read
-their settings from this file, so start Structure first. Only the owner can read
-the file, as it has the passwords.
+At each start, Structure writes the value of each setting to `structure.json` in
+`state-dir`. The tools in `ext/repl` and `ext/rest` read their settings from
+this file, so start Structure first. Only the owner can read the file, as it has
+the passwords.
 
 Since users can see command lines with `ps`, prefer to give passwords in the
 environment or in a settings file that only you can read.

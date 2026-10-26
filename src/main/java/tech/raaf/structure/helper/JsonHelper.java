@@ -10,7 +10,6 @@ import com.github.fge.jsonschema.core.report.ProcessingReport;
 import com.github.fge.jsonschema.main.JsonSchema;
 import com.github.fge.jsonschema.main.JsonSchemaFactory;
 import com.github.fge.jsonschema.processors.syntax.SyntaxValidator;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -18,6 +17,7 @@ import java.util.Iterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tech.raaf.structure.base.Configuration;
+import tech.raaf.structure.base.Configuration.Setting;
 import tech.raaf.structure.base.Context;
 import tech.raaf.structure.bus.manager.SchemaManager;
 
@@ -81,7 +81,8 @@ public class JsonHelper {
   public static JsonNode jsonFromFile(String file, boolean via) {
     JsonNode result = null;
     try {
-      result = mapper.readTree(new File(file));
+      // Relative to home, never to the working directory
+      result = mapper.readTree(Configuration.get(Setting.HOME).resolve(file).toFile());
     } catch (IOException e) {
       if (Configuration.isTraceModeOn()) {
         final String logStatement = "Couldn't open as file  " + file + ": " + e.getMessage();

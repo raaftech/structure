@@ -59,7 +59,9 @@ public class NaiveSorter {
   private String globPattern = "**/*.{type,inst}.json";
 
   public NaiveSorter(Set<Path> bundlePaths) {
-    this.bundlePaths = bundlePaths;
+    // Relative to home, never to the working directory
+    final Path home = Configuration.get(Setting.HOME);
+    this.bundlePaths = bundlePaths == null ? null : bundlePaths.stream().map(home::resolve).collect(Collectors.toSet());
   }
 
   /**
@@ -90,9 +92,13 @@ public class NaiveSorter {
   }
 
   private ObjectNode putPath(ObjectNode node, Path file) {
-    // Relative to home, so that the path is the same on each machine
+    // Never absolute, so that the graph stays valid when Structure moves:
+    // relative to home, or else to the bundle path of the file
     final Path home = Configuration.get(Setting.HOME);
-    final Path path = file.isAbsolute() && file.startsWith(home) ? home.relativize(file) : file;
+    final Path base = file.startsWith(home)
+      ? home
+      : bundlePaths.stream().filter(file::startsWith).findFirst().orElse(file.getParent());
+    final Path path = base.relativize(file);
     if (node.has(META)) {
       ((ObjectNode) node.get(META)).put(PATH, path.toString());
     } else {

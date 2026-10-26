@@ -20,6 +20,8 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import tech.raaf.structure.base.Configuration;
+import tech.raaf.structure.base.Configuration.Setting;
 import tech.raaf.structure.exceptions.EntityDeserializationException;
 import tech.raaf.structure.exceptions.JsonValidationException;
 import tech.raaf.structure.helper.JsonHelper;
@@ -375,20 +377,17 @@ public class EntityDeserializer extends StdDeserializer<Entity> {
     return entity;
   }
 
+  // A relative path is relative to the bundle file, or else to home
   private File pathHelper(File givenFilePath) {
     File filePath = givenFilePath;
     if (!filePath.isAbsolute()) {
-      log.debug("Relative path specified for file \"{}\"", filePath.getName());
-      Path relativePathForSchema = NaiveSorter.checksumToFiles.get(checksum);
-      if (relativePathForSchema != null) {
-        filePath = new File(relativePathForSchema.getParent().toString() + File.separator + givenFilePath);
-      }
-    } else if (filePath.exists() && !filePath.isDirectory()) {
-      log.debug("Path helper got an absolute path to file \"{}\" and it exists too.", filePath.getName());
-    } else {
+      final Path bundleFile = NaiveSorter.checksumToFiles.get(checksum);
+      final Path directory = bundleFile == null ? Configuration.get(Setting.HOME) : bundleFile.getParent();
+      filePath = directory.resolve(givenFilePath.getPath()).toFile();
+    }
+    if (!filePath.isFile()) {
       log.warn("Path helper failed to find file: {}", filePath.getPath());
     }
-
     return filePath;
   }
 }

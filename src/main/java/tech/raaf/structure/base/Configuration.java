@@ -154,12 +154,12 @@ public final class Configuration {
   }
 
   /**
-   * Write the value of each setting to target/structure.json in home,
-   * for the tools in ext. Only the owner can read the file, as it has
-   * the passwords.
+   * Write the value of each setting to structure.json in state-dir, for
+   * the tools in ext. Only the owner can read the file, as it has the
+   * passwords.
    */
   public static void write() throws IOException {
-    current.write(get(Setting.HOME).resolve("target/structure.json"));
+    current.write(get(Setting.STATE_DIR).resolve("structure.json"));
   }
 
   void write(Path file) throws IOException {
@@ -263,10 +263,16 @@ public final class Configuration {
 
   // The settings files outside the jar, lowest priority first
   static List<Path> files() {
-    final String config = System.getenv("XDG_CONFIG_HOME");
-    final Path user =
-      config == null || config.isEmpty() ? Paths.get(System.getProperty("user.home"), ".config") : Paths.get(config);
-    return Arrays.asList(Paths.get("/etc/structure/config.properties"), user.resolve("structure/config.properties"));
+    final Path user = xdg("XDG_CONFIG_HOME", ".config").resolve("structure/config.properties");
+    return Arrays.asList(Paths.get("/etc/structure/config.properties"), user);
+  }
+
+  // An XDG base directory, or its default in the home of the user
+  private static Path xdg(String variable, String fallback) {
+    final String directory = System.getenv(variable);
+    return directory == null || directory.isEmpty()
+      ? Paths.get(System.getProperty("user.home"), fallback)
+      : Paths.get(directory);
   }
 
   /**
@@ -333,12 +339,20 @@ public final class Configuration {
       home -> home.toAbsolutePath().normalize()
     );
     // A relative path is relative to home
+    public static final Setting<Path> STATE_DIR = new Setting<>(
+      "state-dir",
+      Type.PATH,
+      DEV_ENV ? "target" : xdg("XDG_STATE_HOME", ".local/state").resolve("structure").toString(),
+      "Directory of the files that Structure writes, relative to home",
+      directory -> Configuration.get(HOME).resolve(directory)
+    );
+    // A relative path is relative to state-dir
     public static final Setting<Path> JKS_FILE = new Setting<>(
       "jks-file",
       Type.PATH,
-      "target/structure.jks",
-      "JKS keystore for HTTPS, relative to home; made if missing",
-      file -> Configuration.get(HOME).resolve(file)
+      "structure.jks",
+      "JKS keystore for HTTPS, relative to state-dir; made if missing",
+      file -> Configuration.get(STATE_DIR).resolve(file)
     );
     public static final Setting<String> JKS_PASS = new Setting<>(
       "jks-pass",
@@ -408,6 +422,7 @@ public final class Configuration {
         UNSAFE,
         BUNDLE_PATH,
         HOME,
+        STATE_DIR,
         JKS_FILE,
         JKS_PASS,
         NEO4J_BOLT_URI,
