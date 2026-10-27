@@ -88,6 +88,8 @@
     <java.source-target.version>1.8</java.source-target.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <main.class>tech.raaf.structure.base.Application</main.class>
+    <classes.dir>target/classes</classes.dir>
+    <test-classes.dir>target/test-classes</test-classes.dir>
 
     <!-- Core component versions -->
     <vertx.version>3.4.1</vertx.version>
@@ -233,8 +235,8 @@
 
     <directory>target</directory>
 
-    <outputDirectory>target/classes</outputDirectory>
-    <testOutputDirectory>target/test-classes</testOutputDirectory>
+    <outputDirectory>${classes.dir}</outputDirectory>
+    <testOutputDirectory>${test-classes.dir}</testOutputDirectory>
 
     <sourceDirectory>src/main/java</sourceDirectory>
     <testSourceDirectory>src/test/java</testSourceDirectory>
@@ -431,4 +433,19 @@
       </plugin>
     </plugins>
   </build>
+
+  <profiles>
+    <profile>
+      <id>m2e</id>
+      <activation>
+        <property>
+          <name>m2e.version</name>
+        </property>
+      </activation>
+      <properties>
+        <classes.dir>target/m2e-classes</classes.dir>
+        <test-classes.dir>target/m2e-test-classes</test-classes.dir>
+      </properties>
+    </profile>
+  </profiles>
 </project>
