@@ -7,6 +7,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.io.ByteArrayInputStream;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
@@ -18,6 +20,7 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 import tech.raaf.structure.base.Configuration;
 import tech.raaf.structure.base.Configuration.Setting;
@@ -27,6 +30,9 @@ public class NaiveSorterTest {
 
   @Rule
   public final TemporaryFolder folder = new TemporaryFolder();
+
+  @Rule
+  public final ExpectedException exception = ExpectedException.none();
 
   private final ObjectMapper mapper = new ObjectMapper();
 
@@ -114,5 +120,30 @@ public class NaiveSorterTest {
     for (JsonNode node : elsewhere) {
       assertTrue(node.get("meta").get("path").asText().startsWith("simple/"));
     }
+  }
+
+  @Test
+  public void invalidJsonReportsFileName() throws Exception {
+    Path file = folder.newFolder("bundle").toPath().resolve("broken.type.json");
+    Files.write(file, "{".getBytes(StandardCharsets.UTF_8));
+
+    exception.expect(Exception.class);
+    exception.expectMessage(file.getFileName().toString());
+    new NaiveSorter(Collections.singleton(folder.getRoot().toPath())).readAllJson();
+  }
+
+  @Test
+  public void emptyWorklistReturnsEmptyList() throws Exception {
+    NaiveSorter sorter = new NaiveSorter(Collections.emptySet());
+    assertTrue(sorter.sortIt(Collections.emptyList()).isEmpty());
+  }
+
+  @Test
+  public void missingBundlePathReportsPath() {
+    Path missing = folder.getRoot().toPath().resolve("missing");
+
+    exception.expect(Exception.class);
+    exception.expectMessage(missing.toString());
+    new NaiveSorter(Collections.singleton(missing)).readAllJson();
   }
 }
