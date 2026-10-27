@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.net.URI;
 import java.util.*;
 import java.util.function.Function;
+import java.util.regex.Pattern;
 import tech.raaf.structure.helper.JsonHelper;
 import tech.raaf.structure.helper.classification.tree.BranchNode;
 import tech.raaf.structure.helper.classification.tree.LeafNode;
@@ -60,6 +61,10 @@ public class ArgumentsToClassificationTreeParser {
     public ObjectNode result;
     public Set<JsonNode> failed = new HashSet<>();
     public Set<JsonNode> askUser = new HashSet<>();
+  }
+
+  public static boolean matchesTypePath(String typePath, String hierarchyPath) {
+    return hierarchyPath.matches(Pattern.quote(typePath) + "(\\..*)?");
   }
 
   @SuppressWarnings("unchecked")
@@ -144,9 +149,11 @@ public class ArgumentsToClassificationTreeParser {
 
       // Get the "type" key
       if (!fromString.equals("static")) {
-        // use a regex, because type could be lower in the type tree than
-        // specified in the instrument
-        head = new BranchNodeJson(head, typeKey, value.get("type").asText() + ".*");
+        String typePath = value.get("type").asText();
+        head = new BranchNode<>(
+          head,
+          node -> node.has(typeKey) && matchesTypePath(typePath, node.get(typeKey).asText())
+        );
       } else {
         head = new BranchNodeJson(head, "name", keyName);
       }
