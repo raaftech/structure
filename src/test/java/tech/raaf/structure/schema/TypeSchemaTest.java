@@ -19,17 +19,18 @@ import tech.raaf.structure.helper.loader.BundleLoader;
  */
 public abstract class TypeSchemaTest extends GraphTest {
 
-  private static boolean httpUp = false;
+  // The schema server is the same for each test, so start it one time
+  private static Vertx vertx;
+  private static URI schemaNamespace;
   // The bundles are the same for each test, so read them one time
   private static BundleLoader bundleLoader;
 
   @Before
   public void setUpDatabase() throws Exception {
     // Setup the http endpoint for querying type schema's
-    if (!httpUp) {
+    if (vertx == null) {
       // Setup vertx and http+router
-      final Vertx vertx = Vertx.vertx();
-      Context.setVertx(vertx);
+      vertx = Vertx.vertx();
       final HttpServer httpServer = vertx.createHttpServer();
       final Router router = Router.router(vertx);
       SchemaManager schemaManager = new SchemaManager();
@@ -45,11 +46,12 @@ public abstract class TypeSchemaTest extends GraphTest {
         }
       });
 
-      // Set the schema namespace to the http endpoint that we exposed before
-      Context.setSchemaNamespace(URI.create("http://localhost:" + listening.get().actualPort()));
-
-      httpUp = true;
+      // The schema namespace is the http endpoint that we exposed before
+      schemaNamespace = URI.create("http://localhost:" + listening.get().actualPort());
     }
+    // Other tests in the same JVM can change these, so set them each time
+    Context.setVertx(vertx);
+    Context.setSchemaNamespace(schemaNamespace);
 
     // The location of the bundle to test
     if (bundleLoader == null) {

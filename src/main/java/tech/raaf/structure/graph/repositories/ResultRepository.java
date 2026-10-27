@@ -4,7 +4,8 @@ import tech.raaf.structure.graph.Result;
 
 public class ResultRepository extends GenericRepository<Result> {
 
-  public ResultRepository() {
-    super("Result");
+  @Override
+  protected String label() {
+    return "Result";
   }
 }

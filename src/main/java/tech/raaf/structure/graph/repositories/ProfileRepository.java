@@ -8,8 +8,9 @@ import tech.raaf.structure.graph.Profile;
 
 public class ProfileRepository extends GenericRepository<Profile> {
 
-  public ProfileRepository() {
-    super("Profile");
+  @Override
+  protected String label() {
+    return "Profile";
   }
 
   // Used to purge all profiles from the database

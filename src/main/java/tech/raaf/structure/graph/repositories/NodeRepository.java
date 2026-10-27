@@ -16,8 +16,9 @@ import tech.raaf.structure.graph.Node;
  */
 public class NodeRepository extends GenericRepository<Node> {
 
-  public NodeRepository() {
-    super("Node");
+  @Override
+  protected String label() {
+    return "Node";
   }
 
   public void purge() {

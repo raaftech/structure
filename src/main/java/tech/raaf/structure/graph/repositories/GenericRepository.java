@@ -16,30 +16,27 @@ import tech.raaf.structure.graph.NodeMapper;
  */
 public abstract class GenericRepository<T extends Node> {
 
-  private final String label;
-
-  protected GenericRepository(String label) {
-    this.label = label;
-  }
+  // Mocks can skip the constructor, so the label comes from a method
+  protected abstract String label();
 
   public T findByUuid(String uuid) {
-    return one("MATCH (n:" + label + " {uuid: $uuid}) RETURN n", ImmutableMap.of("uuid", uuid));
+    return one("MATCH (n:" + label() + " {uuid: $uuid}) RETURN n", ImmutableMap.of("uuid", uuid));
   }
 
   public Set<T> findByName(String name) {
-    return set("MATCH (n:" + label + " {name: $name}) RETURN n", ImmutableMap.of("name", name));
+    return set("MATCH (n:" + label() + " {name: $name}) RETURN n", ImmutableMap.of("name", name));
   }
 
   public T findOneByName(String name) {
-    return one("MATCH (n:" + label + " {name: $name}) RETURN n LIMIT 1", ImmutableMap.of("name", name));
+    return one("MATCH (n:" + label() + " {name: $name}) RETURN n LIMIT 1", ImmutableMap.of("name", name));
   }
 
   public List<T> findAll() {
-    return NodeMapper.mapAll(Graph.query("MATCH (n:" + label + ") RETURN n"), "n");
+    return NodeMapper.mapAll(Graph.query("MATCH (n:" + label() + ") RETURN n"), "n");
   }
 
   public long count() {
-    return number("MATCH (n:" + label + ") RETURN count(n) AS n", ImmutableMap.of());
+    return number("MATCH (n:" + label() + ") RETURN count(n) AS n", ImmutableMap.of());
   }
 
   public void delete(T node) {

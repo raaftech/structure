@@ -10,8 +10,9 @@ import tech.raaf.structure.graph.Type;
 
 public class InstrumentRepository extends GenericRepository<Instrument> {
 
-  public InstrumentRepository() {
-    super("Instrument");
+  @Override
+  protected String label() {
+    return "Instrument";
   }
 
   public Set<Instrument> findAllAsSet() {

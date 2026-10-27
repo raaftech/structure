@@ -7,8 +7,9 @@ import tech.raaf.structure.graph.Instance;
 
 public class GroupingRepository extends GenericRepository<Group> {
 
-  public GroupingRepository() {
-    super("Group");
+  @Override
+  protected String label() {
+    return "Group";
   }
 
   public Set<Instance> getChildrenOfType(String groupUuid, String typeName) {

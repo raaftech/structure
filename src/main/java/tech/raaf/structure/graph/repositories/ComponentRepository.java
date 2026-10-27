@@ -6,8 +6,9 @@ import tech.raaf.structure.graph.Component;
 
 public class ComponentRepository extends GenericRepository<Component> {
 
-  public ComponentRepository() {
-    super("Component");
+  @Override
+  protected String label() {
+    return "Component";
   }
 
   public Set<Component> findChildrenByType(String uuid, String type) {

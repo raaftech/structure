@@ -16,8 +16,9 @@ import tech.raaf.structure.graph.Type;
  */
 public class TypeRepository extends GenericRepository<Type> {
 
-  public TypeRepository() {
-    super("Type");
+  @Override
+  protected String label() {
+    return "Type";
   }
 
   // Find a type by it's name, but case insensitive. This is more expensive than the case sensitive search.

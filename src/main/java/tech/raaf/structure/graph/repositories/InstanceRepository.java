@@ -16,8 +16,9 @@ import tech.raaf.structure.graph.NodeMapper;
  */
 public class InstanceRepository extends GenericRepository<Instance> {
 
-  public InstanceRepository() {
-    super("Instance");
+  @Override
+  protected String label() {
+    return "Instance";
   }
 
   // This returns 0 if we're not of queried type, >0 if we are.
