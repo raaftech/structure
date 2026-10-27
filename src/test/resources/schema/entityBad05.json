@@ -1,0 +1,11 @@
+{
+  "name": "example",
+  "desc": "An example instance.",
+  "meta": {
+    "relations": {
+      "INSTANCE_OF": {
+        "direction": "outgoing"
+      }
+    }
+  }
+}

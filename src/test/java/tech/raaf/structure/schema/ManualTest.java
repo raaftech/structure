@@ -7,7 +7,12 @@ public class ManualTest extends SchemaTest {
 
   @Override
   protected Set<String> good() {
-    return ImmutableSet.of("schema/manualGood01.json");
+    return ImmutableSet.of(
+      "schema/manualGood01.json",
+      "help/genericactor.help.json",
+      "help/genericactor.version.json",
+      "help/busmanager.list.json"
+    );
   }
 
   @Override

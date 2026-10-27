@@ -1,0 +1,19 @@
+{
+  "name": "ExampleType",
+  "desc": "An example type.",
+  "meta": {
+    "relations": {
+      "ISA": {
+        "direction": "outgoing",
+        "to": ["Type"]
+      }
+    }
+  },
+  "file": {
+    "script": {
+      "encoding": "text",
+      "format": "script",
+      "path": "example.sh"
+    }
+  }
+}

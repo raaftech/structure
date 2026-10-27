@@ -1,0 +1,19 @@
+{
+  "name": "ExampleType",
+  "desc": "An example type.",
+  "meta": {
+    "relations": {
+      "ISA": {
+        "direction": "outgoing",
+        "to": ["invalid type name"]
+      }
+    }
+  },
+  "file": {
+    "dataSchema": {
+      "encoding": "text",
+      "format": "json",
+      "path": "example.schema.json"
+    }
+  }
+}

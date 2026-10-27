@@ -1,0 +1,15 @@
+{
+  "name": "TestController",
+  "desc": "A test controller.",
+  "instrumentType": "xmarkerx",
+  "subjectIsLocal": true,
+  "arguments": {
+    "origin": {
+      "value": {
+        "from": "origin",
+        "type": "type.component.software.service",
+        "strategy": "useFirst"
+      }
+    }
+  }
+}

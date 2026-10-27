@@ -1,13 +1,13 @@
 package tech.raaf.structure.schema;
 
-import static junit.framework.TestCase.assertTrue;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.net.URI;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import org.junit.Before;
 import org.junit.Test;
 import tech.raaf.structure.helper.JsonHelper;
 
@@ -16,27 +16,25 @@ import tech.raaf.structure.helper.JsonHelper;
  */
 public abstract class SchemaTest {
 
-  private Set<JsonNode> good;
-  private Set<JsonNode> bad;
-  private URI schema;
-
-  @Before
-  public void loadJson() {
-    good = good().stream().map(JsonHelper::jsonFromResourceOrFile).collect(Collectors.toSet());
-    bad = bad().stream().map(JsonHelper::jsonFromResourceOrFile).collect(Collectors.toSet());
-    schema = URI.create(schema());
+  @Test
+  public void testGoodJson() {
+    List<String> rejected = good()
+      .stream()
+      .filter(file -> !valid(file))
+      .collect(Collectors.toList());
+    assertTrue("Valid fixtures rejected: " + rejected, rejected.isEmpty());
   }
 
   @Test
-  public void testGoodJson() throws Exception {
-    good.forEach(json -> assertTrue(JsonHelper.validateToSchema(schema, json)));
+  public void testBadJson() {
+    List<String> accepted = bad().stream().filter(this::valid).collect(Collectors.toList());
+    assertTrue("Invalid fixtures accepted: " + accepted, accepted.isEmpty());
   }
 
-  @Test
-  public void testBadJson() throws Exception {
-    bad.forEach(json -> {
-      assertFalse(JsonHelper.validateToSchema(schema, json));
-    });
+  private boolean valid(String file) {
+    JsonNode json = JsonHelper.jsonFromResourceOrFile(file);
+    assertNotNull("Missing fixture " + file, json);
+    return JsonHelper.validateToSchema(URI.create(schema()), json);
   }
 
   protected abstract Set<String> good();
