@@ -46,7 +46,8 @@ public class BundleConsistencyTest {
       "IMPLEMENTS",
       "HAS",
       "MEMBER_OF",
-      "HAS_RESULT",
+      "RESULTS",
+      "NEXT_RESULT",
       "PARSED",
       "PRODUCED"
     )

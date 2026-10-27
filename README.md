@@ -108,6 +108,21 @@ a normal run. Testcontainers removes the container when the tests stop.
 The address discovery tests need no services. Run them with
 `(cd ext/util/net-discovery && npm test)`.
 
+### Bundle loading
+
+Each bundle path must be a directory. An empty directory is valid. Each entity
+in a `.type.json` or `.inst.json` file must have a `meta.uuid`. UUIDs must be
+unique across all configured bundle paths, including entities in the same file.
+The loader reads files in overlapping bundle paths once.
+
+If a bundle file cannot be read, Structure stops and reports the file name. If
+dependencies cannot be resolved, it reports each unsorted entity and its missing
+targets. These errors are visible at the default log level.
+
+Bundle loading adds new entities and updates entities whose checksum changed. It
+retains graph entities that are absent from disk. Removal of a bundle file does
+not delete its entities or their instances from the graph.
+
 ### Configuration
 
 Each setting has a command line option, an environment variable and a property.

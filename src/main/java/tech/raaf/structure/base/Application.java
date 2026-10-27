@@ -130,6 +130,7 @@ public class Application {
       Configuration.get(Setting.HOME),
       Configuration.isDevEnv() ? "development" : "release"
     );
+    log.info("Bundle paths are {}", String.join(", ", Configuration.get(Setting.BUNDLE_PATH)));
     log.info("State directory is {}", Configuration.get(Setting.STATE_DIR));
     if (!Configuration.loadedFiles().isEmpty()) {
       log.info(
@@ -246,7 +247,7 @@ public class Application {
     try {
       new BundleLoader().load();
     } catch (Exception e) {
-      handleUnrecoverableLoadingError(e, 1, "Unrecoverable error while loading bundles. Shutting down...");
+      handleUnrecoverableLoadingError(e, 1, "Unrecoverable error while loading bundles: " + e.getMessage());
     }
 
     // Deploy TypeActors.

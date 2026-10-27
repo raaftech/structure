@@ -1,6 +1,7 @@
 package tech.raaf.structure.helper.loader;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -42,7 +43,7 @@ import tech.raaf.structure.helper.JsonHelper;
 public class NaiveSorter {
 
   private static final Logger log = LoggerFactory.getLogger(NaiveSorter.class);
-  private final ObjectMapper mapper = new ObjectMapper();
+  private final ObjectMapper mapper = new ObjectMapper().enable(DeserializationFeature.FAIL_ON_TRAILING_TOKENS);
   private final Set<Path> bundlePaths;
   public static final Map<String, Path> checksumToFiles = new HashMap<>();
   private final NodeRepository nodeRepository = Context.getNodeRepository();
@@ -58,7 +59,13 @@ public class NaiveSorter {
   public NaiveSorter(Set<Path> bundlePaths) {
     // Relative to home, never to the working directory.
     final Path home = Configuration.get(Setting.HOME);
-    this.bundlePaths = bundlePaths == null ? null : bundlePaths.stream().map(home::resolve).collect(Collectors.toSet());
+    this.bundlePaths =
+      bundlePaths == null
+        ? Collections.emptySet()
+        : bundlePaths
+            .stream()
+            .map(path -> home.resolve(path).normalize())
+            .collect(Collectors.toSet());
   }
 
   /**
@@ -223,6 +230,9 @@ public class NaiveSorter {
    * @return List of Paths matching the specified globbing pattern
    */
   private List<Path> globFiles(Path path, String pattern) {
+    if (!Files.isDirectory(path)) {
+      throw new IllegalArgumentException("Bundle path is not a directory: " + path);
+    }
     final List<Path> matchingFiles = new ArrayList<>();
     final String workingDirectory = path.toString().replace('\\', '/');
     final String syntaxAndPattern = "glob:" + workingDirectory + "/" + pattern.replace('\\', '/');
@@ -244,19 +254,10 @@ public class NaiveSorter {
             }
             return FileVisitResult.CONTINUE;
           }
-
-          @Override
-          public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
-            return FileVisitResult.CONTINUE;
-          }
         }
       );
     } catch (IOException e) {
-      log.error(e.getMessage());
-
-      if (Configuration.isTraceModeOn()) {
-        e.printStackTrace();
-      }
+      throw new IllegalArgumentException("Cannot read bundle path " + path + ": " + e.getMessage(), e);
     }
 
     return matchingFiles;
@@ -293,13 +294,13 @@ public class NaiveSorter {
   }
 
   /**
-   * Check whether all dependencies for node are present in sortedArray
+   * Get the dependencies that are absent from sortedArray.
    *
    * @param node        the node to check dependencies for
    * @param sortedArray the array containing dependencies
-   * @return are all dependencies present in sortedArray
+   * @return The missing UUID and name dependencies.
    */
-  private boolean allDependenciesMet(JsonNode node, List<JsonNode> sortedArray) {
+  private Map<String, Set<String>> getMissingDependencies(JsonNode node, List<JsonNode> sortedArray) {
     Set<String> sortedUuids = sortedArray
       .stream()
       .map(sortedNode -> sortedNode.get(META).get(UUID).asText())
@@ -310,10 +311,9 @@ public class NaiveSorter {
       .collect(Collectors.toSet());
 
     final Map<String, Set<String>> dependencies = getDeps(node);
-    return (
-      dependencies.get("uuids").stream().allMatch(sortedUuids::contains) &&
-      dependencies.get("names").stream().allMatch(sortedNames::contains)
-    );
+    dependencies.get("uuids").removeAll(sortedUuids);
+    dependencies.get("names").removeAll(sortedNames);
+    return dependencies;
   }
 
   /**
@@ -323,18 +323,15 @@ public class NaiveSorter {
    */
   public List<JsonNode> readAllJson() {
     ArrayList<JsonNode> unsorted = new ArrayList<>();
-    List<Path> jsonFilePaths = new ArrayList<>();
-
-    if (bundlePaths == null) {
-      return unsorted;
-    }
+    Set<Path> jsonFilePaths = new LinkedHashSet<>();
+    Map<String, Path> uuidToFiles = new HashMap<>();
 
     for (Path bundlePathEntry : bundlePaths) {
       jsonFilePaths.addAll(globFiles(bundlePathEntry, "**/*.{type,inst}.json"));
     }
 
-    try {
-      for (Path jsonFilePath : jsonFilePaths) {
+    for (Path jsonFilePath : jsonFilePaths) {
+      try {
         JsonNode jsonFile = mapper.readTree(jsonFilePath.toFile());
         String fromBundle = null;
         // the next piece of code finds the bundle name where the json originates from
@@ -350,36 +347,36 @@ public class NaiveSorter {
         }
 
         // array of tokens
-        if (jsonFile.isArray()) {
+        if (jsonFile != null && jsonFile.isArray()) {
           for (JsonNode token : jsonFile) {
-            final String entityChecksum = calculateChecksum(
-              injectFileReferences(token, jsonFilePath),
-              ChecksumAlgorithm.SHA1
-            );
-            checksumToFiles.put(entityChecksum, jsonFilePath);
-            unsorted.add(
-              putPath(putBundleName(putChecksum((ObjectNode) token, entityChecksum), fromBundle), jsonFilePath)
-            );
+            unsorted.add(readEntity(token, jsonFilePath, fromBundle, uuidToFiles));
           }
         } else {
-          // single token
-          final String entityChecksum = calculateChecksum(
-            injectFileReferences(jsonFile, jsonFilePath),
-            ChecksumAlgorithm.SHA1
-          );
-          checksumToFiles.put(entityChecksum, jsonFilePath);
-          unsorted.add(
-            putPath(putBundleName(putChecksum((ObjectNode) jsonFile, entityChecksum), fromBundle), jsonFilePath)
-          );
+          unsorted.add(readEntity(jsonFile, jsonFilePath, fromBundle, uuidToFiles));
         }
-      }
-    } catch (IOException e) {
-      if (Configuration.isTraceModeOn()) {
-        e.printStackTrace();
+      } catch (IOException | RuntimeException e) {
+        throw new IllegalArgumentException("Cannot read bundle file " + jsonFilePath + ": " + e.getMessage(), e);
       }
     }
 
     return unsorted;
+  }
+
+  private ObjectNode readEntity(JsonNode entity, Path file, String bundle, Map<String, Path> uuidToFiles) {
+    if (!(entity instanceof ObjectNode)) {
+      throw new JsonValidationException("Expected an entity JSON object");
+    }
+    final JsonNode uuid = entity.path(META).path(UUID);
+    if (!uuid.isTextual() || uuid.asText().isEmpty()) {
+      throw new JsonValidationException("Missing or invalid meta.uuid for entity " + entity.path(NAME).asText());
+    }
+    final Path previous = uuidToFiles.putIfAbsent(uuid.asText(), file);
+    if (previous != null) {
+      throw new JsonValidationException("Duplicate uuid " + uuid.asText() + " in " + previous + " and " + file);
+    }
+    final String checksum = calculateChecksum(injectFileReferences(entity, file), ChecksumAlgorithm.SHA1);
+    checksumToFiles.put(checksum, file);
+    return putPath(putBundleName(putChecksum((ObjectNode) entity, checksum), bundle), file);
   }
 
   /**
@@ -390,28 +387,36 @@ public class NaiveSorter {
    */
   public List<JsonNode> sortIt(List<JsonNode> worklist) throws Exception {
     List<JsonNode> sorted = new ArrayList<>();
-    boolean eject = false;
+    List<JsonNode> remaining = new ArrayList<>(worklist);
 
     log.info("Started sorting {} items..", worklist.size());
 
-    int i = 0;
-    while (!eject) {
-      // If we looped the same number of times as the length of the worklist, worklist seems unresolvable
-      if (i >= worklist.size()) {
-        throw new Exception("Unresolvable worklist was passed");
-      }
-
-      for (JsonNode item : worklist) {
-        if (allDependenciesMet(item, sorted) && !sorted.contains(item)) {
+    while (!remaining.isEmpty()) {
+      boolean progress = false;
+      Iterator<JsonNode> iterator = remaining.iterator();
+      while (iterator.hasNext()) {
+        JsonNode item = iterator.next();
+        if (getMissingDependencies(item, sorted).values().stream().allMatch(Set::isEmpty)) {
           sorted.add(item);
-        }
-
-        // Set eject if sorted and worklist are equal.
-        if (sorted.size() >= worklist.size()) {
-          eject = true;
+          iterator.remove();
+          progress = true;
         }
       }
-      i++;
+      if (!progress) {
+        String unresolved = remaining
+          .stream()
+          .map(item ->
+            String.format(
+              "%s (%s, %s): missing %s",
+              item.path(NAME).asText(),
+              item.path(META).path(UUID).asText(),
+              item.path(META).path(PATH).asText(),
+              getMissingDependencies(item, sorted)
+            )
+          )
+          .collect(Collectors.joining("\n"));
+        throw new IllegalArgumentException("Unresolved bundle dependencies:\n" + unresolved);
+      }
     }
 
     return sorted;
