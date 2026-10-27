@@ -45,7 +45,6 @@ public class NaiveSorter {
   private final ObjectMapper mapper = new ObjectMapper();
   private final Set<Path> bundlePaths;
   public static final Map<String, Path> checksumToFiles = new HashMap<>();
-  public static final Map<String, String> checksumToUuid = new HashMap<>();
   private final NodeRepository nodeRepository = Context.getNodeRepository();
 
   private static final URI ENTITYSCHEMA = URI.create("resource:/schema/entity.schema.json");
@@ -55,8 +54,6 @@ public class NaiveSorter {
   private static final String PATH = "path";
   private static final String UUID = "uuid";
   private static final String NAME = "name";
-
-  private String globPattern = "**/*.{type,inst}.json";
 
   public NaiveSorter(Set<Path> bundlePaths) {
     // Relative to home, never to the working directory.
@@ -296,38 +293,6 @@ public class NaiveSorter {
   }
 
   /**
-   * Return the JsonNode described by the key and value specified from the passed array
-   *
-   * @param lookupField the key to search for
-   * @param lookupValue the value for the searchkey (lookupField)
-   * @param haystack    the array in which so search
-   * @return the JsonNode described by the key/value
-   */
-  private Optional<JsonNode> getNode(String lookupField, String lookupValue, List<JsonNode> haystack) {
-    return haystack
-      .stream()
-      .filter(node -> node.get(lookupField).asText().equals(lookupValue))
-      .findFirst();
-  }
-
-  /**
-   * See whether a (key,value)-pair exists in an array
-   *
-   * @param lookupField
-   * @param lookupValue
-   * @param haystack
-   * @return
-   */
-  private boolean arrayContains(String lookupField, String lookupValue, List<JsonNode> haystack) {
-    return (
-      haystack
-        .stream()
-        .filter(node -> node.get(lookupField).asText().equals(lookupValue))
-        .count() > 0
-    );
-  }
-
-  /**
    * Check whether all dependencies for node are present in sortedArray
    *
    * @param node        the node to check dependencies for
@@ -365,7 +330,7 @@ public class NaiveSorter {
     }
 
     for (Path bundlePathEntry : bundlePaths) {
-      jsonFilePaths.addAll(globFiles(bundlePathEntry, globPattern));
+      jsonFilePaths.addAll(globFiles(bundlePathEntry, "**/*.{type,inst}.json"));
     }
 
     try {
@@ -392,7 +357,6 @@ public class NaiveSorter {
               ChecksumAlgorithm.SHA1
             );
             checksumToFiles.put(entityChecksum, jsonFilePath);
-            checksumToUuid.put(entityChecksum, token.get(META).get(UUID).asText());
             unsorted.add(
               putPath(putBundleName(putChecksum((ObjectNode) token, entityChecksum), fromBundle), jsonFilePath)
             );
@@ -416,11 +380,6 @@ public class NaiveSorter {
     }
 
     return unsorted;
-  }
-
-  public NaiveSorter setGlobPattern(String globPattern) {
-    this.globPattern = globPattern;
-    return this;
   }
 
   /**
