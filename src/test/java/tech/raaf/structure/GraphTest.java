@@ -2,20 +2,21 @@ package tech.raaf.structure;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.experimental.categories.Category;
+import org.testcontainers.neo4j.Neo4jContainer;
 import tech.raaf.structure.base.Application;
-import tech.raaf.structure.base.Configuration;
-import tech.raaf.structure.base.Configuration.Setting;
 import tech.raaf.structure.graph.Graph;
 
 /**
- * Base class of the tests that use the graph. Connects to the Neo4j
- * test server and deletes all data before each test. Thus the test
- * server must not be the server of a normal run.
+ * Base class of the tests that use the graph. Starts one Neo4j container
+ * for all the tests in the JVM, and deletes all data before each test.
+ * Testcontainers removes the container when the JVM stops. The class is
+ * also the category of these tests: failsafe runs them, surefire does not.
  */
+@Category(GraphTest.class)
 public abstract class GraphTest {
 
-  // The name prefix of the test settings.
-  private static final String PREFIX = "test.structure";
+  private static final Neo4jContainer NEO4J = new Neo4jContainer("neo4j:latest");
   private static boolean connected = false;
 
   @BeforeClass
@@ -23,15 +24,8 @@ public abstract class GraphTest {
     if (connected) {
       return;
     }
-    final String uri = Configuration.get(PREFIX, Setting.NEO4J_BOLT_URI);
-    if (uri.equals(Configuration.get(Setting.NEO4J_BOLT_URI))) {
-      throw new IllegalStateException(
-        "Set TEST_STRUCTURE_NEO4J_BOLT_URI to a server other than " +
-          uri +
-          ". The tests delete all data on that server."
-      );
-    }
-    Graph.connect(uri, Configuration.get(PREFIX, Setting.NEO4J_USER), Configuration.get(PREFIX, Setting.NEO4J_PASS));
+    NEO4J.start();
+    Graph.connect(NEO4J.getBoltUrl(), "neo4j", NEO4J.getAdminPassword());
     Application.createSchema();
     connected = true;
   }

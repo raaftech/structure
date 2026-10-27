@@ -44,10 +44,8 @@ public class ConfigurationTest {
 
   @Test
   public void names() throws Exception {
-    assertEquals("structure.neo4j.bolt.uri", Configuration.property("structure", Setting.NEO4J_BOLT_URI));
-    assertEquals("STRUCTURE_NEO4J_BOLT_URI", Configuration.variable("structure", Setting.NEO4J_BOLT_URI));
-    assertEquals("test.structure.neo4j.bolt.uri", Configuration.property("test.structure", Setting.NEO4J_BOLT_URI));
-    assertEquals("TEST_STRUCTURE_NEO4J_BOLT_URI", Configuration.variable("test.structure", Setting.NEO4J_BOLT_URI));
+    assertEquals("structure.neo4j.bolt.uri", Configuration.property(Setting.NEO4J_BOLT_URI));
+    assertEquals("STRUCTURE_NEO4J_BOLT_URI", Configuration.variable(Setting.NEO4J_BOLT_URI));
     assertEquals(
       singletonMap("neo4j-bolt-uri", "bolt://other"),
       Configuration.parse(new String[] { "--neo4j-bolt-uri", "bolt://other" })
@@ -63,55 +61,43 @@ public class ConfigurationTest {
     final Properties none = new Properties();
     assertEquals(
       "arguments",
-      new Configuration(arguments, environment, system, file).resolve("structure", Setting.HTTPS_HOST)
+      new Configuration(arguments, environment, system, file).resolve(Setting.HTTPS_HOST)
     );
     assertEquals(
       "environment",
-      new Configuration(NONE, environment, system, file).resolve("structure", Setting.HTTPS_HOST)
+      new Configuration(NONE, environment, system, file).resolve(Setting.HTTPS_HOST)
     );
-    assertEquals("system", new Configuration(NONE, NONE, system, file).resolve("structure", Setting.HTTPS_HOST));
-    assertEquals("file", new Configuration(NONE, NONE, none, file).resolve("structure", Setting.HTTPS_HOST));
-    assertEquals("localhost", new Configuration(NONE, NONE, none, none).resolve("structure", Setting.HTTPS_HOST));
-  }
-
-  @Test
-  public void prefix() {
-    final Configuration configuration = new Configuration(
-      NONE,
-      singletonMap("TEST_STRUCTURE_NEO4J_BOLT_URI", "bolt://test"),
-      new Properties(),
-      properties("structure.neo4j.bolt.uri", "bolt://normal")
-    );
-    assertEquals("bolt://test", configuration.resolve("test.structure", Setting.NEO4J_BOLT_URI));
-    assertEquals("bolt://normal", configuration.resolve("structure", Setting.NEO4J_BOLT_URI));
+    assertEquals("system", new Configuration(NONE, NONE, system, file).resolve(Setting.HTTPS_HOST));
+    assertEquals("file", new Configuration(NONE, NONE, none, file).resolve(Setting.HTTPS_HOST));
+    assertEquals("localhost", new Configuration(NONE, NONE, none, none).resolve(Setting.HTTPS_HOST));
   }
 
   @Test
   public void types() throws Exception {
     final Configuration none = file("structure.other", "");
     final Map<String, String> flag = Configuration.parse(new String[] { "--unsafe" });
-    assertTrue(new Configuration(flag, NONE, new Properties(), new Properties()).resolve("structure", Setting.UNSAFE));
-    assertTrue(file("structure.unsafe", "TRUE").resolve("structure", Setting.UNSAFE));
-    assertFalse(file("structure.unsafe", "false").resolve("structure", Setting.UNSAFE));
-    assertFalse(none.resolve("structure", Setting.UNSAFE));
-    assertEquals("DEBUG", file("structure.log.level", "DEBUG").resolve("structure", Setting.LOG_LEVEL));
-    assertEquals(Integer.valueOf(9443), file("structure.https.port", "9443").resolve("structure", Setting.HTTPS_PORT));
+    assertTrue(new Configuration(flag, NONE, new Properties(), new Properties()).resolve(Setting.UNSAFE));
+    assertTrue(file("structure.unsafe", "TRUE").resolve(Setting.UNSAFE));
+    assertFalse(file("structure.unsafe", "false").resolve(Setting.UNSAFE));
+    assertFalse(none.resolve(Setting.UNSAFE));
+    assertEquals("DEBUG", file("structure.log.level", "DEBUG").resolve(Setting.LOG_LEVEL));
+    assertEquals(Integer.valueOf(9443), file("structure.https.port", "9443").resolve(Setting.HTTPS_PORT));
     assertEquals(
       Long.valueOf(5000000000L),
-      none.resolve("structure", new Setting<>("size", Setting.Type.LONG, "5000000000", "A size"))
+      none.resolve(new Setting<>("size", Setting.Type.LONG, "5000000000", "A size"))
     );
     assertEquals(
       Double.valueOf(0.5),
-      none.resolve("structure", new Setting<>("ratio", Setting.Type.DECIMAL, "0.5", "A ratio"))
+      none.resolve(new Setting<>("ratio", Setting.Type.DECIMAL, "0.5", "A ratio"))
     );
     assertEquals(
       Paths.get("/opt/structure"),
-      file("structure.home", "/opt/structure").resolve("structure", Setting.HOME)
+      file("structure.home", "/opt/structure").resolve(Setting.HOME)
     );
     final Path home = Configuration.get(Setting.HOME);
     assertEquals(
       Arrays.asList(home.resolve("a").toString(), "/b"),
-      file("structure.bundle.path", " a, /b ,,").resolve("structure", Setting.BUNDLE_PATH)
+      file("structure.bundle.path", " a, /b ,,").resolve(Setting.BUNDLE_PATH)
     );
   }
 
@@ -126,7 +112,7 @@ public class ConfigurationTest {
     assertEquals(home.resolve("src/main/resources"), Configuration.resources());
     assertEquals(
       Paths.get("/opt/structure"),
-      file("structure.home", "/opt/x/../structure").resolve("structure", Setting.HOME)
+      file("structure.home", "/opt/x/../structure").resolve(Setting.HOME)
     );
   }
 
@@ -147,44 +133,44 @@ public class ConfigurationTest {
 
   @Test(expected = IllegalArgumentException.class)
   public void invalidFlag() {
-    file("structure.unsafe", "yes").resolve("structure", Setting.UNSAFE);
+    file("structure.unsafe", "yes").resolve(Setting.UNSAFE);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void invalidInteger() {
-    file("structure.https.port", "https").resolve("structure", Setting.HTTPS_PORT);
+    file("structure.https.port", "https").resolve(Setting.HTTPS_PORT);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void required() {
-    file("structure.other", "").resolve("structure", Setting.NEO4J_PASS);
+    file("structure.other", "").resolve(Setting.NEO4J_PASS);
   }
 
   @Test
   public void modifiers() {
     // The modifier also applies to the default.
-    assertEquals(Long.valueOf(300000000000L), file("structure.other", "").resolve("structure", Setting.WORKER_TIMEOUT));
+    assertEquals(Long.valueOf(300000000000L), file("structure.other", "").resolve(Setting.WORKER_TIMEOUT));
     assertEquals(
       Long.valueOf(1000000000L),
-      file("structure.worker.timeout", "1").resolve("structure", Setting.WORKER_TIMEOUT)
+      file("structure.worker.timeout", "1").resolve(Setting.WORKER_TIMEOUT)
     );
     // A relative state-dir is relative to home, and in development mode,
     // the default is target in home.
     final Path home = Configuration.get(Setting.HOME);
-    assertEquals(home.resolve("target"), file("structure.other", "").resolve("structure", Setting.STATE_DIR));
-    assertEquals(home.resolve("state"), file("structure.state.dir", "state").resolve("structure", Setting.STATE_DIR));
+    assertEquals(home.resolve("target"), file("structure.other", "").resolve(Setting.STATE_DIR));
+    assertEquals(home.resolve("state"), file("structure.state.dir", "state").resolve(Setting.STATE_DIR));
     assertEquals(
       Paths.get("/var/lib/structure"),
-      file("structure.state.dir", "/var/lib/structure").resolve("structure", Setting.STATE_DIR)
+      file("structure.state.dir", "/var/lib/structure").resolve(Setting.STATE_DIR)
     );
     // A relative keystore path is relative to state-dir.
     assertEquals(
       Configuration.get(Setting.HOME).resolve("target/structure.jks"),
-      file("structure.other", "").resolve("structure", Setting.JKS_FILE)
+      file("structure.other", "").resolve(Setting.JKS_FILE)
     );
     assertEquals(
       Paths.get("/etc/structure.jks"),
-      file("structure.jks.file", "/etc/structure.jks").resolve("structure", Setting.JKS_FILE)
+      file("structure.jks.file", "/etc/structure.jks").resolve(Setting.JKS_FILE)
     );
   }
 
@@ -268,8 +254,8 @@ public class ConfigurationTest {
     Files.createDirectory(home.resolve("etc"));
     Files.write(home.resolve("etc/config.properties"), Arrays.asList("structure.https.port=9555", "structure.home=/x"));
     final Configuration configuration = Configuration.create(singletonMap("home", home.toString()));
-    assertEquals(home, configuration.resolve("structure", Setting.HOME));
-    assertEquals(Integer.valueOf(9555), configuration.resolve("structure", Setting.HTTPS_PORT));
+    assertEquals(home, configuration.resolve(Setting.HOME));
+    assertEquals(Integer.valueOf(9555), configuration.resolve(Setting.HTTPS_PORT));
   }
 
   @Test(expected = ParseException.class)

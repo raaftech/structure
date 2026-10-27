@@ -39,16 +39,16 @@ import org.apache.commons.cli.ParseException;
  * the environment, the system properties, the settings files (see
  * {@link #load(List)}), and the default of the setting.
  *
- * From the name neo4j-bolt-uri and the prefix structure follow the
- * option --neo4j-bolt-uri, the environment variable
- * STRUCTURE_NEO4J_BOLT_URI and the property structure.neo4j.bolt.uri.
+ * From the name neo4j-bolt-uri follow the option --neo4j-bolt-uri, the
+ * environment variable STRUCTURE_NEO4J_BOLT_URI and the property
+ * structure.neo4j.bolt.uri.
  *
  * @author Freek Alleman <freek@raaf.tech>
  * @since 2016-09-30
  */
 public final class Configuration {
 
-  // The default name prefix of the settings.
+  // The name prefix of the environment variables and the properties.
   private static final String PREFIX = "structure";
 
   // The jar of Structure (or target/classes in the tests).
@@ -108,12 +108,11 @@ public final class Configuration {
   static Configuration create(Map<String, String> arguments) {
     final Map<String, String> environment = System.getenv();
     final Path home = new Configuration(arguments, environment, System.getProperties(), new Properties()).resolve(
-      PREFIX,
       Setting.HOME
     );
     final List<Path> loadedFiles = new ArrayList<>();
     final Properties files = load(files(isDevEnv(JAR, home), home), loadedFiles);
-    files.remove(property(PREFIX, Setting.HOME));
+    files.remove(property(Setting.HOME));
     return new Configuration(arguments, environment, System.getProperties(), files, loadedFiles);
   }
 
@@ -122,17 +121,7 @@ public final class Configuration {
    * @throws IllegalArgumentException when the value is missing or not valid.
    */
   public static <T> T get(Setting<T> setting) {
-    return get(PREFIX, setting);
-  }
-
-  /**
-   * Get the value of a setting, with a different name prefix for the
-   * environment variable and the property. For example, the tests use
-   * test.structure, which reads TEST_STRUCTURE_NEO4J_BOLT_URI.
-   * @throws IllegalArgumentException when the value is missing or not valid.
-   */
-  public static <T> T get(String prefix, Setting<T> setting) {
-    return current().resolve(prefix, setting);
+    return current().resolve(setting);
   }
 
   /**
@@ -201,7 +190,7 @@ public final class Configuration {
     final Map<String, Object> values = new LinkedHashMap<>();
     for (Setting<?> setting : Setting.ALL) {
       if (setting != Setting.HELP) {
-        final Object value = resolve(PREFIX, setting);
+        final Object value = resolve(setting);
         values.put(setting.name, value instanceof Path ? value.toString() : value);
       }
     }
@@ -231,11 +220,11 @@ public final class Configuration {
     );
   }
 
-  <T> T resolve(String prefix, Setting<T> setting) {
-    final String property = property(prefix, setting);
+  <T> T resolve(Setting<T> setting) {
+    final String property = property(setting);
     final String value = Stream.<Supplier<String>>of(
       () -> arguments.get(setting.name),
-      () -> environment.get(variable(prefix, setting)),
+      () -> environment.get(variable(setting)),
       () -> system.getProperty(property),
       () -> file.getProperty(property),
       setting.fallback == null ? () -> null : setting.fallback
@@ -245,7 +234,7 @@ public final class Configuration {
       .findFirst()
       .orElseThrow(() ->
         new IllegalArgumentException(
-          String.format("%s has no value: set %s or %s", setting.name, variable(prefix, setting), property)
+          String.format("%s has no value: set %s or %s", setting.name, variable(setting), property)
         )
       );
     try {
@@ -258,12 +247,12 @@ public final class Configuration {
     }
   }
 
-  static String property(String prefix, Setting<?> setting) {
-    return (prefix + "." + setting.name).replace('-', '.');
+  static String property(Setting<?> setting) {
+    return (PREFIX + "." + setting.name).replace('-', '.');
   }
 
-  static String variable(String prefix, Setting<?> setting) {
-    return property(prefix, setting).toUpperCase(Locale.ROOT).replace('.', '_');
+  static String variable(Setting<?> setting) {
+    return property(setting).toUpperCase(Locale.ROOT).replace('.', '_');
   }
 
   // The given options by name; a flag has the value true.

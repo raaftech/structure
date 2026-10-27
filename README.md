@@ -15,8 +15,8 @@ builds with JDK 8 using `~/.m2/toolchains.xml`:
 </toolchains>
 ```
 
-Build the jar without the tests, which need a running Neo4j server of their own
-(see Testing). The below will result in `target/structure-*-fat.jar`:
+Build the jar without the tests (see Testing). The below will result in
+`target/structure-*-fat.jar`:
 
 ```bash
 mvn package -DskipTests
@@ -99,30 +99,11 @@ curl -s -u neo4j:structure -H 'Content-Type: application/json' \
 
 ### Testing
 
-`mvn verify` runs the tests, and checks that line coverage is 60% or higher.
-Tests read the Neo4j settings with the prefix `test.structure`, for example,
-`TEST_STRUCTURE_NEO4J_BOLT_URI` or `test.structure.neo4j.bolt.uri`. They use the
-same defaults as a normal run. The tests delete all data on their Neo4j server,
-so, as a safeguard, they refuse to run if `TEST_STRUCTURE_NEO4J_BOLT_URI` is the
-same as the URI of a normal run.
-
-To run the tests next to a server on port 7687, start a second Neo4j from the
-same installation with its own `NEO4J_HOME` and configuration. Change
-`/etc/neo4j` to the `conf` directory of your installation:
-
-```bash
-export NEO4J_HOME=/tmp/structure-neo4j NEO4J_CONF=/tmp/structure-neo4j/conf
-mkdir -p $NEO4J_CONF
-sed -e 's/^#\?server.bolt.listen_address=.*/server.bolt.listen_address=localhost:7688/' \
-    -e 's/^#\?server.http.enabled=.*/server.http.enabled=false/' \
-    /etc/neo4j/neo4j.conf > $NEO4J_CONF/neo4j.conf
-neo4j-admin dbms set-initial-password structure
-neo4j start
-export TEST_STRUCTURE_NEO4J_BOLT_URI=bolt://localhost:7688
-export TEST_STRUCTURE_NEO4J_PASS=structure
-mvn verify
-neo4j stop
-```
+`mvn test` runs the unit tests. `mvn verify` also runs the integration tests,
+which are the subclasses of `GraphTest`, and checks that line coverage is 60% or
+higher. The integration tests need Docker. They start their own Neo4j server
+from the image `neo4j:latest` with Testcontainers, and do not use the server of
+a normal run. Testcontainers removes the container when the tests stop.
 
 ### Configuration
 
