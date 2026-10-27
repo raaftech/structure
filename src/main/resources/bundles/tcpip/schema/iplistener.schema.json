@@ -11,7 +11,9 @@
       "description": "IP listeners should at least have the addr and port fields."
     },
     "port": {
-      "type": "number",
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 65535,
       "description": "IP listeners should at least have the addr and port fields."
     },
     "desc": {

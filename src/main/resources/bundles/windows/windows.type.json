@@ -6,7 +6,7 @@
     "relations": {
       "ISA": {
         "direction": "outgoing",
-        "to": ["4edbaf6a-da58-4644-abac-ae80328ddb49"]
+        "to": ["WindowsLike"]
       }
     }
   },

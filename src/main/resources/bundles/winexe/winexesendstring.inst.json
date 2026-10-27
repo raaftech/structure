@@ -6,19 +6,19 @@
     "relations": {
       "PROVIDED_BY": {
         "direction": "outgoing",
-        "to": ["2f207919-c852-4177-9b8f-e4a368026ca6"]
+        "to": ["Winexe"]
       },
       "APPLIES_TO": {
         "direction": "outgoing",
-        "to": ["2f207919-c852-4177-9b8f-e4a368026ca6"]
+        "to": ["Winexe"]
       },
       "GIVES_CAPABILITY": {
         "direction": "outgoing",
-        "to": ["64ca8ff9-8071-4933-95d0-bbacb97bd4a8"]
+        "to": ["SendString"]
       },
       "INSTANCE_OF": {
         "direction": "outgoing",
-        "to": ["f482204e-7d63-45ca-96c9-10a7cc2783da"]
+        "to": ["Controller"]
       }
     }
   },

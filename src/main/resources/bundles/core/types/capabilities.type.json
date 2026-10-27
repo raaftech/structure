@@ -7,7 +7,7 @@
       "relations": {
         "ISA": {
           "direction": "outgoing",
-          "to": ["b1bc963a-19cc-4518-aecb-a35d028c49e3"]
+          "to": ["Type"]
         }
       }
     },
@@ -27,7 +27,7 @@
       "relations": {
         "ISA": {
           "direction": "outgoing",
-          "to": ["916e04a9-c773-4eaf-9c08-450016426e5a"]
+          "to": ["Capability"]
         }
       }
     },
@@ -47,7 +47,7 @@
       "relations": {
         "ISA": {
           "direction": "outgoing",
-          "to": ["916e04a9-c773-4eaf-9c08-450016426e5a"]
+          "to": ["Capability"]
         }
       }
     },
@@ -67,7 +67,7 @@
       "relations": {
         "ISA": {
           "direction": "outgoing",
-          "to": ["916e04a9-c773-4eaf-9c08-450016426e5a"]
+          "to": ["Capability"]
         }
       }
     },
@@ -87,7 +87,7 @@
       "relations": {
         "ISA": {
           "direction": "outgoing",
-          "to": ["916e04a9-c773-4eaf-9c08-450016426e5a"]
+          "to": ["Capability"]
         }
       }
     },
@@ -107,7 +107,7 @@
       "relations": {
         "ISA": {
           "direction": "outgoing",
-          "to": ["916e04a9-c773-4eaf-9c08-450016426e5a"]
+          "to": ["Capability"]
         }
       }
     },
@@ -127,7 +127,7 @@
       "relations": {
         "ISA": {
           "direction": "outgoing",
-          "to": ["916e04a9-c773-4eaf-9c08-450016426e5a"]
+          "to": ["Capability"]
         }
       }
     },
@@ -147,7 +147,7 @@
       "relations": {
         "ISA": {
           "direction": "outgoing",
-          "to": ["916e04a9-c773-4eaf-9c08-450016426e5a"]
+          "to": ["Capability"]
         }
       }
     },
@@ -167,7 +167,7 @@
       "relations": {
         "ISA": {
           "direction": "outgoing",
-          "to": ["916e04a9-c773-4eaf-9c08-450016426e5a"]
+          "to": ["Capability"]
         }
       }
     },
@@ -187,7 +187,7 @@
       "relations": {
         "ISA": {
           "direction": "outgoing",
-          "to": ["916e04a9-c773-4eaf-9c08-450016426e5a"]
+          "to": ["Capability"]
         }
       }
     },
@@ -207,7 +207,7 @@
       "relations": {
         "ISA": {
           "direction": "outgoing",
-          "to": ["916e04a9-c773-4eaf-9c08-450016426e5a"]
+          "to": ["Capability"]
         }
       }
     },
@@ -227,7 +227,7 @@
       "relations": {
         "ISA": {
           "direction": "outgoing",
-          "to": ["916e04a9-c773-4eaf-9c08-450016426e5a"]
+          "to": ["Capability"]
         }
       }
     },
@@ -247,7 +247,7 @@
       "relations": {
         "ISA": {
           "direction": "outgoing",
-          "to": ["916e04a9-c773-4eaf-9c08-450016426e5a"]
+          "to": ["Capability"]
         }
       }
     },
@@ -267,7 +267,7 @@
       "relations": {
         "ISA": {
           "direction": "outgoing",
-          "to": ["916e04a9-c773-4eaf-9c08-450016426e5a"]
+          "to": ["Capability"]
         }
       }
     },
@@ -287,7 +287,7 @@
       "relations": {
         "ISA": {
           "direction": "outgoing",
-          "to": ["916e04a9-c773-4eaf-9c08-450016426e5a"]
+          "to": ["Capability"]
         }
       }
     },
@@ -307,7 +307,7 @@
       "relations": {
         "ISA": {
           "direction": "outgoing",
-          "to": ["916e04a9-c773-4eaf-9c08-450016426e5a"]
+          "to": ["Capability"]
         }
       }
     },
@@ -327,7 +327,7 @@
       "relations": {
         "ISA": {
           "direction": "outgoing",
-          "to": ["916e04a9-c773-4eaf-9c08-450016426e5a"]
+          "to": ["Capability"]
         }
       }
     },
@@ -347,7 +347,7 @@
       "relations": {
         "ISA": {
           "direction": "outgoing",
-          "to": ["916e04a9-c773-4eaf-9c08-450016426e5a"]
+          "to": ["Capability"]
         }
       }
     },
@@ -367,7 +367,7 @@
       "relations": {
         "ISA": {
           "direction": "outgoing",
-          "to": ["916e04a9-c773-4eaf-9c08-450016426e5a"]
+          "to": ["Capability"]
         }
       }
     },
@@ -387,7 +387,7 @@
       "relations": {
         "ISA": {
           "direction": "outgoing",
-          "to": ["916e04a9-c773-4eaf-9c08-450016426e5a"]
+          "to": ["Capability"]
         }
       }
     },

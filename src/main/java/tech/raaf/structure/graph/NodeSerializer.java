@@ -32,10 +32,11 @@ public class NodeSerializer extends StdSerializer<Node> {
 
   @Override
   public void serialize(Node value, JsonGenerator gen, SerializerProvider provider) throws IOException {
-    // Sort by peer uuid, so that the output is the same each time
+    // Sort by peer identifier to keep the output order stable.
     final String outgoing =
       "MATCH (a:Node {uuid: $uuid})-[r]->(b) " +
-      "RETURN type(r) AS rel, b.uuid AS peer, r.forRelationship AS forRelationship, " +
+      "RETURN type(r) AS rel, CASE WHEN b:Type THEN b.name ELSE b.uuid END AS peer, " +
+      "r.forRelationship AS forRelationship, " +
       "r.cardinality AS cardinality ORDER BY peer";
     final Map<String, List<Map<String, Object>>> relMap = new HashMap<>();
     for (Map<String, Object> row : Graph.query(outgoing, ImmutableMap.of("uuid", value.getUuid()))) {
@@ -90,22 +91,22 @@ public class NodeSerializer extends StdSerializer<Node> {
           // write the direction
           gen.writeStringField("direction", direction);
 
-          // write the uuids array
+          // Write the target identifiers.
           gen.writeFieldName("to");
           gen.writeStartArray();
           entry
             .getValue()
             .stream()
             .map(row -> (String) row.get("peer"))
-            .forEach(uuid -> {
+            .forEach(identifier -> {
               try {
-                gen.writeString(uuid);
+                gen.writeString(identifier);
               } catch (IOException e) {
                 log.error("Caught IOException: " + e.getMessage());
                 throw new RuntimeException("Error while writing relationship entry during entity serialization.");
               }
             });
-          // end the uuids array
+          // End the target array.
           gen.writeEndArray();
           // end the relationship object
           gen.writeEndObject();

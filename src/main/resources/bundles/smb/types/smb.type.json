@@ -7,7 +7,7 @@
       "relations": {
         "ISA": {
           "direction": "outgoing",
-          "to": ["db0c3c65-52fd-4dec-907c-6c8a669e88f3"]
+          "to": ["Protocol"]
         }
       }
     },
@@ -27,7 +27,7 @@
       "relations": {
         "ISA": {
           "direction": "outgoing",
-          "to": ["0771de77-c3d8-4db1-92fa-7ac96205f9bb"]
+          "to": ["SMB"]
         }
       }
     },
@@ -47,7 +47,7 @@
       "relations": {
         "ISA": {
           "direction": "outgoing",
-          "to": ["0771de77-c3d8-4db1-92fa-7ac96205f9bb"]
+          "to": ["SMB"]
         }
       }
     },
@@ -67,7 +67,7 @@
       "relations": {
         "ISA": {
           "direction": "outgoing",
-          "to": ["0771de77-c3d8-4db1-92fa-7ac96205f9bb"]
+          "to": ["SMB"]
         }
       }
     },
@@ -87,7 +87,7 @@
       "relations": {
         "ISA": {
           "direction": "outgoing",
-          "to": ["0771de77-c3d8-4db1-92fa-7ac96205f9bb"]
+          "to": ["SMB"]
         }
       }
     },

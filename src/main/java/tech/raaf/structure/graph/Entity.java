@@ -74,11 +74,8 @@ public class Entity {
    * of the nodes that should be related by this relationship. */
   private Set<Triple<String, String, Set<String>>> relations;
 
-  /* Constraints are temporarily stored in this field. The field is a map from a string
-   * to a list. The string of that map is the relation name that is constrainted. The list
-   * contains tuples of Cardinality + UUID.
-   */
-  private Map<String, List<Pair<Constraint.Cardinality, UUID>>> constraints;
+  // Store constraint cardinalities and target UUIDs or type names.
+  private Map<String, List<Pair<Constraint.Cardinality, String>>> constraints;
 
   /*
     The next two sets are used to see if a vertice incident to an edge can be
@@ -254,7 +251,7 @@ public class Entity {
     return relations;
   }
 
-  public Optional<Map<String, List<Pair<Constraint.Cardinality, UUID>>>> getConstraints() {
+  public Optional<Map<String, List<Pair<Constraint.Cardinality, String>>>> getConstraints() {
     return constraints == null ? Optional.empty() : Optional.of(constraints);
   }
 
@@ -346,12 +343,12 @@ public class Entity {
     this.identity = identity;
   }
 
-  public void addConstraint(String relName, Constraint.Cardinality cardinality, UUID to) {
+  public void addConstraint(String relName, Constraint.Cardinality cardinality, String to) {
     if (constraints == null) {
       constraints = new HashMap<>();
     }
 
-    final List<Pair<Constraint.Cardinality, UUID>> constraintList;
+    final List<Pair<Constraint.Cardinality, String>> constraintList;
     if (constraints.containsKey(relName)) {
       constraintList = constraints.get(relName);
     } else {
@@ -741,19 +738,22 @@ public class Entity {
     if (!isInstance()) {
       throw new IllegalArgumentException("Cannot get the type of a type entity.");
     }
-    Optional<String> instanceOfUuid = getRelations()
+    Optional<String> instanceOfIdentifier = getRelations()
       .stream()
       .filter(triple -> "INSTANCE_OF".equals(triple.getLeft()))
       .map(Triple::getRight)
       .flatMap(Set::stream)
       .findFirst();
-    if (!instanceOfUuid.isPresent()) {
+    if (!instanceOfIdentifier.isPresent()) {
       throw new IllegalStateException("Instance " + getUuid() + " has no INSTANCE_OF relationship");
     }
 
-    Type instanceOf = typeRepository.findByUuid(instanceOfUuid.get());
+    String identifier = instanceOfIdentifier.get();
+    Type instanceOf = GenericActor.isUuid(identifier)
+      ? typeRepository.findByUuid(identifier)
+      : typeRepository.findOneByName(identifier);
     if (instanceOf == null) {
-      log.error("No type with UUID " + instanceOfUuid.get() + " exists in the database");
+      log.error("No type with identifier " + identifier + " exists in the database");
       return Optional.empty();
     } else {
       return Optional.of(instanceOf);

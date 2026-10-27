@@ -96,7 +96,8 @@ public class BundleLoader {
 
     // The statement also works when the constraint points to the type itself
     final String constraint =
-      "MATCH (a:Type {uuid: $from}), (b:Type {uuid: $to}) " +
+      "MATCH (a:Type {uuid: $from}), (b:Type) " +
+      "WHERE b.uuid = $to OR b.name = $to " +
       "MERGE (a)-[c:CONSTRAINTS {forRelationship: $rel}]->(b) " +
       "SET c.cardinality = $card " +
       "RETURN count(c) AS count";
@@ -105,7 +106,7 @@ public class BundleLoader {
       .get()
       .forEach((relName, constraints) ->
         constraints.forEach(pair -> {
-          final String target = pair.getRight().toString();
+          final String target = pair.getRight();
           log.debug(
             "Adding constraint for " + typeEntity.getUuid() + " to " + target + ": " + relName + ", " + pair.getLeft()
           );

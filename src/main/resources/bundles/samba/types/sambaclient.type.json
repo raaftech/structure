@@ -6,11 +6,11 @@
     "relations": {
       "ISA": {
         "direction": "outgoing",
-        "to": ["7d1c7242-2403-4578-b6c4-789573ea3c45"]
+        "to": ["SmbClient"]
       },
       "IMPLEMENTS": {
         "direction": "outgoing",
-        "to": ["0771de77-c3d8-4db1-92fa-7ac96205f9bb"]
+        "to": ["SMB10", "SMB20", "SMB21", "SMB30"]
       }
     }
   },

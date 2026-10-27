@@ -39,20 +39,6 @@ public class TypeRepository extends GenericRepository<Type> {
     );
   }
 
-  // This query finds common protocols between two (groups of) Instances.
-  // This can be used to find ways to setup a connection between two computers.
-  public Set<Type> getCommonProtocols(String commander, String subject) {
-    return set(
-      "MATCH (commander:Node {uuid: $commanderUuid})-[*0..]->(:Instance)-[:INSTANCE_OF]->(client)" +
-        "-[:ISA*0..]->()-[:IMPLEMENTS]->(n)<-[:IMPLEMENTS]-()<-[:ISA*0..]-(server)" +
-        "<-[:INSTANCE_OF]-(:Instance)<-[*0..]-(subject:Node {uuid: $subjectUuid}) " +
-        "MATCH (client)-[:ISA*0..]->({name: 'Client'}) " +
-        "MATCH (server)-[:ISA*0..]->({name: 'Server'}) " +
-        "RETURN DISTINCT n",
-      ImmutableMap.of("commanderUuid", commander, "subjectUuid", subject)
-    );
-  }
-
   // Get the hierarchical path of a type: the names from the root type down, joined with dots
   public String getHierarchyPath(String uuid) {
     return value(

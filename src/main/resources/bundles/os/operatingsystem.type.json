@@ -6,18 +6,18 @@
     "relations": {
       "ISA": {
         "direction": "outgoing",
-        "to": ["8db2b492-9a4a-41fe-97a5-bc625da042ea"]
+        "to": ["Software"]
       }
     },
     "constraints": {
       "HAS": [
         {
           "cardinality": "OPTIONAL_TO_MANY",
-          "to": "3f4a43f7-b558-4bf0-ba7e-66b99cffaf16"
+          "to": "Configuration"
         },
         {
           "cardinality": "OPTIONAL_TO_MANY",
-          "to": "8db2b492-9a4a-41fe-97a5-bc625da042ea"
+          "to": "Software"
         }
       ]
     }

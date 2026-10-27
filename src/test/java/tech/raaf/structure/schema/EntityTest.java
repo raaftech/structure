@@ -1,13 +1,16 @@
 package tech.raaf.structure.schema;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableSet;
 import java.net.URI;
 import java.util.Set;
 import org.junit.Test;
+import tech.raaf.structure.graph.Entity;
 import tech.raaf.structure.helper.JsonHelper;
 
 public class EntityTest extends SchemaTest {
@@ -38,6 +41,39 @@ public class EntityTest extends SchemaTest {
     ObjectNode entity = instance();
     relation(entity).putArray("to").add("a79ce509-a021-4177-ae61-73abd01fb479").add("Component");
     assertTrue(valid(entity));
+  }
+
+  @Test
+  public void acceptsUuidAndTypeNameConstraintTargets() throws Exception {
+    for (String target : new String[] { "Component", "a79ce509-a021-4177-ae61-73abd01fb479" }) {
+      ObjectNode entity = rootType();
+      ((ObjectNode) entity.path("meta"))
+        .putObject("constraints")
+        .putArray("HAS")
+        .addObject()
+        .put("cardinality", "OPTIONAL_TO_MANY")
+        .put("to", target);
+      assertTrue(target, valid(entity));
+      ObjectNode schema = (ObjectNode) entity.path("file").path("dataSchema");
+      schema.remove("path");
+      schema.put("content", "{}");
+      Entity deserialized = new ObjectMapper().treeToValue(entity, Entity.class);
+      assertEquals(target, deserialized.getConstraints().get().get("HAS").get(0).getRight());
+    }
+  }
+
+  @Test
+  public void rejectsInvalidConstraintTargets() {
+    for (String target : new String[] { "", "component", "type.component", "invalid type name" }) {
+      ObjectNode entity = rootType();
+      ((ObjectNode) entity.path("meta"))
+        .putObject("constraints")
+        .putArray("HAS")
+        .addObject()
+        .put("cardinality", "OPTIONAL_TO_MANY")
+        .put("to", target);
+      assertFalse(target, valid(entity));
+    }
   }
 
   @Test

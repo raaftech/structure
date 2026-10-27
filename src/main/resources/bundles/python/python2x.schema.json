@@ -1,0 +1,23 @@
+{
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/schema#",
+  "type": "object",
+  "properties": {
+    "name": {
+      "$ref": "type.schema.json#/properties/name"
+    },
+    "ver": {
+      "$ref": "python.schema.json#/properties/ver"
+    },
+    "shortName": {
+      "$ref": "python.schema.json#/properties/shortName"
+    },
+    "desc": {
+      "$ref": "type.schema.json#/properties/desc"
+    },
+    "longName": {
+      "$ref": "python.schema.json#/properties/longName"
+    }
+  },
+  "required": ["name", "desc", "ver", "shortName", "longName"]
+}

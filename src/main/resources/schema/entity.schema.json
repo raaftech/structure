@@ -191,7 +191,7 @@
       "additionalProperties": false,
       "properties": {
         "to": {
-          "$ref": "common.schema.json#/definitions/uuid"
+          "$ref": "common.schema.json#/definitions/uuidOrName"
         },
         "cardinality": {
           "$ref": "#/definitions/cardinality"

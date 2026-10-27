@@ -7,7 +7,7 @@
       "relations": {
         "ISA": {
           "direction": "outgoing",
-          "to": ["d047f415-734c-4bd3-92b9-d68d5521ce69"]
+          "to": ["Interpreter"]
         }
       }
     },
@@ -27,7 +27,7 @@
       "relations": {
         "ISA": {
           "direction": "outgoing",
-          "to": ["4d0d4e1a-dc1a-462e-8388-c3f63cf4565a"]
+          "to": ["Python"]
         }
       }
     },
@@ -35,7 +35,7 @@
       "dataSchema": {
         "encoding": "text",
         "format": "json",
-        "path": "python.schema.json"
+        "path": "python2x.schema.json"
       }
     }
   }

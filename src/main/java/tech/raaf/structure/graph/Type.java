@@ -319,10 +319,6 @@ public class Type extends Node {
     return Pair.of(errors.isEmpty(), ImmutableSet.copyOf(errors));
   }
 
-  public Set<Type> findCommonProtocols(Instance subject) {
-    return typeRepository.getCommonProtocols(this.getUuid(), subject.getUuid());
-  }
-
   public int getGlyphId() {
     return glyphId;
   }
@@ -412,28 +408,6 @@ public class Type extends Node {
     return persisted ? related("<-[:PROVIDED_BY]-(b:Instrument)") : new HashSet<>();
   }
 
-  public Type addImplementedProtocol(Type protocol) {
-    if (protocol == null) {
-      log.error("Provided argument to addImplementedProtocol cannot be null.");
-      return this;
-    }
-    if (!protocol.isOfType("Protocol")) {
-      log.error("Can't add non-protocol type " + protocol.getName() + " as implemented protocol.");
-      return this;
-    }
-    if (!isOfType("Software")) {
-      log.error("Can't add an implemented protocol to a non-software type.");
-      return this;
-    }
-
-    Graph.query(
-      "MATCH (a:Type {uuid: $uuid}), (b:Type {uuid: $protocol}) MERGE (a)-[:IMPLEMENTS]->(b)",
-      ImmutableMap.of("uuid", getUuid(), "protocol", protocol.getUuid())
-    );
-
-    return this;
-  }
-
   /**
    * Get the first identity set of a linked list of types.
    * @return An optional of the first identity set found, or an empty optional.
@@ -450,10 +424,6 @@ public class Type extends Node {
     } else {
       return getFirstInheritedIndentity(type.getIsa());
     }
-  }
-
-  public boolean implementsProtocol(Type protocol) {
-    return protocol != null && related("-[:IMPLEMENTS]->(b:Type)").contains(protocol);
   }
 
   public boolean isOfType(String type) {

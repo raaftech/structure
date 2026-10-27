@@ -38,11 +38,6 @@ public class TypeRepositoryTest extends TypeSchemaTest {
   }
 
   @Test
-  public void getCommonProtocols() throws Exception {
-    // todo: create test
-  }
-
-  @Test
   public void getHierarchyPath() throws Exception {
     Type linux = typeRepository.findOneByName("Linux");
     assertEquals(

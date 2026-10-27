@@ -138,7 +138,7 @@ public class EntityDeserializer extends StdDeserializer<Entity> {
             entity.addConstraint(
               relName,
               Constraint.Cardinality.valueOf(constraintData.get("cardinality").asText()),
-              UUID.fromString(constraintData.get("to").asText())
+              constraintData.get("to").asText()
             );
           }
         }

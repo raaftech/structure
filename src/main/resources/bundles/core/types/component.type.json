@@ -13,19 +13,19 @@
       "HAS": [
         {
           "cardinality": "OPTIONAL_TO_MANY",
-          "to": "a79ce509-a021-4177-ae61-73abd01fb479"
+          "to": "Component"
         }
       ],
       "RESULTS": [
         {
           "cardinality": "OPTIONAL_TO_ONE",
-          "to": "f3498c02-58c6-486b-87c6-9d54607fdb12"
+          "to": "Result"
         }
       ],
       "MEMBER_OF": [
         {
           "cardinality": "OPTIONAL_TO_MANY",
-          "to": "ee92c308-80f4-40b2-af3a-77d26cd99517"
+          "to": "ComponentGroup"
         }
       ]
     }

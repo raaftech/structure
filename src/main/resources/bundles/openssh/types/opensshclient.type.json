@@ -6,7 +6,11 @@
     "relations": {
       "ISA": {
         "direction": "outgoing",
-        "to": ["dce98afb-1a42-48af-8b4b-ab9d08b3b5dc"]
+        "to": ["SshClient"]
+      },
+      "IMPLEMENTS": {
+        "direction": "outgoing",
+        "to": ["SSH10", "SSH20"]
       }
     }
   },

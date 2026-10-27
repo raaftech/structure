@@ -6,15 +6,15 @@
     "relations": {
       "INSTANCE_OF": {
         "direction": "outgoing",
-        "to": ["c970f6d3-4898-4596-bfac-9d6d1f6b2541"]
+        "to": ["Profile"]
       },
       "APPLIES_TO": {
         "direction": "outgoing",
-        "to": ["a5613527-2f64-4481-83f2-80b0cb427e28"]
+        "to": ["Linux"]
       },
       "PROVIDED_BY": {
         "direction": "outgoing",
-        "to": ["a5613527-2f64-4481-83f2-80b0cb427e28"]
+        "to": ["Linux"]
       }
     }
   },

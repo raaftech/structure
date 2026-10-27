@@ -7,7 +7,7 @@
       "relations": {
         "ISA": {
           "direction": "outgoing",
-          "to": ["b1bc963a-19cc-4518-aecb-a35d028c49e3"]
+          "to": ["Type"]
         }
       },
       "identity": "name"
@@ -16,7 +16,7 @@
       "dataSchema": {
         "encoding": "text",
         "format": "json",
-        "path": "../schema/grouping.schema.json"
+        "path": "../schema/group.schema.json"
       }
     }
   },
@@ -28,14 +28,14 @@
       "relations": {
         "ISA": {
           "direction": "outgoing",
-          "to": ["5f1eb7c5-ec5e-4563-be6a-fc50774fc374"]
+          "to": ["Group"]
         }
       },
       "constraints": {
         "MEMBER_OF": [
           {
             "cardinality": "OPTIONAL_TO_MANY",
-            "to": "ee92c308-80f4-40b2-af3a-77d26cd99517"
+            "to": "ComponentGroup"
           }
         ]
       }

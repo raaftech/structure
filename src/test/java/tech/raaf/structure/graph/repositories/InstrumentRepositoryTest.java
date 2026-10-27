@@ -199,6 +199,21 @@ public class InstrumentRepositoryTest extends TypeSchemaTest {
   }
 
   @Test
+  public void getMatchingReceiversUseInheritedSmbProtocol() {
+    Instrument sendString = instrumentRepository.findOneByName("WinexeSendString");
+    assertNotNull(sendString);
+    Marker receiveString = instrumentRepository.getMatchingReceiveString(sendString.getUuid());
+    assertNotNull(receiveString);
+    assertEquals("SmbReceiveString", receiveString.getName());
+
+    Instrument sendFile = instrumentRepository.findOneByName("SmbClientSendFile");
+    assertNotNull(sendFile);
+    Marker receiveFile = instrumentRepository.getMatchingReceiveFile(sendFile.getUuid());
+    assertNotNull(receiveFile);
+    assertEquals("SmbReceiveFile", receiveFile.getName());
+  }
+
+  @Test
   public void getInvokableInterpreter() throws Exception {
     Instrument invokable = instrumentRepository.getInvokableInterpreter(host1.getUuid());
     assertNull(invokable);

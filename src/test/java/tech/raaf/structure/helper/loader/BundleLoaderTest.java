@@ -1,0 +1,64 @@
+package tech.raaf.structure.helper.loader;
+
+import static org.junit.Assert.assertEquals;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.collect.ImmutableSet;
+import java.nio.file.Path;
+import java.util.Set;
+import java.util.stream.Collectors;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
+import tech.raaf.structure.GraphTest;
+import tech.raaf.structure.graph.Graph;
+import tech.raaf.structure.helper.JsonHelper;
+
+public class BundleLoaderTest extends GraphTest {
+
+  @Rule
+  public TemporaryFolder temporaryFolder = new TemporaryFolder();
+
+  @Test
+  public void resolvesConstraintTargetsAfterAllTypesAreStored() throws Exception {
+    ObjectMapper mapper = new ObjectMapper();
+    ObjectNode root = (ObjectNode) JsonHelper.jsonFromResource("bundles/simple/root.type.json");
+    ObjectNode component = (ObjectNode) JsonHelper.jsonFromResource("bundles/simple/component.type.json");
+    constraint(root, "FORWARD", "Component");
+    constraint(component, "SELF", "Component");
+    constraint(component, "ROOT", root.path("meta").path("uuid").asText());
+    Path bundle = temporaryFolder.newFolder("bundle").toPath();
+    for (ObjectNode entity : new ObjectNode[] { root, component }) {
+      ((ObjectNode) entity.path("file").path("dataSchema")).remove("path");
+      mapper.writeValue(bundle.resolve(entity.path("name").asText() + ".type.json").toFile(), entity);
+    }
+
+    new BundleLoader(ImmutableSet.of(temporaryFolder.getRoot().toPath())).loadTypes();
+
+    Set<String> actual = Graph.query(
+      "MATCH (a:Type)-[c:CONSTRAINTS]->(b:Type) " +
+        "RETURN a.name + '.' + c.forRelationship + '.' + c.cardinality + '.' + b.name AS target"
+    )
+      .stream()
+      .map(row -> (String) row.get("target"))
+      .collect(Collectors.toSet());
+    assertEquals(
+      ImmutableSet.of(
+        "Type.FORWARD.OPTIONAL_TO_MANY.Component",
+        "Component.SELF.OPTIONAL_TO_MANY.Component",
+        "Component.ROOT.OPTIONAL_TO_MANY.Type"
+      ),
+      actual
+    );
+  }
+
+  private void constraint(ObjectNode entity, String relation, String target) {
+    ((ObjectNode) entity.path("meta"))
+      .with("constraints")
+      .putArray(relation)
+      .addObject()
+      .put("cardinality", "OPTIONAL_TO_MANY")
+      .put("to", target);
+  }
+}

@@ -6,19 +6,19 @@
     "relations": {
       "PROVIDED_BY": {
         "direction": "outgoing",
-        "to": ["b6f5296b-28b9-4825-950d-402b7e5d968c"]
+        "to": ["Python2x"]
       },
       "APPLIES_TO": {
         "direction": "outgoing",
-        "to": ["a79ce509-a021-4177-ae61-73abd01fb479"]
+        "to": ["Component"]
       },
       "GIVES_CAPABILITY": {
         "direction": "outgoing",
-        "to": ["3c170a27-05ee-4999-97d4-e7cc9135cb96"]
+        "to": ["Detect"]
       },
       "INSTANCE_OF": {
         "direction": "outgoing",
-        "to": ["f482204e-7d63-45ca-96c9-10a7cc2783da"]
+        "to": ["Controller"]
       }
     }
   },

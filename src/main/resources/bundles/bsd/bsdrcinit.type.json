@@ -6,7 +6,7 @@
     "relations": {
       "ISA": {
         "direction": "outgoing",
-        "to": ["c3008eec-b454-4ef6-bf7e-0bd92c13d3c3"]
+        "to": ["ServiceManager"]
       }
     }
   },

@@ -39,7 +39,7 @@ public class NodeSerializerTest extends TypeSchemaTest {
     assertEquals("outgoing", rel.getMiddle());
     Set<String> peers = rel.getRight();
     assertEquals(1, peers.size());
-    assertEquals("6a1eea8b-1462-4439-8c60-12edbee6c397", peers.iterator().next());
+    assertEquals("UnixLike", peers.iterator().next());
 
     // test files
     assertNotNull(entity.getFiles());
@@ -48,6 +48,16 @@ public class NodeSerializerTest extends TypeSchemaTest {
     assertEquals("text", dataSchema.get("encoding").asText());
     assertEquals("json", dataSchema.get("format").asText());
     assertEquals("../schemas/linux.schema.json", dataSchema.get("path").asText());
+  }
+
+  @Test
+  public void serializesTypeNamesInConstraintsAndInstanceRelations() {
+    JsonNode controller = mapper.valueToTree(Context.getTypeRepository().findOneByName("Controller"));
+    assertEquals("Result", controller.at("/meta/constraints/PRODUCED/0/to").asText());
+
+    JsonNode invoke = mapper.valueToTree(Context.getInstrumentRepository().findOneByName("BashInvoke"));
+    assertEquals("Controller", invoke.at("/meta/relations/INSTANCE_OF/to/0").asText());
+    assertEquals("Bash", invoke.at("/meta/relations/PROVIDED_BY/to/0").asText());
   }
 
   @Test
