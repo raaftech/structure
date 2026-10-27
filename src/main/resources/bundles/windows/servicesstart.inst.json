@@ -29,7 +29,7 @@
       "origin": {
         "value": {
           "from": "origin",
-          "type": "type.component.software.server"
+          "type": "type.component.software.service"
         },
         "isOptional": false,
         "canBeUserSupplied": false
