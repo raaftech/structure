@@ -1,11 +1,12 @@
 angular.module("structureApp").factory("instanceSrvs", function (vertxEventBus, vertxEventBusService) {
   return {
-    getNInstances: function (n) {
+    getNInstances: function (n, labels) {
       return vertxEventBusService
         .send("tech.raaf.structure.bus.repository.instances", {
           msgh: "nLastCreated",
           args: {
             amount: n,
+            labels: labels || [],
           },
         })
         .then(function (response) {

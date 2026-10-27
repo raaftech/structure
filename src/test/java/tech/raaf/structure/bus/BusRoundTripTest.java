@@ -1,6 +1,7 @@
 package tech.raaf.structure.bus;
 
 import static io.vertx.core.json.Json.mapper;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -10,7 +11,9 @@ import io.vertx.core.json.JsonObject;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -23,6 +26,7 @@ import tech.raaf.structure.bus.manager.StructureManager;
 import tech.raaf.structure.bus.repository.Instances;
 import tech.raaf.structure.bus.repository.Types;
 import tech.raaf.structure.graph.Entity;
+import tech.raaf.structure.graph.Result;
 import tech.raaf.structure.helper.JsonHelper;
 import tech.raaf.structure.schema.TypeSchemaTest;
 
@@ -125,6 +129,9 @@ public class BusRoundTripTest extends TypeSchemaTest {
       // The error paths of the msgh dispatch, a null msgh is absent
       { ENTITIES, "noSuchHandler", "{}", "No handler for called method." },
       { TYPES, "findOneByName", "{}", "Arguments didn't validate against schema." },
+      { INSTANCES, "nLastCreated", "{'amount': 5, 'labels': 'Group'}", "Arguments didn't validate against schema." },
+      { INSTANCES, "nLastCreated", "{'amount': 5, 'labels': [1]}", "Arguments didn't validate against schema." },
+      { INSTANCES, "nLastCreated", "{'amount': 5, 'labels': null}", "Arguments didn't validate against schema." },
       { ENTITIES, null, "{}", "Request didn't validate against schema." },
       { ENTITIES, "no.such.handler", "{}", "Request didn't validate against schema." },
       { ENTITIES, "read", "[]", "Request didn't validate against schema." },
@@ -145,6 +152,42 @@ public class BusRoundTripTest extends TypeSchemaTest {
       }
     }
     assertTrue(String.join("\n", failures), failures.isEmpty());
+  }
+
+  @Test
+  public void nLastCreatedReturnsComponentsAndGroups() throws Exception {
+    JsonNode data = send(INSTANCES, "nLastCreated", "{\"amount\": 5, \"labels\": [\"Component\", \"Group\"]}")
+      .path("result")
+      .path("data");
+    Set<String> uuids = new HashSet<>();
+    data.forEach(instance -> uuids.add(instance.path("uuid").asText()));
+    assertEquals(new HashSet<>(Arrays.asList(host, group)), uuids);
+  }
+
+  @Test
+  public void nLastCreatedSupportsOptionalLabels() throws Exception {
+    Result result = new Entity.ResultBuilder().process("test").taskId("latest-instances-test").buildAndStore();
+    JsonNode all = send(INSTANCES, "nLastCreated", "{\"amount\": 1000}").path("result").path("data");
+    assertEquals(Context.getInstanceRepository().count(), all.size());
+    assertEquals(
+      all,
+      send(INSTANCES, "nLastCreated", "{\"amount\": 1000, \"labels\": []}").path("result").path("data")
+    );
+    JsonNode latest = send(INSTANCES, "nLastCreated", "{\"amount\": 1}").path("result").path("data");
+    assertEquals(1, latest.size());
+    assertEquals(result.getUuid(), latest.get(0).path("uuid").asText());
+    JsonNode groups = send(INSTANCES, "nLastCreated", "{\"amount\": 1, \"labels\": [\"Group\"]}")
+      .path("result")
+      .path("data");
+    assertEquals(1, groups.size());
+    assertEquals(group, groups.get(0).path("uuid").asText());
+    assertEquals(
+      0,
+      send(INSTANCES, "nLastCreated", "{\"amount\": 5, \"labels\": [\"NoSuchLabel\"]}")
+        .path("result")
+        .path("data")
+        .size()
+    );
   }
 
   private static JsonNode send(String address, String msgh, String args) throws Exception {

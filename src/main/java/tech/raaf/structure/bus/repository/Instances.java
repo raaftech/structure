@@ -31,9 +31,8 @@ public class Instances extends Repository<Instance> {
   }
 
   /**
-   * Query the last N Instances, filtering out Instances that are instruments.
-   * @return A data array containing the last N created Instances. If we don't have N nodes, then return
-   * as many as we have.
+   * Get the latest instances, with an optional class label filter.
+   * @return A data array with at most the requested number of nodes.
    */
   @SchemaPath("resource:/schema/repository/instances/nLastCreated.schema.json")
   @SuppressWarnings("unused")
@@ -44,9 +43,10 @@ public class Instances extends Repository<Instance> {
         ObjectNode result = mapper.createObjectNode();
         ObjectNode args = (ObjectNode) request.get("args");
         int n = args.get("amount").asInt();
+        String[] labels = args.has("labels") ? mapper.convertValue(args.get("labels"), String[].class) : new String[0];
 
         ArrayNode data = result.putArray("data");
-        repository.getNLastCreated(n).stream().map(Instance::toJson).forEach(data::add);
+        repository.nLastCreated(n, labels).stream().map(Instance::toJson).forEach(data::add);
 
         return response(request, result);
       }

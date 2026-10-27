@@ -1,6 +1,6 @@
 angular.module("structureApp").controller("instanceCtrl", function ($scope, instanceSrvs) {
   $scope.getNInstances = function (n) {
-    instanceSrvs.getNInstances(n).then(function (response) {
+    instanceSrvs.getNInstances(n, ["Component", "Group"]).then(function (response) {
       $scope.instances = response;
     });
   };

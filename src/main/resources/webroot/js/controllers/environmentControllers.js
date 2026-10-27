@@ -101,7 +101,7 @@ angular.module("structureApp").controller("environmentCtrl", function ($scope, $
   $scope.createIsaSelectBox("a79ce509-a021-4177-ae61-73abd01fb479");
 
   $scope.getNInstances = function (n) {
-    instanceSrvs.getNInstances(n).then(function (response) {
+    instanceSrvs.getNInstances(n, ["Component", "Group"]).then(function (response) {
       $scope.instances = response;
     });
   };

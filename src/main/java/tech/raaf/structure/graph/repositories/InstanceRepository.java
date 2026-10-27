@@ -1,6 +1,7 @@
 package tech.raaf.structure.graph.repositories;
 
 import com.google.common.collect.ImmutableMap;
+import java.util.Arrays;
 import java.util.List;
 import tech.raaf.structure.graph.Component;
 import tech.raaf.structure.graph.Graph;
@@ -37,14 +38,14 @@ public class InstanceRepository extends GenericRepository<Instance> {
     );
   }
 
-  // In creation sequence; nodes from the same millisecond sort by uuid
-  public List<Instance> getNLastCreated(int amount) {
+  // Match any supplied label, or all instances if no labels are supplied
+  public List<Instance> nLastCreated(int amount, String... labels) {
     return NodeMapper.mapAll(
       Graph.query(
         "MATCH (n:Instance) " +
-          "WHERE NOT EXISTS { (n)-[:INSTANCE_OF]->({name: 'Handler'}) } " +
+          "WHERE size($labels) = 0 OR any(label IN $labels WHERE label IN labels(n)) " +
           "RETURN n ORDER BY n.created DESC, n.uuid DESC LIMIT $amount",
-        ImmutableMap.of("amount", amount)
+        ImmutableMap.of("amount", amount, "labels", Arrays.asList(labels))
       ),
       "n"
     );

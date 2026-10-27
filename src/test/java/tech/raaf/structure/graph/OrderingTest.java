@@ -74,11 +74,17 @@ public class OrderingTest extends TypeSchemaTest {
       .map(c -> c[1])
       .collect(Collectors.toList());
     List<String> last = Context.getInstanceRepository()
-      .getNLastCreated(20)
+      .nLastCreated(20)
       .stream()
       .map(Instance::getUuid)
       .collect(Collectors.toList());
     assertEquals(expected, last);
+    List<String> filtered = Context.getInstanceRepository()
+      .nLastCreated(20, "Group")
+      .stream()
+      .map(Instance::getUuid)
+      .collect(Collectors.toList());
+    assertEquals(expected, filtered);
   }
 
   @Test

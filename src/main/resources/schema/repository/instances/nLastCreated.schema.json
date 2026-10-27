@@ -7,6 +7,13 @@
     "amount": {
       "type": "number",
       "minimum": 1
+    },
+    "labels": {
+      "description": "Match any listed class label. An empty list matches all instances.",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
     }
   },
   "required": ["amount"]

@@ -3,12 +3,20 @@ package tech.raaf.structure.graph.repositories;
 import static io.vertx.core.json.Json.mapper;
 import static org.junit.Assert.*;
 
+import com.google.common.collect.ImmutableSet;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import tech.raaf.structure.base.Context;
 import tech.raaf.structure.graph.Component;
+import tech.raaf.structure.graph.Entity;
 import tech.raaf.structure.graph.Group;
+import tech.raaf.structure.graph.Instance;
+import tech.raaf.structure.graph.Instrument;
+import tech.raaf.structure.graph.Profile;
+import tech.raaf.structure.graph.Result;
 import tech.raaf.structure.graph.Type;
 import tech.raaf.structure.schema.TypeSchemaTest;
 
@@ -93,8 +101,36 @@ public class InstanceRepositoryTest extends TypeSchemaTest {
     Assert.assertEquals(group.getUuid(), instanceRepository.getStartOfComponentGroup(child01.getUuid()).getUuid());
   }
 
-  // Disabled this test. We don't test against a static bundle anymore so this test is hopeless
-  public void getNLastCreated() throws Exception {
-    assertEquals(4, instanceRepository.getNLastCreated(10).size());
+  @Test
+  public void nLastCreated() throws Exception {
+    Result result = new Entity.ResultBuilder().process("test").taskId("latest-instances-test").buildAndStore();
+    List<Instance> instances = instanceRepository.nLastCreated(Integer.MAX_VALUE);
+    assertEquals(instanceRepository.count(), instances.size());
+    assertTrue(instances.containsAll(ImmutableSet.of(group, parent, child01, child02, result)));
+    assertTrue(instances.stream().anyMatch(Instrument.class::isInstance));
+    assertTrue(instances.stream().anyMatch(Profile.class::isInstance));
+  }
+
+  @Test
+  public void nLastCreatedWithLabels() throws Exception {
+    new Entity.ResultBuilder().process("test").taskId("latest-instances-test").buildAndStore();
+    assertEquals(
+      ImmutableSet.of(group.getUuid(), parent.getUuid(), child01.getUuid(), child02.getUuid()),
+      instanceRepository
+        .nLastCreated(10, "Component", "Group")
+        .stream()
+        .map(Instance::getUuid)
+        .collect(Collectors.toSet())
+    );
+  }
+
+  @Test
+  public void nLastCreatedWithSingleLabel() {
+    assertEquals(ImmutableSet.of(group), ImmutableSet.copyOf(instanceRepository.nLastCreated(10, "Group")));
+  }
+
+  @Test
+  public void nLastCreatedWithUnknownLabel() {
+    assertTrue(instanceRepository.nLastCreated(10, "NoSuchLabel").isEmpty());
   }
 }
