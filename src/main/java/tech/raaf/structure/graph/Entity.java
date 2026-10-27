@@ -87,8 +87,8 @@ public class Entity {
   */
   // Incoming relations that origin from a type
   private static final Set<String> incomingFromType = ImmutableSet.of("ISA", "CONSTRAINTS", "IMPLEMENTS");
-  // Outgoing relations that point to a typ
-  private static final Set<String> outgoingToType = ImmutableSet.of(
+  // Outgoing relations that point to a type
+  static final Set<String> outgoingToType = ImmutableSet.of(
     "ISA",
     "CONSTRAINTS",
     "IMPLEMENTS",

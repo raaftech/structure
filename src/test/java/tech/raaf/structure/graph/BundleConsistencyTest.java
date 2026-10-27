@@ -1,0 +1,431 @@
+package tech.raaf.structure.graph;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.github.fge.jsonschema.SchemaVersion;
+import com.github.fge.jsonschema.core.report.ProcessingReport;
+import com.github.fge.jsonschema.main.JsonSchemaFactory;
+import com.github.fge.jsonschema.processors.syntax.SyntaxValidator;
+import java.io.IOException;
+import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import tech.raaf.structure.base.Configuration;
+import tech.raaf.structure.base.Configuration.Setting;
+
+public class BundleConsistencyTest {
+
+  private static final Path RESOURCES = Configuration.get(Setting.HOME).resolve("src/main/resources");
+  private static final Path BUNDLES = RESOURCES.resolve("bundles");
+  private static final Set<String> RELATIONS = new HashSet<>(
+    Arrays.asList(
+      "ISA",
+      "INSTANCE_OF",
+      "APPLIES_TO",
+      "PROVIDED_BY",
+      "GIVES_CAPABILITY",
+      "IMPLEMENTS",
+      "HAS",
+      "MEMBER_OF",
+      "HAS_RESULT",
+      "PRODUCED"
+    )
+  );
+  private static final Map<Path, JsonNode> documents = new LinkedHashMap<>();
+  private static final List<String> jsonErrors = new ArrayList<>();
+  private static final List<BundleEntity> entities = new ArrayList<>();
+  private static final Map<String, BundleEntity> byUuid = new LinkedHashMap<>();
+  private static final Map<String, BundleEntity> types = new LinkedHashMap<>();
+  private static List<Path> files;
+
+  private final List<String> errors = new ArrayList<>();
+
+  @BeforeClass
+  public static void readResources() throws IOException {
+    try (Stream<Path> paths = Files.walk(RESOURCES)) {
+      files = paths
+        .filter(Files::isRegularFile)
+        .filter(path -> !path.startsWith(RESOURCES.resolve("webroot")))
+        .sorted()
+        .collect(Collectors.toList());
+    }
+    ObjectMapper mapper = new ObjectMapper().enable(JsonParser.Feature.STRICT_DUPLICATE_DETECTION);
+    for (Path path : files) {
+      if (!path.toString().endsWith(".json")) {
+        continue;
+      }
+      JsonNode document;
+      try (JsonParser parser = mapper.getFactory().createParser(path.toFile())) {
+        document = mapper.readTree(parser);
+        if (document == null) {
+          jsonErrors.add(path + ": empty JSON file");
+        }
+        if (parser.nextToken() != null) {
+          jsonErrors.add(path + ": content after the JSON document");
+        }
+      } catch (IOException e) {
+        jsonErrors.add(path + ": " + e.getMessage());
+        // Use the application parser so the other checks can run.
+        try {
+          document = new ObjectMapper().readTree(path.toFile());
+        } catch (IOException invalid) {
+          continue;
+        }
+      }
+      if (document == null) {
+        continue;
+      }
+      documents.put(path, document);
+      String name = path.getFileName().toString();
+      if (path.startsWith(BUNDLES) && (name.endsWith(".type.json") || name.endsWith(".inst.json"))) {
+        for (JsonNode node : document.isArray() ? document : Arrays.asList(document)) {
+          BundleEntity entity = new BundleEntity(path, node);
+          entities.add(entity);
+          byUuid.put(node.path("meta").path("uuid").asText(), entity);
+          if (entity.isType()) {
+            types.put(node.path("name").asText().toLowerCase(Locale.ROOT), entity);
+          }
+        }
+      }
+    }
+    assertTrue("No bundle entities found in " + BUNDLES, !entities.isEmpty());
+  }
+
+  @Test
+  public void jsonIsValidWithoutDuplicateKeys() {
+    assertTrue(String.join("\n", jsonErrors), jsonErrors.isEmpty());
+  }
+
+  @Test
+  public void entityUuidsAreUniqueVersionFour() {
+    Map<String, BundleEntity> seen = new LinkedHashMap<>();
+    for (BundleEntity entity : entities) {
+      String value = entity.node.path("meta").path("uuid").asText();
+      try {
+        UUID uuid = UUID.fromString(value);
+        check(
+          uuid.version() == 4 && uuid.variant() == 2 && uuid.toString().equals(value),
+          entity + ": expected a v4 uuid, got " + value
+        );
+      } catch (IllegalArgumentException e) {
+        errors.add(entity + ": missing or invalid uuid " + value);
+      }
+      BundleEntity previous = seen.put(value, entity);
+      check(previous == null, entity + ": duplicate uuid " + value + ", also in " + previous);
+    }
+    assertNoErrors();
+  }
+
+  @Test
+  public void relationAndConstraintTargetsExist() {
+    for (BundleEntity entity : entities) {
+      entity.node
+        .path("meta")
+        .path("relations")
+        .fields()
+        .forEachRemaining(relation -> {
+          JsonNode value = relation.getValue();
+          boolean toType =
+            "outgoing".equals(value.path("direction").asText()) && Entity.outgoingToType.contains(relation.getKey());
+          for (JsonNode target : value.path("to")) {
+            checkTarget(entity, relation.getKey(), target.asText(), toType);
+          }
+        });
+      entity.node
+        .path("meta")
+        .path("constraints")
+        .fields()
+        .forEachRemaining(constraint -> {
+          for (JsonNode value : constraint.getValue()) {
+            checkTarget(entity, constraint.getKey(), value.path("to").asText(), true);
+          }
+        });
+    }
+    assertNoErrors();
+  }
+
+  @Test
+  public void relationAndConstraintNamesAreCurrent() {
+    for (BundleEntity entity : entities) {
+      for (String field : Arrays.asList("relations", "constraints")) {
+        entity.node
+          .path("meta")
+          .path(field)
+          .fieldNames()
+          .forEachRemaining(name -> check(RELATIONS.contains(name), entity + ": unknown " + field + " name " + name));
+      }
+    }
+    assertNoErrors();
+  }
+
+  @Test
+  public void bundleFilesExistAndAreUsed() {
+    Set<Path> used = new HashSet<>();
+    for (BundleEntity entity : entities) {
+      used.add(entity.path);
+      entity.node
+        .path("file")
+        .fields()
+        .forEachRemaining(file -> {
+          String value = file.getValue().path("path").asText();
+          Path path = entity.path.getParent().resolve(value).normalize();
+          check(
+            !value.isEmpty() && Files.isRegularFile(path),
+            entity + ": missing file." + file.getKey() + ".path " + value
+          );
+          used.add(path);
+        });
+    }
+    for (Path path : files) {
+      if (path.startsWith(BUNDLES)) {
+        check(used.contains(path), path + ": file is not used by an entity");
+      }
+    }
+    assertNoErrors();
+  }
+
+  @Test
+  public void schemaFileNamesMatchTypeNames() {
+    for (BundleEntity type : types.values()) {
+      String expected = type.node.path("name").asText().toLowerCase(Locale.ROOT) + ".schema.json";
+      check(
+        type.schemaPath().getFileName().toString().equals(expected),
+        type + ": expected schema file " + expected + ", got " + type.schemaPath().getFileName()
+      );
+    }
+    assertNoErrors();
+  }
+
+  @Test
+  public void typeSchemasHaveValidSyntaxAndReferences() {
+    SyntaxValidator validator = JsonSchemaFactory.byDefault().getSyntaxValidator();
+    for (BundleEntity type : types.values()) {
+      JsonNode schema = type.schema();
+      ObjectNode draft4 = schema.deepCopy();
+      draft4.put("$schema", SchemaVersion.DRAFTV4.getLocation().toString());
+      ProcessingReport report = validator.validateSchema(draft4);
+      check(report.isSuccess(), type + ": invalid draft-04 schema: " + report);
+      walk(schema, "", (pointer, node) -> {
+        if (node.has("$ref")) {
+          checkReference(type, schema, pointer, node.path("$ref").asText());
+        }
+      });
+    }
+    assertNoErrors();
+  }
+
+  @Test
+  public void requiredAndIdentityNamesHaveProperties() {
+    for (BundleEntity type : types.values()) {
+      JsonNode properties = type.schema().path("properties");
+      for (JsonNode required : type.schema().path("required")) {
+        check(properties.has(required.asText()), type + ": required property is absent: " + required.asText());
+      }
+      JsonNode identity = type.node.path("meta").path("identity");
+      if (!identity.isMissingNode()) {
+        for (JsonNode name : identity.isArray() ? identity : Arrays.asList(identity)) {
+          check(properties.has(name.asText()), type + ": identity property is absent: " + name.asText());
+        }
+      }
+    }
+    assertNoErrors();
+  }
+
+  @Test
+  public void patternAlternativesAreGrouped() {
+    documents.forEach((path, schema) -> {
+      if (path.toString().endsWith(".schema.json")) {
+        walk(schema, "", (pointer, node) -> {
+          if (node.has("pattern")) {
+            String pattern = node.path("pattern").asText();
+            check(
+              !hasUngroupedAlternative(pattern),
+              path + "#" + pointer + "/pattern: ungrouped alternative in " + pattern
+            );
+          }
+        });
+      }
+    });
+    assertNoErrors();
+  }
+
+  @Test
+  public void childSchemasIncludeParentPropertiesAndRequiredNames() {
+    for (BundleEntity type : types.values()) {
+      for (JsonNode target : type.node.path("meta").path("relations").path("ISA").path("to")) {
+        BundleEntity parent = findEntity(target.asText());
+        if (parent == null || !parent.isType()) {
+          errors.add(type + ": missing parent type " + target.asText());
+          continue;
+        }
+        JsonNode childSchema = type.schema();
+        JsonNode parentSchema = parent.schema();
+        parentSchema
+          .path("properties")
+          .fieldNames()
+          .forEachRemaining(name ->
+            check(
+              childSchema.path("properties").has(name),
+              type + ": missing property " + name + " from " + parent.node.path("name").asText()
+            )
+          );
+        Set<String> required = new HashSet<>();
+        childSchema.path("required").forEach(name -> required.add(name.asText()));
+        for (JsonNode name : parentSchema.path("required")) {
+          check(
+            required.contains(name.asText()),
+            type + ": missing required name " + name.asText() + " from " + parent.node.path("name").asText()
+          );
+        }
+      }
+    }
+    assertNoErrors();
+  }
+
+  private void checkTarget(BundleEntity source, String relation, String target, boolean toType) {
+    BundleEntity entity = findEntity(target);
+    check(entity != null, source + ": " + relation + " refers to missing entity " + target);
+    if (toType) {
+      check(
+        entity != null && entity.isType() && target.equals(entity.node.path("name").asText()),
+        source + ": " + relation + " must refer to a type by name, got " + target
+      );
+    }
+  }
+
+  private static BundleEntity findEntity(String target) {
+    BundleEntity entity = byUuid.get(target);
+    return entity == null ? types.get(target.toLowerCase(Locale.ROOT)) : entity;
+  }
+
+  private void checkReference(BundleEntity type, JsonNode schema, String pointer, String value) {
+    String location = type.schemaPath() + "#" + pointer + "/$ref";
+    try {
+      URI reference = URI.create(value);
+      if (reference.isAbsolute() || reference.getAuthority() != null || reference.getQuery() != null) {
+        errors.add(location + ": reference must use a type name: " + value);
+        return;
+      }
+      JsonNode target = schema;
+      String path = reference.getPath();
+      if (path != null && !path.isEmpty()) {
+        String suffix = ".schema.json";
+        BundleEntity referenced = path.endsWith(suffix)
+          ? types.get(path.substring(0, path.length() - suffix.length()))
+          : null;
+        if (referenced == null) {
+          errors.add(location + ": reference must use a type name: " + value);
+          return;
+        }
+        target = referenced.schema();
+      }
+      String fragment = reference.getFragment();
+      check(
+        fragment == null || !target.at(fragment).isMissingNode(),
+        location + ": JSON pointer does not exist: " + value
+      );
+    } catch (IllegalArgumentException e) {
+      errors.add(location + ": invalid reference " + value);
+    }
+  }
+
+  private static void walk(JsonNode node, String pointer, BiConsumer<String, JsonNode> action) {
+    action.accept(pointer, node);
+    if (node.isObject()) {
+      node
+        .fields()
+        .forEachRemaining(field ->
+          walk(field.getValue(), pointer + "/" + field.getKey().replace("~", "~0").replace("/", "~1"), action)
+        );
+    } else if (node.isArray()) {
+      for (int i = 0; i < node.size(); i++) {
+        walk(node.get(i), pointer + "/" + i, action);
+      }
+    }
+  }
+
+  private static boolean hasUngroupedAlternative(String pattern) {
+    int depth = 0;
+    boolean escaped = false;
+    boolean inClass = false;
+    for (char c : pattern.toCharArray()) {
+      if (escaped) {
+        escaped = false;
+      } else if (c == '\\') {
+        escaped = true;
+      } else if (inClass) {
+        if (c == ']') {
+          inClass = false;
+        }
+      } else if (c == '[') {
+        inClass = true;
+      } else if (c == '(') {
+        depth++;
+      } else if (c == ')') {
+        depth--;
+      } else if (c == '|' && depth == 0) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private void check(boolean condition, String message) {
+    if (!condition) {
+      errors.add(message);
+    }
+  }
+
+  private void assertNoErrors() {
+    assertTrue(String.join("\n", errors), errors.isEmpty());
+  }
+
+  private static class BundleEntity {
+
+    private final Path path;
+    private final JsonNode node;
+
+    private BundleEntity(Path path, JsonNode node) {
+      this.path = path;
+      this.node = node;
+    }
+
+    private boolean isType() {
+      return path.toString().endsWith(".type.json");
+    }
+
+    private Path schemaPath() {
+      return path.getParent().resolve(node.path("file").path("dataSchema").path("path").asText()).normalize();
+    }
+
+    private JsonNode schema() {
+      JsonNode schema = documents.get(schemaPath());
+      assertNotNull(this + ": missing schema " + schemaPath(), schema);
+      return schema;
+    }
+
+    @Override
+    public String toString() {
+      return RESOURCES.relativize(path) + " (" + node.path("name").asText() + ")";
+    }
+  }
+}
