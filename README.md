@@ -105,6 +105,9 @@ higher. The integration tests need Docker. They start their own Neo4j server
 from the image `neo4j:latest` with Testcontainers, and do not use the server of
 a normal run. Testcontainers removes the container when the tests stop.
 
+The address discovery tests need no services. Run them with
+`(cd ext/util/net-discovery && npm test)`.
+
 ### Configuration
 
 Each setting has a command line option, an environment variable and a property.

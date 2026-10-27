@@ -7,6 +7,7 @@ import static tech.raaf.structure.helper.classification.ArgumentsToClassificatio
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -24,6 +25,7 @@ import org.junit.Test;
 import tech.raaf.structure.base.Configuration;
 import tech.raaf.structure.base.Configuration.Setting;
 import tech.raaf.structure.base.Context;
+import tech.raaf.structure.helper.InstrumentRunner;
 import tech.raaf.structure.helper.loader.NaiveSorter;
 import tech.raaf.structure.schema.TypeSchemaTest;
 
@@ -164,6 +166,56 @@ public class BundleGraphTest extends TypeSchemaTest {
   }
 
   @Test
+  public void discoveryUsesTheOriginAndInstalledTool() throws IOException {
+    Group agent = new Group(
+      mapper.createObjectNode().put("name", "Structure").put("desc", "The Structure host."),
+      Context.getTypeRepository().findOneByName("Group")
+    );
+    Component host = new Component(
+      mapper.createObjectNode().put("name", "host").put("desc", "The Structure host."),
+      Context.getTypeRepository().findOneByName("Component")
+    );
+    host.addComponent(
+      new Component(
+        mapper
+          .createObjectNode()
+          .put("name", "Structure")
+          .put("desc", "The Structure application.")
+          .put("shortName", "structure")
+          .put("longName", "Structure")
+          .put("ver", "unknown"),
+        Context.getTypeRepository().findOneByName("Structure")
+      )
+    );
+    agent.addMember(host);
+    agent.save();
+    Context.setSelfGroup(agent);
+    Context.setSelfIdentifier(agent.getUuid());
+    try {
+      Component address = new Component(
+        mapper
+          .createObjectNode()
+          .put("name", "host")
+          .put("desc", "An existing address.")
+          .put("addr", "192.0.2.10")
+          .put("reachable", false),
+        Context.getTypeRepository().findOneByName("Ipv4Address")
+      );
+      assertDiscoveryCommand(address, "IpAddressDiscover", "-i 192.0.2.10");
+      for (String cidr : Arrays.asList("192.0.2.0/24", "192.0.2.10/32")) {
+        Component network = new Component(
+          mapper.createObjectNode().put("name", "network").put("desc", "A network.").put("cidr", cidr),
+          Context.getTypeRepository().findOneByName("Ipv4Network")
+        );
+        assertDiscoveryCommand(network, "IpNetworkDiscover", "-c " + cidr);
+      }
+    } finally {
+      Context.setSelfGroup(null);
+      Context.setSelfIdentifier(null);
+    }
+  }
+
+  @Test
   public void unchangedBundlesNeedNoUpdates() throws Exception {
     NaiveSorter sorter = new NaiveSorter(Collections.singleton(BUNDLES));
     List<JsonNode> updates = sorter.getUpdateList(sorter.sortIt(sorter.readAllJson()));
@@ -172,6 +224,24 @@ public class BundleGraphTest extends TypeSchemaTest {
       .map(entity -> entity.path("name").asText() + " (" + entity.path("meta").path("uuid").asText() + ")")
       .collect(Collectors.toList());
     assertTrue("Unchanged bundle entities need updates: " + names, updates.isEmpty());
+  }
+
+  private static void assertDiscoveryCommand(Component origin, String instrument, String target) {
+    origin.save();
+    Controller controller = (Controller) Context.getInstrumentRepository().findOneByName(instrument);
+    assertNotNull(controller);
+    ObjectNode arguments = mapper.createObjectNode().put("token", "test-token");
+    InstrumentRunner runner = new InstrumentRunner(origin, controller, arguments, "discovery");
+    assertEquals(1, runner.getJobs().size());
+    assertEquals(
+      "node \"" +
+        Configuration.get(Setting.HOME).resolve("ext/util/net-discovery/main.js") +
+        "\" " +
+        target +
+        " -t test-token",
+      runner.getJobs().get(0).getLeft()
+    );
+    assertEquals(Long.valueOf(60000), runner.getJobs().get(0).getRight().get());
   }
 
   private static Map<String, String> typePaths() {

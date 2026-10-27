@@ -830,6 +830,7 @@ public class InstrumentRunner {
   private String applyTemplate(String template, JsonNode context) throws IOException {
     Handlebars handlebars = new Handlebars();
     handlebars.registerHelper("reachable", ReachableAddress.INSTANCE);
+    handlebars.registerHelper("structureHome", (value, options) -> Configuration.get(Setting.HOME).toString());
     Template compiledTemplate = handlebars.compileInline(template);
 
     // Create context with our JSON.

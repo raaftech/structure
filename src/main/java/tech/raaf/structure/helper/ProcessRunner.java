@@ -39,6 +39,8 @@ public class ProcessRunner {
 
   public ProcessRunner(String command) {
     this.command = command;
+    environment().put("STRUCTURE_STATE_DIR", Configuration.get(Setting.STATE_DIR).toString());
+    environment().put("NODE_EXTRA_CA_CERTS", KeystoreHelper.crt(Configuration.get(Setting.JKS_FILE)).toString());
   }
 
   private static String readFile(String path) throws IOException {

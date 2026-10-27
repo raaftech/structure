@@ -128,9 +128,6 @@ module.exports = function (Entity) {
     let args = {
       instrument: instrumentName,
     };
-    //FIXME find a beter way to do this
-    if (instrumentName === "IpAddressDiscover") args.timeAllocated = 600000;
-
     evBus
       .sendEvent(baseAddress(["node", uuid]), "runInstrument", args)
       .then((result) => callback(null, resultFetcher(result)))

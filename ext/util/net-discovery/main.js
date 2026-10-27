@@ -5,15 +5,15 @@ const path = require("path");
 const cmd = require("command-line-args");
 const getUsage = require("command-line-usage");
 const nmapLib = require("./nmapLib");
+const discoverAddress = require("./address");
 const Helper = require("./helper");
 const RestConnector = require("./restConnector");
 
-const settings = require(path.join(__dirname, "settings")).config();
-const rest = new RestConnector(settings["rest-host"], settings["rest-port"]);
 const log = (x) => console.log(JSON.stringify(x, undefined, 2));
 
 const optionDefs = [
   { name: "cidr", alias: "c", type: String },
+  { name: "ip", alias: "i", type: String },
   { name: "token", alias: "t", type: String },
   { name: "net", alias: "n", type: String },
   { name: "args", alias: "a", type: String },
@@ -23,12 +23,13 @@ const options = cmd(optionDefs);
 const sections = [
   {
     header: "structure network discovery instrument",
-    content: "Wraps the nmap command for discovering a network",
+    content: "Scan a network or an existing IPv4 address with nmap.",
   },
   {
     header: "Options",
     optionList: [
-      { name: "cidr", alias: "c", typeLabel: "[underline]{cidr}", description: "required argument, cidr to scan" },
+      { name: "cidr", alias: "c", typeLabel: "[underline]{cidr}", description: "The network CIDR to scan." },
+      { name: "ip", alias: "i", typeLabel: "[underline]{ip}", description: "An existing IPv4 address to scan." },
       { name: "token", alias: "t", typeLabel: "[underline]{token}", description: "REST api token" },
       {
         name: "net",
@@ -85,7 +86,6 @@ const main = (db) => {
   let args = R.defaultTo("-p22,80", options.args);
   let cidr = R.defaultTo("localhost", options.cidr);
   const helper = new Helper(db);
-  rest.setToken(options.token);
   let network;
   let reuseId = false;
 
@@ -138,8 +138,8 @@ const main = (db) => {
     .catch((ex) => console.log(ex));
 };
 
-if (R.isNil(options.cidr)) {
-  console.log("A cidr is required");
+if (Boolean(options.cidr) === Boolean(options.ip)) {
+  console.log("Give one CIDR or one IP address.");
   console.log(usage);
   process.exit(1);
 }
@@ -150,7 +150,18 @@ if (R.isNil(options.token)) {
   process.exit(1);
 }
 
+const settings = require(path.join(__dirname, "settings")).config();
+const rest = new RestConnector(settings["rest-host"], settings["rest-port"]);
+rest.setToken(options.token);
 rest
   .getAllTypes()
-  .then((types) => main(types))
-  .catch((ex) => console.log("Failed to fetch all types from structure. (is your token valid?): %s", ex));
+  .then((types) => {
+    if (options.ip) {
+      return discoverAddress(rest, new Helper(types), options.ip, options.args).then(log);
+    }
+    return main(types);
+  })
+  .catch((ex) => {
+    console.error(ex);
+    process.exitCode = 1;
+  });
