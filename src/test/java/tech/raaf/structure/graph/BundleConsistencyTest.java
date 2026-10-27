@@ -47,6 +47,7 @@ public class BundleConsistencyTest {
       "HAS",
       "MEMBER_OF",
       "HAS_RESULT",
+      "PARSED",
       "PRODUCED"
     )
   );

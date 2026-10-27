@@ -17,7 +17,7 @@
     },
     "instrumentType": {
       "type": "string",
-      "pattern": "^controller|marker|parser$"
+      "enum": ["controller", "marker", "parser"]
     },
     "subjectIsLocal": {
       "type": "boolean",

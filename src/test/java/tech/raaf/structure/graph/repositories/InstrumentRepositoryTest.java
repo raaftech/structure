@@ -232,7 +232,6 @@ public class InstrumentRepositoryTest extends TypeSchemaTest {
       .name("nonlocal")
       .desc("nonlocal test instrument")
       .capability("State")
-      .filePath("/tmp/foo")
       .handles(appliesTo)
       .providedBy(typeRepository.findOneByName("OpenSshClient"))
       .build();
@@ -382,7 +381,6 @@ public class InstrumentRepositoryTest extends TypeSchemaTest {
       .name("nonlocal")
       .desc("nonlocal test instrument")
       .capability("State")
-      .filePath("/tmp/foo")
       .handles(appliesTo)
       .providedBy(typeRepository.findOneByName("OpenSshClient"))
       .build();

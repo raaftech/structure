@@ -21,7 +21,6 @@ public class Controller extends Instrument {
   private static final String NAME = "name";
   private static final String DESC = "desc";
   private static final String UUID = "uuid";
-  private static final String FILELOCATION = "filePath";
   private static final String SUBJECTLOCAL = "subjectIsLocal";
   private static final String TEMPLATE = "template";
   private static final String TEMPLATEFILE = "templateFile";
@@ -51,7 +50,7 @@ public class Controller extends Instrument {
     private Type providedBy;
     private Map<Integer, Result.State> exitCodeToState = new HashMap<>();
 
-    ObjectNode json = mapper.createObjectNode();
+    ObjectNode json = mapper.createObjectNode().put("instrumentType", "controller");
 
     public Builder() {}
 
@@ -73,11 +72,6 @@ public class Controller extends Instrument {
 
     public Builder capability(String capabilityUuid) {
       capability(typeRepository.findOneByName(capabilityUuid));
-      return this;
-    }
-
-    public Builder filePath(String filePath) {
-      json.put(FILELOCATION, filePath);
       return this;
     }
 
@@ -109,11 +103,6 @@ public class Controller extends Instrument {
     // optional setters
     public Builder uuid(String uuid) {
       json.put(UUID, uuid);
-      return this;
-    }
-
-    public Builder arguments(String arguments) {
-      json.put(ARGUMENTS, arguments);
       return this;
     }
 
@@ -153,7 +142,6 @@ public class Controller extends Instrument {
         !json.has(NAME) ||
         !json.has(DESC) ||
         capability == null ||
-        !json.has(FILELOCATION) ||
         appliesTo == null ||
         providedBy == null ||
         !json.has(SUBJECTLOCAL)
@@ -209,6 +197,10 @@ public class Controller extends Instrument {
 
   public Set<Type> getHandledTypes() {
     return persisted ? related("-[:APPLIES_TO]->(b:Type)") : appliesTo;
+  }
+
+  public Set<Result> getResults() {
+    return related("-[:PRODUCED]->(b:Result)");
   }
 
   public Optional<ObjectNode> getArguments() {

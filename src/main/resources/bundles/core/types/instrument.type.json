@@ -77,6 +77,20 @@
           "direction": "outgoing",
           "to": ["14dbfbfa-b50a-466f-8539-55d5d3f15e4a"]
         }
+      },
+      "constraints": {
+        "PARSED": [
+          {
+            "cardinality": "OPTIONAL_TO_MANY",
+            "to": "f3498c02-58c6-486b-87c6-9d54607fdb12"
+          }
+        ],
+        "PRODUCED": [
+          {
+            "cardinality": "OPTIONAL_TO_MANY",
+            "to": "b1bc963a-19cc-4518-aecb-a35d028c49e3"
+          }
+        ]
       }
     },
     "file": {

@@ -36,14 +36,6 @@
       "pattern": "^[a-zA-Z0-9]+$",
       "description": "Possible extension in case of a scriptable instrument."
     },
-    "filePath": {
-      "type": "string",
-      "description": "The filesystem location of the controller."
-    },
-    "arguments": {
-      "type": "string",
-      "description": "A string representation of the arguments object."
-    },
     "stateMap": {
       "type": "object",
       "patternProperties": {
@@ -63,18 +55,19 @@
           "properties": {
             "canBeUserSupplied": {
               "type": "boolean",
-              "default": "false"
+              "default": false
             },
             "isOptional": {
               "type": "boolean",
-              "default": "false"
+              "default": false
             },
             "pass": {
               "type": "object",
               "additionalProperties": false,
               "properties": {
                 "index": {
-                  "type": "number"
+                  "type": "integer",
+                  "minimum": 0
                 },
                 "option": {
                   "type": "string"
@@ -97,11 +90,11 @@
               "properties": {
                 "from": {
                   "type": "string",
-                  "pattern": "^subject|origin|agent|static$"
+                  "enum": ["subject", "origin", "agent", "static"]
                 },
                 "type": {
                   "type": "string",
-                  "pattern": "^\\w+(\\.\\w+)+|string$"
+                  "pattern": "^(\\w+(\\.\\w+)+|string)$"
                 },
                 "matches": {
                   "type": ["object", "string"]
@@ -111,12 +104,12 @@
                 },
                 "strategy": {
                   "type": "string",
-                  "pattern": "^useFirst|useLast|mustBeOne|mustBeMany$",
+                  "enum": ["useFirst", "useLast", "mustBeOne", "mustBeMany"],
                   "default": "mustBeOne"
                 },
                 "onError": {
                   "type": "string",
-                  "pattern": "^fail|askUser|ignore$",
+                  "enum": ["fail", "askUser", "ignore"],
                   "default": "fail"
                 }
               },
@@ -127,7 +120,7 @@
       }
     }
   },
-  "required": ["name", "desc", "subjectIsLocal"],
+  "required": ["name", "desc", "instrumentType", "subjectIsLocal"],
   "definitions": {
     "state": {
       "type": "object",

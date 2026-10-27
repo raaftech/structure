@@ -12,9 +12,6 @@
     "desc": {
       "$ref": "type.schema.json#/properties/desc"
     },
-    "filePath": {
-      "$ref": "instrument.schema.json#/properties/filePath"
-    },
     "instrumentType": {
       "$ref": "instrument.schema.json#/properties/instrumentType"
     },
@@ -22,5 +19,5 @@
       "$ref": "instrument.schema.json#/properties/subjectIsLocal"
     }
   },
-  "required": ["name", "desc"]
+  "required": ["name", "desc", "instrumentType", "subjectIsLocal"]
 }

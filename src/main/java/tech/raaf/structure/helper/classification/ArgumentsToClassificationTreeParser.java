@@ -182,7 +182,7 @@ public class ArgumentsToClassificationTreeParser {
       String strategy = value.get("strategy") != null ? value.get("strategy").asText() : strategyDefault;
       Function<Set<JsonNode>, Set<JsonNode>> strategyFunc = selectionMap.get(strategy);
 
-      Terminal<JsonNode> failure = onErrorTerminalMap.get(value.get("onError"));
+      Terminal<JsonNode> failure = onErrorTerminalMap.get(value.path("onError").asText());
       if (failure == null) {
         failure = onErrorTerminalMap.get(onErrorDefault);
       }
