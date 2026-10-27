@@ -64,8 +64,10 @@
         },
         "relations": {
           "type": "object",
+          "additionalProperties": false,
           "patternProperties": {
-            "^[a-zA-Z]+$": {
+            "^[a-zA-Z_]+$": {
+              "type": "object",
               "required": ["direction", "to"],
               "additionalProperties": false,
               "properties": {
@@ -73,12 +75,11 @@
                   "$ref": "#/definitions/direction"
                 },
                 "to": {
-                  "$ref": "common.schema.json#/definitions/caseInsensitiveAlphaNumWithDotArray"
+                  "$ref": "common.schema.json#/definitions/uuidOrNameArray"
                 }
               }
             }
-          },
-          "minProperties": 1
+          }
         },
         "constraints": {
           "type": "object",
@@ -126,18 +127,39 @@
             }
           }
         },
-        "properties": {
-          "file": {
-            "properties": {
-              "dataSchema": {
-                "type": "object"
-              }
-            },
-            "required": ["dataSchema"]
-          }
+        "file": {
+          "properties": {
+            "dataSchema": {
+              "type": "object"
+            }
+          },
+          "required": ["dataSchema"]
         }
       },
       "required": ["meta", "file"]
+    },
+    {
+      "properties": {
+        "name": {
+          "enum": ["Type"]
+        },
+        "meta": {
+          "properties": {
+            "relations": {
+              "maxProperties": 0
+            }
+          }
+        },
+        "file": {
+          "properties": {
+            "dataSchema": {
+              "type": "object"
+            }
+          },
+          "required": ["dataSchema"]
+        }
+      },
+      "required": ["file"]
     },
     {
       "properties": {

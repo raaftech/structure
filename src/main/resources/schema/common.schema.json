@@ -22,12 +22,18 @@
       "type": "string",
       "pattern": "^[a-zA-Z0-9\\.]+$"
     },
-    "caseInsensitiveAlphaNumWithDotArray": {
+    "uuidOrNameArray": {
       "type": "array",
       "items": {
-        "type": "string",
-        "minItems": 1,
-        "uniqueItems": true
+        "anyOf": [
+          {
+            "$ref": "#/definitions/uuid"
+          },
+          {
+            "type": "string",
+            "pattern": "^[A-Z][A-Za-z0-9]+$"
+          }
+        ]
       },
       "minItems": 1,
       "uniqueItems": true

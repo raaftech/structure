@@ -81,10 +81,7 @@ public class EntityDeserializer extends StdDeserializer<Entity> {
      * responsibility to make sure the values are there and are correct!
      * Don't clutter the code with null checks and value mangling!
      */
-    final boolean isRootType =
-      !entityJson.path("meta").path("relations").has("INSTANCE_OF") && entityJson.path("name").asText().equals("Type");
-
-    if (isRootType || JsonHelper.validateToSchema(entitySchema, entityJson)) {
+    if (JsonHelper.validateToSchema(entitySchema, entityJson)) {
       /* Set name. */
       name = entityJson.get("name").asText();
       log.debug("Setting name to \"{}\"", name);

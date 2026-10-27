@@ -1,6 +1,7 @@
 package tech.raaf.structure.helper.loader;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -25,6 +26,8 @@ import org.junit.rules.TemporaryFolder;
 import tech.raaf.structure.base.Configuration;
 import tech.raaf.structure.base.Configuration.Setting;
 import tech.raaf.structure.base.Context;
+import tech.raaf.structure.exceptions.JsonValidationException;
+import tech.raaf.structure.helper.JsonHelper;
 
 public class NaiveSorterTest {
 
@@ -49,13 +52,13 @@ public class NaiveSorterTest {
     ObjectNode meta = a.putObject("meta").put("identity", "foo").put("uuid", "abba2750-7e05-4e70-8b36-1a56665dccd6");
     ObjectNode rela = meta.putObject("relations").putObject("INSTANCE_OF");
     rela.put("direction", "outgoing");
-    rela.putArray("uuids").add(instanceOf);
+    rela.putArray("to").add(instanceOf);
 
     ObjectNode b = mapper.createObjectNode().put("desc", "Foo.").put("name", "Foo");
     ObjectNode metb = b.putObject("meta").put("uuid", "abba2750-7e05-4e70-8b36-1a56665dccd6").put("identity", "foo");
     ObjectNode relb = metb.putObject("relations").putObject("INSTANCE_OF");
     relb.put("direction", "outgoing");
-    relb.putArray("uuids").add(instanceOf);
+    relb.putArray("to").add(instanceOf);
     System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(b));
 
     // our old way:
@@ -99,6 +102,22 @@ public class NaiveSorterTest {
         NaiveSorter.calculateChecksum(b, NaiveSorter.ChecksumAlgorithm.SHA1)
       )
     );
+  }
+
+  @Test
+  public void calculatesRootTypeChecksum() {
+    ObjectNode root = (ObjectNode) JsonHelper.jsonFromResource("bundles/core/types/type.type.json");
+    assertNotNull(NaiveSorter.calculateChecksum(root, NaiveSorter.ChecksumAlgorithm.SHA1));
+  }
+
+  @Test
+  public void validatesRootTypeBeforeHashing() {
+    ObjectNode root = (ObjectNode) JsonHelper.jsonFromResource("bundles/core/types/type.type.json");
+    root.remove("desc");
+
+    exception.expect(JsonValidationException.class);
+    exception.expectMessage("Type");
+    NaiveSorter.calculateChecksum(root, NaiveSorter.ChecksumAlgorithm.SHA1);
   }
 
   @Test

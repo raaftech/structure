@@ -121,15 +121,13 @@ public class NaiveSorter {
   );
 
   private static String prepareForHashing(ObjectNode input) throws JsonProcessingException {
-    if (BundleLoader.isInstance(input) || !input.get("name").asText().equals("Type")) {
-      if (!JsonHelper.validateToSchema(ENTITYSCHEMA, input)) {
-        throw new JsonValidationException(
-          "Cannot calculate a checksum for type [" +
-            input.get("name").asText() +
-            "]: JSON does not validate against " +
-            "entity schema"
-        );
-      }
+    if (!JsonHelper.validateToSchema(ENTITYSCHEMA, input)) {
+      throw new JsonValidationException(
+        "Cannot calculate a checksum for type [" +
+          input.get("name").asText() +
+          "]: JSON does not validate against " +
+          "entity schema"
+      );
     }
 
     ObjectNode inputCopy = input.deepCopy();

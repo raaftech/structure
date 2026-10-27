@@ -178,6 +178,15 @@ public class EntityTest extends GraphTest {
   }
 
   @Test
+  public void rejectsInvalidRootType() throws Exception {
+    ObjectNode root = (ObjectNode) mapper.readTree(getDataFromFile("src/test/resources/bundles/simple/root.type.json"));
+    root.remove("desc");
+
+    exception.expect(JsonValidationException.class);
+    mapper.treeToValue(root, Entity.class);
+  }
+
+  @Test
   public void testRootNodeCreationFromJson() throws Exception {
     final String bundlePath = "src/test/resources/bundles/simple";
     final String rootFileLocation = bundlePath + "/root.type.json";
