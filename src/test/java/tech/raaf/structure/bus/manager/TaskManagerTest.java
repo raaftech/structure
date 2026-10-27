@@ -3,13 +3,18 @@ package tech.raaf.structure.bus.manager;
 import static io.vertx.core.json.Json.mapper;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableMap;
 import io.vertx.core.json.JsonObject;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +23,8 @@ import java.util.concurrent.CompletableFuture;
 import org.junit.Before;
 import org.junit.Test;
 import tech.raaf.structure.base.Context;
+import tech.raaf.structure.bus.InstanceActor;
+import tech.raaf.structure.graph.Controller;
 import tech.raaf.structure.graph.Entity;
 import tech.raaf.structure.graph.Graph;
 import tech.raaf.structure.schema.TypeSchemaTest;
@@ -63,7 +70,7 @@ public class TaskManagerTest extends TypeSchemaTest {
       String task = UUID.randomUUID().toString();
       tasks.add(task);
       queue(task, origin, NO_SUCH_COMMAND, mapper.createObjectNode());
-      awaitHead(origin, task);
+      awaitResult(origin, task);
     }
 
     assertEquals(0, count("MATCH (n:Node {uuid: $uuid})<-[r:RESULTS]-() RETURN count(r) AS n", origin));
@@ -105,7 +112,7 @@ public class TaskManagerTest extends TypeSchemaTest {
           "\"description\": \"Java runs.\"}}}"
       )
     );
-    awaitHead(origin, task);
+    awaitResult(origin, task);
 
     String uuid = single("MATCH (n:Node {uuid: $uuid})-[:RESULTS]->(r) RETURN r.uuid AS n", origin);
     assertEquals(0, count("MATCH (n:Node {uuid: $uuid})-[r:NEXT_RESULT]-() RETURN count(r) AS n", uuid));
@@ -134,9 +141,78 @@ public class TaskManagerTest extends TypeSchemaTest {
     String origin = origin();
     String task = UUID.randomUUID().toString();
     queue(task, origin, NO_SUCH_COMMAND, mapper.createObjectNode());
-    awaitHead(origin, task);
+    awaitResult(origin, task);
 
     assertEquals(0, count("MATCH (r:Result {`data-task`: $uuid}) RETURN count(r) AS n", lost));
+  }
+
+  @Test
+  public void getResultsReturnsBothResultsNewestFirst() throws Exception {
+    String origin = origin();
+    List<String> expected = new ArrayList<>(queueResults(origin).keySet());
+    Collections.reverse(expected);
+
+    JsonNode results = getResults(origin, mapper.createObjectNode());
+    List<String> actual = new ArrayList<>();
+    results.forEach(result -> actual.add(result.path("task").asText()));
+    assertEquals(expected, actual);
+  }
+
+  @Test
+  public void getResultsFiltersByTask() throws Exception {
+    String origin = origin();
+    for (String task : queueResults(origin).keySet()) {
+      JsonNode results = getResults(origin, mapper.createObjectNode().put("task", task));
+      assertEquals("Results for task " + task, 1, results.size());
+      assertEquals(task, results.get(0).path("task").asText());
+    }
+  }
+
+  @Test
+  public void resultsLinkToTheirControllerAndOrigin() throws Exception {
+    String origin = origin();
+    for (Map.Entry<String, String> task : queueResults(origin).entrySet()) {
+      List<Map<String, Object>> rows = Graph.query(
+        "MATCH (r:Result {`data-task`: $task}) " +
+          "OPTIONAL MATCH (controller:Controller)-[:PRODUCED]->(r) " +
+          "OPTIONAL MATCH (origin:Component)-[:HAS_RESULT]->(r) " +
+          "RETURN controller.uuid AS controller, origin.uuid AS origin",
+        ImmutableMap.of("task", task.getKey())
+      );
+      assertEquals("Stored results for task " + task.getKey(), 1, rows.size());
+      assertEquals(
+        "Result links for task " + task.getKey(),
+        ImmutableMap.of("controller", task.getValue(), "origin", origin),
+        rows.get(0)
+      );
+    }
+  }
+
+  private static Map<String, String> queueResults(String origin) throws Exception {
+    Map<String, String> tasks = new LinkedHashMap<>();
+    for (String name : Arrays.asList("BashInvoke", "IpNetworkDiscover")) {
+      Controller controller = (Controller) Context.getInstrumentRepository().findOneByName(name);
+      assertNotNull("Missing controller " + name, controller);
+      String task = UUID.randomUUID().toString();
+      tasks.put(task, controller.getUuid());
+      ObjectNode metadata = mapper
+        .createObjectNode()
+        .put("instrument", controller.getUuid())
+        .put("capability", controller.getCapability().getName());
+      queue(task, origin, NO_SUCH_COMMAND, metadata);
+      awaitResult(origin, task);
+    }
+    return tasks;
+  }
+
+  private static JsonNode getResults(String origin, ObjectNode arguments) {
+    ObjectNode request = mapper.createObjectNode().put("msgh", "getResults");
+    request.set("args", arguments);
+    JsonNode reply = new InstanceActor(Context.getInstanceRepository().findByUuid(origin)).getResults().exec(request);
+    assertFalse(reply.toString(), reply.path("result").has("error"));
+    JsonNode results = reply.path("result").path("data");
+    assertTrue(reply.toString(), results.isArray());
+    return results;
   }
 
   private String origin() throws Exception {
@@ -186,12 +262,11 @@ public class TaskManagerTest extends TypeSchemaTest {
   }
 
   // The TaskManager timer writes the result, so poll the graph
-  private void awaitHead(String origin, String task) throws Exception {
+  private static void awaitResult(String origin, String task) throws Exception {
     long deadline = System.currentTimeMillis() + 10000;
     while (System.currentTimeMillis() < deadline) {
       if (
-        count("MATCH (n:Node {uuid: $uuid})-[:RESULTS]->(r {`data-task`: $task}) RETURN count(r) AS n", origin, task) >
-        0
+        count("MATCH (n:Node {uuid: $uuid})-->(r:Result {`data-task`: $task}) RETURN count(r) AS n", origin, task) > 0
       ) {
         return;
       }

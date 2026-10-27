@@ -3,20 +3,30 @@ package tech.raaf.structure.graph.repositories;
 import static io.vertx.core.json.Json.mapper;
 import static org.junit.Assert.*;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import io.vertx.core.json.JsonObject;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
+import mockit.Mock;
+import mockit.MockUp;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import tech.raaf.structure.base.Context;
+import tech.raaf.structure.bus.NodeActor;
 import tech.raaf.structure.graph.*;
 import tech.raaf.structure.schema.TypeSchemaTest;
 
 public class InstrumentRepositoryTest extends TypeSchemaTest {
+
+  private static final String UPSTART_STOP = "2b138899-51ed-4c72-bef8-c08aa5df8b12";
 
   private final NodeRepository nodeRepository = Context.getNodeRepository();
   private final TypeRepository typeRepository = Context.getTypeRepository();
@@ -134,6 +144,12 @@ public class InstrumentRepositoryTest extends TypeSchemaTest {
     host2OS.addComponent(bash).addComponent(hostSshServer).addComponent(upstart);
     host2.addMember(host2OS);
     host2.save();
+  }
+
+  @After
+  public void reset() {
+    Context.setSelfGroup(null);
+    Context.setSelfIdentifier(null);
   }
 
   @Test
@@ -263,6 +279,62 @@ public class InstrumentRepositoryTest extends TypeSchemaTest {
     );
     assertNotNull(upstartStop);
     assertEquals("Upstart", upstartStop.getProvidedBy().getName());
+  }
+
+  @Test
+  public void stopCapabilitySelectsUpstartOnHost2() throws Exception {
+    Component sshd = host2OS
+      .getComponents()
+      .stream()
+      .filter(component -> "SshServer".equals(component.getName()))
+      .findFirst()
+      .get();
+    // Give an unavailable controller a higher weight.
+    Graph.query(
+      "MATCH (n:Controller)-[:PROVIDED_BY]->(:Type {name: 'Systemd'}) " +
+        "MATCH (n)-[:GIVES_CAPABILITY]->(:Type {name: 'Stop'}) SET n.`data-weight` = 100"
+    );
+    Context.setSelfGroup(structure);
+    Context.setSelfIdentifier(structure.getUuid());
+
+    CompletableFuture<Controller> selected = new CompletableFuture<>();
+    new MockUp<Instance>() {
+      @Mock
+      public Instance runController(Controller controller, ObjectNode arguments, String taskId) {
+        selected.complete(controller);
+        return sshd;
+      }
+    };
+    String deployment = NodeActor.deploy(sshd).get(10, TimeUnit.SECONDS);
+    try {
+      ObjectNode request = mapper.createObjectNode().put("msgh", "runCapability");
+      request.putObject("args").put("capability", "Stop").putObject("arguments");
+      CompletableFuture<Object> reply = new CompletableFuture<>();
+      Context.getVertx()
+        .eventBus()
+        .send("tech.raaf.structure.bus.node." + sshd.getUuid(), new JsonObject(request.toString()), ar -> {
+          if (ar.succeeded()) {
+            reply.complete(ar.result().body());
+          } else {
+            reply.completeExceptionally(ar.cause());
+          }
+        });
+      JsonNode response = mapper.readTree(reply.get(10, TimeUnit.SECONDS).toString());
+      assertFalse(response.toString(), response.path("result").has("error"));
+      Controller controller = selected.get(10, TimeUnit.SECONDS);
+      assertEquals("Stop must use the provider on host2", UPSTART_STOP, controller.getUuid());
+      assertEquals("UpstartStop", controller.getName());
+    } finally {
+      CompletableFuture<Void> undeployed = new CompletableFuture<>();
+      Context.getVertx().undeploy(deployment, ar -> {
+        if (ar.succeeded()) {
+          undeployed.complete(null);
+        } else {
+          undeployed.completeExceptionally(ar.cause());
+        }
+      });
+      undeployed.get(10, TimeUnit.SECONDS);
+    }
   }
 
   @Test
