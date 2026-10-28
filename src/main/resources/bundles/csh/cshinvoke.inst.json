@@ -1,0 +1,52 @@
+{
+  "name": "CshInvoke",
+  "desc": "Run a script with csh.",
+  "meta": {
+    "uuid": "5df09a33-9023-45b4-82f7-c9e90844f290",
+    "relations": {
+      "PROVIDED_BY": {
+        "direction": "outgoing",
+        "to": ["Csh"]
+      },
+      "APPLIES_TO": {
+        "direction": "outgoing",
+        "to": ["Csh"]
+      },
+      "GIVES_CAPABILITY": {
+        "direction": "outgoing",
+        "to": ["Invoke"]
+      },
+      "INSTANCE_OF": {
+        "direction": "outgoing",
+        "to": ["Controller"]
+      }
+    }
+  },
+  "data": {
+    "instrumentType": "controller",
+    "subjectIsLocal": true,
+    "arguments": {
+      "script": {
+        "value": {
+          "from": "static",
+          "type": "string",
+          "strategy": "mustBeOne"
+        },
+        "canBeUserSupplied": false,
+        "isOptional": false
+      }
+    }
+  },
+  "file": {
+    "dataSchema": {
+      "encoding": "text",
+      "format": "json",
+      "path": "../core/schema/controller.schema.json"
+    },
+    "templateFile": {
+      "encoding": "text",
+      "format": "hbs",
+      "path": "cshinvoke.hbs.csh"
+    }
+  }
+}

@@ -307,7 +307,7 @@ public class BundleConsistencyTest {
       if (!path.startsWith(BUNDLES) || !name.contains(".hbs.")) {
         continue;
       }
-      String helper = name.endsWith(".sh") ? "sh" : "cmd";
+      String helper = name.endsWith(".cmd") || name.endsWith(".bat") ? "cmd" : "sh";
       String template = new String(Files.readAllBytes(path), StandardCharsets.UTF_8);
       Matcher tags = MUSTACHE.matcher(SECRET_FILE.matcher(template).replaceAll("{{sh secretFile}}"));
       while (tags.find()) {

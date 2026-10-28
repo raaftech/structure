@@ -770,7 +770,9 @@ public class InstrumentRunner {
       );
     }
     ObjectNode context = validateAndSelectArguments(controller);
-    String script = applyTemplate(controllerTemplateContent.get(), context);
+    // The shell of the interpreter runs the script, so quote for it
+    final Quote quote = Quote.forShell(invokableInterpreter.getExtension().orElse(""));
+    String script = applyTemplate(controllerTemplateContent.get(), context, quote);
     arguments.put("script", script);
     context = validateAndSelectArguments(invokableInterpreter);
     script = applyTemplate(interpreterTemplateContent.get(), context);
@@ -826,11 +828,16 @@ public class InstrumentRunner {
    *                     Template.apply.
    */
   private String applyTemplate(String template, JsonNode context) throws IOException {
+    return applyTemplate(template, context, Quote.SH);
+  }
+
+  // As applyTemplate, but the sh helper quotes for the given shell
+  private String applyTemplate(String template, JsonNode context, Quote sh) throws IOException {
     // Give each value as it is, the quote helpers make it safe for a shell
     Handlebars handlebars = new Handlebars().with(value -> value.toString());
     handlebars.registerHelper("reachable", ReachableAddress.INSTANCE);
     handlebars.registerHelper("structureHome", (value, options) -> Configuration.get(Setting.HOME).toString());
-    handlebars.registerHelper("sh", Quote.SH);
+    handlebars.registerHelper("sh", sh);
     handlebars.registerHelper("cmd", Quote.CMD);
     handlebars.registerHelper("secretFile", secretFile);
     Template compiledTemplate = handlebars.compileInline(template);
