@@ -1,0 +1,52 @@
+{
+  "name": "ZshInvoke",
+  "desc": "Run a script with zsh.",
+  "meta": {
+    "uuid": "ad2579a0-519a-4b6f-a5e7-ca55f49c8bcf",
+    "relations": {
+      "PROVIDED_BY": {
+        "direction": "outgoing",
+        "to": ["Zsh"]
+      },
+      "APPLIES_TO": {
+        "direction": "outgoing",
+        "to": ["Zsh"]
+      },
+      "GIVES_CAPABILITY": {
+        "direction": "outgoing",
+        "to": ["Invoke"]
+      },
+      "INSTANCE_OF": {
+        "direction": "outgoing",
+        "to": ["Controller"]
+      }
+    }
+  },
+  "data": {
+    "instrumentType": "controller",
+    "subjectIsLocal": true,
+    "arguments": {
+      "script": {
+        "value": {
+          "from": "static",
+          "type": "string",
+          "strategy": "mustBeOne"
+        },
+        "canBeUserSupplied": false,
+        "isOptional": false
+      }
+    }
+  },
+  "file": {
+    "dataSchema": {
+      "encoding": "text",
+      "format": "json",
+      "path": "../core/schema/controller.schema.json"
+    },
+    "templateFile": {
+      "encoding": "text",
+      "format": "hbs",
+      "path": "zshinvoke.hbs.sh"
+    }
+  }
+}
