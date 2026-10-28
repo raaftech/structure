@@ -304,6 +304,34 @@ public class BundleGraphTest extends TypeSchemaTest {
     }
   }
 
+  // The discovery script runs on each Python, thus also on Python 2
+  @Test
+  public void pythonDiscoverNeedsPython() {
+    for (boolean python : Arrays.asList(false, true)) {
+      Component host = software("Linux");
+      if (python) {
+        host.addComponent(software("Python2x"));
+      }
+      Group group = subject(host);
+      List<String> names = Context.getInstrumentRepository()
+        .findAvailableControllers(host.getUuid(), group.getUuid(), "Detect")
+        .stream()
+        .map(Controller::getName)
+        .collect(Collectors.toList());
+      assertEquals("PythonDiscover with Python: " + python, python, names.contains("PythonDiscover"));
+    }
+  }
+
+  private static Group subject(Component host) {
+    Group group = new Group(
+      mapper.createObjectNode().put("name", "subject").put("desc", "A subject."),
+      Context.getTypeRepository().findOneByName("Group")
+    );
+    group.addMember(host);
+    group.save();
+    return group;
+  }
+
   private static Component software(String type) {
     return new Component(
       mapper

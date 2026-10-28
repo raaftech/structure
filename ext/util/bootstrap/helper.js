@@ -269,7 +269,7 @@ class Helper {
       genInstance("OpenSshClient"),
       genInstance("Winexe"),
       genInstance("SambaClient"),
-      genInstance("Python2x"),
+      genInstance("Python"),
       genInstance("NmapClient"),
       genInstance("IcmpServer"),
       genInstance("Structure"),
