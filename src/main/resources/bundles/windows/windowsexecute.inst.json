@@ -1,5 +1,5 @@
 {
-  "name": "execute",
+  "name": "WindowsExecute",
   "desc": "This instrument executes an arbitrary command on Windows-like machines.",
   "meta": {
     "uuid": "15d782a7-c4f4-4ece-ab09-9ed7c3fa40ef",

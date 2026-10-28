@@ -1,5 +1,5 @@
 {
-  "name": "execute",
+  "name": "UnixExecute",
   "desc": "This instrument executes an arbitrary command on UNIX-like machines.",
   "meta": {
     "uuid": "bc384804-dccb-4c6e-94dc-e4200d49796e",

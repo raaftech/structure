@@ -192,7 +192,7 @@ const deepDetect = (input) => {
 //{"status":"FINISHED",
 // "originName":"UnixLike",
 // "originUuid":"3fb1c82b-17ce-4ac3-bb7a-fa6f2f87ea84",
-// "instrument":"py2discovery","capability":"Detect","timeAllocated":10000,
+// "instrument":"Python2xDiscover","capability":"Detect","timeAllocated":10000,
 // "result":{"process":"scp root@172.17.1.1:/tmp/", "returnCode":0,"stdout":"Linux\n","stderr":""},
 // "process":"scp /tmp/"}
 const handleStatusMessage = (input) => {

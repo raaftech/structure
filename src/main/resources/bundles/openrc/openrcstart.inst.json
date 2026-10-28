@@ -1,6 +1,6 @@
 {
-  "name": "start",
-  "desc": "OpenRcStart.",
+  "name": "OpenRcStart",
+  "desc": "Start a service with OpenRC.",
   "meta": {
     "uuid": "abee3407-5bcf-45be-92a8-8aec16ab2b7f",
     "relations": {

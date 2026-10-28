@@ -1,6 +1,6 @@
 {
   "name": "SmbReceiveFile",
-  "desc": "A marker handler that marks SmbServer with ReceiveFile..",
+  "desc": "A marker handler that marks SmbServer with ReceiveFile.",
   "meta": {
     "uuid": "66c3db12-f12e-40e8-bb21-348447fe856b",
     "relations": {

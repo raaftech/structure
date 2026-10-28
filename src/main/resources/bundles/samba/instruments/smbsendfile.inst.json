@@ -1,6 +1,6 @@
 {
   "name": "SmbClientSendFile",
-  "desc": "The handler that provides the SendFile capability to smbclient..",
+  "desc": "The handler that provides the SendFile capability to smbclient.",
   "meta": {
     "uuid": "320aa7ee-da10-46d6-9ed4-34cd8d43f088",
     "relations": {

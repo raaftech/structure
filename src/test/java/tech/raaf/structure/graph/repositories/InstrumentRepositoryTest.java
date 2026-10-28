@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.collect.ImmutableSet;
 import io.vertx.core.json.JsonObject;
 import java.io.IOException;
 import java.util.HashSet;
@@ -158,7 +159,7 @@ public class InstrumentRepositoryTest extends TypeSchemaTest {
     assertNotNull(bsdRcInit);
     Controller stopController = null;
     for (Instrument instrument : bsdRcInit.getInstruments()) {
-      if ("stop".equals(instrument.getName())) {
+      if ("BsdrcInitStop".equals(instrument.getName())) {
         stopController = (Controller) instrument;
       }
     }
@@ -271,31 +272,6 @@ public class InstrumentRepositoryTest extends TypeSchemaTest {
   }
 
   @Test
-  public void findMatchingLocalController() throws Exception {
-    // find the stop controllers
-    final String instrumentName = "stop";
-    Set<Instrument> instruments = instrumentRepository.findByName(instrumentName);
-    assertTrue(instruments.size() > 1);
-
-    // find the sshd belonging to host2
-    final Component sshd = host2OS
-      .getComponents()
-      .stream()
-      .filter(c -> "SshServer".equals(c.getName()))
-      .collect(Collectors.toList())
-      .get(0);
-    assertNotNull(sshd);
-
-    Controller upstartStop = instrumentRepository.findMatchingLocalController(
-      sshd.getUuid(),
-      host2.getUuid(),
-      instrumentName
-    );
-    assertNotNull(upstartStop);
-    assertEquals("Upstart", upstartStop.getProvidedBy().getName());
-  }
-
-  @Test
   public void stopCapabilitySelectsUpstartOnHost2() throws Exception {
     Component sshd = host2OS
       .getComponents()
@@ -352,57 +328,52 @@ public class InstrumentRepositoryTest extends TypeSchemaTest {
   }
 
   @Test
-  public void findLocalControllers() throws Exception {
-    // find the sshd belonging to host2
-    final Component sshd = host2OS
+  public void findAvailableControllers() throws Exception {
+    Component sshd = host2OS
       .getComponents()
       .stream()
-      .filter(c -> "SshServer".equals(c.getName()))
-      .collect(Collectors.toList())
-      .get(0);
-    assertNotNull(sshd);
+      .filter(component -> "SshServer".equals(component.getName()))
+      .findFirst()
+      .get();
+    // Of the service managers, host2 has only Upstart
+    assertEquals(ImmutableSet.of("UpstartStart", "UpstartStop"), availableNames(sshd, null));
+    assertEquals(ImmutableSet.of("UpstartStop"), availableNames(sshd, "Stop"));
 
-    Set<Controller> controllers = instrumentRepository.findLocalControllers(sshd.getUuid());
-    // expect 4 instruments: SshReceiveString, SshReceiveFile, stop, start
-    assertEquals(4, controllers.stream().count());
+    // Structure has the OpenSSH client, host2 does not
+    sshClientController("remote", false).save();
+    sshClientController("local", true).save();
+    assertEquals(ImmutableSet.of("UpstartStart", "UpstartStop", "remote"), availableNames(sshd, null));
+
+    // An origin without a group can use only remote controllers
+    Instance single = new Component(
+      mapper
+        .createObjectNode()
+        .put("name", "SshServer")
+        .put("desc", "An SSH server.")
+        .put("longName", "SshServer")
+        .put("shortName", "sshserver")
+        .put("ver", "unknown"),
+      typeRepository.findOneByName("SshServer")
+    ).save();
+    assertEquals(ImmutableSet.of("remote"), availableNames(single, null));
   }
 
-  @Test
-  public void findRemoteControllers() throws Exception {
-    // find the sshd belonging to host2
-    final Component sshd = host2OS
-      .getComponents()
+  private Set<String> availableNames(Instance origin, String capability) {
+    return instrumentRepository
+      .findAvailableControllers(origin.getUuid(), structure.getUuid(), capability)
       .stream()
-      .filter(c -> "SshServer".equals(c.getName()))
-      .collect(Collectors.toList())
-      .get(0);
-    assertNotNull(sshd);
+      .map(Controller::getName)
+      .collect(Collectors.toSet());
+  }
 
-    final Component bash = host1OS
-      .getComponents()
-      .stream()
-      .filter(c -> "Systemd".equals(c.getName()))
-      .collect(Collectors.toList())
-      .get(0);
-    Set<Controller> controllers = instrumentRepository.findRemoteControllers(bash.getUuid(), host1.getUuid());
-    // expect 0 instruments
-    assertEquals(0, controllers.stream().count());
-
-    // create a controller which has subjectIsLocal set to false, then check again
-    Set<Type> appliesTo = new HashSet<>();
-    appliesTo.add(typeRepository.findOneByName("SshServer"));
-    Controller nonLocal = new Controller.Builder()
-      .subjectIsLocal(false)
-      .name("nonlocal")
-      .desc("nonlocal test instrument")
+  private Controller sshClientController(String name, boolean subjectIsLocal) {
+    return new Controller.Builder()
+      .subjectIsLocal(subjectIsLocal)
+      .name(name)
+      .desc("A test controller.")
       .capability("State")
-      .handles(appliesTo)
+      .handles(ImmutableSet.of(typeRepository.findOneByName("SshServer")))
       .providedBy(typeRepository.findOneByName("OpenSshClient"))
       .build();
-    nonLocal.save();
-
-    controllers = instrumentRepository.findRemoteControllers(sshd.getUuid(), structure.getUuid());
-    // expect 1 instruments, the one we just made
-    assertEquals(1, controllers.stream().count());
   }
 }

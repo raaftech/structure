@@ -1,6 +1,6 @@
 {
-  "name": "stop",
-  "desc": "SystemdStop.",
+  "name": "SystemdStop",
+  "desc": "Stop a service with systemd.",
   "meta": {
     "uuid": "32c96242-0635-4a1e-a070-30aca7c5a53c",
     "relations": {

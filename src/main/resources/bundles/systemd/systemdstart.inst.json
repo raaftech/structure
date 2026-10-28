@@ -1,6 +1,6 @@
 {
-  "name": "start",
-  "desc": "SystemdStart.",
+  "name": "SystemdStart",
+  "desc": "Start a service with systemd.",
   "meta": {
     "uuid": "48c81a79-a9da-4312-8282-0c40e8d789d6",
     "relations": {

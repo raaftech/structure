@@ -1,6 +1,6 @@
 {
-  "name": "stop",
-  "desc": "ServicesStop.",
+  "name": "ScmStop",
+  "desc": "Stop a service with the Windows service control manager.",
   "meta": {
     "uuid": "cdbb2079-26cc-4254-8237-5f42a16e1d26",
     "relations": {
@@ -45,7 +45,7 @@
     "templateFile": {
       "encoding": "text",
       "format": "hbs",
-      "path": "servicesstop.hbs.cmd"
+      "path": "scmstop.hbs.cmd"
     }
   }
 }

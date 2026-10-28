@@ -87,11 +87,9 @@ public abstract class Instance extends Node {
       Iterator<String> iter = properties.fieldNames();
       while (iter.hasNext()) {
         String key = iter.next();
-        if (properties.get(key).isObject()) {
-          data.put(key, properties.get(key));
-        } else {
-          data.put(key, properties.get(key).asText());
-        }
+        JsonNode value = properties.get(key);
+        // Keep the JSON type; Entity stores a container as JSON text
+        data.put(key, value.isContainerNode() ? value : mapper.convertValue(value, Object.class));
       }
     } else {
       throw new RuntimeException("Supplied JSON did not match Type schema.");

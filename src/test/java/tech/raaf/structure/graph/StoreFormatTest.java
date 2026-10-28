@@ -143,7 +143,7 @@ public class StoreFormatTest extends TypeSchemaTest {
       n.properties.keySet()
     );
     assertEquals("BashInvoke", n.properties.get("name"));
-    assertEquals("BashInvoke.", n.properties.get("desc"));
+    assertEquals("Run a script with Bash.", n.properties.get("desc"));
     assertEquals("bash", n.properties.get("bundle"));
     assertEquals(BUNDLES + "bash/bashscriptable.inst.json", n.properties.get("path"));
     assertEquals(true, n.properties.get("data-subjectIsLocal"));

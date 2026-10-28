@@ -1,6 +1,6 @@
 {
   "name": "OsDiscover",
-  "desc": "Scan an IP address with ansible for setup information",
+  "desc": "Scan an IP address with ansible for setup information.",
   "meta": {
     "uuid": "725f14be-6c77-4d9a-a946-03c7a066e833",
     "relations": {

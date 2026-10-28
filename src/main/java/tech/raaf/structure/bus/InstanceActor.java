@@ -132,13 +132,11 @@ public class InstanceActor extends NodeActor<Instance> {
           return response(request, result);
         }
 
-        Set<Controller> locallyRun = instrumentRepository.findLocalControllers(originUuid);
-        Set<Controller> remotelyRun = instrumentRepository.findRemoteControllers(originUuid, structure.getUuid());
+        Set<Controller> available = instrumentRepository.findAvailableControllers(originUuid, structure.getUuid());
 
         ObjectNode data = result.putObject("data");
 
-        locallyRun.stream().forEach(instrument -> data.put(instrument.getName(), instrument.getUuid()));
-        remotelyRun.stream().forEach(instrument -> data.put(instrument.getName(), instrument.getUuid()));
+        available.forEach(instrument -> data.put(instrument.getName(), instrument.getUuid()));
 
         return response(request, result);
       }
@@ -173,24 +171,7 @@ public class InstanceActor extends NodeActor<Instance> {
         if (isUuid(instrumentId)) {
           instrument = (Controller) instrumentRepository.findByUuid(instrumentId);
         } else {
-          // There is possibly more than one instrument that applies
-          // in that case we'll assume we're interested in the instrument
-          // that runs locally, since that'll be the most specific one.
-          Set<Instrument> foundInstruments = instrumentRepository.findByName(instrumentId);
-          if (foundInstruments.size() == 1) {
-            instrument = (Controller) foundInstruments.iterator().next();
-          } else {
-            // get the one that applies to this component group
-            String originUuid = getNode().getUuid();
-            Instance startOfComponentGroup = INSTANCE_REPOSITORY.getStartOfComponentGroup(originUuid);
-            if (startOfComponentGroup != null) {
-              instrument = instrumentRepository.findMatchingLocalController(
-                originUuid,
-                startOfComponentGroup.getUuid(),
-                instrumentId
-              );
-            }
-          }
+          instrument = (Controller) instrumentRepository.findOneByName(instrumentId);
         }
         if (instrument != null) {
           try {
@@ -280,8 +261,9 @@ public class InstanceActor extends NodeActor<Instance> {
         final String capability = args.get("capability").asText();
         final UUID taskId = args.has("taskId") ? UUID.fromString(args.get("taskId").asText()) : UUID.randomUUID();
 
-        final Set<Controller> controllersForCapability = instrumentRepository.findControllersPerCapability(
+        final Set<Controller> controllersForCapability = instrumentRepository.findAvailableControllers(
           getNode().getUuid(),
+          Context.getSelfIdentifier(),
           capability
         );
 

@@ -1,6 +1,6 @@
 {
-  "name": "stop",
-  "desc": "BsdrcInitStop.",
+  "name": "BsdrcInitStop",
+  "desc": "Stop a service with its BSD rc.d script.",
   "meta": {
     "uuid": "da028b9a-5c17-4377-8a24-30ece7a54a89",
     "relations": {

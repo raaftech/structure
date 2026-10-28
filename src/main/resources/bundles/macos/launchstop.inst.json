@@ -1,6 +1,6 @@
 {
-  "name": "stop",
-  "desc": "LaunchdStop.",
+  "name": "LaunchdStop",
+  "desc": "Stop a service with launchd.",
   "meta": {
     "uuid": "c0aa07d3-1e31-43d2-8933-62b19cd2c93b",
     "relations": {

@@ -1,6 +1,6 @@
 {
-  "name": "stop",
-  "desc": "OpenRcStop.",
+  "name": "OpenRcStop",
+  "desc": "Stop a service with OpenRC.",
   "meta": {
     "uuid": "b71d662f-700a-4e1b-b65e-4e1418835d8c",
     "relations": {

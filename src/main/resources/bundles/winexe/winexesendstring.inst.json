@@ -1,6 +1,6 @@
 {
   "name": "WinexeSendString",
-  "desc": "The handler that provides the SendString capability to winese..",
+  "desc": "The handler that provides the SendString capability to winexe.",
   "meta": {
     "uuid": "311a7965-6b3b-4753-ac35-fe9a5d715923",
     "relations": {

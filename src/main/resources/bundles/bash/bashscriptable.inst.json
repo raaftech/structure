@@ -1,6 +1,6 @@
 {
   "name": "BashInvoke",
-  "desc": "BashInvoke.",
+  "desc": "Run a script with Bash.",
   "meta": {
     "uuid": "8cabd118-dcc2-4bc6-bf0e-11cecfce4a5b",
     "relations": {

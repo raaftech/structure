@@ -138,6 +138,18 @@ public class BundleConsistencyTest {
   }
 
   @Test
+  public void instrumentNamesAreUnique() {
+    Map<String, BundleEntity> seen = new LinkedHashMap<>();
+    for (BundleEntity entity : entities) {
+      if (!entity.isType()) {
+        BundleEntity previous = seen.put(entity.node.path("name").asText(), entity);
+        check(previous == null, entity + ": duplicate instrument name, also in " + previous);
+      }
+    }
+    assertNoErrors();
+  }
+
+  @Test
   public void relationAndConstraintTargetsExist() {
     for (BundleEntity entity : entities) {
       entity.node

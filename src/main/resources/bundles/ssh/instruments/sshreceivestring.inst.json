@@ -1,6 +1,6 @@
 {
   "name": "SshServerReceiveString",
-  "desc": "A marker handler that marks SshServer with ReceiveString..",
+  "desc": "A marker handler that marks SshServer with ReceiveString.",
   "meta": {
     "uuid": "b6444b7c-3b52-4cac-a007-6c46a1e02e1c",
     "relations": {

@@ -1,6 +1,6 @@
 {
-  "name": "start",
-  "desc": "UpstartStart.",
+  "name": "UpstartStart",
+  "desc": "Start a service with Upstart.",
   "meta": {
     "uuid": "92858950-d283-4e30-8966-b22dffe9e972",
     "relations": {

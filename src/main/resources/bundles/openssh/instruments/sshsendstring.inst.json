@@ -1,6 +1,6 @@
 {
   "name": "OpenSshClientSendString",
-  "desc": "The handler that provides the SendString capability to the OpenSSH client..",
+  "desc": "The handler that provides the SendString capability to the OpenSSH client.",
   "meta": {
     "uuid": "f3fdfd14-2486-41d8-9353-1a341d220e9c",
     "relations": {

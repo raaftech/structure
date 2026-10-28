@@ -1,6 +1,6 @@
 {
-  "name": "start",
-  "desc": "ServicesStart.",
+  "name": "ScmStart",
+  "desc": "Start a service with the Windows service control manager.",
   "meta": {
     "uuid": "7e4ebe1a-c2ef-40c5-b866-734d8ffd164c",
     "relations": {
@@ -45,7 +45,7 @@
     "templateFile": {
       "encoding": "text",
       "format": "hbs",
-      "path": "servicesstart.hbs.cmd"
+      "path": "scmstart.hbs.cmd"
     }
   }
 }

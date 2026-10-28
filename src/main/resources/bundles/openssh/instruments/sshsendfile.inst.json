@@ -1,6 +1,6 @@
 {
   "name": "OpenSshClientSendFile",
-  "desc": "The handler that provides the SendFile capability to the OpenSSH client..",
+  "desc": "The handler that provides the SendFile capability to the OpenSSH client.",
   "meta": {
     "uuid": "9d130117-9c36-4f02-9074-2f02a11b6b45",
     "relations": {

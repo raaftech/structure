@@ -1,6 +1,8 @@
 package tech.raaf.structure.graph.repositories;
 
 import com.google.common.collect.ImmutableMap;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import tech.raaf.structure.graph.Controller;
 import tech.raaf.structure.graph.Graph;
@@ -117,51 +119,29 @@ public class InstrumentRepository extends GenericRepository<Instrument> {
     );
   }
 
-  // When there are multiple hits for a controller name, we want to retrieve
-  // the one that matches the origin.
-  public Controller findMatchingLocalController(String originUuid, String startOfGroupUuid, String instrumentName) {
-    return one(
-      "MATCH (origin:Node {uuid: $originUuid})-[:INSTANCE_OF|ISA*1..]->(handled)" +
-        "<-[:APPLIES_TO]-(n {name: $instrumentName})-[:PROVIDED_BY]->(provider) " +
-        "MATCH (startOfGroup:Node {uuid: $startOfGroupUuid})<-[:MEMBER_OF]-()-[*..]->(:Instance)" +
-        "-[:INSTANCE_OF|ISA*1..]->(provider) " +
-        "RETURN n LIMIT 1",
-      ImmutableMap.of("originUuid", originUuid, "startOfGroupUuid", startOfGroupUuid, "instrumentName", instrumentName)
-    );
+  // Find the controllers that apply to an origin and can run
+  public Set<Controller> findAvailableControllers(String originUuid, String structureUuid) {
+    return findAvailableControllers(originUuid, structureUuid, null);
   }
 
-  // Find all the locally run controllers that apply to a given origin
-  public Set<Controller> findLocalControllers(String originUuid) {
+  // A controller can run when its provider has an instance in the group
+  // of the origin (subjectIsLocal) or else in the group of Structure.
+  // A null capability matches each capability.
+  public Set<Controller> findAvailableControllers(String originUuid, String structureUuid, String capability) {
+    final Map<String, Object> params = new HashMap<>();
+    params.put("originUuid", originUuid);
+    params.put("structureUuid", structureUuid);
+    params.put("capability", capability);
     return set(
-      "MATCH (origin:Node {uuid: $originUuid})-[:INSTANCE_OF|ISA*..]->(handled)" +
-        "<-[:APPLIES_TO]-(n)-[:PROVIDED_BY]->(enabler) " +
-        "MATCH (origin:Instance)<-[*0..]-()-[:MEMBER_OF]->(grouping) " +
-        "MATCH (grouping)<-[:MEMBER_OF]-()-[*1..]->(instance_of_enabler:Instance)" +
-        "-[:INSTANCE_OF|ISA*0..]->(enabler)<-[:PROVIDED_BY]-(n) " +
+      "MATCH (origin:Instance {uuid: $originUuid})-[:INSTANCE_OF|ISA*1..]->()<-[:APPLIES_TO]-(n:Controller) " +
+        "WHERE $capability IS NULL OR EXISTS { (n)-[:GIVES_CAPABILITY]->(:`type:Capability` {name: $capability}) } " +
+        "OPTIONAL MATCH (origin)<-[*0..]-()-[:MEMBER_OF]->(local:Group) " +
+        "MATCH (structure:Group {uuid: $structureUuid}) " +
+        "WITH DISTINCT n, CASE WHEN n.`data-subjectIsLocal` THEN local ELSE structure END AS home " +
+        "WHERE EXISTS { (home)<-[:MEMBER_OF]-()-[*..]->(:Instance)" +
+        "-[:INSTANCE_OF|ISA*..]->()<-[:PROVIDED_BY]-(n) } " +
         "RETURN DISTINCT n",
-      ImmutableMap.of("originUuid", originUuid)
-    );
-  }
-
-  // Find all the remotely run controllers that apply to a given origin
-  public Set<Controller> findRemoteControllers(String originUuid, String startOfGroupUuid) {
-    return set(
-      "MATCH (origin:Node {uuid: $originUuid})-[:INSTANCE_OF|ISA*1..]->(handled)" +
-        "<-[:APPLIES_TO]-(n)-[:PROVIDED_BY]->(provider) " +
-        "MATCH (structure:Group {uuid: $structureUuid})<-[:MEMBER_OF]-()-[*..]->(:Instance)" +
-        "-[:INSTANCE_OF|ISA*1..]->(provider) " +
-        "RETURN DISTINCT n",
-      ImmutableMap.of("originUuid", originUuid, "structureUuid", startOfGroupUuid)
-    );
-  }
-
-  // Find a node's callable controllers
-  public Set<Controller> findControllersPerCapability(String uuid, String name) {
-    return set(
-      "MATCH (:Instance {uuid: $uuid})-[:INSTANCE_OF|ISA*0..]->()<-[:APPLIES_TO]-(n:Controller)" +
-        "-[:GIVES_CAPABILITY]->(capability:`type:Capability` {name: $name}) " +
-        "RETURN DISTINCT n",
-      ImmutableMap.of("uuid", uuid, "name", name)
+      params
     );
   }
 

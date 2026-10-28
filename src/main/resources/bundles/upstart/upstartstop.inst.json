@@ -1,6 +1,6 @@
 {
-  "name": "stop",
-  "desc": "UpstartStop.",
+  "name": "UpstartStop",
+  "desc": "Stop a service with Upstart.",
   "meta": {
     "uuid": "2b138899-51ed-4c72-bef8-c08aa5df8b12",
     "relations": {

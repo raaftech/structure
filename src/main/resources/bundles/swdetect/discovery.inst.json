@@ -1,6 +1,6 @@
 {
-  "name": "py2discovery",
-  "desc": "Discovery script that runs on Python 2",
+  "name": "Python2xDiscover",
+  "desc": "Discovery script that runs on Python 2.",
   "meta": {
     "uuid": "e3cb5862-4362-4147-83fb-7909f3951b0b",
     "relations": {

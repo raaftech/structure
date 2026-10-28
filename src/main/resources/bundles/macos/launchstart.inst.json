@@ -1,6 +1,6 @@
 {
-  "name": "start",
-  "desc": "LaunchdStart.",
+  "name": "LaunchdStart",
+  "desc": "Start a service with launchd.",
   "meta": {
     "uuid": "539dccb8-a850-440c-9358-76f214a927c4",
     "relations": {

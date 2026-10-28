@@ -1,6 +1,6 @@
 {
   "name": "KshScriptable",
-  "desc": "KshScriptable.",
+  "desc": "Run a script with the Korn shell.",
   "meta": {
     "uuid": "74a942c1-0f72-411f-99c4-04c3117a9e92",
     "relations": {

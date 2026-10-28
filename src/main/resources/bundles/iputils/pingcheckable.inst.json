@@ -1,6 +1,6 @@
 {
   "name": "IputilsPingCheckable",
-  "desc": "Provide a check to IP addresses using ping..",
+  "desc": "Provide a check to IP addresses using ping.",
   "meta": {
     "uuid": "be5d22bd-7588-4d76-bb78-08d7767ae240",
     "relations": {

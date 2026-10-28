@@ -1,6 +1,6 @@
 {
-  "name": "start",
-  "desc": "BsdrcInitStart.",
+  "name": "BsdrcInitStart",
+  "desc": "Start a service with its BSD rc.d script.",
   "meta": {
     "uuid": "9e45d1c7-2a55-412e-a475-db6e5b18cff8",
     "relations": {

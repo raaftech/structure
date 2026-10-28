@@ -1,6 +1,6 @@
 {
   "name": "SmbReceiveString",
-  "desc": "A marker handler that marks SmbServer with ReceiveString..",
+  "desc": "A marker handler that marks SmbServer with ReceiveString.",
   "meta": {
     "uuid": "47d23533-6385-4c6b-95f1-458eb7d4f093",
     "relations": {
