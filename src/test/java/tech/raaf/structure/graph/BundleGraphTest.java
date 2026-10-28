@@ -220,6 +220,16 @@ public class BundleGraphTest extends TypeSchemaTest {
         "sh -c 'nmap -sn -n -oG - \"$1\" | grep -q \"Status: Up\"' nmap '192.0.2.10'",
         10000
       );
+      Component listener = new Component(
+        mapper.createObjectNode().put("name", "ssh").put("desc", "A listener.").put("addr", "192.0.2.10").put("port", 22),
+        Context.getTypeRepository().findOneByName("Ipv4Listener")
+      );
+      assertJob(
+        listener,
+        "NmapClientVerifyListener",
+        "sh -c 'nmap -Pn -n -p \"$2\" -oG - \"$1\" | grep -q \"Ports: $2/open/\"' nmap '192.0.2.10' '22'",
+        10000
+      );
       for (String cidr : Arrays.asList("192.0.2.0/24", "192.0.2.10/32")) {
         Component network = new Component(
           mapper.createObjectNode().put("name", "network").put("desc", "A network.").put("cidr", cidr),
