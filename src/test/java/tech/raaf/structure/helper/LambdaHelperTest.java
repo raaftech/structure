@@ -1,8 +1,9 @@
 package tech.raaf.structure.helper;
 
-import static junit.framework.TestCase.assertTrue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 import java.util.List;
@@ -12,14 +13,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Test;
 
 public class LambdaHelperTest {
-
-  @Rule
-  public ExpectedException expectedException = ExpectedException.none();
 
   @Test
   public void wrapWithExceptionHandler() throws Exception {
@@ -73,17 +69,17 @@ public class LambdaHelperTest {
 
   @Test
   public void wrapWithExceptionPropagationRuntimeException() throws Exception {
-    expectedException.expect(RuntimeException.class);
-    LambdaHelper.wrapWithExceptionPropagation(() -> {
+    Supplier<Object> supplier = LambdaHelper.wrapWithExceptionPropagation(() -> {
       throw new RuntimeException("foo");
-    }).get();
+    });
+    assertThrows(RuntimeException.class, supplier::get);
   }
 
   @Test
   public void wrapWithExceptionPropagationException() throws Exception {
-    expectedException.expect(RuntimeException.class);
-    LambdaHelper.wrapWithExceptionPropagation(() -> {
+    Supplier<Object> supplier = LambdaHelper.wrapWithExceptionPropagation(() -> {
       throw new Exception("foo");
-    }).get();
+    });
+    assertThrows(RuntimeException.class, supplier::get);
   }
 }

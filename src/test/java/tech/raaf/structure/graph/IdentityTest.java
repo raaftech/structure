@@ -1,16 +1,17 @@
 package tech.raaf.structure.graph;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import io.vertx.core.json.JsonObject;
 import java.util.Map;
 import java.util.UUID;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import tech.raaf.structure.base.Context;
 import tech.raaf.structure.exceptions.IllegalEntityType;
 import tech.raaf.structure.helper.Triple;
@@ -77,9 +78,9 @@ public class IdentityTest extends TypeSchemaTest {
     assertEquals("An updated address.", Context.getNodeRepository().findByUuid(address.getUuid()).getDesc());
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void instanceHasNoIdentity() {
-    ipv4Address("192.0.2.1").setIdentity(new String[] { "addr" });
+    assertThrows(IllegalArgumentException.class, () -> ipv4Address("192.0.2.1").setIdentity(new String[] { "addr" }));
   }
 
   // Assert that toGraph refuses the duplicate and does not write it

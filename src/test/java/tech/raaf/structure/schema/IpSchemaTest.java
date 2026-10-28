@@ -1,9 +1,9 @@
 package tech.raaf.structure.schema;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import tech.raaf.structure.helper.JsonHelper;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.node.ObjectNode;
@@ -23,20 +23,20 @@ public class IpSchemaTest {
   @Test
   public void ipv4AddressChecksOctets() {
     for (String address : new String[] { "0.0.0.0", "192.0.2.1", "255.255.255.255" }) {
-      assertTrue(address, valid("ipv4address", "addr", address));
+      assertTrue(valid("ipv4address", "addr", address), address);
     }
     for (String address : new String[] { "2001:db8::1", "256.0.0.1", "192.0.2", "192.0.2.01" }) {
-      assertFalse(address, valid("ipv4address", "addr", address));
+      assertFalse(valid("ipv4address", "addr", address), address);
     }
   }
 
   @Test
   public void ipv4NetworkChecksAddressAndPrefix() {
     for (String network : new String[] { "0.0.0.0/0", "192.0.2.0/24", "255.255.255.255/32" }) {
-      assertTrue(network, valid("ipv4network", "cidr", network));
+      assertTrue(valid("ipv4network", "cidr", network), network);
     }
     for (String network : new String[] { "2001:db8::/32", "256.0.0.0/24", "192.0.2.0/33", "192.0.2.0" }) {
-      assertFalse(network, valid("ipv4network", "cidr", network));
+      assertFalse(valid("ipv4network", "cidr", network), network);
     }
   }
 

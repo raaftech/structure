@@ -1,8 +1,8 @@
 package tech.raaf.structure.graph;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static tech.raaf.structure.helper.classification.ArgumentsToClassificationTreeParser.matchesTypePath;
 
 import java.io.IOException;
@@ -17,8 +17,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import tech.raaf.structure.base.Configuration;
 import tech.raaf.structure.base.Configuration.Setting;
 import tech.raaf.structure.base.Context;
@@ -35,7 +35,7 @@ public class BundleGraphTest extends TypeSchemaTest {
   private static final ObjectMapper mapper = new ObjectMapper();
   private static final List<JsonNode> entities = new ArrayList<>();
 
-  @BeforeClass
+  @BeforeAll
   public static void readBundleFiles() throws IOException {
     List<Path> files;
     try (Stream<Path> paths = Files.walk(BUNDLES)) {
@@ -51,13 +51,13 @@ public class BundleGraphTest extends TypeSchemaTest {
         entities.add(entity);
       }
     }
-    assertTrue("No bundle entities found in " + BUNDLES, !entities.isEmpty());
+    assertTrue(!entities.isEmpty(), "No bundle entities found in " + BUNDLES);
   }
 
   @Test
   public void allBundleEntitiesAreStored() {
     List<Map<String, Object>> rows = Graph.query("MATCH (n) WHERE n.path IS NOT NULL RETURN n.uuid AS uuid");
-    assertEquals("Number of stored bundle entities", entities.size(), rows.size());
+    assertEquals(entities.size(), rows.size(), "Number of stored bundle entities");
     Set<String> expected = entities
       .stream()
       .map(entity -> entity.path("meta").path("uuid").asText())
@@ -66,7 +66,7 @@ public class BundleGraphTest extends TypeSchemaTest {
       .stream()
       .map(row -> row.get("uuid"))
       .collect(Collectors.toSet());
-    assertEquals("Stored bundle uuids", expected, actual);
+    assertEquals(expected, actual, "Stored bundle uuids");
   }
 
   @Test
@@ -78,27 +78,27 @@ public class BundleGraphTest extends TypeSchemaTest {
       for (Map.Entry<String, Object> property : node.getProperties().entrySet()) {
         if (property.getKey().startsWith("file-")) {
           JsonNode file = mapper.readTree((String) property.getValue());
-          assertTrue(describe(node) + ": missing content in " + property.getKey(), file.path("content").isTextual());
+          assertTrue(file.path("content").isTextual(), describe(node) + ": missing content in " + property.getKey());
         }
       }
     }
     for (JsonNode entity : entities) {
       String uuid = entity.path("meta").path("uuid").asText();
       GraphNode node = stored.get(uuid);
-      assertNotNull("Missing bundle entity " + uuid, node);
+      assertNotNull(node, "Missing bundle entity " + uuid);
       entity
         .path("file")
         .propertyNames()
         .forEach(name ->
-          assertTrue(describe(node) + ": missing file-" + name, node.getProperties().containsKey("file-" + name))
+          assertTrue(node.getProperties().containsKey("file-" + name), describe(node) + ": missing file-" + name)
         );
       if (node.getLabels().contains("Type")) {
-        assertTrue(describe(node) + ": missing data schema", node.getProperties().containsKey("file-dataSchema"));
+        assertTrue(node.getProperties().containsKey("file-dataSchema"), describe(node) + ": missing data schema");
       }
       if (node.getLabels().contains("Controller")) {
         assertTrue(
-          describe(node) + ": missing template or script",
-          node.getProperties().containsKey("file-templateFile") || node.getProperties().containsKey("file-script")
+          node.getProperties().containsKey("file-templateFile") || node.getProperties().containsKey("file-script"),
+          describe(node) + ": missing template or script"
         );
       }
     }
@@ -129,7 +129,7 @@ public class BundleGraphTest extends TypeSchemaTest {
           }
         });
     }
-    assertTrue(String.join("\n", errors), errors.isEmpty());
+    assertTrue(errors.isEmpty(), String.join("\n", errors));
   }
 
   @Test
@@ -141,7 +141,7 @@ public class BundleGraphTest extends TypeSchemaTest {
     )) {
       GraphNode instrument = (GraphNode) row.get("n");
       String appliedPath = paths.get(row.get("type"));
-      assertNotNull(describe(instrument) + ": missing hierarchy path for " + row.get("type"), appliedPath);
+      assertNotNull(appliedPath, describe(instrument) + ": missing hierarchy path for " + row.get("type"));
       arguments(instrument)
         .properties()
         .forEach(argument -> {
@@ -162,7 +162,7 @@ public class BundleGraphTest extends TypeSchemaTest {
           }
         });
     }
-    assertTrue(String.join("\n", errors), errors.isEmpty());
+    assertTrue(errors.isEmpty(), String.join("\n", errors));
   }
 
   @Test
@@ -256,7 +256,7 @@ public class BundleGraphTest extends TypeSchemaTest {
       .stream()
       .map(entity -> entity.path("name").asText() + " (" + entity.path("meta").path("uuid").asText() + ")")
       .collect(Collectors.toList());
-    assertTrue("Unchanged bundle entities need updates: " + names, updates.isEmpty());
+    assertTrue(updates.isEmpty(), "Unchanged bundle entities need updates: " + names);
   }
 
   private static void assertDiscoveryCommand(Component origin, String instrument, String target) {
@@ -311,7 +311,7 @@ public class BundleGraphTest extends TypeSchemaTest {
         os.save();
         Controller ping = (Controller) Context.getInstrumentRepository().findOneByName("IputilsPingCheckable");
         InstrumentRunner runner = new InstrumentRunner(address, ping, mapper.createObjectNode(), "ping");
-        assertEquals("Jobs with an IcmpServer: " + icmp, icmp ? 1 : 0, runner.getJobs().size());
+        assertEquals(icmp ? 1 : 0, runner.getJobs().size(), "Jobs with an IcmpServer: " + icmp);
       }
     } finally {
       Context.setSelfGroup(null);
@@ -342,7 +342,7 @@ public class BundleGraphTest extends TypeSchemaTest {
         .stream()
         .map(Controller::getName)
         .collect(Collectors.toList());
-      assertEquals("PythonDiscover with Python: " + python, python, names.contains("PythonDiscover"));
+      assertEquals(python, names.contains("PythonDiscover"), "PythonDiscover with Python: " + python);
     }
   }
 
@@ -401,24 +401,24 @@ public class BundleGraphTest extends TypeSchemaTest {
         entity.path("meta").path("relations").path("INSTANCE_OF").path("to").path(0).asText().equals("Profile")
       )
       .count();
-    assertEquals("Profiles under Component", expected, profiles.size());
+    assertEquals(expected, profiles.size(), "Profiles under Component");
     List<Integer> depths = profiles
       .stream()
       .map(profile -> profile.getAppliesTo().getHierarchyPath().split("\\.").length)
       .collect(Collectors.toList());
     List<Integer> sorted = new ArrayList<>(depths);
     Collections.sort(sorted);
-    assertEquals("Depths of the profile types", sorted, depths);
+    assertEquals(sorted, depths, "Depths of the profile types");
   }
 
   private static Map<String, String> typePaths() {
     Map<String, String> paths = new LinkedHashMap<>();
     for (Type type : Context.getTypeRepository().getAll()) {
       String path = type.getHierarchyPath();
-      assertNotNull(type.getName() + ": missing hierarchy path", path);
+      assertNotNull(path, type.getName() + ": missing hierarchy path");
       paths.put(type.getUuid(), path);
     }
-    assertTrue("No types loaded from bundles", !paths.isEmpty());
+    assertTrue(!paths.isEmpty(), "No types loaded from bundles");
     return paths;
   }
 

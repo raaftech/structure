@@ -1,10 +1,10 @@
 package tech.raaf.structure.schema;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.net.URI;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import tech.raaf.structure.helper.JsonHelper;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.node.ObjectNode;
@@ -17,26 +17,26 @@ public class InstrumentSchemaTest {
   public void requiresInstrumentTypeAndLocality() {
     for (String schema : new String[] { "instrument", "controller", "marker", "parser" }) {
       ObjectNode instrument = instrument(schema.equals("instrument") ? "controller" : schema);
-      assertTrue(schema, valid(schema, instrument));
+      assertTrue(valid(schema, instrument), schema);
       instrument.remove("instrumentType");
-      assertFalse(schema, valid(schema, instrument));
+      assertFalse(valid(schema, instrument), schema);
       instrument.put("instrumentType", "controller");
       instrument.remove("subjectIsLocal");
-      assertFalse(schema, valid(schema, instrument));
+      assertFalse(valid(schema, instrument), schema);
     }
   }
 
   @Test
   public void acceptsInstrumentTypes() {
     for (String type : new String[] { "controller", "marker", "parser" }) {
-      assertTrue(type, valid("instrument", instrument(type)));
+      assertTrue(valid("instrument", instrument(type)), type);
     }
   }
 
   @Test
   public void rejectsInvalidInstrumentTypes() {
     for (String type : new String[] { "controllerSuffix", "prefixmarker", "prefixparser", "other" }) {
-      assertFalse(type, valid("instrument", instrument(type)));
+      assertFalse(valid("instrument", instrument(type)), type);
     }
   }
 
@@ -44,7 +44,7 @@ public class InstrumentSchemaTest {
   public void rejectsOldFilePathProperty() {
     for (String schema : new String[] { "controller", "marker", "parser" }) {
       ObjectNode instrument = instrument(schema).put("filePath", "unused");
-      assertFalse(schema, valid(schema, instrument));
+      assertFalse(valid(schema, instrument), schema);
     }
   }
 

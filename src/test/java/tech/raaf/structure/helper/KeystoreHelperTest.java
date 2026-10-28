@@ -1,7 +1,7 @@
 package tech.raaf.structure.helper;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServer;
@@ -20,14 +20,13 @@ import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
 import org.apache.commons.io.IOUtils;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 public class KeystoreHelperTest {
 
-  @Rule
-  public final TemporaryFolder folder = new TemporaryFolder();
+  @TempDir
+  Path folder;
 
   // The subject alternative names of the exported certificate.
   private List<List<?>> names(Path jks) throws Exception {
@@ -40,7 +39,7 @@ public class KeystoreHelperTest {
   @Test
   public void make() throws Exception {
     // Also makes the missing directory.
-    final Path jks = folder.getRoot().toPath().resolve("target/structure.jks");
+    final Path jks = folder.resolve("target/structure.jks");
     KeystoreHelper.make(jks, "changeit", "structure.example", "rest.example", "localhost", "structure.example");
     assertEquals("rw-------", PosixFilePermissions.toString(Files.getPosixFilePermissions(jks)));
     assertEquals(
@@ -67,14 +66,14 @@ public class KeystoreHelperTest {
 
   @Test
   public void makeForAddress() throws Exception {
-    final Path jks = folder.getRoot().toPath().resolve("structure.jks");
+    final Path jks = folder.resolve("structure.jks");
     KeystoreHelper.make(jks, "changeit", "10.0.0.1");
     assertEquals(Arrays.asList(Arrays.asList(2, "localhost"), Arrays.asList(7, "10.0.0.1")), names(jks));
   }
 
   @Test
   public void trust() throws Exception {
-    final Path jks = folder.getRoot().toPath().resolve("structure.jks");
+    final Path jks = folder.resolve("structure.jks");
     KeystoreHelper.make(jks, "changeit", "localhost");
     KeystoreHelper.trust(jks, "changeit");
     final Vertx vertx = Vertx.vertx();

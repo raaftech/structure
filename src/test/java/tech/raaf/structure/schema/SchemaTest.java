@@ -1,13 +1,13 @@
 package tech.raaf.structure.schema;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.net.URI;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import tech.raaf.structure.helper.JsonHelper;
 import tools.jackson.databind.JsonNode;
 
@@ -22,18 +22,18 @@ public abstract class SchemaTest {
       .stream()
       .filter(file -> !valid(file))
       .collect(Collectors.toList());
-    assertTrue("Valid fixtures rejected: " + rejected, rejected.isEmpty());
+    assertTrue(rejected.isEmpty(), "Valid fixtures rejected: " + rejected);
   }
 
   @Test
   public void testBadJson() {
     List<String> accepted = bad().stream().filter(this::valid).collect(Collectors.toList());
-    assertTrue("Invalid fixtures accepted: " + accepted, accepted.isEmpty());
+    assertTrue(accepted.isEmpty(), "Invalid fixtures accepted: " + accepted);
   }
 
   private boolean valid(String file) {
     JsonNode json = JsonHelper.jsonFromResourceOrFile(file);
-    assertNotNull("Missing fixture " + file, json);
+    assertNotNull(json, "Missing fixture " + file);
     return JsonHelper.validateToSchema(URI.create(schema()), json);
   }
 

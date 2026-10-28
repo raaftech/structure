@@ -1,13 +1,11 @@
 package tech.raaf.structure.helper;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.regex.PatternSyntaxException;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.node.ArrayNode;
 import tools.jackson.databind.node.ObjectNode;
@@ -16,15 +14,12 @@ public class JsonSchemaBuilderTest {
 
   private JsonSchemaBuilder jsonSchema;
 
-  @Rule
-  public ExpectedException exception = ExpectedException.none();
-
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     jsonSchema = new JsonSchemaBuilder();
   }
 
-  @After
+  @AfterEach
   public void tearDown() throws Exception {
     jsonSchema = null;
   }
@@ -66,8 +61,7 @@ public class JsonSchemaBuilderTest {
     // Create new JsonSchema, because we can't change the type when it has been set
     jsonSchema = new JsonSchemaBuilder("id", "foo", "bar");
 
-    exception.expect(IllegalArgumentException.class);
-    jsonSchema.setType("foo");
+    assertThrows(IllegalArgumentException.class, () -> jsonSchema.setType("foo"));
   }
 
   @Test
@@ -103,9 +97,8 @@ public class JsonSchemaBuilderTest {
     // Make sure prop3 has been removed from the schema
     assertEquals(null, node.get("prop3"));
 
-    exception.expect(RuntimeException.class);
     JsonSchemaBuilder json = jsonSchema.addProperty("prop4", "number", true, "description");
-    json.addProperty("impossible", "boolean", false, "description");
+    assertThrows(RuntimeException.class, () -> json.addProperty("impossible", "boolean", false, "description"));
   }
 
   @Test
@@ -137,8 +130,7 @@ public class JsonSchemaBuilderTest {
     schema.setPattern("^[a-z]+$");
     assertEquals("^[a-z]+$", schema.getPattern());
 
-    exception.expect(PatternSyntaxException.class);
-    schema.setPattern("[");
+    assertThrows(PatternSyntaxException.class, () -> schema.setPattern("["));
   }
 
   @Test

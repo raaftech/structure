@@ -1,7 +1,8 @@
 package tech.raaf.structure.graph;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static tech.raaf.structure.helper.JsonHelper.mapper;
 
 import com.google.common.collect.ImmutableMap;
@@ -10,8 +11,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import tech.raaf.structure.base.Context;
 import tech.raaf.structure.exceptions.IllegalEntityType;
 import tech.raaf.structure.schema.TypeSchemaTest;
@@ -24,7 +25,7 @@ public class InstrumentRelationsTest extends TypeSchemaTest {
   private Set<Result> rawResults;
   private Set<Instance> producedNodes;
 
-  @Before
+  @BeforeEach
   public void createInstrumentsAndResults() throws Exception {
     rawResults = ImmutableSet.of(result("first"), result("second"));
     Component component = new Component(
@@ -92,14 +93,14 @@ public class InstrumentRelationsTest extends TypeSchemaTest {
     assertTrue(emptyController.getResults().isEmpty());
   }
 
-  @Test(expected = IllegalEntityType.class)
+  @Test
   public void rejectsInputsThatAreNotResults() {
     Entity entity = parserEntity("InvalidParser");
     entity.addRelations("PARSED", Direction.OUTGOING, uuids(producedNodes));
-    Graph.transaction(entity::toGraph);
+    assertThrows(IllegalEntityType.class, () -> Graph.transaction(entity::toGraph));
   }
 
-  @Test(expected = IllegalEntityType.class)
+  @Test
   public void rejectsTypeNodesAsOutputs() {
     Entity entity = parserEntity("InvalidParser");
     entity.addRelations(
@@ -107,7 +108,7 @@ public class InstrumentRelationsTest extends TypeSchemaTest {
       Direction.OUTGOING,
       ImmutableSet.of(UUID.fromString(Context.getTypeRepository().findOneByName("Component").getUuid()))
     );
-    Graph.transaction(entity::toGraph);
+    assertThrows(IllegalEntityType.class, () -> Graph.transaction(entity::toGraph));
   }
 
   @Test

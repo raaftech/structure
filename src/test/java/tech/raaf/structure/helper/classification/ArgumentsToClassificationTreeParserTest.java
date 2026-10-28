@@ -1,11 +1,11 @@
 package tech.raaf.structure.helper.classification;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collections;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import tech.raaf.structure.helper.classification.ArgumentsToClassificationTreeParser.ClassificationTreeObjects;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.node.ObjectNode;
@@ -54,9 +54,9 @@ public class ArgumentsToClassificationTreeParserTest {
         .put("_hierarchyPath", "type.component.software");
       tree.root.consumeInput(Collections.singleton(origin));
 
-      assertTrue(onError, tree.result.isEmpty());
-      assertEquals(onError, onError.isEmpty() || onError.equals("fail"), tree.failed.contains(origin));
-      assertEquals(onError, onError.equals("askUser"), tree.askUser.contains(origin));
+      assertTrue(tree.result.isEmpty(), onError);
+      assertEquals(onError.isEmpty() || onError.equals("fail"), tree.failed.contains(origin), onError);
+      assertEquals(onError.equals("askUser"), tree.askUser.contains(origin), onError);
     }
   }
 

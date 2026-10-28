@@ -1,7 +1,8 @@
 package tech.raaf.structure.helper.handlebars;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assume.assumeTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import com.github.jknack.handlebars.Handlebars;
 import com.google.common.collect.ImmutableMap;
@@ -10,7 +11,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class QuoteTest {
 
@@ -61,14 +62,14 @@ public class QuoteTest {
     assertEquals("\"C:\\dir\\\\\"", Quote.CMD.quote("C:\\dir\\"));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void cmdRejectsDoubleQuote() {
-    Quote.CMD.quote("a\" & calc & \"");
+    assertThrows(IllegalArgumentException.class, () -> Quote.CMD.quote("a\" & calc & \""));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void cmdRejectsLineBreak() {
-    Quote.CMD.quote("a\r\ncalc");
+    assertThrows(IllegalArgumentException.class, () -> Quote.CMD.quote("a\r\ncalc"));
   }
 
   @Test
@@ -82,7 +83,7 @@ public class QuoteTest {
 
   // Run a script with one quoted value, as an Invoke runs it
   private static String runScript(String shell, Quote quote) throws Exception {
-    assumeTrue(shell + " is not installed", Files.isExecutable(Paths.get(shell)));
+    assumeTrue(Files.isExecutable(Paths.get(shell)), shell + " is not installed");
     final Path script = Files.createTempFile("quote", ".script");
     try {
       Files.write(script, ("printf '[%s]' " + quote.quote(VALUE) + "\n").getBytes(StandardCharsets.UTF_8));

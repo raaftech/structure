@@ -1,14 +1,14 @@
 package tech.raaf.structure.graph;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.UUID;
 import mockit.Expectations;
 import mockit.Mocked;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import mockit.integration.junit5.JMockitExtension;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import tech.raaf.structure.base.Context;
 import tech.raaf.structure.graph.repositories.InstanceRepository;
 import tech.raaf.structure.graph.repositories.NodeRepository;
@@ -17,6 +17,7 @@ import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.node.ArrayNode;
 import tools.jackson.databind.node.ObjectNode;
 
+@ExtendWith(JMockitExtension.class)
 public class TypeTest {
 
   @Mocked
@@ -26,9 +27,6 @@ public class TypeTest {
   InstanceRepository instanceRepository;
 
   ObjectMapper mapper = new ObjectMapper();
-
-  @Rule
-  public ExpectedException exception = ExpectedException.none();
 
   /**
    * SetDescriptor used to be used before everything was entity backed.

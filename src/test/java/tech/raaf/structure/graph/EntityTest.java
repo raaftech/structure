@@ -1,9 +1,10 @@
 package tech.raaf.structure.graph;
 
-import static junit.framework.TestCase.assertNull;
-import static junit.framework.TestCase.assertTrue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static tech.raaf.structure.helper.JsonHelper.mapper;
 
 import com.google.common.collect.ImmutableMap;
@@ -20,12 +21,11 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Test;
 import tech.raaf.structure.GraphTest;
 import tech.raaf.structure.base.Context;
 import tech.raaf.structure.exceptions.EntityDeserializationException;
+import tech.raaf.structure.exceptions.IllegalEntityType;
 import tech.raaf.structure.exceptions.JsonValidationException;
 import tech.raaf.structure.graph.repositories.NodeRepository;
 import tech.raaf.structure.graph.repositories.TypeRepository;
@@ -45,9 +45,6 @@ public class EntityTest extends GraphTest {
   private static final String ENTITY_FILE_DATASCHEMA_PATH = "path";
   private static final String ENTITY_FILE_CONTENT = "content";
   private static final String ENTITY_FILE_CHECKSUM = "checksum";
-
-  @Rule
-  public ExpectedException exception = ExpectedException.none();
 
   private final NodeRepository nodeRepository = Context.getNodeRepository();
   private final TypeRepository typeRepository = Context.getTypeRepository();
@@ -182,8 +179,7 @@ public class EntityTest extends GraphTest {
     ObjectNode root = (ObjectNode) mapper.readTree(getDataFromFile("src/test/resources/bundles/simple/root.type.json"));
     root.remove("desc");
 
-    exception.expect(JsonValidationException.class);
-    mapper.treeToValue(root, Entity.class);
+    assertThrows(JsonValidationException.class, () -> mapper.treeToValue(root, Entity.class));
   }
 
   @Test
@@ -394,8 +390,7 @@ public class EntityTest extends GraphTest {
       null
     );
 
-    exception.expect(JsonValidationException.class);
-    mapper.readValue(entityJson, Entity.class);
+    assertThrows(JsonValidationException.class, () -> mapper.readValue(entityJson, Entity.class));
   }
 
   /**
@@ -411,8 +406,7 @@ public class EntityTest extends GraphTest {
       null
     );
 
-    exception.expect(EntityDeserializationException.class);
-    mapper.readValue(entityJson, Entity.class);
+    assertThrows(EntityDeserializationException.class, () -> mapper.readValue(entityJson, Entity.class));
   }
 
   /**
@@ -454,8 +448,7 @@ public class EntityTest extends GraphTest {
       null
     );
 
-    exception.expect(EntityDeserializationException.class);
-    mapper.readValue(entityJson, Entity.class);
+    assertThrows(EntityDeserializationException.class, () -> mapper.readValue(entityJson, Entity.class));
   }
 
   @Test
@@ -468,8 +461,7 @@ public class EntityTest extends GraphTest {
       "{\"invalid\": \"foo\", \"object\": \"bar\"}"
     );
 
-    exception.expect(EntityDeserializationException.class);
-    mapper.readValue(componentJson, Entity.class);
+    assertThrows(EntityDeserializationException.class, () -> mapper.readValue(componentJson, Entity.class));
   }
 
   @Test
@@ -541,10 +533,10 @@ public class EntityTest extends GraphTest {
     Entity componentEntity = mapper.readValue(componentType, Entity.class);
     Entity instanceEntity = mapper.readValue(instance, Entity.class);
 
-    exception.expectMessage("Cannot instantiate based on an abstract type");
     typeEntity.toGraph();
     componentEntity.toGraph();
-    instanceEntity.toGraph();
+    IllegalEntityType e = assertThrows(IllegalEntityType.class, instanceEntity::toGraph);
+    assertTrue(e.getMessage().contains("Cannot instantiate based on an abstract type"));
   }
 
   // The labels of a node in the graph

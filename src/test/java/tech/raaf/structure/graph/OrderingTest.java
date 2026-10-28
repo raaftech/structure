@@ -1,7 +1,7 @@
 package tech.raaf.structure.graph;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static tech.raaf.structure.helper.JsonHelper.mapper;
 
 import com.google.common.collect.ImmutableMap;
@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import tech.raaf.structure.base.Context;
 import tech.raaf.structure.helper.Triple;
 import tech.raaf.structure.schema.TypeSchemaTest;
@@ -38,7 +38,7 @@ public class OrderingTest extends TypeSchemaTest {
       assertEquals(walk(uuid), Context.getTypeRepository().getHierarchyPath(uuid));
       count++;
     }
-    assertTrue("Too few types: " + count, count > 50);
+    assertTrue(count > 50, "Too few types: " + count);
   }
 
   @Test

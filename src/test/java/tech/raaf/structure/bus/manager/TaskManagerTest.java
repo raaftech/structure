@@ -1,10 +1,10 @@
 package tech.raaf.structure.bus.manager;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static tech.raaf.structure.helper.JsonHelper.mapper;
 
 import com.google.common.collect.ImmutableMap;
@@ -18,8 +18,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import tech.raaf.structure.base.Context;
 import tech.raaf.structure.bus.InstanceActor;
 import tech.raaf.structure.graph.Controller;
@@ -42,7 +42,7 @@ public class TaskManagerTest extends TypeSchemaTest {
   // Each TaskManager starts a timer on the shared queue, so deploy one
   private static boolean deployed = false;
 
-  @Before
+  @BeforeEach
   public void deploy() throws Exception {
     if (deployed) {
       return;
@@ -135,7 +135,7 @@ public class TaskManagerTest extends TypeSchemaTest {
     String origin = origin();
     for (String task : queueResults(origin).keySet()) {
       JsonNode results = getResults(origin, mapper.createObjectNode().put("task", task));
-      assertEquals("Results for task " + task, 1, results.size());
+      assertEquals(1, results.size(), "Results for task " + task);
       assertEquals(task, results.get(0).path("task").asText());
     }
   }
@@ -151,11 +151,11 @@ public class TaskManagerTest extends TypeSchemaTest {
           "RETURN controller.uuid AS controller, origin.uuid AS origin",
         ImmutableMap.of("task", task.getKey())
       );
-      assertEquals("Stored results for task " + task.getKey(), 1, rows.size());
+      assertEquals(1, rows.size(), "Stored results for task " + task.getKey());
       assertEquals(
-        "Result links for task " + task.getKey(),
         ImmutableMap.of("controller", task.getValue(), "origin", origin),
-        rows.get(0)
+        rows.get(0),
+        "Result links for task " + task.getKey()
       );
     }
   }
@@ -164,7 +164,7 @@ public class TaskManagerTest extends TypeSchemaTest {
     Map<String, String> tasks = new LinkedHashMap<>();
     for (String name : Arrays.asList("BashInvoke", "IpNetworkDiscover")) {
       Controller controller = (Controller) Context.getInstrumentRepository().findOneByName(name);
-      assertNotNull("Missing controller " + name, controller);
+      assertNotNull(controller, "Missing controller " + name);
       String task = UUID.randomUUID().toString();
       tasks.put(task, controller.getUuid());
       ObjectNode metadata = mapper
@@ -181,9 +181,9 @@ public class TaskManagerTest extends TypeSchemaTest {
     ObjectNode request = mapper.createObjectNode().put("msgh", "getResults");
     request.set("args", arguments);
     JsonNode reply = new InstanceActor(Context.getInstanceRepository().findByUuid(origin)).getResults().exec(request);
-    assertFalse(reply.toString(), reply.path("result").has("error"));
+    assertFalse(reply.path("result").has("error"), reply.toString());
     JsonNode results = reply.path("result").path("data");
-    assertTrue(reply.toString(), results.isArray());
+    assertTrue(results.isArray(), reply.toString());
     return results;
   }
 
@@ -257,7 +257,7 @@ public class TaskManagerTest extends TypeSchemaTest {
       "MATCH (:Node {uuid: $uuid})-[:HAS_RESULT]->(r:Result {`data-task`: $task}) RETURN properties(r) AS properties",
       ImmutableMap.of("uuid", origin, "task", task)
     );
-    assertEquals("Results for task " + task, 1, rows.size());
+    assertEquals(1, rows.size(), "Results for task " + task);
     return (Map<String, Object>) rows.get(0).get("properties");
   }
 }

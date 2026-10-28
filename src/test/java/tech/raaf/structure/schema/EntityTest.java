@@ -1,13 +1,13 @@
 package tech.raaf.structure.schema;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.google.common.collect.ImmutableSet;
 import java.net.URI;
 import java.util.Set;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import tech.raaf.structure.graph.Entity;
 import tech.raaf.structure.helper.JsonHelper;
 import tools.jackson.databind.ObjectMapper;
@@ -53,7 +53,7 @@ public class EntityTest extends SchemaTest {
         .addObject()
         .put("cardinality", "OPTIONAL_TO_MANY")
         .put("to", target);
-      assertTrue(target, valid(entity));
+      assertTrue(valid(entity), target);
       ObjectNode schema = (ObjectNode) entity.path("file").path("dataSchema");
       schema.remove("path");
       schema.put("content", "{}");
@@ -72,7 +72,7 @@ public class EntityTest extends SchemaTest {
         .addObject()
         .put("cardinality", "OPTIONAL_TO_MANY")
         .put("to", target);
-      assertFalse(target, valid(entity));
+      assertFalse(valid(entity), target);
     }
   }
 
@@ -87,7 +87,7 @@ public class EntityTest extends SchemaTest {
     }) {
       ObjectNode entity = instance();
       relation(entity).putArray("to").add(target);
-      assertFalse(target, valid(entity));
+      assertFalse(valid(entity), target);
     }
   }
 
@@ -116,7 +116,7 @@ public class EntityTest extends SchemaTest {
     for (String name : new String[] { "MEMBER-OF", "MEMBER OF", "MEMBER1", "" }) {
       ObjectNode entity = instance();
       ((ObjectNode) entity.path("meta").path("relations")).set(name, relation(entity).deepCopy());
-      assertFalse(name, valid(entity));
+      assertFalse(valid(entity), name);
     }
   }
 

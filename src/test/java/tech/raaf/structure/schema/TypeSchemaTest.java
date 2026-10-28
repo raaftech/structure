@@ -7,7 +7,7 @@ import io.vertx.ext.web.Router;
 import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import tech.raaf.structure.GraphTest;
 import tech.raaf.structure.base.Context;
 import tech.raaf.structure.bus.manager.SchemaManager;
@@ -24,7 +24,7 @@ public abstract class TypeSchemaTest extends GraphTest {
   // The bundles are the same for each test, so read them one time
   private static BundleLoader bundleLoader;
 
-  @Before
+  @BeforeEach
   public void setUpDatabase() throws Exception {
     // Setup the http endpoint for querying type schema's
     if (vertx == null) {
