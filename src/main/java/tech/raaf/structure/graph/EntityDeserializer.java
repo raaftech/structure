@@ -77,12 +77,13 @@ public class EntityDeserializer extends StdDeserializer<Entity> {
     ObjectNode entityJson = (ObjectNode) deserializationContext.readTree(jsonParser);
 
     /*
-     * Validate schema and go. Notice we don't log anything,
-     * validateToSchema does that for us. Also note that it is the schema's
+     * Validate schema and go. The exception below gives the reasons.
+     * Also note that it is the schema's
      * responsibility to make sure the values are there and are correct!
      * Don't clutter the code with null checks and value mangling!
      */
-    if (JsonHelper.validateToSchema(entitySchema, entityJson)) {
+    final List<String> errors = JsonHelper.validationErrors(entitySchema, entityJson);
+    if (errors.isEmpty()) {
       /* Set name. */
       name = entityJson.get("name").asString();
       log.debug("Setting name to \"{}\"", name);
@@ -318,7 +319,7 @@ public class EntityDeserializer extends StdDeserializer<Entity> {
         //FIXME the full schema validation should already do this, so i'm thinking this piece of code is obsolete
         // if this entity was provided with a dataSchema, make sure the data object validates against that
         // if (dataSchema != null) {
-        //   if (!JsonHelper.validateToSchema(dataSchema, dataJson)) {
+        //   if (!JsonHelper.validationErrors(dataSchema, dataJson).isEmpty()) {
         //     throw new EntityDeserializationException("Provided data for entity \"" + name + "\" doesn't " +
         //         "validate against dataSchema.");
         //   }
@@ -374,7 +375,7 @@ public class EntityDeserializer extends StdDeserializer<Entity> {
         entity.setData(data);
       }
     } else {
-      throw new JsonValidationException("Entity JSON didn't validate against entity schema");
+      throw new JsonValidationException("Entity JSON didn't validate against entity schema: " + errors);
     }
 
     return entity;

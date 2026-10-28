@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
@@ -20,21 +21,26 @@ public abstract class SchemaTest {
   public void testGoodJson() {
     List<String> rejected = good()
       .stream()
-      .filter(file -> !valid(file))
+      .map(file -> Map.entry(file, errors(file)))
+      .filter(entry -> !entry.getValue().isEmpty())
+      .map(Object::toString)
       .collect(Collectors.toList());
     assertTrue(rejected.isEmpty(), "Valid fixtures rejected: " + rejected);
   }
 
   @Test
   public void testBadJson() {
-    List<String> accepted = bad().stream().filter(this::valid).collect(Collectors.toList());
+    List<String> accepted = bad()
+      .stream()
+      .filter(file -> errors(file).isEmpty())
+      .collect(Collectors.toList());
     assertTrue(accepted.isEmpty(), "Invalid fixtures accepted: " + accepted);
   }
 
-  private boolean valid(String file) {
+  private List<String> errors(String file) {
     JsonNode json = JsonHelper.jsonFromResourceOrFile(file);
     assertNotNull(json, "Missing fixture " + file);
-    return JsonHelper.validateToSchema(URI.create(schema()), json);
+    return JsonHelper.validationErrors(URI.create(schema()), json);
   }
 
   protected abstract Set<String> good();

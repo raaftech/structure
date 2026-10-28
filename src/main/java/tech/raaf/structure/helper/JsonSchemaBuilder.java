@@ -1,6 +1,7 @@
 package tech.raaf.structure.helper;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 import org.slf4j.Logger;
@@ -484,10 +485,10 @@ public class JsonSchemaBuilder {
   /**
    * Validate JSON against the schema built with this JsonSchemaBuilder.
    * @param data The JSON data you want to validate.
-   * @return True when the JSON successfully validated, false if not.
+   * @return The reasons why the JSON is not valid; empty if it is valid.
    */
-  public boolean validateJson(JsonNode data) {
-    return JsonHelper.validateToSchema(json, data);
+  public List<String> validationErrors(JsonNode data) {
+    return JsonHelper.validationErrors(json, data);
   }
 
   /**

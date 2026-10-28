@@ -565,9 +565,9 @@ public class Entity {
       final Map<String, Object> data = new HashMap<>(getData());
       data.put("name", getName());
       data.put("desc", getDesc());
-      final boolean validated = JsonHelper.validateToSchema(schemaUri, mapper.valueToTree(data));
-      if (!validated) {
-        throw new IllegalEntityType(createErrorMessage(400, "", "Failed to validate against type schema"));
+      final List<String> errors = JsonHelper.validationErrors(schemaUri, mapper.valueToTree(data));
+      if (!errors.isEmpty()) {
+        throw new IllegalEntityType(createErrorMessage(400, "", "Failed to validate against type schema: " + errors));
       }
     } else {
       maybeClassLabels = getClassLabels("Type");

@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static tech.raaf.structure.helper.JsonHelper.mapper;
 
 import java.net.URI;
+import java.util.List;
 import java.util.UUID;
 import java.util.stream.IntStream;
 import mockit.Expectations;
@@ -34,8 +35,8 @@ public class ResultTest extends GraphTest {
   public void setUp() throws Exception {
     new Expectations() {
       {
-        JsonHelper.validateToSchema((URI) any, (JsonNode) any);
-        result = true;
+        JsonHelper.validationErrors((URI) any, (JsonNode) any);
+        result = List.of();
       }
     };
 

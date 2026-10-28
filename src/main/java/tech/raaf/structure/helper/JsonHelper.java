@@ -149,37 +149,34 @@ public class JsonHelper {
     );
   }
 
-  // Load the schema, validate the object, and log why it is not valid
-  private static boolean validate(Supplier<Schema> schema, JsonNode object) {
+  // Load the schema, and give the reasons why the object is not valid
+  private static List<String> validate(Supplier<Schema> schema, JsonNode object) {
     try {
-      final List<Error> errors = schema.get().validate(object);
-      errors.forEach(error -> log.error("JSON data validation message: {}", error));
-      return errors.isEmpty();
+      return schema.get().validate(object).stream().map(Error::toString).toList();
     } catch (SchemaException e) {
-      log.error(e.getMessage());
-      if (Configuration.isTraceModeOn()) {
-        e.printStackTrace();
-      }
-      return false;
+      return List.of(String.valueOf(e.getMessage()));
     }
   }
 
   /**
-   * See if a JSON object validates against a given schema.
+   * Validate a JSON object against a given schema.
    * We mainly use this method with static schema's located in our resources.
+   * The caller reports the reasons; this method does not log them.
    * @param schema The URI of the schema to use for validation.
    * @param object The object to validate.
-   * @return Does object validate against schema?
+   * @return The reasons why object is not valid; empty if it is valid.
    */
-  public static boolean validateToSchema(URI schema, JsonNode object) {
+  public static List<String> validationErrors(URI schema, JsonNode object) {
     return validate(() -> registry.getSchema(SchemaLocation.of(schema.toString())), object);
   }
 
-  public static boolean validateToSchema(JsonNode schema, JsonNode object, URI customNamespace) {
+  public static List<String> validationErrors(JsonNode schema, JsonNode object, URI customNamespace) {
     final List<Error> syntaxErrors = schemaErrors(schema);
     if (!syntaxErrors.isEmpty()) {
-      syntaxErrors.forEach(error -> log.error("JSON schema validation message: {}", error));
-      return false;
+      return syntaxErrors
+        .stream()
+        .map(error -> "schema " + error)
+        .toList();
     }
     if (Context.getSchemaNamespace() == null) {
       return validate(() -> registry.getSchema(schema), object);
@@ -194,17 +191,17 @@ public class JsonHelper {
   }
 
   /**
-   * See if a JSON object validates against a given schema.
-   * This version of validateSchema(...) is mainly used for schema's that are retrieved from the database.
+   * Validate a JSON object against a given schema.
+   * This version of validationErrors(...) is mainly used for schema's that are retrieved from the database.
    * Because we can't natively expose the graph as a namespace for schema's, we need to provide a proxy to
    * these schema's. That is {@link SchemaManager SchemaManager}'s job,
    * and this method sets the namespace to {@link SchemaManager SchemaManager}'s
    * location on the webserver.
    * @param schema The URI of the schema to use for validation.
    * @param object The object to validate.
-   * @return Does object validate against schema?
+   * @return The reasons why object is not valid; empty if it is valid.
    */
-  public static boolean validateToSchema(JsonNode schema, JsonNode object) {
-    return validateToSchema(schema, object, null);
+  public static List<String> validationErrors(JsonNode schema, JsonNode object) {
+    return validationErrors(schema, object, null);
   }
 }

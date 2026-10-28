@@ -54,6 +54,6 @@ public class IpSchemaTest {
   private boolean valid(String schema, String field, Object value) {
     ObjectNode reference = mapper.createObjectNode();
     reference.put("$ref", "resource:/bundles/tcpip/schema/" + schema + ".schema.json#/properties/" + field);
-    return JsonHelper.validateToSchema(reference, mapper.valueToTree(value));
+    return JsonHelper.validationErrors(reference, mapper.valueToTree(value)).isEmpty();
   }
 }

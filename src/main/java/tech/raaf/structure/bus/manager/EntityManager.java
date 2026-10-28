@@ -84,9 +84,13 @@ public class EntityManager extends GenericActor {
             List<Entity> entities = StreamSupport.stream(data.spliterator(), false)
               // If an object doesn't adhere to entity.schema.json, throw an exception
               .peek(json -> {
-                if (!JsonHelper.validateToSchema(URI.create("resource:/schema/entity.schema.json"), json)) {
+                final List<String> errors = JsonHelper.validationErrors(
+                  URI.create("resource:/schema/entity.schema.json"),
+                  json
+                );
+                if (!errors.isEmpty()) {
                   throw new EntityDeserializationException(
-                    "Received object does not validate against entity.schema.json"
+                    "Received object does not validate against entity.schema.json: " + errors
                   );
                 }
               })

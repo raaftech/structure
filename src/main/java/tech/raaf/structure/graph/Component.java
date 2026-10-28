@@ -41,9 +41,10 @@ public final class Component extends Instance implements Groupable {
     if (type == null) {
       throw new IllegalArgumentException("Component constructor called with null as type.");
     }
-    if (!type.getSchema().validateJson(instanceDataCopy)) {
+    final List<String> errors = type.getSchema().validationErrors(instanceDataCopy);
+    if (!errors.isEmpty()) {
       throw new JsonValidationException(
-        "Cannot create component of type \"" + type.getName() + "\", JSON doesn't validate against it."
+        "Cannot create component of type \"" + type.getName() + "\", JSON doesn't validate against it: " + errors
       );
     }
     final String name = instanceDataCopy.get("name").asString();

@@ -68,8 +68,9 @@ public class ArgumentsToClassificationTreeParser {
   }
 
   public static ClassificationTreeObjects asTree(ObjectNode arguments) {
-    if (!JsonHelper.validateToSchema(argumentsSchema, arguments, INSTRUMENT_SCHEMA_NS)) {
-      throw new IllegalArgumentException("Provided arguments did not conform to arguments schema.");
+    final List<String> errors = JsonHelper.validationErrors(argumentsSchema, arguments, INSTRUMENT_SCHEMA_NS);
+    if (!errors.isEmpty()) {
+      throw new IllegalArgumentException("Provided arguments did not conform to arguments schema: " + errors);
     }
 
     ClassificationTreeObjects returnObject = new ClassificationTreeObjects();

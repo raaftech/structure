@@ -122,13 +122,13 @@ public class BusRoundTripTest extends TypeSchemaTest {
       },
       // The error paths of the msgh dispatch, a null msgh is absent
       { ENTITIES, "noSuchHandler", "{}", "No handler for called method." },
-      { TYPES, "findOneByName", "{}", "Arguments didn't validate against schema." },
-      { INSTANCES, "nLastCreated", "{'amount': 5, 'labels': 'Group'}", "Arguments didn't validate against schema." },
-      { INSTANCES, "nLastCreated", "{'amount': 5, 'labels': [1]}", "Arguments didn't validate against schema." },
-      { INSTANCES, "nLastCreated", "{'amount': 5, 'labels': null}", "Arguments didn't validate against schema." },
-      { ENTITIES, null, "{}", "Request didn't validate against schema." },
-      { ENTITIES, "no.such.handler", "{}", "Request didn't validate against schema." },
-      { ENTITIES, "read", "[]", "Request didn't validate against schema." },
+      { TYPES, "findOneByName", "{}", "Arguments didn't validate against schema: [" },
+      { INSTANCES, "nLastCreated", "{'amount': 5, 'labels': 'Group'}", "Arguments didn't validate against schema: [" },
+      { INSTANCES, "nLastCreated", "{'amount': 5, 'labels': [1]}", "Arguments didn't validate against schema: [" },
+      { INSTANCES, "nLastCreated", "{'amount': 5, 'labels': null}", "Arguments didn't validate against schema: [" },
+      { ENTITIES, null, "{}", "Request didn't validate against schema: [" },
+      { ENTITIES, "no.such.handler", "{}", "Request didn't validate against schema: [" },
+      { ENTITIES, "read", "[]", "Request didn't validate against schema: [" },
     };
     List<String> failures = new ArrayList<>();
     for (String[] row : rows) {
@@ -136,9 +136,9 @@ public class BusRoundTripTest extends TypeSchemaTest {
       try {
         JsonNode response = send(row[0], row[1], row[2].replace('\'', '"'));
         JsonNode error = response.path("result").path("error");
-        if (!JsonHelper.validateToSchema(RESPONSE, response)) {
+        if (!JsonHelper.validationErrors(RESPONSE, response).isEmpty()) {
           failures.add(name + "invalid response " + response);
-        } else if (row[3] == null ? !error.isMissingNode() : !row[3].equals(error.asString())) {
+        } else if (row[3] == null ? !error.isMissingNode() : !error.asString().startsWith(row[3])) {
           failures.add(name + response.get("result"));
         }
       } catch (ExecutionException e) {

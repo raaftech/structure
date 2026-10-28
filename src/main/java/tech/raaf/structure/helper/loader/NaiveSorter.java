@@ -128,12 +128,14 @@ public class NaiveSorter {
   );
 
   private static String prepareForHashing(ObjectNode input) throws JacksonException {
-    if (!JsonHelper.validateToSchema(ENTITYSCHEMA, input)) {
+    final List<String> errors = JsonHelper.validationErrors(ENTITYSCHEMA, input);
+    if (!errors.isEmpty()) {
       throw new JsonValidationException(
         "Cannot calculate a checksum for type [" +
           input.get("name").asString() +
           "]: JSON does not validate against " +
-          "entity schema"
+          "entity schema: " +
+          errors
       );
     }
 

@@ -230,25 +230,25 @@ public class JsonSchemaBuilderTest {
     json.put("name", "foo");
     json.put("desc", "description");
 
-    assertTrue(jsonSchema.validateJson(json));
+    assertTrue(jsonSchema.validationErrors(json).isEmpty());
 
     // Invalid, because we only allow known properties (additionalProperties set to false)
     json.put("invalid", "foo");
-    assertFalse(jsonSchema.validateJson(json));
+    assertFalse(jsonSchema.validationErrors(json).isEmpty());
 
     // Start again
     json = mapper.createObjectNode();
     json.put("uuid", "adf58c7d-098f-4c58-a37b-8f1e07b917ba");
     json.put("name", "foo");
     // desc is missing
-    assertFalse(jsonSchema.validateJson(json));
+    assertFalse(jsonSchema.validationErrors(json).isEmpty());
 
     // False again, because desc should be a string
     json.put("desc", 1);
-    assertFalse(jsonSchema.validateJson(json));
+    assertFalse(jsonSchema.validationErrors(json).isEmpty());
 
     // Valid again
     json.put("desc", "valid");
-    assertTrue(jsonSchema.validateJson(json));
+    assertTrue(jsonSchema.validationErrors(json).isEmpty());
   }
 }

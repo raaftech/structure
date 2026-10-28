@@ -44,7 +44,7 @@ public class JsonHelperTest {
 
   private boolean validates(String ref) {
     final JsonNode schema = JsonHelper.mapper.createObjectNode().put("$ref", ref);
-    return JsonHelper.validateToSchema(schema, JsonHelper.mapper.createObjectNode());
+    return JsonHelper.validationErrors(schema, JsonHelper.mapper.createObjectNode()).isEmpty();
   }
 
   @Test
