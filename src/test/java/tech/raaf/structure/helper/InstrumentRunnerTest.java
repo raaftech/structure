@@ -12,12 +12,13 @@ import java.nio.file.attribute.PosixFilePermissions;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import mockit.Expectations;
 import mockit.Mocked;
-import mockit.StrictExpectations;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Test;
 import tech.raaf.structure.base.Configuration;
@@ -93,19 +94,55 @@ public class InstrumentRunnerTest {
       )
     );
 
-    new StrictExpectations() {
+    final Set<ObjectNode> subjectArguments = ImmutableSet.of(
+      mapper
+        .createObjectNode()
+        .put("_hierarchyPath", "type.component.software.server.httpserver")
+        .put("shortName", "testShortName")
+    );
+    final Optional<JsonNode> sendFileArguments = Optional.of(
+      mapper.readTree(
+        "{\"payloadDirectory\": {" +
+          "        \"value\": {" +
+          "          \"from\": \"static\"," +
+          "          \"type\": \"string\"," +
+          "          \"strategy\": \"mustBeOne\"" +
+          "        }," +
+          "        \"canBeUserSupplied\": false," +
+          "        \"isOptional\": false" +
+          "      }}"
+      )
+    );
+    final Optional<JsonNode> sendStringArguments = Optional.of(
+      mapper.readTree(
+        "{\"payloadFileName\": {" +
+          "        \"value\": {" +
+          "          \"from\": \"static\"," +
+          "          \"type\": \"string\"," +
+          "          \"strategy\": \"mustBeOne\"" +
+          "        }," +
+          "        \"canBeUserSupplied\": false," +
+          "        \"isOptional\": false" +
+          "      }}"
+      )
+    );
+
+    // One mock is all the controllers, thus results come in call order
+    new Expectations() {
       {
         // Return a mocked group when querying the "structure" group
         groupingRepository.findByUuid(anyString);
         result = group;
 
-        // Set the UUID of the origin to originUuid
+        // The origin, and the Group the origin is part of
         origin.getUuid();
         result = originUuid;
-
-        // We'll query the Group the origin is part of and return it
         instanceRepository.getStartOfComponentGroup(originUuid);
         result = group;
+        origin.getName();
+        result = "bash";
+        origin.toJson();
+        result = mapper.createObjectNode().put("name", "Origin");
 
         /*
           Return a set of one type, where the name matches origin.isOfType. This
@@ -114,10 +151,8 @@ public class InstrumentRunnerTest {
         */
         controller.getHandledTypes();
         result = ImmutableSet.of(type);
-
         type.getName();
         result = handledType;
-
         origin.isOfType(handledType);
         result = true;
 
@@ -125,197 +160,70 @@ public class InstrumentRunnerTest {
         controller.isSubjectIsLocal();
         result = true;
 
-        // Next two statements are called in getCompatibleSendString
-
-        // Return the agent's UUID
+        /*
+          The agent and the subject for the send string, the same for the send file,
+          then the subject that must have the interpreter of the script.
+        */
         group.getUuid();
-        result = agentUuid;
-
-        // Return the subject's UUID
-        group.getUuid();
-        result = subjectUuid;
+        returns(agentUuid, subjectUuid, agentUuid, subjectUuid, subjectUuid);
 
         /*
           Return a compatible send string controller receive string controller pair,
           these are needed to establish a path between structure and the subject over
-          which we can execute a command.
+          which we can execute a command. The same for send file and receive file.
         */
         instrumentRepository.getCompatibleSendString(agentUuid, subjectUuid);
         result = ImmutableSet.of(controller);
-
-        controller.getUuid();
-        result = sendStringUuid;
-
         instrumentRepository.getMatchingReceiveString(sendStringUuid);
         result = marker;
-
-        controller.getName();
-        result = "MockedSendString";
-        marker.getName();
-        result = "MockedReceiveString";
-
-        // Next two statements are called in getCompatibleSendString
-
-        // Return the agent's UUID
-        group.getUuid();
-        result = agentUuid;
-
-        // Return the subject's UUID
-        group.getUuid();
-        result = subjectUuid;
-
-        // Same as above, but with {send,receive} file
         instrumentRepository.getCompatibleSendFile(anyString, anyString);
         result = ImmutableSet.of(controller);
-
-        controller.getUuid();
-        result = sendFileUuid;
-
         instrumentRepository.getMatchingReceiveFile(sendFileUuid);
         result = marker;
-
-        controller.getName();
-        result = "MockedSendFile";
+        controller.getUuid();
+        returns(sendStringUuid, sendFileUuid);
         marker.getName();
-        result = "MockedReceiveFile";
+        returns("MockedReceiveString", "MockedReceiveFile");
+
+        // The send string, the send file, then the script controller
+        controller.getName();
+        returns("MockedSendString", "MockedSendFile", calledControllerName);
 
         controller.getCapability();
         result = capability;
-
         capability.getName();
         result = "State";
 
         // Return an interpreter. THIS TRIGGERS THE SCRIPT ROUTINE.
         controller.getInterpreter();
         result = Optional.of("Bash");
-
-        // Return some script content
         controller.getScriptContent();
         result = Optional.of("#!/bin/bash\\necho foo");
-
-        /*
-          The subject is now queried to see if it has the needed interpreter, because
-          we need it to execute the script.
-        */
-        group.getUuid();
-        result = subjectUuid;
+        controller.getExtension();
+        result = Optional.of("sh");
         groupingRepository.getChildrenOfType(subjectUuid, "Bash");
         result = ImmutableSet.of(instance);
 
         /*
-          A script file containing the script will now be created on the filesystem, and its
-          location will be pushed to the context.
+          Two times for the script (validateAndSelectArguments and
+          createArgumentList), then the send file and the send string.
         */
-        origin.getName();
-        result = "bash";
-        controller.getName();
-        result = calledControllerName;
-        controller.getExtension();
-        result = Optional.of("sh");
-
-        // Inside validateAndSelectArguments
         controller.getArguments();
-        result = calledControllerArguments;
-        controller.getName();
-        result = calledControllerName;
+        returns(calledControllerArguments, calledControllerArguments, sendFileArguments, sendStringArguments);
 
-        // subject.toArguments
+        // The subject, then the agent, for each of the three controllers
         group.toArguments();
-        result = ImmutableSet.of(
-          mapper
-            .createObjectNode()
-            .put("_hierarchyPath", "type.component.software.server.httpserver")
-            .put("shortName", "testShortName")
+        returns(
+          subjectArguments,
+          Collections.EMPTY_SET,
+          subjectArguments,
+          Collections.EMPTY_SET,
+          subjectArguments,
+          Collections.EMPTY_SET
         );
-
-        // agent.toArguments
-        group.toArguments();
-        result = Collections.EMPTY_SET;
-
-        // origin.toJson
-        origin.toJson();
-        result = mapper.createObjectNode().put("name", "Origin");
-
-        // Inside createArgumentList
-        controller.getArguments();
-        result = calledControllerArguments;
-
-        // SendFile's validateAndSelectArguments, in this case we do need to return something
-        controller.getArguments();
-        result = Optional.of(
-          mapper.readTree(
-            "{\"payloadDirectory\": {" +
-              "        \"value\": {" +
-              "          \"from\": \"static\"," +
-              "          \"type\": \"string\"," +
-              "          \"strategy\": \"mustBeOne\"" +
-              "        }," +
-              "        \"canBeUserSupplied\": false," +
-              "        \"isOptional\": false" +
-              "      }}"
-          )
-        );
-        controller.getName();
-        result = calledControllerName;
-
-        // subject.toArguments
-        group.toArguments();
-        result = ImmutableSet.of(
-          mapper
-            .createObjectNode()
-            .put("_hierarchyPath", "type.component.software.server.httpserver")
-            .put("shortName", "testShortName")
-        );
-
-        // agent.toArguments
-        group.toArguments();
-        result = Collections.EMPTY_SET;
-
-        // origin.toJson
-        origin.toJson();
-        result = mapper.createObjectNode().put("name", "Origin");
 
         controller.getTemplateContent();
-        result = Optional.of("scp somedirectory");
-
-        // SendString's validateAndSelectArguments, in this case we do need to return something
-        controller.getArguments();
-        result = Optional.of(
-          mapper.readTree(
-            "{\"payloadFileName\": {" +
-              "        \"value\": {" +
-              "          \"from\": \"static\"," +
-              "          \"type\": \"string\"," +
-              "          \"strategy\": \"mustBeOne\"" +
-              "        }," +
-              "        \"canBeUserSupplied\": false," +
-              "        \"isOptional\": false" +
-              "      }}"
-          )
-        );
-
-        controller.getName();
-        result = calledControllerName;
-
-        // subject.toArguments
-        group.toArguments();
-        result = ImmutableSet.of(
-          mapper
-            .createObjectNode()
-            .put("_hierarchyPath", "type.component.software.server.httpserver")
-            .put("shortName", "testShortName")
-        );
-
-        // agent.toArguments
-        group.toArguments();
-        result = Collections.EMPTY_SET;
-
-        // origin.toJson
-        origin.toJson();
-        result = mapper.createObjectNode().put("name", "Origin");
-
-        controller.getTemplateContent();
-        result = Optional.of("ssh -ltoor someserver \"{{ payloadFileName }}\"");
+        returns(Optional.of("scp somedirectory"), Optional.of("ssh -ltoor someserver \"{{ payloadFileName }}\""));
 
         controller.getTimeAllocated();
         result = Optional.of(5000);

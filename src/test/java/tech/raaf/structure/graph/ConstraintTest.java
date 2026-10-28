@@ -7,7 +7,6 @@ import java.util.Set;
 import java.util.UUID;
 import mockit.Expectations;
 import mockit.Mocked;
-import mockit.StrictExpectations;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -287,7 +286,7 @@ public class ConstraintTest {
     Constraint constraint2 = new Constraint(start, end02, Constraint.Cardinality.OPTIONAL_TO_MANY, "SOME_REL");
 
     // end02 subtypes end01
-    new StrictExpectations() {
+    new Expectations() {
       {
         end02.isOfType(anyString);
         result = true;
@@ -296,7 +295,7 @@ public class ConstraintTest {
     assertTrue(constraint1.isSpecialization(constraint2));
 
     // end02 doesn't subtype end01
-    new StrictExpectations() {
+    new Expectations() {
       {
         end02.isOfType(anyString);
         result = false;
@@ -315,7 +314,7 @@ public class ConstraintTest {
     // Make constraint2 the same, but with a stricter cardinality
     constraint2 = new Constraint(start, end02, Constraint.Cardinality.REQUIRED_TO_MANY, "OTHER_REL");
     // end02 does subtype end01
-    new StrictExpectations() {
+    new Expectations() {
       {
         end02.isOfType(anyString);
         result = true;
