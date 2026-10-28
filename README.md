@@ -1,6 +1,6 @@
 # Structure
 
-### Building
+## Building
 
 To build Structure, you need Java 25 or later, Maven, Node.js with npm, and
 Bower. Maven builds and tests with the JDK that it runs on. If the default Java
@@ -20,7 +20,12 @@ Then get the libraries of the web frontend and of the tools in `ext`:
 for dir in ext/rest ext/repl ext/util/*/; do (cd $dir && npm install); done
 ```
 
-### Running
+## Running
+
+To run Structure we need to first start Neo4j and after that Structure itself,
+the REST server and optionally the CLI.
+
+### Neo4j
 
 Structure needs a Neo4j server, version 5.19 or later for the Query API that the
 tools in `ext` use. Neo4j needs passwords of 8 or more characters. Set the
@@ -31,15 +36,13 @@ neo4j-admin dbms set-initial-password structure
 neo4j start
 ```
 
-Start Structure. It starts from any directory, but the commands here run from
-the root of the repository. Structure needs Java 25. If the default Java of your
-system has a different version, point `JAVA_HOME` at an installed JDK 25 and use
-the `java` binary from that location:
+### Structure Backend
+
+Specify the Neo4j database password and start Structure:
 
 ```bash
-export JAVA_HOME=/usr/lib/jvm/java-25-openjdk
 export STRUCTURE_NEO4J_PASS=structure
-"${JAVA_HOME}/bin/java" -jar target/structure-*-fat.jar --log-level debug --unsafe
+java -jar target/structure-*-fat.jar --log-level debug --unsafe
 ```
 
 Structure always uses HTTPS. At the first start, it makes the keystore
@@ -51,6 +54,8 @@ keystore has a self-signed certificate for `localhost`, `https-host` and
 after you change `https-host` or `rest-host`, delete the keystore. `mvn clean`
 also deletes it.
 
+### Structure REST Server
+
 Start the REST server in a second terminal. It listens at `rest-host` and
 `rest-port`, with the key and certificate of Structure:
 
@@ -59,6 +64,8 @@ export NODE_EXTRA_CA_CERTS=$PWD/target/structure.crt
 cd ext/rest && npm start
 ```
 
+### Structure REPL
+
 Start the REPL in a third terminal, and type `help` for its commands:
 
 ```bash
@@ -66,8 +73,9 @@ export NODE_EXTRA_CA_CERTS=$PWD/target/structure.crt
 cd ext/repl && npm start
 ```
 
-Structure starts `ext/util/bootstrap` itself, with `NODE_EXTRA_CA_CERTS` set to
-its certificate. Some requests to try:
+## Examples
+
+Some requests to try:
 
 ```bash
 # The names of all types, from the REST server
@@ -88,7 +96,7 @@ curl -s -u neo4j:structure -H 'Content-Type: application/json' \
   http://localhost:7474/db/neo4j/query/v2 | jq .data.values
 ```
 
-### Testing
+## Testing
 
 `mvn test` runs the unit tests. `mvn verify` also runs the integration tests,
 which are the subclasses of `GraphTest`, and checks that line coverage is 60% or
@@ -98,6 +106,10 @@ a normal run. Testcontainers removes the container when the tests stop.
 
 The address discovery tests need no services. Run them with
 `(cd ext/util/net-discovery && npm test)`.
+
+## Notes
+
+What follows are various notes about various aspects of Structure.
 
 ### Bundle loading
 
