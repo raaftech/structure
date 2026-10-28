@@ -1,24 +1,22 @@
 package tech.raaf.structure.graph;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import com.google.common.collect.ImmutableSet;
 import java.util.Set;
 import java.util.UUID;
 import mockit.Expectations;
 import mockit.Mocked;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import mockit.integration.junit5.JMockitExtension;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import tech.raaf.structure.base.Context;
 import tech.raaf.structure.graph.repositories.NodeRepository;
 import tech.raaf.structure.graph.repositories.TypeRepository;
 import tech.raaf.structure.helper.Triple;
 
+@ExtendWith(JMockitExtension.class)
 public class ConstraintTest {
-
-  @Rule
-  public ExpectedException thrown = ExpectedException.none();
 
   @Mocked
   Context context;
@@ -340,8 +338,7 @@ public class ConstraintTest {
   public void testVerificationOnType(@Mocked Type type, @Mocked Entity entity) throws Exception {
     Constraint constraint = new Constraint(type, type, Constraint.Cardinality.OPTIONAL_TO_MANY, "TEST_REL");
 
-    thrown.expect(IllegalArgumentException.class);
-    constraint.validateConstraint(entity);
+    assertThrows(IllegalArgumentException.class, () -> constraint.validateConstraint(entity));
   }
 
   @Test

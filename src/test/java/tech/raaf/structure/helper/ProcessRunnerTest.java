@@ -1,8 +1,8 @@
 package tech.raaf.structure.helper;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import tech.raaf.structure.base.Configuration;
 import tech.raaf.structure.base.Configuration.Setting;
 import tech.raaf.structure.helper.handlebars.Quote;

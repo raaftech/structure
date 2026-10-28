@@ -1,10 +1,10 @@
 package tech.raaf.structure.graph;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static tech.raaf.structure.helper.JsonHelper.mapper;
 
 import java.util.Set;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import tech.raaf.structure.base.Context;
 import tech.raaf.structure.graph.repositories.NodeRepository;
 import tech.raaf.structure.helper.Triple;

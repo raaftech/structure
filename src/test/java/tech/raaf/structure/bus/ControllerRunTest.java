@@ -1,18 +1,18 @@
 package tech.raaf.structure.bus;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static tech.raaf.structure.helper.JsonHelper.mapper;
 
 import com.google.common.collect.ImmutableMap;
 import io.vertx.core.json.JsonObject;
 import java.util.List;
 import java.util.Map;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import tech.raaf.structure.base.Context;
 import tech.raaf.structure.bus.manager.TaskManager;
 import tech.raaf.structure.graph.Component;
@@ -38,7 +38,7 @@ public class ControllerRunTest extends TypeSchemaTest {
   // Each TaskManager starts a timer on the shared queue, so deploy one
   private static boolean deployed = false;
 
-  @Before
+  @BeforeEach
   public void deploy() throws Exception {
     if (deployed) {
       return;
@@ -47,7 +47,7 @@ public class ControllerRunTest extends TypeSchemaTest {
     deployed = true;
   }
 
-  @After
+  @AfterEach
   public void reset() {
     Context.setSelfGroup(null);
     Context.setSelfIdentifier(null);
@@ -99,16 +99,16 @@ public class ControllerRunTest extends TypeSchemaTest {
     ObjectNode args = mapper.createObjectNode().put("instrument", PING);
     args.putObject("arguments").put("count", "1");
     JsonNode reply = send(NODE + address.getUuid(), "runInstrument", args);
-    assertFalse(reply.toString(), reply.path("result").has("error"));
+    assertFalse(reply.path("result").has("error"), reply.toString());
     String task = reply.path("result").path("data").asText();
 
     Map<String, Object> result = awaitResult(address.getUuid(), task);
     assertEquals(PING, result.get("controller"));
-    assertTrue(result.toString(), ((String) result.get("data-process")).startsWith("ping "));
-    assertTrue(result.toString(), ((String) result.get("data-process")).endsWith(" '127.0.0.1'"));
+    assertTrue(((String) result.get("data-process")).startsWith("ping "), result.toString());
+    assertTrue(((String) result.get("data-process")).endsWith(" '127.0.0.1'"), result.toString());
     assertEquals(task, result.get("data-task"));
     // The ping can fail on a machine without ping, so check only that it ran to an end
-    assertTrue(result.toString(), result.containsKey("data-stateCode") || result.containsKey("data-error"));
+    assertTrue(result.containsKey("data-stateCode") || result.containsKey("data-error"), result.toString());
   }
 
   private static ObjectNode json(String json) throws Exception {

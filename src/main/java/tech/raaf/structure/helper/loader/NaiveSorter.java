@@ -16,8 +16,8 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tech.raaf.structure.base.Configuration.Setting;
 import tech.raaf.structure.base.Configuration;
+import tech.raaf.structure.base.Configuration.Setting;
 import tech.raaf.structure.base.Context;
 import tech.raaf.structure.bus.GenericActor;
 import tech.raaf.structure.exceptions.FileInjectionException;
@@ -44,7 +44,9 @@ import tools.jackson.databind.node.ObjectNode;
 public class NaiveSorter {
 
   private static final Logger log = LoggerFactory.getLogger(NaiveSorter.class);
-  private final ObjectMapper mapper = JsonMapper.builder().enable(DeserializationFeature.FAIL_ON_TRAILING_TOKENS).build();
+  private final ObjectMapper mapper = JsonMapper.builder()
+    .enable(DeserializationFeature.FAIL_ON_TRAILING_TOKENS)
+    .build();
   private final Set<Path> bundlePaths;
   public static final Map<String, Path> checksumToFiles = new HashMap<>();
   private final NodeRepository nodeRepository = Context.getNodeRepository();
@@ -159,7 +161,9 @@ public class NaiveSorter {
       A object mapper that has a special configuration to alphabetically sort keys so
       we calculate equal checksums for JSON objects even though properties are unsorted.
     */
-    final ObjectMapper sortedMapper = JsonMapper.builder().enable(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS).build();
+    final ObjectMapper sortedMapper = JsonMapper.builder()
+      .enable(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS)
+      .build();
 
     /*
       Use sortedMapper to deserialize to object, then serialize back to a JSON string again.

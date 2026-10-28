@@ -1,6 +1,6 @@
 package tech.raaf.structure.graph.repositories;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static tech.raaf.structure.helper.JsonHelper.mapper;
 
 import com.google.common.collect.ImmutableSet;
@@ -14,10 +14,12 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import mockit.Mock;
 import mockit.MockUp;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import mockit.integration.junit5.JMockitExtension;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import tech.raaf.structure.base.Context;
 import tech.raaf.structure.bus.NodeActor;
 import tech.raaf.structure.graph.*;
@@ -25,6 +27,7 @@ import tech.raaf.structure.schema.TypeSchemaTest;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.node.ObjectNode;
 
+@ExtendWith(JMockitExtension.class)
 public class InstrumentRepositoryTest extends TypeSchemaTest {
 
   private static final String UPSTART_STOP = "2b138899-51ed-4c72-bef8-c08aa5df8b12";
@@ -41,7 +44,7 @@ public class InstrumentRepositoryTest extends TypeSchemaTest {
   private Group host2;
   private Component host2OS;
 
-  @Before
+  @BeforeEach
   public void setupComponents() throws IOException {
     // Create the simplest structure server representation
     Type groupingType = typeRepository.findOneByName("Group");
@@ -147,7 +150,7 @@ public class InstrumentRepositoryTest extends TypeSchemaTest {
     host2.save();
   }
 
-  @After
+  @AfterEach
   public void reset() {
     Context.setSelfGroup(null);
     Context.setSelfIdentifier(null);
@@ -164,7 +167,7 @@ public class InstrumentRepositoryTest extends TypeSchemaTest {
       }
     }
     assertNotNull(stopController);
-    Assert.assertEquals("Stop", instrumentRepository.getInstrumentCapability(stopController.getUuid()).getName());
+    Assertions.assertEquals("Stop", instrumentRepository.getInstrumentCapability(stopController.getUuid()).getName());
   }
 
   @Test
@@ -305,9 +308,9 @@ public class InstrumentRepositoryTest extends TypeSchemaTest {
         .await(10, TimeUnit.SECONDS)
         .body();
       JsonNode response = mapper.readTree(reply.toString());
-      assertFalse(response.toString(), response.path("result").has("error"));
+      assertFalse(response.path("result").has("error"), response.toString());
       Controller controller = selected.get(10, TimeUnit.SECONDS);
-      assertEquals("Stop must use the provider on host2", UPSTART_STOP, controller.getUuid());
+      assertEquals(UPSTART_STOP, controller.getUuid(), "Stop must use the provider on host2");
       assertEquals("UpstartStop", controller.getName());
     } finally {
       Context.getVertx().undeploy(deployment).await(10, TimeUnit.SECONDS);

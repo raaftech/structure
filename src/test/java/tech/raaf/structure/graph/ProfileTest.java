@@ -1,6 +1,6 @@
 package tech.raaf.structure.graph;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServer;
@@ -9,8 +9,8 @@ import java.net.URI;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import tech.raaf.structure.GraphTest;
 import tech.raaf.structure.base.Application;
 import tech.raaf.structure.base.Context;
@@ -22,7 +22,7 @@ import tools.jackson.databind.ObjectMapper;
 
 public class ProfileTest extends GraphTest {
 
-  @Before
+  @BeforeEach
   public void setup() throws Exception {
     final Vertx vertx = Vertx.vertx();
     Context.setVertx(vertx);

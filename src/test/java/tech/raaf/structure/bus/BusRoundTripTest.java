@@ -1,7 +1,7 @@
 package tech.raaf.structure.bus;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static tech.raaf.structure.helper.JsonHelper.mapper;
 
 import io.vertx.core.Verticle;
@@ -15,9 +15,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import tech.raaf.structure.base.Context;
 import tech.raaf.structure.bus.manager.EntityManager;
 import tech.raaf.structure.bus.manager.InstrumentManager;
@@ -54,7 +54,7 @@ public class BusRoundTripTest extends TypeSchemaTest {
   private final String group = UUID.randomUUID().toString();
   private final String created = UUID.randomUUID().toString();
 
-  @Before
+  @BeforeEach
   public void deploy() throws Exception {
     // Application sets these, status and reload need them
     Context.setHostname("bus-test-host");
@@ -79,7 +79,7 @@ public class BusRoundTripTest extends TypeSchemaTest {
     Context.setSelfIdentifier(group);
   }
 
-  @After
+  @AfterEach
   public void reset() {
     Context.setSelfGroup(null);
     Context.setSelfIdentifier(null);
@@ -145,7 +145,7 @@ public class BusRoundTripTest extends TypeSchemaTest {
         failures.add(name + e.getCause().getMessage());
       }
     }
-    assertTrue(String.join("\n", failures), failures.isEmpty());
+    assertTrue(failures.isEmpty(), String.join("\n", failures));
   }
 
   // The reply has the task ID that each instance gets

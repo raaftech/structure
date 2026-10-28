@@ -1,9 +1,9 @@
 package tech.raaf.structure.graph.repositories;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Set;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import tech.raaf.structure.base.Context;
 import tech.raaf.structure.graph.Type;
 import tech.raaf.structure.schema.TypeSchemaTest;

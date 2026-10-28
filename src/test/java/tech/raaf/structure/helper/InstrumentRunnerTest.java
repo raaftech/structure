@@ -1,6 +1,6 @@
 package tech.raaf.structure.helper;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import com.google.common.collect.ImmutableSet;
 import java.nio.file.Files;
@@ -16,10 +16,12 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import mockit.Expectations;
 import mockit.Mocked;
+import mockit.integration.junit5.JMockitExtension;
 import org.apache.commons.lang3.tuple.Pair;
-import org.junit.Test;
-import tech.raaf.structure.base.Configuration.Setting;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import tech.raaf.structure.base.Configuration;
+import tech.raaf.structure.base.Configuration.Setting;
 import tech.raaf.structure.base.Context;
 import tech.raaf.structure.graph.*;
 import tech.raaf.structure.graph.repositories.GroupingRepository;
@@ -29,6 +31,7 @@ import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.node.ObjectNode;
 
+@ExtendWith(JMockitExtension.class)
 public class InstrumentRunnerTest {
 
   final ObjectMapper mapper = new ObjectMapper();
@@ -242,7 +245,7 @@ public class InstrumentRunnerTest {
       "ssh -ltoor someserver \"(bash-MockedScriptController_[0-9]{13}.sh)\" " +
         Pattern.quote("''\"'\"'--option'\"'\"' '\"'\"'testShortName'\"'\"''")
     ).matcher(jobs.get(1));
-    assertTrue(jobs.get(1), matcher.matches());
+    assertTrue(matcher.matches(), jobs.get(1));
     // Only the owner can read and run the script
     Path script = Configuration.get(Setting.STATE_DIR).resolve("generated-scripts").resolve(matcher.group(1));
     assertEquals("rwx------", PosixFilePermissions.toString(Files.getPosixFilePermissions(script)));
@@ -264,7 +267,7 @@ public class InstrumentRunnerTest {
       InstrumentRunner.refuseUnsuppliable(controller, declared, mapper.createObjectNode().put("payloadDirectory", "/"));
       fail("A caller must not supply payloadDirectory");
     } catch (IllegalArgumentException e) {
-      assertTrue(e.getMessage(), e.getMessage().contains("payloadDirectory"));
+      assertTrue(e.getMessage().contains("payloadDirectory"), e.getMessage());
     }
   }
 }

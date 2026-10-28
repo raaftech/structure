@@ -1,6 +1,6 @@
 package tech.raaf.structure.bus.manager;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static tech.raaf.structure.helper.JsonHelper.mapper;
 
 import com.google.common.collect.ImmutableList;
@@ -15,8 +15,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import tech.raaf.structure.base.Context;
 import tech.raaf.structure.bus.GenericActor;
 import tech.raaf.structure.graph.Component;
@@ -115,7 +115,7 @@ public class EntityManagerTest extends TypeSchemaTest {
     ObjectNode result = (ObjectNode) response.get("result");
 
     // the result should not have an error property
-    assertFalse(result.toString(), result.has("error"));
+    assertFalse(result.has("error"), result.toString());
     // it should have a data array
     assertTrue(result.has("data"));
     assertTrue(result.get("data").isArray());
@@ -133,7 +133,7 @@ public class EntityManagerTest extends TypeSchemaTest {
     result = (ObjectNode) response.get("result");
 
     // the result should not have an error property
-    assertFalse(result.toString(), result.has("error"));
+    assertFalse(result.has("error"), result.toString());
     // because no new entity was created, it should have a data array, but it should be empty
     assertTrue(result.has("data"));
     assertEquals(0, result.get("data").size());
@@ -160,7 +160,7 @@ public class EntityManagerTest extends TypeSchemaTest {
     ObjectNode result = (ObjectNode) response.get("result");
 
     // the result should not have an error property
-    assertFalse(result.toString(), result.has("error"));
+    assertFalse(result.has("error"), result.toString());
     // it should have a data array
     assertTrue(result.has("data"));
     assertTrue(result.get("data").isArray());
@@ -208,7 +208,7 @@ public class EntityManagerTest extends TypeSchemaTest {
     ObjectNode result = (ObjectNode) response.get("result");
 
     // the result should not have an error property
-    assertFalse(result.toString(), result.has("error"));
+    assertFalse(result.has("error"), result.toString());
     // it should have a data array
     assertTrue(result.has("data"));
     assertTrue(result.get("data").isArray());
@@ -222,10 +222,10 @@ public class EntityManagerTest extends TypeSchemaTest {
     assertEquals(linuxType.getUuid(), data.get(0).asText());
 
     // retrieve "Linux" from the graph again, check if it was indeed updated
-    Assert.assertEquals(newName, nodeRepository.findByUuid(linuxType.getUuid()).getName());
+    Assertions.assertEquals(newName, nodeRepository.findByUuid(linuxType.getUuid()).getName());
     // the update keeps the bundle and the path
-    Assert.assertEquals("linux", nodeRepository.findByUuid(linuxType.getUuid()).getBundle());
-    Assert.assertEquals(
+    Assertions.assertEquals("linux", nodeRepository.findByUuid(linuxType.getUuid()).getBundle());
+    Assertions.assertEquals(
       "src/main/resources/bundles/linux/types/linux.type.json",
       nodeRepository.findByUuid(linuxType.getUuid()).getPath()
     );
@@ -268,7 +268,7 @@ public class EntityManagerTest extends TypeSchemaTest {
     result = (ObjectNode) response.get("result");
 
     // the result should not have an error property
-    assertTrue(result.toString(), result.has("error"));
+    assertTrue(result.has("error"), result.toString());
   }
 
   @Test
@@ -278,7 +278,12 @@ public class EntityManagerTest extends TypeSchemaTest {
     final String operatingSystemUuid = "f05e325e-1aee-4892-96e4-8bcd6e97c528";
     // A new address is a leaf: nothing points to it
     final Component address = new Component(
-      mapper.createObjectNode().put("name", "leaf").put("desc", "A leaf.").put("addr", "192.0.2.30").put("reachable", false),
+      mapper
+        .createObjectNode()
+        .put("name", "leaf")
+        .put("desc", "A leaf.")
+        .put("addr", "192.0.2.30")
+        .put("reachable", false),
       Context.getTypeRepository().findOneByName("Ipv4Address")
     );
     address.save();
@@ -300,7 +305,7 @@ public class EntityManagerTest extends TypeSchemaTest {
     ObjectNode result = (ObjectNode) response.get("result");
 
     // the result should have an error property
-    assertTrue(result.toString(), result.has("error"));
+    assertTrue(result.has("error"), result.toString());
     assertNotNull(nodeRepository.findByUuid(operatingSystemUuid));
 
     // Now try again, but pick a leaf node
@@ -314,7 +319,7 @@ public class EntityManagerTest extends TypeSchemaTest {
     result = (ObjectNode) response.get("result");
 
     // error should now be absent
-    assertTrue(result.toString(), !result.has("error"));
+    assertTrue(!result.has("error"), result.toString());
     assertNull(nodeRepository.findByUuid(leafUuid));
   }
 
@@ -335,7 +340,7 @@ public class EntityManagerTest extends TypeSchemaTest {
       "specialize",
       mapper.createObjectNode().put("instance", os).put("isa", UNIX_LIKE)
     );
-    assertFalse(result.toString(), result.has("error"));
+    assertFalse(result.has("error"), result.toString());
     assertEquals("Instance [OperatingSystem] specialized to [UnixLike]", result.get("data").asText());
     assertEquals(ImmutableList.of("INSTANCE_OF -> " + UNIX_LIKE), outgoing(os));
     // The type labels follow the new type
@@ -388,7 +393,7 @@ public class EntityManagerTest extends TypeSchemaTest {
     List<String> member = ImmutableList.of("INSTANCE_OF -> " + OPERATING_SYSTEM, "MEMBER_OF -> " + group);
 
     ObjectNode result = exec(entityManager.group(), "group", args);
-    assertEquals(result.toString(), true, result.path("data").path("changed").asBoolean());
+    assertEquals(true, result.path("data").path("changed").asBoolean(), result.toString());
     assertEquals(member, outgoing(host));
 
     // A second member does not remove the first
@@ -399,15 +404,15 @@ public class EntityManagerTest extends TypeSchemaTest {
     // A second group adds no relationship
     result = exec(entityManager.group(), "group", args);
     assertEquals(member, outgoing(host));
-    assertEquals(result.toString(), false, result.path("data").path("changed").asBoolean());
+    assertEquals(false, result.path("data").path("changed").asBoolean(), result.toString());
 
     result = exec(entityManager.ungroup(), "ungroup", args);
-    assertEquals(result.toString(), true, result.path("data").path("changed").asBoolean());
+    assertEquals(true, result.path("data").path("changed").asBoolean(), result.toString());
     assertEquals(ImmutableList.of("INSTANCE_OF -> " + OPERATING_SYSTEM), outgoing(host));
     assertEquals(ImmutableList.of("INSTANCE_OF -> " + COMPONENT_GROUP), outgoing(group));
 
     result = exec(entityManager.ungroup(), "ungroup", args);
-    assertEquals(result.toString(), false, result.path("data").path("changed").asBoolean());
+    assertEquals(false, result.path("data").path("changed").asBoolean(), result.toString());
   }
 
   @Test
@@ -442,7 +447,7 @@ public class EntityManagerTest extends TypeSchemaTest {
 
     // The labels that ext/rest/common/models/instance.js sends
     ObjectNode result = exec(entityManager.delete(), "delete", deleteArgs(host, "Instance"));
-    assertEquals(result.toString(), host, result.path("data").asText());
+    assertEquals(host, result.path("data").asText(), result.toString());
     assertNull(nodeRepository.findByUuid(host));
     assertEquals(ImmutableList.of("INSTANCE_OF -> " + OPERATING_SYSTEM), outgoing(peer));
   }

@@ -1,8 +1,8 @@
 package tech.raaf.structure.helper.handlebars;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import com.github.jknack.handlebars.Handlebars;
 import com.github.jknack.handlebars.HandlebarsException;
@@ -14,23 +14,24 @@ import java.nio.file.Path;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.util.ArrayList;
 import java.util.List;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 public class SecretFileTest {
 
-  @Rule
-  public final TemporaryFolder folder = new TemporaryFolder();
+  @TempDir
+  Path folder;
 
   @Test
   public void writesContentThatOnlyTheOwnerCanRead() throws Exception {
     final List<Path> files = new ArrayList<>();
-    final SecretFile secretFile = new SecretFile(folder.getRoot().toPath().resolve("scripts"), files);
+    final SecretFile secretFile = new SecretFile(folder.resolve("scripts"), files);
     final String command = new Handlebars()
       .with(value -> value.toString())
       .registerHelper("secretFile", secretFile)
-      .compileInline("smbclient -A {{#secretFile}}username = {{username}}\npassword = {{password}}\n{{/secretFile}} //host")
+      .compileInline(
+        "smbclient -A {{#secretFile}}username = {{username}}\npassword = {{password}}\n{{/secretFile}} //host"
+      )
       .apply(ImmutableMap.of("username", "Administrator", "password", "p@ss 'word'%=&"));
 
     assertEquals(1, files.size());
@@ -46,7 +47,7 @@ public class SecretFileTest {
   @Test
   public void refusesValueWithLineBreak() throws Exception {
     final List<Path> files = new ArrayList<>();
-    final SecretFile secretFile = new SecretFile(folder.getRoot().toPath().resolve("scripts"), files);
+    final SecretFile secretFile = new SecretFile(folder.resolve("scripts"), files);
     final Template template = new Handlebars()
       .with(value -> value.toString())
       .registerHelper("secretFile", secretFile)

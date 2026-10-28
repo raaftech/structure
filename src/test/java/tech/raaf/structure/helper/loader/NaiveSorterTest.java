@@ -1,10 +1,11 @@
 package tech.raaf.structure.helper.loader;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
@@ -18,14 +19,15 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 import mockit.Mocked;
+import mockit.integration.junit5.JMockitExtension;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.rules.TemporaryFolder;
-import tech.raaf.structure.base.Configuration.Setting;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.function.Executable;
+import org.junit.jupiter.api.io.TempDir;
 import tech.raaf.structure.base.Configuration;
+import tech.raaf.structure.base.Configuration.Setting;
 import tech.raaf.structure.base.Context;
 import tech.raaf.structure.exceptions.JsonValidationException;
 import tech.raaf.structure.helper.JsonHelper;
@@ -33,13 +35,11 @@ import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.node.ObjectNode;
 
+@ExtendWith(JMockitExtension.class)
 public class NaiveSorterTest {
 
-  @Rule
-  public final TemporaryFolder folder = new TemporaryFolder();
-
-  @Rule
-  public final ExpectedException exception = ExpectedException.none();
+  @TempDir
+  Path folder;
 
   private final ObjectMapper mapper = new ObjectMapper();
 
@@ -119,9 +119,11 @@ public class NaiveSorterTest {
     ObjectNode root = (ObjectNode) JsonHelper.jsonFromResource("bundles/core/types/type.type.json");
     root.remove("desc");
 
-    exception.expect(JsonValidationException.class);
-    exception.expectMessage("Type");
-    NaiveSorter.calculateChecksum(root, NaiveSorter.ChecksumAlgorithm.SHA1);
+    assertThrowsWith(
+      JsonValidationException.class,
+      () -> NaiveSorter.calculateChecksum(root, NaiveSorter.ChecksumAlgorithm.SHA1),
+      "Type"
+    );
   }
 
   @Test
@@ -135,7 +137,7 @@ public class NaiveSorterTest {
       assertTrue(node.get("meta").get("path").asText().startsWith("src/main/resources/bundles/"));
     }
     // Outside home, the stored path is relative to the bundle path.
-    final Path outside = folder.getRoot().toPath();
+    final Path outside = folder;
     final Path simple = Configuration.get(Setting.HOME).resolve("src/test/resources/bundles/simple");
     FileUtils.copyDirectory(simple.toFile(), outside.resolve("simple").toFile());
     final List<JsonNode> elsewhere = new NaiveSorter(Collections.singleton(outside)).readAllJson();
@@ -147,12 +149,14 @@ public class NaiveSorterTest {
 
   @Test
   public void invalidJsonReportsFileName() throws Exception {
-    Path file = folder.newFolder("bundle").toPath().resolve("broken.type.json");
+    Path file = Files.createDirectory(folder.resolve("bundle")).resolve("broken.type.json");
     Files.write(file, "{".getBytes(StandardCharsets.UTF_8));
 
-    exception.expect(Exception.class);
-    exception.expectMessage(file.getFileName().toString());
-    new NaiveSorter(Collections.singleton(folder.getRoot().toPath())).readAllJson();
+    assertThrowsWith(
+      Exception.class,
+      () -> new NaiveSorter(Collections.singleton(folder)).readAllJson(),
+      file.getFileName().toString()
+    );
   }
 
   @Test
@@ -163,25 +167,29 @@ public class NaiveSorterTest {
 
   @Test
   public void missingBundlePathReportsPath() {
-    Path missing = folder.getRoot().toPath().resolve("missing");
+    Path missing = folder.resolve("missing");
 
-    exception.expect(Exception.class);
-    exception.expectMessage(missing.toString());
-    new NaiveSorter(Collections.singleton(missing)).readAllJson();
+    assertThrowsWith(
+      Exception.class,
+      () -> new NaiveSorter(Collections.singleton(missing)).readAllJson(),
+      missing.toString()
+    );
   }
 
   @Test
   public void bundlePathMustBeDirectory() throws Exception {
-    Path file = folder.newFile("bundle").toPath();
+    Path file = Files.createFile(folder.resolve("bundle"));
 
-    exception.expect(IllegalArgumentException.class);
-    exception.expectMessage(file.toString());
-    new NaiveSorter(Collections.singleton(file)).readAllJson();
+    assertThrowsWith(
+      IllegalArgumentException.class,
+      () -> new NaiveSorter(Collections.singleton(file)).readAllJson(),
+      file.toString()
+    );
   }
 
   @Test
   public void emptyBundleDirectoryReturnsEmptyList() throws Exception {
-    NaiveSorter sorter = new NaiveSorter(Collections.singleton(folder.getRoot().toPath()));
+    NaiveSorter sorter = new NaiveSorter(Collections.singleton(folder));
     assertTrue(sorter.sortIt(sorter.readAllJson()).isEmpty());
   }
 
@@ -191,10 +199,7 @@ public class NaiveSorterTest {
     ((ObjectNode) root.get("meta")).remove("uuid");
     Path file = writeBundle("root.type.json", root);
 
-    exception.expect(IllegalArgumentException.class);
-    exception.expectMessage(file.toString());
-    exception.expectMessage("meta.uuid");
-    sorter().readAllJson();
+    assertThrowsWith(IllegalArgumentException.class, () -> sorter().readAllJson(), file.toString(), "meta.uuid");
   }
 
   @Test
@@ -203,10 +208,7 @@ public class NaiveSorterTest {
     ((ObjectNode) root.get("meta")).remove("uuid");
     Path file = writeBundle("roots.type.json", mapper.createArrayNode().add(rootType()).add(root));
 
-    exception.expect(IllegalArgumentException.class);
-    exception.expectMessage(file.toString());
-    exception.expectMessage("meta.uuid");
-    sorter().readAllJson();
+    assertThrowsWith(IllegalArgumentException.class, () -> sorter().readAllJson(), file.toString(), "meta.uuid");
   }
 
   @Test
@@ -215,12 +217,14 @@ public class NaiveSorterTest {
     Path first = writeBundle("first.type.json", root);
     Path second = writeBundle("second.type.json", root.put("desc", "A changed description."));
 
-    exception.expect(IllegalArgumentException.class);
-    exception.expectMessage("Duplicate uuid");
-    exception.expectMessage(root.path("meta").path("uuid").asText());
-    exception.expectMessage(first.toString());
-    exception.expectMessage(second.toString());
-    sorter().readAllJson();
+    assertThrowsWith(
+      IllegalArgumentException.class,
+      () -> sorter().readAllJson(),
+      "Duplicate uuid",
+      root.path("meta").path("uuid").asText(),
+      first.toString(),
+      second.toString()
+    );
   }
 
   @Test
@@ -228,17 +232,19 @@ public class NaiveSorterTest {
     ObjectNode root = rootType();
     Path file = writeBundle("roots.type.json", mapper.createArrayNode().add(root).add(root));
 
-    exception.expect(IllegalArgumentException.class);
-    exception.expectMessage("Duplicate uuid");
-    exception.expectMessage(root.path("meta").path("uuid").asText());
-    exception.expectMessage(file.toString());
-    sorter().readAllJson();
+    assertThrowsWith(
+      IllegalArgumentException.class,
+      () -> sorter().readAllJson(),
+      "Duplicate uuid",
+      root.path("meta").path("uuid").asText(),
+      file.toString()
+    );
   }
 
   @Test
   public void overlappingBundlePathsReadEachFileOnce() throws Exception {
     writeBundle("types/root.type.json", rootType());
-    Path directory = folder.getRoot().toPath();
+    Path directory = folder;
     NaiveSorter sorter = new NaiveSorter(new HashSet<>(Arrays.asList(directory, directory.resolve("bundle"))));
 
     assertEquals(1, sorter.readAllJson().size());
@@ -250,29 +256,23 @@ public class NaiveSorterTest {
     root.remove("desc");
     Path file = writeBundle("root.type.json", root);
 
-    exception.expect(IllegalArgumentException.class);
-    exception.expectMessage(file.toString());
-    sorter().readAllJson();
+    assertThrowsWith(IllegalArgumentException.class, () -> sorter().readAllJson(), file.toString());
   }
 
   @Test
   public void emptyJsonReportsFileName() throws Exception {
-    Path file = folder.newFolder("bundle").toPath().resolve("empty.type.json");
+    Path file = Files.createDirectory(folder.resolve("bundle")).resolve("empty.type.json");
     Files.createFile(file);
 
-    exception.expect(IllegalArgumentException.class);
-    exception.expectMessage(file.toString());
-    sorter().readAllJson();
+    assertThrowsWith(IllegalArgumentException.class, () -> sorter().readAllJson(), file.toString());
   }
 
   @Test
   public void trailingJsonReportsFileName() throws Exception {
-    Path file = folder.newFolder("bundle").toPath().resolve("trailing.type.json");
+    Path file = Files.createDirectory(folder.resolve("bundle")).resolve("trailing.type.json");
     Files.write(file, (rootType().toString() + " {}").getBytes(StandardCharsets.UTF_8));
 
-    exception.expect(IllegalArgumentException.class);
-    exception.expectMessage(file.toString());
-    sorter().readAllJson();
+    assertThrowsWith(IllegalArgumentException.class, () -> sorter().readAllJson(), file.toString());
   }
 
   @Test
@@ -302,12 +302,12 @@ public class NaiveSorterTest {
       sorter().sortIt(Arrays.asList(child, root));
       fail("Expected unresolved dependencies");
     } catch (IllegalArgumentException e) {
-      assertTrue(e.getMessage(), e.getMessage().contains("Component"));
-      assertTrue(e.getMessage(), e.getMessage().contains(child.path("meta").path("uuid").asText()));
-      assertTrue(e.getMessage(), e.getMessage().contains("bundle/component.type.json"));
-      assertTrue(e.getMessage(), e.getMessage().contains("MissingType"));
-      assertTrue(e.getMessage(), e.getMessage().contains(missingUuid));
-      assertFalse(e.getMessage(), e.getMessage().contains(root.path("meta").path("uuid").asText()));
+      assertTrue(e.getMessage().contains("Component"), e.getMessage());
+      assertTrue(e.getMessage().contains(child.path("meta").path("uuid").asText()), e.getMessage());
+      assertTrue(e.getMessage().contains("bundle/component.type.json"), e.getMessage());
+      assertTrue(e.getMessage().contains("MissingType"), e.getMessage());
+      assertTrue(e.getMessage().contains(missingUuid), e.getMessage());
+      assertFalse(e.getMessage().contains(root.path("meta").path("uuid").asText()), e.getMessage());
     }
   }
 
@@ -320,16 +320,26 @@ public class NaiveSorterTest {
       .putArray("to")
       .add(second.path("meta").path("uuid").asText());
 
-    exception.expect(IllegalArgumentException.class);
-    exception.expectMessage("Type");
-    exception.expectMessage("Component");
-    exception.expectMessage(first.path("meta").path("uuid").asText());
-    exception.expectMessage(second.path("meta").path("uuid").asText());
-    sorter().sortIt(Arrays.asList(first, second));
+    assertThrowsWith(
+      IllegalArgumentException.class,
+      () -> sorter().sortIt(Arrays.asList(first, second)),
+      "Type",
+      "Component",
+      first.path("meta").path("uuid").asText(),
+      second.path("meta").path("uuid").asText()
+    );
+  }
+
+  // Assert that the call throws the type, with all parts in the message
+  private static void assertThrowsWith(Class<? extends Throwable> type, Executable call, String... parts) {
+    final String message = assertThrows(type, call).getMessage();
+    for (String part : parts) {
+      assertTrue(message.contains(part), message);
+    }
   }
 
   private NaiveSorter sorter() {
-    return new NaiveSorter(Collections.singleton(folder.getRoot().toPath()));
+    return new NaiveSorter(Collections.singleton(folder));
   }
 
   private ObjectNode rootType() {
@@ -337,7 +347,7 @@ public class NaiveSorterTest {
   }
 
   private Path writeBundle(String name, JsonNode document) throws Exception {
-    Path file = folder.getRoot().toPath().resolve("bundle").resolve(name);
+    Path file = folder.resolve("bundle").resolve(name);
     Files.createDirectories(file.getParent());
     mapper.writeValue(file.toFile(), document);
     return file;

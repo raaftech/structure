@@ -1,13 +1,13 @@
 package tech.raaf.structure.graph.repositories;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static tech.raaf.structure.helper.JsonHelper.mapper;
 
 import java.util.Set;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import tech.raaf.structure.base.Context;
 import tech.raaf.structure.graph.Component;
 import tech.raaf.structure.graph.Type;
@@ -21,7 +21,7 @@ public class ComponentRepositoryTest extends TypeSchemaTest {
   private Type parentType;
   private Type childType;
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     parentType = typeRepository.findOneByName("Software");
     childType = typeRepository.findOneByName("Linux");
@@ -58,7 +58,7 @@ public class ComponentRepositoryTest extends TypeSchemaTest {
 
     Set<Component> childrenByType = componentRepository.findChildrenByType(parent.getUuid(), childType.getName());
     assertEquals(1, childrenByType.size());
-    Assert.assertEquals(
+    Assertions.assertEquals(
       child.getUuid(),
       componentRepository.findChildrenByType(parent.getUuid(), "Linux").stream().findFirst().get().getUuid()
     );

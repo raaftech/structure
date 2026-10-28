@@ -298,17 +298,14 @@ public class InstanceActor extends NodeActor<Instance> {
     // Check if there is a timeAllocation field specified. If so, get the value there. Else the default value is used.
     // Unordered, so that a long run does not stop the message handlers
     vertx
-      .executeBlocking(
-        () -> {
-          if (args.has("timeAllocated")) {
-            getNode().runController(controller, arguments, taskId.toString(), args.get("timeAllocated").asLong());
-          } else {
-            getNode().runController(controller, arguments, taskId.toString());
-          }
-          return null;
-        },
-        false
-      )
+      .executeBlocking(() -> {
+        if (args.has("timeAllocated")) {
+          getNode().runController(controller, arguments, taskId.toString(), args.get("timeAllocated").asLong());
+        } else {
+          getNode().runController(controller, arguments, taskId.toString());
+        }
+        return null;
+      }, false)
       .onComplete(res -> {
         if (res.failed()) {
           if (Configuration.isTraceModeOn()) {

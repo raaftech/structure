@@ -1,7 +1,8 @@
 package tech.raaf.structure.graph;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static tech.raaf.structure.helper.JsonHelper.mapper;
 
 import com.google.common.collect.ImmutableMap;
@@ -10,8 +11,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import tech.raaf.structure.base.Context;
 import tech.raaf.structure.exceptions.IllegalEntityType;
 import tech.raaf.structure.schema.TypeSchemaTest;
@@ -24,7 +25,7 @@ public class InstrumentRelationsTest extends TypeSchemaTest {
   private Set<Result> rawResults;
   private Set<Instance> producedNodes;
 
-  @Before
+  @BeforeEach
   public void createInstrumentsAndResults() throws Exception {
     rawResults = ImmutableSet.of(result("first"), result("second"));
     Component component = new Component(
@@ -42,8 +43,7 @@ public class InstrumentRelationsTest extends TypeSchemaTest {
 
     controller = (Controller) Context.getInstrumentRepository().findOneByName("BashInvoke");
     Graph.query(
-      "MATCH (c:Controller {uuid: $controller}), (r:Result) " +
-        "WHERE r.uuid IN $results MERGE (c)-[:PRODUCED]->(r)",
+      "MATCH (c:Controller {uuid: $controller}), (r:Result) " + "WHERE r.uuid IN $results MERGE (c)-[:PRODUCED]->(r)",
       ImmutableMap.of(
         "controller",
         controller.getUuid(),
@@ -84,22 +84,23 @@ public class InstrumentRelationsTest extends TypeSchemaTest {
     Entity entity = parserEntity("EmptyParser");
     Graph.transaction(entity::toGraph);
     Parser emptyParser = (Parser) Context.getInstrumentRepository().findByUuid(entity.getUuid());
-    Controller emptyController = (Controller) Context.getInstrumentRepository()
-      .findOneByName("OpenSshClientSendString");
+    Controller emptyController = (Controller) Context.getInstrumentRepository().findOneByName(
+      "OpenSshClientSendString"
+    );
 
     assertTrue(emptyParser.getRawResults().isEmpty());
     assertTrue(emptyParser.getProducedNodes().isEmpty());
     assertTrue(emptyController.getResults().isEmpty());
   }
 
-  @Test(expected = IllegalEntityType.class)
+  @Test
   public void rejectsInputsThatAreNotResults() {
     Entity entity = parserEntity("InvalidParser");
     entity.addRelations("PARSED", Direction.OUTGOING, uuids(producedNodes));
-    Graph.transaction(entity::toGraph);
+    assertThrows(IllegalEntityType.class, () -> Graph.transaction(entity::toGraph));
   }
 
-  @Test(expected = IllegalEntityType.class)
+  @Test
   public void rejectsTypeNodesAsOutputs() {
     Entity entity = parserEntity("InvalidParser");
     entity.addRelations(
@@ -107,7 +108,7 @@ public class InstrumentRelationsTest extends TypeSchemaTest {
       Direction.OUTGOING,
       ImmutableSet.of(UUID.fromString(Context.getTypeRepository().findOneByName("Component").getUuid()))
     );
-    Graph.transaction(entity::toGraph);
+    assertThrows(IllegalEntityType.class, () -> Graph.transaction(entity::toGraph));
   }
 
   @Test
@@ -150,7 +151,10 @@ public class InstrumentRelationsTest extends TypeSchemaTest {
   }
 
   private Set<UUID> uuids(Set<? extends Node> nodes) {
-    return nodes.stream().map(node -> UUID.fromString(node.getUuid())).collect(Collectors.toSet());
+    return nodes
+      .stream()
+      .map(node -> UUID.fromString(node.getUuid()))
+      .collect(Collectors.toSet());
   }
 
   private void assertRelation(JsonNode json, String name, Set<? extends Node> peers) {

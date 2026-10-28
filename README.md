@@ -1,13 +1,36 @@
 # Structure
 
+Structure models computing environments in a Neo4j graph. All knowledge is data:
+types for operating systems, services, addresses and nodes, plus instances for
+each item in use.
+
+Bundles define types in JSON with various relational links, constraints and
+associated schemas. Instruments are instances too, and each one states what it
+applies to and which capability it gives. New systems thus mean new bundles,
+with no change to the backend. The backend interacts with the graph, runs tasks
+and serves results.
+
+The following sections below show you how to [build](#building) Structure, how
+to [run](#running) it, some [example](#examples) calls using `curl` and how to
+run [tests](#testing). We also have an extensive [notes](#notes) section with
+various details about Structure.
+
+## Requirements
+
+To build and run Structure, you need:
+
+- [Java](https://adoptium.net/) 25 or later.
+- [Maven](https://maven.apache.org/download.cgi), to build and run tests.
+- [Node.js](https://nodejs.org/) with npm, to run the REST server, the REPL and
+  the tools in `ext`.
+- [Bower](https://bower.io/), to fetch the libs of the web frontend.
+- [Neo4j](https://neo4j.com/download/) server 5.19 or later, to store the graph.
+- [Docker](https://docs.docker.com/get-docker/), to run the integration tests.
+
 ## Building
 
-To build Structure, you need Java 25 or later, Maven, Node.js with npm, and
-Bower. Maven builds and tests with the JDK that it runs on. If the default Java
-of your system is older, point `JAVA_HOME` at a JDK 25.
-
-Build the jar without the tests (see Testing). The below will result in
-`target/structure-*-fat.jar`:
+Build the jar without the tests (see [Testing](#testing)). The below will result
+in `target/structure-*-fat.jar`:
 
 ```bash
 mvn package -DskipTests
@@ -23,7 +46,7 @@ for dir in ext/rest ext/repl ext/util/*/; do (cd $dir && npm install); done
 ## Running
 
 To run Structure we need to first start Neo4j and after that Structure itself,
-the REST server and optionally the CLI.
+the REST server and optionally the REPL.
 
 ### Neo4j
 
@@ -168,29 +191,29 @@ first:
 2. the environment variable, for example `STRUCTURE_NEO4J_BOLT_URI`;
 3. the system property, for example `-Dstructure.neo4j.bolt.uri`;
 4. the key in a settings file, for example `structure.neo4j.bolt.uri` (see
-   Settings files below);
+   [Settings files](#settings-files));
 5. the default.
 
-| Option             | Environment variable       | Property                   | Default                 | Description                                                                |
-| ------------------ | -------------------------- | -------------------------- | ----------------------- | -------------------------------------------------------------------------- |
-| `--help`           | `STRUCTURE_HELP`           | `structure.help`           |                         | Print usage and exit                                                       |
-| `--log-level`      | `STRUCTURE_LOG_LEVEL`      | `structure.log.level`      | `info`                  | `info`, `debug` or `trace`; `trace` also prints stack traces               |
-| `--unsafe`         | `STRUCTURE_UNSAFE`         | `structure.unsafe`         |                         | Allow all event bus addresses and log argument values                      |
-| `--bundle-path`    | `STRUCTURE_BUNDLE_PATH`    | `structure.bundle.path`    | see below               | Comma-separated bundle paths, relative to Structure's home                 |
-| `--home`           | `STRUCTURE_HOME`           | `structure.home`           | see below               | Structure's home directory                                                 |
-| `--state-dir`      | `STRUCTURE_STATE_DIR`      | `structure.state.dir`      | see below               | Directory of the files that Structure writes, relative to Structure's home |
-| `--jks-file`       | `STRUCTURE_JKS_FILE`       | `structure.jks.file`       | `structure.jks`         | JKS keystore for HTTPS, relative to `state-dir`; made if missing           |
-| `--jks-pass`       | `STRUCTURE_JKS_PASS`       | `structure.jks.pass`       | `changeit`              | Keystore password                                                          |
-| `--neo4j-bolt-uri` | `STRUCTURE_NEO4J_BOLT_URI` | `structure.neo4j.bolt.uri` | `bolt://localhost:7687` | Neo4j Bolt server                                                          |
-| `--neo4j-http-uri` | `STRUCTURE_NEO4J_HTTP_URI` | `structure.neo4j.http.uri` | `http://localhost:7474` | Neo4j Query API, for the tools in ext                                      |
-| `--neo4j-user`     | `STRUCTURE_NEO4J_USER`     | `structure.neo4j.user`     | `neo4j`                 | Neo4j user                                                                 |
-| `--neo4j-pass`     | `STRUCTURE_NEO4J_PASS`     | `structure.neo4j.pass`     | required                | Neo4j password                                                             |
-| `--https-host`     | `STRUCTURE_HTTPS_HOST`     | `structure.https.host`     | `localhost`             | HTTPS server host; also used in schema URIs                                |
-| `--https-port`     | `STRUCTURE_HTTPS_PORT`     | `structure.https.port`     | `8443`                  | HTTPS server port                                                          |
-| `--rest-host`      | `STRUCTURE_REST_HOST`      | `structure.rest.host`      | `localhost`             | Host of the REST server in ext/rest                                        |
-| `--rest-port`      | `STRUCTURE_REST_PORT`      | `structure.rest.port`      | `3443`                  | Port of the REST server in ext/rest                                        |
-| `--worker-timeout` | `STRUCTURE_WORKER_TIMEOUT` | `structure.worker.timeout` | `300`                   | Maximum worker run time, in seconds                                        |
-| `--job-pool`       | `STRUCTURE_JOB_POOL`       | `structure.job.pool`       | 4 × CPU cores           | Maximum number of jobs that run at the same time                           |
+| Option             | Environment variable       | Property                   | Default                             | Description                                                                |
+| ------------------ | -------------------------- | -------------------------- | ----------------------------------- | -------------------------------------------------------------------------- |
+| `--help`           | `STRUCTURE_HELP`           | `structure.help`           |                                     | Print usage and exit                                                       |
+| `--log-level`      | `STRUCTURE_LOG_LEVEL`      | `structure.log.level`      | `info`                              | `info`, `debug` or `trace`; `trace` also prints stack traces               |
+| `--unsafe`         | `STRUCTURE_UNSAFE`         | `structure.unsafe`         |                                     | Allow all event bus addresses and log argument values                      |
+| `--bundle-path`    | `STRUCTURE_BUNDLE_PATH`    | `structure.bundle.path`    | [Home and mode](#home-and-mode)     | Comma-separated bundle paths, relative to Structure's home                 |
+| `--home`           | `STRUCTURE_HOME`           | `structure.home`           | [Home and mode](#home-and-mode)     | Structure's home directory                                                 |
+| `--state-dir`      | `STRUCTURE_STATE_DIR`      | `structure.state.dir`      | [State directory](#state-directory) | Directory of the files that Structure writes, relative to Structure's home |
+| `--jks-file`       | `STRUCTURE_JKS_FILE`       | `structure.jks.file`       | `structure.jks`                     | JKS keystore for HTTPS, relative to `state-dir`; made if missing           |
+| `--jks-pass`       | `STRUCTURE_JKS_PASS`       | `structure.jks.pass`       | `changeit`                          | Keystore password                                                          |
+| `--neo4j-bolt-uri` | `STRUCTURE_NEO4J_BOLT_URI` | `structure.neo4j.bolt.uri` | `bolt://localhost:7687`             | Neo4j Bolt server                                                          |
+| `--neo4j-http-uri` | `STRUCTURE_NEO4J_HTTP_URI` | `structure.neo4j.http.uri` | `http://localhost:7474`             | Neo4j Query API, for the tools in ext                                      |
+| `--neo4j-user`     | `STRUCTURE_NEO4J_USER`     | `structure.neo4j.user`     | `neo4j`                             | Neo4j user                                                                 |
+| `--neo4j-pass`     | `STRUCTURE_NEO4J_PASS`     | `structure.neo4j.pass`     | required                            | Neo4j password                                                             |
+| `--https-host`     | `STRUCTURE_HTTPS_HOST`     | `structure.https.host`     | `localhost`                         | HTTPS server host; also used in schema URIs                                |
+| `--https-port`     | `STRUCTURE_HTTPS_PORT`     | `structure.https.port`     | `8443`                              | HTTPS server port                                                          |
+| `--rest-host`      | `STRUCTURE_REST_HOST`      | `structure.rest.host`      | `localhost`                         | Host of the REST server in ext/rest                                        |
+| `--rest-port`      | `STRUCTURE_REST_PORT`      | `structure.rest.port`      | `3443`                              | Port of the REST server in ext/rest                                        |
+| `--worker-timeout` | `STRUCTURE_WORKER_TIMEOUT` | `structure.worker.timeout` | `300`                               | Maximum worker run time, in seconds                                        |
+| `--job-pool`       | `STRUCTURE_JOB_POOL`       | `structure.job.pool`       | 4 × CPU cores                       | Maximum number of jobs that run at the same time                           |
 
 `--help` and `--unsafe` are flags. On the command line they have no value. In
 the other sources, their value is `true` or `false`. Structure prints the usage

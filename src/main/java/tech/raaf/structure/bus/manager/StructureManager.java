@@ -9,8 +9,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tech.raaf.structure.annotations.SchemaPath;
 import tech.raaf.structure.base.Application;
-import tech.raaf.structure.base.Configuration.Setting;
 import tech.raaf.structure.base.Configuration;
+import tech.raaf.structure.base.Configuration.Setting;
 import tech.raaf.structure.base.Context;
 import tech.raaf.structure.bus.GenericActor;
 import tech.raaf.structure.bus.NodeActor;
@@ -84,13 +84,10 @@ public class StructureManager extends GenericActor {
         // Then reinit
         // Unordered, so that the reinit does not stop the message handlers
         vertx
-          .executeBlocking(
-            () -> {
-              Application.init(vertx);
-              return null;
-            },
-            false
-          )
+          .executeBlocking(() -> {
+            Application.init(vertx);
+            return null;
+          }, false)
           .onComplete(res -> {
             publishStatus("structureReinitialization", mapper.createObjectNode().put("data", "finished"));
             log.info("Successfully reinitialized the database");
@@ -119,13 +116,10 @@ public class StructureManager extends GenericActor {
 
         // Unordered, so that the discovery does not stop the message handlers
         vertx
-          .executeBlocking(
-            () -> {
-              selfDiscovery(token);
-              return null;
-            },
-            false
-          )
+          .executeBlocking(() -> {
+            selfDiscovery(token);
+            return null;
+          }, false)
           .onComplete(resultHandler -> {
             if (resultHandler.failed()) {
               resultHandler.cause().printStackTrace();

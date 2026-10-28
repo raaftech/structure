@@ -123,8 +123,7 @@ public class InstrumentRepository extends GenericRepository<Instrument> {
           "<-[:INSTANCE_OF]-(:Instance)<-[:HAS]-()-[:HAS*0..]->(origin) } " +
           "RETURN n LIMIT 1",
         ImmutableMap.of("instrumentUuid", instrumentUuid, "originUuid", originUuid)
-      ) !=
-      null
+      ) != null
     );
   }
 

@@ -12,8 +12,8 @@ import java.util.List;
 import java.util.function.Supplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tech.raaf.structure.base.Configuration.Setting;
 import tech.raaf.structure.base.Configuration;
+import tech.raaf.structure.base.Configuration.Setting;
 import tech.raaf.structure.base.Context;
 import tech.raaf.structure.bus.manager.SchemaManager;
 import tools.jackson.core.JacksonException;
@@ -29,8 +29,9 @@ public class JsonHelper {
   public static final ObjectMapper mapper = new ObjectMapper();
   private static final Logger log = LoggerFactory.getLogger(JsonHelper.class);
   // Type schemas come from the graph and can change, thus no cache
-  private static final SchemaRegistry registry = SchemaRegistry.withDefaultDialect(SpecificationVersion.DRAFT_4, builder ->
-    builder.schemaCacheEnabled(false).schemaLoader(loader -> loader.fetchRemoteResources())
+  private static final SchemaRegistry registry = SchemaRegistry.withDefaultDialect(
+    SpecificationVersion.DRAFT_4,
+    builder -> builder.schemaCacheEnabled(false).schemaLoader(loader -> loader.fetchRemoteResources())
   );
   // The draft-04 meta-schema, to check the syntax of a schema
   private static final Schema metaSchema = registry.getSchema(
@@ -156,9 +157,7 @@ public class JsonHelper {
     if (Context.getSchemaNamespace() == null) {
       return validate(() -> registry.getSchema(schema), object);
     }
-    final URI namespace = customNamespace == null
-      ? Context.getSchemaNamespace().resolve("/schemas/")
-      : customNamespace;
+    final URI namespace = customNamespace == null ? Context.getSchemaNamespace().resolve("/schemas/") : customNamespace;
     return validate(() -> registry.getSchema(SchemaLocation.of(namespace.toString()), schema), object);
   }
 

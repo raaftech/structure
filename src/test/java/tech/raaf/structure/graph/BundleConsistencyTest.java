@@ -1,7 +1,7 @@
 package tech.raaf.structure.graph;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.networknt.schema.Error;
 import com.networknt.schema.SpecificationVersion;
@@ -24,10 +24,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import tech.raaf.structure.base.Configuration.Setting;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import tech.raaf.structure.base.Configuration;
+import tech.raaf.structure.base.Configuration.Setting;
 import tech.raaf.structure.helper.JsonHelper;
 import tools.jackson.core.JacksonException;
 import tools.jackson.core.JsonParser;
@@ -71,7 +71,7 @@ public class BundleConsistencyTest {
 
   private final List<String> errors = new ArrayList<>();
 
-  @BeforeClass
+  @BeforeAll
   public static void readResources() throws IOException {
     try (Stream<Path> paths = Files.walk(RESOURCES)) {
       files = paths
@@ -119,12 +119,12 @@ public class BundleConsistencyTest {
         }
       }
     }
-    assertTrue("No bundle entities found in " + BUNDLES, !entities.isEmpty());
+    assertTrue(!entities.isEmpty(), "No bundle entities found in " + BUNDLES);
   }
 
   @Test
   public void jsonIsValidWithoutDuplicateKeys() {
-    assertTrue(String.join("\n", jsonErrors), jsonErrors.isEmpty());
+    assertTrue(jsonErrors.isEmpty(), String.join("\n", jsonErrors));
   }
 
   @Test
@@ -450,7 +450,7 @@ public class BundleConsistencyTest {
   }
 
   private void assertNoErrors() {
-    assertTrue(String.join("\n", errors), errors.isEmpty());
+    assertTrue(errors.isEmpty(), String.join("\n", errors));
   }
 
   private static class BundleEntity {
@@ -473,7 +473,7 @@ public class BundleConsistencyTest {
 
     private JsonNode schema() {
       JsonNode schema = documents.get(schemaPath());
-      assertNotNull(this + ": missing schema " + schemaPath(), schema);
+      assertNotNull(schema, this + ": missing schema " + schemaPath());
       return schema;
     }
 

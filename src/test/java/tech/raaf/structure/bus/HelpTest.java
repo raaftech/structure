@@ -1,11 +1,11 @@
 package tech.raaf.structure.bus;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import tech.raaf.structure.base.Context;
 import tech.raaf.structure.bus.manager.EntityManager;
 import tech.raaf.structure.bus.manager.InstrumentManager;
@@ -51,6 +51,6 @@ public class HelpTest extends TypeSchemaTest {
         }
       }
     }
-    assertTrue("Handlers without help: " + missing, missing.isEmpty());
+    assertTrue(missing.isEmpty(), "Handlers without help: " + missing);
   }
 }

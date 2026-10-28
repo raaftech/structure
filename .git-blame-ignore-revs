@@ -9,3 +9,6 @@ c5494d1cce17a38a6ebe3b6f84b181f67dda118e
 
 # Added .prettierrc, and wrapped all markdown files at 80
 410f5633a8dd9326e6e8fcc0bb9707a2880c8177
+
+# Reformat the Java sources with prettier-java 2.11
+3b20cee184261cfd0fcb6311011f8299291297ae

@@ -48,6 +48,9 @@ public class SecretFile implements Helper<Object> {
   }
 
   private static long lineBreaks(String text) {
-    return text.chars().filter(c -> c == '\n' || c == '\r').count();
+    return text
+      .chars()
+      .filter(c -> c == '\n' || c == '\r')
+      .count();
   }
 }

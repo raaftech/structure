@@ -1,12 +1,12 @@
 package tech.raaf.structure.schema;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.google.common.collect.ImmutableSet;
 import java.net.URI;
 import java.util.Set;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import tech.raaf.structure.helper.JsonHelper;
 import tools.jackson.databind.node.ObjectNode;
 
@@ -17,7 +17,7 @@ public class ControllerSchemaTest extends SchemaTest {
     for (String type : new String[] { "string", "type.component", "type.component.software.service" }) {
       ObjectNode controller = controller();
       value(controller).put("type", type);
-      assertTrue(type, valid(controller));
+      assertTrue(valid(controller), type);
     }
   }
 
@@ -26,7 +26,7 @@ public class ControllerSchemaTest extends SchemaTest {
     for (String type : new String[] { "type.component!", "prefixstring", "stringSuffix" }) {
       ObjectNode controller = controller();
       value(controller).put("type", type);
-      assertFalse(type, valid(controller));
+      assertFalse(valid(controller), type);
     }
   }
 
@@ -35,7 +35,7 @@ public class ControllerSchemaTest extends SchemaTest {
     for (String onError : new String[] { "fail", "askUser", "ignore" }) {
       ObjectNode controller = controller();
       value(controller).put("onError", onError);
-      assertTrue(onError, valid(controller));
+      assertTrue(valid(controller), onError);
     }
   }
 
@@ -44,7 +44,7 @@ public class ControllerSchemaTest extends SchemaTest {
     for (String onError : new String[] { "failSuffix", "prefixignore", "other" }) {
       ObjectNode controller = controller();
       value(controller).put("onError", onError);
-      assertFalse(onError, valid(controller));
+      assertFalse(valid(controller), onError);
     }
   }
 

@@ -1,9 +1,11 @@
 package tech.raaf.structure.base;
 
 import static java.util.Collections.singletonMap;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeFalse;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -16,10 +18,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import org.apache.commons.cli.ParseException;
-import org.junit.Assume;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import tech.raaf.structure.base.Configuration.Setting;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
@@ -28,8 +28,8 @@ public class ConfigurationTest {
 
   private static final Map<String, String> NONE = Collections.emptyMap();
 
-  @Rule
-  public final TemporaryFolder folder = new TemporaryFolder();
+  @TempDir
+  Path folder;
 
   private static Properties properties(String key, String value) {
     final Properties properties = new Properties();
@@ -59,14 +59,8 @@ public class ConfigurationTest {
     final Properties system = properties("structure.https.host", "system");
     final Properties file = properties("structure.https.host", "file");
     final Properties none = new Properties();
-    assertEquals(
-      "arguments",
-      new Configuration(arguments, environment, system, file).resolve(Setting.HTTPS_HOST)
-    );
-    assertEquals(
-      "environment",
-      new Configuration(NONE, environment, system, file).resolve(Setting.HTTPS_HOST)
-    );
+    assertEquals("arguments", new Configuration(arguments, environment, system, file).resolve(Setting.HTTPS_HOST));
+    assertEquals("environment", new Configuration(NONE, environment, system, file).resolve(Setting.HTTPS_HOST));
     assertEquals("system", new Configuration(NONE, NONE, system, file).resolve(Setting.HTTPS_HOST));
     assertEquals("file", new Configuration(NONE, NONE, none, file).resolve(Setting.HTTPS_HOST));
     assertEquals("localhost", new Configuration(NONE, NONE, none, none).resolve(Setting.HTTPS_HOST));
@@ -86,14 +80,8 @@ public class ConfigurationTest {
       Long.valueOf(5000000000L),
       none.resolve(new Setting<>("size", Setting.Type.LONG, "5000000000", "A size"))
     );
-    assertEquals(
-      Double.valueOf(0.5),
-      none.resolve(new Setting<>("ratio", Setting.Type.DECIMAL, "0.5", "A ratio"))
-    );
-    assertEquals(
-      Paths.get("/opt/structure"),
-      file("structure.home", "/opt/structure").resolve(Setting.HOME)
-    );
+    assertEquals(Double.valueOf(0.5), none.resolve(new Setting<>("ratio", Setting.Type.DECIMAL, "0.5", "A ratio")));
+    assertEquals(Paths.get("/opt/structure"), file("structure.home", "/opt/structure").resolve(Setting.HOME));
     final Path home = Configuration.get(Setting.HOME);
     assertEquals(
       Arrays.asList(home.resolve("a").toString(), "/b"),
@@ -110,15 +98,12 @@ public class ConfigurationTest {
     final Path home = Configuration.get(Setting.HOME);
     assertEquals(Paths.get("").toAbsolutePath(), home);
     assertEquals(home.resolve("src/main/resources"), Configuration.resources());
-    assertEquals(
-      Paths.get("/opt/structure"),
-      file("structure.home", "/opt/x/../structure").resolve(Setting.HOME)
-    );
+    assertEquals(Paths.get("/opt/structure"), file("structure.home", "/opt/x/../structure").resolve(Setting.HOME));
   }
 
   @Test
   public void isDevEnv() throws Exception {
-    final Path repo = folder.newFolder("repo").toPath();
+    final Path repo = Files.createDirectory(folder.resolve("repo"));
     final Path jar = repo.resolve("target/structure.jar");
     // A pom.xml alone is not enough.
     Files.createFile(repo.resolve("pom.xml"));
@@ -131,29 +116,28 @@ public class ConfigurationTest {
     assertFalse(Configuration.isDevEnv(Paths.get("/opt/structure/lib/structure.jar"), Paths.get("/opt/structure")));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void invalidFlag() {
-    file("structure.unsafe", "yes").resolve(Setting.UNSAFE);
+    assertThrows(IllegalArgumentException.class, () -> file("structure.unsafe", "yes").resolve(Setting.UNSAFE));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void invalidInteger() {
-    file("structure.https.port", "https").resolve(Setting.HTTPS_PORT);
+    assertThrows(IllegalArgumentException.class, () ->
+      file("structure.https.port", "https").resolve(Setting.HTTPS_PORT)
+    );
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void required() {
-    file("structure.other", "").resolve(Setting.NEO4J_PASS);
+    assertThrows(IllegalArgumentException.class, () -> file("structure.other", "").resolve(Setting.NEO4J_PASS));
   }
 
   @Test
   public void modifiers() {
     // The modifier also applies to the default.
     assertEquals(Long.valueOf(300000000000L), file("structure.other", "").resolve(Setting.WORKER_TIMEOUT));
-    assertEquals(
-      Long.valueOf(1000000000L),
-      file("structure.worker.timeout", "1").resolve(Setting.WORKER_TIMEOUT)
-    );
+    assertEquals(Long.valueOf(1000000000L), file("structure.worker.timeout", "1").resolve(Setting.WORKER_TIMEOUT));
     // A relative state-dir is relative to home, and in development mode,
     // the default is target in home.
     final Path home = Configuration.get(Setting.HOME);
@@ -176,7 +160,7 @@ public class ConfigurationTest {
 
   @Test
   public void write() throws Exception {
-    final Path file = folder.getRoot().toPath().resolve("target/structure.json");
+    final Path file = folder.resolve("target/structure.json");
     final Map<String, String> environment = singletonMap("STRUCTURE_NEO4J_PASS", "secret");
     new Configuration(NONE, environment, new Properties(), new Properties()).write(file);
     assertEquals("rw-------", PosixFilePermissions.toString(Files.getPosixFilePermissions(file)));
@@ -198,12 +182,12 @@ public class ConfigurationTest {
 
   @Test
   public void load() throws Exception {
-    final Path system = folder.newFile("system.properties").toPath();
-    final Path user = folder.newFile("user.properties").toPath();
+    final Path system = Files.createFile(folder.resolve("system.properties"));
+    final Path user = Files.createFile(folder.resolve("user.properties"));
     Files.write(system, Arrays.asList("structure.https.port=9443", "structure.rest.port=9444"));
     Files.write(user, Arrays.asList("structure.https.port=10443"));
     // A later file has priority, and a missing file is no error.
-    final Path missing = folder.getRoot().toPath().resolve("missing.properties");
+    final Path missing = folder.resolve("missing.properties");
     final List<Path> loadedFiles = new ArrayList<>();
     final Properties properties = Configuration.load(Arrays.asList(system, user, missing), loadedFiles);
     assertEquals("10443", properties.getProperty("structure.https.port"));
@@ -237,9 +221,9 @@ public class ConfigurationTest {
   @Test
   public void releaseStateDir() throws Exception {
     // A writable /var/lib/structure on this machine would come first.
-    Assume.assumeFalse(Files.isWritable(Paths.get("/var/lib/structure")));
+    assumeFalse(Files.isWritable(Paths.get("/var/lib/structure")));
     // Without var in home, the default is structure in $XDG_STATE_HOME.
-    final Path home = folder.newFolder("opt").toPath();
+    final Path home = Files.createDirectory(folder.resolve("opt"));
     assertTrue(Configuration.releaseStateDir(home).endsWith("structure"));
     // With a var in home that we can write to, the default is that var.
     Files.createDirectory(home.resolve("var"));
@@ -250,7 +234,7 @@ public class ConfigurationTest {
   public void homeOverride() throws Exception {
     // With another home, Structure reads etc/config.properties there, but
     // a settings file can not set home.
-    final Path home = folder.newFolder("other").toPath();
+    final Path home = Files.createDirectory(folder.resolve("other"));
     Files.createDirectory(home.resolve("etc"));
     Files.write(home.resolve("etc/config.properties"), Arrays.asList("structure.https.port=9555", "structure.home=/x"));
     final Configuration configuration = Configuration.create(singletonMap("home", home.toString()));
@@ -258,13 +242,13 @@ public class ConfigurationTest {
     assertEquals(Integer.valueOf(9555), configuration.resolve(Setting.HTTPS_PORT));
   }
 
-  @Test(expected = ParseException.class)
-  public void unknownOption() throws Exception {
-    Configuration.parse(new String[] { "-h" });
+  @Test
+  public void unknownOption() {
+    assertThrows(ParseException.class, () -> Configuration.parse(new String[] { "-h" }));
   }
 
-  @Test(expected = ParseException.class)
-  public void unexpectedArgument() throws Exception {
-    Configuration.parse(new String[] { "--unsafe", "true" });
+  @Test
+  public void unexpectedArgument() {
+    assertThrows(ParseException.class, () -> Configuration.parse(new String[] { "--unsafe", "true" }));
   }
 }

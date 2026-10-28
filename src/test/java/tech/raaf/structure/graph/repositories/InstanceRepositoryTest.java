@@ -1,14 +1,14 @@
 package tech.raaf.structure.graph.repositories;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static tech.raaf.structure.helper.JsonHelper.mapper;
 
 import com.google.common.collect.ImmutableSet;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import tech.raaf.structure.base.Context;
 import tech.raaf.structure.graph.Component;
 import tech.raaf.structure.graph.Entity;
@@ -29,7 +29,7 @@ public class InstanceRepositoryTest extends TypeSchemaTest {
   private Group group;
   private Component parent, child01, child02;
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     Type groupingType = typeRepository.findOneByName("Group");
     assertNotNull(groupingType);
@@ -98,7 +98,7 @@ public class InstanceRepositoryTest extends TypeSchemaTest {
 
   @Test
   public void getStartOfComponentGroup() throws Exception {
-    Assert.assertEquals(group.getUuid(), instanceRepository.getStartOfComponentGroup(child01.getUuid()).getUuid());
+    Assertions.assertEquals(group.getUuid(), instanceRepository.getStartOfComponentGroup(child01.getUuid()).getUuid());
   }
 
   @Test

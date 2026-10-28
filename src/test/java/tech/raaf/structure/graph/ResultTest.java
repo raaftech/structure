@@ -1,9 +1,10 @@
 package tech.raaf.structure.graph;
 
-import static junit.framework.TestCase.assertFalse;
-import static junit.framework.TestCase.assertTrue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static tech.raaf.structure.helper.JsonHelper.mapper;
 
 import java.net.URI;
@@ -11,16 +12,17 @@ import java.util.UUID;
 import java.util.stream.IntStream;
 import mockit.Expectations;
 import mockit.Mocked;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import mockit.integration.junit5.JMockitExtension;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import tech.raaf.structure.GraphTest;
 import tech.raaf.structure.base.Context;
 import tech.raaf.structure.graph.repositories.ResultRepository;
 import tech.raaf.structure.helper.JsonHelper;
 import tools.jackson.databind.JsonNode;
 
+@ExtendWith(JMockitExtension.class)
 public class ResultTest extends GraphTest {
 
   private final ResultRepository resultRepository = Context.getResultRepository();
@@ -28,7 +30,7 @@ public class ResultTest extends GraphTest {
   @Mocked
   JsonHelper jsonHelper;
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     new Expectations() {
       {
@@ -90,9 +92,6 @@ public class ResultTest extends GraphTest {
     });
   }
 
-  @Rule
-  public ExpectedException thrown = ExpectedException.none();
-
   @Test
   public void save() throws Exception {
     // save the thing
@@ -122,10 +121,9 @@ public class ResultTest extends GraphTest {
     IntStream.of(0, 1, 2).forEach(i -> new Result.State(i, stateInterpretation, stateDescription));
 
     // Anything else should result in an exception
-    thrown.expect(IllegalArgumentException.class);
-    new Result.State(-1, stateInterpretation, stateDescription);
-    new Result.State(0, null, stateDescription);
-    new Result.State(0, stateInterpretation, null);
+    assertThrows(IllegalArgumentException.class, () -> new Result.State(-1, stateInterpretation, stateDescription));
+    assertThrows(NullPointerException.class, () -> new Result.State(0, null, stateDescription));
+    assertThrows(NullPointerException.class, () -> new Result.State(0, stateInterpretation, null));
   }
 
   @Test

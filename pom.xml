@@ -108,7 +108,7 @@
     <jackson.version>3.2.4</jackson.version>
 
     <!-- Test component versions -->
-    <junit.version>4.13.2</junit.version>
+    <junit.version>6.1.3</junit.version>
     <jmockit.version>2.3.0</jmockit.version>
     <testcontainers.version>2.0.5</testcontainers.version>
     <argLine>-javaagent:${settings.localRepository}/com/github/hazendaz/jmockit/jmockit/${jmockit.version}/jmockit-${jmockit.version}.jar</argLine>
@@ -128,6 +128,13 @@
         <groupId>tools.jackson</groupId>
         <artifactId>jackson-bom</artifactId>
         <version>${jackson.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.junit</groupId>
+        <artifactId>junit-bom</artifactId>
+        <version>${junit.version}</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -228,9 +235,8 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>${junit.version}</version>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -296,7 +302,7 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <version>${maven.surefire.plugin.version}</version>
         <configuration>
-          <excludedGroups>tech.raaf.structure.GraphTest</excludedGroups>
+          <excludedGroups>graph</excludedGroups>
           <systemPropertyVariables>
             <vertx.cacheDirBase>${project.build.directory}/vertx</vertx.cacheDirBase>
           </systemPropertyVariables>
@@ -320,7 +326,7 @@
           <includes>
             <include>**/*Test.java</include>
           </includes>
-          <groups>tech.raaf.structure.GraphTest</groups>
+          <groups>graph</groups>
           <systemPropertyVariables>
             <vertx.cacheDirBase>${project.build.directory}/vertx</vertx.cacheDirBase>
           </systemPropertyVariables>
@@ -407,7 +413,6 @@
                                     them here -->
                 <excludes>
                   <exclude>io.vertx:codegen</exclude>
-                  <exclude>junit:junit</exclude>
                   <exclude>org.mvel:mvel2</exclude>
                   <exclude>log4j:log4j</exclude>
                 </excludes>

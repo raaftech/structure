@@ -17,8 +17,10 @@ public class ManualTest extends SchemaTest {
   protected Set<String> good() {
     // The sample, and each help file of a message handler
     try (Stream<Path> files = Files.list(Configuration.get(Setting.HOME).resolve("src/main/resources/help"))) {
-      return Stream.concat(Stream.of("schema/manualGood01.json"), files.map(file -> "help/" + file.getFileName()))
-        .collect(Collectors.toSet());
+      return Stream.concat(
+        Stream.of("schema/manualGood01.json"),
+        files.map(file -> "help/" + file.getFileName())
+      ).collect(Collectors.toSet());
     } catch (IOException e) {
       throw new UncheckedIOException(e);
     }
