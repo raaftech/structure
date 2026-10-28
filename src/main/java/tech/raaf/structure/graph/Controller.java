@@ -132,7 +132,7 @@ public class Controller extends Instrument {
 
     public Builder addExitCodeToState(int exitCode, Result.State state) {
       Validate.inclusiveBetween(0, 255, exitCode);
-      Validate.notNull(state);
+      Objects.requireNonNull(state);
       exitCodeToState.put(exitCode, state);
       return this;
     }

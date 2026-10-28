@@ -1,5 +1,6 @@
 package tech.raaf.structure.graph;
 
+import java.util.Objects;
 import java.util.Optional;
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
@@ -38,8 +39,8 @@ public class Result extends Instance {
 
     public State(int code, String interpretation, String description) {
       Validate.inclusiveBetween(0, 2, code);
-      Validate.notNull(interpretation);
-      Validate.notNull(description);
+      Objects.requireNonNull(interpretation);
+      Objects.requireNonNull(description);
       this.code = code;
       this.interpretation = interpretation;
       this.description = description;

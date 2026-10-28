@@ -2,6 +2,7 @@ package tech.raaf.structure.helper;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -17,7 +18,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
-import org.apache.commons.io.IOUtils;
 
 /**
  * Makes the keystore of the HTTPS server, and makes the JVM trust its
@@ -137,7 +137,7 @@ public final class KeystoreHelper {
     final Process process = builder.start();
     // No input, so keytool fails if it prompts.
     process.getOutputStream().close();
-    final String output = IOUtils.toString(process.getInputStream());
+    final String output = new String(process.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
     if (process.waitFor() != 0) {
       throw new IOException("keytool " + args[0] + " failed: " + output.trim());
     }
