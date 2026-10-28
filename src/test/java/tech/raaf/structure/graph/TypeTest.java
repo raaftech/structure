@@ -28,7 +28,7 @@ public class TypeTest {
 
   ObjectMapper mapper = new ObjectMapper();
 
-  /**
+  /*
    * SetDescriptor used to be used before everything was entity backed.
    * When we are going to allow modifications from other places we might
    * need it again, so I'll leave this test here, but commented.

@@ -42,9 +42,7 @@ public abstract class Instance extends Node {
 
   JsonNode instanceData;
 
-  /****************/
-  /* Constructors */
-  /****************/
+  // Constructors
 
   // TODO: Move to builder pattern, just too many constructors
 
@@ -61,9 +59,7 @@ public abstract class Instance extends Node {
     setProperties(json);
   }
 
-  /******************/
-  /* Public Methods */
-  /******************/
+  // Public Methods
 
   public Type getInstanceOf() {
     if (instanceOf == null && persisted) {
@@ -77,7 +73,7 @@ public abstract class Instance extends Node {
    * @param properties The JSON to use for the properties.
    * @return The Instance setProperties was called on.
    */
-  protected Instance setProperties(ObjectNode properties) {
+  protected final Instance setProperties(ObjectNode properties) {
     boolean success = JsonHelper.validateToSchema(instanceOf.getSchema().getAsObjectNode(), properties);
     if (success) {
       // Name and desc are saved already, so we can remove those.

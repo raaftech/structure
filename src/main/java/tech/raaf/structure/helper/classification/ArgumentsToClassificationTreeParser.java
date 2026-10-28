@@ -67,7 +67,6 @@ public class ArgumentsToClassificationTreeParser {
     return hierarchyPath.matches(Pattern.quote(typePath) + "(\\..*)?");
   }
 
-  @SuppressWarnings("unchecked")
   public static ClassificationTreeObjects asTree(ObjectNode arguments) {
     if (!JsonHelper.validateToSchema(argumentsSchema, arguments, INSTRUMENT_SCHEMA_NS)) {
       throw new IllegalArgumentException("Provided arguments did not conform to arguments schema.");
@@ -127,7 +126,7 @@ public class ArgumentsToClassificationTreeParser {
     selectionMap.put("mustBeOne", mustBeOne);
     selectionMap.put("mustBeMany", mustBeMany);
 
-    Map<String, Terminal> onErrorTerminalMap = new HashMap<>();
+    Map<String, Terminal<JsonNode>> onErrorTerminalMap = new HashMap<>();
     onErrorTerminalMap.put("fail", fail);
     onErrorTerminalMap.put("askUser", askUser);
     onErrorTerminalMap.put("ignore", ignore);

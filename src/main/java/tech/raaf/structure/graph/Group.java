@@ -1,20 +1,15 @@
 package tech.raaf.structure.graph;
 
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Sets;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
-import java.util.function.BiFunction;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import tech.raaf.structure.exceptions.JsonValidationException;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.node.ObjectNode;
 
-public class Group extends Instance implements Groupable {
+public final class Group extends Instance implements Groupable {
 
   // The members of a new group. A persisted group reads them from the graph.
   private Set<Groupable> groupees;
@@ -125,37 +120,10 @@ public class Group extends Instance implements Groupable {
    * can be used to as an argument for an instrument.
    * @return JSON representation that can be used as an argument for a instrument.
    */
-  @SuppressWarnings("unchecked")
   public Set<JsonNode> toArguments() {
-    Set<JsonNode> arguments = new HashSet<>();
-
-    arguments.add(super.toJson());
-    BiFunction<BiFunction, Groupable, Set<JsonNode>> consumeArgsHelper = (f, node) -> {
-      final Set<Component> components;
-      if (node instanceof Component) {
-        components = ((Component) node).getComponents();
-      } else {
-        components = Collections.emptySet();
-      }
-      final Set<JsonNode> childSet;
-      if (!components.isEmpty()) {
-        childSet = components
-          .stream()
-          .flatMap(instance -> ((Set<JsonNode>) f.apply(f, instance)).stream())
-          .collect(Collectors.toSet());
-        // Stream.concat(groupees.stream(), configurations.stream()).forEach(n -> f.accept(f, n));
-      } else {
-        childSet = Collections.emptySet();
-      }
-      return Sets.union(childSet, ImmutableSet.of(((Instance) node).toJson()));
-    };
-
-    // Lambda's can't refer to themselves using their variable name. That means consumeArgsHelper defined
-    // above cannot refer to itself by name. This sucks, because it's a recursive function.
-    // However, it can refer to itself if it's passed a reference to itself as an argument, so that's what's
-    // happening in consumeArgs. After calling consumeArgsHelper below, consumeArgsHelper is bound to 'f' in the lambda.
-    Function<Groupable, Set<JsonNode>> consumeArgs = node -> consumeArgsHelper.apply(consumeArgsHelper, node);
-
-    return getGroupees().stream().map(consumeArgs).flatMap(Collection::stream).collect(Collectors.toSet());
+    return getGroupees()
+      .stream()
+      .flatMap(g -> Component.arguments((Instance) g).stream())
+      .collect(Collectors.toSet());
   }
 }

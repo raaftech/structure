@@ -58,9 +58,7 @@ public class Type extends Node {
 
   private TypeRepository typeRepository = Context.getTypeRepository();
 
-  /****************/
-  /* Constructors */
-  /****************/
+  // Constructors
 
   public Type() {}
 
@@ -95,17 +93,13 @@ public class Type extends Node {
     initSchema();
   }
 
-  /*******************/
-  /* Private Methods */
-  /*******************/
+  // Private Methods
 
   private void initSchema() {
     // TODO: Entity, this can go, i think
   }
 
-  /******************/
-  /* Public Methods */
-  /******************/
+  // Public Methods
 
   public Set<Type> getChildIsaSet() {
     return persisted ? related("<-[:ISA]-(b:Type)") : new HashSet<>();

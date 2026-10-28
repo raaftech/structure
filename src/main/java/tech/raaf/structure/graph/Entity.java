@@ -562,7 +562,7 @@ public class Entity {
       final URI schemaUri = Context.getSchemaNamespace().resolve(
         String.format(schemaUriPattern, instanceOf.getName().toLowerCase())
       );
-      final Map<String, Object> data = new HashMap(getData());
+      final Map<String, Object> data = new HashMap<>(getData());
       data.put("name", getName());
       data.put("desc", getDesc());
       final boolean validated = JsonHelper.validateToSchema(schemaUri, mapper.valueToTree(data));

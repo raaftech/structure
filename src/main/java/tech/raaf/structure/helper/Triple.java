@@ -19,9 +19,8 @@ public class Triple<L, M, R> {
     this.right = right;
   }
 
-  @SuppressWarnings("unchecked")
   public static <L, M, R> Triple<L, M, R> of(L left, M middle, R right) {
-    return new Triple(left, middle, right);
+    return new Triple<>(left, middle, right);
   }
 
   public L getLeft() {
@@ -51,6 +50,8 @@ public class Triple<L, M, R> {
    * element of {@link Triple#right right}. If {@link Triple#right right} is not a {@link Collection} then return a
    * stream containing only this element, but with {@link Triple#right right} cast to {@link T}.
    */
+  // The caller picks T; a wrong T fails later, on use of an element
+  @SuppressWarnings("unchecked")
   public <T> Stream<Triple<L, M, T>> flatten() {
     if (right instanceof Collection<?>) {
       return ((Collection<T>) right).stream().map(el -> Triple.of(left, middle, el));

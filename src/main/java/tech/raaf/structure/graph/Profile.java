@@ -19,6 +19,7 @@ import tech.raaf.structure.base.Configuration;
 import tech.raaf.structure.base.Context;
 import tech.raaf.structure.graph.repositories.TypeRepository;
 import tools.jackson.core.JacksonException;
+import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.node.ObjectNode;
 
@@ -119,7 +120,7 @@ public class Profile extends Instance {
       return Optional.empty();
     }
     try {
-      return Optional.of(mapper.treeToValue(maybeJson.get(), Map.class));
+      return Optional.of(mapper.treeToValue(maybeJson.get(), new TypeReference<Map<String, Map<String, String>>>() {}));
     } catch (JacksonException e) {
       if (Configuration.isTraceModeOn()) {
         e.printStackTrace();
@@ -156,7 +157,7 @@ public class Profile extends Instance {
       return ImmutableMap.of();
     }
     try {
-      return mapper.treeToValue(maybeDirectories.get(), Map.class);
+      return mapper.treeToValue(maybeDirectories.get(), new TypeReference<Map<String, List<String>>>() {});
     } catch (JacksonException e) {
       if (Configuration.isTraceModeOn()) {
         e.printStackTrace();

@@ -42,9 +42,7 @@ public abstract class Node {
   // NodeMapper sets this for a node that it reads from the graph
   boolean persisted;
 
-  /****************/
-  /* Constructors */
-  /****************/
+  // Constructors
 
   public Node() {
     this.uuid = UUID.randomUUID().toString();
@@ -77,9 +75,7 @@ public abstract class Node {
     this.checksum = checksum;
   }
 
-  /******************/
-  /* Public Methods */
-  /******************/
+  // Public Methods
 
   public String getDesc() {
     return desc;

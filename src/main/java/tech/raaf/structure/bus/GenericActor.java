@@ -64,7 +64,8 @@ public abstract class GenericActor extends AbstractVerticle {
     }
   }
 
-  // Constructor.
+  // Constructor. It gets the handlers of the subclass by reflection.
+  @SuppressWarnings("this-escape")
   protected GenericActor() {
     // Initialize arrays.
     Method methods[] = this.getClass().getMethods();

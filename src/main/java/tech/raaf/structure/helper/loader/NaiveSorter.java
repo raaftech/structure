@@ -176,12 +176,11 @@ public class NaiveSorter {
   /**
    * Calculate the checksum of a string.
    * @param input The string to calculate the hash for.
-   * @param algorithm Either SHA1, or MD5, defaulting to SHA1.
+   * @param algorithm Either SHA1, or MD5.
    * @return The calculated hash.
    */
   @SuppressWarnings("Duplicates")
   public static String calculateChecksum(ObjectNode input, ChecksumAlgorithm algorithm) {
-    final String output;
     final String preparedJson;
     try {
       preparedJson = prepareForHashing(input);
@@ -193,17 +192,10 @@ public class NaiveSorter {
       return null;
     }
 
-    switch (algorithm) {
-      case MD5:
-        output = DigestUtils.md5Hex(preparedJson);
-        break;
-      default:
-        log.warn("Invalid algorithm given to calculateChecksum, defaulting to SHA1");
-      case SHA1:
-        output = DigestUtils.sha1Hex(preparedJson);
-        break;
-    }
-    return output;
+    return switch (algorithm) {
+      case MD5 -> DigestUtils.md5Hex(preparedJson);
+      case SHA1 -> DigestUtils.sha1Hex(preparedJson);
+    };
   }
 
   /**
