@@ -224,8 +224,6 @@ public class EntityTest extends GraphTest {
     // make sure the labels are correct
     assertTrue(allLabelsMatch(labels(rootUuid), "Node", "Type", "type:Type"));
 
-    System.out.println(typeRepository.findOneByName(rootName).toJson());
-
     // make sure data and files are empty
     assertEquals(1, rootNode.getFiles().size());
     assertEquals(0, rootNode.getData().size());
