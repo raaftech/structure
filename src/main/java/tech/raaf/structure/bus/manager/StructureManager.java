@@ -83,17 +83,18 @@ public class StructureManager extends GenericActor {
 
         // Then reinit
         // Unordered, so that the reinit does not stop the message handlers
-        vertx.executeBlocking(
-          future -> {
-            Application.init(vertx);
-            future.complete();
-          },
-          false,
-          res -> {
+        vertx
+          .executeBlocking(
+            () -> {
+              Application.init(vertx);
+              return null;
+            },
+            false
+          )
+          .onComplete(res -> {
             publishStatus("structureReinitialization", mapper.createObjectNode().put("data", "finished"));
             log.info("Successfully reinitialized the database");
-          }
-        );
+          });
         log.info("Started database reinitialization");
 
         return response(request, result);
@@ -117,13 +118,15 @@ public class StructureManager extends GenericActor {
         final String token = args.get("token").asText();
 
         // Unordered, so that the discovery does not stop the message handlers
-        vertx.executeBlocking(
-          future -> {
-            selfDiscovery(token);
-            future.complete();
-          },
-          false,
-          resultHandler -> {
+        vertx
+          .executeBlocking(
+            () -> {
+              selfDiscovery(token);
+              return null;
+            },
+            false
+          )
+          .onComplete(resultHandler -> {
             if (resultHandler.failed()) {
               resultHandler.cause().printStackTrace();
               log.error(resultHandler.cause().getMessage());
@@ -134,8 +137,7 @@ public class StructureManager extends GenericActor {
             } else {
               publishStatus("selfDiscovery", mapper.createObjectNode().put("status", "done"));
             }
-          }
-        );
+          });
 
         return response(request, result.put("data", token));
       }

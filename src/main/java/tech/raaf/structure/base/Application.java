@@ -1,9 +1,7 @@
 package tech.raaf.structure.base;
 
 import ch.qos.logback.classic.Level;
-import io.vertx.core.AsyncResult;
 import io.vertx.core.DeploymentOptions;
-import io.vertx.core.Handler;
 import io.vertx.core.Verticle;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
@@ -25,8 +23,6 @@ import java.security.GeneralSecurityException;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import org.apache.commons.cli.ParseException;
 import org.slf4j.Logger;
@@ -180,7 +176,7 @@ public class Application {
     httpServer = vertx.createHttpServer(
       new HttpServerOptions()
         .setSsl(true)
-        .setKeyStoreOptions(new JksOptions().setPath(jks.toString()).setPassword(jksPass))
+        .setKeyCertOptions(new JksOptions().setPath(jks.toString()).setPassword(jksPass))
     );
     router = Router.router(vertx);
     // One of the endpoints will be routed to SchemaManager, so instance it
@@ -199,7 +195,7 @@ public class Application {
     // Deploy our main actors. Structure stops if one of them fails.
     // The actors that use the graph run on worker threads.
     deploy(vertx, new StructureManager(), GenericActor.worker());
-    deploy(vertx, new InstrumentManager(), new DeploymentOptions().setWorker(false));
+    deploy(vertx, new InstrumentManager(), new DeploymentOptions());
     deploy(vertx, new EntityManager(), GenericActor.worker());
 
     deploy(vertx, new TaskManager(Configuration.get(Setting.JOB_POOL)), GenericActor.worker());
@@ -217,8 +213,8 @@ public class Application {
     }
     final HttpServer server = httpServer.requestHandler(router);
     try {
-      Application.<HttpServer>await(handler -> server.listen(port, host, handler));
-    } catch (InterruptedException | ExecutionException e) {
+      server.listen(port, host).await();
+    } catch (Exception e) {
       handleUnrecoverableLoadingError(e, 1, "Failed to start the web server: " + e.getMessage());
     }
 
@@ -292,24 +288,11 @@ public class Application {
   private static void deploy(Vertx vertx, Verticle verticle, DeploymentOptions options) {
     final String name = verticle.getClass().getSimpleName();
     try {
-      final String id = await(handler -> vertx.deployVerticle(verticle, options, handler));
+      final String id = vertx.deployVerticle(verticle, options).await();
       log.info("Deployed {} with id: {}", name, id);
-    } catch (InterruptedException | ExecutionException e) {
+    } catch (Exception e) {
       handleUnrecoverableLoadingError(e, 1, "Failed to deploy " + name + ": " + e.getMessage());
     }
-  }
-
-  // Start an asynchronous Vert.x call and wait for its result.
-  private static <T> T await(Consumer<Handler<AsyncResult<T>>> call) throws InterruptedException, ExecutionException {
-    final CompletableFuture<T> result = new CompletableFuture<>();
-    call.accept(ar -> {
-      if (ar.succeeded()) {
-        result.complete(ar.result());
-      } else {
-        result.completeExceptionally(ar.cause());
-      }
-    });
-    return result.get();
   }
 
   private static Optional<String> getHostname() {

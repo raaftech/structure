@@ -103,7 +103,7 @@ public abstract class NodeActor<T extends Node> extends GenericActor {
     return new MessageHandler() {
       @Override
       public JsonNode exec(JsonNode request) {
-        vertx.undeploy(deploymentID(), result -> {
+        vertx.undeploy(deploymentID()).onComplete(result -> {
           if (result.succeeded()) {
             log.info("Undeployed NodeActor \"" + primaryConsumerAddress + "\"");
           } else {
@@ -156,7 +156,7 @@ public abstract class NodeActor<T extends Node> extends GenericActor {
       return deploymentId;
     }
     final Verticle verticle = node instanceof Type ? new TypeActor((Type) node) : new InstanceActor((Instance) node);
-    Context.getVertx().deployVerticle(verticle, worker(), ar -> {
+    Context.getVertx().deployVerticle(verticle, worker()).onComplete(ar -> {
       if (ar.succeeded()) {
         deploymentId.complete(ar.result());
       } else {

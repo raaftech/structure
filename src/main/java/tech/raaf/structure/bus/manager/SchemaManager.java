@@ -18,7 +18,7 @@ public class SchemaManager {
     final String schemaName = routingContext.request().getParam("schema");
     if (schemaName == null) {
       log.error("No schema name given, could not process schema request.");
-      routingContext.response().setStatusCode(400).close();
+      routingContext.response().setStatusCode(400).end();
       return;
     }
 

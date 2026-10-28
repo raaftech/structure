@@ -11,7 +11,6 @@ import java.net.URI;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 import org.junit.Before;
 import org.junit.Test;
 import tech.raaf.structure.GraphTest;
@@ -35,15 +34,7 @@ public class ProfileTest extends GraphTest {
     router.route("/schemas/:schema").blockingHandler(schemaManager::getSchema, false);
 
     // Port 0 lets the system choose a free port
-    final CompletableFuture<HttpServer> listening = new CompletableFuture<>();
-    httpServer.requestHandler(router).listen(0, "localhost", ar -> {
-      if (ar.succeeded()) {
-        listening.complete(ar.result());
-      } else {
-        listening.completeExceptionally(ar.cause());
-      }
-    });
-    final int port = listening.get().actualPort();
+    final int port = httpServer.requestHandler(router).listen(0, "localhost").await().actualPort();
     Context.setSchemaNamespace(URI.create("http://localhost:" + port + "/schemas/"));
     Application.init(vertx);
   }

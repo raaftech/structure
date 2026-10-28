@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import org.apache.commons.io.IOUtils;
 import org.junit.Rule;
 import org.junit.Test;
@@ -80,23 +79,17 @@ public class KeystoreHelperTest {
     KeystoreHelper.trust(jks, "changeit");
     final Vertx vertx = Vertx.vertx();
     try {
-      final CompletableFuture<HttpServer> listening = new CompletableFuture<>();
-      vertx
+      final HttpServer listening = vertx
         .createHttpServer(
           new HttpServerOptions()
             .setSsl(true)
-            .setKeyStoreOptions(new JksOptions().setPath(jks.toString()).setPassword("changeit"))
+            .setKeyCertOptions(new JksOptions().setPath(jks.toString()).setPassword("changeit"))
         )
         .requestHandler(request -> request.response().end("ok"))
-        .listen(0, "localhost", ar -> {
-          if (ar.succeeded()) {
-            listening.complete(ar.result());
-          } else {
-            listening.completeExceptionally(ar.cause());
-          }
-        });
+        .listen(0, "localhost")
+        .await();
       // The default trust and host name check accept the certificate.
-      final URL url = new URL("https://localhost:" + listening.get().actualPort() + "/");
+      final URL url = new URL("https://localhost:" + listening.actualPort() + "/");
       try (InputStream stream = url.openStream()) {
         assertEquals("ok", IOUtils.toString(stream));
       }

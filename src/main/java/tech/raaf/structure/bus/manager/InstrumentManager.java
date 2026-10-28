@@ -138,11 +138,10 @@ public class InstrumentManager extends GenericActor {
           final UUID uuid = UUID.fromString(iter.next().asText());
           final String address = String.format(instanceActorFormat, uuid);
           log.info("Sending message to " + address);
-          vertx.eventBus().request(address, message, handler -> {
-            if (handler.failed()) {
-              log.error("Error while sending message to " + address + ": " + handler.cause().getMessage());
-            }
-          });
+          vertx
+            .eventBus()
+            .request(address, message)
+            .onFailure(cause -> log.error("Error while sending message to " + address + ": " + cause.getMessage()));
         }
 
         result.put("data", taskId.toString());

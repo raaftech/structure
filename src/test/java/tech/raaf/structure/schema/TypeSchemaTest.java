@@ -7,7 +7,6 @@ import io.vertx.ext.web.Router;
 import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.concurrent.CompletableFuture;
 import org.junit.Before;
 import tech.raaf.structure.GraphTest;
 import tech.raaf.structure.base.Context;
@@ -37,17 +36,10 @@ public abstract class TypeSchemaTest extends GraphTest {
       router.route("/schemas/:schema").blockingHandler(schemaManager::getSchema, false);
 
       // Port 0 lets the system choose a free port
-      final CompletableFuture<HttpServer> listening = new CompletableFuture<>();
-      httpServer.requestHandler(router).listen(0, "localhost", ar -> {
-        if (ar.succeeded()) {
-          listening.complete(ar.result());
-        } else {
-          listening.completeExceptionally(ar.cause());
-        }
-      });
+      final HttpServer listening = httpServer.requestHandler(router).listen(0, "localhost").await();
 
       // The schema namespace is the http endpoint that we exposed before
-      schemaNamespace = URI.create("http://localhost:" + listening.get().actualPort());
+      schemaNamespace = URI.create("http://localhost:" + listening.actualPort());
     }
     // Other tests in the same JVM can change these, so set them each time
     Context.setVertx(vertx);

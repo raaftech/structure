@@ -10,6 +10,7 @@ import com.github.fge.jsonschema.main.JsonSchema;
 import com.github.fge.jsonschema.main.JsonSchemaFactory;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.DeploymentOptions;
+import io.vertx.core.ThreadingModel;
 import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.json.JsonObject;
@@ -53,7 +54,7 @@ public abstract class GenericActor extends AbstractVerticle {
 
   // Options to deploy an actor that uses the graph.
   public static DeploymentOptions worker() {
-    return new DeploymentOptions().setWorker(true).setWorkerPoolName(POOL);
+    return new DeploymentOptions().setThreadingModel(ThreadingModel.WORKER).setWorkerPoolName(POOL);
   }
 
   class HandlerSchema {
