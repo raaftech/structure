@@ -145,6 +145,7 @@ public class InstrumentManager extends GenericActor {
           });
         }
 
+        result.put("data", taskId.toString());
         return response(request, result);
       }
 

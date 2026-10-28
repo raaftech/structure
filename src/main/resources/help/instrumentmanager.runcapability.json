@@ -9,5 +9,5 @@
       "arguments": "object with the arguments of the instrument (optional)"
     }
   },
-  "description": "The runCapability handler sends the capability to each of the instances. All instances get the same task ID. You must bootstrap Structure first."
+  "description": "The runCapability handler sends the capability to each of the instances. All instances get the same task ID, and the handler returns this task ID. You must bootstrap Structure first."
 }

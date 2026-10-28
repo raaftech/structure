@@ -22,6 +22,7 @@ import org.junit.Before;
 import org.junit.Test;
 import tech.raaf.structure.base.Context;
 import tech.raaf.structure.bus.manager.EntityManager;
+import tech.raaf.structure.bus.manager.InstrumentManager;
 import tech.raaf.structure.bus.manager.StructureManager;
 import tech.raaf.structure.bus.repository.Instances;
 import tech.raaf.structure.bus.repository.Types;
@@ -44,6 +45,7 @@ public class BusRoundTripTest extends TypeSchemaTest {
   private static final String INSTANCES = BUS + "repository.instances";
   private static final String ENTITIES = BUS + "manager.entitymanager";
   private static final String STRUCTURE = BUS + "manager.structuremanager";
+  private static final String INSTRUMENTS = BUS + "manager.instrumentmanager";
   private static final String OPERATING_SYSTEM = "f05e325e-1aee-4892-96e4-8bcd6e97c528";
   private static final String UNIX_LIKE = "6a1eea8b-1462-4439-8c60-12edbee6c397";
   private static final String COMPONENT_GROUP = "ee92c308-80f4-40b2-af3a-77d26cd99517";
@@ -60,6 +62,7 @@ public class BusRoundTripTest extends TypeSchemaTest {
     for (Verticle verticle : Arrays.asList(
       new EntityManager(),
       new StructureManager(),
+      new InstrumentManager(),
       new Types(Context.getTypeRepository()),
       new Instances(Context.getInstanceRepository())
     )) {
@@ -152,6 +155,19 @@ public class BusRoundTripTest extends TypeSchemaTest {
       }
     }
     assertTrue(String.join("\n", failures), failures.isEmpty());
+  }
+
+  // The reply has the task ID that each instance gets
+  @Test
+  public void runCapabilityGivesTaskId() throws Exception {
+    JsonNode data = send(
+      INSTRUMENTS,
+      "runCapability",
+      "{\"capability\": \"NoSuchCapability\", \"uuids\": [\"" + host + "\"]}"
+    )
+      .path("result")
+      .path("data");
+    assertEquals(data.asText(), UUID.fromString(data.asText()).toString());
   }
 
   @Test
