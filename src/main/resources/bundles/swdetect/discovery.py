@@ -10,6 +10,7 @@ exit 1
 
 import os
 import re
+import socket
 import sys
 
 
@@ -57,8 +58,17 @@ def hasService(name):
     eprint(name)
 
 def isPortOpen(port):
-    """Check whether a process is listening on the given port."""
-    eprint(port)
+    """Check whether a process is listening on the given TCP port."""
+    # A listener on all addresses also listens on the loopback address
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    try:
+        try:
+            s.connect(("127.0.0.1", int(port)))
+            return 1
+        except socket.error:
+            return 0
+    finally:
+        s.close()
 
 def checkIfFileExists(path):
     """Check whether a file exists at the given path."""
@@ -101,7 +111,15 @@ def checkProfile(profile):
                 anyMatched = 0
                 for location in locations:
                     anyMatched |= checkIfFileExists(location)
-            if anyMatched:
+                if anyMatched:
+                    score.success()
+                else:
+                    score.failure()
+
+    # Check all ports
+    if portsKey in env:
+        for port in env[portsKey].split(","):
+            if isPortOpen(port):
                 score.success()
             else:
                 score.failure()
