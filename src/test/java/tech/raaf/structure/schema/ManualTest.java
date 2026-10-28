@@ -11,7 +11,7 @@ public class ManualTest extends SchemaTest {
       "schema/manualGood01.json",
       "help/genericactor.help.json",
       "help/genericactor.version.json",
-      "help/busmanager.list.json"
+      "help/structuremanager.list.json"
     );
   }
 

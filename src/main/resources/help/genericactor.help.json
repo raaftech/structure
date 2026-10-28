@@ -4,5 +4,5 @@
     "msgh": "help",
     "args": {}
   },
-  "description": "The help handler gathers the help messages from all other MessageHandler type objects and returns them as a JSON type object."
+  "description": "The help handler returns the help messages of the handlers of the actor. It skips the handlers that have no help message."
 }

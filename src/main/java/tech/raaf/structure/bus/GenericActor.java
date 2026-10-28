@@ -39,7 +39,6 @@ public abstract class GenericActor extends AbstractVerticle {
 
   final URI schemaForRequest = URI.create("resource:/schema/base/request.schema.json");
   final URI schemaForResponse = URI.create("resource:/schema/base/response.schema.json");
-  final URI schemaForManual = URI.create("resource:/schema/base/manual.schema.json");
   // used as a default schema in case we need to fallback on something
   final URI fallbackSchema = URI.create("resource:/schema/base/args.schema.json");
 
@@ -220,8 +219,10 @@ public abstract class GenericActor extends AbstractVerticle {
 
         for (String msgh : handlers.keySet()) {
           try {
-            HandlerSchema handlerAndSchema = handlers.get(msgh);
-            result.set(msgh, handlerAndSchema.handler.help(request));
+            JsonNode help = handlers.get(msgh).handler.help(request);
+            if (help != null) {
+              result.set(msgh, help);
+            }
           } catch (NullPointerException e) {
             log.error(e.getMessage());
 

@@ -48,7 +48,7 @@ public class StructureManager extends GenericActor {
       }
 
       public JsonNode help(JsonNode request) {
-        return jsonFromResource("help/busmanager.list.json");
+        return jsonFromResource("help/structuremanager.list.json");
       }
     };
   }

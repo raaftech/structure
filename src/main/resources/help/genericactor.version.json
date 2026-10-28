@@ -4,5 +4,5 @@
     "msgh": "version",
     "args": {}
   },
-  "description": "The version handler from BaseActor returns the release object of Universal in JSON format. If the actor has no version method of its own, this version handler of BaseActor will be used. An actor can override the version handler and return an actor-specific version object of its own."
+  "description": "The version handler of GenericActor returns the release object of Structure in JSON format. An actor that has no version handler of its own uses this handler. An actor can override the version handler to return a version object of its own."
 }
