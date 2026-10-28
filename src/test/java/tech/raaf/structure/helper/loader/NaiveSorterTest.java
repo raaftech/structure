@@ -63,7 +63,6 @@ public class NaiveSorterTest {
     ObjectNode relb = metb.putObject("relations").putObject("INSTANCE_OF");
     relb.put("direction", "outgoing");
     relb.putArray("to").add(instanceOf);
-    System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(b));
 
     // our old way:
     assertFalse(Objects.equals(DigestUtils.md5Hex(a.toString()), DigestUtils.md5Hex(b.toString())));

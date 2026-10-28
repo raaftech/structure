@@ -215,7 +215,6 @@ public class EntityTest extends GraphTest {
 
     // make sure the retrieved entity is the same as our deserialized entity
     // assertEquals(rootNode, result);
-    System.out.println(result.toJson());
     assertEquals(rootUuid, result.getUuid());
     assertEquals(rootType, result.getType());
     assertEquals(rootBundle, result.getBundle());
