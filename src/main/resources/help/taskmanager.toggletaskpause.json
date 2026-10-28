@@ -1,0 +1,10 @@
+{
+  "name": "toggleTaskPause",
+  "synopsis": {
+    "msgh": "toggleTaskPause",
+    "args": {
+      "taskId": "task UUID"
+    }
+  },
+  "description": "The toggleTaskPause handler stops the task for a time, or starts it again if it is stopped. It returns the new status of the task."
+}

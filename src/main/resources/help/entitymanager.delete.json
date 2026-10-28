@@ -1,0 +1,11 @@
+{
+  "name": "delete",
+  "synopsis": {
+    "msgh": "delete",
+    "args": {
+      "labels": "array of graph labels, for example [\"Instance\"]",
+      "uuid": "UUID of the node"
+    }
+  },
+  "description": "The delete handler deletes the node if it is safe, and returns its UUID. A label is a graph label, for example Instance or type:Component. It is safe to delete the node if the two conditions that follow are true. The node has no relations to nodes with a label in labels. All relations to the node come from nodes with a label in labels."
+}

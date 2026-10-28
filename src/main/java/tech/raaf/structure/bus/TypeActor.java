@@ -39,7 +39,7 @@ public class TypeActor extends NodeActor<Type> {
 
       @Override
       public JsonNode help(JsonNode request) {
-        return null;
+        return jsonFromResource("help/typeactor.getpath.json");
       }
     };
   }
@@ -56,7 +56,7 @@ public class TypeActor extends NodeActor<Type> {
 
       @Override
       public JsonNode help(JsonNode request) {
-        return null;
+        return jsonFromResource("help/typeactor.getschema.json");
       }
     };
   }
@@ -80,7 +80,7 @@ public class TypeActor extends NodeActor<Type> {
 
       @Override
       public JsonNode help(JsonNode request) {
-        return null;
+        return jsonFromResource("help/typeactor.getsubtypes.json");
       }
     };
   }
@@ -100,7 +100,7 @@ public class TypeActor extends NodeActor<Type> {
 
       @Override
       public JsonNode help(JsonNode request) {
-        return null;
+        return jsonFromResource("help/typeactor.getconstraints.json");
       }
     };
   }

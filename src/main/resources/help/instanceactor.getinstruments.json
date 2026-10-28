@@ -1,0 +1,8 @@
+{
+  "name": "getInstruments",
+  "synopsis": {
+    "msgh": "getInstruments",
+    "args": {}
+  },
+  "description": "The getInstruments handler returns the controllers that Structure can run on the instance, as a map from name to UUID. You must bootstrap Structure first."
+}

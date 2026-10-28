@@ -74,8 +74,7 @@ public abstract class NodeActor<T extends Node> extends GenericActor {
 
       @Override
       public JsonNode help(JsonNode request) {
-        // TODO Auto-generated method stub
-        return null;
+        return jsonFromResource("help/nodeactor.uuid.json");
       }
     };
   }
@@ -95,7 +94,7 @@ public abstract class NodeActor<T extends Node> extends GenericActor {
 
       @Override
       public JsonNode help(JsonNode request) {
-        return null;
+        return jsonFromResource("help/nodeactor.json.json");
       }
     };
   }
@@ -116,7 +115,7 @@ public abstract class NodeActor<T extends Node> extends GenericActor {
 
       @Override
       public JsonNode help(JsonNode request) {
-        return null;
+        return jsonFromResource("help/nodeactor.undeploy.json");
       }
     };
   }

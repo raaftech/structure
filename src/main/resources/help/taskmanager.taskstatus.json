@@ -1,0 +1,10 @@
+{
+  "name": "taskStatus",
+  "synopsis": {
+    "msgh": "taskStatus",
+    "args": {
+      "taskId": "task UUID"
+    }
+  },
+  "description": "The taskStatus handler returns the status of the task."
+}

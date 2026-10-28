@@ -1,18 +1,27 @@
 package tech.raaf.structure.schema;
 
 import com.google.common.collect.ImmutableSet;
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import tech.raaf.structure.base.Configuration;
+import tech.raaf.structure.base.Configuration.Setting;
 
 public class ManualTest extends SchemaTest {
 
   @Override
   protected Set<String> good() {
-    return ImmutableSet.of(
-      "schema/manualGood01.json",
-      "help/genericactor.help.json",
-      "help/genericactor.version.json",
-      "help/structuremanager.list.json"
-    );
+    // The sample, and each help file of a message handler
+    try (Stream<Path> files = Files.list(Configuration.get(Setting.HOME).resolve("src/main/resources/help"))) {
+      return Stream.concat(Stream.of("schema/manualGood01.json"), files.map(file -> "help/" + file.getFileName()))
+        .collect(Collectors.toSet());
+    } catch (IOException e) {
+      throw new UncheckedIOException(e);
+    }
   }
 
   @Override

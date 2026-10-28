@@ -1,0 +1,10 @@
+{
+  "name": "getComponentsByType",
+  "synopsis": {
+    "msgh": "getComponentsByType",
+    "args": {
+      "type": "type name"
+    }
+  },
+  "description": "The getComponentsByType handler returns the components of the instance that have the type that you give."
+}

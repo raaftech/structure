@@ -1,0 +1,8 @@
+{
+  "name": "getAll",
+  "synopsis": {
+    "msgh": "getAll",
+    "args": {}
+  },
+  "description": "The getAll handler returns all types."
+}

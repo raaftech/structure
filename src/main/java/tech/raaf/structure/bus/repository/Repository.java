@@ -50,8 +50,7 @@ public abstract class Repository<T extends Node> extends GenericActor {
 
       @Override
       public JsonNode help(JsonNode request) {
-        // TODO Auto-generated method stub
-        return null;
+        return jsonFromResource("help/repository.findbyname.json");
       }
     };
   }
@@ -82,8 +81,7 @@ public abstract class Repository<T extends Node> extends GenericActor {
 
       @Override
       public JsonNode help(JsonNode request) {
-        // TODO Auto-generated method stub
-        return null;
+        return jsonFromResource("help/repository.findonebyname.json");
       }
     };
   }
@@ -125,8 +123,7 @@ public abstract class Repository<T extends Node> extends GenericActor {
 
       @Override
       public JsonNode help(JsonNode request) {
-        // TODO Auto-generated method stub
-        return null;
+        return jsonFromResource("help/repository.findone.json");
       }
     };
   }

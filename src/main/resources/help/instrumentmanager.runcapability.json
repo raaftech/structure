@@ -1,0 +1,13 @@
+{
+  "name": "runCapability",
+  "synopsis": {
+    "msgh": "runCapability",
+    "args": {
+      "capability": "capability name",
+      "uuids": "array of instance UUIDs",
+      "timeAllocated": "time in ms (optional)",
+      "arguments": "object with the arguments of the instrument (optional)"
+    }
+  },
+  "description": "The runCapability handler sends the capability to each of the instances. All instances get the same task ID. You must bootstrap Structure first."
+}

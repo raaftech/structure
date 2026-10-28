@@ -1,0 +1,10 @@
+{
+  "name": "findByName",
+  "synopsis": {
+    "msgh": "findByName",
+    "args": {
+      "name": "name"
+    }
+  },
+  "description": "The findByName handler returns the nodes that have the name."
+}

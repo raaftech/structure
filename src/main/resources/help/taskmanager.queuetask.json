@@ -1,0 +1,13 @@
+{
+  "name": "queueTask",
+  "synopsis": {
+    "msgh": "queueTask",
+    "args": {
+      "taskId": "task UUID (optional)",
+      "sequential": "boolean (optional)",
+      "temporaryFiles": "array of file paths (optional)",
+      "jobs": "array of jobs, each with a command and metadata"
+    }
+  },
+  "description": "The queueTask handler adds a task to the queue and returns its ID. If sequential is true, the jobs run one after the other. When the task is complete, Structure deletes the temporary files."
+}

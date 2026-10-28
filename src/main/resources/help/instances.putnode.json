@@ -1,0 +1,12 @@
+{
+  "name": "putNode",
+  "synopsis": {
+    "msgh": "putNode",
+    "args": {
+      "node": "UUID of the type",
+      "name": "name of the instance",
+      "desc": "description of the instance"
+    }
+  },
+  "description": "The putNode handler makes an instance of the type and returns its UUID."
+}

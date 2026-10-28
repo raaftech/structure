@@ -1,0 +1,11 @@
+{
+  "name": "cancelJob",
+  "synopsis": {
+    "msgh": "cancelJob",
+    "args": {
+      "taskId": "task UUID",
+      "jobId": "job number"
+    }
+  },
+  "description": "The cancelJob handler cancels one job of the task."
+}

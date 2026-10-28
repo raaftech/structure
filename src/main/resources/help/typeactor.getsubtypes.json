@@ -1,0 +1,8 @@
+{
+  "name": "getSubtypes",
+  "synopsis": {
+    "msgh": "getSubtypes",
+    "args": {}
+  },
+  "description": "The getSubtypes handler returns the types one level below the type."
+}

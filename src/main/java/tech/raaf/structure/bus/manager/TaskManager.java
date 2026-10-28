@@ -455,7 +455,7 @@ public class TaskManager extends GenericActor {
 
       @Override
       public JsonNode help(JsonNode request) {
-        return null;
+        return jsonFromResource("help/taskmanager.canceljob.json");
       }
     };
   }
@@ -496,7 +496,7 @@ public class TaskManager extends GenericActor {
 
       @Override
       public JsonNode help(JsonNode request) {
-        return null;
+        return jsonFromResource("help/taskmanager.canceltask.json");
       }
     };
   }
@@ -527,7 +527,7 @@ public class TaskManager extends GenericActor {
 
       @Override
       public JsonNode help(JsonNode request) {
-        return null;
+        return jsonFromResource("help/taskmanager.queuestatus.json");
       }
     };
   }
@@ -584,7 +584,7 @@ public class TaskManager extends GenericActor {
 
       @Override
       public JsonNode help(JsonNode request) {
-        return null;
+        return jsonFromResource("help/taskmanager.queuetask.json");
       }
     };
   }
@@ -616,7 +616,7 @@ public class TaskManager extends GenericActor {
 
       @Override
       public JsonNode help(JsonNode request) {
-        return null;
+        return jsonFromResource("help/taskmanager.taskstatus.json");
       }
     };
   }
@@ -658,7 +658,7 @@ public class TaskManager extends GenericActor {
 
       @Override
       public JsonNode help(JsonNode request) {
-        return null;
+        return jsonFromResource("help/taskmanager.toggletaskpause.json");
       }
     };
   }

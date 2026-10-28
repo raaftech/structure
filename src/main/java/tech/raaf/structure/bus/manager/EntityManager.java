@@ -124,7 +124,7 @@ public class EntityManager extends GenericActor {
 
       @Override
       public JsonNode help(JsonNode request) {
-        return null;
+        return jsonFromResource("help/entitymanager.create.json");
       }
     };
   }
@@ -174,7 +174,7 @@ public class EntityManager extends GenericActor {
 
       @Override
       public JsonNode help(JsonNode request) {
-        return null;
+        return jsonFromResource("help/entitymanager.read.json");
       }
     };
   }
@@ -275,7 +275,7 @@ public class EntityManager extends GenericActor {
 
       @Override
       public JsonNode help(JsonNode request) {
-        return null;
+        return jsonFromResource("help/entitymanager.update.json");
       }
     };
   }
@@ -326,7 +326,7 @@ public class EntityManager extends GenericActor {
 
       @Override
       public JsonNode help(JsonNode request) {
-        return null;
+        return jsonFromResource("help/entitymanager.delete.json");
       }
     };
   }
@@ -390,7 +390,7 @@ public class EntityManager extends GenericActor {
 
       @Override
       public JsonNode help(JsonNode request) {
-        return null;
+        return jsonFromResource("help/entitymanager.specialize.json");
       }
     };
   }
@@ -443,7 +443,7 @@ public class EntityManager extends GenericActor {
 
       @Override
       public JsonNode help(JsonNode request) {
-        return null;
+        return jsonFromResource("help/entitymanager.group.json");
       }
     };
   }
@@ -489,7 +489,7 @@ public class EntityManager extends GenericActor {
 
       @Override
       public JsonNode help(JsonNode request) {
-        return null;
+        return jsonFromResource("help/entitymanager.ungroup.json");
       }
     };
   }

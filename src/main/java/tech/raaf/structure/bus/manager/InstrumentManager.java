@@ -67,7 +67,7 @@ public class InstrumentManager extends GenericActor {
 
       @Override
       public JsonNode help(JsonNode request) {
-        return null;
+        return jsonFromResource("help/instrumentmanager.reloadinstruments.json");
       }
     };
   }
@@ -87,7 +87,7 @@ public class InstrumentManager extends GenericActor {
 
       @Override
       public JsonNode help(JsonNode request) {
-        return null;
+        return jsonFromResource("help/instrumentmanager.removeinstruments.json");
       }
     };
   }
@@ -150,7 +150,7 @@ public class InstrumentManager extends GenericActor {
 
       @Override
       public JsonNode help(JsonNode request) {
-        return null;
+        return jsonFromResource("help/instrumentmanager.runcapability.json");
       }
     };
   }

@@ -1,0 +1,11 @@
+{
+  "name": "nLastCreated",
+  "synopsis": {
+    "msgh": "nLastCreated",
+    "args": {
+      "amount": "maximum number of instances",
+      "labels": "array of graph labels, for example [\"Group\"] (optional)"
+    }
+  },
+  "description": "The nLastCreated handler returns the instances that Structure made last. The maximum number is amount. If you give labels, it returns only the instances that have a label in labels. A label is a graph label, for example Group."
+}

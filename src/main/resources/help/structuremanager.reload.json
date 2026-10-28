@@ -1,0 +1,8 @@
+{
+  "name": "reload",
+  "synopsis": {
+    "msgh": "reload",
+    "args": {}
+  },
+  "description": "The reload handler loads the types and instances of the bundles again."
+}

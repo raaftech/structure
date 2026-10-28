@@ -1,0 +1,8 @@
+{
+  "name": "getCapabilities",
+  "synopsis": {
+    "msgh": "getCapabilities",
+    "args": {}
+  },
+  "description": "The getCapabilities handler returns the capabilities of the instruments for the instance, as a map from name to UUID. You must bootstrap Structure first."
+}

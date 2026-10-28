@@ -1,0 +1,10 @@
+{
+  "name": "create",
+  "synopsis": {
+    "msgh": "create",
+    "args": {
+      "entities": "array of entities"
+    }
+  },
+  "description": "The create handler adds the new entities to the graph and returns their UUIDs. An entity is new if it has no UUID, or if the graph does not have its UUID."
+}

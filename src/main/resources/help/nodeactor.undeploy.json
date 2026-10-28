@@ -1,0 +1,8 @@
+{
+  "name": "undeploy",
+  "synopsis": {
+    "msgh": "undeploy",
+    "args": {}
+  },
+  "description": "The undeploy handler stops the actor of the node and returns its deployment ID."
+}

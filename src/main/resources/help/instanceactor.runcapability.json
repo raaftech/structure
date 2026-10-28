@@ -1,0 +1,13 @@
+{
+  "name": "runCapability",
+  "synopsis": {
+    "msgh": "runCapability",
+    "args": {
+      "capability": "capability name",
+      "taskId": "task UUID (optional)",
+      "timeAllocated": "time in ms (optional)",
+      "arguments": "object with the arguments of the instrument (optional)"
+    }
+  },
+  "description": "The runCapability handler runs the controller with the highest weight that gives the capability. It runs the controller on the instance and returns the task ID. You must bootstrap Structure first."
+}

@@ -1,0 +1,8 @@
+{
+  "name": "queueStatus",
+  "synopsis": {
+    "msgh": "queueStatus",
+    "args": {}
+  },
+  "description": "The queueStatus handler returns the tasks in the queue."
+}

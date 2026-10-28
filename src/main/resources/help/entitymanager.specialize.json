@@ -1,0 +1,11 @@
+{
+  "name": "specialize",
+  "synopsis": {
+    "msgh": "specialize",
+    "args": {
+      "instance": "UUID of the instance",
+      "isa": "UUID of the new type"
+    }
+  },
+  "description": "The specialize handler changes the type of the instance to a type below its current type."
+}

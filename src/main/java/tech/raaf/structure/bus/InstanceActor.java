@@ -59,7 +59,7 @@ public class InstanceActor extends NodeActor<Instance> {
 
       @Override
       public JsonNode help(JsonNode request) {
-        return null;
+        return jsonFromResource("help/instanceactor.getresults.json");
       }
     };
   }
@@ -91,7 +91,7 @@ public class InstanceActor extends NodeActor<Instance> {
 
       @Override
       public JsonNode help(JsonNode request) {
-        return null;
+        return jsonFromResource("help/instanceactor.getcomponentsbytype.json");
       }
     };
   }
@@ -131,7 +131,7 @@ public class InstanceActor extends NodeActor<Instance> {
 
       @Override
       public JsonNode help(JsonNode request) {
-        return null;
+        return jsonFromResource("help/instanceactor.getinstruments.json");
       }
     };
   }
@@ -182,7 +182,7 @@ public class InstanceActor extends NodeActor<Instance> {
 
       @Override
       public JsonNode help(JsonNode request) {
-        return null;
+        return jsonFromResource("help/instanceactor.runinstrument.json");
       }
     };
   }
@@ -226,7 +226,7 @@ public class InstanceActor extends NodeActor<Instance> {
 
       @Override
       public JsonNode help(JsonNode request) {
-        return null;
+        return jsonFromResource("help/instanceactor.getcapabilities.json");
       }
     };
   }
@@ -280,7 +280,7 @@ public class InstanceActor extends NodeActor<Instance> {
 
       @Override
       public JsonNode help(JsonNode request) {
-        return null;
+        return jsonFromResource("help/instanceactor.runcapability.json");
       }
     };
   }

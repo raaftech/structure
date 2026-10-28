@@ -1,0 +1,10 @@
+{
+  "name": "getResults",
+  "synopsis": {
+    "msgh": "getResults",
+    "args": {
+      "task": "task ID (optional)"
+    }
+  },
+  "description": "The getResults handler returns the results of the instance. If you give a task ID, it returns only the results of that task."
+}

@@ -1,0 +1,12 @@
+{
+  "name": "read",
+  "synopsis": {
+    "msgh": "read",
+    "args": {
+      "labels": "array of graph labels, for example [\"Type\"]",
+      "start": "UUID of the start node",
+      "includeStart": "boolean (optional)"
+    }
+  },
+  "description": "The read handler returns the nodes that it can get to from the start node. It goes only through nodes that have a label in labels. A label is a graph label, for example Type or Instance. If includeStart is true, the result also has the start node."
+}

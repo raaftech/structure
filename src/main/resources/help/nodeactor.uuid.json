@@ -1,0 +1,8 @@
+{
+  "name": "uuid",
+  "synopsis": {
+    "msgh": "uuid",
+    "args": {}
+  },
+  "description": "The uuid handler returns the UUID of the node."
+}

@@ -1,0 +1,11 @@
+{
+  "name": "ungroup",
+  "synopsis": {
+    "msgh": "ungroup",
+    "args": {
+      "grouping": "UUID of the group",
+      "groupee": "UUID of the node"
+    }
+  },
+  "description": "The ungroup handler removes the node from the group. The result tells if the group changed."
+}

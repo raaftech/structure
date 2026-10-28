@@ -1,0 +1,8 @@
+{
+  "name": "status",
+  "synopsis": {
+    "msgh": "status",
+    "args": {}
+  },
+  "description": "The status handler returns the number of types, groups, results, components and instruments in the graph. It also returns data about the JVM."
+}

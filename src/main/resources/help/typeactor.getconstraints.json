@@ -1,0 +1,8 @@
+{
+  "name": "getConstraints",
+  "synopsis": {
+    "msgh": "getConstraints",
+    "args": {}
+  },
+  "description": "The getConstraints handler returns the incoming and outgoing constraints of the type. It also returns the constraints that the type gets from its parent types."
+}

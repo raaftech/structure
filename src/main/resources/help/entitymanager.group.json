@@ -1,0 +1,11 @@
+{
+  "name": "group",
+  "synopsis": {
+    "msgh": "group",
+    "args": {
+      "grouping": "UUID of the group",
+      "groupee": "UUID of the node"
+    }
+  },
+  "description": "The group handler adds the node to the group. The result tells if the group changed."
+}

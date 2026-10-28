@@ -1,0 +1,11 @@
+{
+  "name": "update",
+  "synopsis": {
+    "msgh": "update",
+    "args": {
+      "entities": "array of entities",
+      "oldEntities": "array of entities (optional)"
+    }
+  },
+  "description": "The update handler writes the changed entities to the graph and returns their UUIDs. An entity is changed if the graph has its UUID and its checksum is different. If you give oldEntities, an entity changes only if its old version is the same as the version in the graph."
+}

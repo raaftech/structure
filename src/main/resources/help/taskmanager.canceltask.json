@@ -1,0 +1,10 @@
+{
+  "name": "cancelTask",
+  "synopsis": {
+    "msgh": "cancelTask",
+    "args": {
+      "taskId": "task UUID"
+    }
+  },
+  "description": "The cancelTask handler cancels the jobs of the task that run or wait in the queue. It returns these jobs."
+}

@@ -1,0 +1,10 @@
+{
+  "name": "findOneByCaseInsensitiveName",
+  "synopsis": {
+    "msgh": "findOneByCaseInsensitiveName",
+    "args": {
+      "name": "name of the type"
+    }
+  },
+  "description": "The findOneByCaseInsensitiveName handler returns the type that has the name. Upper case and lower case letters are the same."
+}

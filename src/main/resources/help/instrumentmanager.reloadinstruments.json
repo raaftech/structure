@@ -1,0 +1,8 @@
+{
+  "name": "reloadInstruments",
+  "synopsis": {
+    "msgh": "reloadInstruments",
+    "args": {}
+  },
+  "description": "The reloadInstruments handler deletes all instruments from the graph and loads them again from the bundles."
+}

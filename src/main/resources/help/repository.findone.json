@@ -1,0 +1,10 @@
+{
+  "name": "findOne",
+  "synopsis": {
+    "msgh": "findOne",
+    "args": {
+      "node": "UUID or name"
+    }
+  },
+  "description": "The findOne handler returns one node. It finds the node by its UUID or by its name."
+}

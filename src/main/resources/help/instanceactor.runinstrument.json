@@ -1,0 +1,12 @@
+{
+  "name": "runInstrument",
+  "synopsis": {
+    "msgh": "runInstrument",
+    "args": {
+      "instrument": "instrument name or UUID",
+      "timeAllocated": "time in ms (optional)",
+      "arguments": "object with the arguments of the instrument (optional)"
+    }
+  },
+  "description": "The runInstrument handler runs the instrument on the instance and returns the task ID. You must bootstrap Structure first."
+}

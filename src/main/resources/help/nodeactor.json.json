@@ -1,0 +1,8 @@
+{
+  "name": "json",
+  "synopsis": {
+    "msgh": "json",
+    "args": {}
+  },
+  "description": "The json handler returns the node as an entity."
+}

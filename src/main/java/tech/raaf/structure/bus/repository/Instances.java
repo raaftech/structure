@@ -53,7 +53,7 @@ public class Instances extends Repository<Instance> {
 
       @Override
       public JsonNode help(JsonNode request) {
-        return null;
+        return jsonFromResource("help/instances.nlastcreated.json");
       }
     };
   }
@@ -117,7 +117,7 @@ public class Instances extends Repository<Instance> {
 
       @Override
       public JsonNode help(JsonNode request) {
-        return null;
+        return jsonFromResource("help/instances.putnode.json");
       }
     };
   }

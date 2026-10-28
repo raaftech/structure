@@ -1,0 +1,8 @@
+{
+  "name": "getSchema",
+  "synopsis": {
+    "msgh": "getSchema",
+    "args": {}
+  },
+  "description": "The getSchema handler returns the JSON schema of the type."
+}

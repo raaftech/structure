@@ -1,0 +1,8 @@
+{
+  "name": "reinitialize",
+  "synopsis": {
+    "msgh": "reinitialize",
+    "args": {}
+  },
+  "description": "The reinitialize handler stops all node actors, deletes all nodes from the graph and loads the bundles again. It returns the addresses of the actors that it stopped."
+}

@@ -4,5 +4,5 @@
     "msgh": "help",
     "args": {}
   },
-  "description": "The help handler returns the help messages of the handlers of the actor. It skips the handlers that have no help message."
+  "description": "The help handler returns the help messages of the handlers of the actor. It does not show the handlers that have no help message."
 }

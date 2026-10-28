@@ -1,0 +1,8 @@
+{
+  "name": "findAllTypeGlyphs",
+  "synopsis": {
+    "msgh": "findAllTypeGlyphs",
+    "args": {}
+  },
+  "description": "The findAllTypeGlyphs handler returns the glyph numbers of all types. The web interface uses them as icons."
+}

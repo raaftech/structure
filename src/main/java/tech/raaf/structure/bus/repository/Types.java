@@ -41,7 +41,7 @@ public class Types extends Repository<Type> {
 
       @Override
       public JsonNode help(JsonNode request) {
-        return null;
+        return jsonFromResource("help/types.findonebycaseinsensitivename.json");
       }
     };
   }
@@ -66,7 +66,7 @@ public class Types extends Repository<Type> {
 
       @Override
       public JsonNode help(JsonNode request) {
-        return null;
+        return jsonFromResource("help/types.getall.json");
       }
     };
   }
@@ -87,7 +87,7 @@ public class Types extends Repository<Type> {
 
       @Override
       public JsonNode help(JsonNode request) {
-        return null;
+        return jsonFromResource("help/types.findalltypeglyphs.json");
       }
     };
   }

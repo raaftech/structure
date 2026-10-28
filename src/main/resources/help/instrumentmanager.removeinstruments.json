@@ -1,0 +1,8 @@
+{
+  "name": "removeInstruments",
+  "synopsis": {
+    "msgh": "removeInstruments",
+    "args": {}
+  },
+  "description": "The removeInstruments handler deletes all instruments from the graph."
+}

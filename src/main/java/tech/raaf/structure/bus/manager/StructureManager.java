@@ -101,7 +101,7 @@ public class StructureManager extends GenericActor {
 
       @Override
       public JsonNode help(JsonNode request) {
-        return null;
+        return jsonFromResource("help/structuremanager.reinitialize.json");
       }
     };
   }
@@ -142,7 +142,7 @@ public class StructureManager extends GenericActor {
 
       @Override
       public JsonNode help(JsonNode request) {
-        return null;
+        return jsonFromResource("help/structuremanager.selfdiscovery.json");
       }
     };
   }
@@ -170,7 +170,7 @@ public class StructureManager extends GenericActor {
 
       @Override
       public JsonNode help(JsonNode request) {
-        return null;
+        return jsonFromResource("help/structuremanager.reload.json");
       }
     };
   }
@@ -272,7 +272,7 @@ public class StructureManager extends GenericActor {
 
       @Override
       public JsonNode help(JsonNode request) {
-        return null;
+        return jsonFromResource("help/structuremanager.status.json");
       }
     };
   }

@@ -1,0 +1,8 @@
+{
+  "name": "getPath",
+  "synopsis": {
+    "msgh": "getPath",
+    "args": {}
+  },
+  "description": "The getPath handler returns the hierarchy path of the type, for example type.component.software."
+}
