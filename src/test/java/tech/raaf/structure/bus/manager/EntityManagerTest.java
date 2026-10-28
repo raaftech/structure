@@ -22,6 +22,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import tech.raaf.structure.base.Context;
 import tech.raaf.structure.bus.GenericActor;
+import tech.raaf.structure.graph.Component;
 import tech.raaf.structure.graph.Entity;
 import tech.raaf.structure.graph.Graph;
 import tech.raaf.structure.graph.Node;
@@ -275,7 +276,13 @@ public class EntityManagerTest extends TypeSchemaTest {
     EntityManager entityManager = new EntityManager();
 
     final String operatingSystemUuid = "f05e325e-1aee-4892-96e4-8bcd6e97c528";
-    final String ipv4AddressUuid = "5ca95f7a-5175-4e7f-8a61-862e24485af3";
+    // A new address is a leaf: nothing points to it
+    final Component address = new Component(
+      mapper.createObjectNode().put("name", "leaf").put("desc", "A leaf.").put("addr", "192.0.2.30").put("reachable", false),
+      Context.getTypeRepository().findOneByName("Ipv4Address")
+    );
+    address.save();
+    final String leafUuid = address.getUuid();
 
     /*
       construct a message that tries to delete the "OperatingSystem" node, but will fail because we have outgoing
@@ -296,8 +303,8 @@ public class EntityManagerTest extends TypeSchemaTest {
     assertTrue(result.toString(), result.has("error"));
     assertNotNull(nodeRepository.findByUuid(operatingSystemUuid));
 
-    // Now try again, but pick a leaf node in the type tree
-    args.put("uuid", ipv4AddressUuid);
+    // Now try again, but pick a leaf node
+    args.put("uuid", leafUuid);
     labels.removeAll();
     // We won't have an outgoing rel to anything with label Foo, so this will succeed
     labels.add("Foo");
@@ -308,7 +315,7 @@ public class EntityManagerTest extends TypeSchemaTest {
 
     // error should now be absent
     assertTrue(result.toString(), !result.has("error"));
-    assertNull(nodeRepository.findByUuid(ipv4AddressUuid));
+    assertNull(nodeRepository.findByUuid(leafUuid));
   }
 
   private static Set<String> names(List<Node> nodes) {
