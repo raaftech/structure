@@ -109,6 +109,14 @@
           "type": "string",
           "maxLength": 260
         }
+      },
+      "not": {
+        "required": ["identity"],
+        "properties": {
+          "relations": {
+            "required": ["INSTANCE_OF"]
+          }
+        }
       }
     }
   },

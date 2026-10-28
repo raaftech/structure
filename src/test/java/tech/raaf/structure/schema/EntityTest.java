@@ -121,6 +121,16 @@ public class EntityTest extends SchemaTest {
   }
 
   @Test
+  public void onlyTypesHaveIdentity() {
+    ObjectNode type = rootType();
+    ((ObjectNode) type.path("meta")).put("identity", "name");
+    assertTrue(valid(type));
+    ObjectNode entity = instance();
+    ((ObjectNode) entity.path("meta")).put("identity", "name");
+    assertFalse(valid(entity));
+  }
+
+  @Test
   public void onlyRootTypeCanHaveNoRelations() {
     ObjectNode entity = rootType();
     entity.put("name", "OtherType");

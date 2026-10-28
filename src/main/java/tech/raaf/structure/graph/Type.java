@@ -417,10 +417,10 @@ public class Type extends Node {
   }
 
   private Optional<Pair<String, Set<String>>> getFirstInheritedIndentity(Type type) {
-    if (type.identity != null) {
-      return Optional.of(Pair.of(getName(), type.identity));
-    } else if (getIsa() == null) {
+    if (type == null) {
       return Optional.empty();
+    } else if (type.identity != null) {
+      return Optional.of(Pair.of(type.getName(), type.identity));
     } else {
       return getFirstInheritedIndentity(type.getIsa());
     }

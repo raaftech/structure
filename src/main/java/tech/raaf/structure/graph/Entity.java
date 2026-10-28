@@ -365,8 +365,18 @@ public class Entity {
     return changed;
   }
 
+  /**
+   * Sets the identity of an entity. Can only be used on "Type" entities.
+   *
+   * @param identity The names of the properties that identify an instance.
+   * @throws IllegalArgumentException Thrown when called on a non "Type" entity.
+   */
   public void setIdentity(String[] identity) {
-    this.identity = identity;
+    if (isInstance()) {
+      throw new IllegalArgumentException(createErrorMessage(400, "", "Only a \"Type\" entity can have an identity."));
+    } else {
+      this.identity = identity;
+    }
   }
 
   public void addConstraint(String relName, Constraint.Cardinality cardinality, String to) {
@@ -443,37 +453,6 @@ public class Entity {
     }
 
     return instanceOf.get().validateEntityToConstraints(this);
-  }
-
-  /**
-   * Get the the identity properties for the type of an instance, and the name of the
-   * type these identity properties are defined on.
-   *
-   * @return Optionally the identity properties that must hold for an instance of a particular type,
-   * and the type name those properties are defined on.
-   */
-  private Optional<Pair<String, Set<String>>> getIdentityProperties() {
-    final Optional<Type> maybeInstanceOf = getInstanceOf();
-    if (!maybeInstanceOf.isPresent()) {
-      throw new TypeUnknownException(createErrorMessage(404, "", "Type for entity \"" + uuid + "\" doesn't exist"));
-    }
-
-    Type instanceOf = maybeInstanceOf.get();
-    if (identity == null) {
-      if (typeRepository.inheritsIdentity(instanceOf.getUuid())) {
-        /*
-          Retrieve first inherited identity. We already know the optional won't be empty
-          because of the typeRepository#inheritsIdentity query.
-        */
-        return instanceOf.getFirstInheritedIdentity();
-      } else {
-        // No identity to adhere to, return true
-        return Optional.empty();
-      }
-    } else {
-      // Use identity field
-      return Optional.of(Pair.of(instanceOf.getName(), Arrays.stream(identity).collect(Collectors.toSet())));
-    }
   }
 
   /**
@@ -556,7 +535,7 @@ public class Entity {
       }
 
       // Now check if this instance is unique per its type's identity array
-      Optional<Pair<String, Set<String>>> maybeLabelAndIdentityProperties = getIdentityProperties();
+      Optional<Pair<String, Set<String>>> maybeLabelAndIdentityProperties = instanceOf.getFirstInheritedIdentity();
       if (maybeLabelAndIdentityProperties.isPresent()) {
         final String label = maybeLabelAndIdentityProperties.get().getLeft();
         final Set<String> identityProperties = maybeLabelAndIdentityProperties.get().getRight();

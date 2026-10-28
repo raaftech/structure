@@ -53,13 +53,13 @@ public class NaiveSorterTest {
     String instanceOf = UUID.randomUUID().toString();
 
     ObjectNode a = mapper.createObjectNode().put("name", "Foo").put("desc", "Foo.");
-    ObjectNode meta = a.putObject("meta").put("identity", "foo").put("uuid", "abba2750-7e05-4e70-8b36-1a56665dccd6");
+    ObjectNode meta = a.putObject("meta").put("bundle", "foo").put("uuid", "abba2750-7e05-4e70-8b36-1a56665dccd6");
     ObjectNode rela = meta.putObject("relations").putObject("INSTANCE_OF");
     rela.put("direction", "outgoing");
     rela.putArray("to").add(instanceOf);
 
     ObjectNode b = mapper.createObjectNode().put("desc", "Foo.").put("name", "Foo");
-    ObjectNode metb = b.putObject("meta").put("uuid", "abba2750-7e05-4e70-8b36-1a56665dccd6").put("identity", "foo");
+    ObjectNode metb = b.putObject("meta").put("uuid", "abba2750-7e05-4e70-8b36-1a56665dccd6").put("bundle", "foo");
     ObjectNode relb = metb.putObject("relations").putObject("INSTANCE_OF");
     relb.put("direction", "outgoing");
     relb.putArray("to").add(instanceOf);

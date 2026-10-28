@@ -144,9 +144,9 @@ public class EntityDeserializer extends StdDeserializer<Entity> {
         }
       }
 
-      // Persist identity
+      // Persist identity, the schema refuses it on an instance
       final String identityKey = "identity";
-      if (metaJson.has(identityKey) && !isInstance) {
+      if (metaJson.has(identityKey)) {
         final JsonNode identityProperty = metaJson.get(identityKey);
         final Set<String> identity = identityProperty.isArray()
           ? ImmutableSet.copyOf(mapper.convertValue(identityProperty, HashSet.class))

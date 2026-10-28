@@ -90,15 +90,4 @@ public class TypeRepository extends GenericRepository<Type> {
       )
     );
   }
-
-  // Check if one of the parents of a node has an identity property
-  public boolean inheritsIdentity(String uuid) {
-    return Boolean.TRUE.equals(
-      value(
-        "MATCH (:Node {uuid: $uuid})-[:ISA*..]->(p) " +
-          "RETURN reduce(init = false, n IN collect(p) | init OR n.identity IS NOT NULL) AS n",
-        ImmutableMap.of("uuid", uuid)
-      )
-    );
-  }
 }
