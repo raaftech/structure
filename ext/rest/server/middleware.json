@@ -38,11 +38,7 @@
       "paths": ["${restApiRoot}"]
     }
   },
-  "files": {
-    "loopback#static": {
-      "params": "$!../client"
-    }
-  },
+  "files": {},
   "final": {
     "loopback#urlNotFound": {}
   },
