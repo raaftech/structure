@@ -125,8 +125,7 @@ public class EntityTest extends GraphTest {
   /**
    * Test update procedure for an Entity. Creating two entities with the same UUID
    * should result in one node, with the properties of the one that was persisted last.
-   *
-   * This test logs error messages because no relationships are defined for the test entity.
+   * The relations have no peers, because a missing peer stops the write of all relations.
    */
   @Test
   public void testEntityUpdate() {
@@ -135,7 +134,7 @@ public class EntityTest extends GraphTest {
     entity01.setName("entity01");
     entity01.setUuid(uuid);
     entity01.setDesc("Test entity.");
-    entity01.addRelations("ISA", Direction.OUTGOING, ImmutableSet.of(UUID.randomUUID()));
+    entity01.addRelations("ISA", Direction.OUTGOING, ImmutableSet.of());
     entity01.toGraph();
 
     // Database should contain only one entity
@@ -150,7 +149,7 @@ public class EntityTest extends GraphTest {
     entity02.setName("entity02");
     entity02.setUuid(uuid);
     entity02.setDesc("Test entity.");
-    entity02.addRelations("ISA", Direction.OUTGOING, ImmutableSet.of(UUID.randomUUID()));
+    entity02.addRelations("ISA", Direction.OUTGOING, ImmutableSet.of());
     entity02.toGraph();
 
     // Database should still only contain one entity
@@ -167,7 +166,7 @@ public class EntityTest extends GraphTest {
     entity03.setName("entity03");
     entity03.setUuid(UUID.randomUUID().toString());
     entity03.setDesc("Test entity.");
-    entity03.addRelations("ISA", Direction.OUTGOING, ImmutableSet.of(UUID.randomUUID()));
+    entity03.addRelations("ISA", Direction.OUTGOING, ImmutableSet.of());
     entity03.toGraph();
 
     // Database should contain two entities

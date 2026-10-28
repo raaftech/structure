@@ -6,6 +6,7 @@ import static tech.raaf.structure.helper.JsonHelper.mapper;
 
 import io.vertx.core.Verticle;
 import io.vertx.core.eventbus.DeliveryOptions;
+import io.vertx.core.eventbus.MessageConsumer;
 import io.vertx.core.json.JsonObject;
 import java.net.URI;
 import java.util.ArrayList;
@@ -14,7 +15,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -48,6 +51,8 @@ public class BusRoundTripTest extends TypeSchemaTest {
   private static final String OPERATING_SYSTEM = "f05e325e-1aee-4892-96e4-8bcd6e97c528";
   private static final String UNIX_LIKE = "6a1eea8b-1462-4439-8c60-12edbee6c397";
   private static final String COMPONENT_GROUP = "ee92c308-80f4-40b2-af3a-77d26cd99517";
+  private static final String DNS_NAME = "99c0da37-3599-418d-8ecc-de36d37ae9f4";
+  private static final String STATUS = BUS + "status";
   private static final URI RESPONSE = URI.create("resource:/schema/base/response.schema.json");
 
   private final String host = UUID.randomUUID().toString();
@@ -90,7 +95,8 @@ public class BusRoundTripTest extends TypeSchemaTest {
     String hostAddress = BUS + "node." + host;
     String typeAddress = BUS + "node." + OPERATING_SYSTEM;
     // Address, msgh, args and the expected error, if there is one.
-    // The table leaves out reinitialize, because it purges the graph.
+    // The table leaves out reinitialize, because it purges the graph,
+    // and selfDiscovery, which has its own test.
     String[][] rows = {
       { TYPES, "getAll", "{}", null },
       { TYPES, "findOneByName", "{'name': 'ComponentGroup'}", null },
@@ -103,7 +109,6 @@ public class BusRoundTripTest extends TypeSchemaTest {
       { ENTITIES, "delete", "{'labels': ['Instance'], 'uuid': '" + created + "', 'includeStart': true}", null },
       { INSTANCES, "nLastCreated", "{'amount': 5}", null },
       { INSTANCES, "findByName", "{'name': 'bus-host'}", null },
-      { STRUCTURE, "selfDiscovery", "{'token': 'bus-token'}", null },
       { STRUCTURE, "reload", "{}", null },
       { STRUCTURE, "status", "{}", null },
       { typeAddress, "getSubtypes", "{}", null },
@@ -159,6 +164,30 @@ public class BusRoundTripTest extends TypeSchemaTest {
       .path("result")
       .path("data");
     assertEquals(data.asString(), UUID.fromString(data.asString()).toString());
+  }
+
+  // The graph has the name of the host, thus the job does not run the bootstrap
+  @Test
+  public void selfDiscoveryFindsTheHost() throws Exception {
+    // Context keeps the first hostname that a test sets
+    String data = "{\"dnsname\": \"" + Context.getHostname() + "\"}";
+    String dns = entity(UUID.randomUUID().toString(), "bus-dns", "The test host.", DNS_NAME, data);
+    mapper.readValue(dns, Entity.class).toGraph();
+    CompletableFuture<JsonObject> done = new CompletableFuture<>();
+    MessageConsumer<JsonObject> status = Context.getVertx()
+      .eventBus()
+      .consumer(STATUS, message -> {
+        if ("selfDiscovery".equals(message.body().getString("event"))) {
+          done.complete(message.body().getJsonObject("data"));
+        }
+      });
+    try {
+      JsonNode reply = send(STRUCTURE, "selfDiscovery", "{\"token\": \"bus-token\"}");
+      assertTrue(reply.path("result").path("error").isMissingNode(), reply.toString());
+      assertEquals("done", done.get(10, TimeUnit.SECONDS).getString("status"));
+    } finally {
+      status.unregister().await();
+    }
   }
 
   @Test
