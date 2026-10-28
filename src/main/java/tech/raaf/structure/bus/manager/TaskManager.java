@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.stream.IntStream;
@@ -100,6 +102,8 @@ public class TaskManager extends GenericActor {
     public String id = UUID.randomUUID().toString();
     public boolean sequential;
     public ArrayList<Job> jobs = new ArrayList<>();
+    // Files of the task, such as secret files, to delete at the end
+    public List<String> temporaryFiles = new ArrayList<>();
     private int finishedCount = 0;
 
     public Task(String id, boolean sequential) {
@@ -263,6 +267,13 @@ public class TaskManager extends GenericActor {
       log.info("Task " + task.id + " is finished.");
       // Remove task from taskMap.
       taskMap.remove(task.id);
+      for (String file : task.temporaryFiles) {
+        try {
+          Files.deleteIfExists(Paths.get(file));
+        } catch (IOException e) {
+          log.error("Couldn't delete temporary file " + file + ": " + e.getMessage());
+        }
+      }
       // Notify interested parties
       publishStatus("taskFinished", mapper.createObjectNode().put("taskId", task.id).set("taskObj", task.toJson()));
 
@@ -546,6 +557,7 @@ public class TaskManager extends GenericActor {
           task = new Task(taskId, sequential);
         }
         result.put("data", taskId);
+        args.path("temporaryFiles").forEach(file -> task.temporaryFiles.add(file.asText()));
 
         // Add the given jobs to the task
         Iterator<JsonNode> jobIterator = jobs.elements();

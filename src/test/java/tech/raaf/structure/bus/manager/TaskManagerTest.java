@@ -11,6 +11,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableMap;
 import io.vertx.core.json.JsonObject;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -102,6 +104,17 @@ public class TaskManagerTest extends TypeSchemaTest {
   }
 
   // The pool has one process, so the second task finishes after the first
+  // At the end the task deletes its files, such as secret files
+  @Test
+  public void deletesTemporaryFiles() throws Exception {
+    String origin = origin();
+    String task = UUID.randomUUID().toString();
+    Path file = Files.createTempFile("secret", null);
+    queue(task, origin, NO_SUCH_COMMAND, mapper.createObjectNode(), file.toString());
+    awaitResult(origin, task);
+    assertFalse(Files.exists(file));
+  }
+
   @Test
   public void unknownOrigin() throws Exception {
     String lost = UUID.randomUUID().toString();
@@ -201,8 +214,10 @@ public class TaskManagerTest extends TypeSchemaTest {
     return uuid;
   }
 
-  private static void queue(String task, String origin, String command, ObjectNode metadata) throws Exception {
+  private static void queue(String task, String origin, String command, ObjectNode metadata, String... files)
+    throws Exception {
     ObjectNode args = mapper.createObjectNode().put("taskId", task).put("sequential", true);
+    Arrays.stream(files).forEach(args.putArray("temporaryFiles")::add);
     args
       .putArray("jobs")
       .addObject()

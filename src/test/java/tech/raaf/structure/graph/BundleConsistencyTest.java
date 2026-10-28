@@ -13,6 +13,7 @@ import com.github.fge.jsonschema.main.JsonSchemaFactory;
 import com.github.fge.jsonschema.processors.syntax.SyntaxValidator;
 import java.io.IOException;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -25,6 +26,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.BiConsumer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.BeforeClass;
@@ -50,6 +53,13 @@ public class BundleConsistencyTest {
       "PARSED",
       "PRODUCED"
     )
+  );
+  private static final Pattern MUSTACHE = Pattern.compile("\\{\\{\\{?([^}]*)}?}}");
+  // The content of a secret file goes to a file, not to a command
+  private static final Pattern SECRET_FILE = Pattern.compile("(?s)\\{\\{#secretFile}}.*?\\{\\{/secretFile}}");
+  // Code on purpose (#267), or names of files that Structure makes
+  private static final Set<String> UNQUOTED = new HashSet<>(
+    Arrays.asList("script", "command", "payloadDirectory", "payloadFileName")
   );
   private static final Map<Path, JsonNode> documents = new LinkedHashMap<>();
   private static final List<String> jsonErrors = new ArrayList<>();
@@ -278,6 +288,27 @@ public class BundleConsistencyTest {
         });
       }
     });
+    assertNoErrors();
+  }
+
+  @Test
+  public void templateValuesAreQuoted() throws IOException {
+    for (Path path : files) {
+      String name = path.getFileName().toString();
+      if (!path.startsWith(BUNDLES) || !name.contains(".hbs.")) {
+        continue;
+      }
+      String helper = name.endsWith(".sh") ? "sh" : "cmd";
+      String template = new String(Files.readAllBytes(path), StandardCharsets.UTF_8);
+      Matcher tags = MUSTACHE.matcher(SECRET_FILE.matcher(template).replaceAll("{{sh secretFile}}"));
+      while (tags.find()) {
+        String tag = tags.group(1).trim();
+        check(
+          tag.startsWith(helper + " ") || tag.startsWith("#if ") || tag.equals("/if") || UNQUOTED.contains(tag),
+          path + ": " + tags.group() + " does not use the " + helper + " helper"
+        );
+      }
+    }
     assertNoErrors();
   }
 

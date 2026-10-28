@@ -1,1 +1,1 @@
-sc start {{ origin.shortName }}
+sc start {{cmd origin.shortName}}

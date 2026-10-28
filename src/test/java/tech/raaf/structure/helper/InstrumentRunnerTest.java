@@ -6,16 +6,22 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableSet;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.attribute.PosixFilePermissions;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import mockit.Mocked;
 import mockit.StrictExpectations;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Test;
+import tech.raaf.structure.base.Configuration;
+import tech.raaf.structure.base.Configuration.Setting;
 import tech.raaf.structure.base.Context;
 import tech.raaf.structure.graph.*;
 import tech.raaf.structure.graph.repositories.GroupingRepository;
@@ -323,9 +329,14 @@ public class InstrumentRunnerTest {
     assertNotNull(jobs);
     assertEquals(2, jobs.size());
     assertEquals("scp somedirectory", jobs.get(0));
-    Pattern pattern = Pattern.compile(
-      "ssh -ltoor someserver " + "\"bash-MockedScriptController_[0-9]{13}.sh\"" + " '--option' 'testShortName'"
-    );
-    assertTrue(pattern.asPredicate().test(jobs.get(1)));
+    // The remote shell parses the arguments again, so they have two quotes
+    Matcher matcher = Pattern.compile(
+      "ssh -ltoor someserver \"(bash-MockedScriptController_[0-9]{13}.sh)\" " +
+        Pattern.quote("''\"'\"'--option'\"'\"' '\"'\"'testShortName'\"'\"''")
+    ).matcher(jobs.get(1));
+    assertTrue(jobs.get(1), matcher.matches());
+    // Only the owner can read and run the script
+    Path script = Configuration.get(Setting.STATE_DIR).resolve("generated-scripts").resolve(matcher.group(1));
+    assertEquals("rwx------", PosixFilePermissions.toString(Files.getPosixFilePermissions(script)));
   }
 }

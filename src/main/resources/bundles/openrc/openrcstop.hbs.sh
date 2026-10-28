@@ -1,1 +1,1 @@
-service {{ origin.shortName }} stop
+service {{sh origin.shortName}} stop

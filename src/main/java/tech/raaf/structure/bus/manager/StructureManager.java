@@ -22,6 +22,7 @@ import tech.raaf.structure.graph.Component;
 import tech.raaf.structure.graph.Group;
 import tech.raaf.structure.graph.repositories.*;
 import tech.raaf.structure.helper.ProcessRunner;
+import tech.raaf.structure.helper.handlebars.Quote;
 import tech.raaf.structure.helper.loader.BundleLoader;
 
 public class StructureManager extends GenericActor {
@@ -187,7 +188,12 @@ public class StructureManager extends GenericActor {
         throw new RuntimeException(error);
       }
       ProcessRunner runner = new ProcessRunner(
-        "node ".concat(bootstrapLocation.toString()).concat(" -c -h " + Context.getHostname() + " -t " + token)
+        "node " +
+          Quote.SH.quote(bootstrapLocation.toString()) +
+          " -c -h " +
+          Quote.SH.quote(Context.getHostname()) +
+          " -t " +
+          Quote.SH.quote(token)
       );
       try {
         runner.run();

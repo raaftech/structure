@@ -14,6 +14,7 @@ import java.nio.file.attribute.FileAttribute;
 import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -139,61 +140,36 @@ public class ProcessRunner {
 
   private static final boolean isPosix = FileSystems.getDefault().supportedFileAttributeViews().contains("posix");
 
-  private static String[] tokenizeCommand(String commandLine) {
-    String[] tokens = commandLine.split("\\s");
-    ArrayList<String> process = new ArrayList<>();
-    State state = State.NORMAL;
-    String currentNewToken = null;
-
-    for (String token : tokens) {
-      switch (state) {
-        case NORMAL:
-          if (token.contains("\"")) {
-            state = State.IN_DOUBLEQUOTES;
-            currentNewToken = token.replace("\"", "");
-            if ((token.length() - currentNewToken.length()) % 2 == 0) {
-              process.add(currentNewToken);
-              state = State.NORMAL;
-            }
-          } else if (token.contains("'")) {
-            state = State.IN_QUOTES;
-            currentNewToken = token.replace("'", "");
-            if ((token.length() - currentNewToken.length()) % 2 == 0) {
-              process.add(currentNewToken);
-              state = State.NORMAL;
-            }
-          } else {
-            process.add(token);
-          }
-          break;
-        case IN_DOUBLEQUOTES:
-          currentNewToken = currentNewToken.concat(" " + token.replace("\"", ""));
-          if (token.contains("\"")) {
-            process.add(currentNewToken);
-            state = State.NORMAL;
-          }
-          break;
-        case IN_QUOTES:
-          currentNewToken = currentNewToken.concat(" " + token.replace("'", ""));
-          if (token.contains("'")) {
-            process.add(currentNewToken);
-            state = State.NORMAL;
-          }
-          break;
+  // Split a command into words as sh does, without escapes or expansions
+  private static String[] tokenizeCommand(String command) {
+    final List<String> words = new ArrayList<>();
+    final StringBuilder word = new StringBuilder();
+    boolean inWord = false;
+    for (int i = 0; i < command.length(); i++) {
+      final char c = command.charAt(i);
+      if (c == '\'' || c == '"') {
+        final int end = command.indexOf(c, i + 1);
+        if (end < 0) {
+          throw new IllegalArgumentException("String contains uneven amount of quotes.");
+        }
+        word.append(command, i + 1, end);
+        i = end;
+        inWord = true;
+      } else if (Character.isWhitespace(c)) {
+        if (inWord) {
+          words.add(word.toString());
+          word.setLength(0);
+          inWord = false;
+        }
+      } else {
+        word.append(c);
+        inWord = true;
       }
     }
-
-    if (state == State.IN_DOUBLEQUOTES || state == State.IN_QUOTES) {
-      throw new IllegalArgumentException("String contains uneven amount of quotes.");
+    if (inWord) {
+      words.add(word.toString());
     }
-
-    return process.toArray(new String[process.size()]);
-  }
-
-  enum State {
-    NORMAL,
-    IN_DOUBLEQUOTES,
-    IN_QUOTES,
+    return words.toArray(new String[0]);
   }
 
   public static class ProcessResult {

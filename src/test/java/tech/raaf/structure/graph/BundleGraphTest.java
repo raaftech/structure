@@ -201,13 +201,13 @@ public class BundleGraphTest extends TypeSchemaTest {
           .put("reachable", false),
         Context.getTypeRepository().findOneByName("Ipv4Address")
       );
-      assertDiscoveryCommand(address, "IpAddressDiscover", "-i 192.0.2.10");
+      assertDiscoveryCommand(address, "IpAddressDiscover", "-i '192.0.2.10'");
       for (String cidr : Arrays.asList("192.0.2.0/24", "192.0.2.10/32")) {
         Component network = new Component(
           mapper.createObjectNode().put("name", "network").put("desc", "A network.").put("cidr", cidr),
           Context.getTypeRepository().findOneByName("Ipv4Network")
         );
-        assertDiscoveryCommand(network, "IpNetworkDiscover", "-c " + cidr);
+        assertDiscoveryCommand(network, "IpNetworkDiscover", "-c '" + cidr + "'");
       }
     } finally {
       Context.setSelfGroup(null);
@@ -234,11 +234,7 @@ public class BundleGraphTest extends TypeSchemaTest {
     InstrumentRunner runner = new InstrumentRunner(origin, controller, arguments, "discovery");
     assertEquals(1, runner.getJobs().size());
     assertEquals(
-      "node \"" +
-        Configuration.get(Setting.HOME).resolve("ext/util/net-discovery/main.js") +
-        "\" " +
-        target +
-        " -t test-token",
+      "node '" + Configuration.get(Setting.HOME) + "'/ext/util/net-discovery/main.js " + target + " -t 'test-token'",
       runner.getJobs().get(0).getLeft()
     );
     assertEquals(Long.valueOf(60000), runner.getJobs().get(0).getRight().get());

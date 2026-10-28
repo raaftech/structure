@@ -1,1 +1,1 @@
-service {{ origin.shortName }} start
+service {{sh origin.shortName}} start

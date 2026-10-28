@@ -1,1 +1,1 @@
-launchctl unload {{ origin.shortName }} 
+launchctl unload {{sh origin.shortName}}

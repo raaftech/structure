@@ -387,7 +387,7 @@ public final class Configuration {
       "unsafe",
       Type.FLAG,
       "false",
-      "Allow all event bus addresses"
+      "Allow all event bus addresses and log argument values"
     );
     // A relative path is relative to home.
     public static final Setting<List<String>> BUNDLE_PATH = new Setting<>(

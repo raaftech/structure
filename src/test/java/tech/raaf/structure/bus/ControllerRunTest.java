@@ -106,7 +106,7 @@ public class ControllerRunTest extends TypeSchemaTest {
     Map<String, Object> result = awaitResult(address.getUuid(), task);
     assertEquals(PING, result.get("controller"));
     assertTrue(result.toString(), ((String) result.get("data-process")).startsWith("ping "));
-    assertTrue(result.toString(), ((String) result.get("data-process")).endsWith(" 127.0.0.1"));
+    assertTrue(result.toString(), ((String) result.get("data-process")).endsWith(" '127.0.0.1'"));
     assertEquals(task, result.get("data-task"));
     // The ping can fail on a machine without ping, so check only that it ran to an end
     assertTrue(result.toString(), result.containsKey("data-stateCode") || result.containsKey("data-error"));

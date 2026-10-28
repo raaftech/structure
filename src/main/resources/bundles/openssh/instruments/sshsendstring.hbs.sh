@@ -1,1 +1,1 @@
-ssh -l{{{username}}} {{{ ipv4address.addr }}} "cd /tmp/; ./{{{ payloadFileName }}}"
+ssh -l {{sh username}} {{sh ipv4address.addr}} "cd /tmp/; ./{{sh payloadFileName}}"

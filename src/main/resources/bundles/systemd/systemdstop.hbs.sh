@@ -1,1 +1,1 @@
-systemctl stop {{ origin.shortName }}
+systemctl stop {{sh origin.shortName}}

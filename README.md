@@ -140,7 +140,7 @@ first:
 | ------------------ | -------------------------- | -------------------------- | ----------------------- | -------------------------------------------------------------------------- |
 | `--help`           | `STRUCTURE_HELP`           | `structure.help`           |                         | Print usage and exit                                                       |
 | `--log-level`      | `STRUCTURE_LOG_LEVEL`      | `structure.log.level`      | `info`                  | `info`, `debug` or `trace`; `trace` also prints stack traces               |
-| `--unsafe`         | `STRUCTURE_UNSAFE`         | `structure.unsafe`         |                         | Allow all event bus addresses                                              |
+| `--unsafe`         | `STRUCTURE_UNSAFE`         | `structure.unsafe`         |                         | Allow all event bus addresses and log argument values                      |
 | `--bundle-path`    | `STRUCTURE_BUNDLE_PATH`    | `structure.bundle.path`    | see below               | Comma-separated bundle paths, relative to Structure's home                 |
 | `--home`           | `STRUCTURE_HOME`           | `structure.home`           | see below               | Structure's home directory                                                 |
 | `--state-dir`      | `STRUCTURE_STATE_DIR`      | `structure.state.dir`      | see below               | Directory of the files that Structure writes, relative to Structure's home |

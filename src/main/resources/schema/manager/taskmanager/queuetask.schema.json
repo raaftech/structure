@@ -11,6 +11,11 @@
       "type": "boolean",
       "default": false
     },
+    "temporaryFiles": {
+      "description": "Files that TaskManager deletes when the task is finished.",
+      "type": "array",
+      "items": { "type": "string" }
+    },
     "jobs": {
       "type": "array",
       "minItems": 1,

@@ -1,1 +1,1 @@
-launchctl load -w {{ origin.shortName }} 
+launchctl load -w {{sh origin.shortName}}

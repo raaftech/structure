@@ -1,1 +1,1 @@
-/etc/rc.d/{{ origin.shortName }} start
+/etc/rc.d/{{sh origin.shortName}} start

@@ -1,1 +1,1 @@
-systemctl start {{ origin.shortName }}
+systemctl start {{sh origin.shortName}}

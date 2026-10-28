@@ -13,13 +13,15 @@ import com.google.common.collect.ImmutableList;
 import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.json.JsonObject;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.attribute.PosixFilePermissions;
 import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import joptsimple.internal.Strings;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
@@ -33,7 +35,9 @@ import tech.raaf.structure.graph.repositories.InstanceRepository;
 import tech.raaf.structure.graph.repositories.InstrumentRepository;
 import tech.raaf.structure.helper.classification.ArgumentsToClassificationTreeParser;
 import tech.raaf.structure.helper.classification.tree.RootNode;
+import tech.raaf.structure.helper.handlebars.Quote;
 import tech.raaf.structure.helper.handlebars.ReachableAddress;
+import tech.raaf.structure.helper.handlebars.SecretFile;
 
 /**
  * @author Boy van Duuren <boy@raaf.tech>
@@ -52,8 +56,12 @@ public class InstrumentRunner {
   private final Group agent;
   private final ObjectNode arguments;
 
-  private final String workingDirectory =
-    Configuration.get(Setting.STATE_DIR).resolve("generated-scripts") + File.separator;
+  // Commands run in state-dir, so they can use this path without quotes
+  private static final String payloadDirectory = "generated-scripts" + File.separator;
+  private final Path workingDirectory = Configuration.get(Setting.STATE_DIR).resolve(payloadDirectory);
+  // Files of the run, which TaskManager deletes when the task is done
+  private final List<Path> temporaryFiles = new ArrayList<>();
+  private final SecretFile secretFile = new SecretFile(workingDirectory, temporaryFiles);
   // Set timeout of transport to 10000ms
   private static final Optional<Long> transportTimeout = Optional.of(10000L);
 
@@ -117,6 +125,22 @@ public class InstrumentRunner {
       // todo: log as result
     }
 
+    try {
+      addJobs(timeAllocated);
+    } catch (RuntimeException e) {
+      // No task runs, so delete the files now
+      for (Path file : temporaryFiles) {
+        try {
+          Files.deleteIfExists(file);
+        } catch (IOException deleteError) {
+          log.error(deleteError.getMessage());
+        }
+      }
+      throw e;
+    }
+  }
+
+  private void addJobs(long timeAllocated) {
     if (controller.isSubjectIsLocal()) {
       // run subject as local routine
       // we need to do all the checks needed for a local routine, which are:
@@ -267,6 +291,11 @@ public class InstrumentRunner {
           ObjectNode filteredContext = validateAndSelectArguments(controller);
           List<String> argumentsToScript = createArgumentList(controller, filteredContext);
           log.debug("Found the following arguments: " + argumentsToScript);
+          // ssh joins its arguments, so quote them for the remote shell too
+          final String quotedArguments = argumentsToScript
+            .stream()
+            .map(Quote.SH::quote)
+            .collect(Collectors.joining(" "));
           // send file to subject (assumes sendFile + receiveFile)
           jobList.add(Pair.of(sendFile(heaviestSendFile), transportTimeout));
           // send execution to subject (assumes sendString + receiveString)
@@ -275,14 +304,14 @@ public class InstrumentRunner {
           if (timeAllocated == -1) {
             jobList.add(
               Pair.of(
-                sendString(heaviestSendString) + " " + Strings.join(argumentsToScript, " "),
+                sendString(heaviestSendString) + " " + quotedArguments,
                 controller.getTimeAllocated()
               )
             );
           } else {
             jobList.add(
               Pair.of(
-                sendString(heaviestSendString) + " " + Strings.join(argumentsToScript, ""),
+                sendString(heaviestSendString) + " " + quotedArguments,
                 Optional.of(timeAllocated)
               )
             );
@@ -418,7 +447,7 @@ public class InstrumentRunner {
     copyStringToFile(flattenedProfiles.toString(), outputFile);
 
     // This is nasty because these properties will be reused later on L365 and L645
-    arguments.put("payloadDirectory", workingDirectory);
+    arguments.put("payloadDirectory", payloadDirectory);
     arguments.put("payloadFileName", outputFile);
 
     arguments.put("profiles", outputFile);
@@ -438,7 +467,7 @@ public class InstrumentRunner {
     );
     copyStringToFile(script, scriptFilename);
 
-    arguments.put("payloadDirectory", workingDirectory);
+    arguments.put("payloadDirectory", payloadDirectory);
     arguments.put("payloadFileName", scriptFilename);
   }
 
@@ -451,7 +480,9 @@ public class InstrumentRunner {
       .append(System.currentTimeMillis())
       .append(".")
       .append(extension)
-      .toString();
+      .toString()
+      // Use only characters that need no quotes in a command
+      .replaceAll("[^\\w.-]", "_");
   }
 
   /**
@@ -543,16 +574,11 @@ public class InstrumentRunner {
         contextValue = "";
       }
 
-      final char delim = '\'';
       final String arg;
       if (selector.get(pass).has(option)) {
-        arg = new StringBuilder()
-          .append(Strings.surround(selector.get(pass).get(option).asText(), delim, delim))
-          .append(" ")
-          .append(Strings.surround(contextValue, delim, delim))
-          .toString();
+        arg = Quote.SH.quote(selector.get(pass).get(option).asText()) + " " + Quote.SH.quote(contextValue);
       } else {
-        arg = Strings.surround(contextValue, delim, delim);
+        arg = Quote.SH.quote(contextValue);
       }
 
       return arg;
@@ -684,7 +710,11 @@ public class InstrumentRunner {
       }
     }
 
-    log.debug("Selected the following arguments: \n{}", result);
+    // A value can be a password, so log values only when unsafe
+    log.debug(
+      "Selected the following arguments: {}",
+      Configuration.get(Setting.UNSAFE) ? result : ImmutableList.copyOf(result.fieldNames())
+    );
 
     return result;
   }
@@ -707,10 +737,15 @@ public class InstrumentRunner {
     }
   }
 
+  // Write a file that only the owner can read and run
   private void copyStringToFile(String content, String name) throws IOException {
-    FileWriter scriptWriter = createFileWriter(name);
-    scriptWriter.write(content);
-    scriptWriter.close();
+    Files.createDirectories(workingDirectory);
+    final Path file = Files.createFile(
+      workingDirectory.resolve(name),
+      PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString("rwx------"))
+    );
+    temporaryFiles.add(file);
+    Files.write(file, content.getBytes(StandardCharsets.UTF_8));
   }
 
   /**
@@ -747,45 +782,8 @@ public class InstrumentRunner {
     );
     copyStringToFile(script, scriptFilename);
 
-    arguments.put("payloadDirectory", workingDirectory);
+    arguments.put("payloadDirectory", payloadDirectory);
     arguments.put("payloadFileName", scriptFilename);
-  }
-
-  /**
-   * Create a filewriter using a file in our working directory
-   *
-   * @param name The name of the file.
-   * @return A filewriter.
-   */
-  private FileWriter createFileWriter(String name) {
-    FileWriter fileWriter = null;
-    createTempDirectory(workingDirectory);
-    try {
-      File file = new File(workingDirectory + name);
-      fileWriter = new FileWriter(file);
-      if (!file.setExecutable(true, false)) {
-        log.error("Couldn't set file " + file.toString() + " executable, this result in problems.");
-      }
-    } catch (IOException e) {
-      log.error("Couldn't create FileWriter to write generated script to: " + e.getMessage());
-
-      if (Configuration.isTraceModeOn()) {
-        e.printStackTrace();
-      }
-    }
-
-    return fileWriter;
-  }
-
-  /**
-   * Create a temporary directory.
-   *
-   * @param path The path of the directory.
-   * @return True if we created the directory, false if we didn't.
-   */
-  private boolean createTempDirectory(String path) {
-    File dir = new File(path);
-    return !new File(path).exists() && dir.mkdirs();
   }
 
   /**
@@ -828,9 +826,13 @@ public class InstrumentRunner {
    *                     Template.apply.
    */
   private String applyTemplate(String template, JsonNode context) throws IOException {
-    Handlebars handlebars = new Handlebars();
+    // Give each value as it is, the quote helpers make it safe for a shell
+    Handlebars handlebars = new Handlebars().with(value -> value.toString());
     handlebars.registerHelper("reachable", ReachableAddress.INSTANCE);
     handlebars.registerHelper("structureHome", (value, options) -> Configuration.get(Setting.HOME).toString());
+    handlebars.registerHelper("sh", Quote.SH);
+    handlebars.registerHelper("cmd", Quote.CMD);
+    handlebars.registerHelper("secretFile", secretFile);
     Template compiledTemplate = handlebars.compileInline(template);
 
     // Create context with our JSON.
@@ -858,6 +860,8 @@ public class InstrumentRunner {
     ObjectNode args = message.putObject("args");
     args.put("taskId", taskId);
     args.put("sequential", true);
+    ArrayNode files = args.putArray("temporaryFiles");
+    temporaryFiles.forEach(file -> files.add(file.toString()));
     ArrayNode jobs = args.putArray("jobs");
     jobList.stream().forEachOrdered(commandAndTimeout -> {
       ObjectNode job = mapper.createObjectNode();
