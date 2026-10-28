@@ -1,0 +1,29 @@
+{
+  "name": "CshProfile",
+  "desc": "A profile that detects csh.",
+  "meta": {
+    "uuid": "e179153e-7844-4e41-b9ac-53f58e20ed3f",
+    "relations": {
+      "INSTANCE_OF": {
+        "direction": "outgoing",
+        "to": ["Profile"]
+      },
+      "APPLIES_TO": {
+        "direction": "outgoing",
+        "to": ["Csh"]
+      },
+      "PROVIDED_BY": {
+        "direction": "outgoing",
+        "to": ["Csh"]
+      }
+    }
+  },
+  "data": {
+    "directories": {
+      "binaryDirectories": ["/bin", "/usr/bin", "/usr/local/bin"]
+    },
+    "files": {
+      "binaryFiles": ["csh"]
+    }
+  }
+}
