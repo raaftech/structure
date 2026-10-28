@@ -30,7 +30,9 @@ public class SecretFileTest {
     final String command = new Handlebars()
       .with(value -> value.toString())
       .registerHelper("secretFile", secretFile)
-      .compileInline("smbclient -A {{#secretFile}}username = {{username}}\npassword = {{password}}\n{{/secretFile}} //host")
+      .compileInline(
+        "smbclient -A {{#secretFile}}username = {{username}}\npassword = {{password}}\n{{/secretFile}} //host"
+      )
       .apply(ImmutableMap.of("username", "Administrator", "password", "p@ss 'word'%=&"));
 
     assertEquals(1, files.size());

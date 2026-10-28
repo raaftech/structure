@@ -22,8 +22,8 @@ import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tech.raaf.structure.base.Configuration.Setting;
 import tech.raaf.structure.base.Configuration;
+import tech.raaf.structure.base.Configuration.Setting;
 import tech.raaf.structure.base.Context;
 import tech.raaf.structure.graph.*;
 import tech.raaf.structure.graph.repositories.GroupingRepository;
@@ -305,19 +305,9 @@ public class InstrumentRunner {
 
           // If timeAllocated has no value assigned, use getTimeAllocated, else use timeAllocated
           if (timeAllocated == -1) {
-            jobList.add(
-              Pair.of(
-                sendString(heaviestSendString) + " " + quotedArguments,
-                controller.getTimeAllocated()
-              )
-            );
+            jobList.add(Pair.of(sendString(heaviestSendString) + " " + quotedArguments, controller.getTimeAllocated()));
           } else {
-            jobList.add(
-              Pair.of(
-                sendString(heaviestSendString) + " " + quotedArguments,
-                Optional.of(timeAllocated)
-              )
-            );
+            jobList.add(Pair.of(sendString(heaviestSendString) + " " + quotedArguments, Optional.of(timeAllocated)));
           }
         } catch (IOException e) {
           log.error(e.getMessage());
@@ -487,17 +477,19 @@ public class InstrumentRunner {
   }
 
   private String constructScriptFilename(String originName, String controllerName, String extension) {
-    return new StringBuilder()
-      .append(originName)
-      .append("-")
-      .append(controllerName)
-      .append("_")
-      .append(System.currentTimeMillis())
-      .append(".")
-      .append(extension)
-      .toString()
-      // Use only characters that need no quotes in a command
-      .replaceAll("[^\\w.-]", "_");
+    return (
+      new StringBuilder()
+        .append(originName)
+        .append("-")
+        .append(controllerName)
+        .append("_")
+        .append(System.currentTimeMillis())
+        .append(".")
+        .append(extension)
+        .toString()
+        // Use only characters that need no quotes in a command
+        .replaceAll("[^\\w.-]", "_")
+    );
   }
 
   /**

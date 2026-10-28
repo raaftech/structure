@@ -156,14 +156,16 @@ public abstract class NodeActor<T extends Node> extends GenericActor {
       return deploymentId;
     }
     final Verticle verticle = node instanceof Type ? new TypeActor((Type) node) : new InstanceActor((Instance) node);
-    Context.getVertx().deployVerticle(verticle, worker()).onComplete(ar -> {
-      if (ar.succeeded()) {
-        deploymentId.complete(ar.result());
-      } else {
-        log.error("Failed to deploy actor for \"{}\"", node.getUuid(), ar.cause());
-        deploymentId.completeExceptionally(ar.cause());
-      }
-    });
+    Context.getVertx()
+      .deployVerticle(verticle, worker())
+      .onComplete(ar -> {
+        if (ar.succeeded()) {
+          deploymentId.complete(ar.result());
+        } else {
+          log.error("Failed to deploy actor for \"{}\"", node.getUuid(), ar.cause());
+          deploymentId.completeExceptionally(ar.cause());
+        }
+      });
     return deploymentId;
   }
 }

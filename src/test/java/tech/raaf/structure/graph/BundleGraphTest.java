@@ -19,8 +19,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import tech.raaf.structure.base.Configuration.Setting;
 import tech.raaf.structure.base.Configuration;
+import tech.raaf.structure.base.Configuration.Setting;
 import tech.raaf.structure.base.Context;
 import tech.raaf.structure.helper.InstrumentRunner;
 import tech.raaf.structure.helper.loader.NaiveSorter;
@@ -221,7 +221,12 @@ public class BundleGraphTest extends TypeSchemaTest {
         10000
       );
       Component listener = new Component(
-        mapper.createObjectNode().put("name", "ssh").put("desc", "A listener.").put("addr", "192.0.2.10").put("port", 22),
+        mapper
+          .createObjectNode()
+          .put("name", "ssh")
+          .put("desc", "A listener.")
+          .put("addr", "192.0.2.10")
+          .put("port", 22),
         Context.getTypeRepository().findOneByName("Ipv4Listener")
       );
       assertJob(
@@ -256,7 +261,12 @@ public class BundleGraphTest extends TypeSchemaTest {
 
   private static void assertDiscoveryCommand(Component origin, String instrument, String target) {
     String home = Configuration.get(Setting.HOME).toString();
-    assertJob(origin, instrument, "node '" + home + "'/ext/util/net-discovery/main.js " + target + " -t 'test-token'", 60000);
+    assertJob(
+      origin,
+      instrument,
+      "node '" + home + "'/ext/util/net-discovery/main.js " + target + " -t 'test-token'",
+      60000
+    );
   }
 
   private static void assertJob(Component origin, String instrument, String command, long timeAllocated) {
@@ -286,7 +296,12 @@ public class BundleGraphTest extends TypeSchemaTest {
     try {
       for (boolean icmp : Arrays.asList(false, true)) {
         Component address = new Component(
-          mapper.createObjectNode().put("name", "host").put("desc", "An address.").put("addr", "192.0.2.20").put("reachable", false),
+          mapper
+            .createObjectNode()
+            .put("name", "host")
+            .put("desc", "An address.")
+            .put("addr", "192.0.2.20")
+            .put("reachable", false),
           Context.getTypeRepository().findOneByName("Ipv4Address")
         );
         Component os = software("Linux").addComponent(address);
@@ -382,7 +397,9 @@ public class BundleGraphTest extends TypeSchemaTest {
     List<Profile> profiles = Context.getProfileRepository().findAllProfilesForType(component.getUuid());
     long expected = entities
       .stream()
-      .filter(entity -> entity.path("meta").path("relations").path("INSTANCE_OF").path("to").path(0).asText().equals("Profile"))
+      .filter(entity ->
+        entity.path("meta").path("relations").path("INSTANCE_OF").path("to").path(0).asText().equals("Profile")
+      )
       .count();
     assertEquals("Profiles under Component", expected, profiles.size());
     List<Integer> depths = profiles

@@ -42,8 +42,7 @@ public class InstrumentRelationsTest extends TypeSchemaTest {
 
     controller = (Controller) Context.getInstrumentRepository().findOneByName("BashInvoke");
     Graph.query(
-      "MATCH (c:Controller {uuid: $controller}), (r:Result) " +
-        "WHERE r.uuid IN $results MERGE (c)-[:PRODUCED]->(r)",
+      "MATCH (c:Controller {uuid: $controller}), (r:Result) " + "WHERE r.uuid IN $results MERGE (c)-[:PRODUCED]->(r)",
       ImmutableMap.of(
         "controller",
         controller.getUuid(),
@@ -84,8 +83,9 @@ public class InstrumentRelationsTest extends TypeSchemaTest {
     Entity entity = parserEntity("EmptyParser");
     Graph.transaction(entity::toGraph);
     Parser emptyParser = (Parser) Context.getInstrumentRepository().findByUuid(entity.getUuid());
-    Controller emptyController = (Controller) Context.getInstrumentRepository()
-      .findOneByName("OpenSshClientSendString");
+    Controller emptyController = (Controller) Context.getInstrumentRepository().findOneByName(
+      "OpenSshClientSendString"
+    );
 
     assertTrue(emptyParser.getRawResults().isEmpty());
     assertTrue(emptyParser.getProducedNodes().isEmpty());
@@ -150,7 +150,10 @@ public class InstrumentRelationsTest extends TypeSchemaTest {
   }
 
   private Set<UUID> uuids(Set<? extends Node> nodes) {
-    return nodes.stream().map(node -> UUID.fromString(node.getUuid())).collect(Collectors.toSet());
+    return nodes
+      .stream()
+      .map(node -> UUID.fromString(node.getUuid()))
+      .collect(Collectors.toSet());
   }
 
   private void assertRelation(JsonNode json, String name, Set<? extends Node> peers) {

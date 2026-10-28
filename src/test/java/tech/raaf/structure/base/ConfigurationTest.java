@@ -59,14 +59,8 @@ public class ConfigurationTest {
     final Properties system = properties("structure.https.host", "system");
     final Properties file = properties("structure.https.host", "file");
     final Properties none = new Properties();
-    assertEquals(
-      "arguments",
-      new Configuration(arguments, environment, system, file).resolve(Setting.HTTPS_HOST)
-    );
-    assertEquals(
-      "environment",
-      new Configuration(NONE, environment, system, file).resolve(Setting.HTTPS_HOST)
-    );
+    assertEquals("arguments", new Configuration(arguments, environment, system, file).resolve(Setting.HTTPS_HOST));
+    assertEquals("environment", new Configuration(NONE, environment, system, file).resolve(Setting.HTTPS_HOST));
     assertEquals("system", new Configuration(NONE, NONE, system, file).resolve(Setting.HTTPS_HOST));
     assertEquals("file", new Configuration(NONE, NONE, none, file).resolve(Setting.HTTPS_HOST));
     assertEquals("localhost", new Configuration(NONE, NONE, none, none).resolve(Setting.HTTPS_HOST));
@@ -86,14 +80,8 @@ public class ConfigurationTest {
       Long.valueOf(5000000000L),
       none.resolve(new Setting<>("size", Setting.Type.LONG, "5000000000", "A size"))
     );
-    assertEquals(
-      Double.valueOf(0.5),
-      none.resolve(new Setting<>("ratio", Setting.Type.DECIMAL, "0.5", "A ratio"))
-    );
-    assertEquals(
-      Paths.get("/opt/structure"),
-      file("structure.home", "/opt/structure").resolve(Setting.HOME)
-    );
+    assertEquals(Double.valueOf(0.5), none.resolve(new Setting<>("ratio", Setting.Type.DECIMAL, "0.5", "A ratio")));
+    assertEquals(Paths.get("/opt/structure"), file("structure.home", "/opt/structure").resolve(Setting.HOME));
     final Path home = Configuration.get(Setting.HOME);
     assertEquals(
       Arrays.asList(home.resolve("a").toString(), "/b"),
@@ -110,10 +98,7 @@ public class ConfigurationTest {
     final Path home = Configuration.get(Setting.HOME);
     assertEquals(Paths.get("").toAbsolutePath(), home);
     assertEquals(home.resolve("src/main/resources"), Configuration.resources());
-    assertEquals(
-      Paths.get("/opt/structure"),
-      file("structure.home", "/opt/x/../structure").resolve(Setting.HOME)
-    );
+    assertEquals(Paths.get("/opt/structure"), file("structure.home", "/opt/x/../structure").resolve(Setting.HOME));
   }
 
   @Test
@@ -150,10 +135,7 @@ public class ConfigurationTest {
   public void modifiers() {
     // The modifier also applies to the default.
     assertEquals(Long.valueOf(300000000000L), file("structure.other", "").resolve(Setting.WORKER_TIMEOUT));
-    assertEquals(
-      Long.valueOf(1000000000L),
-      file("structure.worker.timeout", "1").resolve(Setting.WORKER_TIMEOUT)
-    );
+    assertEquals(Long.valueOf(1000000000L), file("structure.worker.timeout", "1").resolve(Setting.WORKER_TIMEOUT));
     // A relative state-dir is relative to home, and in development mode,
     // the default is target in home.
     final Path home = Configuration.get(Setting.HOME);

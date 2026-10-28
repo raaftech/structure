@@ -278,7 +278,12 @@ public class EntityManagerTest extends TypeSchemaTest {
     final String operatingSystemUuid = "f05e325e-1aee-4892-96e4-8bcd6e97c528";
     // A new address is a leaf: nothing points to it
     final Component address = new Component(
-      mapper.createObjectNode().put("name", "leaf").put("desc", "A leaf.").put("addr", "192.0.2.30").put("reachable", false),
+      mapper
+        .createObjectNode()
+        .put("name", "leaf")
+        .put("desc", "A leaf.")
+        .put("addr", "192.0.2.30")
+        .put("reachable", false),
       Context.getTypeRepository().findOneByName("Ipv4Address")
     );
     address.save();
