@@ -195,7 +195,8 @@ public class TaskManager extends GenericActor {
                   try {
                     runJob(job);
                   } catch (UnsupportedOperationException | InterruptedException | IOException e) {
-                    log.error("Ran into error while executing job " + task.id + "." + jobId);
+                    // The result of the job keeps the error
+                    log.warn("Job {}.{} failed: {}", task.id, jobId, e.getMessage());
                     if (Configuration.isTraceModeOn()) {
                       e.printStackTrace();
                     }

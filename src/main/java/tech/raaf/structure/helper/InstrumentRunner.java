@@ -376,7 +376,7 @@ public class InstrumentRunner {
       if (
         instrumentRepository.validateNonLocalInstrument(controller.getUuid(), agent.getUuid(), origin.getUuid()) == null
       ) {
-        log.error(
+        log.warn(
           "We can't run controller \"" +
             controller.getName() +
             "\", because \"" +
@@ -390,7 +390,7 @@ public class InstrumentRunner {
         );
         // todo: log as result
       } else if (!instrumentRepository.originHasServer(controller.getUuid(), origin.getUuid())) {
-        log.error(
+        log.warn(
           "We can't run controller \"" +
             controller.getName() +
             "\", because nothing that has \"" +

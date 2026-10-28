@@ -122,7 +122,9 @@ public class StructureManager extends GenericActor {
           }, false)
           .onComplete(resultHandler -> {
             if (resultHandler.failed()) {
-              resultHandler.cause().printStackTrace();
+              if (Configuration.isTraceModeOn()) {
+                resultHandler.cause().printStackTrace();
+              }
               log.error(resultHandler.cause().getMessage());
               publishStatus(
                 "selfDiscovery",
