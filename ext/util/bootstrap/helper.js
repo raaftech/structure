@@ -270,6 +270,7 @@ class Helper {
       genInstance("Winexe"),
       genInstance("SambaClient"),
       genInstance("Python2x"),
+      genInstance("NmapClient"),
       genInstance("Structure"),
     ];
   }

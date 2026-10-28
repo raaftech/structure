@@ -187,6 +187,18 @@ public class BundleGraphTest extends TypeSchemaTest {
         Context.getTypeRepository().findOneByName("Structure")
       )
     );
+    host.addComponent(
+      new Component(
+        mapper
+          .createObjectNode()
+          .put("name", "NmapClient")
+          .put("desc", "The nmap network scanner.")
+          .put("shortName", "nmap")
+          .put("longName", "Nmap")
+          .put("ver", "unknown"),
+        Context.getTypeRepository().findOneByName("NmapClient")
+      )
+    );
     agent.addMember(host);
     agent.save();
     Context.setSelfGroup(agent);
@@ -202,6 +214,12 @@ public class BundleGraphTest extends TypeSchemaTest {
         Context.getTypeRepository().findOneByName("Ipv4Address")
       );
       assertDiscoveryCommand(address, "IpAddressDiscover", "-i '192.0.2.10'");
+      assertJob(
+        address,
+        "NmapClientVerify",
+        "sh -c 'nmap -sn -n -oG - \"$1\" | grep -q \"Status: Up\"' nmap '192.0.2.10'",
+        10000
+      );
       for (String cidr : Arrays.asList("192.0.2.0/24", "192.0.2.10/32")) {
         Component network = new Component(
           mapper.createObjectNode().put("name", "network").put("desc", "A network.").put("cidr", cidr),
@@ -227,17 +245,19 @@ public class BundleGraphTest extends TypeSchemaTest {
   }
 
   private static void assertDiscoveryCommand(Component origin, String instrument, String target) {
+    String home = Configuration.get(Setting.HOME).toString();
+    assertJob(origin, instrument, "node '" + home + "'/ext/util/net-discovery/main.js " + target + " -t 'test-token'", 60000);
+  }
+
+  private static void assertJob(Component origin, String instrument, String command, long timeAllocated) {
     origin.save();
     Controller controller = (Controller) Context.getInstrumentRepository().findOneByName(instrument);
     assertNotNull(controller);
     ObjectNode arguments = mapper.createObjectNode().put("token", "test-token");
     InstrumentRunner runner = new InstrumentRunner(origin, controller, arguments, "discovery");
     assertEquals(1, runner.getJobs().size());
-    assertEquals(
-      "node '" + Configuration.get(Setting.HOME) + "'/ext/util/net-discovery/main.js " + target + " -t 'test-token'",
-      runner.getJobs().get(0).getLeft()
-    );
-    assertEquals(Long.valueOf(60000), runner.getJobs().get(0).getRight().get());
+    assertEquals(command, runner.getJobs().get(0).getLeft());
+    assertEquals(Long.valueOf(timeAllocated), runner.getJobs().get(0).getRight().get());
   }
 
   // Detect gets all profiles of a type tree, the deepest types last
