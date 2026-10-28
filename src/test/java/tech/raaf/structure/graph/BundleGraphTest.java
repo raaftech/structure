@@ -240,6 +240,25 @@ public class BundleGraphTest extends TypeSchemaTest {
     assertEquals(Long.valueOf(60000), runner.getJobs().get(0).getRight().get());
   }
 
+  // Detect gets all profiles of a type tree, the deepest types last
+  @Test
+  public void profilesOfTypeTreeAreSortedByDepth() {
+    Type component = Context.getTypeRepository().findOneByName("Component");
+    List<Profile> profiles = Context.getProfileRepository().findAllProfilesForType(component.getUuid());
+    long expected = entities
+      .stream()
+      .filter(entity -> entity.path("meta").path("relations").path("INSTANCE_OF").path("to").path(0).asText().equals("Profile"))
+      .count();
+    assertEquals("Profiles under Component", expected, profiles.size());
+    List<Integer> depths = profiles
+      .stream()
+      .map(profile -> profile.getAppliesTo().getHierarchyPath().split("\\.").length)
+      .collect(Collectors.toList());
+    List<Integer> sorted = new ArrayList<>(depths);
+    Collections.sort(sorted);
+    assertEquals("Depths of the profile types", sorted, depths);
+  }
+
   private static Map<String, String> typePaths() {
     Map<String, String> paths = new LinkedHashMap<>();
     for (Type type : Context.getTypeRepository().getAll()) {

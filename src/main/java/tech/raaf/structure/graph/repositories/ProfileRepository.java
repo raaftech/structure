@@ -24,7 +24,7 @@ public class ProfileRepository extends GenericRepository<Profile> {
       Graph.query(
         "MATCH (start:Type {uuid: $uuid})<-[:ISA*0..]-(child:Type)" +
           "<-[:APPLIES_TO]-(profile:Profile) " +
-          "MATCH distanceToRoot = shortestPath((child)-[:ISA]->(t:Type {name: 'Type'})) " +
+          "MATCH distanceToRoot = shortestPath((child)-[:ISA*]->(t:Type {name: 'Type'})) " +
           "WITH distanceToRoot, profile ORDER BY length(distanceToRoot) ASC " +
           "RETURN DISTINCT profile AS n",
         ImmutableMap.of("uuid", typeUuid)
