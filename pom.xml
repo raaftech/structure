@@ -97,7 +97,7 @@
     <handlebars.version>4.5.7</handlebars.version>
 
     <!-- Helper component versions -->
-    <json-schema-validator.version>2.2.6</json-schema-validator.version>
+    <json-schema-validator.version>2.2.14</json-schema-validator.version>
     <commons-io.version>2.22.0</commons-io.version>
     <commons-cli.version>1.11.0</commons-cli.version>
     <commons-codec.version>1.23.0</commons-codec.version>
@@ -154,7 +154,7 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>com.github.fge</groupId>
+      <groupId>com.github.java-json-tools</groupId>
       <artifactId>json-schema-validator</artifactId>
       <version>${json-schema-validator.version}</version>
       <scope>compile</scope>
