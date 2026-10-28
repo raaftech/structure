@@ -20,9 +20,9 @@
   },
   "data": {
     "commands": {
-      "uname": {
-        "command": "cat /etc/SuSE-release",
-        "matches": "SUSE LINUX"
+      "osrelease": {
+        "command": "grep ^ID= /etc/os-release",
+        "matches": "sles"
       }
     }
   }

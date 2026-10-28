@@ -20,9 +20,9 @@
   },
   "data": {
     "commands": {
-      "uname": {
-        "command": "cat /etc/redhat-release",
-        "matches": "CentOS"
+      "osrelease": {
+        "command": "grep ^ID= /etc/os-release",
+        "matches": "centos"
       }
     }
   }

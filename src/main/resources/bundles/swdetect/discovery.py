@@ -1,6 +1,13 @@
-#!/usr/bin/env python2
+#!/bin/sh
+# The sh code below runs the first Python it finds. Python skips it.
+''':'
+for python in python3 python python2; do
+  command -v "$python" >/dev/null 2>&1 && exec "$python" "$0" "$@"
+done
+echo "No Python interpreter found." >&2
+exit 1
+'''
 
-import commands
 import os
 import re
 import sys
@@ -12,7 +19,7 @@ def eprint(msg):
 
 def die(reason="None given", exitcode=1):
     eprint("[ERROR] %s" % (reason))
-    sys.exit(sys.exitcode)
+    sys.exit(exitcode)
 
 def log_debug(message):
     eprint("[DEBUG] %s" % (message))
@@ -63,7 +70,7 @@ def runCommand(command):
 
 def matchCommandOutput(command, match):
     """Run a given command and return whether or not its STDOUT matches param match."""
-    stdout = commands.getoutput(command).strip()
+    stdout = os.popen(command).read().strip()
     log_debug("Matching %s to %s" % (stdout, match))
     return match in stdout
 
@@ -120,7 +127,7 @@ if len(sys.argv) < 2:
     die("No profile file passed to script.")
 
 profiles = sys.argv[1]
-propMatcher = re.compile('(\w+)="(.*)"')
+propMatcher = re.compile(r'(\w+)="(.*)"')
 
 env = {}
 
@@ -159,7 +166,7 @@ def idxProfileTuple(profile):
 def matches(item):
     return item[1] == 1
 
-indexedMatches = map(idxProfileTuple, filter(matches, scores.items()))
+indexedMatches = [idxProfileTuple(item) for item in scores.items() if matches(item)]
 # Get the most specific match based on its index in profiles
 
 # get the profile with the highest score
@@ -173,7 +180,7 @@ def findMax(indexToProfile):
     return max[0]
 
 if len(indexedMatches) > 0:
-    print findMax(indexedMatches)
+    sys.stdout.write("%s\n" % (findMax(indexedMatches)))
 else:
     log_debug("Found no profiles that match.")
     sys.exit(0)

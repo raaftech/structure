@@ -20,9 +20,9 @@
   },
   "data": {
     "commands": {
-      "uname": {
-        "command": "cat /etc/redhat-release",
-        "matches": "Red Hat Enterprise Linux"
+      "osrelease": {
+        "command": "grep ^ID= /etc/os-release",
+        "matches": "rhel"
       }
     }
   }

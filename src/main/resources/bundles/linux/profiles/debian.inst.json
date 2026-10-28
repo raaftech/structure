@@ -20,9 +20,9 @@
   },
   "data": {
     "commands": {
-      "uname": {
-        "command": "grep DISTRIB_ID /var/log/installer/lsb-release",
-        "matches": "Debian"
+      "osrelease": {
+        "command": "grep ^ID= /etc/os-release",
+        "matches": "debian"
       }
     }
   }
