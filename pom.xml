@@ -112,12 +112,12 @@
     <testcontainers.version>2.0.5</testcontainers.version>
 
     <!-- Maven plugin versions -->
-    <maven.toolchains.plugin.version>3.2.0</maven.toolchains.plugin.version>
-    <maven.compiler.plugin.version>3.3</maven.compiler.plugin.version>
-    <maven.shade.plugin.version>2.4.3</maven.shade.plugin.version>
-    <maven.surefire.plugin.version>2.19.1</maven.surefire.plugin.version>
-    <maven.failsafe.plugin.version>2.19.1</maven.failsafe.plugin.version>
-    <jacoco.plugin.version>0.8.11</jacoco.plugin.version>
+    <maven.toolchains.plugin.version>3.3.0</maven.toolchains.plugin.version>
+    <maven.compiler.plugin.version>3.16.0</maven.compiler.plugin.version>
+    <maven.shade.plugin.version>3.6.2</maven.shade.plugin.version>
+    <maven.surefire.plugin.version>3.5.6</maven.surefire.plugin.version>
+    <maven.failsafe.plugin.version>3.5.6</maven.failsafe.plugin.version>
+    <jacoco.plugin.version>0.8.16</jacoco.plugin.version>
     <jacoco.line.minimum>0.60</jacoco.line.minimum>
   </properties>
 
@@ -427,6 +427,7 @@
                 </excludes>
               </artifactSet>
               <outputFile>${project.build.directory}/${project.artifactId}-${project.version}-fat.jar</outputFile>
+              <createDependencyReducedPom>false</createDependencyReducedPom>
             </configuration>
           </execution>
         </executions>
