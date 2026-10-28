@@ -1,0 +1,29 @@
+{
+  "name": "OpenSshServerProfile",
+  "desc": "A profile that detects the OpenSSH server.",
+  "meta": {
+    "uuid": "ebe41fdb-bb4c-4f7f-9baa-953e56603beb",
+    "relations": {
+      "INSTANCE_OF": {
+        "direction": "outgoing",
+        "to": ["Profile"]
+      },
+      "APPLIES_TO": {
+        "direction": "outgoing",
+        "to": ["OpenSshServer"]
+      },
+      "PROVIDED_BY": {
+        "direction": "outgoing",
+        "to": ["OpenSshServer"]
+      }
+    }
+  },
+  "data": {
+    "commands": {
+      "version": {
+        "command": "PATH=$PATH:/usr/sbin:/usr/local/sbin:/sbin sshd -V 2>&1",
+        "matches": "OpenSSH"
+      }
+    }
+  }
+}

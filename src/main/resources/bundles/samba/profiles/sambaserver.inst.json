@@ -1,0 +1,29 @@
+{
+  "name": "SambaServerProfile",
+  "desc": "A profile that detects the Samba server.",
+  "meta": {
+    "uuid": "1d59bac8-3f60-4bd0-930f-7d699e64e18e",
+    "relations": {
+      "INSTANCE_OF": {
+        "direction": "outgoing",
+        "to": ["Profile"]
+      },
+      "APPLIES_TO": {
+        "direction": "outgoing",
+        "to": ["SambaServer"]
+      },
+      "PROVIDED_BY": {
+        "direction": "outgoing",
+        "to": ["SambaServer"]
+      }
+    }
+  },
+  "data": {
+    "directories": {
+      "binaryDirectories": ["/sbin", "/usr/sbin", "/usr/local/sbin"]
+    },
+    "files": {
+      "binaryFiles": ["smbd"]
+    }
+  }
+}

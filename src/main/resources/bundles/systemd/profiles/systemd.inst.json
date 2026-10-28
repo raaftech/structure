@@ -1,0 +1,29 @@
+{
+  "name": "SystemdProfile",
+  "desc": "A profile that detects systemd.",
+  "meta": {
+    "uuid": "bedd7302-3b3d-47c1-8840-0dffce26ff31",
+    "relations": {
+      "INSTANCE_OF": {
+        "direction": "outgoing",
+        "to": ["Profile"]
+      },
+      "APPLIES_TO": {
+        "direction": "outgoing",
+        "to": ["Systemd"]
+      },
+      "PROVIDED_BY": {
+        "direction": "outgoing",
+        "to": ["Systemd"]
+      }
+    }
+  },
+  "data": {
+    "commands": {
+      "pid1": {
+        "command": "ps -p 1 -o comm=",
+        "matches": "systemd"
+      }
+    }
+  }
+}

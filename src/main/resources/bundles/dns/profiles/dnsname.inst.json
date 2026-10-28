@@ -1,0 +1,29 @@
+{
+  "name": "DnsNameProfile",
+  "desc": "A profile that detects a DNS name.",
+  "meta": {
+    "uuid": "38de033c-2536-4e5a-ba1b-696fe2db6a69",
+    "relations": {
+      "INSTANCE_OF": {
+        "direction": "outgoing",
+        "to": ["Profile"]
+      },
+      "APPLIES_TO": {
+        "direction": "outgoing",
+        "to": ["DnsName"]
+      },
+      "PROVIDED_BY": {
+        "direction": "outgoing",
+        "to": ["DnsName"]
+      }
+    }
+  },
+  "data": {
+    "commands": {
+      "hostname": {
+        "command": "hostname | grep -c .",
+        "matches": "1"
+      }
+    }
+  }
+}

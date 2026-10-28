@@ -1,0 +1,29 @@
+{
+  "name": "ShProfile",
+  "desc": "A profile that detects sh.",
+  "meta": {
+    "uuid": "09086641-f4f0-490d-9595-0e980bf045f6",
+    "relations": {
+      "INSTANCE_OF": {
+        "direction": "outgoing",
+        "to": ["Profile"]
+      },
+      "APPLIES_TO": {
+        "direction": "outgoing",
+        "to": ["Sh"]
+      },
+      "PROVIDED_BY": {
+        "direction": "outgoing",
+        "to": ["Sh"]
+      }
+    }
+  },
+  "data": {
+    "directories": {
+      "binaryDirectories": ["/bin"]
+    },
+    "files": {
+      "binaryFiles": ["sh"]
+    }
+  }
+}

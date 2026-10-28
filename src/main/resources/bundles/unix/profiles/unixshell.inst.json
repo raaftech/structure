@@ -1,0 +1,29 @@
+{
+  "name": "UnixShellProfile",
+  "desc": "A profile that detects a UNIX shell.",
+  "meta": {
+    "uuid": "3cf4955c-dae2-441b-9861-da4ee3efd37a",
+    "relations": {
+      "INSTANCE_OF": {
+        "direction": "outgoing",
+        "to": ["Profile"]
+      },
+      "APPLIES_TO": {
+        "direction": "outgoing",
+        "to": ["UnixShell"]
+      },
+      "PROVIDED_BY": {
+        "direction": "outgoing",
+        "to": ["UnixShell"]
+      }
+    }
+  },
+  "data": {
+    "directories": {
+      "binaryDirectories": ["/bin"]
+    },
+    "files": {
+      "binaryFiles": ["sh"]
+    }
+  }
+}

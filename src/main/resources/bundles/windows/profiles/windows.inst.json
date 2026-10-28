@@ -1,0 +1,29 @@
+{
+  "name": "WindowsProfile",
+  "desc": "A profile that detects Windows.",
+  "meta": {
+    "uuid": "a7b0b545-a7f0-4f74-bc78-f68bdb3bd3f3",
+    "relations": {
+      "INSTANCE_OF": {
+        "direction": "outgoing",
+        "to": ["Profile"]
+      },
+      "APPLIES_TO": {
+        "direction": "outgoing",
+        "to": ["Windows"]
+      },
+      "PROVIDED_BY": {
+        "direction": "outgoing",
+        "to": ["Windows"]
+      }
+    }
+  },
+  "data": {
+    "commands": {
+      "ver": {
+        "command": "ver",
+        "matches": "Windows"
+      }
+    }
+  }
+}

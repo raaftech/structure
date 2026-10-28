@@ -1,0 +1,24 @@
+{
+  "name": "SshServerProfile",
+  "desc": "A profile that detects an SSH server.",
+  "meta": {
+    "uuid": "ec5787f4-e0ee-4d3b-ada3-dfa953c7d208",
+    "relations": {
+      "INSTANCE_OF": {
+        "direction": "outgoing",
+        "to": ["Profile"]
+      },
+      "APPLIES_TO": {
+        "direction": "outgoing",
+        "to": ["SshServer"]
+      },
+      "PROVIDED_BY": {
+        "direction": "outgoing",
+        "to": ["SshServer"]
+      }
+    }
+  },
+  "data": {
+    "ports": [22]
+  }
+}

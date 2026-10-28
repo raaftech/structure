@@ -1,0 +1,29 @@
+{
+  "name": "BashProfile",
+  "desc": "A profile that detects Bash.",
+  "meta": {
+    "uuid": "99122ee1-29a5-4e03-b4b6-52b4c7870fe6",
+    "relations": {
+      "INSTANCE_OF": {
+        "direction": "outgoing",
+        "to": ["Profile"]
+      },
+      "APPLIES_TO": {
+        "direction": "outgoing",
+        "to": ["Bash"]
+      },
+      "PROVIDED_BY": {
+        "direction": "outgoing",
+        "to": ["Bash"]
+      }
+    }
+  },
+  "data": {
+    "directories": {
+      "binaryDirectories": ["/bin", "/usr/bin", "/usr/local/bin"]
+    },
+    "files": {
+      "binaryFiles": ["bash"]
+    }
+  }
+}

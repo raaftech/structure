@@ -1,0 +1,29 @@
+{
+  "name": "UpstartProfile",
+  "desc": "A profile that detects Upstart.",
+  "meta": {
+    "uuid": "51956b85-b7fa-40c7-bd98-0bea6fa500c0",
+    "relations": {
+      "INSTANCE_OF": {
+        "direction": "outgoing",
+        "to": ["Profile"]
+      },
+      "APPLIES_TO": {
+        "direction": "outgoing",
+        "to": ["Upstart"]
+      },
+      "PROVIDED_BY": {
+        "direction": "outgoing",
+        "to": ["Upstart"]
+      }
+    }
+  },
+  "data": {
+    "commands": {
+      "initctl": {
+        "command": "initctl version 2>&1",
+        "matches": "upstart"
+      }
+    }
+  }
+}

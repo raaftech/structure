@@ -1,0 +1,29 @@
+{
+  "name": "PythonProfile",
+  "desc": "A profile that detects Python.",
+  "meta": {
+    "uuid": "682a520d-c746-4c07-9107-04519dcc1b4e",
+    "relations": {
+      "INSTANCE_OF": {
+        "direction": "outgoing",
+        "to": ["Profile"]
+      },
+      "APPLIES_TO": {
+        "direction": "outgoing",
+        "to": ["Python"]
+      },
+      "PROVIDED_BY": {
+        "direction": "outgoing",
+        "to": ["Python"]
+      }
+    }
+  },
+  "data": {
+    "commands": {
+      "version": {
+        "command": "python3 --version 2>&1; python --version 2>&1",
+        "matches": "Python"
+      }
+    }
+  }
+}

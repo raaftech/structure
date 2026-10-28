@@ -1,0 +1,29 @@
+{
+  "name": "OpenRcProfile",
+  "desc": "A profile that detects OpenRC.",
+  "meta": {
+    "uuid": "8acfdd5e-c7ca-4d30-b715-45e8758d1968",
+    "relations": {
+      "INSTANCE_OF": {
+        "direction": "outgoing",
+        "to": ["Profile"]
+      },
+      "APPLIES_TO": {
+        "direction": "outgoing",
+        "to": ["OpenRc"]
+      },
+      "PROVIDED_BY": {
+        "direction": "outgoing",
+        "to": ["OpenRc"]
+      }
+    }
+  },
+  "data": {
+    "directories": {
+      "binaryDirectories": ["/sbin", "/usr/sbin", "/bin"]
+    },
+    "files": {
+      "binaryFiles": ["openrc"]
+    }
+  }
+}

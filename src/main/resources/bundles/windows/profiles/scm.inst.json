@@ -1,0 +1,29 @@
+{
+  "name": "ScmProfile",
+  "desc": "A profile that detects the Windows service control manager.",
+  "meta": {
+    "uuid": "37088ca3-1ee4-4ae9-96a1-6d4f39fd4599",
+    "relations": {
+      "INSTANCE_OF": {
+        "direction": "outgoing",
+        "to": ["Profile"]
+      },
+      "APPLIES_TO": {
+        "direction": "outgoing",
+        "to": ["Scm"]
+      },
+      "PROVIDED_BY": {
+        "direction": "outgoing",
+        "to": ["Scm"]
+      }
+    }
+  },
+  "data": {
+    "directories": {
+      "binaryDirectories": ["C:/Windows/System32"]
+    },
+    "files": {
+      "binaryFiles": ["sc.exe"]
+    }
+  }
+}

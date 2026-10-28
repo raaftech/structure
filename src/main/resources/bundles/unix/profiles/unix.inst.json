@@ -1,0 +1,29 @@
+{
+  "name": "UnixProfile",
+  "desc": "A profile that detects UNIX.",
+  "meta": {
+    "uuid": "18cbc6f6-d4b9-44a3-8bc4-ba145f54021e",
+    "relations": {
+      "INSTANCE_OF": {
+        "direction": "outgoing",
+        "to": ["Profile"]
+      },
+      "APPLIES_TO": {
+        "direction": "outgoing",
+        "to": ["Unix"]
+      },
+      "PROVIDED_BY": {
+        "direction": "outgoing",
+        "to": ["Unix"]
+      }
+    }
+  },
+  "data": {
+    "commands": {
+      "uname": {
+        "command": "uname | egrep -vc '^(Linux|Darwin|.*BSD)$'",
+        "matches": "1"
+      }
+    }
+  }
+}

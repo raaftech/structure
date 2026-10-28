@@ -1,0 +1,29 @@
+{
+  "name": "WinexeProfile",
+  "desc": "A profile that detects winexe.",
+  "meta": {
+    "uuid": "8b9ddf71-b799-4b27-8c4e-858f6f781b75",
+    "relations": {
+      "INSTANCE_OF": {
+        "direction": "outgoing",
+        "to": ["Profile"]
+      },
+      "APPLIES_TO": {
+        "direction": "outgoing",
+        "to": ["Winexe"]
+      },
+      "PROVIDED_BY": {
+        "direction": "outgoing",
+        "to": ["Winexe"]
+      }
+    }
+  },
+  "data": {
+    "directories": {
+      "binaryDirectories": ["/bin", "/usr/bin", "/usr/local/bin", "/sbin", "/usr/sbin", "/usr/local/sbin"]
+    },
+    "files": {
+      "binaryFiles": ["winexe"]
+    }
+  }
+}

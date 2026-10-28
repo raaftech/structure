@@ -1,0 +1,29 @@
+{
+  "name": "OpenSshClientProfile",
+  "desc": "A profile that detects the OpenSSH client.",
+  "meta": {
+    "uuid": "cf88b905-6f00-4b62-a17a-4c6f2f66f350",
+    "relations": {
+      "INSTANCE_OF": {
+        "direction": "outgoing",
+        "to": ["Profile"]
+      },
+      "APPLIES_TO": {
+        "direction": "outgoing",
+        "to": ["OpenSshClient"]
+      },
+      "PROVIDED_BY": {
+        "direction": "outgoing",
+        "to": ["OpenSshClient"]
+      }
+    }
+  },
+  "data": {
+    "commands": {
+      "version": {
+        "command": "ssh -V 2>&1",
+        "matches": "OpenSSH"
+      }
+    }
+  }
+}

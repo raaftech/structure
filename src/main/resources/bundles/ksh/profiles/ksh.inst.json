@@ -1,0 +1,29 @@
+{
+  "name": "KshProfile",
+  "desc": "A profile that detects ksh.",
+  "meta": {
+    "uuid": "080a5e47-1160-4186-ab60-aa05a1b1e075",
+    "relations": {
+      "INSTANCE_OF": {
+        "direction": "outgoing",
+        "to": ["Profile"]
+      },
+      "APPLIES_TO": {
+        "direction": "outgoing",
+        "to": ["Ksh"]
+      },
+      "PROVIDED_BY": {
+        "direction": "outgoing",
+        "to": ["Ksh"]
+      }
+    }
+  },
+  "data": {
+    "directories": {
+      "binaryDirectories": ["/bin", "/usr/bin", "/usr/local/bin"]
+    },
+    "files": {
+      "binaryFiles": ["ksh"]
+    }
+  }
+}

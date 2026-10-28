@@ -1,0 +1,29 @@
+{
+  "name": "DosLikeProfile",
+  "desc": "A profile that detects a DOS-like operating system.",
+  "meta": {
+    "uuid": "cfa171ee-8910-455f-8854-83ac765d8b4f",
+    "relations": {
+      "INSTANCE_OF": {
+        "direction": "outgoing",
+        "to": ["Profile"]
+      },
+      "APPLIES_TO": {
+        "direction": "outgoing",
+        "to": ["DosLike"]
+      },
+      "PROVIDED_BY": {
+        "direction": "outgoing",
+        "to": ["DosLike"]
+      }
+    }
+  },
+  "data": {
+    "directories": {
+      "configurationDirectories": ["C:"]
+    },
+    "files": {
+      "configurationFiles": ["COMMAND.COM"]
+    }
+  }
+}

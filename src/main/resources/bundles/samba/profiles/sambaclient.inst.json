@@ -1,0 +1,29 @@
+{
+  "name": "SambaClientProfile",
+  "desc": "A profile that detects the Samba client.",
+  "meta": {
+    "uuid": "59fcaebb-1ab9-48c7-b82a-ab43411e8c02",
+    "relations": {
+      "INSTANCE_OF": {
+        "direction": "outgoing",
+        "to": ["Profile"]
+      },
+      "APPLIES_TO": {
+        "direction": "outgoing",
+        "to": ["SambaClient"]
+      },
+      "PROVIDED_BY": {
+        "direction": "outgoing",
+        "to": ["SambaClient"]
+      }
+    }
+  },
+  "data": {
+    "directories": {
+      "binaryDirectories": ["/bin", "/usr/bin", "/usr/local/bin"]
+    },
+    "files": {
+      "binaryFiles": ["smbclient"]
+    }
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "name": "IputilsProfile",
+  "desc": "A profile that detects iputils.",
+  "meta": {
+    "uuid": "7fc09f1d-1a58-4486-bd37-d089d096815b",
+    "relations": {
+      "INSTANCE_OF": {
+        "direction": "outgoing",
+        "to": ["Profile"]
+      },
+      "APPLIES_TO": {
+        "direction": "outgoing",
+        "to": ["Iputils"]
+      },
+      "PROVIDED_BY": {
+        "direction": "outgoing",
+        "to": ["Iputils"]
+      }
+    }
+  },
+  "data": {
+    "commands": {
+      "version": {
+        "command": "ping -V 2>&1",
+        "matches": "iputils"
+      }
+    }
+  }
+}

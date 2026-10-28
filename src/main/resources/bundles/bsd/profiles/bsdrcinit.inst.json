@@ -1,0 +1,29 @@
+{
+  "name": "BsdrcInitProfile",
+  "desc": "A profile that detects BSD rc.",
+  "meta": {
+    "uuid": "b96a9951-28b6-44b5-9155-531bcab77194",
+    "relations": {
+      "INSTANCE_OF": {
+        "direction": "outgoing",
+        "to": ["Profile"]
+      },
+      "APPLIES_TO": {
+        "direction": "outgoing",
+        "to": ["BsdrcInit"]
+      },
+      "PROVIDED_BY": {
+        "direction": "outgoing",
+        "to": ["BsdrcInit"]
+      }
+    }
+  },
+  "data": {
+    "directories": {
+      "configurationDirectories": ["/etc", "/etc/rc.d"]
+    },
+    "files": {
+      "configurationFiles": ["rc.subr"]
+    }
+  }
+}

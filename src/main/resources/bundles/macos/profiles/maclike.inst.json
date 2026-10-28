@@ -1,0 +1,29 @@
+{
+  "name": "MacLikeProfile",
+  "desc": "A profile that detects a Mac-like operating system.",
+  "meta": {
+    "uuid": "4aff66e0-b6f3-4eb4-9af7-3ceeadbe5447",
+    "relations": {
+      "INSTANCE_OF": {
+        "direction": "outgoing",
+        "to": ["Profile"]
+      },
+      "APPLIES_TO": {
+        "direction": "outgoing",
+        "to": ["MacLike"]
+      },
+      "PROVIDED_BY": {
+        "direction": "outgoing",
+        "to": ["MacLike"]
+      }
+    }
+  },
+  "data": {
+    "directories": {
+      "configurationDirectories": ["/System/Library/CoreServices"]
+    },
+    "files": {
+      "configurationFiles": ["SystemVersion.plist"]
+    }
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "name": "SmbServerProfile",
+  "desc": "A profile that detects an SMB server.",
+  "meta": {
+    "uuid": "a80bf394-b837-4046-a2a2-2a6717978b76",
+    "relations": {
+      "INSTANCE_OF": {
+        "direction": "outgoing",
+        "to": ["Profile"]
+      },
+      "APPLIES_TO": {
+        "direction": "outgoing",
+        "to": ["SmbServer"]
+      },
+      "PROVIDED_BY": {
+        "direction": "outgoing",
+        "to": ["SmbServer"]
+      }
+    }
+  },
+  "data": {
+    "ports": [445]
+  }
+}

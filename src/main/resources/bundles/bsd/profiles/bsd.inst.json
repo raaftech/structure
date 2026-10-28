@@ -1,0 +1,29 @@
+{
+  "name": "BsdProfile",
+  "desc": "A profile that detects BSD.",
+  "meta": {
+    "uuid": "5161ba0a-9fb0-4308-a5c6-b5119f2a81d7",
+    "relations": {
+      "INSTANCE_OF": {
+        "direction": "outgoing",
+        "to": ["Profile"]
+      },
+      "APPLIES_TO": {
+        "direction": "outgoing",
+        "to": ["Bsd"]
+      },
+      "PROVIDED_BY": {
+        "direction": "outgoing",
+        "to": ["Bsd"]
+      }
+    }
+  },
+  "data": {
+    "commands": {
+      "uname": {
+        "command": "uname",
+        "matches": "BSD"
+      }
+    }
+  }
+}

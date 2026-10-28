@@ -1,0 +1,29 @@
+{
+  "name": "WindowsLikeProfile",
+  "desc": "A profile that detects a Windows-like operating system.",
+  "meta": {
+    "uuid": "98424107-b2c3-4d56-942b-5f217391d8b2",
+    "relations": {
+      "INSTANCE_OF": {
+        "direction": "outgoing",
+        "to": ["Profile"]
+      },
+      "APPLIES_TO": {
+        "direction": "outgoing",
+        "to": ["WindowsLike"]
+      },
+      "PROVIDED_BY": {
+        "direction": "outgoing",
+        "to": ["WindowsLike"]
+      }
+    }
+  },
+  "data": {
+    "directories": {
+      "configurationDirectories": ["C:/Windows", "C:/WINNT"]
+    },
+    "files": {
+      "configurationFiles": ["win.ini"]
+    }
+  }
+}

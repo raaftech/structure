@@ -1,0 +1,29 @@
+{
+  "name": "LaunchdProfile",
+  "desc": "A profile that detects launchd.",
+  "meta": {
+    "uuid": "81723f70-5ddc-4071-aa56-1768d9065c22",
+    "relations": {
+      "INSTANCE_OF": {
+        "direction": "outgoing",
+        "to": ["Profile"]
+      },
+      "APPLIES_TO": {
+        "direction": "outgoing",
+        "to": ["Launchd"]
+      },
+      "PROVIDED_BY": {
+        "direction": "outgoing",
+        "to": ["Launchd"]
+      }
+    }
+  },
+  "data": {
+    "commands": {
+      "pid1": {
+        "command": "ps -p 1 -o comm=",
+        "matches": "launchd"
+      }
+    }
+  }
+}

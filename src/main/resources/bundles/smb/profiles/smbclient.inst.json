@@ -1,0 +1,29 @@
+{
+  "name": "SmbClientProfile",
+  "desc": "A profile that detects an SMB client.",
+  "meta": {
+    "uuid": "83c235fb-e592-4662-9ffe-8e49ef535ed0",
+    "relations": {
+      "INSTANCE_OF": {
+        "direction": "outgoing",
+        "to": ["Profile"]
+      },
+      "APPLIES_TO": {
+        "direction": "outgoing",
+        "to": ["SmbClient"]
+      },
+      "PROVIDED_BY": {
+        "direction": "outgoing",
+        "to": ["SmbClient"]
+      }
+    }
+  },
+  "data": {
+    "commands": {
+      "binary": {
+        "command": "command -v smbclient || command -v winexe || command -v mount.cifs",
+        "matches": "/"
+      }
+    }
+  }
+}

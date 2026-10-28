@@ -1,0 +1,29 @@
+{
+  "name": "CmdShellProfile",
+  "desc": "A profile that detects cmd.",
+  "meta": {
+    "uuid": "391791b9-75d2-44ce-9890-75e487657d08",
+    "relations": {
+      "INSTANCE_OF": {
+        "direction": "outgoing",
+        "to": ["Profile"]
+      },
+      "APPLIES_TO": {
+        "direction": "outgoing",
+        "to": ["CmdShell"]
+      },
+      "PROVIDED_BY": {
+        "direction": "outgoing",
+        "to": ["CmdShell"]
+      }
+    }
+  },
+  "data": {
+    "directories": {
+      "binaryDirectories": ["C:/Windows/System32"]
+    },
+    "files": {
+      "binaryFiles": ["cmd.exe"]
+    }
+  }
+}

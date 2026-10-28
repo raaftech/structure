@@ -1,0 +1,29 @@
+{
+  "name": "UnixLikeProfile",
+  "desc": "A profile that detects a UNIX-like operating system.",
+  "meta": {
+    "uuid": "57006f7e-7ce1-4536-a54b-9b35c9519309",
+    "relations": {
+      "INSTANCE_OF": {
+        "direction": "outgoing",
+        "to": ["Profile"]
+      },
+      "APPLIES_TO": {
+        "direction": "outgoing",
+        "to": ["UnixLike"]
+      },
+      "PROVIDED_BY": {
+        "direction": "outgoing",
+        "to": ["UnixLike"]
+      }
+    }
+  },
+  "data": {
+    "directories": {
+      "binaryDirectories": ["/bin"]
+    },
+    "files": {
+      "binaryFiles": ["sh"]
+    }
+  }
+}

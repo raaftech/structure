@@ -1,0 +1,29 @@
+{
+  "name": "SshClientProfile",
+  "desc": "A profile that detects an SSH client.",
+  "meta": {
+    "uuid": "d97a06d7-815e-4911-82fc-b1b94f8d22f1",
+    "relations": {
+      "INSTANCE_OF": {
+        "direction": "outgoing",
+        "to": ["Profile"]
+      },
+      "APPLIES_TO": {
+        "direction": "outgoing",
+        "to": ["SshClient"]
+      },
+      "PROVIDED_BY": {
+        "direction": "outgoing",
+        "to": ["SshClient"]
+      }
+    }
+  },
+  "data": {
+    "directories": {
+      "binaryDirectories": ["/bin", "/usr/bin", "/usr/local/bin"]
+    },
+    "files": {
+      "binaryFiles": ["ssh"]
+    }
+  }
+}
