@@ -339,4 +339,24 @@ public class InstrumentRunnerTest {
     Path script = Configuration.get(Setting.STATE_DIR).resolve("generated-scripts").resolve(matcher.group(1));
     assertEquals("rwx------", PosixFilePermissions.toString(Files.getPosixFilePermissions(script)));
   }
+
+  @Test
+  public void callerSuppliesOnlyArgumentsThatAllowIt() throws Exception {
+    final ObjectNode declared = (ObjectNode) mapper.readTree(
+      "{\"username\": {\"value\": {\"from\": \"static\"}, \"canBeUserSupplied\": true}," +
+        " \"payloadDirectory\": {\"value\": {\"from\": \"static\"}}}"
+    );
+    // Arguments that the controller does not declare are for other controllers
+    InstrumentRunner.refuseUnsuppliable(
+      controller,
+      declared,
+      mapper.createObjectNode().put("username", "root").put("password", "secret")
+    );
+    try {
+      InstrumentRunner.refuseUnsuppliable(controller, declared, mapper.createObjectNode().put("payloadDirectory", "/"));
+      fail("A caller must not supply payloadDirectory");
+    } catch (IllegalArgumentException e) {
+      assertTrue(e.getMessage(), e.getMessage().contains("payloadDirectory"));
+    }
+  }
 }

@@ -29,6 +29,11 @@ public class SecretFile implements Helper<Object> {
 
   @Override
   public CharSequence apply(Object context, Options options) throws IOException {
+    final String content = options.fn().toString();
+    // A value with a line break can add a line, such as domain = x
+    if (lineBreaks(content) > lineBreaks(options.fn.text())) {
+      throw new IllegalArgumentException("A value for a secret file contains a line break.");
+    }
     Files.createDirectories(directory);
     final Path file = Files.createTempFile(
       directory,
@@ -37,8 +42,12 @@ public class SecretFile implements Helper<Object> {
       PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString("rw-------"))
     );
     files.add(file);
-    Files.write(file, options.fn().toString().getBytes(StandardCharsets.UTF_8));
+    Files.write(file, content.getBytes(StandardCharsets.UTF_8));
     // Only commands that Structure runs can read the file, these use sh
     return new Handlebars.SafeString(Quote.SH.quote(file.toString()));
+  }
+
+  private static long lineBreaks(String text) {
+    return text.chars().filter(c -> c == '\n' || c == '\r').count();
   }
 }

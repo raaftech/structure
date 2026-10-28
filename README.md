@@ -123,6 +123,38 @@ Bundle loading adds new entities and updates entities whose checksum changed. It
 retains graph entities that are absent from disk. Removal of a bundle file does
 not delete its entities or their instances from the graph.
 
+### User input
+
+The caller of an instrument can give values for the static arguments that have
+`canBeUserSupplied: true`, for example `username` of `OpenSshClientSendString`
+or `token` of `IpNetworkDiscover`. Structure gives the other static arguments,
+and refuses a task when the caller gives one of these. Structure does not
+sanitize the values of the caller, but it quotes them:
+
+- Templates for a Unix shell give each value through the `sh` helper, and
+  templates for `cmd` through the `cmd` helper. Thus each value is one word of
+  the command. `BundleConsistencyTest` checks each template in `bundles`.
+- The `cmd` helper cannot escape a double quote or a line break. Structure
+  refuses a value for `cmd` that has one of these characters.
+- Script arguments are quoted two times, because the remote shell of `ssh`
+  parses them again.
+- A value for a secret file, such as a password, must be one line.
+
+Some values are code on purpose, and are not quoted. A user who can call these
+instruments can run each command on the subject:
+
+- `command` of `UnixExecute` and `WindowsExecute`;
+- `script` of the invoke instruments, for example `ShInvoke` and
+  `CmdShellInvoke`.
+
+`payloadDirectory` and `payloadFileName` are not quoted either. Structure makes
+these names, with word characters, dots and dashes only.
+
+Instruments with `subjectIsLocal: false`, for example those of `nmap` and
+`openssh`, run on the Structure host, as the user that runs Structure. Other
+instruments run on their subject, through a send string instrument such as
+`OpenSshClientSendString`.
+
 ### Configuration
 
 Each setting has a command line option, an environment variable and a property.

@@ -54,7 +54,10 @@ public class InstrumentRunner {
   private final Controller controller;
   private final Group subject;
   private final Group agent;
-  private final ObjectNode arguments;
+  // Arguments of the caller, which this class does not change
+  private final ObjectNode suppliedArguments;
+  // Static arguments that Structure gives, such as the script file
+  private final ObjectNode generatedArguments = mapper.createObjectNode();
 
   // Commands run in state-dir, so they can use this path without quotes
   private static final String payloadDirectory = "generated-scripts" + File.separator;
@@ -101,7 +104,7 @@ public class InstrumentRunner {
     this.taskId = taskId;
     this.origin = origin;
     this.controller = controller;
-    this.arguments = arguments == null ? mapper.createObjectNode() : arguments;
+    this.suppliedArguments = arguments == null ? mapper.createObjectNode() : arguments;
 
     this.agent = groupingRepository.findByUuid(Context.getSelfIdentifier());
     this.subject = instanceRepository.getStartOfComponentGroup(origin.getUuid());
@@ -459,10 +462,10 @@ public class InstrumentRunner {
     copyStringToFile(flattenedProfiles.toString(), outputFile);
 
     // This is nasty because these properties will be reused later on L365 and L645
-    arguments.put("payloadDirectory", payloadDirectory);
-    arguments.put("payloadFileName", outputFile);
+    generatedArguments.put("payloadDirectory", payloadDirectory);
+    generatedArguments.put("payloadFileName", outputFile);
 
-    arguments.put("profiles", outputFile);
+    generatedArguments.put("profiles", outputFile);
   }
 
   /**
@@ -479,8 +482,8 @@ public class InstrumentRunner {
     );
     copyStringToFile(script, scriptFilename);
 
-    arguments.put("payloadDirectory", payloadDirectory);
-    arguments.put("payloadFileName", scriptFilename);
+    generatedArguments.put("payloadDirectory", payloadDirectory);
+    generatedArguments.put("payloadFileName", scriptFilename);
   }
 
   private String constructScriptFilename(String originName, String controllerName, String extension) {
@@ -632,6 +635,7 @@ public class InstrumentRunner {
     }
 
     log.debug("Validating and selecting arguments for \"{}\"", controller.getName());
+    refuseUnsuppliable(controller, tmpArguments.get(), suppliedArguments);
 
     //
     // Create the context we're working with.
@@ -650,10 +654,11 @@ public class InstrumentRunner {
     agent.toArguments().forEach(arg -> collect.accept(arg, "agent"));
     ObjectNode originCopy = ((Instance) origin).toJson().deepCopy().put("_from", "origin");
     context.add(originCopy);
-    ObjectNode argumentsCopy = arguments.deepCopy();
-    // create a copy of the given statically provided arguments
-    // and add them to our context in a way we can filter
-    argumentsCopy.fields().forEachRemaining(entry -> {
+    // Structure gives the other static arguments, its values win
+    final ObjectNode staticArguments = suppliedArguments.deepCopy();
+    staticArguments.setAll(generatedArguments);
+    // add the static arguments to our context in a way we can filter
+    staticArguments.fields().forEachRemaining(entry -> {
       ObjectNode node = mapper.createObjectNode().put("name", entry.getKey()).put("data", entry.getValue().asText());
       collect.accept(node, "static");
     });
@@ -732,6 +737,24 @@ public class InstrumentRunner {
   }
 
   /**
+   * Refuse each argument of the caller that the controller declares
+   * without canBeUserSupplied. Structure gives these values itself.
+   *
+   * @param controller The controller that declares the arguments.
+   * @param declared   The arguments object of the controller.
+   * @param supplied   The arguments of the caller.
+   */
+  static void refuseUnsuppliable(Controller controller, ObjectNode declared, ObjectNode supplied) {
+    declared.fields().forEachRemaining(entry -> {
+      if (supplied.has(entry.getKey()) && !entry.getValue().path("canBeUserSupplied").asBoolean()) {
+        throw new IllegalArgumentException(
+          "A caller cannot supply argument \"" + entry.getKey() + "\" of controller " + controller.getName() + "."
+        );
+      }
+    });
+  }
+
+  /**
    * Create a send string execution string using the given SendFile controller and context.
    *
    * @param sendStringInstrument An controller that implements the SendFile capability.
@@ -785,7 +808,7 @@ public class InstrumentRunner {
     // The shell of the interpreter runs the script, so quote for it
     final Quote quote = Quote.forShell(invokableInterpreter.getExtension().orElse(""));
     String script = applyTemplate(controllerTemplateContent.get(), context, quote);
-    arguments.put("script", script);
+    generatedArguments.put("script", script);
     context = validateAndSelectArguments(invokableInterpreter);
     script = applyTemplate(interpreterTemplateContent.get(), context);
 
@@ -796,8 +819,8 @@ public class InstrumentRunner {
     );
     copyStringToFile(script, scriptFilename);
 
-    arguments.put("payloadDirectory", payloadDirectory);
-    arguments.put("payloadFileName", scriptFilename);
+    generatedArguments.put("payloadDirectory", payloadDirectory);
+    generatedArguments.put("payloadFileName", scriptFilename);
   }
 
   /**
