@@ -11,10 +11,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
 import org.neo4j.driver.AuthTokens;
-import org.neo4j.driver.Config;
 import org.neo4j.driver.Driver;
 import org.neo4j.driver.GraphDatabase;
-import org.neo4j.driver.Logging;
 import org.neo4j.driver.Record;
 import org.neo4j.driver.Result;
 import org.neo4j.driver.Session;
@@ -53,11 +51,8 @@ public final class Graph {
   private Graph() {}
 
   public static void connect(String uri, String user, String password) {
-    // The driver logs only warnings and errors
-    final Config config = Config.builder()
-      .withLogging(Logging.javaUtilLogging(java.util.logging.Level.WARNING))
-      .build();
-    driver = GraphDatabase.driver(uri, AuthTokens.basic(user, password), config);
+    // The driver logs to System.Logger, at the log level of Structure
+    driver = GraphDatabase.driver(uri, AuthTokens.basic(user, password));
     try {
       driver.verifyConnectivity();
     } catch (Neo4jException e) {
