@@ -1,0 +1,24 @@
+{
+  "name": "IcmpServer",
+  "desc": "The part of an IP stack that answers ICMP messages, such as an echo request.",
+  "meta": {
+    "uuid": "002ab858-ac20-468a-8582-ae9014de0379",
+    "relations": {
+      "ISA": {
+        "direction": "outgoing",
+        "to": ["Service"]
+      },
+      "IMPLEMENTS": {
+        "direction": "outgoing",
+        "to": ["ICMP"]
+      }
+    }
+  },
+  "file": {
+    "dataSchema": {
+      "encoding": "text",
+      "format": "json",
+      "path": "../schema/icmpserver.schema.json"
+    }
+  }
+}

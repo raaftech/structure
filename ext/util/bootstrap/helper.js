@@ -271,6 +271,7 @@ class Helper {
       genInstance("SambaClient"),
       genInstance("Python2x"),
       genInstance("NmapClient"),
+      genInstance("IcmpServer"),
       genInstance("Structure"),
     ];
   }

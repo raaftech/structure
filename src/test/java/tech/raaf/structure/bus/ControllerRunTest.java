@@ -90,7 +90,15 @@ public class ControllerRunTest extends TypeSchemaTest {
       ),
       typeRepository.findOneByName("Ipv4Address")
     );
-    host.addComponent(iputils).addComponent(address);
+    // The IP stack of the host answers the ping
+    Component icmp = new Component(
+      json(
+        "{\"name\": \"IcmpServer\", \"desc\": \"The IP stack.\", " +
+          "\"longName\": \"IcmpServer\", \"shortName\": \"icmp\", \"ver\": \"unknown\"}"
+      ),
+      typeRepository.findOneByName("IcmpServer")
+    );
+    host.addComponent(iputils).addComponent(address).addComponent(icmp);
     structure.addMember(host);
     structure.save();
     Context.setSelfGroup(structure);

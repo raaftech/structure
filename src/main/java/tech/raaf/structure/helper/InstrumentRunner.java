@@ -396,6 +396,18 @@ public class InstrumentRunner {
             "\"."
         );
         // todo: log as result
+      } else if (!instrumentRepository.originHasServer(controller.getUuid(), origin.getUuid())) {
+        log.error(
+          "We can't run controller \"" +
+            controller.getName() +
+            "\", because nothing that has \"" +
+            origin.getName() +
+            "\" [" +
+            origin.getUuid() +
+            "] has a server for the protocol of \"" +
+            instrumentRepository.findInstrumentOwner(controller.getUuid()) +
+            "\"."
+        );
       } else {
         log.debug("Valid, non-local path");
         try {

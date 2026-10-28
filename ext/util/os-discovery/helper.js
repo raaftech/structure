@@ -53,6 +53,11 @@ class Helper {
     os = R.clone(pair[0]);
     graph.entities.push(R.clone(pair[1]));
 
+    //ICMP
+    pair = relate(this.icmpData());
+    os = R.clone(pair[0]);
+    graph.entities.push(R.clone(pair[1]));
+
     let tuple = graphLib.relateEntity(root, "MEMBER_OF", "incoming", os);
     graph.os = tuple[1];
     graph.root = tuple[0];
@@ -143,6 +148,19 @@ class Helper {
     });
 
     return ssh;
+  }
+
+  // The IP stack of an operating system answers ICMP
+  icmpData() {
+    let server = this.typeByName("IcmpServer");
+    let mkInstance = graphLib.createInstance(server);
+    return mkInstance({
+      name: server.name,
+      desc: server.desc,
+      ver: "",
+      shortName: server.name,
+      longName: server.name,
+    });
   }
 
   //Ipv4Address

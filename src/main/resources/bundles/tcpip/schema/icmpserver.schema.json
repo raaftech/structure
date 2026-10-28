@@ -1,0 +1,23 @@
+{
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "name": {
+      "$ref": "type.schema.json#/properties/name"
+    },
+    "ver": {
+      "$ref": "software.schema.json#/properties/ver"
+    },
+    "shortName": {
+      "$ref": "software.schema.json#/properties/shortName"
+    },
+    "desc": {
+      "$ref": "type.schema.json#/properties/desc"
+    },
+    "longName": {
+      "$ref": "software.schema.json#/properties/longName"
+    }
+  },
+  "required": ["name", "desc", "ver", "shortName", "longName"]
+}

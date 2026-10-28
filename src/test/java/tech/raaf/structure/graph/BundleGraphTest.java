@@ -260,6 +260,66 @@ public class BundleGraphTest extends TypeSchemaTest {
     assertEquals(Long.valueOf(timeAllocated), runner.getJobs().get(0).getRight().get());
   }
 
+  // Ping runs only on an address of something that has an ICMP server
+  @Test
+  public void pingNeedsIcmpServerWithAddress() {
+    Group agent = new Group(
+      mapper.createObjectNode().put("name", "Structure").put("desc", "The Structure host."),
+      Context.getTypeRepository().findOneByName("Group")
+    );
+    Component host = software("Linux");
+    host.addComponent(software("Iputils"));
+    agent.addMember(host);
+    agent.save();
+    Context.setSelfGroup(agent);
+    Context.setSelfIdentifier(agent.getUuid());
+    try {
+      for (boolean icmp : Arrays.asList(false, true)) {
+        Component address = new Component(
+          mapper.createObjectNode().put("name", "host").put("desc", "An address.").put("addr", "192.0.2.20").put("reachable", false),
+          Context.getTypeRepository().findOneByName("Ipv4Address")
+        );
+        Component os = software("Linux").addComponent(address);
+        if (icmp) {
+          os.addComponent(software("IcmpServer"));
+        }
+        os.save();
+        Controller ping = (Controller) Context.getInstrumentRepository().findOneByName("IputilsPingCheckable");
+        InstrumentRunner runner = new InstrumentRunner(address, ping, mapper.createObjectNode(), "ping");
+        assertEquals("Jobs with an IcmpServer: " + icmp, icmp ? 1 : 0, runner.getJobs().size());
+      }
+    } finally {
+      Context.setSelfGroup(null);
+      Context.setSelfIdentifier(null);
+    }
+  }
+
+  private static Component software(String type) {
+    return new Component(
+      mapper
+        .createObjectNode()
+        .put("name", type)
+        .put("desc", "A " + type + ".")
+        .put("shortName", type.toLowerCase())
+        .put("longName", type)
+        .put("ver", "unknown"),
+      Context.getTypeRepository().findOneByName(type)
+    );
+  }
+
+  // Ping, an ICMP client, finds its server through the ICMP protocol
+  @Test
+  public void pingAndIcmpServerImplementIcmp() {
+    List<Object> protocols = Graph.query(
+      "MATCH (:Type {name: 'Iputils'})-[:ISA*0..]->()-[:IMPLEMENTS]->(protocol)" +
+        "<-[:IMPLEMENTS]-()<-[:ISA*0..]-(:Type {name: 'IcmpServer'}) RETURN DISTINCT protocol.name AS name"
+    )
+      .stream()
+      .map(row -> row.get("name"))
+      .collect(Collectors.toList());
+    assertEquals(Collections.singletonList("ICMP"), protocols);
+  }
+
   // Detect gets all profiles of a type tree, the deepest types last
   @Test
   public void profilesOfTypeTreeAreSortedByDepth() {

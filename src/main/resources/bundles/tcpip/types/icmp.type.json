@@ -1,0 +1,20 @@
+{
+  "name": "ICMP",
+  "desc": "The Internet Control Message Protocol.",
+  "meta": {
+    "uuid": "66624b1f-84dd-4c5d-9b80-f4c5c0e405f4",
+    "relations": {
+      "ISA": {
+        "direction": "outgoing",
+        "to": ["Protocol"]
+      }
+    }
+  },
+  "file": {
+    "dataSchema": {
+      "encoding": "text",
+      "format": "json",
+      "path": "../schema/icmp.schema.json"
+    }
+  }
+}

@@ -98,16 +98,33 @@ public class InstrumentRepository extends GenericRepository<Instrument> {
     Graph.query("MATCH (n:Instrument) DETACH DELETE n");
   }
 
-  // This query checks if we can execute something about a patient, on the structure node.
+  // This query checks if we can execute something about an origin, on the structure node.
   // A good example would be a ping check. Structure needs a particular tool (ping), that can do something
-  // (ICMP echo request) which is about something that doesn't belong to its tree (the IP address of the patient).
-  public Instrument validateNonLocalInstrument(String instrumentUuid, String structureUuid, String patientUuid) {
+  // (ICMP echo request) which is about something that doesn't belong to its tree (the IP address of the origin).
+  public Instrument validateNonLocalInstrument(String instrumentUuid, String structureUuid, String originUuid) {
     return one(
       "MATCH (structure:Group {uuid: $structureUuid})<-[:MEMBER_OF]-()-[*..]->(:Instance)" +
         "-[:INSTANCE_OF|ISA*..]->()<-[:PROVIDED_BY]-(n:Node {uuid: $instrumentUuid}) " +
-        "MATCH (n)-[:APPLIES_TO]->(patientType)<-[:INSTANCE_OF|ISA*..]-(patient:Node {uuid: $patientUuid}) " +
+        "MATCH (n)-[:APPLIES_TO]->(originType)<-[:INSTANCE_OF|ISA*..]-(origin:Node {uuid: $originUuid}) " +
         "RETURN n LIMIT 1",
-      ImmutableMap.of("instrumentUuid", instrumentUuid, "structureUuid", structureUuid, "patientUuid", patientUuid)
+      ImmutableMap.of("instrumentUuid", instrumentUuid, "structureUuid", structureUuid, "originUuid", originUuid)
+    );
+  }
+
+  // If the client of an instrument implements a protocol, the origin needs a server for it.
+  // The server is part of what has the origin, for example the IcmpServer of an operating system
+  // that has the IP address.
+  public boolean originHasServer(String instrumentUuid, String originUuid) {
+    return (
+      one(
+        "MATCH (n:Node {uuid: $instrumentUuid})-[:PROVIDED_BY]->(client), (origin:Node {uuid: $originUuid}) " +
+          "WHERE NOT EXISTS { (client)-[:ISA*0..]->()-[:IMPLEMENTS]->() } " +
+          "OR EXISTS { (client)-[:ISA*0..]->()-[:IMPLEMENTS]->(protocol)<-[:IMPLEMENTS]-()<-[:ISA*0..]-()" +
+          "<-[:INSTANCE_OF]-(:Instance)<-[:HAS]-()-[:HAS*0..]->(origin) } " +
+          "RETURN n LIMIT 1",
+        ImmutableMap.of("instrumentUuid", instrumentUuid, "originUuid", originUuid)
+      ) !=
+      null
     );
   }
 

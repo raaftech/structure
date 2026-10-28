@@ -7,6 +7,10 @@
       "ISA": {
         "direction": "outgoing",
         "to": ["Client"]
+      },
+      "IMPLEMENTS": {
+        "direction": "outgoing",
+        "to": ["ICMP"]
       }
     }
   },
