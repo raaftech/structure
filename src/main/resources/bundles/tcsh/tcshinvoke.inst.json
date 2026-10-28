@@ -1,0 +1,52 @@
+{
+  "name": "TcshInvoke",
+  "desc": "Run a script with tcsh.",
+  "meta": {
+    "uuid": "060f4ad8-f8f2-477e-9cc0-bcab333a0568",
+    "relations": {
+      "PROVIDED_BY": {
+        "direction": "outgoing",
+        "to": ["Tcsh"]
+      },
+      "APPLIES_TO": {
+        "direction": "outgoing",
+        "to": ["Tcsh"]
+      },
+      "GIVES_CAPABILITY": {
+        "direction": "outgoing",
+        "to": ["Invoke"]
+      },
+      "INSTANCE_OF": {
+        "direction": "outgoing",
+        "to": ["Controller"]
+      }
+    }
+  },
+  "data": {
+    "instrumentType": "controller",
+    "subjectIsLocal": true,
+    "arguments": {
+      "script": {
+        "value": {
+          "from": "static",
+          "type": "string",
+          "strategy": "mustBeOne"
+        },
+        "canBeUserSupplied": false,
+        "isOptional": false
+      }
+    }
+  },
+  "file": {
+    "dataSchema": {
+      "encoding": "text",
+      "format": "json",
+      "path": "../core/schema/controller.schema.json"
+    },
+    "templateFile": {
+      "encoding": "text",
+      "format": "hbs",
+      "path": "tcshinvoke.hbs.csh"
+    }
+  }
+}
