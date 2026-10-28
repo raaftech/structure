@@ -14,7 +14,6 @@ import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
-import joptsimple.internal.Strings;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
@@ -243,7 +242,7 @@ public class Profile extends Instance {
       Map<String, String> entriesPerType = DIR_FILE_PREFIXES.stream()
         .map(prfx -> prfx + postfix)
         .filter(filesOrDirs::containsKey)
-        .collect(Collectors.toMap(type -> type, type -> Strings.join(filesOrDirs.get(type), ",")));
+        .collect(Collectors.toMap(type -> type, type -> String.join(",", filesOrDirs.get(type))));
       entriesPerType
         .entrySet()
         .forEach(entry -> writeKeyValue.accept(jsonKeyToSourceKey.apply(entry.getKey(), postfix), entry.getValue()));
@@ -252,12 +251,12 @@ public class Profile extends Instance {
     // write packages
     final Optional<List<String>> maybePackages = getPackageNames();
     if (maybePackages.isPresent()) {
-      writeKeyValue.accept("PACKAGES", Strings.join(maybePackages.get(), ","));
+      writeKeyValue.accept("PACKAGES", String.join(",", maybePackages.get()));
     }
     // write services
     final Optional<List<String>> maybeServices = getServiceNames();
     if (maybeServices.isPresent()) {
-      writeKeyValue.accept("SERVICES", Strings.join(maybeServices.get(), ","));
+      writeKeyValue.accept("SERVICES", String.join(",", maybeServices.get()));
     }
     // write ports
     final Optional<List<Integer>> maybePorts = getPorts();

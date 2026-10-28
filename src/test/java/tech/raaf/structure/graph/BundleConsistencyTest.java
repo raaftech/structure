@@ -6,10 +6,8 @@ import static org.junit.Assert.assertTrue;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.fge.jsonschema.SchemaVersion;
-import com.github.fge.jsonschema.core.report.ProcessingReport;
-import com.github.fge.jsonschema.main.JsonSchemaFactory;
-import com.github.fge.jsonschema.processors.syntax.SyntaxValidator;
+import com.networknt.schema.Error;
+import com.networknt.schema.SpecificationVersion;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
@@ -33,6 +31,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import tech.raaf.structure.base.Configuration;
 import tech.raaf.structure.base.Configuration.Setting;
+import tech.raaf.structure.helper.JsonHelper;
 
 public class BundleConsistencyTest {
 
@@ -239,7 +238,7 @@ public class BundleConsistencyTest {
 
   @Test
   public void schemasUseDraftFour() {
-    String draft4 = SchemaVersion.DRAFTV4.getLocation().toString();
+    String draft4 = SpecificationVersion.DRAFT_4.getDialectId();
     documents.forEach((path, schema) -> {
       if (path.toString().endsWith(".schema.json")) {
         String value = schema.path("$schema").asText();
@@ -251,11 +250,10 @@ public class BundleConsistencyTest {
 
   @Test
   public void typeSchemasHaveValidSyntaxAndReferences() {
-    SyntaxValidator validator = JsonSchemaFactory.byDefault().getSyntaxValidator();
     for (BundleEntity type : types.values()) {
       JsonNode schema = type.schema();
-      ProcessingReport report = validator.validateSchema(schema);
-      check(report.isSuccess(), type + ": invalid draft-04 schema: " + report);
+      List<Error> errors = JsonHelper.schemaErrors(schema);
+      check(errors.isEmpty(), type + ": invalid draft-04 schema: " + errors);
       walk(schema, "", (pointer, node) -> {
         if (node.has("$ref")) {
           checkReference(type, schema, pointer, node.path("$ref").asText());

@@ -5,7 +5,6 @@ import static tech.raaf.structure.helper.JsonHelper.mapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.github.fge.jsonschema.core.exceptions.ProcessingException;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
@@ -22,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tech.raaf.structure.base.Configuration;
 import tech.raaf.structure.base.Context;
+import tech.raaf.structure.exceptions.JsonValidationException;
 import tech.raaf.structure.graph.repositories.TypeRepository;
 import tech.raaf.structure.helper.JsonSchemaBuilder;
 import tech.raaf.structure.helper.Triple;
@@ -396,7 +396,7 @@ public class Type extends Node {
         .get("content")
         .asText();
       schema = new JsonSchemaBuilder((ObjectNode) mapper.readTree(dataSchemaContent));
-    } catch (ProcessingException | IOException e) {
+    } catch (JsonValidationException | IOException e) {
       if (Configuration.isTraceModeOn()) {
         e.printStackTrace();
       }

@@ -4,10 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.github.fge.jsonschema.core.exceptions.ProcessingException;
-import com.github.fge.jsonschema.core.report.ProcessingReport;
-import com.github.fge.jsonschema.main.JsonSchema;
-import com.github.fge.jsonschema.main.JsonSchemaFactory;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.ThreadingModel;
@@ -164,21 +160,7 @@ public abstract class GenericActor extends AbstractVerticle {
 
   // The validator.
   public JsonNode validate(URI schemaDoc, JsonNode jsonDoc) {
-    try {
-      final JsonSchemaFactory factory = JsonSchemaFactory.byDefault();
-      final JsonSchema schema = factory.getJsonSchema(schemaDoc.toString());
-      ProcessingReport report = schema.validate(jsonDoc);
-      if (!report.isSuccess()) {
-        log.error(report.toString());
-      }
-    } catch (ProcessingException e) {
-      log.error(e.getMessage());
-
-      if (Configuration.isTraceModeOn()) {
-        e.printStackTrace();
-      }
-    }
-
+    JsonHelper.validateToSchema(schemaDoc, jsonDoc);
     return jsonDoc;
   }
 
