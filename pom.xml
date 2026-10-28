@@ -155,6 +155,19 @@
       <version>${vertx.version}</version>
       <scope>compile</scope>
     </dependency>
+    <!-- Annotations on the Vert.x classes; javac warns if they are missing -->
+    <dependency>
+      <groupId>io.vertx</groupId>
+      <artifactId>vertx-codegen-api</artifactId>
+      <version>${vertx.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.vertx</groupId>
+      <artifactId>vertx-codegen-json</artifactId>
+      <version>${vertx.version}</version>
+      <scope>provided</scope>
+    </dependency>
     <dependency>
       <groupId>tools.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
