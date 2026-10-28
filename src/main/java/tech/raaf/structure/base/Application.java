@@ -10,10 +10,10 @@ import io.vertx.core.VertxOptions;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.HttpServerOptions;
 import io.vertx.core.net.JksOptions;
+import io.vertx.ext.bridge.PermittedOptions;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.StaticHandler;
-import io.vertx.ext.web.handler.sockjs.BridgeOptions;
-import io.vertx.ext.web.handler.sockjs.PermittedOptions;
+import io.vertx.ext.web.handler.sockjs.SockJSBridgeOptions;
 import io.vertx.ext.web.handler.sockjs.SockJSHandler;
 import java.io.IOException;
 import java.net.URI;
@@ -164,7 +164,7 @@ public class Application {
     Context.setVertx(vertx);
 
     // Enable bridging on /eventbus, and add some in- and outbound permissions.
-    BridgeOptions bridgeOptions = new BridgeOptions()
+    SockJSBridgeOptions bridgeOptions = new SockJSBridgeOptions()
       .addInboundPermitted(new PermittedOptions().setAddressRegex("tech\\.raaf\\.structure\\..*"))
       .addOutboundPermitted(new PermittedOptions().setAddressRegex("tech\\.raaf\\.structure\\..*"));
 

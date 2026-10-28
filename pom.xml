@@ -92,7 +92,7 @@
     <test-classes.dir>target/test-classes</test-classes.dir>
 
     <!-- Core component versions -->
-    <vertx.version>3.4.1</vertx.version>
+    <vertx.version>3.9.16</vertx.version>
     <neo4j-java-driver.version>4.4.27</neo4j-java-driver.version>
     <handlebars.version>2.2.3</handlebars.version>
 
