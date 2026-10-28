@@ -8,14 +8,6 @@
         "direction": "outgoing",
         "to": ["Type"]
       }
-    },
-    "constraints": {
-      "NEXT_RESULT": [
-        {
-          "cardinality": "OPTIONAL_TO_ONE",
-          "to": "Result"
-        }
-      ]
     }
   },
   "file": {

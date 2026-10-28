@@ -24,7 +24,8 @@
             "type": "object",
             "additionalProperties": false,
             "properties": {
-              "instrument": { "type": "string" },
+              "instrumentName": { "type": "string" },
+              "instrumentUuid": { "type": "string" },
               "originName": { "type": "string" },
               "originUuid": { "type": "string" },
               "capability": { "type": "string" },
@@ -43,7 +44,7 @@
                 "additionalProperties": false
               }
             },
-            "required": ["instrument", "originName", "originUuid", "capability"]
+            "required": ["instrumentName", "instrumentUuid", "originName", "originUuid", "capability"]
           }
         },
         "required": ["command"]

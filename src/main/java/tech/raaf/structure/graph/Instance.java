@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import java.io.IOException;
 import java.util.Collections;
@@ -128,30 +127,6 @@ public abstract class Instance extends Node {
    */
   public boolean isOfType(Type type) {
     return type != null && isOfType(type.getName());
-  }
-
-  // Get the newest result of this Instance
-  public Result getStartOfResultChain() {
-    return relatedOne("-[:RESULTS]->(b:Result)");
-  }
-
-  /**
-   * Make a stored result the newest result of this instance. The
-   * previous newest result gets a NEXT_RESULT to the new one.
-   * @param result The result, which must be in the graph.
-   * @return This instance.
-   */
-  public Instance addResult(Result result) {
-    Graph.query(
-      "MATCH (i:Node {uuid: $instance}), (new:Result {uuid: $result}) " +
-        "OPTIONAL MATCH (i)-[old:RESULTS]->(head:Result) " +
-        "DELETE old " +
-        "MERGE (i)-[:RESULTS]->(new) " +
-        "WITH head, new WHERE head IS NOT NULL " +
-        "MERGE (head)-[:NEXT_RESULT]->(new)",
-      ImmutableMap.of("instance", getUuid(), "result", result.getUuid())
-    );
-    return this;
   }
 
   // An entity with the properties and relations of this instance

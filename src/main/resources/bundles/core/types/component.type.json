@@ -16,9 +16,9 @@
           "to": "Component"
         }
       ],
-      "RESULTS": [
+      "HAS_RESULT": [
         {
-          "cardinality": "OPTIONAL_TO_ONE",
+          "cardinality": "OPTIONAL_TO_MANY",
           "to": "Result"
         }
       ],

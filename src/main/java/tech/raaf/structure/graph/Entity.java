@@ -110,6 +110,8 @@ public class Entity {
     private String user;
     private Result.State state;
     private String error;
+    private String origin;
+    private String controller;
 
     public ResultBuilder() {}
 
@@ -154,6 +156,18 @@ public class Entity {
       return this;
     }
 
+    // The uuid of the instance that the task ran on
+    public ResultBuilder origin(String origin) {
+      this.origin = origin;
+      return this;
+    }
+
+    // The uuid of the controller that ran the task
+    public ResultBuilder controller(String controller) {
+      this.controller = controller;
+      return this;
+    }
+
     public Result buildAndStore() throws JsonProcessingException {
       if (process == null || taskId == null) {
         log.error("Error while building Result");
@@ -195,7 +209,19 @@ public class Entity {
       entity.addRelations("INSTANCE_OF", Direction.OUTGOING, ImmutableSet.of(UUID.fromString(resultType.getUuid())));
       entity.setData(data);
 
-      Graph.transaction(entity::toGraph);
+      final Map<String, Object> link = new HashMap<>();
+      link.put("result", entity.getUuid());
+      link.put("origin", origin);
+      link.put("controller", controller);
+      Graph.transaction(() -> {
+        entity.toGraph();
+        // A MATCH that finds nothing stops only the writes after it
+        Graph.query(
+          "MATCH (r:Result {uuid: $result}), (o:Node {uuid: $origin}) MERGE (o)-[:HAS_RESULT]->(r) " +
+            "WITH r MATCH (c:Controller {uuid: $controller}) MERGE (c)-[:PRODUCED]->(r)",
+          link
+        );
+      });
 
       return Context.getResultRepository().findByUuid(entity.getUuid());
     }

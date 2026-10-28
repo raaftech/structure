@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -59,41 +58,18 @@ public class TaskManagerTest extends TypeSchemaTest {
     deployed = true;
   }
 
-  // The command does not exist, so no process runs and each job errs
+  // The command does not exist, so no process runs and the job errs
   @Test
-  public void resultChain() throws Exception {
+  public void erredJob() throws Exception {
     String origin = origin();
+    String task = UUID.randomUUID().toString();
+    queue(task, origin, NO_SUCH_COMMAND, mapper.createObjectNode());
+    awaitResult(origin, task);
 
-    // Run the tasks one by one, so that the order is known
-    List<String> tasks = new ArrayList<>();
-    for (int i = 0; i < 3; i++) {
-      String task = UUID.randomUUID().toString();
-      tasks.add(task);
-      queue(task, origin, NO_SUCH_COMMAND, mapper.createObjectNode());
-      awaitResult(origin, task);
-    }
-
-    assertEquals(0, count("MATCH (n:Node {uuid: $uuid})<-[r:RESULTS]-() RETURN count(r) AS n", origin));
-    String head = single("MATCH (n:Node {uuid: $uuid})-[:RESULTS]->(r) RETURN r.uuid AS n", origin);
-    assertEquals(0, count("MATCH (n:Node {uuid: $uuid})-[r:NEXT_RESULT]->() RETURN count(r) AS n", head));
-
-    // Walk from the newest result to the oldest one
-    LinkedList<String> chain = new LinkedList<>();
-    for (String result = head; result != null; result = previous(result)) {
-      Map<String, Object> r = Graph.query(
-        "MATCH (r:Node {uuid: $uuid}) RETURN 'Result' IN labels(r) AS result, " +
-          "properties(r) AS properties, exists { (r)<-[:RESULTS]-() } AS head",
-        ImmutableMap.of("uuid", result)
-      ).get(0);
-      @SuppressWarnings("unchecked")
-      Map<String, Object> properties = (Map<String, Object>) r.get("properties");
-      assertTrue((Boolean) r.get("result"));
-      assertEquals(NO_SUCH_COMMAND, properties.get("data-process"));
-      assertTrue(properties.containsKey("data-error"));
-      assertEquals(result.equals(head), r.get("head"));
-      chain.addFirst((String) properties.get("data-task"));
-    }
-    assertEquals(tasks, chain);
+    Map<String, Object> result = properties(origin, task);
+    assertEquals(NO_SUCH_COMMAND, result.get("data-process"));
+    assertTrue(result.containsKey("data-error"));
+    assertFalse(result.containsKey("data-returnCode"));
   }
 
   // The JVM of the test runs, it exists on each machine that runs tests
@@ -114,15 +90,7 @@ public class TaskManagerTest extends TypeSchemaTest {
     );
     awaitResult(origin, task);
 
-    String uuid = single("MATCH (n:Node {uuid: $uuid})-[:RESULTS]->(r) RETURN r.uuid AS n", origin);
-    assertEquals(0, count("MATCH (n:Node {uuid: $uuid})-[r:NEXT_RESULT]-() RETURN count(r) AS n", uuid));
-    @SuppressWarnings("unchecked")
-    Map<String, Object> result = (Map<String, Object>) Graph.query(
-      "MATCH (r:Node {uuid: $uuid}) RETURN properties(r) AS properties",
-      ImmutableMap.of("uuid", uuid)
-    )
-      .get(0)
-      .get("properties");
+    Map<String, Object> result = properties(origin, task);
     assertEquals(command, result.get("data-process"));
     assertEquals(0L, result.get("data-returnCode"));
     assertEquals("", result.get("data-stdout"));
@@ -197,7 +165,7 @@ public class TaskManagerTest extends TypeSchemaTest {
       tasks.put(task, controller.getUuid());
       ObjectNode metadata = mapper
         .createObjectNode()
-        .put("instrument", controller.getUuid())
+        .put("instrumentUuid", controller.getUuid())
         .put("capability", controller.getCapability().getName());
       queue(task, origin, NO_SUCH_COMMAND, metadata);
       awaitResult(origin, task);
@@ -242,7 +210,8 @@ public class TaskManagerTest extends TypeSchemaTest {
       .putObject("metadata")
       .put("originName", "task-origin")
       .put("originUuid", origin)
-      .put("instrument", "DummyController")
+      .put("instrumentName", "DummyController")
+      .put("instrumentUuid", UUID.randomUUID().toString())
       .put("capability", "DummyCapability")
       .setAll(metadata);
     ObjectNode message = mapper.createObjectNode().put("msgh", "queueTask");
@@ -263,11 +232,10 @@ public class TaskManagerTest extends TypeSchemaTest {
 
   // The TaskManager timer writes the result, so poll the graph
   private static void awaitResult(String origin, String task) throws Exception {
+    String cypher = "MATCH (:Node {uuid: $uuid})-[:HAS_RESULT]->(r:Result {`data-task`: $task}) RETURN count(r) AS n";
     long deadline = System.currentTimeMillis() + 10000;
     while (System.currentTimeMillis() < deadline) {
-      if (
-        count("MATCH (n:Node {uuid: $uuid})-->(r:Result {`data-task`: $task}) RETURN count(r) AS n", origin, task) > 0
-      ) {
+      if (count(cypher, origin, task) > 0) {
         return;
       }
       Thread.sleep(50);
@@ -285,20 +253,14 @@ public class TaskManagerTest extends TypeSchemaTest {
     return ((Number) Graph.query(cypher, params).get(0).get("n")).longValue();
   }
 
-  // The value of the one row that the query returns
-  private static String single(String cypher, String uuid) {
-    List<Map<String, Object>> rows = Graph.query(cypher, ImmutableMap.of("uuid", uuid));
-    assertEquals(cypher + " for " + uuid, 1, rows.size());
-    return (String) rows.get(0).get("n");
-  }
-
-  // The result before this one in the chain, or null
-  private static String previous(String result) {
+  // The properties of the one result of a task of the origin
+  @SuppressWarnings("unchecked")
+  private static Map<String, Object> properties(String origin, String task) {
     List<Map<String, Object>> rows = Graph.query(
-      "MATCH (r:Node {uuid: $uuid})<-[:NEXT_RESULT]-(p) " + "RETURN p.uuid AS n",
-      ImmutableMap.of("uuid", result)
+      "MATCH (:Node {uuid: $uuid})-[:HAS_RESULT]->(r:Result {`data-task`: $task}) RETURN properties(r) AS properties",
+      ImmutableMap.of("uuid", origin, "task", task)
     );
-    assertTrue(rows.size() <= 1);
-    return rows.isEmpty() ? null : (String) rows.get(0).get("n");
+    assertEquals("Results for task " + task, 1, rows.size());
+    return (Map<String, Object>) rows.get(0).get("properties");
   }
 }

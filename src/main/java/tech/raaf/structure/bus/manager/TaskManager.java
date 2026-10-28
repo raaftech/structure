@@ -314,9 +314,10 @@ public class TaskManager extends GenericActor {
         log.warn("Origin \"{}\" of task {} not found, result not stored", originUuid, task.id);
       } else {
         try {
-          Result result = resultBuilder.buildAndStore();
-          // Makes the result the head of the result chain of the origin, in one statement
-          result.add(UUID.fromString(originUuid));
+          resultBuilder
+            .origin(originUuid)
+            .controller(job.metadata.path("instrumentUuid").textValue())
+            .buildAndStore();
           log.info(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(task.toJson()));
         } catch (JsonProcessingException e) {
           if (Configuration.isTraceModeOn()) {

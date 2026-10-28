@@ -50,20 +50,8 @@ public class InstanceActor extends NodeActor<Instance> {
         Component component = (Component) getNode();
 
         ArrayNode allResults = result.putArray("data");
-        // A component without results has no result chain
-        if (component != null && component.getStartOfResultChain() != null) {
-          if (args.get("task") == null) {
-            component
-              .getStartOfResultChain()
-              .getThisAndNewer()
-              .stream()
-              .forEachOrdered(r -> allResults.add(r.toJson()));
-          } else {
-            component
-              .getResults(args.get("task").asText())
-              .stream()
-              .forEachOrdered(r -> allResults.add(r.toJson()));
-          }
+        if (component != null) {
+          component.getResults(args.path("task").textValue()).forEach(r -> allResults.add(r.toJson()));
         }
 
         return response(request, result);

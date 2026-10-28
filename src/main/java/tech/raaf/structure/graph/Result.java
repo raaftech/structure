@@ -1,16 +1,10 @@
 package tech.raaf.structure.graph;
 
-import com.google.common.collect.ImmutableMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tech.raaf.structure.base.Context;
-import tech.raaf.structure.exceptions.IllegalEntityType;
-import tech.raaf.structure.graph.repositories.InstanceRepository;
 import tech.raaf.structure.graph.repositories.ResultRepository;
 
 public class Result extends Instance {
@@ -32,8 +26,6 @@ public class Result extends Instance {
   public static final ResultRepository resultRepository = Context.getResultRepository();
 
   static final Logger log = LoggerFactory.getLogger(Result.class);
-
-  private static final InstanceRepository instanceRepository = Context.getInstanceRepository();
 
   /**
    * A state is a simple object that allows us to express the "goodness" of a return value.
@@ -102,10 +94,6 @@ public class Result extends Instance {
     return (String) data.get(TASKID);
   }
 
-  public Result getNext() {
-    return relatedOne("-[:NEXT_RESULT]->(b:Result)");
-  }
-
   public Optional<String> getUser() {
     return data.containsKey(USER) ? Optional.of((String) data.get(USER)) : Optional.empty();
   }
@@ -124,82 +112,5 @@ public class Result extends Instance {
       maybeState = Optional.empty();
     }
     return maybeState;
-  }
-
-  public Result setNext(Result next) {
-    if (getNext() == null) {
-      Graph.query(
-        "MATCH (a:Result {uuid: $from}), (b:Result {uuid: $to}) MERGE (a)-[:NEXT_RESULT]->(b)",
-        ImmutableMap.of("from", getUuid(), "to", next.getUuid())
-      );
-    } else {
-      throw new IllegalStateException("Can't set next result on \"" + getUuid() + "\", it already has one.");
-    }
-    return this;
-  }
-
-  public Result getPrevious() {
-    return relatedOne("<-[:NEXT_RESULT]-(b:Result)");
-  }
-
-  public List<Result> getThisAndNewer() {
-    LinkedList<Result> results = new LinkedList<>();
-
-    Result head = this;
-    do {
-      results.add(head);
-      head = head.getNext();
-    } while (head != null);
-
-    return results;
-  }
-
-  public List<Result> getThisAndOlder() {
-    LinkedList<Result> results = new LinkedList<>();
-
-    Result head = this;
-    do {
-      results.add(head);
-      head = head.getPrevious();
-    } while (head != null);
-
-    return results;
-  }
-
-  /**
-   * Add this result to an instance.
-   * @param instance The instance this should be added to.
-   * @return The instance this result was added to. Make sure that that instance
-   * is saved, otherwise the relationship between the instance and this result won't
-   * persist.
-   */
-  public Instance add(Instance instance) {
-    instance.addResult(this);
-    return instance;
-  }
-
-  /**
-   * Add this result to an instance.
-   * @param instanceUuid The UUID of the instance this should be added to.
-   * @return The instance this result was added to. Make sure that that instance
-   * is saved, otherwise the relationship between the instance and this result won't
-   * persist.
-   */
-  public Instance add(UUID instanceUuid) {
-    Instance foundInstance = instanceRepository.findByUuid(instanceUuid.toString());
-    Validate.notNull(foundInstance);
-    return add(foundInstance);
-  }
-
-  /**
-   * We need to override this because our model views Results as instances as well,
-   * however, adding a result to a result doesn't make sense, so we throw an Exception
-   * when that happens.
-   * @param result A result.
-   * @return Nothing, this always throws an {@link IllegalEntityType}.
-   */
-  @Override
-  public Instance addResult(Result result) {
-    throw new IllegalEntityType("Cannot add a result to a result.");
   }
 }

@@ -865,7 +865,8 @@ public class InstrumentRunner {
         .putObject("metadata")
         .put("originName", origin.getName())
         .put("originUuid", origin.getUuid())
-        .put("instrument", controller.getName())
+        .put("instrumentName", controller.getName())
+        .put("instrumentUuid", controller.getUuid())
         .put("capability", instrumentRepository.getInstrumentCapability(controller.getUuid()).getName());
       Optional<ObjectNode> maybeStateMap = controller.getStateMapAsJson();
       if (maybeStateMap.isPresent()) {

@@ -103,7 +103,8 @@ public class ControllerRunTest extends TypeSchemaTest {
     assertFalse(reply.toString(), reply.path("result").has("error"));
     String task = reply.path("result").path("data").asText();
 
-    Map<String, Object> result = awaitHead(address.getUuid(), task);
+    Map<String, Object> result = awaitResult(address.getUuid(), task);
+    assertEquals(PING, result.get("controller"));
     assertTrue(result.toString(), ((String) result.get("data-process")).startsWith("ping "));
     assertTrue(result.toString(), ((String) result.get("data-process")).endsWith(" 127.0.0.1"));
     assertEquals(task, result.get("data-task"));
@@ -133,16 +134,17 @@ public class ControllerRunTest extends TypeSchemaTest {
 
   // The TaskManager timer writes the result, so poll the graph
   @SuppressWarnings("unchecked")
-  private static Map<String, Object> awaitHead(String origin, String task) throws Exception {
+  private static Map<String, Object> awaitResult(String origin, String task) throws Exception {
     long deadline = System.currentTimeMillis() + 30000;
     while (System.currentTimeMillis() < deadline) {
       List<Map<String, Object>> rows = Graph.query(
-        "MATCH (:Node {uuid: $uuid})-[:RESULTS]->(r:Result) " +
-          "WHERE r.`data-task` = $task RETURN properties(r) AS properties",
+        "MATCH (:Node {uuid: $uuid})-[:HAS_RESULT]->(r:Result {`data-task`: $task}) " +
+          "OPTIONAL MATCH (c:Controller)-[:PRODUCED]->(r) " +
+          "RETURN r {.*, controller: c.uuid} AS result",
         ImmutableMap.of("uuid", origin, "task", task)
       );
       if (!rows.isEmpty()) {
-        return (Map<String, Object>) rows.get(0).get("properties");
+        return (Map<String, Object>) rows.get(0).get("result");
       }
       Thread.sleep(100);
     }

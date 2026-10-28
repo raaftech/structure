@@ -8,7 +8,6 @@ import static org.junit.Assert.assertNotNull;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.net.URI;
-import java.util.List;
 import java.util.UUID;
 import java.util.stream.IntStream;
 import mockit.Expectations;
@@ -19,7 +18,6 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import tech.raaf.structure.GraphTest;
 import tech.raaf.structure.base.Context;
-import tech.raaf.structure.exceptions.IllegalEntityType;
 import tech.raaf.structure.graph.repositories.ResultRepository;
 import tech.raaf.structure.helper.JsonHelper;
 
@@ -70,14 +68,6 @@ public class ResultTest extends GraphTest {
       "                    \"b1bc963a-19cc-4518-aecb-a35d028c49e3\"" +
       "                ]   " +
       "            }   " +
-      "        },  " +
-      "        \"constraints\": {" +
-      "            \"NEXT_RESULT\": [" +
-      "                {   " +
-      "                    \"cardinality\": \"OPTIONAL_TO_ONE\"," +
-      "                    \"to\": \"f3498c02-58c6-486b-87c6-9d54607fdb12\"" +
-      "                }   " +
-      "            ]   " +
       "        }   " +
       "    },  " +
       "    \"file\": {" +
@@ -125,132 +115,6 @@ public class ResultTest extends GraphTest {
   }
 
   @Test
-  public void getThisAndNewer() throws Exception {
-    Result r1 = new Entity.ResultBuilder()
-      .process("1")
-      .taskId(UUID.randomUUID().toString())
-      .stdout("1")
-      .stderr("1")
-      .returnCode(1)
-      .buildAndStore();
-    Result r2 = new Entity.ResultBuilder()
-      .process("2")
-      .taskId(UUID.randomUUID().toString())
-      .stdout("2")
-      .stderr("2")
-      .returnCode(2)
-      .buildAndStore();
-    Result r3 = new Entity.ResultBuilder()
-      .process("3")
-      .taskId(UUID.randomUUID().toString())
-      .stdout("3")
-      .stderr("3")
-      .returnCode(3)
-      .buildAndStore();
-    Result r4 = new Entity.ResultBuilder()
-      .process("4")
-      .taskId(UUID.randomUUID().toString())
-      .stdout("4")
-      .stderr("4")
-      .returnCode(4)
-      .buildAndStore();
-
-    r1.setNext(r2);
-    r2.setNext(r3);
-    r3.setNext(r4);
-
-    // r1AndNewer should contain r1 -> r2 -> r3 -> r4
-    List<Result> r1AndNewer = r1.getThisAndNewer();
-    IntStream.range(1, 5).forEach(i -> {
-      assertEquals(i, r1AndNewer.get(i - 1).getReturnCode());
-    });
-
-    // next LinkedList should just contain r4
-    assertEquals(4, r4.getThisAndNewer().get(0).getReturnCode());
-  }
-
-  @Test
-  public void getThisAndOlder() throws Exception {
-    Result r1 = new Entity.ResultBuilder()
-      .process("1")
-      .taskId(UUID.randomUUID().toString())
-      .stdout("1")
-      .stderr("1")
-      .returnCode(1)
-      .buildAndStore();
-    Result r2 = new Entity.ResultBuilder()
-      .process("2")
-      .taskId(UUID.randomUUID().toString())
-      .stdout("2")
-      .stderr("2")
-      .returnCode(2)
-      .buildAndStore();
-    Result r3 = new Entity.ResultBuilder()
-      .process("3")
-      .taskId(UUID.randomUUID().toString())
-      .stdout("3")
-      .stderr("3")
-      .returnCode(3)
-      .buildAndStore();
-    Result r4 = new Entity.ResultBuilder()
-      .process("4")
-      .taskId(UUID.randomUUID().toString())
-      .stdout("4")
-      .stderr("4")
-      .returnCode(4)
-      .buildAndStore();
-
-    r1.setNext(r2);
-    r2.setNext(r3);
-    r3.setNext(r4);
-
-    // next LinkedList should contain r1
-    assertEquals(1, r1.getThisAndNewer().get(0).getReturnCode());
-
-    // r4AndOlder should contain r4, r3, r2, r1
-    List<Result> r4AndOlder = r4.getThisAndOlder();
-    IntStream.range(1, 5).forEach(i -> {
-      assertEquals(5 - i, r4AndOlder.get(i - 1).getReturnCode());
-    });
-  }
-
-  @Test
-  public void testSetNextException() throws Exception {
-    Result r1 = new Entity.ResultBuilder()
-      .process("1")
-      .taskId(UUID.randomUUID().toString())
-      .stdout("1")
-      .stderr("1")
-      .returnCode(1)
-      .buildAndStore();
-    Result r2 = new Entity.ResultBuilder()
-      .process("2")
-      .taskId(UUID.randomUUID().toString())
-      .stdout("2")
-      .stderr("2")
-      .returnCode(2)
-      .buildAndStore();
-    Result r3 = new Entity.ResultBuilder()
-      .process("3")
-      .taskId(UUID.randomUUID().toString())
-      .stdout("3")
-      .stderr("3")
-      .returnCode(3)
-      .buildAndStore();
-    Result r4 = new Entity.ResultBuilder()
-      .process("4")
-      .taskId(UUID.randomUUID().toString())
-      .stdout("4")
-      .stderr("4")
-      .returnCode(4)
-      .buildAndStore();
-
-    r1.setNext(r2);
-    thrown.expect(IllegalStateException.class);
-    r1.setNext(r3);
-  }
-
-  @Test
   public void testInvalidStateConstructions() throws Exception {
     final String stateInterpretation = "OK";
     final String stateDescription = "Test";
@@ -282,27 +146,5 @@ public class ResultTest extends GraphTest {
     assertEquals(0, state.getCode());
     assertEquals("OK", state.getInterpretation());
     assertEquals("Test", state.getDescription());
-  }
-
-  @Test
-  public void testAddResultToResult() throws Exception {
-    // Adding a result to a result shouldn't be allowed.
-    Result r1 = new Entity.ResultBuilder()
-      .process("1")
-      .taskId(UUID.randomUUID().toString())
-      .stdout("1")
-      .stderr("1")
-      .returnCode(1)
-      .buildAndStore();
-    Result r2 = new Entity.ResultBuilder()
-      .process("2")
-      .taskId(UUID.randomUUID().toString())
-      .stdout("2")
-      .stderr("2")
-      .returnCode(2)
-      .buildAndStore();
-
-    thrown.expect(IllegalEntityType.class);
-    r1.addResult(r2);
   }
 }

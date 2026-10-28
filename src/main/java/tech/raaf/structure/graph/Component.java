@@ -8,7 +8,10 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.BiFunction;
@@ -83,17 +86,20 @@ public class Component extends Instance implements Groupable {
     return persisted ? related("<-[:HAS]-(b:Component)") : new HashSet<>();
   }
 
-  /**
-   * Get all the startOfResultChain belonging to this Instance while filtering on the task ID.
-   * @param task The ID of the task.
-   * @return All the startOfResultChain belonging to a specific task.
-   */
-  public Set<Result> getResults(String task) {
-    return getStartOfResultChain()
-      .getThisAndNewer()
-      .stream()
-      .filter(r -> r.getTaskId().equals(task))
-      .collect(Collectors.toSet());
+  // The results of this component, newest first; a null task gives all
+  public List<Result> getResults(String task) {
+    final Map<String, Object> params = new HashMap<>();
+    params.put("uuid", getUuid());
+    params.put("task", task);
+    return NodeMapper.mapAll(
+      Graph.query(
+        "MATCH (:Component {uuid: $uuid})-[:HAS_RESULT]->(n:Result) " +
+          "WHERE $task IS NULL OR n.`data-task` = $task " +
+          "RETURN n ORDER BY n.created DESC, n.uuid DESC",
+        params
+      ),
+      "n"
+    );
   }
 
   public Set<Group> getMemberOf() {
