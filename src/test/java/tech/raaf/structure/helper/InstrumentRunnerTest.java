@@ -2,9 +2,6 @@ package tech.raaf.structure.helper;
 
 import static org.junit.Assert.*;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableSet;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -21,13 +18,16 @@ import mockit.Expectations;
 import mockit.Mocked;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Test;
-import tech.raaf.structure.base.Configuration;
 import tech.raaf.structure.base.Configuration.Setting;
+import tech.raaf.structure.base.Configuration;
 import tech.raaf.structure.base.Context;
 import tech.raaf.structure.graph.*;
 import tech.raaf.structure.graph.repositories.GroupingRepository;
 import tech.raaf.structure.graph.repositories.InstanceRepository;
 import tech.raaf.structure.graph.repositories.InstrumentRepository;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ObjectNode;
 
 public class InstrumentRunnerTest {
 

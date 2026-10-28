@@ -2,8 +2,6 @@ package tech.raaf.structure.bus;
 
 import static org.junit.Assert.assertTrue;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -18,6 +16,8 @@ import tech.raaf.structure.bus.repository.Nodes;
 import tech.raaf.structure.bus.repository.Types;
 import tech.raaf.structure.graph.Component;
 import tech.raaf.structure.schema.TypeSchemaTest;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 
 public class HelpTest extends TypeSchemaTest {
 

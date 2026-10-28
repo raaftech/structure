@@ -1,6 +1,5 @@
 package tech.raaf.structure.graph;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.collect.ImmutableSet;
 import java.util.HashSet;
 import java.util.List;
@@ -17,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tech.raaf.structure.base.Context;
 import tech.raaf.structure.graph.repositories.NodeRepository;
+import tools.jackson.databind.annotation.JsonSerialize;
 
 /**
  * The constraint class is responsible for denoting constraints between (instances of) types.

@@ -2,13 +2,6 @@ package tech.raaf.structure.graph;
 
 import static tech.raaf.structure.helper.JsonHelper.mapper;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableSet;
 import java.io.File;
 import java.io.IOException;
@@ -20,14 +13,22 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tech.raaf.structure.base.Configuration;
 import tech.raaf.structure.base.Configuration.Setting;
+import tech.raaf.structure.base.Configuration;
 import tech.raaf.structure.exceptions.EntityDeserializationException;
 import tech.raaf.structure.exceptions.JsonValidationException;
 import tech.raaf.structure.helper.JsonHelper;
 import tech.raaf.structure.helper.Triple;
 import tech.raaf.structure.helper.loader.BundleLoader;
 import tech.raaf.structure.helper.loader.NaiveSorter;
+import tools.jackson.core.JsonParser;
+import tools.jackson.core.exc.JacksonIOException;
+import tools.jackson.core.exc.StreamReadException;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.deser.std.StdDeserializer;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.ObjectNode;
 
 public class EntityDeserializer extends StdDeserializer<Entity> {
 
@@ -70,10 +71,10 @@ public class EntityDeserializer extends StdDeserializer<Entity> {
 
   @Override
   @SuppressWarnings("unchecked")
-  public Entity deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
+  public Entity deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) {
     log.info("Creating entity from JSON data");
     Entity entity = new Entity();
-    ObjectNode entityJson = jsonParser.getCodec().readTree(jsonParser);
+    ObjectNode entityJson = (ObjectNode) deserializationContext.readTree(jsonParser);
 
     /*
      * Validate schema and go. Notice we don't log anything,
@@ -102,7 +103,7 @@ public class EntityDeserializer extends StdDeserializer<Entity> {
       relationsJson = metaJson.get("relations");
       relations = new HashSet<Triple<String, String, Set<String>>>();
 
-      Iterator<Map.Entry<String, JsonNode>> relationsIterator = relationsJson.fields();
+      Iterator<Map.Entry<String, JsonNode>> relationsIterator = relationsJson.properties().iterator();
       while (relationsIterator.hasNext()) {
         Map.Entry<String, JsonNode> entry = relationsIterator.next();
         String key = entry.getKey();
@@ -125,14 +126,14 @@ public class EntityDeserializer extends StdDeserializer<Entity> {
       // Handle constraints
       if (metaJson.has("constraints")) {
         final JsonNode constraintsJson = metaJson.get("constraints");
-        Iterator<Map.Entry<String, JsonNode>> iterConstraints = constraintsJson.fields();
+        Iterator<Map.Entry<String, JsonNode>> iterConstraints = constraintsJson.properties().iterator();
 
         while (iterConstraints.hasNext()) {
           Map.Entry<String, JsonNode> entry = iterConstraints.next();
           final String relName = entry.getKey();
           final ArrayNode constraints = (ArrayNode) entry.getValue();
 
-          Iterator<JsonNode> iterConstraintData = constraints.elements();
+          Iterator<JsonNode> iterConstraintData = constraints.values().iterator();
           while (iterConstraintData.hasNext()) {
             JsonNode constraintData = iterConstraintData.next();
             entity.addConstraint(
@@ -202,7 +203,7 @@ public class EntityDeserializer extends StdDeserializer<Entity> {
         file = new HashMap<>();
 
         fileJson = entityJson.get("file");
-        Iterator<Map.Entry<String, JsonNode>> fileIterator = fileJson.fields();
+        Iterator<Map.Entry<String, JsonNode>> fileIterator = fileJson.properties().iterator();
         while (fileIterator.hasNext()) {
           Map.Entry<String, JsonNode> entry = fileIterator.next();
           String key = entry.getKey();
@@ -219,20 +220,24 @@ public class EntityDeserializer extends StdDeserializer<Entity> {
             File filePath = pathHelper(new File(value.get("path").asText()));
 
             if (filePath.exists() && !filePath.isDirectory()) {
-              switch (encoding) {
-                case "base64":
-                  String fileString = FileUtils.readFileToString(filePath, "UTF-8");
-                  log.debug("Base64 encoding file \"{}\" and injecting into content", filePath.toString());
-                  value.put("content", Base64.encodeBase64String(fileString.getBytes("UTF-8")));
-                  log.debug("Writing JSON object with name \"{}\" to file object", key);
-                  file.put(key, value.toString());
-                  break;
-                case "text":
-                  log.debug("Text encoding file \"{}\" and injecting into content", filePath.toString());
-                  value.put("content", FileUtils.readFileToString(filePath, "UTF-8"));
-                  log.debug("Writing JSON object with name \"{}\" to file object", key);
-                  file.put(key, value.toString());
-                  break;
+              try {
+                switch (encoding) {
+                  case "base64":
+                    String fileString = FileUtils.readFileToString(filePath, "UTF-8");
+                    log.debug("Base64 encoding file \"{}\" and injecting into content", filePath.toString());
+                    value.put("content", Base64.encodeBase64String(fileString.getBytes("UTF-8")));
+                    log.debug("Writing JSON object with name \"{}\" to file object", key);
+                    file.put(key, value.toString());
+                    break;
+                  case "text":
+                    log.debug("Text encoding file \"{}\" and injecting into content", filePath.toString());
+                    value.put("content", FileUtils.readFileToString(filePath, "UTF-8"));
+                    log.debug("Writing JSON object with name \"{}\" to file object", key);
+                    file.put(key, value.toString());
+                    break;
+                }
+              } catch (IOException e) {
+                throw JacksonIOException.construct(e, jsonParser);
               }
             } else {
               log.error("\"" + filePath + "\" does not exist or is a directory");
@@ -278,12 +283,12 @@ public class EntityDeserializer extends StdDeserializer<Entity> {
 
           // do some validation checks:
 
-          // if format is JSON, we need to make sure it is actually valid JSON, else a JsonProcessingException
+          // if format is JSON, we need to make sure it is actually valid JSON, else a JacksonException
           // gets thrown
           if ("json".equals(value.get("format").asText())) {
             try {
               mapper.readTree(value.get("content").asText());
-            } catch (JsonParseException e) {
+            } catch (StreamReadException e) {
               throw new EntityDeserializationException(
                 "Can't deserialize entity \"" +
                   entity +
@@ -318,7 +323,7 @@ public class EntityDeserializer extends StdDeserializer<Entity> {
         //         "validate against dataSchema.");
         //   }
         // }
-        Iterator<Map.Entry<String, JsonNode>> dataIterator = dataJson.fields();
+        Iterator<Map.Entry<String, JsonNode>> dataIterator = dataJson.properties().iterator();
 
         while (dataIterator.hasNext()) {
           Map.Entry<String, JsonNode> next = dataIterator.next();

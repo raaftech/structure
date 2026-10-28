@@ -1,16 +1,11 @@
 package tech.raaf.structure.bus;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.ThreadingModel;
 import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.json.JsonObject;
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URI;
@@ -23,6 +18,11 @@ import org.slf4j.LoggerFactory;
 import tech.raaf.structure.annotations.SchemaPath;
 import tech.raaf.structure.base.Configuration;
 import tech.raaf.structure.helper.JsonHelper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.JsonNodeFactory;
+import tools.jackson.databind.node.ObjectNode;
 
 /**
  * GenericActor is our default Abstract class for actors on the bus..
@@ -122,7 +122,7 @@ public abstract class GenericActor extends AbstractVerticle {
 
     try {
       jsonNode = mapper.readTree(jsonObject.toString());
-    } catch (IOException e) {
+    } catch (JacksonException e) {
       log.error(e.getMessage());
 
       if (Configuration.isTraceModeOn()) {

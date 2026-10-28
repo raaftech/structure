@@ -1,12 +1,5 @@
 package tech.raaf.structure.helper.loader;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import java.io.File;
@@ -23,8 +16,8 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tech.raaf.structure.base.Configuration;
 import tech.raaf.structure.base.Configuration.Setting;
+import tech.raaf.structure.base.Configuration;
 import tech.raaf.structure.base.Context;
 import tech.raaf.structure.bus.GenericActor;
 import tech.raaf.structure.exceptions.FileInjectionException;
@@ -32,6 +25,14 @@ import tech.raaf.structure.exceptions.JsonValidationException;
 import tech.raaf.structure.graph.Node;
 import tech.raaf.structure.graph.repositories.NodeRepository;
 import tech.raaf.structure.helper.JsonHelper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.SerializationFeature;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.ObjectNode;
 
 /**
  * NaiveSorter handles loading all json from bundle locations do dependency
@@ -43,7 +44,7 @@ import tech.raaf.structure.helper.JsonHelper;
 public class NaiveSorter {
 
   private static final Logger log = LoggerFactory.getLogger(NaiveSorter.class);
-  private final ObjectMapper mapper = new ObjectMapper().enable(DeserializationFeature.FAIL_ON_TRAILING_TOKENS);
+  private final ObjectMapper mapper = JsonMapper.builder().enable(DeserializationFeature.FAIL_ON_TRAILING_TOKENS).build();
   private final Set<Path> bundlePaths;
   public static final Map<String, Path> checksumToFiles = new HashMap<>();
   private final NodeRepository nodeRepository = Context.getNodeRepository();
@@ -124,7 +125,7 @@ public class NaiveSorter {
     ImmutableList.of("checksum", "path")
   );
 
-  private static String prepareForHashing(ObjectNode input) throws JsonProcessingException {
+  private static String prepareForHashing(ObjectNode input) throws JacksonException {
     if (!JsonHelper.validateToSchema(ENTITYSCHEMA, input)) {
       throw new JsonValidationException(
         "Cannot calculate a checksum for type [" +
@@ -158,10 +159,7 @@ public class NaiveSorter {
       A object mapper that has a special configuration to alphabetically sort keys so
       we calculate equal checksums for JSON objects even though properties are unsorted.
     */
-    final ObjectMapper sortedMapper = new ObjectMapper().configure(
-      SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS,
-      true
-    );
+    final ObjectMapper sortedMapper = JsonMapper.builder().enable(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS).build();
 
     /*
       Use sortedMapper to deserialize to object, then serialize back to a JSON string again.
@@ -183,7 +181,7 @@ public class NaiveSorter {
     final String preparedJson;
     try {
       preparedJson = prepareForHashing(input);
-    } catch (JsonProcessingException e) {
+    } catch (JacksonException e) {
       if (Configuration.isTraceModeOn()) {
         e.printStackTrace();
       }
@@ -275,11 +273,11 @@ public class NaiveSorter {
     final Set<String> uuidDependencies = new HashSet<>();
     final Set<String> namedDependencies = new HashSet<>();
 
-    Iterator<Map.Entry<String, JsonNode>> relationships = daNode.get(META).get("relations").fields();
+    Iterator<Map.Entry<String, JsonNode>> relationships = daNode.get(META).get("relations").properties().iterator();
     while (relationships.hasNext()) {
       Map.Entry<String, JsonNode> relation = relationships.next();
       ArrayNode identifiers = (ArrayNode) relation.getValue().get("to");
-      Iterator<JsonNode> iter = identifiers.elements();
+      Iterator<JsonNode> iter = identifiers.values().iterator();
       while (iter.hasNext()) {
         final String identifier = iter.next().asText();
         if (GenericActor.isUuid(identifier)) {
@@ -354,7 +352,7 @@ public class NaiveSorter {
         } else {
           unsorted.add(readEntity(jsonFile, jsonFilePath, fromBundle, uuidToFiles));
         }
-      } catch (IOException | RuntimeException e) {
+      } catch (RuntimeException e) {
         throw new IllegalArgumentException("Cannot read bundle file " + jsonFilePath + ": " + e.getMessage(), e);
       }
     }
@@ -432,12 +430,12 @@ public class NaiveSorter {
     if (!(entity instanceof ObjectNode)) {
       throw new FileInjectionException("Can't inject files into non object JSON.");
     }
-    final ObjectNode entityCopy = entity.deepCopy();
+    final ObjectNode entityCopy = (ObjectNode) entity.deepCopy();
 
     // do we even have a file object?
     if (entityCopy.has(FILE)) {
       // iterate over every file declaration
-      final Iterator<Map.Entry<String, JsonNode>> files = entityCopy.get(FILE).fields();
+      final Iterator<Map.Entry<String, JsonNode>> files = entityCopy.get(FILE).properties().iterator();
       while (files.hasNext()) {
         final Map.Entry<String, JsonNode> file = files.next();
         final ObjectNode fileObject = (ObjectNode) file.getValue();

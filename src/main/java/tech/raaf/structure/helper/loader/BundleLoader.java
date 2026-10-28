@@ -1,7 +1,5 @@
 package tech.raaf.structure.helper.loader;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -10,12 +8,14 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tech.raaf.structure.base.Configuration;
 import tech.raaf.structure.base.Configuration.Setting;
+import tech.raaf.structure.base.Configuration;
 import tech.raaf.structure.exceptions.EntityDeserializationException;
 import tech.raaf.structure.graph.Entity;
 import tech.raaf.structure.graph.Graph;
 import tech.raaf.structure.helper.LambdaHelper;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * BundleLoader sorts all entities found in the bundle paths and loads them.

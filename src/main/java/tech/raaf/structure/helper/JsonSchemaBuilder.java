@@ -1,9 +1,5 @@
 package tech.raaf.structure.helper;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.Iterator;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -11,6 +7,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tech.raaf.structure.base.Configuration;
 import tech.raaf.structure.exceptions.JsonValidationException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.ObjectNode;
 
 /**
  * JsonSchemaBuilder wraps Jackson JsonNode while providing an easy way
@@ -327,7 +327,7 @@ public class JsonSchemaBuilder {
       return false;
     } else {
       boolean ret = false;
-      Iterator<JsonNode> fields = required.elements();
+      Iterator<JsonNode> fields = required.values().iterator();
       while (fields.hasNext()) {
         if (property.equals(fields.next().asText())) {
           ret = true;

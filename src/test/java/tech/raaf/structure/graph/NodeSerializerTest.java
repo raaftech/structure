@@ -3,13 +3,13 @@ package tech.raaf.structure.graph;
 import static org.junit.Assert.*;
 import static tech.raaf.structure.helper.JsonHelper.mapper;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import java.util.Set;
 import org.junit.Test;
 import tech.raaf.structure.base.Context;
 import tech.raaf.structure.graph.repositories.NodeRepository;
 import tech.raaf.structure.helper.Triple;
 import tech.raaf.structure.schema.TypeSchemaTest;
+import tools.jackson.databind.JsonNode;
 
 public class NodeSerializerTest extends TypeSchemaTest {
 

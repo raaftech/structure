@@ -6,8 +6,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static tech.raaf.structure.helper.JsonHelper.mapper;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableMap;
 import io.vertx.core.json.JsonObject;
 import java.util.List;
@@ -22,6 +20,8 @@ import tech.raaf.structure.graph.Graph;
 import tech.raaf.structure.graph.Group;
 import tech.raaf.structure.graph.repositories.TypeRepository;
 import tech.raaf.structure.schema.TypeSchemaTest;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ObjectNode;
 
 /**
  * Runs a controller on an instance through its actor, as the frontend

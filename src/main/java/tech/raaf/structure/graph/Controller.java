@@ -2,11 +2,7 @@ package tech.raaf.structure.graph;
 
 import static tech.raaf.structure.helper.JsonHelper.mapper;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.type.MapType;
-import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.google.common.io.Files;
-import java.io.IOException;
 import java.util.*;
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
@@ -15,6 +11,10 @@ import tech.raaf.structure.base.Configuration;
 import tech.raaf.structure.base.Context;
 import tech.raaf.structure.exceptions.ComponentBuilderException;
 import tech.raaf.structure.graph.repositories.TypeRepository;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.node.ObjectNode;
+import tools.jackson.databind.type.MapType;
+import tools.jackson.databind.type.TypeFactory;
 
 public class Controller extends Instrument {
 
@@ -150,7 +150,7 @@ public class Controller extends Instrument {
         throw new ComponentBuilderException("Not all required parameters were set.");
       }
       if (!exitCodeToState.isEmpty()) {
-        json.put(STATEMAP, mapper.valueToTree(exitCodeToState));
+        json.set(STATEMAP, mapper.valueToTree(exitCodeToState));
       }
       Controller controller = new Controller(json);
       controller.capability = capability;
@@ -210,7 +210,7 @@ public class Controller extends Instrument {
       // Try to map it to an ObjectNode and create an Optional of it.
       try {
         arguments = Optional.of((ObjectNode) mapper.readTree((String) data.get(ARGUMENTS)));
-      } catch (IOException e) {
+      } catch (JacksonException e) {
         if (Configuration.isTraceModeOn()) {
           log.error("Error while trying to get arguments object from " + getName());
           e.printStackTrace();
@@ -282,7 +282,7 @@ public class Controller extends Instrument {
     if (data.containsKey(STATEMAP)) {
       try {
         maybeStateMap = Optional.of((ObjectNode) mapper.readTree((String) data.get(STATEMAP)));
-      } catch (IOException e) {
+      } catch (JacksonException e) {
         maybeStateMap = Optional.empty();
         log.error("Error while deserializing statusmap of controller " + getName());
         if (Configuration.isTraceModeOn()) {
@@ -302,7 +302,7 @@ public class Controller extends Instrument {
       MapType mapType = typeFactory.constructMapType(HashMap.class, Integer.class, Result.State.class);
       try {
         maybeStateMap = Optional.of(mapper.readValue(data.get(STATEMAP).toString(), mapType));
-      } catch (IOException e) {
+      } catch (JacksonException e) {
         maybeStateMap = Optional.empty();
         if (Configuration.isTraceModeOn()) {
           e.printStackTrace();
@@ -329,7 +329,7 @@ public class Controller extends Instrument {
     }
     Optional<ObjectNode> arguments = getArguments();
     if (arguments.isPresent()) {
-      json.put(ARGUMENTS, arguments.get());
+      json.set(ARGUMENTS, arguments.get());
     }
 
     return json;

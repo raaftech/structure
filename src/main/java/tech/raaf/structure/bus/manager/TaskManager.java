@@ -1,9 +1,5 @@
 package tech.raaf.structure.bus.manager;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -19,6 +15,10 @@ import tech.raaf.structure.bus.GenericActor;
 import tech.raaf.structure.graph.Entity;
 import tech.raaf.structure.graph.Result;
 import tech.raaf.structure.helper.ProcessRunner;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.ObjectNode;
 
 /**
  * TaskManager manages jobs, which in turn are grouped by tasks.
@@ -77,7 +77,7 @@ public class TaskManager extends GenericActor {
     public ObjectNode toJson() {
       ObjectNode json = mapper.createObjectNode();
       json.put("status", status.name());
-      Iterator<Map.Entry<String, JsonNode>> elements = metadata.fields();
+      Iterator<Map.Entry<String, JsonNode>> elements = metadata.properties().iterator();
       while (elements.hasNext()) {
         Map.Entry<String, JsonNode> el = elements.next();
         json.set(el.getKey(), el.getValue());
@@ -327,10 +327,10 @@ public class TaskManager extends GenericActor {
         try {
           resultBuilder
             .origin(originUuid)
-            .controller(job.metadata.path("instrumentUuid").textValue())
+            .controller(job.metadata.path("instrumentUuid").stringValue(null))
             .buildAndStore();
           log.info(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(task.toJson()));
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
           if (Configuration.isTraceModeOn()) {
             e.printStackTrace();
           }
@@ -560,7 +560,7 @@ public class TaskManager extends GenericActor {
         args.path("temporaryFiles").forEach(file -> task.temporaryFiles.add(file.asText()));
 
         // Add the given jobs to the task
-        Iterator<JsonNode> jobIterator = jobs.elements();
+        Iterator<JsonNode> jobIterator = jobs.values().iterator();
         while (jobIterator.hasNext()) {
           ObjectNode jobData = (ObjectNode) jobIterator.next();
           String command = jobData.get("command").asText();

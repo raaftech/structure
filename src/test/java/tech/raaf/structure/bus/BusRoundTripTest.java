@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static tech.raaf.structure.helper.JsonHelper.mapper;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import io.vertx.core.Verticle;
 import io.vertx.core.eventbus.DeliveryOptions;
 import io.vertx.core.json.JsonObject;
@@ -29,6 +28,7 @@ import tech.raaf.structure.graph.Entity;
 import tech.raaf.structure.graph.Result;
 import tech.raaf.structure.helper.JsonHelper;
 import tech.raaf.structure.schema.TypeSchemaTest;
+import tools.jackson.databind.JsonNode;
 
 /**
  * Sends each address and msgh pair that the REST models in

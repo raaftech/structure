@@ -7,8 +7,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static tech.raaf.structure.helper.JsonHelper.mapper;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableMap;
 import io.vertx.core.json.JsonObject;
 import java.nio.file.Files;
@@ -28,6 +26,8 @@ import tech.raaf.structure.graph.Controller;
 import tech.raaf.structure.graph.Entity;
 import tech.raaf.structure.graph.Graph;
 import tech.raaf.structure.schema.TypeSchemaTest;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ObjectNode;
 
 /**
  * Queues tasks on a deployed TaskManager and checks the results in

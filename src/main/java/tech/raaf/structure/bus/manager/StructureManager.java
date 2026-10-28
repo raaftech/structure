@@ -1,9 +1,5 @@
 package tech.raaf.structure.bus.manager;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.shareddata.LocalMap;
 import java.io.IOException;
@@ -13,8 +9,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tech.raaf.structure.annotations.SchemaPath;
 import tech.raaf.structure.base.Application;
-import tech.raaf.structure.base.Configuration;
 import tech.raaf.structure.base.Configuration.Setting;
+import tech.raaf.structure.base.Configuration;
 import tech.raaf.structure.base.Context;
 import tech.raaf.structure.bus.GenericActor;
 import tech.raaf.structure.bus.NodeActor;
@@ -24,6 +20,10 @@ import tech.raaf.structure.graph.repositories.*;
 import tech.raaf.structure.helper.ProcessRunner;
 import tech.raaf.structure.helper.handlebars.Quote;
 import tech.raaf.structure.helper.loader.BundleLoader;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.JsonNodeFactory;
+import tools.jackson.databind.node.ObjectNode;
 
 public class StructureManager extends GenericActor {
 

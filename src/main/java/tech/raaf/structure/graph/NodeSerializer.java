@@ -2,10 +2,6 @@ package tech.raaf.structure.graph;
 
 import static tech.raaf.structure.helper.JsonHelper.mapper;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import com.google.common.collect.ImmutableMap;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -18,6 +14,11 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tech.raaf.structure.helper.LambdaHelper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.SerializationContext;
+import tools.jackson.databind.ser.std.StdSerializer;
 
 /**
  * Serialize Node objects to JSON.
@@ -31,7 +32,7 @@ public class NodeSerializer extends StdSerializer<Node> {
   }
 
   @Override
-  public void serialize(Node value, JsonGenerator gen, SerializerProvider provider) throws IOException {
+  public void serialize(Node value, JsonGenerator gen, SerializationContext provider) {
     // Sort by peer identifier to keep the output order stable.
     final String outgoing =
       "MATCH (a:Node {uuid: $uuid})-[r]->(b) " +
@@ -45,26 +46,26 @@ public class NodeSerializer extends StdSerializer<Node> {
 
     // start json
     gen.writeStartObject();
-    gen.writeStringField("name", value.getName());
-    gen.writeStringField("desc", value.getDesc());
+    gen.writeStringProperty("name", value.getName());
+    gen.writeStringProperty("desc", value.getDesc());
 
     // start meta object
-    gen.writeFieldName("meta");
+    gen.writeName("meta");
     gen.writeStartObject();
-    gen.writeStringField("uuid", value.getUuid());
+    gen.writeStringProperty("uuid", value.getUuid());
     if (value instanceof Type) {
-      gen.writeBooleanField("abstract", ((Type) value).isAbstract());
+      gen.writeBooleanProperty("abstract", ((Type) value).isAbstract());
     }
-    gen.writeStringField("checksum", value.getChecksum());
+    gen.writeStringProperty("checksum", value.getChecksum());
     if (value.getBundle() != null) {
-      gen.writeStringField("bundle", value.getBundle());
+      gen.writeStringProperty("bundle", value.getBundle());
     }
     if (value.getPath() != null) {
-      gen.writeStringField("path", value.getPath());
+      gen.writeStringProperty("path", value.getPath());
     }
 
     // start relations object, which should always exist
-    gen.writeFieldName("relations");
+    gen.writeName("relations");
     gen.writeStartObject();
     relMap
       .entrySet()
@@ -85,14 +86,14 @@ public class NodeSerializer extends StdSerializer<Node> {
           // determine the direction of the first relationship and assume the others are directed the same
           final String direction = "outgoing";
           // start an object with the relationship name
-          gen.writeFieldName(name);
+          gen.writeName(name);
           gen.writeStartObject();
 
           // write the direction
-          gen.writeStringField("direction", direction);
+          gen.writeStringProperty("direction", direction);
 
           // Write the target identifiers.
-          gen.writeFieldName("to");
+          gen.writeName("to");
           gen.writeStartArray();
           entry
             .getValue()
@@ -101,7 +102,7 @@ public class NodeSerializer extends StdSerializer<Node> {
             .forEach(identifier -> {
               try {
                 gen.writeString(identifier);
-              } catch (IOException e) {
+              } catch (JacksonException e) {
                 log.error("Caught IOException: " + e.getMessage());
                 throw new RuntimeException("Error while writing relationship entry during entity serialization.");
               }
@@ -110,7 +111,7 @@ public class NodeSerializer extends StdSerializer<Node> {
           gen.writeEndArray();
           // end the relationship object
           gen.writeEndObject();
-        } catch (IOException e) {
+        } catch (JacksonException e) {
           log.error("Caught IOException: " + e.getMessage());
           throw new RuntimeException("Error while writing relationship object during entity serialization.");
         }
@@ -127,7 +128,7 @@ public class NodeSerializer extends StdSerializer<Node> {
       .map(Map.Entry::getValue)
       .findFirst();
     if (maybeConstraints.isPresent()) {
-      gen.writeFieldName("constraints");
+      gen.writeName("constraints");
       gen.writeStartObject();
 
       final Map<String, List<Map<String, Object>>> constraints = maybeConstraints
@@ -136,13 +137,13 @@ public class NodeSerializer extends StdSerializer<Node> {
         .collect(Collectors.groupingBy(row -> row.get("forRelationship").toString()));
 
       for (Map.Entry<String, List<Map<String, Object>>> pair : constraints.entrySet()) {
-        gen.writeFieldName(pair.getKey());
+        gen.writeName(pair.getKey());
         gen.writeStartArray();
 
         for (Map<String, Object> row : pair.getValue()) {
           gen.writeStartObject();
-          gen.writeStringField("cardinality", row.get("cardinality").toString());
-          gen.writeStringField("to", row.get("peer").toString());
+          gen.writeStringProperty("cardinality", row.get("cardinality").toString());
+          gen.writeStringProperty("to", row.get("peer").toString());
           gen.writeEndObject();
         }
 
@@ -157,7 +158,7 @@ public class NodeSerializer extends StdSerializer<Node> {
 
     // if we have data, start a data object
     if (value.getData() != null && value.getData().size() > 0) {
-      gen.writeFieldName("data");
+      gen.writeName("data");
       gen.writeStartObject();
 
       value
@@ -166,7 +167,7 @@ public class NodeSerializer extends StdSerializer<Node> {
         .stream()
         .forEach(entry ->
           LambdaHelper.wrapWithExceptionPropagation(() -> {
-            gen.writeObjectField(entry.getKey(), entry.getValue());
+            gen.writePOJOProperty(entry.getKey(), entry.getValue());
             return true;
           }).get()
         );
@@ -177,7 +178,7 @@ public class NodeSerializer extends StdSerializer<Node> {
 
     // if we have files, start a file object
     if (value.getFiles() != null && value.getFiles().size() > 0) {
-      gen.writeFieldName("file");
+      gen.writeName("file");
       gen.writeStartObject();
 
       // for every file, create an object
@@ -187,19 +188,19 @@ public class NodeSerializer extends StdSerializer<Node> {
         .stream()
         .forEach(entry -> {
           try {
-            gen.writeFieldName(entry.getKey());
+            gen.writeName(entry.getKey());
             gen.writeStartObject();
 
             // write the object
             JsonNode fileJson = mapper.readTree((String) entry.getValue());
-            gen.writeStringField("encoding", fileJson.get("encoding").asText());
-            gen.writeStringField("format", fileJson.get("format").asText());
-            if (fileJson.has("path")) gen.writeStringField("path", fileJson.get("path").asText());
-            gen.writeStringField("content", fileJson.get("content").asText());
+            gen.writeStringProperty("encoding", fileJson.get("encoding").asText());
+            gen.writeStringProperty("format", fileJson.get("format").asText());
+            if (fileJson.has("path")) gen.writeStringProperty("path", fileJson.get("path").asText());
+            gen.writeStringProperty("content", fileJson.get("content").asText());
 
             // end the file specific object
             gen.writeEndObject();
-          } catch (IOException e) {
+          } catch (JacksonException e) {
             log.error("Caught IOException: " + e.getMessage());
             throw new RuntimeException("Error while writing file object during entity serialization");
           }

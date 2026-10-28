@@ -2,8 +2,6 @@ package tech.raaf.structure.helper.loader;
 
 import static org.junit.Assert.assertEquals;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableSet;
 import java.nio.file.Path;
 import java.util.Set;
@@ -14,6 +12,8 @@ import org.junit.rules.TemporaryFolder;
 import tech.raaf.structure.GraphTest;
 import tech.raaf.structure.graph.Graph;
 import tech.raaf.structure.helper.JsonHelper;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ObjectNode;
 
 public class BundleLoaderTest extends GraphTest {
 
@@ -55,7 +55,7 @@ public class BundleLoaderTest extends GraphTest {
 
   private void constraint(ObjectNode entity, String relation, String target) {
     ((ObjectNode) entity.path("meta"))
-      .with("constraints")
+      .withObjectProperty("constraints")
       .putArray(relation)
       .addObject()
       .put("cardinality", "OPTIONAL_TO_MANY")

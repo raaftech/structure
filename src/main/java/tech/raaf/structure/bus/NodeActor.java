@@ -1,7 +1,5 @@
 package tech.raaf.structure.bus;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.vertx.core.Verticle;
 import io.vertx.core.eventbus.MessageConsumer;
 import java.util.UUID;
@@ -16,6 +14,8 @@ import tech.raaf.structure.graph.Instance;
 import tech.raaf.structure.graph.Node;
 import tech.raaf.structure.graph.Type;
 import tech.raaf.structure.graph.repositories.NodeRepository;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ObjectNode;
 
 public abstract class NodeActor<T extends Node> extends GenericActor {
 

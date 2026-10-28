@@ -1,6 +1,5 @@
 package tech.raaf.structure.base;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
@@ -32,6 +31,7 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * The settings of Structure. {@link #get(Setting)} reads the value of a

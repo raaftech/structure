@@ -6,8 +6,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static tech.raaf.structure.helper.JsonHelper.mapper;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import java.io.File;
@@ -32,6 +30,8 @@ import tech.raaf.structure.exceptions.JsonValidationException;
 import tech.raaf.structure.graph.repositories.NodeRepository;
 import tech.raaf.structure.graph.repositories.TypeRepository;
 import tech.raaf.structure.helper.Triple;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ObjectNode;
 
 public class EntityTest extends GraphTest {
 

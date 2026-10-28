@@ -3,11 +3,11 @@ package tech.raaf.structure.schema;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.net.URI;
 import org.junit.Test;
 import tech.raaf.structure.helper.JsonHelper;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ObjectNode;
 
 public class InstrumentSchemaTest {
 

@@ -1,24 +1,24 @@
 package tech.raaf.structure.helper;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.networknt.schema.Error;
 import com.networknt.schema.Schema;
 import com.networknt.schema.SchemaException;
 import com.networknt.schema.SchemaLocation;
 import com.networknt.schema.SchemaRegistry;
 import com.networknt.schema.SpecificationVersion;
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.List;
 import java.util.function.Supplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tech.raaf.structure.base.Configuration;
 import tech.raaf.structure.base.Configuration.Setting;
+import tech.raaf.structure.base.Configuration;
 import tech.raaf.structure.base.Context;
 import tech.raaf.structure.bus.manager.SchemaManager;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * @author Boy van Duuren <boy@raaf.tech>
@@ -91,7 +91,7 @@ public class JsonHelper {
     try {
       // Relative to home, never to the working directory.
       result = mapper.readTree(Configuration.get(Setting.HOME).resolve(file).toFile());
-    } catch (IOException e) {
+    } catch (JacksonException e) {
       if (Configuration.isTraceModeOn()) {
         final String logStatement = "Couldn't open as file  " + file + ": " + e.getMessage();
         if (via) {

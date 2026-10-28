@@ -97,7 +97,7 @@
     <handlebars.version>4.5.7</handlebars.version>
 
     <!-- Helper component versions -->
-    <json-schema-validator.version>2.0.8</json-schema-validator.version>
+    <json-schema-validator.version>3.0.8</json-schema-validator.version>
     <guava.version>33.7.2-jre</guava.version>
     <commons-io.version>2.22.0</commons-io.version>
     <commons-cli.version>1.11.0</commons-cli.version>
@@ -105,7 +105,7 @@
     <commons-lang3.version>3.21.0</commons-lang3.version>
     <logback.version>1.6.6</logback.version>
     <slf4j.version>2.0.20</slf4j.version>
-    <jackson.version>2.22.4</jackson.version>
+    <jackson.version>3.2.4</jackson.version>
 
     <!-- Test component versions -->
     <junit.version>4.13.2</junit.version>
@@ -124,9 +124,8 @@
 
   <dependencyManagement>
     <dependencies>
-      <!-- One Jackson version for Vert.x, the libraries and Testcontainers -->
       <dependency>
-        <groupId>com.fasterxml.jackson</groupId>
+        <groupId>tools.jackson</groupId>
         <artifactId>jackson-bom</artifactId>
         <version>${jackson.version}</version>
         <type>pom</type>
@@ -150,7 +149,7 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
+      <groupId>tools.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
       <scope>compile</scope>
     </dependency>
@@ -217,7 +216,7 @@
     </dependency>
     <dependency>
       <groupId>com.github.jknack</groupId>
-      <artifactId>handlebars-jackson</artifactId>
+      <artifactId>handlebars-jackson3</artifactId>
       <version>${handlebars.version}</version>
     </dependency>
 

@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static tech.raaf.structure.helper.JsonHelper.mapper;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import java.util.HashSet;
@@ -16,6 +15,7 @@ import org.junit.Test;
 import tech.raaf.structure.base.Context;
 import tech.raaf.structure.exceptions.IllegalEntityType;
 import tech.raaf.structure.schema.TypeSchemaTest;
+import tools.jackson.databind.JsonNode;
 
 public class InstrumentRelationsTest extends TypeSchemaTest {
 

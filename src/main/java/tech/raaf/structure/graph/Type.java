@@ -2,14 +2,10 @@ package tech.raaf.structure.graph;
 
 import static tech.raaf.structure.helper.JsonHelper.mapper;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import java.io.IOException;
 import java.util.*;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
@@ -25,6 +21,9 @@ import tech.raaf.structure.exceptions.JsonValidationException;
 import tech.raaf.structure.graph.repositories.TypeRepository;
 import tech.raaf.structure.helper.JsonSchemaBuilder;
 import tech.raaf.structure.helper.Triple;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ObjectNode;
 
 /**
  * Give a description of Type here.
@@ -396,7 +395,7 @@ public class Type extends Node {
         .get("content")
         .asText();
       schema = new JsonSchemaBuilder((ObjectNode) mapper.readTree(dataSchemaContent));
-    } catch (JsonValidationException | IOException e) {
+    } catch (JsonValidationException | JacksonException e) {
       if (Configuration.isTraceModeOn()) {
         e.printStackTrace();
       }
@@ -462,7 +461,7 @@ public class Type extends Node {
       if (childIsaUuids != null) {
         json.put("children", mapper.writeValueAsString(childIsaUuids));
       }
-    } catch (JsonProcessingException e) {
+    } catch (JacksonException e) {
       log.error(e.getMessage());
 
       if (Configuration.isTraceModeOn()) {

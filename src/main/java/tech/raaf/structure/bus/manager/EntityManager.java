@@ -1,9 +1,5 @@
 package tech.raaf.structure.bus.manager;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import java.net.URI;
@@ -32,6 +28,10 @@ import tech.raaf.structure.helper.JsonHelper;
 import tech.raaf.structure.helper.LambdaHelper;
 import tech.raaf.structure.helper.Triple;
 import tech.raaf.structure.helper.loader.NaiveSorter;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.ObjectNode;
 
 public class EntityManager extends GenericActor {
 
@@ -421,7 +421,7 @@ public class EntityManager extends GenericActor {
         final Entity groupingEntity;
         try {
           groupingEntity = mapper.treeToValue(mapper.valueToTree(group), Entity.class);
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
           if (Configuration.isTraceModeOn()) {
             e.printStackTrace();
           }

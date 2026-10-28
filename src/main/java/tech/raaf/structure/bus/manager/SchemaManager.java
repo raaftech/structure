@@ -1,6 +1,7 @@
 package tech.raaf.structure.bus.manager;
 
-import io.vertx.core.json.Json;
+import static tech.raaf.structure.helper.JsonHelper.mapper;
+
 import io.vertx.ext.web.RoutingContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +34,7 @@ public class SchemaManager {
       routingContext
         .response()
         .putHeader("content-type", "application/json; charset=utf-8")
-        .end(Json.encodePrettily(foundType.getSchema().getAsObjectNode()));
+        .end(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(foundType.getSchema().getAsObjectNode()));
     }
   }
 }

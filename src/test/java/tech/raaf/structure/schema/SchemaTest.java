@@ -3,13 +3,13 @@ package tech.raaf.structure.schema;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import java.net.URI;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.junit.Test;
 import tech.raaf.structure.helper.JsonHelper;
+import tools.jackson.databind.JsonNode;
 
 /**
  * Tests to check whether JSON schemas in Structure are correct.

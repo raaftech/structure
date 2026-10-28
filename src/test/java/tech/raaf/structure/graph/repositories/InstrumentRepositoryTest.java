@@ -3,8 +3,6 @@ package tech.raaf.structure.graph.repositories;
 import static org.junit.Assert.*;
 import static tech.raaf.structure.helper.JsonHelper.mapper;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableSet;
 import io.vertx.core.json.JsonObject;
 import java.io.IOException;
@@ -24,6 +22,8 @@ import tech.raaf.structure.base.Context;
 import tech.raaf.structure.bus.NodeActor;
 import tech.raaf.structure.graph.*;
 import tech.raaf.structure.schema.TypeSchemaTest;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ObjectNode;
 
 public class InstrumentRepositoryTest extends TypeSchemaTest {
 

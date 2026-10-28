@@ -2,8 +2,6 @@ package tech.raaf.structure.graph;
 
 import static org.junit.Assert.*;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServer;
 import io.vertx.ext.web.Router;
@@ -19,6 +17,8 @@ import tech.raaf.structure.base.Context;
 import tech.raaf.structure.bus.manager.SchemaManager;
 import tech.raaf.structure.graph.repositories.NodeRepository;
 import tech.raaf.structure.helper.JsonHelper;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 
 public class ProfileTest extends GraphTest {
 

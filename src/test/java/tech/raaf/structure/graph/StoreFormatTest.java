@@ -3,8 +3,6 @@ package tech.raaf.structure.graph;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
@@ -16,6 +14,8 @@ import java.util.Set;
 import java.util.TreeMap;
 import org.junit.Test;
 import tech.raaf.structure.schema.TypeSchemaTest;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * Checks the stored format of some nodes from the bundles. This format
@@ -197,7 +197,7 @@ public class StoreFormatTest extends TypeSchemaTest {
 
   private void assertFile(Stored n, String key, String encoding, String format, String path) throws Exception {
     JsonNode file = mapper.readTree((String) n.properties.get(key));
-    assertEquals(FILE_KEYS, Sets.newHashSet(file.fieldNames()));
+    assertEquals(FILE_KEYS, Sets.newHashSet(file.propertyNames()));
     assertEquals(encoding, file.get("encoding").asText());
     assertEquals(format, file.get("format").asText());
     assertEquals(path, file.get("path").asText());

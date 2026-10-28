@@ -1,8 +1,5 @@
 package tech.raaf.structure.bus;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -16,6 +13,9 @@ import tech.raaf.structure.graph.*;
 import tech.raaf.structure.graph.repositories.ComponentRepository;
 import tech.raaf.structure.graph.repositories.InstanceRepository;
 import tech.raaf.structure.graph.repositories.InstrumentRepository;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.ObjectNode;
 
 public class InstanceActor extends NodeActor<Instance> {
 
@@ -51,7 +51,7 @@ public class InstanceActor extends NodeActor<Instance> {
 
         ArrayNode allResults = result.putArray("data");
         if (component != null) {
-          component.getResults(args.path("task").textValue()).forEach(r -> allResults.add(r.toJson()));
+          component.getResults(args.path("task").stringValue(null)).forEach(r -> allResults.add(r.toJson()));
         }
 
         return response(request, result);

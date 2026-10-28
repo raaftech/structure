@@ -1,13 +1,13 @@
 package tech.raaf.structure.bus.repository;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.List;
 import tech.raaf.structure.annotations.SchemaPath;
 import tech.raaf.structure.graph.Graph;
 import tech.raaf.structure.graph.Type;
 import tech.raaf.structure.graph.repositories.TypeRepository;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.ObjectNode;
 
 public class Types extends Repository<Type> {
 
@@ -30,7 +30,7 @@ public class Types extends Repository<Type> {
         Graph.transaction(() -> {
           final Type found = repository.findOneByCaseInsensitiveName(name);
           if (found != null) {
-            result.put("data", mapper.valueToTree(found));
+            result.set("data", mapper.valueToTree(found));
           } else {
             result.put("error", "Couldn't find type with name " + name);
           }

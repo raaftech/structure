@@ -2,9 +2,6 @@ package tech.raaf.structure.graph;
 
 import static tech.raaf.structure.helper.JsonHelper.mapper;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import java.util.List;
@@ -21,6 +18,9 @@ import org.slf4j.LoggerFactory;
 import tech.raaf.structure.base.Configuration;
 import tech.raaf.structure.base.Context;
 import tech.raaf.structure.graph.repositories.TypeRepository;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ObjectNode;
 
 public class Profile extends Instance {
 
@@ -120,7 +120,7 @@ public class Profile extends Instance {
     }
     try {
       return Optional.of(mapper.treeToValue(maybeJson.get(), Map.class));
-    } catch (JsonProcessingException e) {
+    } catch (JacksonException e) {
       if (Configuration.isTraceModeOn()) {
         e.printStackTrace();
       }
@@ -157,7 +157,7 @@ public class Profile extends Instance {
     }
     try {
       return mapper.treeToValue(maybeDirectories.get(), Map.class);
-    } catch (JsonProcessingException e) {
+    } catch (JacksonException e) {
       if (Configuration.isTraceModeOn()) {
         e.printStackTrace();
       }
