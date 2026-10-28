@@ -4,9 +4,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import tech.raaf.structure.base.Configuration;
 import tech.raaf.structure.exceptions.JsonValidationException;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
@@ -25,8 +22,6 @@ import tools.jackson.databind.node.ObjectNode;
  *
  */
 public class JsonSchemaBuilder {
-
-  static final Logger log = LoggerFactory.getLogger(JsonSchemaBuilder.class);
 
   private ObjectNode json;
 
@@ -124,13 +119,6 @@ public class JsonSchemaBuilder {
       property.setDescription(description);
     } catch (Exception e) {
       properties.remove(name);
-
-      log.error(e.getMessage());
-
-      if (Configuration.isTraceModeOn()) {
-        e.printStackTrace();
-      }
-
       throw e;
     }
     if (req) {
@@ -234,13 +222,6 @@ public class JsonSchemaBuilder {
       item.setType(type);
     } catch (Exception e) {
       items.remove(name);
-
-      log.error(e.getMessage());
-
-      if (Configuration.isTraceModeOn()) {
-        e.printStackTrace();
-      }
-
       throw e;
     }
     if (req) {

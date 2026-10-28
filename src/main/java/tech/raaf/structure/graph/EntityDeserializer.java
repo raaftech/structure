@@ -241,7 +241,7 @@ public class EntityDeserializer extends StdDeserializer<Entity> {
                 throw JacksonIOException.construct(e, jsonParser);
               }
             } else {
-              log.error("\"" + filePath + "\" does not exist or is a directory");
+              throw new EntityDeserializationException("\"" + filePath + "\" does not exist or is a directory");
             }
           } else if (value.has("content")) {
             // we don't lowercase the key variable, because the schema is case sensitive
@@ -252,7 +252,6 @@ public class EntityDeserializer extends StdDeserializer<Entity> {
           }
 
           if (!value.has("content")) {
-            log.error("No content field found, stopping load process.");
             throw new EntityDeserializationException("No content field found, stopping load process.");
           }
           // we now have content, so we can validate, or create a checksum
@@ -388,9 +387,6 @@ public class EntityDeserializer extends StdDeserializer<Entity> {
       final Path bundleFile = NaiveSorter.checksumToFiles.get(checksum);
       final Path directory = bundleFile == null ? Configuration.get(Setting.HOME) : bundleFile.getParent();
       filePath = directory.resolve(givenFilePath.getPath()).toFile();
-    }
-    if (!filePath.isFile()) {
-      log.warn("Path helper failed to find file: {}", filePath.getPath());
     }
     return filePath;
   }
