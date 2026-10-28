@@ -1,0 +1,29 @@
+{
+  "name": "SystemStarterProfile",
+  "desc": "A profile that detects SystemStarter.",
+  "meta": {
+    "uuid": "cc332440-ab25-4fa3-8ba5-091e1ac4cd0f",
+    "relations": {
+      "INSTANCE_OF": {
+        "direction": "outgoing",
+        "to": ["Profile"]
+      },
+      "APPLIES_TO": {
+        "direction": "outgoing",
+        "to": ["SystemStarter"]
+      },
+      "PROVIDED_BY": {
+        "direction": "outgoing",
+        "to": ["SystemStarter"]
+      }
+    }
+  },
+  "data": {
+    "directories": {
+      "binaryDirectories": ["/sbin"]
+    },
+    "files": {
+      "binaryFiles": ["SystemStarter"]
+    }
+  }
+}

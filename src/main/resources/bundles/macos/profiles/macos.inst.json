@@ -1,0 +1,35 @@
+{
+  "name": "MacOsProfile",
+  "desc": "A profile that detects macOS.",
+  "meta": {
+    "uuid": "e069eed0-514c-4144-8756-5da8e4b9f8fd",
+    "relations": {
+      "INSTANCE_OF": {
+        "direction": "outgoing",
+        "to": ["Profile"]
+      },
+      "APPLIES_TO": {
+        "direction": "outgoing",
+        "to": ["MacOs"]
+      },
+      "PROVIDED_BY": {
+        "direction": "outgoing",
+        "to": ["MacOs"]
+      }
+    }
+  },
+  "data": {
+    "directories": {
+      "configurationDirectories": ["/System/Library/CoreServices"]
+    },
+    "files": {
+      "configurationFiles": ["SystemVersion.plist"]
+    },
+    "commands": {
+      "uname": {
+        "command": "uname",
+        "matches": "Darwin"
+      }
+    }
+  }
+}
