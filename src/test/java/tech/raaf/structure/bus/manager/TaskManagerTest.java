@@ -1,11 +1,11 @@
 package tech.raaf.structure.bus.manager;
 
-import static io.vertx.core.json.Json.mapper;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static tech.raaf.structure.helper.JsonHelper.mapper;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -235,7 +235,7 @@ public class TaskManagerTest extends TypeSchemaTest {
     CompletableFuture<Object> reply = new CompletableFuture<>();
     Context.getVertx()
       .eventBus()
-      .send(TASK_MANAGER, request, ar -> {
+      .request(TASK_MANAGER, request, ar -> {
         if (ar.succeeded()) {
           reply.complete(ar.result().body());
         } else {

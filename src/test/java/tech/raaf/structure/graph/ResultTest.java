@@ -1,10 +1,10 @@
 package tech.raaf.structure.graph;
 
-import static io.vertx.core.json.Json.mapper;
 import static junit.framework.TestCase.assertFalse;
 import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static tech.raaf.structure.helper.JsonHelper.mapper;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.net.URI;

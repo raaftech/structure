@@ -4,10 +4,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.vertx.core.json.JsonObject;
-import io.vertx.core.logging.Logger;
-import io.vertx.core.logging.LoggerFactory;
 import java.util.Iterator;
 import java.util.UUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import tech.raaf.structure.annotations.SchemaPath;
 import tech.raaf.structure.base.Context;
 import tech.raaf.structure.bus.GenericActor;
@@ -138,7 +138,7 @@ public class InstrumentManager extends GenericActor {
           final UUID uuid = UUID.fromString(iter.next().asText());
           final String address = String.format(instanceActorFormat, uuid);
           log.info("Sending message to " + address);
-          vertx.eventBus().send(address, message, handler -> {
+          vertx.eventBus().request(address, message, handler -> {
             if (handler.failed()) {
               log.error("Error while sending message to " + address + ": " + handler.cause().getMessage());
             }

@@ -1,7 +1,7 @@
 package tech.raaf.structure.graph;
 
-import static io.vertx.core.json.Json.mapper;
 import static org.junit.Assert.*;
+import static tech.raaf.structure.helper.JsonHelper.mapper;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.Set;

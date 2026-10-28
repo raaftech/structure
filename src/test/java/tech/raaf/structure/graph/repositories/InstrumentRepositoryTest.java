@@ -1,7 +1,7 @@
 package tech.raaf.structure.graph.repositories;
 
-import static io.vertx.core.json.Json.mapper;
 import static org.junit.Assert.*;
+import static tech.raaf.structure.helper.JsonHelper.mapper;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -302,7 +302,7 @@ public class InstrumentRepositoryTest extends TypeSchemaTest {
       CompletableFuture<Object> reply = new CompletableFuture<>();
       Context.getVertx()
         .eventBus()
-        .send("tech.raaf.structure.bus.node." + sshd.getUuid(), new JsonObject(request.toString()), ar -> {
+        .request("tech.raaf.structure.bus.node." + sshd.getUuid(), new JsonObject(request.toString()), ar -> {
           if (ar.succeeded()) {
             reply.complete(ar.result().body());
           } else {

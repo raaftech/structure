@@ -1,6 +1,6 @@
 package tech.raaf.structure.helper;
 
-import static io.vertx.core.json.Json.mapper;
+import static tech.raaf.structure.helper.JsonHelper.mapper;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.io.File;

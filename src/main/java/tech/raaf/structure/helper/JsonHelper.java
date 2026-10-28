@@ -26,7 +26,8 @@ import tech.raaf.structure.bus.manager.SchemaManager;
  */
 public class JsonHelper {
 
-  private static final ObjectMapper mapper = new ObjectMapper();
+  // The mapper for all JSON in Structure
+  public static final ObjectMapper mapper = new ObjectMapper();
   private static final Logger log = LoggerFactory.getLogger(JsonHelper.class);
 
   /**

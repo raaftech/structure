@@ -12,6 +12,7 @@ import io.vertx.core.http.HttpServerOptions;
 import io.vertx.core.net.JksOptions;
 import io.vertx.ext.bridge.PermittedOptions;
 import io.vertx.ext.web.Router;
+import io.vertx.ext.web.handler.FileSystemAccess;
 import io.vertx.ext.web.handler.StaticHandler;
 import io.vertx.ext.web.handler.sockjs.SockJSBridgeOptions;
 import io.vertx.ext.web.handler.sockjs.SockJSHandler;
@@ -122,7 +123,6 @@ public class Application {
     Vertx vertx;
     HttpServer httpServer;
     Router router;
-    SockJSHandler sockJsHandler;
 
     // Tell the user we're starting up.
     log.info(
@@ -168,24 +168,6 @@ public class Application {
       .addInboundPermitted(new PermittedOptions().setAddressRegex("tech\\.raaf\\.structure\\..*"))
       .addOutboundPermitted(new PermittedOptions().setAddressRegex("tech\\.raaf\\.structure\\..*"));
 
-    // Setup httpServer, router and sockJs.
-    httpServer = vertx.createHttpServer(
-      new HttpServerOptions()
-        .setSsl(true)
-        .setKeyStoreOptions(new JksOptions().setPath(jks.toString()).setPassword(jksPass))
-    );
-    sockJsHandler = SockJSHandler.create(vertx);
-    sockJsHandler.bridge(bridgeOptions);
-    router = Router.router(vertx);
-    // One of the endpoints will be routed to SchemaManager, so instance it
-    SchemaManager schemaManager = new SchemaManager();
-    // Setup routes
-    router.route("/eventbus/*").handler(sockJsHandler);
-    router.route("/bundles/*").handler(files(Configuration.resources().resolve("bundles")));
-    // The schema handler queries the graph, so it must not run on the event loop
-    router.route("/schemas/:schema").blockingHandler(schemaManager::getSchema, false);
-    router.route("/*").handler(files(Configuration.resources().resolve("webroot")));
-
     // If we're in unsafe mode allow direct access to everything
     // on the eventbus and serve the debug page.
     if (Configuration.get(Setting.UNSAFE)) {
@@ -193,6 +175,22 @@ public class Application {
       bridgeOptions.addInboundPermitted(new PermittedOptions().setAddressRegex(".*"));
       bridgeOptions.addOutboundPermitted(new PermittedOptions().setAddressRegex(".*"));
     }
+
+    // Setup httpServer, router and sockJs.
+    httpServer = vertx.createHttpServer(
+      new HttpServerOptions()
+        .setSsl(true)
+        .setKeyStoreOptions(new JksOptions().setPath(jks.toString()).setPassword(jksPass))
+    );
+    router = Router.router(vertx);
+    // One of the endpoints will be routed to SchemaManager, so instance it
+    SchemaManager schemaManager = new SchemaManager();
+    // Setup routes
+    router.route("/eventbus/*").subRouter(SockJSHandler.create(vertx).bridge(bridgeOptions));
+    router.route("/bundles/*").handler(files(Configuration.resources().resolve("bundles")));
+    // The schema handler queries the graph, so it must not run on the event loop
+    router.route("/schemas/:schema").blockingHandler(schemaManager::getSchema, false);
+    router.route("/*").handler(files(Configuration.resources().resolve("webroot")));
 
     // Setup indexes and constraints
     log.info("Creating indices.");
@@ -217,7 +215,7 @@ public class Application {
     } catch (URISyntaxException e) {
       handleUnrecoverableLoadingError(e, 1, "Unrecoverable error while setting schema namespace");
     }
-    final HttpServer server = httpServer.requestHandler(router::accept);
+    final HttpServer server = httpServer.requestHandler(router);
     try {
       Application.<HttpServer>await(handler -> server.listen(port, host, handler));
     } catch (InterruptedException | ExecutionException e) {
@@ -230,7 +228,7 @@ public class Application {
 
   // A handler that serves the files in a directory.
   private static StaticHandler files(Path directory) {
-    return StaticHandler.create().setAllowRootFileSystemAccess(true).setWebRoot(directory.toString());
+    return StaticHandler.create(FileSystemAccess.ROOT, directory.toString());
   }
 
   // The constraints and indexes, each in its own transaction

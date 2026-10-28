@@ -1,8 +1,8 @@
 package tech.raaf.structure.bus;
 
-import static io.vertx.core.json.Json.mapper;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static tech.raaf.structure.helper.JsonHelper.mapper;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import io.vertx.core.Verticle;
@@ -214,7 +214,7 @@ public class BusRoundTripTest extends TypeSchemaTest {
     }
     Context.getVertx()
       .eventBus()
-      .send(address, request, new DeliveryOptions().setSendTimeout(10000), ar -> {
+      .request(address, request, new DeliveryOptions().setSendTimeout(10000), ar -> {
         if (ar.succeeded()) {
           reply.complete(ar.result().body());
         } else {

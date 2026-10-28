@@ -36,7 +36,7 @@ public class ProfileTest extends GraphTest {
 
     // Port 0 lets the system choose a free port
     final CompletableFuture<HttpServer> listening = new CompletableFuture<>();
-    httpServer.requestHandler(router::accept).listen(0, "localhost", ar -> {
+    httpServer.requestHandler(router).listen(0, "localhost", ar -> {
       if (ar.succeeded()) {
         listening.complete(ar.result());
       } else {
