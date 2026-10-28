@@ -304,6 +304,15 @@ public class BundleGraphTest extends TypeSchemaTest {
     }
   }
 
+  // Invoke takes the shell with the most weight: the most recent shell
+  @Test
+  public void invokeTakesHeaviestShell() {
+    assertEquals("ZshInvoke", invokeWith("Sh", "Ksh", "Csh", "Tcsh", "Bash", "Zsh"));
+    assertEquals("BashInvoke", invokeWith("Tcsh", "Bash"));
+    assertEquals("TcshInvoke", invokeWith("Sh", "Tcsh"));
+    assertEquals("KshInvoke", invokeWith("Ksh", "Sh"));
+  }
+
   // The discovery script runs on each Python, thus also on Python 2
   @Test
   public void pythonDiscoverNeedsPython() {
@@ -320,6 +329,14 @@ public class BundleGraphTest extends TypeSchemaTest {
         .collect(Collectors.toList());
       assertEquals("PythonDiscover with Python: " + python, python, names.contains("PythonDiscover"));
     }
+  }
+
+  private static String invokeWith(String... shells) {
+    Component host = software("Linux");
+    for (String shell : shells) {
+      host.addComponent(software(shell));
+    }
+    return Context.getInstrumentRepository().getInvokableInterpreter(subject(host).getUuid()).getName();
   }
 
   private static Group subject(Component host) {

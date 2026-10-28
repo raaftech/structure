@@ -136,6 +136,7 @@ public class StoreFormatTest extends TypeSchemaTest {
         "created",
         "data-subjectIsLocal",
         "data-instrumentType",
+        "data-weight",
         "data-arguments",
         "file-dataSchema",
         "file-templateFile"
@@ -148,6 +149,7 @@ public class StoreFormatTest extends TypeSchemaTest {
     assertEquals(BUNDLES + "bash/bashinvoke.inst.json", n.properties.get("path"));
     assertEquals(true, n.properties.get("data-subjectIsLocal"));
     assertEquals("controller", n.properties.get("data-instrumentType"));
+    assertEquals(50L, n.properties.get("data-weight"));
     assertJson(
       "{\"script\": {\"value\": {\"from\": \"static\", \"type\": \"string\", \"strategy\": \"mustBeOne\"}," +
         " \"canBeUserSupplied\": false, \"isOptional\": false}}",

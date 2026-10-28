@@ -88,7 +88,7 @@ public class InstrumentRepository extends GenericRepository<Instrument> {
         "-[:ISA|INSTANCE_OF*..]->({name: 'Interpreter'}) " +
         "MATCH p = (component)-[:ISA|INSTANCE_OF*..]->(t)<-[:PROVIDED_BY]-(n)" +
         "-[:GIVES_CAPABILITY]->({name: 'Invoke'}) " +
-        "RETURN n ORDER BY length(p) ASC LIMIT 1",
+        "RETURN n ORDER BY length(p) ASC, coalesce(n.`data-weight`, 0) DESC LIMIT 1",
       ImmutableMap.of("uuid", instanceUuid)
     );
   }

@@ -25,6 +25,7 @@
   "data": {
     "instrumentType": "controller",
     "subjectIsLocal": true,
+    "weight": 20,
     "arguments": {
       "script": {
         "value": {
