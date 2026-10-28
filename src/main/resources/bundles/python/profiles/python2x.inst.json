@@ -21,7 +21,7 @@
   "data": {
     "commands": {
       "pyversion": {
-        "command": "python2 --version",
+        "command": "python2 --version 2>&1",
         "matches": "Python 2"
       }
     }
