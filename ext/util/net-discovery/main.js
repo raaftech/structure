@@ -53,11 +53,11 @@ const resolvePersistErrors = (network, list) => {
   let toObject = R.map((x) => JSON.parse(x));
   let filterErrors = R.compose(toObject, getStrings);
   let removeFromRelation = (network, uuid) => {
-    network.meta.relations.HAS.uuids = R.reject(R.equals(uuid), network.meta.relations.HAS.uuids);
+    network.meta.relations.HAS.to = R.reject(R.equals(uuid), network.meta.relations.HAS.to);
     return network;
   };
   let addRelation = (network, uuid) => {
-    network.meta.relations.HAS.uuids = R.append(uuid, network.meta.relations.HAS.uuids);
+    network.meta.relations.HAS.to = R.append(uuid, network.meta.relations.HAS.to);
     return network;
   };
   console.log(list);
@@ -70,7 +70,7 @@ const resolvePersistErrors = (network, list) => {
   R.forEach((item) => {
     if (item.code === 409) {
       network = removeFromRelation(network, item.uuid);
-      if (!R.contains(item.conflict, network.meta.relations.HAS.uuids)) network = addRelation(network, item.conflict);
+      if (!R.contains(item.conflict, network.meta.relations.HAS.to)) network = addRelation(network, item.conflict);
     } else {
       network = removeFromRelation(network, item.uuid);
     }
