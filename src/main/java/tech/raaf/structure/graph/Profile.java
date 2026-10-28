@@ -84,7 +84,7 @@ public class Profile extends Instance {
    * an empty {@link Optional}.
    */
   public Optional<List<String>> getPackageNames() {
-    return dataArrayStringToList(PACKAGENAMES, JsonNode::asText);
+    return dataArrayStringToList(PACKAGENAMES, JsonNode::asString);
   }
 
   /**
@@ -93,7 +93,7 @@ public class Profile extends Instance {
    * an empty {@link Optional}.
    */
   public Optional<List<String>> getServiceNames() {
-    return dataArrayStringToList(SERVICENAMES, JsonNode::asText);
+    return dataArrayStringToList(SERVICENAMES, JsonNode::asString);
   }
 
   /**

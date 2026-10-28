@@ -53,7 +53,7 @@ public class EntityManager extends GenericActor {
     if (json.has(META) && !json.get(META).has(UUlD)) {
       return true;
     }
-    String uuid = json.get(META).get(UUlD).asText();
+    String uuid = json.get(META).get(UUlD).asString();
 
     return nodeRepository.findByUuid(uuid) == null;
   };
@@ -145,10 +145,12 @@ public class EntityManager extends GenericActor {
         ObjectNode args = (ObjectNode) request.get("args");
         ObjectNode result = mapper.createObjectNode();
 
-        final String startUuid = args.get(START).asText();
+        final String startUuid = args.get(START).asString();
         final boolean includeStart = args.has(INCLUDESTART) ? args.get(INCLUDESTART).asBoolean() : true;
         final Set<String> labels = ImmutableSet.copyOf(
-          StreamSupport.stream(args.get(LABELS).spliterator(), false).map(JsonNode::asText).collect(Collectors.toList())
+          StreamSupport.stream(args.get(LABELS).spliterator(), false)
+            .map(JsonNode::asString)
+            .collect(Collectors.toList())
         );
 
         Graph.transaction(() -> {
@@ -200,7 +202,7 @@ public class EntityManager extends GenericActor {
 
         if (args.has("oldEntities")) {
           oldEntitiesUuidToChecksum = StreamSupport.stream(args.get("oldEntities").spliterator(), false).collect(
-            Collectors.toMap(e -> e.get(META).get(UUlD).asText(), e -> e.get(META).get(CHECKSUM).asText())
+            Collectors.toMap(e -> e.get(META).get(UUlD).asString(), e -> e.get(META).get(CHECKSUM).asString())
           );
         } else {
           oldEntitiesUuidToChecksum = ImmutableMap.of();
@@ -295,11 +297,11 @@ public class EntityManager extends GenericActor {
         ObjectNode result = mapper.createObjectNode();
 
         List<String> labels = StreamSupport.stream(args.get("labels").spliterator(), false)
-          .map(JsonNode::asText)
+          .map(JsonNode::asString)
           .collect(Collectors.toList());
 
-        final String uuid = args.get("uuid").asText();
-        Node toDelete = nodeRepository.findByUuid(args.get("uuid").asText());
+        final String uuid = args.get("uuid").asString();
+        Node toDelete = nodeRepository.findByUuid(args.get("uuid").asString());
         if (toDelete == null) {
           result.put(ERROR, "Couldn't find node with UUID \"" + uuid + "\".");
           return response(request, result);
@@ -338,8 +340,8 @@ public class EntityManager extends GenericActor {
       public JsonNode exec(JsonNode request) {
         ObjectNode args = (ObjectNode) request.get("args");
         ObjectNode result = mapper.createObjectNode();
-        final String instanceUuid = args.get("instance").asText();
-        final String isaUuid = args.get("isa").asText();
+        final String instanceUuid = args.get("instance").asString();
+        final String isaUuid = args.get("isa").asString();
 
         try {
           Graph.transaction(() -> {
@@ -403,8 +405,8 @@ public class EntityManager extends GenericActor {
         final JsonNode args = request.get("args");
         final ObjectNode result = mapper.createObjectNode();
 
-        final String groupingUuid = args.get("grouping").asText();
-        final String groupeeUuid = args.get("groupee").asText();
+        final String groupingUuid = args.get("grouping").asString();
+        final String groupeeUuid = args.get("groupee").asString();
 
         final Group group = Context.getGroupingRepository().findByUuid(groupingUuid);
         final Node groupee = nodeRepository.findByUuid(groupeeUuid);
@@ -456,8 +458,8 @@ public class EntityManager extends GenericActor {
         final JsonNode args = request.get("args");
         final ObjectNode result = mapper.createObjectNode();
 
-        final String groupingUuid = args.get("grouping").asText();
-        final String groupeeUuid = args.get("groupee").asText();
+        final String groupingUuid = args.get("grouping").asString();
+        final String groupeeUuid = args.get("groupee").asString();
 
         final Group group = Context.getGroupingRepository().findByUuid(groupingUuid);
         final Node groupee = nodeRepository.findByUuid(groupeeUuid);

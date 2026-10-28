@@ -100,7 +100,7 @@ public class ControllerRunTest extends TypeSchemaTest {
     args.putObject("arguments").put("count", "1");
     JsonNode reply = send(NODE + address.getUuid(), "runInstrument", args);
     assertFalse(reply.path("result").has("error"), reply.toString());
-    String task = reply.path("result").path("data").asText();
+    String task = reply.path("result").path("data").asString();
 
     Map<String, Object> result = awaitResult(address.getUuid(), task);
     assertEquals(PING, result.get("controller"));

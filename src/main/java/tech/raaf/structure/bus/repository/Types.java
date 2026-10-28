@@ -25,7 +25,7 @@ public class Types extends Repository<Type> {
       public JsonNode exec(JsonNode request) {
         final ObjectNode result = mapper.createObjectNode();
         final JsonNode args = request.get("args");
-        final String name = args.get("name").asText().toLowerCase();
+        final String name = args.get("name").asString().toLowerCase();
 
         Graph.transaction(() -> {
           final Type found = repository.findOneByCaseInsensitiveName(name);

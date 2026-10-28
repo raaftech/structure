@@ -159,9 +159,9 @@ public class InstrumentRelationsTest extends TypeSchemaTest {
 
   private void assertRelation(JsonNode json, String name, Set<? extends Node> peers) {
     JsonNode relation = json.path("meta").path("relations").path(name);
-    assertEquals("outgoing", relation.path("direction").asText());
+    assertEquals("outgoing", relation.path("direction").asString());
     Set<UUID> targets = new HashSet<>();
-    relation.path("to").forEach(target -> targets.add(UUID.fromString(target.asText())));
+    relation.path("to").forEach(target -> targets.add(UUID.fromString(target.asString())));
     assertEquals(uuids(peers), targets);
   }
 }

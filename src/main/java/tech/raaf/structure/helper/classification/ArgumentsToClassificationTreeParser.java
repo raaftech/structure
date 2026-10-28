@@ -85,8 +85,8 @@ public class ArgumentsToClassificationTreeParser {
     // Terminals
     Terminal<JsonNode> success = new Terminal<>(input -> {
       input.stream().forEach(node -> {
-        String key = node.get("_key").asText();
-        String from = node.get("_from").asText();
+        String key = node.get("_key").asString();
+        String from = node.get("_from").asString();
 
         // Sanitize
         ((ObjectNode) node).remove("_from");
@@ -103,7 +103,7 @@ public class ArgumentsToClassificationTreeParser {
           ((ArrayNode) result.get(key)).add(node);
         } else {
           if (from.equals("static")) {
-            result.put(key, node.get("data").asText());
+            result.put(key, node.get("data").asString());
           } else {
             result.set(key, node);
           }
@@ -114,8 +114,8 @@ public class ArgumentsToClassificationTreeParser {
     Terminal<JsonNode> askUser = new Terminal<>(input -> returnObject.askUser.addAll(input));
     Terminal<JsonNode> ignore = new Terminal<>(input -> {});
 
-    final String strategyDefault = valueKeySchema.get("strategy").get("default").asText();
-    final String onErrorDefault = valueKeySchema.get("onError").get("default").asText();
+    final String strategyDefault = valueKeySchema.get("strategy").get("default").asString();
+    final String onErrorDefault = valueKeySchema.get("onError").get("default").asString();
 
     RootNode<JsonNode> root = new RootNode<>();
     returnObject.root = root;
@@ -140,7 +140,7 @@ public class ArgumentsToClassificationTreeParser {
       BranchNode<JsonNode> head;
 
       // Get the "from" key
-      String fromString = value.get("from").asText();
+      String fromString = value.get("from").asString();
       head = fromMap.get(fromString);
       if (head == null) {
         fromMap.put(fromString, new BranchNodeJson(root, "_from", fromString));
@@ -149,10 +149,10 @@ public class ArgumentsToClassificationTreeParser {
 
       // Get the "type" key
       if (!fromString.equals("static")) {
-        String typePath = value.get("type").asText();
+        String typePath = value.get("type").asString();
         head = new BranchNode<>(
           head,
-          node -> node.has(typeKey) && matchesTypePath(typePath, node.get(typeKey).asText())
+          node -> node.has(typeKey) && matchesTypePath(typePath, node.get(typeKey).asString())
         );
       } else {
         head = new BranchNodeJson(head, "name", keyName);
@@ -161,13 +161,13 @@ public class ArgumentsToClassificationTreeParser {
       // Get the "matches" key, which may be an object of K,V's, or a string
       JsonNode matches = value.get("matches");
       if (matches != null) {
-        if (matches.isTextual()) {
-          head = new BranchNodeJson(head, "data", value.get("matches").asText());
+        if (matches.isString()) {
+          head = new BranchNodeJson(head, "data", value.get("matches").asString());
         } else if (matches.isObject()) {
           Iterator<Map.Entry<String, JsonNode>> iter = ((ObjectNode) matches).properties().iterator();
           while (iter.hasNext()) {
             Map.Entry<String, JsonNode> entry = iter.next();
-            head = new BranchNodeJson(head, entry.getKey(), entry.getValue().asText());
+            head = new BranchNodeJson(head, entry.getKey(), entry.getValue().asString());
           }
         }
       }
@@ -179,10 +179,10 @@ public class ArgumentsToClassificationTreeParser {
       });
 
       // Get the strategy, which is a LeafNode.
-      String strategy = value.get("strategy") != null ? value.get("strategy").asText() : strategyDefault;
+      String strategy = value.get("strategy") != null ? value.get("strategy").asString() : strategyDefault;
       Function<Set<JsonNode>, Set<JsonNode>> strategyFunc = selectionMap.get(strategy);
 
-      Terminal<JsonNode> failure = onErrorTerminalMap.get(value.path("onError").asText());
+      Terminal<JsonNode> failure = onErrorTerminalMap.get(value.path("onError").asString());
       if (failure == null) {
         failure = onErrorTerminalMap.get(onErrorDefault);
       }

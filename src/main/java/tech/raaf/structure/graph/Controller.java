@@ -227,7 +227,7 @@ public class Controller extends Instrument {
     if (maybeTemplate.isPresent()) {
       final ObjectNode template = maybeTemplate.get();
       if (template.has("path")) {
-        extension = Optional.of(Files.getFileExtension(template.get("path").asText()));
+        extension = Optional.of(Files.getFileExtension(template.get("path").asString()));
       } else {
         extension = Optional.empty();
       }

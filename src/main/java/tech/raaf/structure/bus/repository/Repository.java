@@ -39,7 +39,7 @@ public abstract class Repository<T extends Node> extends GenericActor {
       public JsonNode exec(JsonNode request) {
         JsonNode args = request.get("args");
         ObjectNode result = mapper.createObjectNode();
-        String name = args.get("name").asText();
+        String name = args.get("name").asString();
 
         ArrayNode nodes = result.putArray("data");
         Set<T> found = repository.findByName(name);
@@ -67,7 +67,7 @@ public abstract class Repository<T extends Node> extends GenericActor {
       public JsonNode exec(JsonNode request) {
         JsonNode args = request.get("args");
         ObjectNode result = mapper.createObjectNode();
-        String name = args.get("name").asText();
+        String name = args.get("name").asString();
 
         T found = repository.findOneByName(name);
         if (found != null) {
@@ -101,7 +101,7 @@ public abstract class Repository<T extends Node> extends GenericActor {
       public JsonNode exec(JsonNode request) {
         ObjectNode result = mapper.createObjectNode();
         JsonNode args = request.get("args");
-        String node = args.get("node").asText();
+        String node = args.get("node").asString();
 
         if (isUuid(node)) {
           T found = repository.findByUuid(node);

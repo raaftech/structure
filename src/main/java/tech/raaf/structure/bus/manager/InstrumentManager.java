@@ -124,7 +124,7 @@ public class InstrumentManager extends GenericActor {
           .put("msgh", "runCapability")
           .put(
             "args",
-            new JsonObject().put("capability", args.get("capability").asText()).put("taskId", taskId.toString())
+            new JsonObject().put("capability", args.get("capability").asString()).put("taskId", taskId.toString())
           );
         if (args.has("arguments")) {
           message.getJsonObject("args").put("arguments", new JsonObject(args.get("arguments").toString()));
@@ -135,7 +135,7 @@ public class InstrumentManager extends GenericActor {
 
         // For every UUID send the message to its address on the bus
         for (final Iterator<JsonNode> iter = uuids.values().iterator(); iter.hasNext(); ) {
-          final UUID uuid = UUID.fromString(iter.next().asText());
+          final UUID uuid = UUID.fromString(iter.next().asString());
           final String address = String.format(instanceActorFormat, uuid);
           log.info("Sending message to " + address);
           vertx

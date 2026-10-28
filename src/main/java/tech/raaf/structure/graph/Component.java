@@ -52,8 +52,8 @@ public class Component extends Instance implements Groupable {
         "Cannot create component of type \"" + type.getName() + "\", JSON doesn't validate against it."
       );
     }
-    final String name = instanceDataCopy.get("name").asText();
-    final String desc = instanceDataCopy.get("desc").asText();
+    final String name = instanceDataCopy.get("name").asString();
+    final String desc = instanceDataCopy.get("desc").asString();
 
     this.name = name;
     this.desc = desc;

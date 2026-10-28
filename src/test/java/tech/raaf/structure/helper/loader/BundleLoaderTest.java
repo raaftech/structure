@@ -27,11 +27,11 @@ public class BundleLoaderTest extends GraphTest {
     ObjectNode component = (ObjectNode) JsonHelper.jsonFromResource("bundles/simple/component.type.json");
     constraint(root, "FORWARD", "Component");
     constraint(component, "SELF", "Component");
-    constraint(component, "ROOT", root.path("meta").path("uuid").asText());
+    constraint(component, "ROOT", root.path("meta").path("uuid").asString());
     Path bundle = Files.createDirectory(temporaryFolder.resolve("bundle"));
     for (ObjectNode entity : new ObjectNode[] { root, component }) {
       ((ObjectNode) entity.path("file").path("dataSchema")).remove("path");
-      mapper.writeValue(bundle.resolve(entity.path("name").asText() + ".type.json").toFile(), entity);
+      mapper.writeValue(bundle.resolve(entity.path("name").asString() + ".type.json").toFile(), entity);
     }
 
     new BundleLoader(ImmutableSet.of(temporaryFolder)).loadTypes();

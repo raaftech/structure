@@ -131,7 +131,7 @@ public class NaiveSorter {
     if (!JsonHelper.validateToSchema(ENTITYSCHEMA, input)) {
       throw new JsonValidationException(
         "Cannot calculate a checksum for type [" +
-          input.get("name").asText() +
+          input.get("name").asString() +
           "]: JSON does not validate against " +
           "entity schema"
       );
@@ -283,7 +283,7 @@ public class NaiveSorter {
       ArrayNode identifiers = (ArrayNode) relation.getValue().get("to");
       Iterator<JsonNode> iter = identifiers.values().iterator();
       while (iter.hasNext()) {
-        final String identifier = iter.next().asText();
+        final String identifier = iter.next().asString();
         if (GenericActor.isUuid(identifier)) {
           uuidDependencies.add(identifier);
         } else {
@@ -305,11 +305,11 @@ public class NaiveSorter {
   private Map<String, Set<String>> getMissingDependencies(JsonNode node, List<JsonNode> sortedArray) {
     Set<String> sortedUuids = sortedArray
       .stream()
-      .map(sortedNode -> sortedNode.get(META).get(UUID).asText())
+      .map(sortedNode -> sortedNode.get(META).get(UUID).asString())
       .collect(Collectors.toSet());
     Set<String> sortedNames = sortedArray
       .stream()
-      .map(sortedNode -> sortedNode.get(NAME).asText())
+      .map(sortedNode -> sortedNode.get(NAME).asString())
       .collect(Collectors.toSet());
 
     final Map<String, Set<String>> dependencies = getDeps(node);
@@ -369,12 +369,12 @@ public class NaiveSorter {
       throw new JsonValidationException("Expected an entity JSON object");
     }
     final JsonNode uuid = entity.path(META).path(UUID);
-    if (!uuid.isTextual() || uuid.asText().isEmpty()) {
-      throw new JsonValidationException("Missing or invalid meta.uuid for entity " + entity.path(NAME).asText());
+    if (!uuid.isString() || uuid.asString().isEmpty()) {
+      throw new JsonValidationException("Missing or invalid meta.uuid for entity " + entity.path(NAME).asString());
     }
-    final Path previous = uuidToFiles.putIfAbsent(uuid.asText(), file);
+    final Path previous = uuidToFiles.putIfAbsent(uuid.asString(), file);
     if (previous != null) {
-      throw new JsonValidationException("Duplicate uuid " + uuid.asText() + " in " + previous + " and " + file);
+      throw new JsonValidationException("Duplicate uuid " + uuid.asString() + " in " + previous + " and " + file);
     }
     final String checksum = calculateChecksum(injectFileReferences(entity, file), ChecksumAlgorithm.SHA1);
     checksumToFiles.put(checksum, file);
@@ -410,9 +410,9 @@ public class NaiveSorter {
           .map(item ->
             String.format(
               "%s (%s, %s): missing %s",
-              item.path(NAME).asText(),
-              item.path(META).path(UUID).asText(),
-              item.path(META).path(PATH).asText(),
+              item.path(NAME).asString(),
+              item.path(META).path(UUID).asString(),
+              item.path(META).path(PATH).asString(),
               getMissingDependencies(item, sorted)
             )
           )
@@ -452,7 +452,7 @@ public class NaiveSorter {
           continue;
         }
 
-        final Path entityFileReferencePath = entityFilePath.getParent().resolve(fileObject.get(PATH).asText());
+        final Path entityFileReferencePath = entityFilePath.getParent().resolve(fileObject.get(PATH).asString());
         // read the file's contents and inject it into the file JSON object
         if (entityFileReferencePath.toFile().exists()) {
           try {
@@ -475,16 +475,16 @@ public class NaiveSorter {
   public List<JsonNode> getUpdateList(List<JsonNode> sortedList) {
     List<JsonNode> updateEntityList = sortedList
       .stream()
-      .filter(n -> nodeRepository.findByUuid(n.get(META).get(UUID).asText()) != null)
+      .filter(n -> nodeRepository.findByUuid(n.get(META).get(UUID).asString()) != null)
       .filter(n -> {
-        Node node = nodeRepository.findByUuid(n.get(META).get(UUID).asText());
-        return !node.getChecksum().equals(n.get(META).get("checksum").asText());
+        Node node = nodeRepository.findByUuid(n.get(META).get(UUID).asString());
+        return !node.getChecksum().equals(n.get(META).get("checksum").asString());
       })
       .collect(Collectors.toList());
 
     List<JsonNode> newEntityList = sortedList
       .stream()
-      .filter(n -> nodeRepository.findByUuid(n.get(META).get(UUID).asText()) == null)
+      .filter(n -> nodeRepository.findByUuid(n.get(META).get(UUID).asString()) == null)
       .collect(Collectors.toList());
 
     log.debug("Update list: {} , new list: {}", updateEntityList.size(), newEntityList.size());

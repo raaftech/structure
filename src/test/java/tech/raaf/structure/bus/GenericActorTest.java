@@ -29,7 +29,7 @@ public class GenericActorTest {
     JsonNode request = JsonNodeFactory.instance.objectNode().put("msgh", "help");
     JsonNode result = new Probe().help().exec(request).path("result");
     assertFalse(result.has("silent"));
-    assertEquals("help", result.path("help").path("name").asText());
-    assertEquals("version", result.path("version").path("name").asText());
+    assertEquals("help", result.path("help").path("name").asString());
+    assertEquals("version", result.path("version").path("name").asString());
   }
 }

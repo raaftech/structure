@@ -553,7 +553,7 @@ public class InstrumentRunner {
       final String contextKey = toPass.inverse().get(selector);
       // We may have a particular property we're interested in, or we just want the whole object
       final Optional<String> contextProperty = selector.get(pass).has(key)
-        ? Optional.of(selector.get(pass).get(key).asText())
+        ? Optional.of(selector.get(pass).get(key).asString())
         : Optional.empty();
       /*
         If contextProperty is present, get the value of the key we want from the context.
@@ -572,7 +572,7 @@ public class InstrumentRunner {
         }
         if (contextProperty.isPresent()) {
           contextValue = context.get(contextKey).has(contextProperty.get())
-            ? context.get(contextKey).get(contextProperty.get()).asText()
+            ? context.get(contextKey).get(contextProperty.get()).asString()
             : "";
         } else {
           contextValue = context.get(contextKey).toString();
@@ -583,7 +583,7 @@ public class InstrumentRunner {
 
       final String arg;
       if (selector.get(pass).has(option)) {
-        arg = Quote.SH.quote(selector.get(pass).get(option).asText()) + " " + Quote.SH.quote(contextValue);
+        arg = Quote.SH.quote(selector.get(pass).get(option).asString()) + " " + Quote.SH.quote(contextValue);
       } else {
         arg = Quote.SH.quote(contextValue);
       }
@@ -651,7 +651,7 @@ public class InstrumentRunner {
     staticArguments.setAll(generatedArguments);
     // add the static arguments to our context in a way we can filter
     staticArguments.properties().forEach(entry -> {
-      ObjectNode node = mapper.createObjectNode().put("name", entry.getKey()).put("data", entry.getValue().asText());
+      ObjectNode node = mapper.createObjectNode().put("name", entry.getKey()).put("data", entry.getValue().asString());
       collect.accept(node, "static");
     });
 

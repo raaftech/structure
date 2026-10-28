@@ -175,7 +175,7 @@ public abstract class Node {
     final Optional<String> content;
     final Optional<ObjectNode> file = getFile(name);
     if (file.isPresent()) {
-      content = Optional.of(file.get().get("content").asText());
+      content = Optional.of(file.get().get("content").asString());
     } else {
       content = Optional.empty();
     }

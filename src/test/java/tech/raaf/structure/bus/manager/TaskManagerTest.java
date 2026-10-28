@@ -126,7 +126,7 @@ public class TaskManagerTest extends TypeSchemaTest {
 
     JsonNode results = getResults(origin, mapper.createObjectNode());
     List<String> actual = new ArrayList<>();
-    results.forEach(result -> actual.add(result.path("task").asText()));
+    results.forEach(result -> actual.add(result.path("task").asString()));
     assertEquals(expected, actual);
   }
 
@@ -136,7 +136,7 @@ public class TaskManagerTest extends TypeSchemaTest {
     for (String task : queueResults(origin).keySet()) {
       JsonNode results = getResults(origin, mapper.createObjectNode().put("task", task));
       assertEquals(1, results.size(), "Results for task " + task);
-      assertEquals(task, results.get(0).path("task").asText());
+      assertEquals(task, results.get(0).path("task").asString());
     }
   }
 
@@ -224,7 +224,7 @@ public class TaskManagerTest extends TypeSchemaTest {
     message.set("args", args);
     JsonObject request = new JsonObject(message.toString());
     final Object reply = Context.getVertx().eventBus().request(TASK_MANAGER, request).await().body();
-    assertEquals(task, mapper.readTree(reply.toString()).path("result").path("data").asText());
+    assertEquals(task, mapper.readTree(reply.toString()).path("result").path("data").asString());
   }
 
   // The TaskManager timer writes the result, so poll the graph

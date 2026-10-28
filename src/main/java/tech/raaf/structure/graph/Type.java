@@ -393,7 +393,7 @@ public class Type extends Node {
       String dataSchemaContent = mapper
         .readTree((String) getFiles().get("dataSchema"))
         .get("content")
-        .asText();
+        .asString();
       schema = new JsonSchemaBuilder((ObjectNode) mapper.readTree(dataSchemaContent));
     } catch (JsonValidationException | JacksonException e) {
       if (Configuration.isTraceModeOn()) {

@@ -166,17 +166,17 @@ public class ConfigurationTest {
     assertEquals("rw-------", PosixFilePermissions.toString(Files.getPosixFilePermissions(file)));
     final JsonNode json = new ObjectMapper().readTree(file.toFile());
     assertFalse(json.has("help"));
-    assertEquals("secret", json.get("neo4j-pass").asText());
-    assertEquals("http://localhost:7474", json.get("neo4j-http-uri").asText());
+    assertEquals("secret", json.get("neo4j-pass").asString());
+    assertEquals("http://localhost:7474", json.get("neo4j-http-uri").asString());
     assertEquals(8443, json.get("https-port").asInt());
     assertEquals(3443, json.get("rest-port").asInt());
     assertEquals(
       Configuration.get(Setting.HOME).resolve("target/structure.jks").toString(),
-      json.get("jks-file").asText()
+      json.get("jks-file").asString()
     );
     assertEquals(
       Configuration.get(Setting.HOME).resolve("src/main/resources/bundles").toString(),
-      json.get("bundle-path").get(0).asText()
+      json.get("bundle-path").get(0).asString()
     );
   }
 

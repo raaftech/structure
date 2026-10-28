@@ -77,7 +77,7 @@ public class InstanceActor extends NodeActor<Instance> {
       public JsonNode exec(JsonNode request) {
         ObjectNode result = mapper.createObjectNode();
         JsonNode args = request.get("args");
-        String type = args.get("type").asText();
+        String type = args.get("type").asString();
 
         Set<Component> found = componentRepository.findChildrenByType(uuid, type);
         if (found != null && found.size() > 0) {
@@ -154,7 +154,7 @@ public class InstanceActor extends NodeActor<Instance> {
         JsonNode instrumentArgs;
         Controller instrument = null;
 
-        String instrumentId = args.get("instrument").asText();
+        String instrumentId = args.get("instrument").asString();
 
         if (isUuid(instrumentId)) {
           instrument = (Controller) instrumentRepository.findByUuid(instrumentId);
@@ -246,8 +246,8 @@ public class InstanceActor extends NodeActor<Instance> {
         }
 
         final JsonNode args = request.get("args");
-        final String capability = args.get("capability").asText();
-        final UUID taskId = args.has("taskId") ? UUID.fromString(args.get("taskId").asText()) : UUID.randomUUID();
+        final String capability = args.get("capability").asString();
+        final UUID taskId = args.has("taskId") ? UUID.fromString(args.get("taskId").asString()) : UUID.randomUUID();
 
         final Set<Controller> controllersForCapability = instrumentRepository.findAvailableControllers(
           getNode().getUuid(),

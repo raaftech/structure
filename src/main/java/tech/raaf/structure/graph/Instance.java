@@ -56,7 +56,7 @@ public abstract class Instance extends Node {
   }
 
   public Instance(ObjectNode json, Type isa) {
-    this(json.get("name").asText(), json.get("desc").asText(), isa);
+    this(json.get("name").asString(), json.get("desc").asString(), isa);
     instanceData = json.deepCopy();
     setProperties(json);
   }

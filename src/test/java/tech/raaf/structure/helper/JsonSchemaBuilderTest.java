@@ -28,7 +28,7 @@ public class JsonSchemaBuilderTest {
   public void testJsonSchema() {
     ObjectNode node = jsonSchema.getAsObjectNode();
 
-    assertEquals("http://json-schema.org/draft-04/schema#", node.get("$schema").asText());
+    assertEquals("http://json-schema.org/draft-04/schema#", node.get("$schema").asString());
   }
 
   @Test
@@ -36,9 +36,9 @@ public class JsonSchemaBuilderTest {
     jsonSchema = new JsonSchemaBuilder("id", "foo", "bar");
     ObjectNode node = jsonSchema.getAsObjectNode();
 
-    assertEquals("id", node.get("id").asText());
-    assertEquals("foo", node.get("title").asText());
-    assertEquals("bar", node.get("description").asText());
+    assertEquals("id", node.get("id").asString());
+    assertEquals("foo", node.get("title").asString());
+    assertEquals("bar", node.get("description").asString());
   }
 
   @Test
@@ -47,7 +47,7 @@ public class JsonSchemaBuilderTest {
     String type;
 
     jsonSchema.setType("string");
-    type = node.get("type").asText();
+    type = node.get("type").asString();
     assertEquals("string", type);
 
     // Create new JsonSchema, because we can't change the type when it has been set
@@ -55,7 +55,7 @@ public class JsonSchemaBuilderTest {
     node = jsonSchema.getAsObjectNode();
 
     jsonSchema.setType("null");
-    type = node.get("type").asText();
+    type = node.get("type").asString();
     assertEquals("null", type);
 
     // Create new JsonSchema, because we can't change the type when it has been set
@@ -71,11 +71,11 @@ public class JsonSchemaBuilderTest {
     jsonSchema.setType("object");
 
     node = jsonSchema.addProperty("prop1", "string", false, "description").getAsObjectNode();
-    assertEquals("string", node.get("type").asText());
+    assertEquals("string", node.get("type").asString());
 
     schema = jsonSchema.addProperty("prop2", "object", true, "description");
     node = schema.getAsObjectNode();
-    assertEquals("object", node.get("type").asText());
+    assertEquals("object", node.get("type").asString());
 
     schema.addProperty("subprop1", "boolean", true, "description");
     schema.addProperty("subprop2", "string", false, "description");
@@ -112,15 +112,15 @@ public class JsonSchemaBuilderTest {
     schema = jsonSchema.addProperty("baz", "object", true, "description");
     required = jsonSchema.getRequired();
 
-    assertEquals("foo", required.get(0).asText());
-    assertEquals("baz", required.get(1).asText());
+    assertEquals("foo", required.get(0).asString());
+    assertEquals("baz", required.get(1).asString());
 
     schema.addProperty("prop1", "array", true, "description");
     schema.addProperty("null", "null", false, "description");
 
     required = schema.getRequired();
 
-    assertEquals("prop1", required.get(0).asText());
+    assertEquals("prop1", required.get(0).asString());
   }
 
   @Test
@@ -145,7 +145,7 @@ public class JsonSchemaBuilderTest {
     jsonSchema.setType("object");
     jsonSchema.addProperty("foo", "number", true, "description");
     assertTrue(jsonSchema.containsProperty("foo"));
-    assertEquals("foo", jsonSchema.getRequired().get(0).asText());
+    assertEquals("foo", jsonSchema.getRequired().get(0).asString());
     jsonSchema.removeProperty("foo");
     assertFalse(jsonSchema.containsProperty("foo"));
     assertFalse(jsonSchema.getRequired().size() > 0);
@@ -165,11 +165,11 @@ public class JsonSchemaBuilderTest {
     foo.addItem("bar", "number", false);
     ObjectNode items = foo.getItems();
 
-    assertEquals("number", items.get("bar").get("type").asText());
+    assertEquals("number", items.get("bar").get("type").asString());
     assertEquals(false, foo.isRequired("bar"));
 
     foo.addItem("baz", "string", true);
-    assertEquals("string", items.get("baz").get("type").asText());
+    assertEquals("string", items.get("baz").get("type").asString());
     assertEquals(true, foo.isRequired("baz"));
   }
 
@@ -197,7 +197,7 @@ public class JsonSchemaBuilderTest {
   public void testJsonSchemaSetDefault() {
     jsonSchema.setType("string");
     jsonSchema.setDefault("foobar");
-    assertEquals("foobar", jsonSchema.getDefault().asText());
+    assertEquals("foobar", jsonSchema.getDefault().asString());
 
     jsonSchema = new JsonSchemaBuilder();
     jsonSchema.setType("number");

@@ -154,7 +154,7 @@ public class JsonSchemaBuilder {
       properties.remove(name);
       if (required != null) {
         for (int i = 0; i < required.size(); i++) {
-          if (required.get(i).asText().equals(name)) {
+          if (required.get(i).asString().equals(name)) {
             required.remove(i);
             break;
           }
@@ -329,7 +329,7 @@ public class JsonSchemaBuilder {
       boolean ret = false;
       Iterator<JsonNode> fields = required.values().iterator();
       while (fields.hasNext()) {
-        if (property.equals(fields.next().asText())) {
+        if (property.equals(fields.next().asString())) {
           ret = true;
         }
       }
@@ -345,7 +345,7 @@ public class JsonSchemaBuilder {
     JsonNode type = json.get("type");
 
     if (type != null) {
-      return type.asText();
+      return type.asString();
     } else {
       return null;
     }
@@ -405,7 +405,7 @@ public class JsonSchemaBuilder {
   public String getPattern() {
     JsonNode pattern = json.get("pattern");
     if (pattern != null) {
-      return pattern.asText();
+      return pattern.asString();
     }
 
     return null;
@@ -429,7 +429,7 @@ public class JsonSchemaBuilder {
   public String getDescription() {
     JsonNode description = json.get("description");
     if (description != null) {
-      return description.asText();
+      return description.asString();
     } else {
       return null;
     }

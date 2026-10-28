@@ -106,7 +106,7 @@ public class OrderingTest extends TypeSchemaTest {
       .get("relations")
       .get("ORDERED")
       .get("to")
-      .forEach(n -> to.add(n.asText()));
+      .forEach(n -> to.add(n.asString()));
     assertEquals(peers, to);
   }
 

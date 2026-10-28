@@ -112,7 +112,7 @@ public class StructureManager extends GenericActor {
       public JsonNode exec(JsonNode request) {
         JsonNode args = request.get("args");
         final ObjectNode result = mapper.createObjectNode();
-        final String token = args.get("token").asText();
+        final String token = args.get("token").asString();
 
         // Unordered, so that the discovery does not stop the message handlers
         vertx

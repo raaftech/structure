@@ -216,7 +216,7 @@ public class TaskManager extends GenericActor {
                   job.status = JobStatus.CANCELLED;
                   String error = "Job belonged to a sequential task of which a step was " + "cancelled or erred.";
                   if (previousJob.isPresent() && previousJob.get().metadata.has("exception")) {
-                    error += " Original exception: " + previousJob.get().metadata.get("exception").asText();
+                    error += " Original exception: " + previousJob.get().metadata.get("exception").asString();
                   }
                   job.metadata.put("error", error);
                   runningJobs.remove(job);
@@ -302,8 +302,8 @@ public class TaskManager extends GenericActor {
             resultBuilder.state(
               new Result.State(
                 state.get("code").asInt(),
-                state.get("interpretation").asText(),
-                state.get("description").asText()
+                state.get("interpretation").asString(),
+                state.get("description").asString()
               )
             );
           } else {
@@ -311,15 +311,15 @@ public class TaskManager extends GenericActor {
           }
         }
       } else if (job.status == JobStatus.ERROR) {
-        String reason = job.metadata.has("error") ? job.metadata.get("error").asText() : "Unknown error occurred.";
+        String reason = job.metadata.has("error") ? job.metadata.get("error").asString() : "Unknown error occurred.";
         resultBuilder.error(reason);
       } else if (job.status == JobStatus.CANCELLED) {
         String reason = job.metadata.has("error")
-          ? job.metadata.get("error").asText()
+          ? job.metadata.get("error").asString()
           : "Job was cancelled for an unknown reason.";
         resultBuilder.error(reason);
       }
-      final String originUuid = job.metadata.path("originUuid").asText();
+      final String originUuid = job.metadata.path("originUuid").asString();
       if (Context.getInstanceRepository().findByUuid(originUuid) == null) {
         // Nothing can reach a result without an origin
         log.warn("Origin \"{}\" of task {} not found, result not stored", originUuid, task.id);
@@ -428,7 +428,7 @@ public class TaskManager extends GenericActor {
       public JsonNode exec(JsonNode request) {
         JsonNode args = request.get("args");
         ObjectNode result = mapper.createObjectNode();
-        String taskId = args.get("taskId").asText();
+        String taskId = args.get("taskId").asString();
         int jobId = args.get("jobId").asInt();
 
         Task task = taskMap.get(taskId);
@@ -473,7 +473,7 @@ public class TaskManager extends GenericActor {
       public JsonNode exec(JsonNode request) {
         JsonNode args = request.get("args");
         ObjectNode result = mapper.createObjectNode();
-        String taskId = args.get("taskId").asText();
+        String taskId = args.get("taskId").asString();
 
         Task task = taskMap.get(taskId);
         if (task != null) {
@@ -547,7 +547,7 @@ public class TaskManager extends GenericActor {
         ArrayNode jobs = (ArrayNode) args.get("jobs");
 
         final Task task;
-        final String taskId = args.get("taskId").asText();
+        final String taskId = args.get("taskId").asString();
         if (taskMap.containsKey(taskId)) {
           log.info("Task with ID " + taskId + " already existed, adding jobs to it");
           task = taskMap.get(taskId);
@@ -557,13 +557,13 @@ public class TaskManager extends GenericActor {
           task = new Task(taskId, sequential);
         }
         result.put("data", taskId);
-        args.path("temporaryFiles").forEach(file -> task.temporaryFiles.add(file.asText()));
+        args.path("temporaryFiles").forEach(file -> task.temporaryFiles.add(file.asString()));
 
         // Add the given jobs to the task
         Iterator<JsonNode> jobIterator = jobs.values().iterator();
         while (jobIterator.hasNext()) {
           ObjectNode jobData = (ObjectNode) jobIterator.next();
-          String command = jobData.get("command").asText();
+          String command = jobData.get("command").asString();
           ObjectNode metadata = (ObjectNode) jobData.get("metadata");
           ProcessRunner processRunner = new ProcessRunner(command);
           final Job job = new Job(processRunner, task.id, metadata);
@@ -602,7 +602,7 @@ public class TaskManager extends GenericActor {
       public JsonNode exec(JsonNode request) {
         JsonNode args = request.get("args");
         ObjectNode result = mapper.createObjectNode();
-        String taskId = args.get("taskId").asText();
+        String taskId = args.get("taskId").asString();
 
         Task task = taskMap.get(taskId);
         if (task != null) {
@@ -634,7 +634,7 @@ public class TaskManager extends GenericActor {
       public JsonNode exec(JsonNode request) {
         JsonNode args = request.get("args");
         ObjectNode result = mapper.createObjectNode();
-        String taskId = args.get("taskId").asText();
+        String taskId = args.get("taskId").asString();
 
         Task task = taskMap.get(taskId);
         if (task != null) {

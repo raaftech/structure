@@ -262,7 +262,7 @@ public abstract class GenericActor extends AbstractVerticle {
       return;
     }
 
-    String msgh = request.get("msgh").asText();
+    String msgh = request.get("msgh").asString();
     JsonNode args = request.get("args");
 
     if (handlers.containsKey(msgh)) {

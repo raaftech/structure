@@ -334,11 +334,11 @@ public class EntityTest extends GraphTest {
     ObjectNode dataSchema = (ObjectNode) mapper.readTree(dataSchemaVal);
     assertTrue(dataSchema.has(ENTITY_FILE_CONTENT));
     assertTrue(dataSchema.has(ENTITY_FILE_ENCODING));
-    assertEquals(encoding, dataSchema.get(ENTITY_FILE_ENCODING).asText());
+    assertEquals(encoding, dataSchema.get(ENTITY_FILE_ENCODING).asString());
     assertTrue(dataSchema.has(ENTITY_FILE_FORMAT));
-    assertEquals(format, dataSchema.get(ENTITY_FILE_FORMAT).asText());
+    assertEquals(format, dataSchema.get(ENTITY_FILE_FORMAT).asString());
     assertTrue(dataSchema.has(ENTITY_FILE_DATASCHEMA_PATH));
-    assertEquals(path, dataSchema.get(ENTITY_FILE_DATASCHEMA_PATH).asText());
+    assertEquals(path, dataSchema.get(ENTITY_FILE_DATASCHEMA_PATH).asString());
   }
 
   /**
@@ -368,11 +368,11 @@ public class EntityTest extends GraphTest {
     ObjectNode dataSchema = (ObjectNode) mapper.readTree(dataSchemaVal);
     assertTrue(dataSchema.has(ENTITY_FILE_CONTENT));
     assertTrue(dataSchema.has(ENTITY_FILE_ENCODING));
-    assertEquals(encoding, dataSchema.get(ENTITY_FILE_ENCODING).asText());
+    assertEquals(encoding, dataSchema.get(ENTITY_FILE_ENCODING).asString());
     assertTrue(dataSchema.has(ENTITY_FILE_FORMAT));
-    assertEquals(format, dataSchema.get(ENTITY_FILE_FORMAT).asText());
+    assertEquals(format, dataSchema.get(ENTITY_FILE_FORMAT).asString());
     assertTrue(dataSchema.has(ENTITY_FILE_DATASCHEMA_PATH));
-    assertEquals(path, dataSchema.get(ENTITY_FILE_DATASCHEMA_PATH).asText());
+    assertEquals(path, dataSchema.get(ENTITY_FILE_DATASCHEMA_PATH).asString());
   }
 
   /**

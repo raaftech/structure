@@ -138,7 +138,7 @@ public class BusRoundTripTest extends TypeSchemaTest {
         JsonNode error = response.path("result").path("error");
         if (!JsonHelper.validateToSchema(RESPONSE, response)) {
           failures.add(name + "invalid response " + response);
-        } else if (row[3] == null ? !error.isMissingNode() : !row[3].equals(error.asText())) {
+        } else if (row[3] == null ? !error.isMissingNode() : !row[3].equals(error.asString())) {
           failures.add(name + response.get("result"));
         }
       } catch (ExecutionException e) {
@@ -158,7 +158,7 @@ public class BusRoundTripTest extends TypeSchemaTest {
     )
       .path("result")
       .path("data");
-    assertEquals(data.asText(), UUID.fromString(data.asText()).toString());
+    assertEquals(data.asString(), UUID.fromString(data.asString()).toString());
   }
 
   @Test
@@ -167,7 +167,7 @@ public class BusRoundTripTest extends TypeSchemaTest {
       .path("result")
       .path("data");
     Set<String> uuids = new HashSet<>();
-    data.forEach(instance -> uuids.add(instance.path("uuid").asText()));
+    data.forEach(instance -> uuids.add(instance.path("uuid").asString()));
     assertEquals(new HashSet<>(Arrays.asList(host, group)), uuids);
   }
 
@@ -182,12 +182,12 @@ public class BusRoundTripTest extends TypeSchemaTest {
     );
     JsonNode latest = send(INSTANCES, "nLastCreated", "{\"amount\": 1}").path("result").path("data");
     assertEquals(1, latest.size());
-    assertEquals(result.getUuid(), latest.get(0).path("uuid").asText());
+    assertEquals(result.getUuid(), latest.get(0).path("uuid").asString());
     JsonNode groups = send(INSTANCES, "nLastCreated", "{\"amount\": 1, \"labels\": [\"Group\"]}")
       .path("result")
       .path("data");
     assertEquals(1, groups.size());
-    assertEquals(group, groups.get(0).path("uuid").asText());
+    assertEquals(group, groups.get(0).path("uuid").asString());
     assertEquals(
       0,
       send(INSTANCES, "nLastCreated", "{\"amount\": 5, \"labels\": [\"NoSuchLabel\"]}")
