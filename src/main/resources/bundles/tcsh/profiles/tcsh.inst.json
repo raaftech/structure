@@ -1,0 +1,29 @@
+{
+  "name": "TcshProfile",
+  "desc": "A profile that detects tcsh.",
+  "meta": {
+    "uuid": "6dcca265-5c29-4f4e-9b92-8e8ea05792fb",
+    "relations": {
+      "INSTANCE_OF": {
+        "direction": "outgoing",
+        "to": ["Profile"]
+      },
+      "APPLIES_TO": {
+        "direction": "outgoing",
+        "to": ["Tcsh"]
+      },
+      "PROVIDED_BY": {
+        "direction": "outgoing",
+        "to": ["Tcsh"]
+      }
+    }
+  },
+  "data": {
+    "directories": {
+      "binaryDirectories": ["/bin", "/usr/bin", "/usr/local/bin"]
+    },
+    "files": {
+      "binaryFiles": ["tcsh"]
+    }
+  }
+}
