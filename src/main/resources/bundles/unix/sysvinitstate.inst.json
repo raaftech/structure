@@ -1,0 +1,80 @@
+{
+  "name": "SysvInitState",
+  "desc": "Check the state of a service with SysV init.",
+  "meta": {
+    "uuid": "aacc6a2c-146b-48dd-bdff-c19e917ba493",
+    "relations": {
+      "PROVIDED_BY": {
+        "direction": "outgoing",
+        "to": ["SysvInit"]
+      },
+      "APPLIES_TO": {
+        "direction": "outgoing",
+        "to": ["Service"]
+      },
+      "GIVES_CAPABILITY": {
+        "direction": "outgoing",
+        "to": ["State"]
+      },
+      "INSTANCE_OF": {
+        "direction": "outgoing",
+        "to": ["Controller"]
+      }
+    }
+  },
+  "data": {
+    "instrumentType": "controller",
+    "subjectIsLocal": true,
+    "stateMap": {
+      "0": {
+        "code": 0,
+        "interpretation": "OK",
+        "description": "The service is running."
+      },
+      "1": {
+        "code": 2,
+        "interpretation": "NOK",
+        "description": "The service is dead, but its pid file exists."
+      },
+      "2": {
+        "code": 2,
+        "interpretation": "NOK",
+        "description": "The service is dead, but its lock file exists."
+      },
+      "3": {
+        "code": 2,
+        "interpretation": "NOK",
+        "description": "The service is not running."
+      },
+      "4": {
+        "code": 1,
+        "interpretation": "MAYBE",
+        "description": "The state of the service is unknown."
+      }
+    },
+    "arguments": {
+      "origin": {
+        "value": {
+          "from": "origin",
+          "type": "type.component.software.service",
+          "strategy": "mustBeOne",
+          "onError": "fail"
+        },
+        "canBeUserSupplied": false,
+        "isOptional": false
+      }
+    }
+  },
+  "file": {
+    "dataSchema": {
+      "encoding": "text",
+      "format": "json",
+      "path": "../core/schema/controller.schema.json"
+    },
+    "templateFile": {
+      "encoding": "text",
+      "format": "hbs",
+      "path": "sysvinitstate.hbs.sh"
+    }
+  }
+}

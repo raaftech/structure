@@ -1,0 +1,35 @@
+{
+  "name": "SysvInitProfile",
+  "desc": "A profile that detects SysV init.",
+  "meta": {
+    "uuid": "6569e1a6-5a72-48fe-a515-915a6b42e26d",
+    "relations": {
+      "INSTANCE_OF": {
+        "direction": "outgoing",
+        "to": ["Profile"]
+      },
+      "APPLIES_TO": {
+        "direction": "outgoing",
+        "to": ["SysvInit"]
+      },
+      "PROVIDED_BY": {
+        "direction": "outgoing",
+        "to": ["SysvInit"]
+      }
+    }
+  },
+  "data": {
+    "directories": {
+      "configurationDirectories": ["/etc"]
+    },
+    "files": {
+      "configurationFiles": ["inittab"]
+    },
+    "commands": {
+      "pid1": {
+        "command": "ps -p 1 -o comm=",
+        "matches": "init"
+      }
+    }
+  }
+}
