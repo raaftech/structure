@@ -1,16 +1,16 @@
 {
-  "name": "CmdScriptable",
-  "desc": "Run a script with cmd.exe.",
+  "name": "BashInvoke",
+  "desc": "Run a script with Bash.",
   "meta": {
-    "uuid": "431d4fbc-4ff5-47ad-b0a0-eac927d84cc4",
+    "uuid": "8cabd118-dcc2-4bc6-bf0e-11cecfce4a5b",
     "relations": {
       "PROVIDED_BY": {
         "direction": "outgoing",
-        "to": ["CmdShell"]
+        "to": ["Bash"]
       },
       "APPLIES_TO": {
         "direction": "outgoing",
-        "to": ["CmdShell"]
+        "to": ["Bash"]
       },
       "GIVES_CAPABILITY": {
         "direction": "outgoing",
@@ -29,7 +29,8 @@
       "script": {
         "value": {
           "from": "static",
-          "type": "string"
+          "type": "string",
+          "strategy": "mustBeOne"
         },
         "canBeUserSupplied": false,
         "isOptional": false
@@ -45,7 +46,7 @@
     "templateFile": {
       "encoding": "text",
       "format": "hbs",
-      "path": "cmdscriptable.hbs.cmd"
+      "path": "bashinvoke.hbs.sh"
     }
   }
 }

@@ -145,7 +145,7 @@ public class StoreFormatTest extends TypeSchemaTest {
     assertEquals("BashInvoke", n.properties.get("name"));
     assertEquals("Run a script with Bash.", n.properties.get("desc"));
     assertEquals("bash", n.properties.get("bundle"));
-    assertEquals(BUNDLES + "bash/bashscriptable.inst.json", n.properties.get("path"));
+    assertEquals(BUNDLES + "bash/bashinvoke.inst.json", n.properties.get("path"));
     assertEquals(true, n.properties.get("data-subjectIsLocal"));
     assertEquals("controller", n.properties.get("data-instrumentType"));
     assertJson(
@@ -154,7 +154,7 @@ public class StoreFormatTest extends TypeSchemaTest {
       n.properties.get("data-arguments")
     );
     assertFile(n, "file-dataSchema", "text", "json", "../core/schema/controller.schema.json");
-    assertFile(n, "file-templateFile", "text", "hbs", "bashscriptable.hbs.sh");
+    assertFile(n, "file-templateFile", "text", "hbs", "bashinvoke.hbs.sh");
     assertEquals(
       ImmutableSet.of(
         "INSTANCE_OF -> " + CONTROLLER,

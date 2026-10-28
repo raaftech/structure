@@ -1,16 +1,16 @@
 {
-  "name": "BashInvoke",
-  "desc": "Run a script with Bash.",
+  "name": "KshInvoke",
+  "desc": "Run a script with the Korn shell.",
   "meta": {
-    "uuid": "8cabd118-dcc2-4bc6-bf0e-11cecfce4a5b",
+    "uuid": "74a942c1-0f72-411f-99c4-04c3117a9e92",
     "relations": {
       "PROVIDED_BY": {
         "direction": "outgoing",
-        "to": ["Bash"]
+        "to": ["Ksh"]
       },
       "APPLIES_TO": {
         "direction": "outgoing",
-        "to": ["Bash"]
+        "to": ["Ksh"]
       },
       "GIVES_CAPABILITY": {
         "direction": "outgoing",
@@ -46,7 +46,7 @@
     "templateFile": {
       "encoding": "text",
       "format": "hbs",
-      "path": "bashscriptable.hbs.sh"
+      "path": "kshinvoke.hbs.sh"
     }
   }
 }
