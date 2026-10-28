@@ -1,0 +1,29 @@
+{
+  "name": "ZshProfile",
+  "desc": "A profile that detects zsh.",
+  "meta": {
+    "uuid": "b986ad90-f726-40b6-8d95-6e44a491d01c",
+    "relations": {
+      "INSTANCE_OF": {
+        "direction": "outgoing",
+        "to": ["Profile"]
+      },
+      "APPLIES_TO": {
+        "direction": "outgoing",
+        "to": ["Zsh"]
+      },
+      "PROVIDED_BY": {
+        "direction": "outgoing",
+        "to": ["Zsh"]
+      }
+    }
+  },
+  "data": {
+    "directories": {
+      "binaryDirectories": ["/bin", "/usr/bin", "/usr/local/bin"]
+    },
+    "files": {
+      "binaryFiles": ["zsh"]
+    }
+  }
+}
