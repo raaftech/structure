@@ -2,18 +2,9 @@
 
 ### Building
 
-To build Structure, you need Java 8, Maven, Node.js with npm, and Bower. Maven
-builds with JDK 8 using `~/.m2/toolchains.xml`:
-
-```xml
-<toolchains>
-  <toolchain>
-    <type>jdk</type>
-    <provides><version>1.8</version></provides>
-    <configuration><jdkHome>/usr/lib/jvm/java-8-openjdk</jdkHome></configuration>
-  </toolchain>
-</toolchains>
-```
+To build Structure, you need Java 25 or later, Maven, Node.js with npm, and
+Bower. Maven builds and tests with the JDK that it runs on. If the default Java
+of your system is older, point `JAVA_HOME` at a JDK 25.
 
 Build the jar without the tests (see Testing). The below will result in
 `target/structure-*-fat.jar`:
@@ -41,12 +32,12 @@ neo4j start
 ```
 
 Start Structure. It starts from any directory, but the commands here run from
-the root of the repository. Currently, Structure needs Java 8. If your system
-has a later version of Java installed as default, you can simply point
-`JAVA_HOME` at an installed JDK 8 and use the `java` binary from that location:
+the root of the repository. Structure needs Java 25. If the default Java of your
+system has a different version, point `JAVA_HOME` at an installed JDK 25 and use
+the `java` binary from that location:
 
 ```bash
-export JAVA_HOME=/usr/lib/jvm/java-8-openjdk
+export JAVA_HOME=/usr/lib/jvm/java-25-openjdk
 export STRUCTURE_NEO4J_PASS=structure
 "${JAVA_HOME}/bin/java" -jar target/structure-*-fat.jar --log-level debug --unsafe
 ```
