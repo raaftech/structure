@@ -320,7 +320,7 @@ public class EntityTest extends GraphTest {
     final String format = "json";
     final String path = "component.schema.json";
     final String content =
-      "{\\n  \\\"$schema\\\": \\\"http://json-schema.org/schema#\\\",\\n  \\\"additionalProperties\\\": false,\\n  \\\"type\\\": \\\"object\\\",\\n  \\\"properties\\\": {\\n    \\\"name\\\": {\\n      \\\"type\\\": \\\"string\\\",\\n      \\\"description\\\": \\\"The name of this node.\\\"\\n    },\\n    \\\"desc\\\": {\\n      \\\"type\\\": \\\"string\\\",\\n      \\\"description\\\": \\\"The description of this node.\\\"\\n    }\\n  },\\n  \\\"required\\\": [\\n    \\\"name\\\",\\n    \\\"desc\\\"\\n  ]\\n}";
+      "{\\n  \\\"$schema\\\": \\\"http://json-schema.org/draft-04/schema#\\\",\\n  \\\"additionalProperties\\\": false,\\n  \\\"type\\\": \\\"object\\\",\\n  \\\"properties\\\": {\\n    \\\"name\\\": {\\n      \\\"type\\\": \\\"string\\\",\\n      \\\"description\\\": \\\"The name of this node.\\\"\\n    },\\n    \\\"desc\\\": {\\n      \\\"type\\\": \\\"string\\\",\\n      \\\"description\\\": \\\"The description of this node.\\\"\\n    }\\n  },\\n  \\\"required\\\": [\\n    \\\"name\\\",\\n    \\\"desc\\\"\\n  ]\\n}";
     final String entityJson = createJson(
       "Component",
       "An abstract base component.",
@@ -355,7 +355,7 @@ public class EntityTest extends GraphTest {
     final String format = "json";
     final String path = "component.instance.dataSchema.json";
     final String content =
-      "{\\n  \\\"$schema\\\": \\\"http://json-schema.org/schema#\\\",\\n  \\\"additionalProperties\\\": false,\\n  \\\"type\\\": \\\"object\\\",\\n  \\\"properties\\\": {\\n    \\\"name\\\": {\\n      \\\"type\\\": \\\"string\\\",\\n      \\\"description\\\": \\\"The name of this node.\\\"\\n    },\\n    \\\"desc\\\": {\\n      \\\"type\\\": \\\"string\\\",\\n      \\\"description\\\": \\\"The description of this node.\\\"\\n    }\\n  },\\n  \\\"required\\\": [\\n    \\\"name\\\",\\n    \\\"desc\\\"\\n  ]\\n}";
+      "{\\n  \\\"$schema\\\": \\\"http://json-schema.org/draft-04/schema#\\\",\\n  \\\"additionalProperties\\\": false,\\n  \\\"type\\\": \\\"object\\\",\\n  \\\"properties\\\": {\\n    \\\"name\\\": {\\n      \\\"type\\\": \\\"string\\\",\\n      \\\"description\\\": \\\"The name of this node.\\\"\\n    },\\n    \\\"desc\\\": {\\n      \\\"type\\\": \\\"string\\\",\\n      \\\"description\\\": \\\"The description of this node.\\\"\\n    }\\n  },\\n  \\\"required\\\": [\\n    \\\"name\\\",\\n    \\\"desc\\\"\\n  ]\\n}";
     final String entityJson = createJson(
       "Component",
       "An abstract base component.",

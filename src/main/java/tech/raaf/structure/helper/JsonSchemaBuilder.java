@@ -42,7 +42,7 @@ public class JsonSchemaBuilder {
     ObjectMapper mapper = new ObjectMapper();
     json = mapper.createObjectNode();
 
-    json.put("$schema", "http://json-schema.org/schema#");
+    json.put("$schema", "http://json-schema.org/draft-04/schema#");
   }
 
   /**

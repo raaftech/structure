@@ -6,7 +6,6 @@ import static org.junit.Assert.assertTrue;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.fge.jsonschema.SchemaVersion;
 import com.github.fge.jsonschema.core.report.ProcessingReport;
 import com.github.fge.jsonschema.main.JsonSchemaFactory;
@@ -239,13 +238,23 @@ public class BundleConsistencyTest {
   }
 
   @Test
+  public void schemasUseDraftFour() {
+    String draft4 = SchemaVersion.DRAFTV4.getLocation().toString();
+    documents.forEach((path, schema) -> {
+      if (path.toString().endsWith(".schema.json")) {
+        String value = schema.path("$schema").asText();
+        check(draft4.equals(value), path + ": expected $schema " + draft4 + ", got " + value);
+      }
+    });
+    assertNoErrors();
+  }
+
+  @Test
   public void typeSchemasHaveValidSyntaxAndReferences() {
     SyntaxValidator validator = JsonSchemaFactory.byDefault().getSyntaxValidator();
     for (BundleEntity type : types.values()) {
       JsonNode schema = type.schema();
-      ObjectNode draft4 = schema.deepCopy();
-      draft4.put("$schema", SchemaVersion.DRAFTV4.getLocation().toString());
-      ProcessingReport report = validator.validateSchema(draft4);
+      ProcessingReport report = validator.validateSchema(schema);
       check(report.isSuccess(), type + ": invalid draft-04 schema: " + report);
       walk(schema, "", (pointer, node) -> {
         if (node.has("$ref")) {

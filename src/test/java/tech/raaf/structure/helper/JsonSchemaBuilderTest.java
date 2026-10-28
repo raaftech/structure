@@ -34,7 +34,7 @@ public class JsonSchemaBuilderTest {
   public void testJsonSchema() {
     ObjectNode node = jsonSchema.getAsObjectNode();
 
-    assertEquals("http://json-schema.org/schema#", node.get("$schema").asText());
+    assertEquals("http://json-schema.org/draft-04/schema#", node.get("$schema").asText());
   }
 
   @Test
