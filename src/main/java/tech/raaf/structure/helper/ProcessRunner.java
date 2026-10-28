@@ -1,8 +1,7 @@
 package tech.raaf.structure.helper;
 
-import static io.vertx.core.json.Json.mapper;
+import static tech.raaf.structure.helper.JsonHelper.mapper;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -20,8 +19,9 @@ import java.util.Optional;
 import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tech.raaf.structure.base.Configuration;
 import tech.raaf.structure.base.Configuration.Setting;
+import tech.raaf.structure.base.Configuration;
+import tools.jackson.databind.node.ObjectNode;
 
 /**
  * @author Boy van Duuren <boy@raaf.tech>

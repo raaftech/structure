@@ -1,12 +1,11 @@
 package tech.raaf.structure.graph;
 
-import static io.vertx.core.json.Json.mapper;
 import static junit.framework.TestCase.assertFalse;
 import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static tech.raaf.structure.helper.JsonHelper.mapper;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import java.net.URI;
 import java.util.UUID;
 import java.util.stream.IntStream;
@@ -20,6 +19,7 @@ import tech.raaf.structure.GraphTest;
 import tech.raaf.structure.base.Context;
 import tech.raaf.structure.graph.repositories.ResultRepository;
 import tech.raaf.structure.helper.JsonHelper;
+import tools.jackson.databind.JsonNode;
 
 public class ResultTest extends GraphTest {
 

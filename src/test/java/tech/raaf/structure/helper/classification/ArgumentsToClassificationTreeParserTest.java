@@ -4,11 +4,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.Collections;
 import org.junit.Test;
 import tech.raaf.structure.helper.classification.ArgumentsToClassificationTreeParser.ClassificationTreeObjects;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ObjectNode;
 
 public class ArgumentsToClassificationTreeParserTest {
 

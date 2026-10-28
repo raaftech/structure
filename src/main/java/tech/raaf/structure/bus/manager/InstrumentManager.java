@@ -1,17 +1,17 @@
 package tech.raaf.structure.bus.manager;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.vertx.core.json.JsonObject;
-import io.vertx.core.logging.Logger;
-import io.vertx.core.logging.LoggerFactory;
 import java.util.Iterator;
 import java.util.UUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import tech.raaf.structure.annotations.SchemaPath;
 import tech.raaf.structure.base.Context;
 import tech.raaf.structure.bus.GenericActor;
 import tech.raaf.structure.graph.repositories.InstrumentRepository;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.ObjectNode;
 
 /**
  * Give a description of InstrumentManager here.
@@ -134,15 +134,14 @@ public class InstrumentManager extends GenericActor {
         }
 
         // For every UUID send the message to its address on the bus
-        for (final Iterator<JsonNode> iter = uuids.elements(); iter.hasNext(); ) {
+        for (final Iterator<JsonNode> iter = uuids.values().iterator(); iter.hasNext(); ) {
           final UUID uuid = UUID.fromString(iter.next().asText());
           final String address = String.format(instanceActorFormat, uuid);
           log.info("Sending message to " + address);
-          vertx.eventBus().send(address, message, handler -> {
-            if (handler.failed()) {
-              log.error("Error while sending message to " + address + ": " + handler.cause().getMessage());
-            }
-          });
+          vertx
+            .eventBus()
+            .request(address, message)
+            .onFailure(cause -> log.error("Error while sending message to " + address + ": " + cause.getMessage()));
         }
 
         result.put("data", taskId.toString());

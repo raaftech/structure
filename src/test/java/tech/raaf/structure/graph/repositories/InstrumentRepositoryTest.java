@@ -1,10 +1,8 @@
 package tech.raaf.structure.graph.repositories;
 
-import static io.vertx.core.json.Json.mapper;
 import static org.junit.Assert.*;
+import static tech.raaf.structure.helper.JsonHelper.mapper;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableSet;
 import io.vertx.core.json.JsonObject;
 import java.io.IOException;
@@ -24,6 +22,8 @@ import tech.raaf.structure.base.Context;
 import tech.raaf.structure.bus.NodeActor;
 import tech.raaf.structure.graph.*;
 import tech.raaf.structure.schema.TypeSchemaTest;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ObjectNode;
 
 public class InstrumentRepositoryTest extends TypeSchemaTest {
 
@@ -299,31 +299,18 @@ public class InstrumentRepositoryTest extends TypeSchemaTest {
     try {
       ObjectNode request = mapper.createObjectNode().put("msgh", "runCapability");
       request.putObject("args").put("capability", "Stop").putObject("arguments");
-      CompletableFuture<Object> reply = new CompletableFuture<>();
-      Context.getVertx()
+      final Object reply = Context.getVertx()
         .eventBus()
-        .send("tech.raaf.structure.bus.node." + sshd.getUuid(), new JsonObject(request.toString()), ar -> {
-          if (ar.succeeded()) {
-            reply.complete(ar.result().body());
-          } else {
-            reply.completeExceptionally(ar.cause());
-          }
-        });
-      JsonNode response = mapper.readTree(reply.get(10, TimeUnit.SECONDS).toString());
+        .request("tech.raaf.structure.bus.node." + sshd.getUuid(), new JsonObject(request.toString()))
+        .await(10, TimeUnit.SECONDS)
+        .body();
+      JsonNode response = mapper.readTree(reply.toString());
       assertFalse(response.toString(), response.path("result").has("error"));
       Controller controller = selected.get(10, TimeUnit.SECONDS);
       assertEquals("Stop must use the provider on host2", UPSTART_STOP, controller.getUuid());
       assertEquals("UpstartStop", controller.getName());
     } finally {
-      CompletableFuture<Void> undeployed = new CompletableFuture<>();
-      Context.getVertx().undeploy(deployment, ar -> {
-        if (ar.succeeded()) {
-          undeployed.complete(null);
-        } else {
-          undeployed.completeExceptionally(ar.cause());
-        }
-      });
-      undeployed.get(10, TimeUnit.SECONDS);
+      Context.getVertx().undeploy(deployment).await(10, TimeUnit.SECONDS);
     }
   }
 

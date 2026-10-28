@@ -1,10 +1,9 @@
 package tech.raaf.structure.bus;
 
-import static io.vertx.core.json.Json.mapper;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static tech.raaf.structure.helper.JsonHelper.mapper;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import io.vertx.core.Verticle;
 import io.vertx.core.eventbus.DeliveryOptions;
 import io.vertx.core.json.JsonObject;
@@ -15,7 +14,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import org.junit.After;
 import org.junit.Before;
@@ -30,6 +28,7 @@ import tech.raaf.structure.graph.Entity;
 import tech.raaf.structure.graph.Result;
 import tech.raaf.structure.helper.JsonHelper;
 import tech.raaf.structure.schema.TypeSchemaTest;
+import tools.jackson.databind.JsonNode;
 
 /**
  * Sends each address and msgh pair that the REST models in
@@ -66,15 +65,7 @@ public class BusRoundTripTest extends TypeSchemaTest {
       new Types(Context.getTypeRepository()),
       new Instances(Context.getInstanceRepository())
     )) {
-      CompletableFuture<String> id = new CompletableFuture<>();
-      Context.getVertx().deployVerticle(verticle, ar -> {
-        if (ar.succeeded()) {
-          id.complete(ar.result());
-        } else {
-          id.completeExceptionally(ar.cause());
-        }
-      });
-      id.get();
+      Context.getVertx().deployVerticle(verticle).await();
     }
     mapper.readValue(os(host, "bus-host", "A host for the bus test."), Entity.class).toGraph();
     mapper
@@ -207,21 +198,16 @@ public class BusRoundTripTest extends TypeSchemaTest {
   }
 
   private static JsonNode send(String address, String msgh, String args) throws Exception {
-    CompletableFuture<Object> reply = new CompletableFuture<>();
     JsonObject request = new JsonObject("{\"args\": " + args + "}");
     if (msgh != null) {
       request.put("msgh", msgh);
     }
-    Context.getVertx()
+    final Object reply = Context.getVertx()
       .eventBus()
-      .send(address, request, new DeliveryOptions().setSendTimeout(10000), ar -> {
-        if (ar.succeeded()) {
-          reply.complete(ar.result().body());
-        } else {
-          reply.completeExceptionally(ar.cause());
-        }
-      });
-    return mapper.readTree(reply.get().toString());
+      .request(address, request, new DeliveryOptions().setSendTimeout(10000))
+      .await()
+      .body();
+    return mapper.readTree(reply.toString());
   }
 
   private static String os(String uuid, String name, String desc) {

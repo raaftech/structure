@@ -1,19 +1,18 @@
 package tech.raaf.structure.base;
 
 import ch.qos.logback.classic.Level;
-import io.vertx.core.AsyncResult;
 import io.vertx.core.DeploymentOptions;
-import io.vertx.core.Handler;
 import io.vertx.core.Verticle;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.HttpServerOptions;
 import io.vertx.core.net.JksOptions;
+import io.vertx.ext.bridge.PermittedOptions;
 import io.vertx.ext.web.Router;
+import io.vertx.ext.web.handler.FileSystemAccess;
 import io.vertx.ext.web.handler.StaticHandler;
-import io.vertx.ext.web.handler.sockjs.BridgeOptions;
-import io.vertx.ext.web.handler.sockjs.PermittedOptions;
+import io.vertx.ext.web.handler.sockjs.SockJSBridgeOptions;
 import io.vertx.ext.web.handler.sockjs.SockJSHandler;
 import java.io.IOException;
 import java.net.URI;
@@ -24,8 +23,6 @@ import java.security.GeneralSecurityException;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import org.apache.commons.cli.ParseException;
 import org.slf4j.Logger;
@@ -122,7 +119,6 @@ public class Application {
     Vertx vertx;
     HttpServer httpServer;
     Router router;
-    SockJSHandler sockJsHandler;
 
     // Tell the user we're starting up.
     log.info(
@@ -164,27 +160,9 @@ public class Application {
     Context.setVertx(vertx);
 
     // Enable bridging on /eventbus, and add some in- and outbound permissions.
-    BridgeOptions bridgeOptions = new BridgeOptions()
+    SockJSBridgeOptions bridgeOptions = new SockJSBridgeOptions()
       .addInboundPermitted(new PermittedOptions().setAddressRegex("tech\\.raaf\\.structure\\..*"))
       .addOutboundPermitted(new PermittedOptions().setAddressRegex("tech\\.raaf\\.structure\\..*"));
-
-    // Setup httpServer, router and sockJs.
-    httpServer = vertx.createHttpServer(
-      new HttpServerOptions()
-        .setSsl(true)
-        .setKeyStoreOptions(new JksOptions().setPath(jks.toString()).setPassword(jksPass))
-    );
-    sockJsHandler = SockJSHandler.create(vertx);
-    sockJsHandler.bridge(bridgeOptions);
-    router = Router.router(vertx);
-    // One of the endpoints will be routed to SchemaManager, so instance it
-    SchemaManager schemaManager = new SchemaManager();
-    // Setup routes
-    router.route("/eventbus/*").handler(sockJsHandler);
-    router.route("/bundles/*").handler(files(Configuration.resources().resolve("bundles")));
-    // The schema handler queries the graph, so it must not run on the event loop
-    router.route("/schemas/:schema").blockingHandler(schemaManager::getSchema, false);
-    router.route("/*").handler(files(Configuration.resources().resolve("webroot")));
 
     // If we're in unsafe mode allow direct access to everything
     // on the eventbus and serve the debug page.
@@ -194,6 +172,22 @@ public class Application {
       bridgeOptions.addOutboundPermitted(new PermittedOptions().setAddressRegex(".*"));
     }
 
+    // Setup httpServer, router and sockJs.
+    httpServer = vertx.createHttpServer(
+      new HttpServerOptions()
+        .setSsl(true)
+        .setKeyCertOptions(new JksOptions().setPath(jks.toString()).setPassword(jksPass))
+    );
+    router = Router.router(vertx);
+    // One of the endpoints will be routed to SchemaManager, so instance it
+    SchemaManager schemaManager = new SchemaManager();
+    // Setup routes
+    router.route("/eventbus/*").subRouter(SockJSHandler.create(vertx).bridge(bridgeOptions));
+    router.route("/bundles/*").handler(files(Configuration.resources().resolve("bundles")));
+    // The schema handler queries the graph, so it must not run on the event loop
+    router.route("/schemas/:schema").blockingHandler(schemaManager::getSchema, false);
+    router.route("/*").handler(files(Configuration.resources().resolve("webroot")));
+
     // Setup indexes and constraints
     log.info("Creating indices.");
     createSchema();
@@ -201,7 +195,7 @@ public class Application {
     // Deploy our main actors. Structure stops if one of them fails.
     // The actors that use the graph run on worker threads.
     deploy(vertx, new StructureManager(), GenericActor.worker());
-    deploy(vertx, new InstrumentManager(), new DeploymentOptions().setWorker(false));
+    deploy(vertx, new InstrumentManager(), new DeploymentOptions());
     deploy(vertx, new EntityManager(), GenericActor.worker());
 
     deploy(vertx, new TaskManager(Configuration.get(Setting.JOB_POOL)), GenericActor.worker());
@@ -217,10 +211,10 @@ public class Application {
     } catch (URISyntaxException e) {
       handleUnrecoverableLoadingError(e, 1, "Unrecoverable error while setting schema namespace");
     }
-    final HttpServer server = httpServer.requestHandler(router::accept);
+    final HttpServer server = httpServer.requestHandler(router);
     try {
-      Application.<HttpServer>await(handler -> server.listen(port, host, handler));
-    } catch (InterruptedException | ExecutionException e) {
+      server.listen(port, host).await();
+    } catch (Exception e) {
       handleUnrecoverableLoadingError(e, 1, "Failed to start the web server: " + e.getMessage());
     }
 
@@ -230,7 +224,7 @@ public class Application {
 
   // A handler that serves the files in a directory.
   private static StaticHandler files(Path directory) {
-    return StaticHandler.create().setAllowRootFileSystemAccess(true).setWebRoot(directory.toString());
+    return StaticHandler.create(FileSystemAccess.ROOT, directory.toString());
   }
 
   // The constraints and indexes, each in its own transaction
@@ -294,24 +288,11 @@ public class Application {
   private static void deploy(Vertx vertx, Verticle verticle, DeploymentOptions options) {
     final String name = verticle.getClass().getSimpleName();
     try {
-      final String id = await(handler -> vertx.deployVerticle(verticle, options, handler));
+      final String id = vertx.deployVerticle(verticle, options).await();
       log.info("Deployed {} with id: {}", name, id);
-    } catch (InterruptedException | ExecutionException e) {
+    } catch (Exception e) {
       handleUnrecoverableLoadingError(e, 1, "Failed to deploy " + name + ": " + e.getMessage());
     }
-  }
-
-  // Start an asynchronous Vert.x call and wait for its result.
-  private static <T> T await(Consumer<Handler<AsyncResult<T>>> call) throws InterruptedException, ExecutionException {
-    final CompletableFuture<T> result = new CompletableFuture<>();
-    call.accept(ar -> {
-      if (ar.succeeded()) {
-        result.complete(ar.result());
-      } else {
-        result.completeExceptionally(ar.cause());
-      }
-    });
-    return result.get();
   }
 
   private static Optional<String> getHostname() {

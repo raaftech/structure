@@ -1,18 +1,15 @@
 package tech.raaf.structure.bus;
 
-import static io.vertx.core.json.Json.mapper;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static tech.raaf.structure.helper.JsonHelper.mapper;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableMap;
 import io.vertx.core.json.JsonObject;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,6 +20,8 @@ import tech.raaf.structure.graph.Graph;
 import tech.raaf.structure.graph.Group;
 import tech.raaf.structure.graph.repositories.TypeRepository;
 import tech.raaf.structure.schema.TypeSchemaTest;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ObjectNode;
 
 /**
  * Runs a controller on an instance through its actor, as the frontend
@@ -44,15 +43,7 @@ public class ControllerRunTest extends TypeSchemaTest {
     if (deployed) {
       return;
     }
-    CompletableFuture<String> id = new CompletableFuture<>();
-    Context.getVertx().deployVerticle(new TaskManager(1), ar -> {
-      if (ar.succeeded()) {
-        id.complete(ar.result());
-      } else {
-        id.completeExceptionally(ar.cause());
-      }
-    });
-    id.get();
+    Context.getVertx().deployVerticle(new TaskManager(1)).await();
     deployed = true;
   }
 
@@ -127,17 +118,12 @@ public class ControllerRunTest extends TypeSchemaTest {
   private static JsonNode send(String address, String msgh, ObjectNode args) throws Exception {
     ObjectNode message = mapper.createObjectNode().put("msgh", msgh);
     message.set("args", args);
-    CompletableFuture<Object> reply = new CompletableFuture<>();
-    Context.getVertx()
+    final Object reply = Context.getVertx()
       .eventBus()
-      .send(address, new JsonObject(message.toString()), ar -> {
-        if (ar.succeeded()) {
-          reply.complete(ar.result().body());
-        } else {
-          reply.completeExceptionally(ar.cause());
-        }
-      });
-    return mapper.readTree(reply.get().toString());
+      .request(address, new JsonObject(message.toString()))
+      .await()
+      .body();
+    return mapper.readTree(reply.toString());
   }
 
   // The TaskManager timer writes the result, so poll the graph

@@ -1,10 +1,7 @@
 package tech.raaf.structure.helper.classification;
 
-import static io.vertx.core.json.Json.mapper;
+import static tech.raaf.structure.helper.JsonHelper.mapper;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.net.URI;
 import java.util.*;
 import java.util.function.Function;
@@ -15,6 +12,9 @@ import tech.raaf.structure.helper.classification.tree.LeafNode;
 import tech.raaf.structure.helper.classification.tree.RootNode;
 import tech.raaf.structure.helper.classification.tree.Terminal;
 import tech.raaf.structure.helper.classification.tree.implementation.BranchNodeJson;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.ObjectNode;
 
 /**
  * @author Boy van Duuren <boy@raaf.tech>
@@ -132,7 +132,7 @@ public class ArgumentsToClassificationTreeParser {
     onErrorTerminalMap.put("askUser", askUser);
     onErrorTerminalMap.put("ignore", ignore);
 
-    Iterator<Map.Entry<String, JsonNode>> argIter = arguments.fields();
+    Iterator<Map.Entry<String, JsonNode>> argIter = arguments.properties().iterator();
     while (argIter.hasNext()) {
       Map.Entry<String, JsonNode> arg = argIter.next();
       ObjectNode value = (ObjectNode) arg.getValue().get("value");
@@ -164,7 +164,7 @@ public class ArgumentsToClassificationTreeParser {
         if (matches.isTextual()) {
           head = new BranchNodeJson(head, "data", value.get("matches").asText());
         } else if (matches.isObject()) {
-          Iterator<Map.Entry<String, JsonNode>> iter = ((ObjectNode) matches).fields();
+          Iterator<Map.Entry<String, JsonNode>> iter = ((ObjectNode) matches).properties().iterator();
           while (iter.hasNext()) {
             Map.Entry<String, JsonNode> entry = iter.next();
             head = new BranchNodeJson(head, entry.getKey(), entry.getValue().asText());

@@ -1,9 +1,5 @@
 package tech.raaf.structure.graph;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import java.util.Collection;
@@ -22,6 +18,10 @@ import org.slf4j.LoggerFactory;
 import tech.raaf.structure.base.Context;
 import tech.raaf.structure.exceptions.JsonValidationException;
 import tech.raaf.structure.graph.repositories.InstanceRepository;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.ObjectNode;
 
 public class Component extends Instance implements Groupable {
 

@@ -1,7 +1,7 @@
 package tech.raaf.structure.graph.repositories;
 
-import static io.vertx.core.json.Json.mapper;
 import static org.junit.Assert.*;
+import static tech.raaf.structure.helper.JsonHelper.mapper;
 
 import com.google.common.collect.ImmutableSet;
 import java.util.List;

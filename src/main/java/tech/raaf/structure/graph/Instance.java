@@ -1,13 +1,8 @@
 package tech.raaf.structure.graph;
 
-import static io.vertx.core.json.Json.mapper;
+import static tech.raaf.structure.helper.JsonHelper.mapper;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableSet;
-import java.io.IOException;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -24,6 +19,11 @@ import tech.raaf.structure.graph.repositories.InstanceRepository;
 import tech.raaf.structure.graph.repositories.TypeRepository;
 import tech.raaf.structure.helper.InstrumentRunner;
 import tech.raaf.structure.helper.JsonHelper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.ObjectNode;
 
 /**
  * Give a description of Instance here.
@@ -83,12 +83,12 @@ public abstract class Instance extends Node {
       // Name and desc are saved already, so we can remove those.
       properties.remove("name");
       properties.remove("desc");
-      Iterator<String> iter = properties.fieldNames();
+      Iterator<String> iter = properties.propertyNames().iterator();
       while (iter.hasNext()) {
         String key = iter.next();
         JsonNode value = properties.get(key);
         // Keep the JSON type; Entity stores a container as JSON text
-        data.put(key, value.isContainerNode() ? value : mapper.convertValue(value, Object.class));
+        data.put(key, value.isContainer() ? value : mapper.convertValue(value, Object.class));
       }
     } else {
       throw new RuntimeException("Supplied JSON did not match Type schema.");
@@ -218,7 +218,7 @@ public abstract class Instance extends Node {
     try {
       ArrayNode array = (ArrayNode) mapper.readTree((String) value);
       return Optional.of(StreamSupport.stream(array.spliterator(), false).map(map).collect(Collectors.toList()));
-    } catch (IOException e) {
+    } catch (JacksonException e) {
       throw exception;
     }
   }
@@ -242,7 +242,7 @@ public abstract class Instance extends Node {
 
     try {
       return Optional.of(mapper.readTree((String) value));
-    } catch (IOException e) {
+    } catch (JacksonException e) {
       throw exception;
     }
   }

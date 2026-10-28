@@ -1,10 +1,7 @@
 package tech.raaf.structure.graph;
 
-import static io.vertx.core.json.Json.mapper;
+import static tech.raaf.structure.helper.JsonHelper.mapper;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import java.util.List;
@@ -14,7 +11,6 @@ import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
-import joptsimple.internal.Strings;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
@@ -22,6 +18,9 @@ import org.slf4j.LoggerFactory;
 import tech.raaf.structure.base.Configuration;
 import tech.raaf.structure.base.Context;
 import tech.raaf.structure.graph.repositories.TypeRepository;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ObjectNode;
 
 public class Profile extends Instance {
 
@@ -121,7 +120,7 @@ public class Profile extends Instance {
     }
     try {
       return Optional.of(mapper.treeToValue(maybeJson.get(), Map.class));
-    } catch (JsonProcessingException e) {
+    } catch (JacksonException e) {
       if (Configuration.isTraceModeOn()) {
         e.printStackTrace();
       }
@@ -158,7 +157,7 @@ public class Profile extends Instance {
     }
     try {
       return mapper.treeToValue(maybeDirectories.get(), Map.class);
-    } catch (JsonProcessingException e) {
+    } catch (JacksonException e) {
       if (Configuration.isTraceModeOn()) {
         e.printStackTrace();
       }
@@ -243,7 +242,7 @@ public class Profile extends Instance {
       Map<String, String> entriesPerType = DIR_FILE_PREFIXES.stream()
         .map(prfx -> prfx + postfix)
         .filter(filesOrDirs::containsKey)
-        .collect(Collectors.toMap(type -> type, type -> Strings.join(filesOrDirs.get(type), ",")));
+        .collect(Collectors.toMap(type -> type, type -> String.join(",", filesOrDirs.get(type))));
       entriesPerType
         .entrySet()
         .forEach(entry -> writeKeyValue.accept(jsonKeyToSourceKey.apply(entry.getKey(), postfix), entry.getValue()));
@@ -252,12 +251,12 @@ public class Profile extends Instance {
     // write packages
     final Optional<List<String>> maybePackages = getPackageNames();
     if (maybePackages.isPresent()) {
-      writeKeyValue.accept("PACKAGES", Strings.join(maybePackages.get(), ","));
+      writeKeyValue.accept("PACKAGES", String.join(",", maybePackages.get()));
     }
     // write services
     final Optional<List<String>> maybeServices = getServiceNames();
     if (maybeServices.isPresent()) {
-      writeKeyValue.accept("SERVICES", Strings.join(maybeServices.get(), ","));
+      writeKeyValue.accept("SERVICES", String.join(",", maybeServices.get()));
     }
     // write ports
     final Optional<List<Integer>> maybePorts = getPorts();

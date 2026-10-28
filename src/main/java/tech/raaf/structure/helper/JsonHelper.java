@@ -1,33 +1,41 @@
 package tech.raaf.structure.helper;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.fge.jsonschema.core.exceptions.ProcessingException;
-import com.github.fge.jsonschema.core.load.configuration.LoadingConfiguration;
-import com.github.fge.jsonschema.core.load.uri.URITranslatorConfiguration;
-import com.github.fge.jsonschema.core.report.ProcessingMessage;
-import com.github.fge.jsonschema.core.report.ProcessingReport;
-import com.github.fge.jsonschema.main.JsonSchema;
-import com.github.fge.jsonschema.main.JsonSchemaFactory;
-import com.github.fge.jsonschema.processors.syntax.SyntaxValidator;
-import java.io.IOException;
+import com.networknt.schema.Error;
+import com.networknt.schema.Schema;
+import com.networknt.schema.SchemaException;
+import com.networknt.schema.SchemaLocation;
+import com.networknt.schema.SchemaRegistry;
+import com.networknt.schema.SpecificationVersion;
 import java.io.InputStream;
 import java.net.URI;
-import java.util.Iterator;
+import java.util.List;
+import java.util.function.Supplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tech.raaf.structure.base.Configuration;
 import tech.raaf.structure.base.Configuration.Setting;
+import tech.raaf.structure.base.Configuration;
 import tech.raaf.structure.base.Context;
 import tech.raaf.structure.bus.manager.SchemaManager;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * @author Boy van Duuren <boy@raaf.tech>
  */
 public class JsonHelper {
 
-  private static final ObjectMapper mapper = new ObjectMapper();
+  // The mapper for all JSON in Structure
+  public static final ObjectMapper mapper = new ObjectMapper();
   private static final Logger log = LoggerFactory.getLogger(JsonHelper.class);
+  // Type schemas come from the graph and can change, thus no cache
+  private static final SchemaRegistry registry = SchemaRegistry.withDefaultDialect(SpecificationVersion.DRAFT_4, builder ->
+    builder.schemaCacheEnabled(false).schemaLoader(loader -> loader.fetchRemoteResources())
+  );
+  // The draft-04 meta-schema, to check the syntax of a schema
+  private static final Schema metaSchema = registry.getSchema(
+    SchemaLocation.of(SpecificationVersion.DRAFT_4.getDialectId())
+  );
 
   /**
    * Load a JSON file from the classpath.
@@ -83,7 +91,7 @@ public class JsonHelper {
     try {
       // Relative to home, never to the working directory.
       result = mapper.readTree(Configuration.get(Setting.HOME).resolve(file).toFile());
-    } catch (IOException e) {
+    } catch (JacksonException e) {
       if (Configuration.isTraceModeOn()) {
         final String logStatement = "Couldn't open as file  " + file + ": " + e.getMessage();
         if (via) {
@@ -113,31 +121,19 @@ public class JsonHelper {
     return result;
   }
 
-  public static boolean validateToSchema(JsonSchema schema, JsonNode object) {
-    Boolean validationState = false;
-
+  // Load the schema, validate the object, and log why it is not valid
+  private static boolean validate(Supplier<Schema> schema, JsonNode object) {
     try {
-      ProcessingReport validJson = schema.validate(object);
-      Iterator<ProcessingMessage> validJsonIterator = validJson.iterator();
-      ProcessingMessage validJsonMessage;
-
-      if (!validJson.isSuccess()) {
-        while (validJsonIterator.hasNext()) {
-          validJsonMessage = validJsonIterator.next();
-          if (validJsonMessage != null) {
-            log.error("JSON data validation message: " + validJsonMessage.getMessage());
-          }
-        }
-        return validationState;
-      } else {
-        validationState = true;
-      }
-    } catch (ProcessingException e) {
+      final List<Error> errors = schema.get().validate(object);
+      errors.forEach(error -> log.error("JSON data validation message: {}", error));
+      return errors.isEmpty();
+    } catch (SchemaException e) {
       log.error(e.getMessage());
-      return validationState;
+      if (Configuration.isTraceModeOn()) {
+        e.printStackTrace();
+      }
+      return false;
     }
-
-    return validationState;
   }
 
   /**
@@ -148,64 +144,27 @@ public class JsonHelper {
    * @return Does object validate against schema?
    */
   public static boolean validateToSchema(URI schema, JsonNode object) {
-    boolean validationState = false;
-    JsonSchemaFactory jsonSchemaFactory = JsonSchemaFactory.byDefault();
-    try {
-      JsonSchema jsonSchema = jsonSchemaFactory.getJsonSchema(schema.toString());
-      validationState = validateToSchema(jsonSchema, object);
-    } catch (ProcessingException e) {
-      if (Configuration.isTraceModeOn()) {
-        e.printStackTrace();
-      }
-    }
-
-    return validationState;
+    return validate(() -> registry.getSchema(SchemaLocation.of(schema.toString())), object);
   }
 
   public static boolean validateToSchema(JsonNode schema, JsonNode object, URI customNamespace) {
-    Boolean validationState = false;
-
-    try {
-      JsonSchemaFactory jsonSchemaFactory;
-
-      if (Context.getSchemaNamespace() != null) {
-        final URI nameSpaceURI;
-        if (customNamespace == null) {
-          nameSpaceURI = Context.getSchemaNamespace().resolve("/schemas/");
-        } else {
-          nameSpaceURI = customNamespace;
-        }
-        final URITranslatorConfiguration uriTranslatorConfiguration = URITranslatorConfiguration.newBuilder()
-          .setNamespace(nameSpaceURI)
-          .freeze();
-        final LoadingConfiguration loadingConfiguration = LoadingConfiguration.newBuilder()
-          .setURITranslatorConfiguration(uriTranslatorConfiguration)
-          .freeze();
-        jsonSchemaFactory = JsonSchemaFactory.newBuilder().setLoadingConfiguration(loadingConfiguration).freeze();
-      } else {
-        jsonSchemaFactory = JsonSchemaFactory.byDefault();
-      }
-      SyntaxValidator syntaxValidator = jsonSchemaFactory.getSyntaxValidator();
-      ProcessingReport validSchema = syntaxValidator.validateSchema(schema);
-      ProcessingMessage validSchemaMessage;
-      Iterator<ProcessingMessage> validSchemaIterator = validSchema.iterator();
-      if (!validSchema.isSuccess()) {
-        while (validSchemaIterator.hasNext()) {
-          validSchemaMessage = validSchemaIterator.next();
-          if (validSchemaMessage != null) {
-            log.error("JSON schema validation message: " + validSchemaMessage.getMessage());
-          }
-        }
-        return validationState;
-      }
-
-      JsonSchema jsonSchema = jsonSchemaFactory.getJsonSchema(schema);
-      validationState = validateToSchema(jsonSchema, object);
-    } catch (ProcessingException e) {
-      e.printStackTrace();
+    final List<Error> syntaxErrors = schemaErrors(schema);
+    if (!syntaxErrors.isEmpty()) {
+      syntaxErrors.forEach(error -> log.error("JSON schema validation message: {}", error));
+      return false;
     }
+    if (Context.getSchemaNamespace() == null) {
+      return validate(() -> registry.getSchema(schema), object);
+    }
+    final URI namespace = customNamespace == null
+      ? Context.getSchemaNamespace().resolve("/schemas/")
+      : customNamespace;
+    return validate(() -> registry.getSchema(SchemaLocation.of(namespace.toString()), schema), object);
+  }
 
-    return validationState;
+  // The reasons why a schema is not valid draft-04; empty if it is valid
+  public static List<Error> schemaErrors(JsonNode schema) {
+    return metaSchema.validate(schema);
   }
 
   /**

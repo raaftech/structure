@@ -1,14 +1,12 @@
 package tech.raaf.structure.bus.manager;
 
-import static io.vertx.core.json.Json.mapper;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static tech.raaf.structure.helper.JsonHelper.mapper;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableMap;
 import io.vertx.core.json.JsonObject;
 import java.nio.file.Files;
@@ -20,7 +18,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 import org.junit.Before;
 import org.junit.Test;
 import tech.raaf.structure.base.Context;
@@ -29,6 +26,8 @@ import tech.raaf.structure.graph.Controller;
 import tech.raaf.structure.graph.Entity;
 import tech.raaf.structure.graph.Graph;
 import tech.raaf.structure.schema.TypeSchemaTest;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ObjectNode;
 
 /**
  * Queues tasks on a deployed TaskManager and checks the results in
@@ -48,15 +47,7 @@ public class TaskManagerTest extends TypeSchemaTest {
     if (deployed) {
       return;
     }
-    CompletableFuture<String> id = new CompletableFuture<>();
-    Context.getVertx().deployVerticle(new TaskManager(1), ar -> {
-      if (ar.succeeded()) {
-        id.complete(ar.result());
-      } else {
-        id.completeExceptionally(ar.cause());
-      }
-    });
-    id.get();
+    Context.getVertx().deployVerticle(new TaskManager(1)).await();
     deployed = true;
   }
 
@@ -232,17 +223,8 @@ public class TaskManagerTest extends TypeSchemaTest {
     ObjectNode message = mapper.createObjectNode().put("msgh", "queueTask");
     message.set("args", args);
     JsonObject request = new JsonObject(message.toString());
-    CompletableFuture<Object> reply = new CompletableFuture<>();
-    Context.getVertx()
-      .eventBus()
-      .send(TASK_MANAGER, request, ar -> {
-        if (ar.succeeded()) {
-          reply.complete(ar.result().body());
-        } else {
-          reply.completeExceptionally(ar.cause());
-        }
-      });
-    assertEquals(task, mapper.readTree(reply.get().toString()).path("result").path("data").asText());
+    final Object reply = Context.getVertx().eventBus().request(TASK_MANAGER, request).await().body();
+    assertEquals(task, mapper.readTree(reply.toString()).path("result").path("data").asText());
   }
 
   // The TaskManager timer writes the result, so poll the graph

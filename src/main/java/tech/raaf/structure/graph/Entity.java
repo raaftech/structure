@@ -1,10 +1,7 @@
 package tech.raaf.structure.graph;
 
-import static io.vertx.core.json.Json.mapper;
+import static tech.raaf.structure.helper.JsonHelper.mapper;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
@@ -25,6 +22,9 @@ import tech.raaf.structure.graph.repositories.NodeRepository;
 import tech.raaf.structure.graph.repositories.TypeRepository;
 import tech.raaf.structure.helper.JsonHelper;
 import tech.raaf.structure.helper.Triple;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.annotation.JsonDeserialize;
 
 /**
  * A new root entity node with heavily simplified and structured construction.
@@ -168,7 +168,7 @@ public class Entity {
       return this;
     }
 
-    public Result buildAndStore() throws JsonProcessingException {
+    public Result buildAndStore() throws JacksonException {
       if (process == null || taskId == null) {
         log.error("Error while building Result");
         throw new ResultBuilderException("Not all required parameters were set.");

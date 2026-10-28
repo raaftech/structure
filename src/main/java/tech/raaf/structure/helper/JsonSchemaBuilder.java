@@ -1,19 +1,16 @@
 package tech.raaf.structure.helper;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.github.fge.jsonschema.core.exceptions.ProcessingException;
-import com.github.fge.jsonschema.core.report.ProcessingReport;
-import com.github.fge.jsonschema.main.JsonSchemaFactory;
-import com.github.fge.jsonschema.processors.syntax.SyntaxValidator;
 import java.util.Iterator;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tech.raaf.structure.base.Configuration;
+import tech.raaf.structure.exceptions.JsonValidationException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.ObjectNode;
 
 /**
  * JsonSchemaBuilder wraps Jackson JsonNode while providing an easy way
@@ -31,7 +28,6 @@ public class JsonSchemaBuilder {
   static final Logger log = LoggerFactory.getLogger(JsonSchemaBuilder.class);
 
   private ObjectNode json;
-  private final JsonSchemaFactory factory = JsonSchemaFactory.byDefault();
 
   /**
    * Parameterless constructor for JsonSchemaBuilder.
@@ -63,17 +59,13 @@ public class JsonSchemaBuilder {
   /**
    * Construct a JsonSchemaBuilder using a ObjectNode
    * @param objectNode An ObjectNode that is valid JSON Schema
-   * @throws ProcessingException When the ObjectNode does not comply to the JSON Schema specification
+   * @throws JsonValidationException When the ObjectNode does not comply to the JSON Schema specification
    */
-  public JsonSchemaBuilder(ObjectNode objectNode) throws ProcessingException {
-    SyntaxValidator syntaxValidator = factory.getSyntaxValidator();
-    ProcessingReport report = syntaxValidator.validateSchema(objectNode);
-
-    if (report.isSuccess()) {
-      json = objectNode;
-    } else {
-      throw new ProcessingException("Can't construct JsonSchemaBuilder with invalid JSON schema as argument.");
+  public JsonSchemaBuilder(ObjectNode objectNode) {
+    if (!JsonHelper.schemaErrors(objectNode).isEmpty()) {
+      throw new JsonValidationException("Can't construct JsonSchemaBuilder with invalid JSON schema as argument.");
     }
+    json = objectNode;
   }
 
   /**
@@ -112,8 +104,7 @@ public class JsonSchemaBuilder {
    * @param name The name of the property
    * @param type The type of the property, has the same constraints as setType(String type)
    * @param req Sets the property to required, or not
-   * @return A new JsonSchemaBuilder with the newly created property as root, or null when
-   * we catch a ProcessingException.
+   * @return A new JsonSchemaBuilder with the newly created property as root.
    */
   public JsonSchemaBuilder addProperty(String name, String type, boolean req, String description) {
     if (getType() == null || !getType().equals("object")) {
@@ -126,19 +117,7 @@ public class JsonSchemaBuilder {
 
     ObjectNode properties = getOrCreateProperties();
 
-    JsonSchemaBuilder property;
-    try {
-      property = new JsonSchemaBuilder(properties.putObject(name));
-    } catch (ProcessingException e) {
-      log.error(e.getMessage());
-
-      if (Configuration.isTraceModeOn()) {
-        e.printStackTrace();
-      }
-
-      // TODO: Explicit return null?
-      return null;
-    }
+    JsonSchemaBuilder property = new JsonSchemaBuilder(properties.putObject(name));
     try {
       property.setType(type);
       property.setDescription(description);
@@ -247,21 +226,9 @@ public class JsonSchemaBuilder {
     }
 
     ObjectNode items = getOrCreateItems();
-    JsonSchemaBuilder item;
     ArrayNode required;
 
-    try {
-      item = new JsonSchemaBuilder(items.putObject(name));
-    } catch (ProcessingException e) {
-      log.error(e.getMessage());
-
-      if (Configuration.isTraceModeOn()) {
-        e.printStackTrace();
-      }
-
-      // TODO: Explicit return null?
-      return null;
-    }
+    JsonSchemaBuilder item = new JsonSchemaBuilder(items.putObject(name));
     try {
       item.setType(type);
     } catch (Exception e) {
@@ -287,28 +254,23 @@ public class JsonSchemaBuilder {
    * Override the item array completely with a ObjectNode containing a valid JSON schema.
    * @param objectNode An ObjectNode containing a valid JSON schema.
    * @return The JsonSchemaBuilder this method is called on.
-   * @throws ProcessingException Thrown when the ObjectNode isn't valid JSON schema.
+   * @throws JsonValidationException Thrown when the ObjectNode isn't valid JSON schema.
    */
-  public JsonSchemaBuilder setItemToSchema(ObjectNode objectNode) throws ProcessingException {
+  public JsonSchemaBuilder setItemToSchema(ObjectNode objectNode) {
     if (getType() == null || !getType().equals("array")) {
       throw new RuntimeException("Can't add an item to something that's not of type array.");
     }
 
-    final JsonSchemaFactory factory = JsonSchemaFactory.byDefault();
-    final SyntaxValidator syntaxValidator = factory.getSyntaxValidator();
-    ProcessingReport report = syntaxValidator.validateSchema(objectNode);
-
-    if (report.isSuccess()) {
-      ObjectNode items = getOrCreateItems();
-      ArrayNode required = getRequired();
-      items.removeAll();
-      if (required != null) {
-        required.removeAll();
-      }
-      items.setAll(objectNode);
-    } else {
-      throw new ProcessingException("Can't construct JsonSchemaBuilder with invalid JSON schema as argument.");
+    if (!JsonHelper.schemaErrors(objectNode).isEmpty()) {
+      throw new JsonValidationException("Can't construct JsonSchemaBuilder with invalid JSON schema as argument.");
     }
+    ObjectNode items = getOrCreateItems();
+    ArrayNode required = getRequired();
+    items.removeAll();
+    if (required != null) {
+      required.removeAll();
+    }
+    items.setAll(objectNode);
 
     return this;
   }
@@ -365,7 +327,7 @@ public class JsonSchemaBuilder {
       return false;
     } else {
       boolean ret = false;
-      Iterator<JsonNode> fields = required.elements();
+      Iterator<JsonNode> fields = required.values().iterator();
       while (fields.hasNext()) {
         if (property.equals(fields.next().asText())) {
           ret = true;

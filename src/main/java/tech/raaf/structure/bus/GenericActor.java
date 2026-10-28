@@ -1,19 +1,11 @@
 package tech.raaf.structure.bus;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.github.fge.jsonschema.core.exceptions.ProcessingException;
-import com.github.fge.jsonschema.core.report.ProcessingReport;
-import com.github.fge.jsonschema.main.JsonSchema;
-import com.github.fge.jsonschema.main.JsonSchemaFactory;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.DeploymentOptions;
+import io.vertx.core.ThreadingModel;
 import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.json.JsonObject;
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URI;
@@ -26,6 +18,11 @@ import org.slf4j.LoggerFactory;
 import tech.raaf.structure.annotations.SchemaPath;
 import tech.raaf.structure.base.Configuration;
 import tech.raaf.structure.helper.JsonHelper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.JsonNodeFactory;
+import tools.jackson.databind.node.ObjectNode;
 
 /**
  * GenericActor is our default Abstract class for actors on the bus..
@@ -53,7 +50,7 @@ public abstract class GenericActor extends AbstractVerticle {
 
   // Options to deploy an actor that uses the graph.
   public static DeploymentOptions worker() {
-    return new DeploymentOptions().setWorker(true).setWorkerPoolName(POOL);
+    return new DeploymentOptions().setThreadingModel(ThreadingModel.WORKER).setWorkerPoolName(POOL);
   }
 
   class HandlerSchema {
@@ -125,7 +122,7 @@ public abstract class GenericActor extends AbstractVerticle {
 
     try {
       jsonNode = mapper.readTree(jsonObject.toString());
-    } catch (IOException e) {
+    } catch (JacksonException e) {
       log.error(e.getMessage());
 
       if (Configuration.isTraceModeOn()) {
@@ -163,21 +160,7 @@ public abstract class GenericActor extends AbstractVerticle {
 
   // The validator.
   public JsonNode validate(URI schemaDoc, JsonNode jsonDoc) {
-    try {
-      final JsonSchemaFactory factory = JsonSchemaFactory.byDefault();
-      final JsonSchema schema = factory.getJsonSchema(schemaDoc.toString());
-      ProcessingReport report = schema.validate(jsonDoc);
-      if (!report.isSuccess()) {
-        log.error(report.toString());
-      }
-    } catch (ProcessingException e) {
-      log.error(e.getMessage());
-
-      if (Configuration.isTraceModeOn()) {
-        e.printStackTrace();
-      }
-    }
-
+    JsonHelper.validateToSchema(schemaDoc, jsonDoc);
     return jsonDoc;
   }
 

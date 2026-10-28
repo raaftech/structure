@@ -2,16 +2,15 @@ package tech.raaf.structure.helper;
 
 import static org.junit.Assert.*;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.github.fge.jsonschema.core.exceptions.ProcessingException;
 import java.util.regex.PatternSyntaxException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.ObjectNode;
 
 public class JsonSchemaBuilderTest {
 
@@ -183,7 +182,7 @@ public class JsonSchemaBuilderTest {
   }
 
   @Test
-  public void testJsonSchemaSetItemToSchema() throws ProcessingException {
+  public void testJsonSchemaSetItemToSchema() {
     jsonSchema.setType("array");
     jsonSchema.addItem("a", "string", true);
 
@@ -222,7 +221,7 @@ public class JsonSchemaBuilderTest {
   }
 
   @Test
-  public void testJsonSchemaValidate() throws ProcessingException {
+  public void testJsonSchemaValidate() {
     final ObjectMapper mapper = new ObjectMapper();
     ObjectNode json = mapper.createObjectNode();
 

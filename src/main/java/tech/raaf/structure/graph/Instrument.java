@@ -1,10 +1,10 @@
 package tech.raaf.structure.graph;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.Collections;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import tools.jackson.databind.node.ObjectNode;
 
 public abstract class Instrument extends Instance {
 

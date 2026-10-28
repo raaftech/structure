@@ -1,9 +1,8 @@
 package tech.raaf.structure.graph;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.ser.std.StdSerializer;
-import java.io.IOException;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.databind.SerializationContext;
+import tools.jackson.databind.ser.std.StdSerializer;
 
 public class ConstraintSerializer extends StdSerializer<Constraint> {
 
@@ -12,13 +11,13 @@ public class ConstraintSerializer extends StdSerializer<Constraint> {
   }
 
   @Override
-  public void serialize(Constraint value, JsonGenerator gen, SerializerProvider provider) throws IOException {
+  public void serialize(Constraint value, JsonGenerator gen, SerializationContext provider) {
     gen.writeStartObject();
-    gen.writeObjectFieldStart(value.getForRelationship());
+    gen.writeObjectPropertyStart(value.getForRelationship());
 
-    gen.writeStringField("cardinality", value.getCardinality().toString());
-    gen.writeStringField("from", value.getStartOfConstraint().getUuid());
-    gen.writeStringField("to", value.getEndOfConstraint().getUuid());
+    gen.writeStringProperty("cardinality", value.getCardinality().toString());
+    gen.writeStringProperty("from", value.getStartOfConstraint().getUuid());
+    gen.writeStringProperty("to", value.getEndOfConstraint().getUuid());
 
     gen.writeEndObject();
     gen.writeEndObject();

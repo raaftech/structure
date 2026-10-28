@@ -1,10 +1,9 @@
 package tech.raaf.structure.graph;
 
-import static io.vertx.core.json.Json.mapper;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static tech.raaf.structure.helper.JsonHelper.mapper;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import java.util.ArrayList;
@@ -18,6 +17,7 @@ import org.junit.Test;
 import tech.raaf.structure.base.Context;
 import tech.raaf.structure.helper.Triple;
 import tech.raaf.structure.schema.TypeSchemaTest;
+import tools.jackson.databind.JsonNode;
 
 /**
  * Checks the order of hierarchy paths, of the last created instances

@@ -1,8 +1,8 @@
 package tech.raaf.structure.graph.repositories;
 
-import static io.vertx.core.json.Json.mapper;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static tech.raaf.structure.helper.JsonHelper.mapper;
 
 import java.util.Set;
 import org.junit.Assert;

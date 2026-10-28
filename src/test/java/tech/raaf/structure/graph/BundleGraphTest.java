@@ -5,9 +5,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static tech.raaf.structure.helper.classification.ArgumentsToClassificationTreeParser.matchesTypePath;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -22,12 +19,15 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import tech.raaf.structure.base.Configuration;
 import tech.raaf.structure.base.Configuration.Setting;
+import tech.raaf.structure.base.Configuration;
 import tech.raaf.structure.base.Context;
 import tech.raaf.structure.helper.InstrumentRunner;
 import tech.raaf.structure.helper.loader.NaiveSorter;
 import tech.raaf.structure.schema.TypeSchemaTest;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ObjectNode;
 
 public class BundleGraphTest extends TypeSchemaTest {
 
@@ -88,8 +88,8 @@ public class BundleGraphTest extends TypeSchemaTest {
       assertNotNull("Missing bundle entity " + uuid, node);
       entity
         .path("file")
-        .fieldNames()
-        .forEachRemaining(name ->
+        .propertyNames()
+        .forEach(name ->
           assertTrue(describe(node) + ": missing file-" + name, node.getProperties().containsKey("file-" + name))
         );
       if (node.getLabels().contains("Type")) {
@@ -111,8 +111,8 @@ public class BundleGraphTest extends TypeSchemaTest {
     for (Map<String, Object> row : Graph.query("MATCH (n:Instrument) RETURN n ORDER BY n.uuid")) {
       GraphNode instrument = (GraphNode) row.get("n");
       arguments(instrument)
-        .fields()
-        .forEachRemaining(argument -> {
+        .properties()
+        .forEach(argument -> {
           JsonNode value = argument.getValue().path("value");
           if (!"static".equals(value.path("from").asText())) {
             String typePath = value.path("type").asText();
@@ -143,8 +143,8 @@ public class BundleGraphTest extends TypeSchemaTest {
       String appliedPath = paths.get(row.get("type"));
       assertNotNull(describe(instrument) + ": missing hierarchy path for " + row.get("type"), appliedPath);
       arguments(instrument)
-        .fields()
-        .forEachRemaining(argument -> {
+        .properties()
+        .forEach(argument -> {
           JsonNode value = argument.getValue().path("value");
           if ("origin".equals(value.path("from").asText())) {
             String typePath = value.path("type").asText();

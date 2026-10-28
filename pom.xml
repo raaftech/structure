@@ -85,47 +85,47 @@
 
   <properties>
     <!-- Generic settings -->
-    <java.source-target.version>1.8</java.source-target.version>
+    <maven.compiler.release>25</maven.compiler.release>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <main.class>tech.raaf.structure.base.Application</main.class>
     <classes.dir>target/classes</classes.dir>
     <test-classes.dir>target/test-classes</test-classes.dir>
 
     <!-- Core component versions -->
-    <vertx.version>3.4.1</vertx.version>
-    <neo4j-java-driver.version>4.4.27</neo4j-java-driver.version>
-    <handlebars.version>2.2.3</handlebars.version>
+    <vertx.version>5.2.2</vertx.version>
+    <neo4j-java-driver.version>6.3.0</neo4j-java-driver.version>
+    <handlebars.version>4.5.7</handlebars.version>
 
     <!-- Helper component versions -->
-    <json-schema-validator.version>2.2.6</json-schema-validator.version>
+    <json-schema-validator.version>3.0.8</json-schema-validator.version>
+    <guava.version>33.7.2-jre</guava.version>
     <commons-io.version>2.22.0</commons-io.version>
-    <commons-cli.version>1.3.1</commons-cli.version>
-    <commons-codec.version>1.10</commons-codec.version>
-    <commons-lang3.version>3.1</commons-lang3.version>
-    <logback.version>1.1.7</logback.version>
-    <slf4j.version>1.7.21</slf4j.version>
-    <jmockit.version>1.30</jmockit.version>
-    <jackson.version>2.22.4</jackson.version>
+    <commons-cli.version>1.11.0</commons-cli.version>
+    <commons-codec.version>1.23.0</commons-codec.version>
+    <commons-lang3.version>3.21.0</commons-lang3.version>
+    <logback.version>1.6.6</logback.version>
+    <slf4j.version>2.0.20</slf4j.version>
+    <jackson.version>3.2.4</jackson.version>
 
     <!-- Test component versions -->
-    <junit.version>4.12</junit.version>
+    <junit.version>4.13.2</junit.version>
+    <jmockit.version>2.3.0</jmockit.version>
     <testcontainers.version>2.0.5</testcontainers.version>
+    <argLine>-javaagent:${settings.localRepository}/com/github/hazendaz/jmockit/jmockit/${jmockit.version}/jmockit-${jmockit.version}.jar</argLine>
 
     <!-- Maven plugin versions -->
-    <maven.toolchains.plugin.version>3.2.0</maven.toolchains.plugin.version>
-    <maven.compiler.plugin.version>3.3</maven.compiler.plugin.version>
-    <maven.shade.plugin.version>2.4.3</maven.shade.plugin.version>
-    <maven.surefire.plugin.version>2.19.1</maven.surefire.plugin.version>
-    <maven.failsafe.plugin.version>2.19.1</maven.failsafe.plugin.version>
-    <jacoco.plugin.version>0.8.11</jacoco.plugin.version>
+    <maven.compiler.plugin.version>3.16.0</maven.compiler.plugin.version>
+    <maven.shade.plugin.version>3.6.2</maven.shade.plugin.version>
+    <maven.surefire.plugin.version>3.6.1</maven.surefire.plugin.version>
+    <maven.failsafe.plugin.version>3.6.1</maven.failsafe.plugin.version>
+    <jacoco.plugin.version>0.8.16</jacoco.plugin.version>
     <jacoco.line.minimum>0.60</jacoco.line.minimum>
   </properties>
 
   <dependencyManagement>
     <dependencies>
-      <!-- One Jackson version for Vert.x, the libraries and Testcontainers -->
       <dependency>
-        <groupId>com.fasterxml.jackson</groupId>
+        <groupId>tools.jackson</groupId>
         <artifactId>jackson-bom</artifactId>
         <version>${jackson.version}</version>
         <type>pom</type>
@@ -149,9 +149,20 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>com.github.fge</groupId>
+      <groupId>tools.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.networknt</groupId>
       <artifactId>json-schema-validator</artifactId>
       <version>${json-schema-validator.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>${guava.version}</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
@@ -205,13 +216,13 @@
     </dependency>
     <dependency>
       <groupId>com.github.jknack</groupId>
-      <artifactId>handlebars-jackson2</artifactId>
+      <artifactId>handlebars-jackson3</artifactId>
       <version>${handlebars.version}</version>
     </dependency>
 
     <!--Test dependencies -->
     <dependency>
-      <groupId>org.jmockit</groupId>
+      <groupId>com.github.hazendaz.jmockit</groupId>
       <artifactId>jmockit</artifactId>
       <version>${jmockit.version}</version>
       <scope>test</scope>
@@ -267,34 +278,11 @@
     </testResources>
 
     <plugins>
-      <!-- Build and test with the JDK from ~/.m2/toolchains.xml -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-toolchains-plugin</artifactId>
-        <version>${maven.toolchains.plugin.version}</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>toolchain</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <toolchains>
-            <jdk>
-              <version>${java.source-target.version}</version>
-            </jdk>
-          </toolchains>
-        </configuration>
-      </plugin>
-
       <!-- Compiler setup -->
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>${maven.compiler.plugin.version}</version>
         <configuration>
-          <source>${java.source-target.version}</source>
-          <target>${java.source-target.version}</target>
           <useIncrementalCompilation>false</useIncrementalCompilation>
           <compilerArgs>
             <arg>-Xlint:all</arg>
@@ -412,9 +400,7 @@
                     <Main-Class>${main.class}</Main-Class>
                   </manifestEntries>
                 </transformer>
-                <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
-                  <resource>META-INF/services/io.vertx.core.spi.VerticleFactory</resource>
-                </transformer>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
               </transformers>
               <artifactSet>
                 <!-- By default all the deps go into the fat jar, but we don't need some so we can exclude
@@ -427,6 +413,7 @@
                 </excludes>
               </artifactSet>
               <outputFile>${project.build.directory}/${project.artifactId}-${project.version}-fat.jar</outputFile>
+              <createDependencyReducedPom>false</createDependencyReducedPom>
             </configuration>
           </execution>
         </executions>

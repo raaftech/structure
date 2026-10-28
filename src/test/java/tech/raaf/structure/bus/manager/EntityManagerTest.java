@@ -1,11 +1,8 @@
 package tech.raaf.structure.bus.manager;
 
-import static io.vertx.core.json.Json.mapper;
 import static org.junit.Assert.*;
+import static tech.raaf.structure.helper.JsonHelper.mapper;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
@@ -29,6 +26,9 @@ import tech.raaf.structure.graph.Node;
 import tech.raaf.structure.graph.repositories.NodeRepository;
 import tech.raaf.structure.helper.loader.NaiveSorter;
 import tech.raaf.structure.schema.TypeSchemaTest;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.ObjectNode;
 
 public class EntityManagerTest extends TypeSchemaTest {
 
@@ -173,7 +173,7 @@ public class EntityManagerTest extends TypeSchemaTest {
     assertEquals(ImmutableSet.of("Software", "Component", "Type", "Result", "ComponentGroup", "Group"), names);
 
     // all items in that array should be deserializable to an Entity
-    Iterator<JsonNode> iterator = data.elements();
+    Iterator<JsonNode> iterator = data.values().iterator();
     while (iterator.hasNext()) {
       mapper.treeToValue(iterator.next(), Entity.class);
     }

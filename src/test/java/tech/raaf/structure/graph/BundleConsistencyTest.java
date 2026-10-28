@@ -3,13 +3,8 @@ package tech.raaf.structure.graph;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.fge.jsonschema.SchemaVersion;
-import com.github.fge.jsonschema.core.report.ProcessingReport;
-import com.github.fge.jsonschema.main.JsonSchemaFactory;
-import com.github.fge.jsonschema.processors.syntax.SyntaxValidator;
+import com.networknt.schema.Error;
+import com.networknt.schema.SpecificationVersion;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
@@ -31,8 +26,15 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import tech.raaf.structure.base.Configuration;
 import tech.raaf.structure.base.Configuration.Setting;
+import tech.raaf.structure.base.Configuration;
+import tech.raaf.structure.helper.JsonHelper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.JsonParser;
+import tools.jackson.core.StreamReadFeature;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 public class BundleConsistencyTest {
 
@@ -78,26 +80,26 @@ public class BundleConsistencyTest {
         .sorted()
         .collect(Collectors.toList());
     }
-    ObjectMapper mapper = new ObjectMapper().enable(JsonParser.Feature.STRICT_DUPLICATE_DETECTION);
+    ObjectMapper mapper = JsonMapper.builder().enable(StreamReadFeature.STRICT_DUPLICATE_DETECTION).build();
     for (Path path : files) {
       if (!path.toString().endsWith(".json")) {
         continue;
       }
       JsonNode document;
-      try (JsonParser parser = mapper.getFactory().createParser(path.toFile())) {
+      try (JsonParser parser = mapper.createParser(path.toFile())) {
         document = mapper.readTree(parser);
-        if (document == null) {
+        if (document == null || document.isMissingNode()) {
           jsonErrors.add(path + ": empty JSON file");
         }
         if (parser.nextToken() != null) {
           jsonErrors.add(path + ": content after the JSON document");
         }
-      } catch (IOException e) {
+      } catch (JacksonException e) {
         jsonErrors.add(path + ": " + e.getMessage());
         // Use the application parser so the other checks can run.
         try {
           document = new ObjectMapper().readTree(path.toFile());
-        } catch (IOException invalid) {
+        } catch (JacksonException invalid) {
           continue;
         }
       }
@@ -163,8 +165,8 @@ public class BundleConsistencyTest {
       entity.node
         .path("meta")
         .path("relations")
-        .fields()
-        .forEachRemaining(relation -> {
+        .properties()
+        .forEach(relation -> {
           JsonNode value = relation.getValue();
           boolean toType =
             "outgoing".equals(value.path("direction").asText()) && Entity.outgoingToType.contains(relation.getKey());
@@ -175,8 +177,8 @@ public class BundleConsistencyTest {
       entity.node
         .path("meta")
         .path("constraints")
-        .fields()
-        .forEachRemaining(constraint -> {
+        .properties()
+        .forEach(constraint -> {
           for (JsonNode value : constraint.getValue()) {
             checkTarget(entity, constraint.getKey(), value.path("to").asText(), true);
           }
@@ -192,8 +194,8 @@ public class BundleConsistencyTest {
         entity.node
           .path("meta")
           .path(field)
-          .fieldNames()
-          .forEachRemaining(name -> check(RELATIONS.contains(name), entity + ": unknown " + field + " name " + name));
+          .propertyNames()
+          .forEach(name -> check(RELATIONS.contains(name), entity + ": unknown " + field + " name " + name));
       }
     }
     assertNoErrors();
@@ -206,8 +208,8 @@ public class BundleConsistencyTest {
       used.add(entity.path);
       entity.node
         .path("file")
-        .fields()
-        .forEachRemaining(file -> {
+        .properties()
+        .forEach(file -> {
           String value = file.getValue().path("path").asText();
           Path path = entity.path.getParent().resolve(value).normalize();
           check(
@@ -239,7 +241,7 @@ public class BundleConsistencyTest {
 
   @Test
   public void schemasUseDraftFour() {
-    String draft4 = SchemaVersion.DRAFTV4.getLocation().toString();
+    String draft4 = SpecificationVersion.DRAFT_4.getDialectId();
     documents.forEach((path, schema) -> {
       if (path.toString().endsWith(".schema.json")) {
         String value = schema.path("$schema").asText();
@@ -251,11 +253,10 @@ public class BundleConsistencyTest {
 
   @Test
   public void typeSchemasHaveValidSyntaxAndReferences() {
-    SyntaxValidator validator = JsonSchemaFactory.byDefault().getSyntaxValidator();
     for (BundleEntity type : types.values()) {
       JsonNode schema = type.schema();
-      ProcessingReport report = validator.validateSchema(schema);
-      check(report.isSuccess(), type + ": invalid draft-04 schema: " + report);
+      List<Error> errors = JsonHelper.schemaErrors(schema);
+      check(errors.isEmpty(), type + ": invalid draft-04 schema: " + errors);
       walk(schema, "", (pointer, node) -> {
         if (node.has("$ref")) {
           checkReference(type, schema, pointer, node.path("$ref").asText());
@@ -334,8 +335,8 @@ public class BundleConsistencyTest {
         JsonNode parentSchema = parent.schema();
         parentSchema
           .path("properties")
-          .fieldNames()
-          .forEachRemaining(name ->
+          .propertyNames()
+          .forEach(name ->
             check(
               childSchema.path("properties").has(name),
               type + ": missing property " + name + " from " + parent.node.path("name").asText()
@@ -405,8 +406,8 @@ public class BundleConsistencyTest {
     action.accept(pointer, node);
     if (node.isObject()) {
       node
-        .fields()
-        .forEachRemaining(field ->
+        .properties()
+        .forEach(field ->
           walk(field.getValue(), pointer + "/" + field.getKey().replace("~", "~0").replace("/", "~1"), action)
         );
     } else if (node.isArray()) {

@@ -1,12 +1,8 @@
 package tech.raaf.structure.helper;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.jknack.handlebars.Handlebars;
-import com.github.jknack.handlebars.JsonNodeValueResolver;
 import com.github.jknack.handlebars.Template;
+import com.github.jknack.handlebars.jackson.JsonNodeValueResolver;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableList;
@@ -26,8 +22,8 @@ import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tech.raaf.structure.base.Configuration;
 import tech.raaf.structure.base.Configuration.Setting;
+import tech.raaf.structure.base.Configuration;
 import tech.raaf.structure.base.Context;
 import tech.raaf.structure.graph.*;
 import tech.raaf.structure.graph.repositories.GroupingRepository;
@@ -38,6 +34,10 @@ import tech.raaf.structure.helper.classification.tree.RootNode;
 import tech.raaf.structure.helper.handlebars.Quote;
 import tech.raaf.structure.helper.handlebars.ReachableAddress;
 import tech.raaf.structure.helper.handlebars.SecretFile;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.ObjectNode;
 
 /**
  * @author Boy van Duuren <boy@raaf.tech>
@@ -547,7 +547,7 @@ public class InstrumentRunner {
       filter definition needs to have a "pass" object. Filter what we need from the controller's arguments.
     */
     BiMap<String, JsonNode> toPass = HashBiMap.create();
-    Iterator<Map.Entry<String, JsonNode>> iter = arguments.get().fields();
+    Iterator<Map.Entry<String, JsonNode>> iter = arguments.get().properties().iterator();
     while (iter.hasNext()) {
       Map.Entry<String, JsonNode> entry = iter.next();
       JsonNode selector = entry.getValue();
@@ -658,7 +658,7 @@ public class InstrumentRunner {
     final ObjectNode staticArguments = suppliedArguments.deepCopy();
     staticArguments.setAll(generatedArguments);
     // add the static arguments to our context in a way we can filter
-    staticArguments.fields().forEachRemaining(entry -> {
+    staticArguments.properties().forEach(entry -> {
       ObjectNode node = mapper.createObjectNode().put("name", entry.getKey()).put("data", entry.getValue().asText());
       collect.accept(node, "static");
     });
@@ -695,7 +695,7 @@ public class InstrumentRunner {
       final String optionalKey = "isOptional";
       final String defaultValueKey = "defaultValue";
       Set<String> missingKeys = new HashSet<>();
-      Iterator<Map.Entry<String, JsonNode>> argIter = arguments.fields();
+      Iterator<Map.Entry<String, JsonNode>> argIter = arguments.properties().iterator();
       while (argIter.hasNext()) {
         Map.Entry<String, JsonNode> arg = argIter.next();
         String key = arg.getKey();
@@ -730,7 +730,7 @@ public class InstrumentRunner {
     // A value can be a password, so log values only when unsafe
     log.debug(
       "Selected the following arguments: {}",
-      Configuration.get(Setting.UNSAFE) ? result : ImmutableList.copyOf(result.fieldNames())
+      Configuration.get(Setting.UNSAFE) ? result : ImmutableList.copyOf(result.propertyNames())
     );
 
     return result;
@@ -745,7 +745,7 @@ public class InstrumentRunner {
    * @param supplied   The arguments of the caller.
    */
   static void refuseUnsuppliable(Controller controller, ObjectNode declared, ObjectNode supplied) {
-    declared.fields().forEachRemaining(entry -> {
+    declared.properties().forEach(entry -> {
       if (supplied.has(entry.getKey()) && !entry.getValue().path("canBeUserSupplied").asBoolean()) {
         throw new IllegalArgumentException(
           "A caller cannot supply argument \"" + entry.getKey() + "\" of controller " + controller.getName() + "."
@@ -916,7 +916,7 @@ public class InstrumentRunner {
         .put("capability", instrumentRepository.getInstrumentCapability(controller.getUuid()).getName());
       Optional<ObjectNode> maybeStateMap = controller.getStateMapAsJson();
       if (maybeStateMap.isPresent()) {
-        ((ObjectNode) job.get("metadata")).put("stateMap", maybeStateMap.get());
+        ((ObjectNode) job.get("metadata")).set("stateMap", maybeStateMap.get());
       }
       Optional<Long> maybeTimeAllocated = commandAndTimeout.getRight();
       if (maybeTimeAllocated.isPresent()) {

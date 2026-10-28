@@ -1,8 +1,8 @@
 package tech.raaf.structure.helper.classification.tree.implementation;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import tech.raaf.structure.helper.classification.tree.BranchNode;
 import tech.raaf.structure.helper.classification.tree.InternalNode;
+import tools.jackson.databind.JsonNode;
 
 /**
  * BranchNodeJson extends BranchNode in a way that will occur

@@ -2,8 +2,6 @@ package tech.raaf.structure.graph;
 
 import static org.junit.Assert.*;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServer;
 import io.vertx.ext.web.Router;
@@ -11,7 +9,6 @@ import java.net.URI;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 import org.junit.Before;
 import org.junit.Test;
 import tech.raaf.structure.GraphTest;
@@ -20,6 +17,8 @@ import tech.raaf.structure.base.Context;
 import tech.raaf.structure.bus.manager.SchemaManager;
 import tech.raaf.structure.graph.repositories.NodeRepository;
 import tech.raaf.structure.helper.JsonHelper;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 
 public class ProfileTest extends GraphTest {
 
@@ -35,15 +34,7 @@ public class ProfileTest extends GraphTest {
     router.route("/schemas/:schema").blockingHandler(schemaManager::getSchema, false);
 
     // Port 0 lets the system choose a free port
-    final CompletableFuture<HttpServer> listening = new CompletableFuture<>();
-    httpServer.requestHandler(router::accept).listen(0, "localhost", ar -> {
-      if (ar.succeeded()) {
-        listening.complete(ar.result());
-      } else {
-        listening.completeExceptionally(ar.cause());
-      }
-    });
-    final int port = listening.get().actualPort();
+    final int port = httpServer.requestHandler(router).listen(0, "localhost").await().actualPort();
     Context.setSchemaNamespace(URI.create("http://localhost:" + port + "/schemas/"));
     Application.init(vertx);
   }

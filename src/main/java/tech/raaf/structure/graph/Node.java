@@ -1,11 +1,8 @@
 package tech.raaf.structure.graph;
 
-import static io.vertx.core.json.Json.mapper;
+import static tech.raaf.structure.helper.JsonHelper.mapper;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableMap;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -16,6 +13,9 @@ import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tech.raaf.structure.base.Configuration;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.annotation.JsonSerialize;
+import tools.jackson.databind.node.ObjectNode;
 
 /**
  * Give a description of Node here.
@@ -161,7 +161,7 @@ public abstract class Node {
     if (file.containsKey(name)) {
       try {
         maybeFile = Optional.of((ObjectNode) mapper.readTree((String) file.get(name)));
-      } catch (IOException e) {
+      } catch (JacksonException e) {
         if (Configuration.isTraceModeOn()) {
           log.error("Error while trying to get file object on {}", getUuid());
           e.printStackTrace();
