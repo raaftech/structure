@@ -1,0 +1,20 @@
+{
+  "name": "SystemManager",
+  "desc": "Software that manages computing systems.",
+  "meta": {
+    "uuid": "c539f0f6-6d02-4501-bafc-a8834d6e15a5",
+    "relations": {
+      "ISA": {
+        "direction": "outgoing",
+        "to": ["Software"]
+      }
+    }
+  },
+  "file": {
+    "dataSchema": {
+      "encoding": "text",
+      "format": "json",
+      "path": "../schema/systemmanager.schema.json"
+    }
+  }
+}

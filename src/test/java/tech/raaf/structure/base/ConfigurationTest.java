@@ -46,6 +46,9 @@ public class ConfigurationTest {
   public void names() throws Exception {
     assertEquals("structure.neo4j.bolt.uri", Configuration.property(Setting.NEO4J_BOLT_URI));
     assertEquals("STRUCTURE_NEO4J_BOLT_URI", Configuration.variable(Setting.NEO4J_BOLT_URI));
+    assertEquals("structure.ca.cert", Configuration.property(Setting.CA_CERT));
+    assertEquals("STRUCTURE_CA_CERT", Configuration.variable(Setting.CA_CERT));
+    assertEquals(singletonMap("ca-cert", "trust.crt"), Configuration.parse(new String[] { "--ca-cert", "trust.crt" }));
     assertEquals(
       singletonMap("neo4j-bolt-uri", "bolt://other"),
       Configuration.parse(new String[] { "--neo4j-bolt-uri", "bolt://other" })
@@ -156,6 +159,15 @@ public class ConfigurationTest {
       Paths.get("/etc/structure.jks"),
       file("structure.jks.file", "/etc/structure.jks").resolve(Setting.JKS_FILE)
     );
+    assertEquals(
+      Configuration.get(Setting.JKS_FILE).resolveSibling("structure.crt"),
+      file("structure.other", "").resolve(Setting.CA_CERT)
+    );
+    assertEquals(
+      Configuration.get(Setting.STATE_DIR).resolve("trust.crt"),
+      file("structure.ca.cert", "trust.crt").resolve(Setting.CA_CERT)
+    );
+    assertEquals(Paths.get("/etc/trust.crt"), file("structure.ca.cert", "/etc/trust.crt").resolve(Setting.CA_CERT));
   }
 
   @Test
@@ -169,7 +181,12 @@ public class ConfigurationTest {
     assertEquals("secret", json.get("neo4j-pass").asString());
     assertEquals("http://localhost:7474", json.get("neo4j-http-uri").asString());
     assertEquals(8443, json.get("https-port").asInt());
-    assertEquals(3443, json.get("rest-port").asInt());
+    assertEquals(
+      Configuration.get(Setting.JKS_FILE).resolveSibling("structure.crt").toString(),
+      json.get("ca-cert").asString()
+    );
+    assertFalse(json.has("rest-host"));
+    assertFalse(json.has("rest-port"));
     assertEquals(
       Configuration.get(Setting.HOME).resolve("target/structure.jks").toString(),
       json.get("jks-file").asString()
@@ -184,14 +201,14 @@ public class ConfigurationTest {
   public void load() throws Exception {
     final Path system = Files.createFile(folder.resolve("system.properties"));
     final Path user = Files.createFile(folder.resolve("user.properties"));
-    Files.write(system, Arrays.asList("structure.https.port=9443", "structure.rest.port=9444"));
+    Files.write(system, Arrays.asList("structure.https.port=9443", "structure.https.host=example.org"));
     Files.write(user, Arrays.asList("structure.https.port=10443"));
     // A later file has priority, and a missing file is no error.
     final Path missing = folder.resolve("missing.properties");
     final List<Path> loadedFiles = new ArrayList<>();
     final Properties properties = Configuration.load(Arrays.asList(system, user, missing), loadedFiles);
     assertEquals("10443", properties.getProperty("structure.https.port"));
-    assertEquals("9444", properties.getProperty("structure.rest.port"));
+    assertEquals("example.org", properties.getProperty("structure.https.host"));
     assertEquals(Arrays.asList(system, user), loadedFiles);
   }
 
@@ -245,6 +262,8 @@ public class ConfigurationTest {
   @Test
   public void unknownOption() {
     assertThrows(ParseException.class, () -> Configuration.parse(new String[] { "-h" }));
+    assertThrows(ParseException.class, () -> Configuration.parse(new String[] { "--rest-host", "localhost" }));
+    assertThrows(ParseException.class, () -> Configuration.parse(new String[] { "--rest-port", "3443" }));
   }
 
   @Test

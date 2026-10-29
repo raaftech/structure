@@ -15,7 +15,7 @@ public class SchemaManager {
   private static final TypeRepository typeRepository = Context.getTypeRepository();
 
   public void getSchema(RoutingContext routingContext) {
-    log.debug("Received schema request on REST API.");
+    log.debug("Received schema request.");
     final String schemaName = routingContext.request().getParam("schema");
     if (schemaName == null) {
       log.error("No schema name given, could not process schema request.");

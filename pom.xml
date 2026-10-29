@@ -290,6 +290,7 @@
         <filtering>false</filtering>
         <excludes>
           <exclude>release.json</exclude>
+          <exclude>**/__pycache__/**</exclude>
           <!-- Settings of a developer, with passwords; never in the jar. -->
           <exclude>config.properties</exclude>
         </excludes>

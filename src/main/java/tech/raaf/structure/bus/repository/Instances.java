@@ -29,6 +29,49 @@ public class Instances extends Repository<Instance> {
     this.repository = repository;
   }
 
+  @SchemaPath("resource:/schema/repository/instances/findOneByData.schema.json")
+  public MessageHandler findOneByData() {
+    return new MessageHandler() {
+      @Override
+      public JsonNode exec(JsonNode request) {
+        JsonNode args = request.get("args");
+        return Graph.transaction(() -> {
+          Instance found = repository.findOneByData(args.get("property").asString(), args.get("value").asString());
+          return response(
+            request,
+            mapper.createObjectNode().set("data", found == null ? mapper.createObjectNode() : mapper.valueToTree(found))
+          );
+        });
+      }
+
+      @Override
+      public JsonNode help(JsonNode request) {
+        return jsonFromResource("help/instances.findonebydata.json");
+      }
+    };
+  }
+
+  @SchemaPath("resource:/schema/repository/findOne.schema.json")
+  public MessageHandler findOperatingSystem() {
+    return new MessageHandler() {
+      @Override
+      public JsonNode exec(JsonNode request) {
+        return Graph.transaction(() -> {
+          final Instance found = repository.findOperatingSystem(request.path("args").path("node").asString());
+          return response(
+            request,
+            mapper.createObjectNode().set("data", found == null ? mapper.createObjectNode() : mapper.valueToTree(found))
+          );
+        });
+      }
+
+      @Override
+      public JsonNode help(JsonNode request) {
+        return jsonFromResource("help/instances.findoperatingsystem.json");
+      }
+    };
+  }
+
   /**
    * Get the latest instances, with an optional class label filter.
    * @return A data array with at most the requested number of nodes.

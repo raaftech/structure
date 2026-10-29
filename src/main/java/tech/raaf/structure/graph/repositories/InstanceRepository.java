@@ -57,4 +57,27 @@ public class InstanceRepository extends GenericRepository<Instance> {
       ImmutableMap.of("hostname", hostname)
     );
   }
+
+  public Component findOperatingSystem(String componentUuid) {
+    final List<Component> found = NodeMapper.mapAll(
+      Graph.query(
+        "MATCH (os:Component)-[:HAS*0..]->(:Component {uuid: $uuid}) " +
+          "WHERE (os)-[:INSTANCE_OF|ISA*1..]->(:Type {name: 'OperatingSystem'}) " +
+          "RETURN DISTINCT os",
+        ImmutableMap.of("uuid", componentUuid)
+      ),
+      "os"
+    );
+    if (found.size() > 1) {
+      throw new IllegalStateException("Component belongs to more than one operating system: " + componentUuid);
+    }
+    return found.isEmpty() ? null : found.getFirst();
+  }
+
+  public Instance findOneByData(String property, String value) {
+    return one(
+      "MATCH (n:Instance) WHERE n[$property] = $value RETURN n LIMIT 1",
+      ImmutableMap.of("property", "data-" + property, "value", value)
+    );
+  }
 }

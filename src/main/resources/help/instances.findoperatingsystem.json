@@ -1,0 +1,8 @@
+{
+  "name": "findOperatingSystem",
+  "synopsis": {
+    "msgh": "findOperatingSystem",
+    "args": { "node": "<component UUID>" }
+  },
+  "description": "Returns an empty object if no operating system contains the component. Reports an error if more than one operating system contains it."
+}

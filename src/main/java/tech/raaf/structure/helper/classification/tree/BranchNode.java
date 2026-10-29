@@ -37,7 +37,7 @@ public class BranchNode<T> extends InternalNode<T> {
   public void consumeInput(Set<T> input) {
     if (input != null && input.size() > 0) {
       Set<T> result = input.stream().filter(predicate).collect(Collectors.toSet());
-      children.parallelStream().forEach(child -> child.consumeInput(result));
+      children.forEach(child -> child.consumeInput(result));
     }
   }
 }

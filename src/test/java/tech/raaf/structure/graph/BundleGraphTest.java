@@ -191,12 +191,12 @@ public class BundleGraphTest extends TypeSchemaTest {
       new Component(
         mapper
           .createObjectNode()
-          .put("name", "NmapClient")
+          .put("name", "Nmap")
           .put("desc", "The nmap network scanner.")
           .put("shortName", "nmap")
           .put("longName", "Nmap")
           .put("ver", "unknown"),
-        Context.getTypeRepository().findOneByName("NmapClient")
+        Context.getTypeRepository().findOneByName("Nmap")
       )
     );
     agent.addMember(host);
@@ -213,10 +213,10 @@ public class BundleGraphTest extends TypeSchemaTest {
           .put("reachable", false),
         Context.getTypeRepository().findOneByName("Ipv4Address")
       );
-      assertDiscoveryCommand(address, "IpAddressDiscover", "-i '192.0.2.10'");
+      assertDiscoveryCommand(address, "NmapIpAddressDiscover", "-i '192.0.2.10'");
       assertJob(
         address,
-        "NmapClientVerify",
+        "NmapVerify",
         "sh -c 'nmap -sn -n -oG - \"$1\" | grep -q \"Status: Up\"' nmap '192.0.2.10'",
         10000
       );
@@ -231,7 +231,7 @@ public class BundleGraphTest extends TypeSchemaTest {
       );
       assertJob(
         listener,
-        "NmapClientVerifyListener",
+        "NmapVerifyListener",
         "sh -c 'nmap -Pn -n -p \"$2\" -oG - \"$1\" | grep -q \"Ports: $2/open/\"' nmap '192.0.2.10' '22'",
         10000
       );
@@ -240,7 +240,7 @@ public class BundleGraphTest extends TypeSchemaTest {
           mapper.createObjectNode().put("name", "network").put("desc", "A network.").put("cidr", cidr),
           Context.getTypeRepository().findOneByName("Ipv4Network")
         );
-        assertDiscoveryCommand(network, "IpNetworkDiscover", "-c '" + cidr + "'");
+        assertDiscoveryCommand(network, "NmapNetworkDiscover", "-c '" + cidr + "'");
       }
     } finally {
       Context.setSelfGroup(null);
@@ -264,7 +264,7 @@ public class BundleGraphTest extends TypeSchemaTest {
     assertJob(
       origin,
       instrument,
-      "node '" + home + "'/ext/util/net-discovery/main.js " + target + " -t 'test-token'",
+      "python3 '" + home + "/src/main/resources/bundles/nmap/payload/main.py' " + target,
       60000
     );
   }
@@ -273,7 +273,7 @@ public class BundleGraphTest extends TypeSchemaTest {
     origin.save();
     Controller controller = (Controller) Context.getInstrumentRepository().findOneByName(instrument);
     assertNotNull(controller);
-    ObjectNode arguments = mapper.createObjectNode().put("token", "test-token");
+    ObjectNode arguments = mapper.createObjectNode();
     InstrumentRunner runner = new InstrumentRunner(origin, controller, arguments, "discovery");
     assertEquals(1, runner.getJobs().size());
     assertEquals(command, runner.getJobs().get(0).getLeft());
@@ -331,18 +331,106 @@ public class BundleGraphTest extends TypeSchemaTest {
   // The discovery script runs on each Python, thus also on Python 2
   @Test
   public void pythonDiscoverNeedsPython() {
-    for (boolean python : Arrays.asList(false, true)) {
-      Component host = software("Linux");
-      if (python) {
-        host.addComponent(software("Python2x"));
+    for (boolean structure : Arrays.asList(false, true)) {
+      Component agentHost = software("Linux");
+      if (structure) {
+        agentHost.addComponent(software("Structure"));
       }
-      Group group = subject(host);
-      List<String> names = Context.getInstrumentRepository()
-        .findAvailableControllers(host.getUuid(), group.getUuid(), "Detect")
+      Group agent = subject(agentHost);
+      for (boolean python : Arrays.asList(false, true)) {
+        Component host = software("Linux");
+        if (python) {
+          host.addComponent(software("Python2x"));
+        }
+        subject(host);
+        List<String> names = Context.getInstrumentRepository()
+          .findAvailableControllers(host.getUuid(), agent.getUuid(), "Detect")
+          .stream()
+          .map(Controller::getName)
+          .collect(Collectors.toList());
+        assertEquals(structure && python, names.contains("PythonDiscover"));
+      }
+    }
+  }
+
+  @Test
+  public void managersHaveSoftwareTypes() {
+    assertTrue(Context.getTypeRepository().findOneByName("Structure").getIsa().isOfType("Software"));
+    assertEquals("SystemManager", Context.getTypeRepository().findOneByName("Structure").getIsa().getName());
+    assertEquals("ConfigurationManager", Context.getTypeRepository().findOneByName("Ansible").getIsa().getName());
+    assertEquals("Software", Context.getTypeRepository().findOneByName("ConfigurationManager").getIsa().getName());
+    assertEquals("Software", Context.getTypeRepository().findOneByName("SystemManager").getIsa().getName());
+  }
+
+  @Test
+  public void bootstrapUsesPythonAndItsBundlePath() {
+    Component structure = software("Structure");
+    Group agent = subject(software("OperatingSystem").addComponent(structure));
+    Context.setSelfGroup(agent);
+    Context.setSelfIdentifier(agent.getUuid());
+    try {
+      Controller controller = (Controller) Context.getInstrumentRepository().findOneByName("StructureBootstrap");
+      InstrumentRunner runner = new InstrumentRunner(
+        structure,
+        controller,
+        mapper.createObjectNode().put("hostname", "host.example"),
+        "bootstrap"
+      );
+      assertEquals(1, runner.getJobs().size());
+      assertEquals(
+        "python3 '" + BUNDLES.resolve("structure/payload/main.py") + "' -h 'host.example'",
+        runner.getJobs().getFirst().getLeft()
+      );
+    } finally {
+      Context.setSelfGroup(null);
+      Context.setSelfIdentifier(null);
+    }
+  }
+
+  @Test
+  public void osDiscoveryNeedsAnsible() {
+    for (boolean ansible : Arrays.asList(false, true)) {
+      Component agentHost = software("OperatingSystem").addComponent(software("Structure"));
+      if (ansible) {
+        agentHost.addComponent(software("Ansible"));
+      }
+      Group agent = subject(agentHost);
+      Component address = new Component(
+        mapper
+          .createObjectNode()
+          .put("name", "host")
+          .put("desc", "An address.")
+          .put("addr", "192.0.2.30")
+          .put("reachable", true),
+        Context.getTypeRepository().findOneByName("Ipv4Address")
+      );
+      subject(software("OperatingSystem").addComponent(address));
+      Set<String> names = Context.getInstrumentRepository()
+        .findAvailableControllers(address.getUuid(), agent.getUuid(), "Detect")
         .stream()
         .map(Controller::getName)
-        .collect(Collectors.toList());
-      assertEquals(python, names.contains("PythonDiscover"), "PythonDiscover with Python: " + python);
+        .collect(Collectors.toSet());
+      assertEquals(ansible, names.contains("OsDiscover"));
+      Context.setSelfGroup(agent);
+      Context.setSelfIdentifier(agent.getUuid());
+      try {
+        Controller controller = (Controller) Context.getInstrumentRepository().findOneByName("OsDiscover");
+        InstrumentRunner runner = new InstrumentRunner(address, controller, null, "os-discovery");
+        assertEquals(ansible ? 1 : 0, runner.getJobs().size());
+        if (ansible) {
+          assertEquals(
+            "python3 '" +
+              BUNDLES.resolve("ansible/payload/main.py") +
+              "' -i '192.0.2.30' --self-id '" +
+              agent.getUuid() +
+              "'",
+            runner.getJobs().getFirst().getLeft()
+          );
+        }
+      } finally {
+        Context.setSelfGroup(null);
+        Context.setSelfIdentifier(null);
+      }
     }
   }
 

@@ -2,7 +2,7 @@
 **/._.DS_Store
 **/id_dsa*
 **/id_rsa*
-**/node_modules
+**/__pycache__
 **/vendors
 **/*.iml
 .idea
@@ -15,6 +15,5 @@
 .vscode
 structure.db
 target
-ext/repl/payloads
 generatedscripts
 src/main/resources/config.properties

@@ -355,6 +355,7 @@ public class NaiveSorter {
       }
     }
 
+    BundleFiles.register(uuidToFiles);
     return unsorted;
   }
 

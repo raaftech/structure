@@ -140,8 +140,8 @@ public class InstrumentRepository extends GenericRepository<Instrument> {
     return findAvailableControllers(originUuid, structureUuid, null);
   }
 
-  // A controller can run when its provider has an instance in the group
-  // of the origin (subjectIsLocal) or else in the group of Structure.
+  // Scripts use a provider on Structure and an interpreter on the subject.
+  // Other local controllers use a provider on the subject.
   // A null capability matches each capability.
   public Set<Controller> findAvailableControllers(String originUuid, String structureUuid, String capability) {
     final Map<String, Object> params = new HashMap<>();
@@ -153,9 +153,13 @@ public class InstrumentRepository extends GenericRepository<Instrument> {
         "WHERE $capability IS NULL OR EXISTS { (n)-[:GIVES_CAPABILITY]->(:`type:Capability` {name: $capability}) } " +
         "OPTIONAL MATCH (origin)<-[*0..]-()-[:MEMBER_OF]->(local:Group) " +
         "MATCH (structure:Group {uuid: $structureUuid}) " +
-        "WITH DISTINCT n, CASE WHEN n.`data-subjectIsLocal` THEN local ELSE structure END AS home " +
+        "WITH DISTINCT n, local, CASE WHEN n.`data-subjectIsLocal` AND n.`data-interpreter` IS NULL " +
+        "THEN local ELSE structure END AS home " +
         "WHERE EXISTS { (home)<-[:MEMBER_OF]-()-[*..]->(:Instance)" +
         "-[:INSTANCE_OF|ISA*..]->()<-[:PROVIDED_BY]-(n) } " +
+        "AND (n.`data-interpreter` IS NULL OR EXISTS { " +
+        "(local)<-[:MEMBER_OF]-()-[*..]->(:Instance)-[:INSTANCE_OF|ISA*..]->(interpreter:Type) " +
+        "WHERE interpreter.name = n.`data-interpreter` }) " +
         "RETURN DISTINCT n",
       params
     );

@@ -1,0 +1,8 @@
+{
+  "name": "findOneByData",
+  "synopsis": {
+    "msgh": "findOneByData",
+    "args": { "property": "addr", "value": "192.0.2.10" }
+  },
+  "description": "Returns one instance whose data has the given string value, or an empty object if no instance matches."
+}

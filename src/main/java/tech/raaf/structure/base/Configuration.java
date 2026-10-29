@@ -31,6 +31,7 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import tech.raaf.structure.helper.KeystoreHelper;
 import tools.jackson.databind.ObjectMapper;
 
 /**
@@ -145,7 +146,7 @@ public final class Configuration {
   }
 
   /**
-   * The directory of the bundles and the webroot: src/main/resources in
+   * The directory of the bundles: src/main/resources in
    * home in development mode, and home in release mode.
    */
   public static Path resources() {
@@ -179,7 +180,7 @@ public final class Configuration {
 
   /**
    * Write the value of each setting to structure.json in state-dir, for
-   * the tools in ext. Only the owner can read the file, as it has the
+   * bundle payloads. Only the owner can read the file, as it has the
    * passwords.
    */
   public static void write() throws IOException {
@@ -432,6 +433,13 @@ public final class Configuration {
       "changeit",
       "Keystore password"
     );
+    public static final Setting<Path> CA_CERT = new Setting<>(
+      "ca-cert",
+      Type.PATH,
+      () -> KeystoreHelper.crt(Configuration.get(JKS_FILE)).toString(),
+      "Certificate trusted by bundle payloads, relative to state-dir",
+      file -> Configuration.get(STATE_DIR).resolve(file)
+    );
     public static final Setting<String> NEO4J_BOLT_URI = new Setting<>(
       "neo4j-bolt-uri",
       Type.TEXT,
@@ -442,7 +450,7 @@ public final class Configuration {
       "neo4j-http-uri",
       Type.TEXT,
       "http://localhost:7474",
-      "Neo4j Query API, for the tools in ext"
+      "Neo4j Query API"
     );
     public static final Setting<String> NEO4J_USER = new Setting<>("neo4j-user", Type.TEXT, "neo4j", "Neo4j user");
     public static final Setting<String> NEO4J_PASS = new Setting<>("neo4j-pass", Type.TEXT, null, "Neo4j password");
@@ -457,18 +465,6 @@ public final class Configuration {
       Type.INTEGER,
       "8443",
       "HTTPS server port"
-    );
-    public static final Setting<String> REST_HOST = new Setting<>(
-      "rest-host",
-      Type.TEXT,
-      "localhost",
-      "Host of the REST server in ext/rest"
-    );
-    public static final Setting<Integer> REST_PORT = new Setting<>(
-      "rest-port",
-      Type.INTEGER,
-      "3443",
-      "Port of the REST server in ext/rest"
     );
     // Vert.x takes nanoseconds.
     public static final Setting<Long> WORKER_TIMEOUT = new Setting<>(
@@ -497,14 +493,13 @@ public final class Configuration {
         STATE_DIR,
         JKS_FILE,
         JKS_PASS,
+        CA_CERT,
         NEO4J_BOLT_URI,
         NEO4J_HTTP_URI,
         NEO4J_USER,
         NEO4J_PASS,
         HTTPS_HOST,
         HTTPS_PORT,
-        REST_HOST,
-        REST_PORT,
         WORKER_TIMEOUT,
         JOB_POOL
       )

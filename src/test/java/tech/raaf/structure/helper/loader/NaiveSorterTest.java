@@ -1,6 +1,7 @@
 package tech.raaf.structure.helper.loader;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -339,6 +340,20 @@ public class NaiveSorterTest {
 
   private NaiveSorter sorter() {
     return new NaiveSorter(Collections.singleton(folder));
+  }
+
+  @Test
+  public void rescanUpdatesPayloadPathsOutsideHome() throws Exception {
+    JsonNode root = rootType();
+    String uuid = root.path("meta").path("uuid").asString();
+    Path source = writeBundle("root.type.json", root);
+    sorter().readAllJson();
+    assertEquals(source.getParent().resolve("payload/main.py"), BundleFiles.resolve(uuid, "payload/main.py"));
+
+    Path moved = folder.resolve("moved bundle");
+    Files.move(source.getParent(), moved);
+    sorter().readAllJson();
+    assertEquals(moved.resolve("payload/main.py"), BundleFiles.resolve(uuid, "payload/main.py"));
   }
 
   private ObjectNode rootType() {

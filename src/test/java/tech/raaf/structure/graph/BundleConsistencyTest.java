@@ -74,11 +74,7 @@ public class BundleConsistencyTest {
   @BeforeAll
   public static void readResources() throws IOException {
     try (Stream<Path> paths = Files.walk(RESOURCES)) {
-      files = paths
-        .filter(Files::isRegularFile)
-        .filter(path -> !path.startsWith(RESOURCES.resolve("webroot")))
-        .sorted()
-        .collect(Collectors.toList());
+      files = paths.filter(Files::isRegularFile).sorted().collect(Collectors.toList());
     }
     ObjectMapper mapper = JsonMapper.builder().enable(StreamReadFeature.STRICT_DUPLICATE_DETECTION).build();
     for (Path path : files) {
@@ -220,8 +216,26 @@ public class BundleConsistencyTest {
         });
     }
     for (Path path : files) {
-      if (path.startsWith(BUNDLES)) {
+      if (path.startsWith(BUNDLES) && !path.toString().contains("/payload/")) {
         check(used.contains(path), path + ": file is not used by an entity");
+      }
+    }
+    assertNoErrors();
+  }
+
+  @Test
+  public void templatePayloadFilesExist() throws IOException {
+    Pattern reference = Pattern.compile("bundleFile \"([^\"]+)\"");
+    for (BundleEntity entity : entities) {
+      String template = entity.node.path("file").path("templateFile").path("path").asString();
+      if (template.isEmpty()) continue;
+      Path directory = entity.path.getParent();
+      Matcher matches = reference.matcher(Files.readString(directory.resolve(template)));
+      while (matches.find()) {
+        check(
+          Files.isRegularFile(directory.resolve(matches.group(1))),
+          entity + ": missing payload " + matches.group(1)
+        );
       }
     }
     assertNoErrors();

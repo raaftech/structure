@@ -1,0 +1,11 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Find an instance by a string value in its data.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "property": { "type": "string", "minLength": 1 },
+    "value": { "type": "string" }
+  },
+  "required": ["property", "value"]
+}

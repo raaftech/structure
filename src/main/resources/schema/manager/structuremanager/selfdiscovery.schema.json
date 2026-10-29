@@ -2,11 +2,5 @@
   "$schema": "http://json-schema.org/draft-04/schema#",
   "description": "Schema for StructureManager's selfDiscovery method.",
   "type": "object",
-  "properties": {
-    "token": {
-      "type": "string"
-    }
-  },
-  "additionalProperties": false,
-  "required": ["token"]
+  "additionalProperties": false
 }

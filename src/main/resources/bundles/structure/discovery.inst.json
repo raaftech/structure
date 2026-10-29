@@ -1,0 +1,57 @@
+{
+  "name": "PythonDiscover",
+  "desc": "Discovery script that runs on Python 2 and Python 3.",
+  "meta": {
+    "uuid": "e3cb5862-4362-4147-83fb-7909f3951b0b",
+    "relations": {
+      "PROVIDED_BY": {
+        "direction": "outgoing",
+        "to": ["Structure"]
+      },
+      "APPLIES_TO": {
+        "direction": "outgoing",
+        "to": ["Component"]
+      },
+      "GIVES_CAPABILITY": {
+        "direction": "outgoing",
+        "to": ["Detect"]
+      },
+      "INSTANCE_OF": {
+        "direction": "outgoing",
+        "to": ["Controller"]
+      }
+    }
+  },
+  "data": {
+    "instrumentType": "controller",
+    "interpreter": "Python",
+    "subjectIsLocal": true,
+    "extension": "py",
+    "arguments": {
+      "profiles": {
+        "value": {
+          "from": "static",
+          "type": "string",
+          "strategy": "mustBeOne"
+        },
+        "pass": {
+          "index": 0
+        },
+        "canBeUserSupplied": false,
+        "isOptional": false
+      }
+    }
+  },
+  "file": {
+    "dataSchema": {
+      "encoding": "text",
+      "format": "json",
+      "path": "../core/schema/controller.schema.json"
+    },
+    "script": {
+      "encoding": "text",
+      "format": "script",
+      "path": "payload/discovery.py"
+    }
+  }
+}

@@ -8,19 +8,29 @@ import io.vertx.core.Verticle;
 import io.vertx.core.eventbus.DeliveryOptions;
 import io.vertx.core.eventbus.MessageConsumer;
 import io.vertx.core.json.JsonObject;
+import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import mockit.Expectations;
+import mockit.Invocation;
+import mockit.Mock;
+import mockit.MockUp;
+import mockit.Mocked;
+import mockit.integration.junit5.JMockitExtension;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import tech.raaf.structure.base.Context;
 import tech.raaf.structure.bus.manager.EntityManager;
 import tech.raaf.structure.bus.manager.InstrumentManager;
@@ -28,18 +38,19 @@ import tech.raaf.structure.bus.manager.StructureManager;
 import tech.raaf.structure.bus.repository.Instances;
 import tech.raaf.structure.bus.repository.Types;
 import tech.raaf.structure.graph.Entity;
+import tech.raaf.structure.graph.Graph;
 import tech.raaf.structure.graph.Result;
 import tech.raaf.structure.helper.JsonHelper;
+import tech.raaf.structure.helper.ProcessRunner;
 import tech.raaf.structure.schema.TypeSchemaTest;
 import tools.jackson.databind.JsonNode;
 
 /**
- * Sends each address and msgh pair that the REST models in
- * ext/rest/common/models send, and checks that the reply passes
- * response.schema.json and has no error. The managers, the
- * repositories and a few NodeActors run on the test Vert.x
- * instance. The writes commit.
+ * Sends requests to managers, repositories and nodes. Checks each reply
+ * against response.schema.json and checks that it has no error.
+ * The actors run on the test Vert.x instance. The writes commit.
  */
+@ExtendWith(JMockitExtension.class)
 public class BusRoundTripTest extends TypeSchemaTest {
 
   private static final String BUS = "tech.raaf.structure.bus.";
@@ -110,7 +121,7 @@ public class BusRoundTripTest extends TypeSchemaTest {
       { INSTANCES, "nLastCreated", "{'amount': 5}", null },
       { INSTANCES, "findByName", "{'name': 'bus-host'}", null },
       { STRUCTURE, "reload", "{}", null },
-      { STRUCTURE, "status", "{}", null },
+      { STRUCTURE, "discover", "{}", null },
       { typeAddress, "getSubtypes", "{}", null },
       { typeAddress, "getConstraints", "{}", null },
       { hostAddress, "json", "{}", null },
@@ -169,10 +180,22 @@ public class BusRoundTripTest extends TypeSchemaTest {
   // The graph has the name of the host, thus the job does not run the bootstrap
   @Test
   public void selfDiscoveryFindsTheHost() throws Exception {
+    new MockUp<ProcessRunner>() {
+      @Mock
+      public void run() throws IOException {
+        throw new IOException("Ansible is not installed");
+      }
+    };
     // Context keeps the first hostname that a test sets
     String data = "{\"dnsname\": \"" + Context.getHostname() + "\"}";
-    String dns = entity(UUID.randomUUID().toString(), "bus-dns", "The test host.", DNS_NAME, data);
+    String dnsUuid = UUID.randomUUID().toString();
+    String dns = entity(dnsUuid, "bus-dns", "The test host.", DNS_NAME, data);
     mapper.readValue(dns, Entity.class).toGraph();
+    Graph.query(
+      "MATCH (os {uuid: $os}), (dns {uuid: $dns}), (g {uuid: $group}) " +
+        "MERGE (os)-[:HAS]->(dns) MERGE (os)-[:MEMBER_OF]->(g)",
+      Map.of("os", host, "dns", dnsUuid, "group", group)
+    );
     CompletableFuture<JsonObject> done = new CompletableFuture<>();
     MessageConsumer<JsonObject> status = Context.getVertx()
       .eventBus()
@@ -182,12 +205,124 @@ public class BusRoundTripTest extends TypeSchemaTest {
         }
       });
     try {
-      JsonNode reply = send(STRUCTURE, "selfDiscovery", "{\"token\": \"bus-token\"}");
+      JsonNode reply = send(STRUCTURE, "selfDiscovery", "{}");
       assertTrue(reply.path("result").path("error").isMissingNode(), reply.toString());
       assertEquals("done", done.get(10, TimeUnit.SECONDS).getString("status"));
     } finally {
       status.unregister().await();
     }
+  }
+
+  @Test
+  public void findsTheOperatingSystemOfAComponent() throws Exception {
+    String dnsUuid = UUID.randomUUID().toString();
+    mapper
+      .readValue(entity(dnsUuid, "dns", "A host name.", DNS_NAME, "{\"dnsname\":\"host.example\"}"), Entity.class)
+      .toGraph();
+    assertTrue(
+      send(INSTANCES, "findOperatingSystem", "{\"node\":\"" + dnsUuid + "\"}")
+        .path("result")
+        .path("data")
+        .isEmpty()
+    );
+    Graph.query(
+      "MATCH (os {uuid: $os}), (dns {uuid: $dns}) MERGE (os)-[:HAS]->(dns)",
+      Map.of("os", host, "dns", dnsUuid)
+    );
+    assertEquals(host, Context.getInstanceRepository().findOperatingSystem(dnsUuid).getUuid());
+    JsonNode reply = send(INSTANCES, "findOperatingSystem", "{\"node\":\"" + dnsUuid + "\"}");
+    JsonNode found = reply.path("result").path("data");
+    assertEquals(host, found.path("meta").path("uuid").asString(), reply.toString());
+    assertEquals(
+      host,
+      send(INSTANCES, "findOperatingSystem", "{\"node\":\"" + host + "\"}")
+        .path("result")
+        .path("data")
+        .path("meta")
+        .path("uuid")
+        .asString()
+    );
+    String other = UUID.randomUUID().toString();
+    mapper.readValue(os(other, "other", "Another OS."), Entity.class).toGraph();
+    Graph.query(
+      "MATCH (os {uuid: $os}), (dns {uuid: $dns}) MERGE (os)-[:HAS]->(dns)",
+      Map.of("os", other, "dns", dnsUuid)
+    );
+    assertTrue(
+      send(INSTANCES, "findOperatingSystem", "{\"node\":\"" + dnsUuid + "\"}")
+        .path("result")
+        .has("error")
+    );
+  }
+
+  @Test
+  public void selfDiscoveryUsesTheAnsibleInstrument(@Mocked Process process) throws Exception {
+    String dnsUuid = UUID.randomUUID().toString();
+    mapper
+      .readValue(
+        entity(dnsUuid, "local", "The Structure host.", DNS_NAME, "{\"dnsname\":\"" + Context.getHostname() + "\"}"),
+        Entity.class
+      )
+      .toGraph();
+    Graph.query(
+      "MATCH (os {uuid: $os}), (dns {uuid: $dns}), (g {uuid: $group}) " +
+        "MERGE (os)-[:HAS]->(dns) MERGE (os)-[:MEMBER_OF]->(g)",
+      Map.of("os", host, "dns", dnsUuid, "group", group)
+    );
+    List<String> commands = new ArrayList<>();
+    new MockUp<ProcessRunner>() {
+      @Mock
+      public void run(Invocation invocation) {
+        ProcessRunner runner = invocation.getInvokedInstance();
+        commands.add(runner.getCommand());
+      }
+
+      @Mock
+      public Process getProcess() {
+        return process;
+      }
+
+      @Mock
+      public ProcessRunner.ProcessResult finish() {
+        ProcessRunner.ProcessResult result = new ProcessRunner.ProcessResult();
+        result.returnCode = Optional.of(0);
+        result.stdout = Optional.empty();
+        result.stderr = Optional.empty();
+        return result;
+      }
+    };
+    new Expectations() {
+      {
+        process.waitFor(anyLong, (TimeUnit) any);
+        result = true;
+      }
+    };
+    for (int i = 0; i < 2; i++) {
+      CompletableFuture<JsonObject> done = new CompletableFuture<>();
+      MessageConsumer<JsonObject> status = Context.getVertx()
+        .eventBus()
+        .consumer(STATUS, message -> {
+          if ("selfDiscovery".equals(message.body().getString("event"))) {
+            done.complete(message.body().getJsonObject("data"));
+          }
+        });
+      try {
+        send(STRUCTURE, "selfDiscovery", "{}");
+        JsonObject response = done.get(10, TimeUnit.SECONDS);
+        assertEquals("done", response.getString("status"), response.toString());
+      } finally {
+        status.unregister().await();
+      }
+      assertEquals(group, Context.getSelfIdentifier());
+      assertEquals(host, Context.getInstanceRepository().findOperatingSystem(dnsUuid).getUuid());
+    }
+    assertEquals(4, commands.size());
+    assertEquals("ansible --version", commands.get(0));
+    assertTrue(commands.get(1).startsWith("python3 '"));
+    assertTrue(commands.get(1).endsWith("/bundles/ansible/payload/main.py' -i '127.0.0.1' --self-id '" + group + "'"));
+    assertEquals(commands.subList(0, 2), commands.subList(2, 4));
+    assertEquals(1, Context.getGroupingRepository().getChildrenOfType(group, "Ansible").size());
+    assertEquals(1, Context.getGroupingRepository().getChildrenOfType(group, "Ipv4Address").size());
   }
 
   @Test
