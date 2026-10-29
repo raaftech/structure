@@ -1,0 +1,20 @@
+{
+  "name": "Ansible",
+  "desc": "A configuration management and automation tool.",
+  "meta": {
+    "uuid": "3d330741-708f-4f6d-b08e-1ba7159a4193",
+    "relations": {
+      "ISA": {
+        "direction": "outgoing",
+        "to": ["ConfigurationManager"]
+      }
+    }
+  },
+  "file": {
+    "dataSchema": {
+      "encoding": "text",
+      "format": "json",
+      "path": "ansible.schema.json"
+    }
+  }
+}

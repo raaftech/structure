@@ -1,11 +1,11 @@
 {
-  "name": "NmapClient",
+  "name": "Nmap",
   "desc": "The Nmap network scanner",
   "file": {
     "dataSchema": {
       "encoding": "text",
       "format": "json",
-      "path": "nmapclient.schema.json"
+      "path": "nmap.schema.json"
     }
   },
   "meta": {

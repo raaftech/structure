@@ -5,6 +5,9 @@ import io.vertx.core.shareddata.LocalMap;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tech.raaf.structure.annotations.SchemaPath;
@@ -14,8 +17,13 @@ import tech.raaf.structure.base.Context;
 import tech.raaf.structure.bus.GenericActor;
 import tech.raaf.structure.bus.NodeActor;
 import tech.raaf.structure.graph.Component;
+import tech.raaf.structure.graph.Controller;
+import tech.raaf.structure.graph.Direction;
+import tech.raaf.structure.graph.Entity;
+import tech.raaf.structure.graph.Graph;
 import tech.raaf.structure.graph.Group;
 import tech.raaf.structure.graph.repositories.*;
+import tech.raaf.structure.helper.InstrumentRunner;
 import tech.raaf.structure.helper.ProcessRunner;
 import tech.raaf.structure.helper.handlebars.Quote;
 import tech.raaf.structure.helper.loader.BundleFiles;
@@ -72,7 +80,6 @@ public class StructureManager extends GenericActor {
    * purging the database from all vertices and edges and then reloading the bundles.
    * @return All the NodeActor addresses that are being undeployed.
    */
-  @SuppressWarnings("unused")
   public MessageHandler reinitialize() {
     return new MessageHandler() {
       @Override
@@ -118,7 +125,6 @@ public class StructureManager extends GenericActor {
     };
   }
 
-  @SuppressWarnings("unused")
   @SchemaPath("resource:/schema/manager/structuremanager/selfdiscovery.schema.json")
   public MessageHandler selfDiscovery() {
     return new MessageHandler() {
@@ -157,7 +163,6 @@ public class StructureManager extends GenericActor {
     };
   }
 
-  @SuppressWarnings("unused")
   public MessageHandler reload() {
     return new MessageHandler() {
       @Override
@@ -186,103 +191,131 @@ public class StructureManager extends GenericActor {
   }
 
   private void discoverHost() {
-    log.debug("Hostname is \"{}\"", Context.getHostname());
-    Component host = Context.getInstanceRepository().findDnsName(Context.getHostname());
+    final String hostname = Context.getHostname();
+    Component host = Context.getInstanceRepository().findDnsName(hostname);
     if (host == null) {
-      log.info("Structure is not registered in the database, now discovering itself");
-      // Bootstrap runs directly until the host has a graph identity.
-      final Path bootstrapLocation = BundleFiles.resolve("03a764f2-a41f-47bb-bbe6-f28df84af398", "payload/main.js");
-      if (!Files.exists(bootstrapLocation)) {
-        final String error = "Bootstrap program not found at location \"" + bootstrapLocation + "\"";
-        log.error(error);
-        throw new RuntimeException(error);
+      log.info("Registering the Structure host");
+      final Path bootstrap = BundleFiles.resolve("03a764f2-a41f-47bb-bbe6-f28df84af398", "payload/main.js");
+      if (!Files.isRegularFile(bootstrap)) {
+        throw new IllegalStateException("Bootstrap program not found: " + bootstrap);
       }
-      ProcessRunner runner = new ProcessRunner(
-        "node " + Quote.SH.quote(bootstrapLocation.toString()) + " -c -h " + Quote.SH.quote(Context.getHostname())
+      runDiscovery("node " + Quote.SH.quote(bootstrap.toString()) + " -h " + Quote.SH.quote(hostname), 60000);
+      host = Context.getInstanceRepository().findDnsName(hostname);
+    }
+    if (host == null) {
+      throw new IllegalStateException("Bootstrap did not register the Structure host");
+    }
+    final Group group = Context.getInstanceRepository().getStartOfComponentGroup(host.getUuid());
+    if (group == null) {
+      throw new IllegalStateException("The Structure host has no component group");
+    }
+    Context.setSelfGroup(group);
+    Context.setSelfIdentifier(group.getUuid());
+
+    final Component os = Context.getInstanceRepository().findOperatingSystem(host.getUuid());
+    if (os == null) {
+      throw new IllegalStateException("The Structure host has no operating system");
+    }
+    if (!ansibleAvailable()) {
+      log.info("Ansible is unavailable; keeping the minimal host registration");
+      return;
+    }
+    if (
+      os
+        .getComponents()
+        .stream()
+        .noneMatch(component -> component.isOfType("Ansible"))
+    ) {
+      registerComponent(
+        os,
+        new Component(
+          mapper
+            .createObjectNode()
+            .put("name", "Ansible")
+            .put("desc", "The local Ansible installation")
+            .put("ver", "unknown")
+            .put("shortName", "ansible")
+            .put("longName", "Ansible"),
+          typeRepository.findOneByName("Ansible")
+        )
       );
-      try {
-        runner.run();
-        int scriptFinishedWaitCycles = 0;
-        while (runner.isRunning() && scriptFinishedWaitCycles < 10) {
-          Thread.sleep(1000);
-          scriptFinishedWaitCycles++;
-        }
-        ProcessRunner.ProcessResult result = runner.finish();
-        result.stdout.ifPresent(System.out::println);
-        if (result.returnCode.orElse(1) != 0) {
-          throw new IllegalStateException("Bootstrap failed: " + result.stderr.orElse("No error output"));
-        }
-      } catch (IOException | InterruptedException e) {
-        if (e instanceof InterruptedException) Thread.currentThread().interrupt();
-        throw new IllegalStateException("Bootstrap failed", e);
-      }
-      // Wait a second so debug messages are done
-      int newNodesWaitCycles = 0;
-      Group structureInstance = null;
-      while (host == null && structureInstance == null && newNodesWaitCycles < 5) {
-        if (newNodesWaitCycles == 0) {
-          log.info("Waiting for registration...");
-        } else {
-          log.info("...");
-        }
-        newNodesWaitCycles++;
-        try {
-          Thread.sleep(1000);
-        } catch (InterruptedException e) {
-          log.error(e.getMessage());
-        }
-        host = host == null ? Context.getInstanceRepository().findDnsName(Context.getHostname()) : host;
-        structureInstance =
-          structureInstance == null && host != null
-            ? Context.getInstanceRepository().getStartOfComponentGroup(host.getUuid())
-            : structureInstance;
-      }
-      if (host != null && structureInstance != null) {
-        Context.setSelfGroup(structureInstance);
-        Context.setSelfIdentifier(structureInstance.getUuid());
-      } else {
-        throw new RuntimeException("Self discovery script didn't create any new nodes.");
-      }
-    } else {
-      log.info("Structure was already registered in the database");
+    }
+    final Component address = os
+      .getComponents()
+      .stream()
+      .filter(component -> component.isOfType("Ipv4Address"))
+      .findFirst()
+      .orElseGet(() -> {
+        final Component local = new Component(
+          mapper
+            .createObjectNode()
+            .put("name", "127.0.0.1")
+            .put("desc", "The local IPv4 address")
+            .put("addr", "127.0.0.1")
+            .put("reachable", true),
+          typeRepository.findOneByName("Ipv4Address")
+        );
+        registerComponent(os, local);
+        return local;
+      });
+    final Controller controller = (Controller) instrumentRepository.findOneByName("OsDiscover");
+    final InstrumentRunner runner = new InstrumentRunner(address, controller, null, UUID.randomUUID().toString());
+    if (runner.getJobs().isEmpty()) {
+      throw new IllegalStateException("No Ansible OS discovery instrument is available");
+    }
+    for (var job : runner.getJobs()) {
+      runDiscovery(job.getLeft(), job.getRight().orElse(60000L));
     }
   }
 
-  public MessageHandler status() {
-    return new MessageHandler() {
-      @Override
-      public JsonNode exec(JsonNode request) {
-        ObjectNode result = mapper.createObjectNode();
-        ObjectNode graph = result.putObject("graph");
-        graph.put("types", typeRepository.count());
-        graph.put("groupings", groupingRepository.count());
-        graph.put("results", resultRepository.count());
-        graph.put("components", componentRepository.count());
-        graph.put("instruments", instrumentRepository.count());
-
-        ObjectNode jvm = result.putObject("jvm");
-        Runtime runtime = Runtime.getRuntime();
-        jvm.put("java_version", System.getProperty("java.specification.version"));
-        jvm.put("version", System.getProperty("java.vm.version"));
-        jvm.put("available_processors", runtime.availableProcessors());
-        ObjectNode memory = jvm.putObject("memory");
-        memory.put("max", runtime.maxMemory());
-        memory.put("total", runtime.totalMemory());
-        memory.put("free", runtime.freeMemory());
-        memory.put("used", runtime.totalMemory() - runtime.freeMemory());
-
-        ObjectNode structureInfo = result.putObject("structure");
-        boolean bootstrapped = Context.getInstanceRepository().findDnsName(Context.getHostname()) != null;
-        structureInfo.put("bootstrapped", bootstrapped);
-        structureInfo.put("host", Context.getHostname());
-
-        return response(request, result);
+  private boolean ansibleAvailable() {
+    final ProcessRunner runner = new ProcessRunner("ansible --version");
+    try {
+      runner.run();
+      if (!runner.getProcess().waitFor(5, TimeUnit.SECONDS)) {
+        runner.cancel();
+        throw new IllegalStateException("Ansible availability check timed out");
       }
-
-      @Override
-      public JsonNode help(JsonNode request) {
-        return jsonFromResource("help/structuremanager.status.json");
+      if (runner.finish().returnCode.orElse(1) != 0) {
+        throw new IllegalStateException("Ansible availability check failed: " + runner.finish().stderr.orElse(""));
       }
-    };
+      return true;
+    } catch (IOException e) {
+      return false;
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new IllegalStateException("Ansible availability check interrupted", e);
+    }
+  }
+
+  private void registerComponent(Component os, Component component) {
+    Graph.transaction(() -> {
+      component.save();
+      final Entity entity = mapper.treeToValue(mapper.valueToTree(os), Entity.class);
+      entity.addRelations("HAS", Direction.OUTGOING, Set.of(UUID.fromString(component.getUuid())));
+      entity.toGraph();
+    });
+  }
+
+  private void runDiscovery(String command, long timeout) {
+    final ProcessRunner runner = new ProcessRunner(command);
+    try {
+      runner.run();
+      if (!runner.getProcess().waitFor(timeout, TimeUnit.MILLISECONDS)) {
+        runner.cancel();
+        throw new IllegalStateException("Discovery timed out");
+      }
+      final ProcessRunner.ProcessResult result = runner.finish();
+      result.stdout.ifPresent(log::info);
+      if (result.returnCode.orElse(1) != 0) {
+        throw new IllegalStateException("Discovery failed: " + result.stderr.orElse("No error output"));
+      }
+    } catch (IOException e) {
+      throw new IllegalStateException("Could not start discovery", e);
+    } catch (InterruptedException e) {
+      runner.cancel();
+      Thread.currentThread().interrupt();
+      throw new IllegalStateException("Discovery interrupted", e);
+    }
   }
 }

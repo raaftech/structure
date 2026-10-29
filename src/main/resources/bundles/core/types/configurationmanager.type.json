@@ -1,0 +1,20 @@
+{
+  "name": "ConfigurationManager",
+  "desc": "Software that manages host configuration.",
+  "meta": {
+    "uuid": "f88eedc7-ed00-4d2d-985c-4e9bc89dbed9",
+    "relations": {
+      "ISA": {
+        "direction": "outgoing",
+        "to": ["Software"]
+      }
+    }
+  },
+  "file": {
+    "dataSchema": {
+      "encoding": "text",
+      "format": "json",
+      "path": "../schema/configurationmanager.schema.json"
+    }
+  }
+}

@@ -21,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tech.raaf.structure.base.Configuration;
 import tech.raaf.structure.base.Configuration.Setting;
+import tech.raaf.structure.base.Context;
 import tech.raaf.structure.helper.loader.BundleFiles;
 import tools.jackson.databind.node.ObjectNode;
 
@@ -42,6 +43,10 @@ public class ProcessRunner {
   public ProcessRunner(String command) {
     this.command = command;
     processBuilder.environment().put("STRUCTURE_STATE_DIR", Configuration.get(Setting.STATE_DIR).toString());
+    processBuilder.environment().remove("STRUCTURE_SELF_ID");
+    if (Context.getSelfIdentifier() != null) {
+      processBuilder.environment().put("STRUCTURE_SELF_ID", Context.getSelfIdentifier());
+    }
     BundleFiles.clientDirectory().ifPresent(directory ->
       processBuilder.environment().put("NODE_PATH", directory.toString())
     );

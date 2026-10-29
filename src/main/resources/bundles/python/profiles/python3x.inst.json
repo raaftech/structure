@@ -1,0 +1,29 @@
+{
+  "name": "Python3xProfile",
+  "desc": "A profile that detects Python 3.",
+  "meta": {
+    "uuid": "39bd685d-bf4c-4940-a5a3-9b940894f5c1",
+    "relations": {
+      "INSTANCE_OF": {
+        "direction": "outgoing",
+        "to": ["Profile"]
+      },
+      "APPLIES_TO": {
+        "direction": "outgoing",
+        "to": ["Python3x"]
+      },
+      "PROVIDED_BY": {
+        "direction": "outgoing",
+        "to": ["Python3x"]
+      }
+    }
+  },
+  "data": {
+    "commands": {
+      "pyversion": {
+        "command": "python3 --version 2>&1",
+        "matches": "Python 3"
+      }
+    }
+  }
+}

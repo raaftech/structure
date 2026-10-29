@@ -162,7 +162,7 @@ public class TaskManagerTest extends TypeSchemaTest {
 
   private static Map<String, String> queueResults(String origin) throws Exception {
     Map<String, String> tasks = new LinkedHashMap<>();
-    for (String name : Arrays.asList("BashInvoke", "IpNetworkDiscover")) {
+    for (String name : Arrays.asList("BashInvoke", "NmapNetworkDiscover")) {
       Controller controller = (Controller) Context.getInstrumentRepository().findOneByName(name);
       assertNotNull(controller, "Missing controller " + name);
       String task = UUID.randomUUID().toString();

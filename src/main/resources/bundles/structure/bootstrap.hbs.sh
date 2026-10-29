@@ -1,1 +1,1 @@
-node {{sh (bundleFile "payload/main.js")}} -c -h {{sh hostname}}
+node {{sh (bundleFile "payload/main.js")}} -h {{sh hostname}}

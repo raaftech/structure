@@ -13,11 +13,15 @@ class BusConnector {
     this.ready = new Promise((resolve, reject) => {
       this.rejectConnection = reject;
       this.connectionTimer = setTimeout(() => this.fail(new Error("Event bus connection timed out")), timeout);
-      this.socket.addEventListener("open", () => {
-        clearTimeout(this.connectionTimer);
-        this.ping = setInterval(() => this.socket.send(JSON.stringify({ type: "ping" })), 5000);
-        resolve();
-      }, { once: true });
+      this.socket.addEventListener(
+        "open",
+        () => {
+          clearTimeout(this.connectionTimer);
+          this.ping = setInterval(() => this.socket.send(JSON.stringify({ type: "ping" })), 5000);
+          resolve();
+        },
+        { once: true },
+      );
     });
     this.socket.addEventListener("message", (event) => {
       try {
@@ -37,7 +41,9 @@ class BusConnector {
         this.fail(error);
       }
     });
-    this.socket.addEventListener("error", (event) => this.fail(event.error || new Error("Event bus connection failed")));
+    this.socket.addEventListener("error", (event) =>
+      this.fail(event.error || new Error("Event bus connection failed")),
+    );
     this.socket.addEventListener("close", () => this.fail(new Error("Event bus connection closed")));
   }
 
@@ -82,6 +88,18 @@ class BusConnector {
 
   getInstanceByPredicate(property, value) {
     return this.request(bus + "repository.instances", "findOneByData", { property, value });
+  }
+
+  getInstance(uuid) {
+    return this.request(bus + "node." + uuid, "json");
+  }
+
+  getOperatingSystem(uuid) {
+    return this.request(bus + "repository.instances", "findOperatingSystem", { node: uuid });
+  }
+
+  specialize(instance, isa) {
+    return this.request(bus + "manager.entitymanager", "specialize", { instance, isa });
   }
 
   createInstance(args) {

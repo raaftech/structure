@@ -1,8 +1,8 @@
 {
-  "name": "NmapClientProfile",
-  "desc": "A profile that detects nmap.",
+  "name": "AnsibleProfile",
+  "desc": "A profile that detects Ansible.",
   "meta": {
-    "uuid": "4c64d4f7-7e60-4db8-b3c7-d6fc3b0f0221",
+    "uuid": "250ab687-e24d-43f3-a732-a14de3450c19",
     "relations": {
       "INSTANCE_OF": {
         "direction": "outgoing",
@@ -10,11 +10,11 @@
       },
       "APPLIES_TO": {
         "direction": "outgoing",
-        "to": ["NmapClient"]
+        "to": ["Ansible"]
       },
       "PROVIDED_BY": {
         "direction": "outgoing",
-        "to": ["NmapClient"]
+        "to": ["Ansible"]
       }
     }
   },
@@ -23,7 +23,7 @@
       "binaryDirectories": ["/bin", "/usr/bin", "/usr/local/bin"]
     },
     "files": {
-      "binaryFiles": ["nmap"]
+      "binaryFiles": ["ansible"]
     }
   }
 }

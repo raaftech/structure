@@ -24,11 +24,16 @@ To build and run Structure, you need:
 - [Node.js](https://nodejs.org/) 22.4 or later on the Structure host, to run
   bootstrap and the network, address and OS discovery instruments. npm installs
   their JavaScript dependencies.
+- nmap on the Structure host, for network and address discovery.
+- Ansible on the Structure host, for OS discovery. Its `setup` module needs
+  Python on each target host, including the Structure host for local discovery.
 - [Python](https://www.python.org/) on hosts where `PythonDiscover` runs. This
   instrument uses bundle profiles to identify components through files, TCP
   ports and command output. Its script supports Python 2 and Python 3.
 - [Neo4j](https://neo4j.com/download/) server 5.19 or later, to store the graph.
-- [Docker](https://docs.docker.com/get-docker/), to run the integration tests.
+  Note that you can also run Neo4j using Docker, as we do later on.
+- [Docker](https://docs.docker.com/get-docker/), to run the integration tests,
+  and (optionally) to run a Neo4j container image.
 
 Node.js and Python are needed only for these instruments. The Java backend,
 build and tests do not need them.
@@ -45,7 +50,7 @@ mvn package -DskipTests
 Then install the dependencies of the bundle payloads:
 
 ```bash
-for bundle in structure nmap os; do
+for bundle in structure nmap ansible; do
   (cd "src/main/resources/bundles/$bundle/payload" && npm ci)
 done
 ```
@@ -56,12 +61,15 @@ To run Structure, first start Neo4j and then Structure itself.
 
 ### Neo4j
 
-Structure needs a Neo4j server, version 5.19 or later. Neo4j needs passwords of
-8 or more characters. Set the password once, then start Neo4j:
+Structure needs a Neo4j server, version 5.19 or later; let's start one using
+Docker:
+
 
 ```bash
-neo4j-admin dbms set-initial-password structure
-neo4j start
+docker run -d --rm --name neo4j -p 7474:7474 -p 7687:7687 \
+  -e NEO4J_AUTH=neo4j/structure --tmpfs /data --tmpfs /logs \
+  --tmpfs /plugins \--tmpfs /import --tmpfs /var/lib/neo4j/run \
+  neo4j:latest
 ```
 
 ### Structure Backend
@@ -70,16 +78,9 @@ Specify the Neo4j database password and start Structure:
 
 ```bash
 export STRUCTURE_NEO4J_PASS=structure
-java -jar target/structure-*-fat.jar --log-level debug --unsafe
+java -jar target/structure-*-fat.jar --unsafe
 ```
 
-Structure always uses HTTPS. At the first start, it makes the keystore
-`structure.jks` in `state-dir`, which is `target` in development mode. The
-keystore has a self-signed certificate for `localhost` and `https-host`.
-Structure exports the certificate to `structure.crt` and the key to
-`structure.key`, next to the keystore. Clients trust this certificate with
-`curl --cacert` or `NODE_EXTRA_CA_CERTS`. To make a new certificate, for example
-after you change `https-host`, delete the keystore. `mvn clean` also deletes it.
 
 ### Structure REPL
 
@@ -171,6 +172,16 @@ Instruments with `subjectIsLocal: false`, for example those of `nmap` and
 `openssh`, run on the Structure host, as the user that runs Structure. Other
 instruments run on their subject, through a send string instrument such as
 `OpenSshClientSendString`.
+
+### HTTPS
+
+Structure always uses HTTPS. At the first start, it makes the keystore
+`structure.jks` in `state-dir`, which is `target` in development mode. The
+keystore has a self-signed certificate for `localhost` and `https-host`.
+Structure exports the certificate to `structure.crt` and the key to
+`structure.key`, next to the keystore. Clients trust this certificate with
+`curl --cacert` or `NODE_EXTRA_CA_CERTS`. To make a new certificate, for example
+after you change `https-host`, delete the keystore. `mvn clean` also deletes it.
 
 ### Configuration
 
@@ -302,6 +313,17 @@ is registered, `selfDiscovery` starts this instrument's payload directly. It
 uses the bundle file path and the same process settings as normal instrument
 execution. After registration, normal instrument execution is available.
 
+Bootstrap registers a generic OS, the host name, a local IPv4 address and
+Structure. It also registers the tools that it finds on the host. It does not
+need Ansible. If Ansible is available, self-discovery then runs `OsDiscover`
+through the normal instrument path to enrich the same OS and host group.
+Existing UUIDs and components remain in the graph.
+
+`Structure` is a `SystemManager`. `Ansible` is a `ConfigurationManager`; both
+manager types extend `Software`. The `ansible` bundle provides `OsDiscover`
+through `Ansible`. The `os` bundle defines OS types. Network and address
+discovery remain in the `nmap` bundle, provided by `Nmap`.
+
 `PythonDiscover` is also provided by `Structure`. It needs Python on its subject
 and uses bundle profiles to check files, TCP ports and command output.
 
@@ -312,14 +334,18 @@ For manual use from Structure's home, set the runtime paths explicitly:
 export STRUCTURE_STATE_DIR=$PWD/target
 export NODE_PATH=$PWD/src/main/resources/bundles/core/payload
 export NODE_EXTRA_CA_CERTS=$STRUCTURE_STATE_DIR/structure.crt
-node src/main/resources/bundles/structure/payload/main.js -c -h my-host.example
+node src/main/resources/bundles/structure/payload/main.js -h my-host.example
 node src/main/resources/bundles/nmap/payload/main.js -c 192.0.2.0/24
 node src/main/resources/bundles/nmap/payload/main.js -i 192.0.2.10
-node src/main/resources/bundles/os/payload/main.js -i 192.0.2.10
+node src/main/resources/bundles/ansible/payload/main.js -i 192.0.2.10
 ```
 
-The `-c` option of bootstrap uses compatibility mode without Ansible. OS
-discovery runs on the Structure host and uses Ansible to inspect a remote host.
+OS discovery needs Ansible on the Structure host and Python on remote hosts.
+It uses Ansible's `setup` module with a local connection for the Structure host
+and SSH as root for remote hosts. Structure passes its host group UUID through
+`STRUCTURE_SELF_ID` so the payload can select the connection. For manual local
+discovery, set this variable to the registered Structure host group UUID.
+Ansible uses the host's SSH settings and checks remote host keys.
 Network discovery scans a CIDR range with nmap. Address discovery scans one
 existing IPv4 address. A failed connection, scan or write causes a nonzero exit
 status.

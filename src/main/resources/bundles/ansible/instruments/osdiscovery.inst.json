@@ -6,7 +6,7 @@
     "relations": {
       "PROVIDED_BY": {
         "direction": "outgoing",
-        "to": ["Structure"]
+        "to": ["Ansible"]
       },
       "APPLIES_TO": {
         "direction": "outgoing",

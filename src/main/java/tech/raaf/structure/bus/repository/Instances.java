@@ -51,6 +51,27 @@ public class Instances extends Repository<Instance> {
     };
   }
 
+  @SchemaPath("resource:/schema/repository/findOne.schema.json")
+  public MessageHandler findOperatingSystem() {
+    return new MessageHandler() {
+      @Override
+      public JsonNode exec(JsonNode request) {
+        return Graph.transaction(() -> {
+          final Instance found = repository.findOperatingSystem(request.path("args").path("node").asString());
+          return response(
+            request,
+            mapper.createObjectNode().set("data", found == null ? mapper.createObjectNode() : mapper.valueToTree(found))
+          );
+        });
+      }
+
+      @Override
+      public JsonNode help(JsonNode request) {
+        return jsonFromResource("help/instances.findoperatingsystem.json");
+      }
+    };
+  }
+
   /**
    * Get the latest instances, with an optional class label filter.
    * @return A data array with at most the requested number of nodes.

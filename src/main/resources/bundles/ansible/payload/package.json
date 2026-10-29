@@ -10,9 +10,7 @@
   "license": "AGPL-3.0-only",
   "dependencies": {
     "command-line-args": "^3.0.4",
-    "command-line-usage": "^3.0.8",
     "fuzzy-matching": "^0.4.3",
-    "node-ansible": "^0.5.5",
     "ramda": "^0.23.0",
     "uuid": "^3.0.1"
   }

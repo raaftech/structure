@@ -7,7 +7,7 @@
       "relations": {
         "ISA": {
           "direction": "outgoing",
-          "to": ["Service"]
+          "to": ["SystemManager"]
         }
       }
     },

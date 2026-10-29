@@ -38,5 +38,25 @@
         "path": "python2x.schema.json"
       }
     }
+  },
+  {
+    "name": "Python3x",
+    "desc": "The Python interpreter.",
+    "meta": {
+      "uuid": "8a7c3e7c-293d-4ae1-afe0-2a9e8bf284dc",
+      "relations": {
+        "ISA": {
+          "direction": "outgoing",
+          "to": ["Python"]
+        }
+      }
+    },
+    "file": {
+      "dataSchema": {
+        "encoding": "text",
+        "format": "json",
+        "path": "python3x.schema.json"
+      }
+    }
   }
 ]

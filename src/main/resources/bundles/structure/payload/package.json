@@ -1,7 +1,7 @@
 {
   "name": "bootstrap",
   "version": "0.10.1",
-  "description": "Structure bootstrap, discovers the Structure host with Ansible",
+  "description": "Minimal registration of the Structure host",
   "main": "main.js",
   "scripts": {
     "start": "node main.js"
@@ -12,7 +12,6 @@
     "command-line-args": "^3.0.4",
     "command-line-usage": "^3.0.8",
     "fuzzy-matching": "^0.4.3",
-    "node-ansible": "^0.5.5",
     "ramda": "^0.23.0",
     "uuid": "^3.0.1"
   }
