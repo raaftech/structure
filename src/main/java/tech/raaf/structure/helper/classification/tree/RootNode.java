@@ -16,6 +16,6 @@ public class RootNode<T> extends InternalNode<T> {
    */
   @Override
   public void consumeInput(Set<T> input) {
-    children.parallelStream().forEach(node -> node.consumeInput(input));
+    children.forEach(node -> node.consumeInput(input));
   }
 }

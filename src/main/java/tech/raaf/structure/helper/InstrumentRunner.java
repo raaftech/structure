@@ -116,6 +116,7 @@ public class InstrumentRunner {
         "Couldn't find node running Structure by uuid \"" + Context.getSelfIdentifier() + "\"."
       );
     }
+    generatedArguments.put("selfId", Context.getSelfIdentifier());
 
     // Does the controller even work on the given origin?
     if (

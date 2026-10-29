@@ -22,8 +22,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import mockit.Expectations;
-import mockit.Mock;
 import mockit.Invocation;
+import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
 import mockit.integration.junit5.JMockitExtension;
@@ -318,7 +318,8 @@ public class BusRoundTripTest extends TypeSchemaTest {
     }
     assertEquals(4, commands.size());
     assertEquals("ansible --version", commands.get(0));
-    assertTrue(commands.get(1).contains("/bundles/ansible/payload/main.js' -i '127.0.0.1'"));
+    assertTrue(commands.get(1).startsWith("python3 '"));
+    assertTrue(commands.get(1).endsWith("/bundles/ansible/payload/main.py' -i '127.0.0.1' --self-id '" + group + "'"));
     assertEquals(commands.subList(0, 2), commands.subList(2, 4));
     assertEquals(1, Context.getGroupingRepository().getChildrenOfType(group, "Ansible").size());
     assertEquals(1, Context.getGroupingRepository().getChildrenOfType(group, "Ipv4Address").size());

@@ -31,6 +31,7 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import tech.raaf.structure.helper.KeystoreHelper;
 import tools.jackson.databind.ObjectMapper;
 
 /**
@@ -432,6 +433,13 @@ public final class Configuration {
       "changeit",
       "Keystore password"
     );
+    public static final Setting<Path> CA_CERT = new Setting<>(
+      "ca-cert",
+      Type.PATH,
+      () -> KeystoreHelper.crt(Configuration.get(JKS_FILE)).toString(),
+      "Certificate trusted by bundle payloads, relative to state-dir",
+      file -> Configuration.get(STATE_DIR).resolve(file)
+    );
     public static final Setting<String> NEO4J_BOLT_URI = new Setting<>(
       "neo4j-bolt-uri",
       Type.TEXT,
@@ -485,6 +493,7 @@ public final class Configuration {
         STATE_DIR,
         JKS_FILE,
         JKS_PASS,
+        CA_CERT,
         NEO4J_BOLT_URI,
         NEO4J_HTTP_URI,
         NEO4J_USER,

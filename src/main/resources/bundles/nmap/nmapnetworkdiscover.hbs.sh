@@ -1,1 +1,1 @@
-node {{sh (bundleFile "payload/main.js")}} -c {{sh ipnetwork.cidr}}
+python3 {{sh (bundleFile "payload/main.py")}} -c {{sh ipnetwork.cidr}}

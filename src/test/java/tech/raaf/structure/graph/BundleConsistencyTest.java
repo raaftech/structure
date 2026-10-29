@@ -74,11 +74,7 @@ public class BundleConsistencyTest {
   @BeforeAll
   public static void readResources() throws IOException {
     try (Stream<Path> paths = Files.walk(RESOURCES)) {
-      files = paths
-        .filter(Files::isRegularFile)
-        .filter(path -> !path.toString().contains("/node_modules/"))
-        .sorted()
-        .collect(Collectors.toList());
+      files = paths.filter(Files::isRegularFile).sorted().collect(Collectors.toList());
     }
     ObjectMapper mapper = JsonMapper.builder().enable(StreamReadFeature.STRICT_DUPLICATE_DETECTION).build();
     for (Path path : files) {

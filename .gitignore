@@ -2,7 +2,7 @@
 **/._.DS_Store
 **/id_dsa*
 **/id_rsa*
-**/node_modules
+**/__pycache__
 **/vendors
 **/*.iml
 .idea

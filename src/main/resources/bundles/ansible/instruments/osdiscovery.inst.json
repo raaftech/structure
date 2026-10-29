@@ -28,6 +28,11 @@
     "subjectIsLocal": false,
     "weight": 10,
     "arguments": {
+      "selfId": {
+        "value": { "from": "static", "type": "string", "strategy": "mustBeOne" },
+        "canBeUserSupplied": false,
+        "isOptional": false
+      },
       "ipaddress": {
         "value": {
           "from": "origin",

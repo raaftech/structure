@@ -21,22 +21,16 @@ To build and run Structure, you need:
 
 - [Java](https://adoptium.net/) 25 or later.
 - [Maven](https://maven.apache.org/download.cgi), to build and run tests.
-- [Node.js](https://nodejs.org/) 22.4 or later on the Structure host, to run
-  bootstrap and the network, address and OS discovery instruments. npm installs
-  their JavaScript dependencies.
-- nmap on the Structure host, for network and address discovery.
-- Ansible on the Structure host, for OS discovery. Its `setup` module needs
-  Python on each target host, including the Structure host for local discovery.
-- [Python](https://www.python.org/) on hosts where `PythonDiscover` runs. This
-  instrument uses bundle profiles to identify components through files, TCP
-  ports and command output. Its script supports Python 2 and Python 3.
+- [Python 3](https://www.python.org/) on the Structure host, to run bootstrap
+  and the network, address and OS discovery instruments.
+- [nmap](https://nmap.org/) on the Structure host, for network and address
+  scanning and discovery.
+- [Ansible](https://docs.ansible.com/) on the Structure host, for OS discovery.
+  Its `setup` module needs Python 2 or Python 3 on remote hosts.
 - [Neo4j](https://neo4j.com/download/) server 5.19 or later, to store the graph.
   Note that you can also run Neo4j using Docker, as we do later on.
 - [Docker](https://docs.docker.com/get-docker/), to run the integration tests,
   and (optionally) to run a Neo4j container image.
-
-Node.js and Python are needed only for these instruments. The Java backend,
-build and tests do not need them.
 
 ## Building
 
@@ -47,14 +41,6 @@ in `target/structure-*-fat.jar`:
 mvn package -DskipTests
 ```
 
-Then install the dependencies of the bundle payloads:
-
-```bash
-for bundle in structure nmap ansible; do
-  (cd "src/main/resources/bundles/$bundle/payload" && npm ci)
-done
-```
-
 ## Running
 
 To run Structure, first start Neo4j and then Structure itself.
@@ -63,7 +49,6 @@ To run Structure, first start Neo4j and then Structure itself.
 
 Structure needs a Neo4j server, version 5.19 or later; let's start one using
 Docker:
-
 
 ```bash
 docker run -d --rm --name neo4j -p 7474:7474 -p 7687:7687 \
@@ -80,7 +65,6 @@ Specify the Neo4j database password and start Structure:
 export STRUCTURE_NEO4J_PASS=structure
 java -jar target/structure-*-fat.jar --unsafe
 ```
-
 
 ### Structure REPL
 
@@ -103,11 +87,23 @@ curl -s -u neo4j:structure -H 'Content-Type: application/json' \
 
 ## Testing
 
-`mvn test` runs the unit tests. `mvn verify` also runs the integration tests,
-which are the subclasses of `GraphTest`, and checks that line coverage is 60% or
-higher. The integration tests need Docker. They start their own Neo4j server
-from the image `neo4j:latest` with Testcontainers, and do not use the server of
-a normal run. Testcontainers removes the container when the tests stop.
+To run regular unit tests:
+
+```bash
+mvn test
+```
+
+To run integration tests:
+
+```bash
+mvn integration-test
+```
+
+To run all of the above, including coverage report:
+
+```bash
+mvn verify
+```
 
 ## Notes
 
@@ -127,19 +123,6 @@ targets. These errors are visible at the default log level.
 Bundle loading adds new entities and updates entities whose checksum changed. It
 retains graph entities that are absent from disk. Removal of a bundle file does
 not delete its entities or their instances from the graph.
-
-### Command discovery
-
-Send `{"msgh":"discover","args":{}}` to
-`tech.raaf.structure.bus.manager.structuremanager` through the event bus bridge.
-The reply has `result.data`, an object keyed by deployment ID. Each deployment
-has `addresses` and `handlers`. Each handler has `schemaUri`, its argument
-`schema` document and `help`, which is null if no help is available. Schema
-references are relative to `schemaUri`.
-
-Discovery includes node UUID addresses and type aliases. An actor registers its
-metadata when it starts and removes it when it stops. Call discovery again to
-refresh the command list. The `list` handler still returns deployment IDs.
 
 ### User input
 
@@ -180,8 +163,9 @@ Structure always uses HTTPS. At the first start, it makes the keystore
 keystore has a self-signed certificate for `localhost` and `https-host`.
 Structure exports the certificate to `structure.crt` and the key to
 `structure.key`, next to the keystore. Clients trust this certificate with
-`curl --cacert` or `NODE_EXTRA_CA_CERTS`. To make a new certificate, for example
-after you change `https-host`, delete the keystore. `mvn clean` also deletes it.
+`curl --cacert`. Python payloads read `ca-cert` from `structure.json`. To make a
+new certificate, for example after you change `https-host`, delete the keystore.
+`mvn clean` also deletes it.
 
 ### Configuration
 
@@ -206,6 +190,7 @@ first:
 | `--state-dir`      | `STRUCTURE_STATE_DIR`      | `structure.state.dir`      | [State directory](#state-directory) | Directory of the files that Structure writes, relative to Structure's home |
 | `--jks-file`       | `STRUCTURE_JKS_FILE`       | `structure.jks.file`       | `structure.jks`                     | JKS keystore for HTTPS, relative to `state-dir`; made if missing           |
 | `--jks-pass`       | `STRUCTURE_JKS_PASS`       | `structure.jks.pass`       | `changeit`                          | Keystore password                                                          |
+| `--ca-cert`        | `STRUCTURE_CA_CERT`        | `structure.ca.cert`        | `structure.crt` beside `jks-file`   | Certificate trusted by bundle payloads; relative paths use `state-dir`     |
 | `--neo4j-bolt-uri` | `STRUCTURE_NEO4J_BOLT_URI` | `structure.neo4j.bolt.uri` | `bolt://localhost:7687`             | Neo4j Bolt server                                                          |
 | `--neo4j-http-uri` | `STRUCTURE_NEO4J_HTTP_URI` | `structure.neo4j.http.uri` | `http://localhost:7474`             | Neo4j Query API                                                            |
 | `--neo4j-user`     | `STRUCTURE_NEO4J_USER`     | `structure.neo4j.user`     | `neo4j`                             | Neo4j user                                                                 |
@@ -295,14 +280,19 @@ owner and permission settings.
 
 At each start, Structure writes its settings to `structure.json` in `state-dir`.
 Payloads require `STRUCTURE_STATE_DIR` as an absolute path. They do not infer
-settings from the source directory. Structure sets this variable, `NODE_PATH`
-for the shared client in `core/payload`, and `NODE_EXTRA_CA_CERTS` for the
-server certificate when it starts a process.
+settings from the source directory. Structure sets this variable when it starts
+a process. Python payloads find the shared client in the sibling `core/payload`
+directory relative to their own files. The client reads the server address and
+certificate trust from `structure.json`, as written by `Configuration`. Set
+`ca-cert` through the normal configuration sources to use another certificate
+file.
 
 Templates use `bundleFile` to find a payload relative to the instrument JSON
 file. A rescan updates these paths, including for bundles outside Structure's
-home. Install each payload's npm dependencies after you place its bundle. The
-core bundle supplies the shared event bus client, settings and graph writer.
+home. The core bundle supplies the shared event bus client and graph helpers in
+`payload/structure_client.py`. All payloads use the Python standard library. The
+client connects with TLS certificate and host name checks, sends event bus
+heartbeats and handles WebSocket messages, control frames and timeouts.
 
 #### Bootstrap and discovery
 
@@ -332,23 +322,22 @@ For manual use from Structure's home, set the runtime paths explicitly:
 
 ```bash
 export STRUCTURE_STATE_DIR=$PWD/target
-export NODE_PATH=$PWD/src/main/resources/bundles/core/payload
-export NODE_EXTRA_CA_CERTS=$STRUCTURE_STATE_DIR/structure.crt
-node src/main/resources/bundles/structure/payload/main.js -h my-host.example
-node src/main/resources/bundles/nmap/payload/main.js -c 192.0.2.0/24
-node src/main/resources/bundles/nmap/payload/main.js -i 192.0.2.10
-node src/main/resources/bundles/ansible/payload/main.js -i 192.0.2.10
+python3 src/main/resources/bundles/structure/payload/main.py -h my-host.example
+python3 src/main/resources/bundles/nmap/payload/main.py -c 192.0.2.0/24
+python3 src/main/resources/bundles/nmap/payload/main.py -i 192.0.2.10
+python3 src/main/resources/bundles/ansible/payload/main.py -i 192.0.2.10
 ```
 
-OS discovery needs Ansible on the Structure host and Python on remote hosts.
-It uses Ansible's `setup` module with a local connection for the Structure host
-and SSH as root for remote hosts. Structure passes its host group UUID through
-`STRUCTURE_SELF_ID` so the payload can select the connection. For manual local
-discovery, set this variable to the registered Structure host group UUID.
-Ansible uses the host's SSH settings and checks remote host keys.
-Network discovery scans a CIDR range with nmap. Address discovery scans one
-existing IPv4 address. A failed connection, scan or write causes a nonzero exit
-status.
+OS discovery needs Python 3 and Ansible on the Structure host. Remote hosts can
+use Python 2 or Python 3 if the installed Ansible version supports it. It uses
+Ansible's `setup` module with a local connection for the Structure host and SSH
+as root for remote hosts. The `OsDiscover` command passes the Structure host
+group UUID with `--self-id` so the payload can select the connection. For manual
+local discovery, add `--self-id <uuid>` with the registered Structure host group
+UUID. Manual remote discovery can omit this argument. Ansible uses the host's
+SSH settings and checks remote host keys. Network discovery scans a CIDR range
+with nmap. Address discovery scans one existing IPv4 address. A failed
+connection, scan or write causes a nonzero exit status.
 
 #### Passwords
 

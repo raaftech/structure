@@ -264,7 +264,7 @@ public class BundleGraphTest extends TypeSchemaTest {
     assertJob(
       origin,
       instrument,
-      "node '" + home + "/src/main/resources/bundles/nmap/payload/main.js' " + target,
+      "python3 '" + home + "/src/main/resources/bundles/nmap/payload/main.py' " + target,
       60000
     );
   }
@@ -363,6 +363,31 @@ public class BundleGraphTest extends TypeSchemaTest {
   }
 
   @Test
+  public void bootstrapUsesPythonAndItsBundlePath() {
+    Component structure = software("Structure");
+    Group agent = subject(software("OperatingSystem").addComponent(structure));
+    Context.setSelfGroup(agent);
+    Context.setSelfIdentifier(agent.getUuid());
+    try {
+      Controller controller = (Controller) Context.getInstrumentRepository().findOneByName("StructureBootstrap");
+      InstrumentRunner runner = new InstrumentRunner(
+        structure,
+        controller,
+        mapper.createObjectNode().put("hostname", "host.example"),
+        "bootstrap"
+      );
+      assertEquals(1, runner.getJobs().size());
+      assertEquals(
+        "python3 '" + BUNDLES.resolve("structure/payload/main.py") + "' -h 'host.example'",
+        runner.getJobs().getFirst().getLeft()
+      );
+    } finally {
+      Context.setSelfGroup(null);
+      Context.setSelfIdentifier(null);
+    }
+  }
+
+  @Test
   public void osDiscoveryNeedsAnsible() {
     for (boolean ansible : Arrays.asList(false, true)) {
       Component agentHost = software("OperatingSystem").addComponent(software("Structure"));
@@ -394,7 +419,11 @@ public class BundleGraphTest extends TypeSchemaTest {
         assertEquals(ansible ? 1 : 0, runner.getJobs().size());
         if (ansible) {
           assertEquals(
-            "node '" + BUNDLES.resolve("ansible/payload/main.js") + "' -i '192.0.2.30'",
+            "python3 '" +
+              BUNDLES.resolve("ansible/payload/main.py") +
+              "' -i '192.0.2.30' --self-id '" +
+              agent.getUuid() +
+              "'",
             runner.getJobs().getFirst().getLeft()
           );
         }

@@ -195,11 +195,11 @@ public class StructureManager extends GenericActor {
     Component host = Context.getInstanceRepository().findDnsName(hostname);
     if (host == null) {
       log.info("Registering the Structure host");
-      final Path bootstrap = BundleFiles.resolve("03a764f2-a41f-47bb-bbe6-f28df84af398", "payload/main.js");
+      final Path bootstrap = BundleFiles.resolve("03a764f2-a41f-47bb-bbe6-f28df84af398", "payload/main.py");
       if (!Files.isRegularFile(bootstrap)) {
         throw new IllegalStateException("Bootstrap program not found: " + bootstrap);
       }
-      runDiscovery("node " + Quote.SH.quote(bootstrap.toString()) + " -h " + Quote.SH.quote(hostname), 60000);
+      runDiscovery("python3 " + Quote.SH.quote(bootstrap.toString()) + " -h " + Quote.SH.quote(hostname), 60000);
       host = Context.getInstanceRepository().findDnsName(hostname);
     }
     if (host == null) {

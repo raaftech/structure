@@ -30,8 +30,10 @@ public abstract class TypeSchemaTest extends GraphTest {
     if (vertx == null) {
       // Setup vertx and http+router
       vertx = Vertx.vertx();
-      final HttpServer httpServer = vertx.createHttpServer();
-      final Router router = Router.router(vertx);
+      // Bus actors can wait for HTTP schema requests on their event loop.
+      final Vertx schemaVertx = Vertx.vertx();
+      final HttpServer httpServer = schemaVertx.createHttpServer();
+      final Router router = Router.router(schemaVertx);
       SchemaManager schemaManager = new SchemaManager();
       router.route("/schemas/:schema").blockingHandler(schemaManager::getSchema, false);
 

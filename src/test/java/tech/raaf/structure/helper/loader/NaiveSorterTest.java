@@ -348,12 +348,12 @@ public class NaiveSorterTest {
     String uuid = root.path("meta").path("uuid").asString();
     Path source = writeBundle("root.type.json", root);
     sorter().readAllJson();
-    assertEquals(source.getParent().resolve("payload/main.js"), BundleFiles.resolve(uuid, "payload/main.js"));
+    assertEquals(source.getParent().resolve("payload/main.py"), BundleFiles.resolve(uuid, "payload/main.py"));
 
     Path moved = folder.resolve("moved bundle");
     Files.move(source.getParent(), moved);
     sorter().readAllJson();
-    assertEquals(moved.resolve("payload/main.js"), BundleFiles.resolve(uuid, "payload/main.js"));
+    assertEquals(moved.resolve("payload/main.py"), BundleFiles.resolve(uuid, "payload/main.py"));
   }
 
   private ObjectNode rootType() {

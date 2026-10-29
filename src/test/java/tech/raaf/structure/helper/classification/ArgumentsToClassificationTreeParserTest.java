@@ -5,14 +5,44 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 import org.junit.jupiter.api.Test;
 import tech.raaf.structure.helper.classification.ArgumentsToClassificationTreeParser.ClassificationTreeObjects;
+import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.node.ObjectNode;
 
 public class ArgumentsToClassificationTreeParserTest {
 
   private final ObjectMapper mapper = new ObjectMapper();
+
+  @Test
+  public void selectsAllArgumentsTogether() {
+    ObjectNode arguments = mapper.createObjectNode();
+    Set<JsonNode> input = new HashSet<>();
+    for (int i = 0; i < 32; i++) {
+      String key = "argument" + i;
+      String from = i % 2 == 0 ? "static" : "origin";
+      String type = i % 2 == 0 ? "string" : "type.component.test" + i;
+      arguments.putObject(key).putObject("value").put("from", from).put("type", type).put("strategy", "mustBeOne");
+      input.add(
+        mapper.createObjectNode().put("name", key).put("data", key).put("_from", from).put("_hierarchyPath", type)
+      );
+    }
+    for (int attempt = 0; attempt < 200; attempt++) {
+      ClassificationTreeObjects tree = ArgumentsToClassificationTreeParser.asTree(arguments);
+      Set<JsonNode> context = new HashSet<>();
+      input.forEach(node -> context.add(node.deepCopy()));
+      tree.root.consumeInput(context);
+      assertTrue(tree.failed.isEmpty());
+      assertEquals(32, tree.result.size());
+      for (int i = 0; i < 32; i++) {
+        String key = "argument" + i;
+        assertEquals(key, (i % 2 == 0 ? tree.result.path(key) : tree.result.path(key).path("data")).asString());
+      }
+    }
+  }
 
   @Test
   public void acceptsTheSpecifiedTypeAndItsSubtypes() {
