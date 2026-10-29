@@ -42,9 +42,7 @@ public abstract class Node {
   // NodeMapper sets this for a node that it reads from the graph
   boolean persisted;
 
-  /****************/
-  /* Constructors */
-  /****************/
+  // Constructors
 
   public Node() {
     this.uuid = UUID.randomUUID().toString();
@@ -77,9 +75,7 @@ public abstract class Node {
     this.checksum = checksum;
   }
 
-  /******************/
-  /* Public Methods */
-  /******************/
+  // Public Methods
 
   public String getDesc() {
     return desc;
@@ -175,7 +171,7 @@ public abstract class Node {
     final Optional<String> content;
     final Optional<ObjectNode> file = getFile(name);
     if (file.isPresent()) {
-      content = Optional.of(file.get().get("content").asText());
+      content = Optional.of(file.get().get("content").asString());
     } else {
       content = Optional.empty();
     }

@@ -64,9 +64,9 @@ public class InstrumentSchemaTest {
   }
 
   private boolean valid(String schema, ObjectNode instrument) {
-    return JsonHelper.validateToSchema(
+    return JsonHelper.validationErrors(
       URI.create("resource:/bundles/core/schema/" + schema + ".schema.json"),
       instrument
-    );
+    ).isEmpty();
   }
 }

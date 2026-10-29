@@ -206,6 +206,8 @@ public final class Configuration {
   }
 
   // Print the options, with their defaults.
+  // The help package that replaces HelpFormatter prints a table header.
+  @SuppressWarnings("deprecation")
   public static void printUsage() {
     final HelpFormatter formatter = new HelpFormatter();
     formatter.setOptionComparator(null);
@@ -280,7 +282,7 @@ public final class Configuration {
           .hasArg(!flag)
           .argName(setting.type.name)
           .desc(setting.description + fallback)
-          .build()
+          .get()
       );
     }
     return options;

@@ -160,6 +160,6 @@ public class EntityTest extends SchemaTest {
   }
 
   private boolean valid(ObjectNode entity) {
-    return JsonHelper.validateToSchema(URI.create(schema()), entity);
+    return JsonHelper.validationErrors(URI.create(schema()), entity).isEmpty();
   }
 }

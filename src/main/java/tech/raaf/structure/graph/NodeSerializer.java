@@ -193,10 +193,10 @@ public class NodeSerializer extends StdSerializer<Node> {
 
             // write the object
             JsonNode fileJson = mapper.readTree((String) entry.getValue());
-            gen.writeStringProperty("encoding", fileJson.get("encoding").asText());
-            gen.writeStringProperty("format", fileJson.get("format").asText());
-            if (fileJson.has("path")) gen.writeStringProperty("path", fileJson.get("path").asText());
-            gen.writeStringProperty("content", fileJson.get("content").asText());
+            gen.writeStringProperty("encoding", fileJson.get("encoding").asString());
+            gen.writeStringProperty("format", fileJson.get("format").asString());
+            if (fileJson.has("path")) gen.writeStringProperty("path", fileJson.get("path").asString());
+            gen.writeStringProperty("content", fileJson.get("content").asString());
 
             // end the file specific object
             gen.writeEndObject();

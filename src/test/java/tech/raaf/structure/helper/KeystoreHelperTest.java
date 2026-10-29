@@ -8,7 +8,9 @@ import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.HttpServerOptions;
 import io.vertx.core.net.JksOptions;
 import java.io.InputStream;
+import java.net.URI;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.PosixFilePermissions;
@@ -19,7 +21,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
-import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -88,9 +89,9 @@ public class KeystoreHelperTest {
         .listen(0, "localhost")
         .await();
       // The default trust and host name check accept the certificate.
-      final URL url = new URL("https://localhost:" + listening.actualPort() + "/");
+      final URL url = URI.create("https://localhost:" + listening.actualPort() + "/").toURL();
       try (InputStream stream = url.openStream()) {
-        assertEquals("ok", IOUtils.toString(stream));
+        assertEquals("ok", new String(stream.readAllBytes(), StandardCharsets.UTF_8));
       }
     } finally {
       vertx.close();

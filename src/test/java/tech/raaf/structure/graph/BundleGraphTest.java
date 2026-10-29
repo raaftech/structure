@@ -60,7 +60,7 @@ public class BundleGraphTest extends TypeSchemaTest {
     assertEquals(entities.size(), rows.size(), "Number of stored bundle entities");
     Set<String> expected = entities
       .stream()
-      .map(entity -> entity.path("meta").path("uuid").asText())
+      .map(entity -> entity.path("meta").path("uuid").asString())
       .collect(Collectors.toSet());
     Set<Object> actual = rows
       .stream()
@@ -78,12 +78,12 @@ public class BundleGraphTest extends TypeSchemaTest {
       for (Map.Entry<String, Object> property : node.getProperties().entrySet()) {
         if (property.getKey().startsWith("file-")) {
           JsonNode file = mapper.readTree((String) property.getValue());
-          assertTrue(file.path("content").isTextual(), describe(node) + ": missing content in " + property.getKey());
+          assertTrue(file.path("content").isString(), describe(node) + ": missing content in " + property.getKey());
         }
       }
     }
     for (JsonNode entity : entities) {
-      String uuid = entity.path("meta").path("uuid").asText();
+      String uuid = entity.path("meta").path("uuid").asString();
       GraphNode node = stored.get(uuid);
       assertNotNull(node, "Missing bundle entity " + uuid);
       entity
@@ -114,8 +114,8 @@ public class BundleGraphTest extends TypeSchemaTest {
         .properties()
         .forEach(argument -> {
           JsonNode value = argument.getValue().path("value");
-          if (!"static".equals(value.path("from").asText())) {
-            String typePath = value.path("type").asText();
+          if (!"static".equals(value.path("from").asString())) {
+            String typePath = value.path("type").asString();
             if (
               paths
                 .values()
@@ -146,8 +146,8 @@ public class BundleGraphTest extends TypeSchemaTest {
         .properties()
         .forEach(argument -> {
           JsonNode value = argument.getValue().path("value");
-          if ("origin".equals(value.path("from").asText())) {
-            String typePath = value.path("type").asText();
+          if ("origin".equals(value.path("from").asString())) {
+            String typePath = value.path("type").asString();
             if (!matchesTypePath(typePath, appliedPath) && !matchesTypePath(appliedPath, typePath)) {
               errors.add(
                 describe(instrument) +
@@ -254,7 +254,7 @@ public class BundleGraphTest extends TypeSchemaTest {
     List<JsonNode> updates = sorter.getUpdateList(sorter.sortIt(sorter.readAllJson()));
     List<String> names = updates
       .stream()
-      .map(entity -> entity.path("name").asText() + " (" + entity.path("meta").path("uuid").asText() + ")")
+      .map(entity -> entity.path("name").asString() + " (" + entity.path("meta").path("uuid").asString() + ")")
       .collect(Collectors.toList());
     assertTrue(updates.isEmpty(), "Unchanged bundle entities need updates: " + names);
   }
@@ -398,7 +398,7 @@ public class BundleGraphTest extends TypeSchemaTest {
     long expected = entities
       .stream()
       .filter(entity ->
-        entity.path("meta").path("relations").path("INSTANCE_OF").path("to").path(0).asText().equals("Profile")
+        entity.path("meta").path("relations").path("INSTANCE_OF").path("to").path(0).asString().equals("Profile")
       )
       .count();
     assertEquals(expected, profiles.size(), "Profiles under Component");

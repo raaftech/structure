@@ -42,12 +42,12 @@ public class TripleTest {
     );
   }
 
-  @Test
   /**
    * This test is the same as above, but now called on a Triple that does not have
    * a Collection as right field. This should simple return a stream of one triple with
    * the original right field cast to type parameter `T`, see {@link Triple#flatten()}.
    */
+  @Test
   public void flattenSimpleTriple() throws Exception {
     Triple<String, String, String> triple = Triple.of(left, middle, rightPrefix);
     Stream<Triple<String, String, String>> flattenedTripleStream = triple.flatten();

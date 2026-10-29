@@ -198,9 +198,9 @@ public class StoreFormatTest extends TypeSchemaTest {
   private void assertFile(Stored n, String key, String encoding, String format, String path) throws Exception {
     JsonNode file = mapper.readTree((String) n.properties.get(key));
     assertEquals(FILE_KEYS, Sets.newHashSet(file.propertyNames()));
-    assertEquals(encoding, file.get("encoding").asText());
-    assertEquals(format, file.get("format").asText());
-    assertEquals(path, file.get("path").asText());
+    assertEquals(encoding, file.get("encoding").asString());
+    assertEquals(format, file.get("format").asString());
+    assertEquals(path, file.get("path").asString());
   }
 
   @SuppressWarnings("unchecked")

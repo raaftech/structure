@@ -18,8 +18,8 @@ import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.text.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tech.raaf.structure.base.Configuration;
@@ -376,7 +376,7 @@ public class InstrumentRunner {
       if (
         instrumentRepository.validateNonLocalInstrument(controller.getUuid(), agent.getUuid(), origin.getUuid()) == null
       ) {
-        log.error(
+        log.warn(
           "We can't run controller \"" +
             controller.getName() +
             "\", because \"" +
@@ -390,7 +390,7 @@ public class InstrumentRunner {
         );
         // todo: log as result
       } else if (!instrumentRepository.originHasServer(controller.getUuid(), origin.getUuid())) {
-        log.error(
+        log.warn(
           "We can't run controller \"" +
             controller.getName() +
             "\", because nothing that has \"" +
@@ -553,7 +553,7 @@ public class InstrumentRunner {
       final String contextKey = toPass.inverse().get(selector);
       // We may have a particular property we're interested in, or we just want the whole object
       final Optional<String> contextProperty = selector.get(pass).has(key)
-        ? Optional.of(selector.get(pass).get(key).asText())
+        ? Optional.of(selector.get(pass).get(key).asString())
         : Optional.empty();
       /*
         If contextProperty is present, get the value of the key we want from the context.
@@ -572,7 +572,7 @@ public class InstrumentRunner {
         }
         if (contextProperty.isPresent()) {
           contextValue = context.get(contextKey).has(contextProperty.get())
-            ? context.get(contextKey).get(contextProperty.get()).asText()
+            ? context.get(contextKey).get(contextProperty.get()).asString()
             : "";
         } else {
           contextValue = context.get(contextKey).toString();
@@ -583,7 +583,7 @@ public class InstrumentRunner {
 
       final String arg;
       if (selector.get(pass).has(option)) {
-        arg = Quote.SH.quote(selector.get(pass).get(option).asText()) + " " + Quote.SH.quote(contextValue);
+        arg = Quote.SH.quote(selector.get(pass).get(option).asString()) + " " + Quote.SH.quote(contextValue);
       } else {
         arg = Quote.SH.quote(contextValue);
       }
@@ -644,14 +644,14 @@ public class InstrumentRunner {
       subject.toArguments().forEach(arg -> collect.accept(arg, "subject"));
     }
     agent.toArguments().forEach(arg -> collect.accept(arg, "agent"));
-    ObjectNode originCopy = ((Instance) origin).toJson().deepCopy().put("_from", "origin");
+    ObjectNode originCopy = origin.toJson().deepCopy().put("_from", "origin");
     context.add(originCopy);
     // Structure gives the other static arguments, its values win
     final ObjectNode staticArguments = suppliedArguments.deepCopy();
     staticArguments.setAll(generatedArguments);
     // add the static arguments to our context in a way we can filter
     staticArguments.properties().forEach(entry -> {
-      ObjectNode node = mapper.createObjectNode().put("name", entry.getKey()).put("data", entry.getValue().asText());
+      ObjectNode node = mapper.createObjectNode().put("name", entry.getKey()).put("data", entry.getValue().asString());
       collect.accept(node, "static");
     });
 

@@ -63,7 +63,6 @@ public class NaiveSorterTest {
     ObjectNode relb = metb.putObject("relations").putObject("INSTANCE_OF");
     relb.put("direction", "outgoing");
     relb.putArray("to").add(instanceOf);
-    System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(b));
 
     // our old way:
     assertFalse(Objects.equals(DigestUtils.md5Hex(a.toString()), DigestUtils.md5Hex(b.toString())));
@@ -134,7 +133,7 @@ public class NaiveSorterTest {
     ).readAllJson();
     assertFalse(inHome.isEmpty());
     for (JsonNode node : inHome) {
-      assertTrue(node.get("meta").get("path").asText().startsWith("src/main/resources/bundles/"));
+      assertTrue(node.get("meta").get("path").asString().startsWith("src/main/resources/bundles/"));
     }
     // Outside home, the stored path is relative to the bundle path.
     final Path outside = folder;
@@ -143,7 +142,7 @@ public class NaiveSorterTest {
     final List<JsonNode> elsewhere = new NaiveSorter(Collections.singleton(outside)).readAllJson();
     assertFalse(elsewhere.isEmpty());
     for (JsonNode node : elsewhere) {
-      assertTrue(node.get("meta").get("path").asText().startsWith("simple/"));
+      assertTrue(node.get("meta").get("path").asString().startsWith("simple/"));
     }
   }
 
@@ -221,7 +220,7 @@ public class NaiveSorterTest {
       IllegalArgumentException.class,
       () -> sorter().readAllJson(),
       "Duplicate uuid",
-      root.path("meta").path("uuid").asText(),
+      root.path("meta").path("uuid").asString(),
       first.toString(),
       second.toString()
     );
@@ -236,7 +235,7 @@ public class NaiveSorterTest {
       IllegalArgumentException.class,
       () -> sorter().readAllJson(),
       "Duplicate uuid",
-      root.path("meta").path("uuid").asText(),
+      root.path("meta").path("uuid").asString(),
       file.toString()
     );
   }
@@ -293,7 +292,7 @@ public class NaiveSorterTest {
     ((ObjectNode) child.get("meta")).put("path", "bundle/component.type.json");
     ((ObjectNode) child.path("meta").path("relations").path("ISA"))
       .putArray("to")
-      .add(root.path("meta").path("uuid").asText())
+      .add(root.path("meta").path("uuid").asString())
       .add("Type")
       .add("MissingType")
       .add(missingUuid);
@@ -303,11 +302,11 @@ public class NaiveSorterTest {
       fail("Expected unresolved dependencies");
     } catch (IllegalArgumentException e) {
       assertTrue(e.getMessage().contains("Component"), e.getMessage());
-      assertTrue(e.getMessage().contains(child.path("meta").path("uuid").asText()), e.getMessage());
+      assertTrue(e.getMessage().contains(child.path("meta").path("uuid").asString()), e.getMessage());
       assertTrue(e.getMessage().contains("bundle/component.type.json"), e.getMessage());
       assertTrue(e.getMessage().contains("MissingType"), e.getMessage());
       assertTrue(e.getMessage().contains(missingUuid), e.getMessage());
-      assertFalse(e.getMessage().contains(root.path("meta").path("uuid").asText()), e.getMessage());
+      assertFalse(e.getMessage().contains(root.path("meta").path("uuid").asString()), e.getMessage());
     }
   }
 
@@ -318,15 +317,15 @@ public class NaiveSorterTest {
     ((ObjectNode) first.path("meta").path("relations"))
       .putObject("ISA")
       .putArray("to")
-      .add(second.path("meta").path("uuid").asText());
+      .add(second.path("meta").path("uuid").asString());
 
     assertThrowsWith(
       IllegalArgumentException.class,
       () -> sorter().sortIt(Arrays.asList(first, second)),
       "Type",
       "Component",
-      first.path("meta").path("uuid").asText(),
-      second.path("meta").path("uuid").asText()
+      first.path("meta").path("uuid").asString(),
+      second.path("meta").path("uuid").asString()
     );
   }
 

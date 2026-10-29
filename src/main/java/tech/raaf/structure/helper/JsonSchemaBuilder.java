@@ -1,11 +1,9 @@
 package tech.raaf.structure.helper;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import tech.raaf.structure.base.Configuration;
 import tech.raaf.structure.exceptions.JsonValidationException;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
@@ -24,8 +22,6 @@ import tools.jackson.databind.node.ObjectNode;
  *
  */
 public class JsonSchemaBuilder {
-
-  static final Logger log = LoggerFactory.getLogger(JsonSchemaBuilder.class);
 
   private ObjectNode json;
 
@@ -123,13 +119,6 @@ public class JsonSchemaBuilder {
       property.setDescription(description);
     } catch (Exception e) {
       properties.remove(name);
-
-      log.error(e.getMessage());
-
-      if (Configuration.isTraceModeOn()) {
-        e.printStackTrace();
-      }
-
       throw e;
     }
     if (req) {
@@ -154,7 +143,7 @@ public class JsonSchemaBuilder {
       properties.remove(name);
       if (required != null) {
         for (int i = 0; i < required.size(); i++) {
-          if (required.get(i).asText().equals(name)) {
+          if (required.get(i).asString().equals(name)) {
             required.remove(i);
             break;
           }
@@ -233,13 +222,6 @@ public class JsonSchemaBuilder {
       item.setType(type);
     } catch (Exception e) {
       items.remove(name);
-
-      log.error(e.getMessage());
-
-      if (Configuration.isTraceModeOn()) {
-        e.printStackTrace();
-      }
-
       throw e;
     }
     if (req) {
@@ -329,7 +311,7 @@ public class JsonSchemaBuilder {
       boolean ret = false;
       Iterator<JsonNode> fields = required.values().iterator();
       while (fields.hasNext()) {
-        if (property.equals(fields.next().asText())) {
+        if (property.equals(fields.next().asString())) {
           ret = true;
         }
       }
@@ -345,7 +327,7 @@ public class JsonSchemaBuilder {
     JsonNode type = json.get("type");
 
     if (type != null) {
-      return type.asText();
+      return type.asString();
     } else {
       return null;
     }
@@ -405,7 +387,7 @@ public class JsonSchemaBuilder {
   public String getPattern() {
     JsonNode pattern = json.get("pattern");
     if (pattern != null) {
-      return pattern.asText();
+      return pattern.asString();
     }
 
     return null;
@@ -429,7 +411,7 @@ public class JsonSchemaBuilder {
   public String getDescription() {
     JsonNode description = json.get("description");
     if (description != null) {
-      return description.asText();
+      return description.asString();
     } else {
       return null;
     }
@@ -484,10 +466,10 @@ public class JsonSchemaBuilder {
   /**
    * Validate JSON against the schema built with this JsonSchemaBuilder.
    * @param data The JSON data you want to validate.
-   * @return True when the JSON successfully validated, false if not.
+   * @return The reasons why the JSON is not valid; empty if it is valid.
    */
-  public boolean validateJson(JsonNode data) {
-    return JsonHelper.validateToSchema(json, data);
+  public List<String> validationErrors(JsonNode data) {
+    return JsonHelper.validationErrors(json, data);
   }
 
   /**

@@ -77,19 +77,20 @@ public class EntityDeserializer extends StdDeserializer<Entity> {
     ObjectNode entityJson = (ObjectNode) deserializationContext.readTree(jsonParser);
 
     /*
-     * Validate schema and go. Notice we don't log anything,
-     * validateToSchema does that for us. Also note that it is the schema's
+     * Validate schema and go. The exception below gives the reasons.
+     * Also note that it is the schema's
      * responsibility to make sure the values are there and are correct!
      * Don't clutter the code with null checks and value mangling!
      */
-    if (JsonHelper.validateToSchema(entitySchema, entityJson)) {
+    final List<String> errors = JsonHelper.validationErrors(entitySchema, entityJson);
+    if (errors.isEmpty()) {
       /* Set name. */
-      name = entityJson.get("name").asText();
+      name = entityJson.get("name").asString();
       log.debug("Setting name to \"{}\"", name);
       entity.setName(name);
 
       /* Set description. */
-      desc = entityJson.get("desc").asText();
+      desc = entityJson.get("desc").asString();
       log.debug("Setting desc to \"{}\"", desc);
       entity.setDesc(desc);
 
@@ -110,10 +111,10 @@ public class EntityDeserializer extends StdDeserializer<Entity> {
         JsonNode value = entry.getValue();
 
         String rname = key;
-        String direction = value.get("direction").asText();
+        String direction = value.get("direction").asString();
         ArrayNode peersJson = (ArrayNode) value.get("to");
         Set<String> peers = new HashSet<String>();
-        peersJson.forEach(peer -> peers.add(peer.asText()));
+        peersJson.forEach(peer -> peers.add(peer.asString()));
 
         log.debug("Adding {} relation triple for entity \"{}\" named \"{}\"", direction, name, rname);
         Triple<String, String, Set<String>> relation = new Triple<String, String, Set<String>>(rname, direction, peers);
@@ -138,8 +139,8 @@ public class EntityDeserializer extends StdDeserializer<Entity> {
             JsonNode constraintData = iterConstraintData.next();
             entity.addConstraint(
               relName,
-              Constraint.Cardinality.valueOf(constraintData.get("cardinality").asText()),
-              constraintData.get("to").asText()
+              Constraint.Cardinality.valueOf(constraintData.get("cardinality").asString()),
+              constraintData.get("to").asString()
             );
           }
         }
@@ -151,13 +152,13 @@ public class EntityDeserializer extends StdDeserializer<Entity> {
         final JsonNode identityProperty = metaJson.get(identityKey);
         final Set<String> identity = identityProperty.isArray()
           ? ImmutableSet.copyOf(mapper.convertValue(identityProperty, HashSet.class))
-          : ImmutableSet.of(identityProperty.asText());
+          : ImmutableSet.of(identityProperty.asString());
         entity.setIdentity(identity.toArray(new String[identity.size()]));
       }
 
       /* Handle uuid within meta if existent, else generate. */
       if (metaJson.has("uuid")) {
-        uuid = metaJson.get("uuid").asText();
+        uuid = metaJson.get("uuid").asString();
         log.debug("Setting uuid to \"{}\"", uuid);
         entity.setUuid(uuid);
       } else {
@@ -168,7 +169,7 @@ public class EntityDeserializer extends StdDeserializer<Entity> {
 
       /* Handle bundle within meta if existent, else generate. */
       if (metaJson.has("bundle")) {
-        bundle = metaJson.get("bundle").asText();
+        bundle = metaJson.get("bundle").asString();
         log.debug("Setting bundle to \"{}\"", bundle);
         entity.setBundle(bundle);
       } else {
@@ -179,14 +180,14 @@ public class EntityDeserializer extends StdDeserializer<Entity> {
 
       /* Handle path within meta if existent. The bundle loader injects it. */
       if (metaJson.has("path")) {
-        final String path = metaJson.get("path").asText();
+        final String path = metaJson.get("path").asString();
         log.debug("Setting path from JSON data to \"{}\"", path);
         entity.setPath(path);
       }
 
       /* Handle checksum within meta if existent, else create. */
       if (metaJson.has("checksum")) {
-        checksum = metaJson.get("checksum").asText();
+        checksum = metaJson.get("checksum").asString();
       } else {
         checksum = NaiveSorter.calculateChecksum(entityJson, NaiveSorter.ChecksumAlgorithm.SHA1);
       }
@@ -210,14 +211,14 @@ public class EntityDeserializer extends StdDeserializer<Entity> {
           log.debug("Found \"{}\" in file object, starting work..", key);
           ObjectNode value = (ObjectNode) entry.getValue();
 
-          String encoding = value.get("encoding").asText();
-          String format = value.get("format").asText();
+          String encoding = value.get("encoding").asString();
+          String format = value.get("format").asString();
 
           if (value.has("path") && value.has("content")) {
             log.debug("Writing JSON object with name \"{}\" to file object", key);
             file.put(key, value.toString());
           } else if (value.has("path")) {
-            File filePath = pathHelper(new File(value.get("path").asText()));
+            File filePath = pathHelper(new File(value.get("path").asString()));
 
             if (filePath.exists() && !filePath.isDirectory()) {
               try {
@@ -240,7 +241,7 @@ public class EntityDeserializer extends StdDeserializer<Entity> {
                 throw JacksonIOException.construct(e, jsonParser);
               }
             } else {
-              log.error("\"" + filePath + "\" does not exist or is a directory");
+              throw new EntityDeserializationException("\"" + filePath + "\" does not exist or is a directory");
             }
           } else if (value.has("content")) {
             // we don't lowercase the key variable, because the schema is case sensitive
@@ -251,7 +252,6 @@ public class EntityDeserializer extends StdDeserializer<Entity> {
           }
 
           if (!value.has("content")) {
-            log.error("No content field found, stopping load process.");
             throw new EntityDeserializationException("No content field found, stopping load process.");
           }
           // we now have content, so we can validate, or create a checksum
@@ -263,7 +263,7 @@ public class EntityDeserializer extends StdDeserializer<Entity> {
             .toString()
             .substring(1, value.get("content").toString().length() - 1);
           if (value.has("checksum")) {
-            checksum = value.get("checksum").asText();
+            checksum = value.get("checksum").asString();
             checksumMatches = checksum.equals(DigestUtils.sha1Hex(content));
           } else {
             checksumMatches = true;
@@ -276,7 +276,7 @@ public class EntityDeserializer extends StdDeserializer<Entity> {
               "Specified checksum for file \"" + key + "\" does not match content"
             );
           }
-          value.put("checksum", DigestUtils.sha1Hex(value.get("content").asText()));
+          value.put("checksum", DigestUtils.sha1Hex(value.get("content").asString()));
 
           // save file to properties
           file.put(key, value.toString());
@@ -285,9 +285,9 @@ public class EntityDeserializer extends StdDeserializer<Entity> {
 
           // if format is JSON, we need to make sure it is actually valid JSON, else a JacksonException
           // gets thrown
-          if ("json".equals(value.get("format").asText())) {
+          if ("json".equals(value.get("format").asString())) {
             try {
-              mapper.readTree(value.get("content").asText());
+              mapper.readTree(value.get("content").asString());
             } catch (StreamReadException e) {
               throw new EntityDeserializationException(
                 "Can't deserialize entity \"" +
@@ -303,7 +303,7 @@ public class EntityDeserializer extends StdDeserializer<Entity> {
           // all is well. does this key match the dataSchema key? then we keep track of it, because
           // we might use it later on for validating the data object
           if (FILE_DATASCHEMA.equals(key)) {
-            dataSchema = mapper.readTree(value.get("content").asText());
+            dataSchema = mapper.readTree(value.get("content").asString());
           }
         }
 
@@ -318,7 +318,7 @@ public class EntityDeserializer extends StdDeserializer<Entity> {
         //FIXME the full schema validation should already do this, so i'm thinking this piece of code is obsolete
         // if this entity was provided with a dataSchema, make sure the data object validates against that
         // if (dataSchema != null) {
-        //   if (!JsonHelper.validateToSchema(dataSchema, dataJson)) {
+        //   if (!JsonHelper.validationErrors(dataSchema, dataJson).isEmpty()) {
         //     throw new EntityDeserializationException("Provided data for entity \"" + name + "\" doesn't " +
         //         "validate against dataSchema.");
         //   }
@@ -363,9 +363,10 @@ public class EntityDeserializer extends StdDeserializer<Entity> {
               break;
             case POJO:
               log.warn("Pojo value for key \"{}\" in data object not supported, not writing key", key);
+              break;
             case STRING:
               log.debug("Writing key \"{}\" with STRING value \"{}\" in data object", key, value);
-              data.put(key, value.asText());
+              data.put(key, value.asString());
               break;
           }
         }
@@ -373,7 +374,7 @@ public class EntityDeserializer extends StdDeserializer<Entity> {
         entity.setData(data);
       }
     } else {
-      throw new JsonValidationException("Entity JSON didn't validate against entity schema");
+      throw new JsonValidationException("Entity JSON didn't validate against entity schema: " + errors);
     }
 
     return entity;
@@ -386,9 +387,6 @@ public class EntityDeserializer extends StdDeserializer<Entity> {
       final Path bundleFile = NaiveSorter.checksumToFiles.get(checksum);
       final Path directory = bundleFile == null ? Configuration.get(Setting.HOME) : bundleFile.getParent();
       filePath = directory.resolve(givenFilePath.getPath()).toFile();
-    }
-    if (!filePath.isFile()) {
-      log.warn("Path helper failed to find file: {}", filePath.getPath());
     }
     return filePath;
   }

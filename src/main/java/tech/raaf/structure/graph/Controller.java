@@ -132,7 +132,7 @@ public class Controller extends Instrument {
 
     public Builder addExitCodeToState(int exitCode, Result.State state) {
       Validate.inclusiveBetween(0, 255, exitCode);
-      Validate.notNull(state);
+      Objects.requireNonNull(state);
       exitCodeToState.put(exitCode, state);
       return this;
     }
@@ -227,7 +227,7 @@ public class Controller extends Instrument {
     if (maybeTemplate.isPresent()) {
       final ObjectNode template = maybeTemplate.get();
       if (template.has("path")) {
-        extension = Optional.of(Files.getFileExtension(template.get("path").asText()));
+        extension = Optional.of(Files.getFileExtension(template.get("path").asString()));
       } else {
         extension = Optional.empty();
       }

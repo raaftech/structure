@@ -125,7 +125,7 @@ public class EntityManagerTest extends TypeSchemaTest {
     assertEquals(1, data.size());
 
     // that element should be equal to the UUID of the entity we created
-    assertEquals(entityUuid, data.get(0).asText());
+    assertEquals(entityUuid, data.get(0).asString());
 
     // We're going to try to create the same entity again, this shouldn't result in any changes
     // send the message again, unchanged
@@ -169,7 +169,7 @@ public class EntityManagerTest extends TypeSchemaTest {
 
     // the traversal includes the start node
     Set<String> names = new HashSet<>();
-    data.forEach(e -> names.add(e.get("name").asText()));
+    data.forEach(e -> names.add(e.get("name").asString()));
     assertEquals(ImmutableSet.of("Software", "Component", "Type", "Result", "ComponentGroup", "Group"), names);
 
     // all items in that array should be deserializable to an Entity
@@ -219,7 +219,7 @@ public class EntityManagerTest extends TypeSchemaTest {
     assertEquals(1, data.size());
 
     // data should contain the UUID of the "Linux" type
-    assertEquals(linuxType.getUuid(), data.get(0).asText());
+    assertEquals(linuxType.getUuid(), data.get(0).asString());
 
     // retrieve "Linux" from the graph again, check if it was indeed updated
     Assertions.assertEquals(newName, nodeRepository.findByUuid(linuxType.getUuid()).getName());
@@ -341,7 +341,7 @@ public class EntityManagerTest extends TypeSchemaTest {
       mapper.createObjectNode().put("instance", os).put("isa", UNIX_LIKE)
     );
     assertFalse(result.has("error"), result.toString());
-    assertEquals("Instance [OperatingSystem] specialized to [UnixLike]", result.get("data").asText());
+    assertEquals("Instance [OperatingSystem] specialized to [UnixLike]", result.get("data").asString());
     assertEquals(ImmutableList.of("INSTANCE_OF -> " + UNIX_LIKE), outgoing(os));
     // The type labels follow the new type
     labels.add("type:UnixLike");
@@ -361,7 +361,7 @@ public class EntityManagerTest extends TypeSchemaTest {
     );
     assertEquals(
       "Invalid specialization requested. Type [Linux] is not in the specialization set of: " + "[OperatingSystem]",
-      result.get("error").asText()
+      result.get("error").asString()
     );
 
     String unknown = UUID.randomUUID().toString();
@@ -370,7 +370,7 @@ public class EntityManagerTest extends TypeSchemaTest {
       "specialize",
       mapper.createObjectNode().put("instance", os).put("isa", unknown)
     );
-    assertEquals("Could not find a type with uuid " + unknown, result.get("error").asText());
+    assertEquals("Could not find a type with uuid " + unknown, result.get("error").asString());
 
     // A type is not an instance
     result = exec(
@@ -378,7 +378,7 @@ public class EntityManagerTest extends TypeSchemaTest {
       "specialize",
       mapper.createObjectNode().put("instance", LINUX).put("isa", OPERATING_SYSTEM)
     );
-    assertEquals("Could not find an instance with uuid " + LINUX, result.get("error").asText());
+    assertEquals("Could not find an instance with uuid " + LINUX, result.get("error").asString());
 
     assertEquals(ImmutableList.of("INSTANCE_OF -> " + OPERATING_SYSTEM), outgoing(os));
   }
@@ -428,9 +428,9 @@ public class EntityManagerTest extends TypeSchemaTest {
         "group",
         mapper.createObjectNode().put("grouping", unknown).put("groupee", host)
       );
-      assertEquals("Group with UUlD \"" + unknown + "\" not found.", result.get("error").asText());
+      assertEquals("Group with UUlD \"" + unknown + "\" not found.", result.get("error").asString());
       result = exec(handler, "group", mapper.createObjectNode().put("grouping", group).put("groupee", unknown));
-      assertEquals("Node with UUlD \"" + unknown + "\" not found.", result.get("error").asText());
+      assertEquals("Node with UUlD \"" + unknown + "\" not found.", result.get("error").asString());
     }
     assertEquals(ImmutableList.of("INSTANCE_OF -> " + OPERATING_SYSTEM), outgoing(host));
   }
@@ -447,7 +447,7 @@ public class EntityManagerTest extends TypeSchemaTest {
 
     // The labels that ext/rest/common/models/instance.js sends
     ObjectNode result = exec(entityManager.delete(), "delete", deleteArgs(host, "Instance"));
-    assertEquals(host, result.path("data").asText(), result.toString());
+    assertEquals(host, result.path("data").asString(), result.toString());
     assertNull(nodeRepository.findByUuid(host));
     assertEquals(ImmutableList.of("INSTANCE_OF -> " + OPERATING_SYSTEM), outgoing(peer));
   }
@@ -462,7 +462,7 @@ public class EntityManagerTest extends TypeSchemaTest {
     // The labels that ext/rest/common/models/group.js sends. A member
     // without the Group label makes the delete unsafe.
     ObjectNode result = exec(entityManager.delete(), "delete", deleteArgs(group, "Group"));
-    assertEquals("Couldn't delete entity.", result.get("error").asText());
+    assertEquals("Couldn't delete entity.", result.get("error").asString());
     assertEquals(ImmutableList.of("INSTANCE_OF -> " + OPERATING_SYSTEM, "MEMBER_OF -> " + group), outgoing(host));
   }
 

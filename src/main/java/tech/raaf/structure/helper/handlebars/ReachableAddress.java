@@ -22,7 +22,7 @@ public class ReachableAddress implements Helper<ArrayNode> {
     while (iter.hasNext()) {
       JsonNode el = iter.next();
       if (el.get("reachable").asBoolean() == true) {
-        return el.get("addr").asText();
+        return el.get("addr").asString();
       }
     }
     return null;

@@ -11,6 +11,7 @@ import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import org.slf4j.Logger;
@@ -64,7 +65,8 @@ public abstract class GenericActor extends AbstractVerticle {
     }
   }
 
-  // Constructor.
+  // Constructor. It gets the handlers of the subclass by reflection.
+  @SuppressWarnings("this-escape")
   protected GenericActor() {
     // Initialize arrays.
     Method methods[] = this.getClass().getMethods();
@@ -158,15 +160,10 @@ public abstract class GenericActor extends AbstractVerticle {
     }
   }
 
-  // The validator.
+  // Log why a response is not valid; that is a fault of Structure
   public JsonNode validate(URI schemaDoc, JsonNode jsonDoc) {
-    JsonHelper.validateToSchema(schemaDoc, jsonDoc);
+    JsonHelper.validationErrors(schemaDoc, jsonDoc).forEach(error -> log.error("Invalid response: {}", error));
     return jsonDoc;
-  }
-
-  // Return whether JSON is valid according to JSON Schema
-  public boolean isValidJson(URI schemaDoc, JsonNode jsonDoc) {
-    return JsonHelper.validateToSchema(schemaDoc, jsonDoc);
   }
 
   // Publish a status on the status channel
@@ -256,18 +253,21 @@ public abstract class GenericActor extends AbstractVerticle {
     JsonObject response;
 
     // Without a valid msgh and args we can't dispatch, reply with an error
-    if (!isValidJson(schemaForRequest, request)) {
-      JsonNode error = JsonNodeFactory.instance.objectNode().put("error", "Request didn't validate against schema.");
+    final List<String> requestErrors = JsonHelper.validationErrors(schemaForRequest, request);
+    if (!requestErrors.isEmpty()) {
+      JsonNode error = JsonNodeFactory.instance
+        .objectNode()
+        .put("error", "Request didn't validate against schema: " + requestErrors);
       message.reply(new JsonObject(validate(schemaForResponse, response(request, error)).toString()));
       return;
     }
 
-    String msgh = request.get("msgh").asText();
+    String msgh = request.get("msgh").asString();
     JsonNode args = request.get("args");
 
     if (handlers.containsKey(msgh)) {
       // If we didn't get any args create an empty JSON object, so we don't get
-      // a NPE when calling isValidJson(schema, args)
+      // a NPE when we validate args
       if (args == null) {
         args = mapper.createObjectNode();
       }
@@ -281,7 +281,8 @@ public abstract class GenericActor extends AbstractVerticle {
         );
         schema = fallbackSchema;
       }
-      if (isValidJson(schema, args)) {
+      final List<String> argsErrors = JsonHelper.validationErrors(schema, args);
+      if (argsErrors.isEmpty()) {
         JsonNode result;
         try {
           result = handlerAndSchema.handler.exec(request);
@@ -295,7 +296,7 @@ public abstract class GenericActor extends AbstractVerticle {
       } else {
         JsonNode error = JsonNodeFactory.instance
           .objectNode()
-          .put("error", "Arguments didn't validate against schema.");
+          .put("error", "Arguments didn't validate against schema: " + argsErrors);
         response = new JsonObject(validate(schemaForResponse, response(request, error)).toString());
       }
     } else {

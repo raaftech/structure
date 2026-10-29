@@ -1,17 +1,11 @@
 package tech.raaf.structure.graph;
 
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Sets;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import java.util.function.BiFunction;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +17,7 @@ import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.node.ArrayNode;
 import tools.jackson.databind.node.ObjectNode;
 
-public class Component extends Instance implements Groupable {
+public final class Component extends Instance implements Groupable {
 
   // The child components of a new component. A persisted component reads them from the graph.
   private Set<Component> components;
@@ -47,13 +41,14 @@ public class Component extends Instance implements Groupable {
     if (type == null) {
       throw new IllegalArgumentException("Component constructor called with null as type.");
     }
-    if (!type.getSchema().validateJson(instanceDataCopy)) {
+    final List<String> errors = type.getSchema().validationErrors(instanceDataCopy);
+    if (!errors.isEmpty()) {
       throw new JsonValidationException(
-        "Cannot create component of type \"" + type.getName() + "\", JSON doesn't validate against it."
+        "Cannot create component of type \"" + type.getName() + "\", JSON doesn't validate against it: " + errors
       );
     }
-    final String name = instanceDataCopy.get("name").asText();
-    final String desc = instanceDataCopy.get("desc").asText();
+    final String name = instanceDataCopy.get("name").asString();
+    final String desc = instanceDataCopy.get("desc").asString();
 
     this.name = name;
     this.desc = desc;
@@ -159,38 +154,21 @@ public class Component extends Instance implements Groupable {
    * can be used to as an argument for an instrument.
    * @return JSON representation that can be used as an argument for a instrument.
    */
-  @SuppressWarnings("unchecked")
   public Set<JsonNode> toArguments() {
-    Set<JsonNode> arguments = new HashSet<>();
+    return getComponents()
+      .stream()
+      .flatMap(c -> arguments(c).stream())
+      .collect(Collectors.toSet());
+  }
 
-    arguments.add(super.toJson());
-    BiFunction<BiFunction, Instance, Set<JsonNode>> consumeArgsHelper = (f, node) -> {
-      final Set<Component> components;
-      if (node instanceof Component) {
-        components = ((Component) node).getComponents();
-      } else {
-        components = Collections.emptySet();
-      }
-      final Set<JsonNode> childSet;
-      if (!components.isEmpty()) {
-        childSet = components
-          .stream()
-          .flatMap(instance -> ((Set<JsonNode>) f.apply(f, instance)).stream())
-          .collect(Collectors.toSet());
-        // Stream.concat(components.stream(), configurations.stream()).forEach(n -> f.accept(f, n));
-      } else {
-        childSet = Collections.emptySet();
-      }
-      return Sets.union(childSet, ImmutableSet.of(node.toJson()));
-    };
-
-    // Lambda's can't refer to themselves using their variable name. That means consumeArgsHelper defined
-    // above cannot refer to itself by name. This sucks, because it's a recursive function.
-    // However, it can refer to itself if it's passed a reference to itself as an argument, so that's what's
-    // happening in consumeArgs. After calling consumeArgsHelper below, consumeArgsHelper is bound to 'f' in the lambda.
-    Function<Instance, Set<JsonNode>> consumeArgs = node -> consumeArgsHelper.apply(consumeArgsHelper, node);
-
-    return getComponents().stream().map(consumeArgs).flatMap(Collection::stream).collect(Collectors.toSet());
+  // The JSON of an instance and of its components, recursively
+  static Set<JsonNode> arguments(Instance instance) {
+    final Set<JsonNode> result = new HashSet<>();
+    result.add(instance.toJson());
+    if (instance instanceof Component component) {
+      component.getComponents().forEach(c -> result.addAll(arguments(c)));
+    }
+    return result;
   }
 
   public ObjectNode deepToJson(int dimension) {

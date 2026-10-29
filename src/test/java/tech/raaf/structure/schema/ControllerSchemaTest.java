@@ -71,7 +71,7 @@ public class ControllerSchemaTest extends SchemaTest {
   }
 
   private boolean valid(ObjectNode controller) {
-    return JsonHelper.validateToSchema(URI.create(schema()), controller);
+    return JsonHelper.validationErrors(URI.create(schema()), controller).isEmpty();
   }
 
   @Override

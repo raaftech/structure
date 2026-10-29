@@ -70,7 +70,7 @@ public class Instances extends Repository<Instance> {
       public JsonNode exec(JsonNode request) {
         ObjectNode result = mapper.createObjectNode();
         ObjectNode args = (ObjectNode) request.get("args");
-        String isa = args.get("node").asText();
+        String isa = args.get("node").asString();
         Type type = TYPE_REPOSITORY.findByUuid(isa);
         // Remove the node field so it won't interfere with the Type schema.
         args.remove("node");
@@ -81,8 +81,8 @@ public class Instances extends Repository<Instance> {
             final String uuid = UUID.randomUUID().toString();
             final ObjectNode json = mapper
               .createObjectNode()
-              .put("name", args.path("name").asText())
-              .put("desc", args.path("desc").asText());
+              .put("name", args.path("name").asString())
+              .put("desc", args.path("desc").asString());
             json
               .putObject("meta")
               .put("uuid", uuid)

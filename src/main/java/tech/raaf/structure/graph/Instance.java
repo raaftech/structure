@@ -42,9 +42,7 @@ public abstract class Instance extends Node {
 
   JsonNode instanceData;
 
-  /****************/
-  /* Constructors */
-  /****************/
+  // Constructors
 
   // TODO: Move to builder pattern, just too many constructors
 
@@ -56,14 +54,12 @@ public abstract class Instance extends Node {
   }
 
   public Instance(ObjectNode json, Type isa) {
-    this(json.get("name").asText(), json.get("desc").asText(), isa);
+    this(json.get("name").asString(), json.get("desc").asString(), isa);
     instanceData = json.deepCopy();
     setProperties(json);
   }
 
-  /******************/
-  /* Public Methods */
-  /******************/
+  // Public Methods
 
   public Type getInstanceOf() {
     if (instanceOf == null && persisted) {
@@ -77,9 +73,9 @@ public abstract class Instance extends Node {
    * @param properties The JSON to use for the properties.
    * @return The Instance setProperties was called on.
    */
-  protected Instance setProperties(ObjectNode properties) {
-    boolean success = JsonHelper.validateToSchema(instanceOf.getSchema().getAsObjectNode(), properties);
-    if (success) {
+  protected final Instance setProperties(ObjectNode properties) {
+    final List<String> errors = JsonHelper.validationErrors(instanceOf.getSchema().getAsObjectNode(), properties);
+    if (errors.isEmpty()) {
       // Name and desc are saved already, so we can remove those.
       properties.remove("name");
       properties.remove("desc");
@@ -91,7 +87,7 @@ public abstract class Instance extends Node {
         data.put(key, value.isContainer() ? value : mapper.convertValue(value, Object.class));
       }
     } else {
-      throw new RuntimeException("Supplied JSON did not match Type schema.");
+      throw new RuntimeException("Supplied JSON did not match Type schema: " + errors);
     }
 
     return this;
@@ -168,8 +164,9 @@ public abstract class Instance extends Node {
     final boolean newNode = !persisted;
     Graph.transaction(() -> {
       if (newNode) {
-        if (!getInstanceOf().getSchema().validateJson(instanceData)) {
-          throw new RuntimeException("Can't create instanceNode, missing properties.");
+        final List<String> errors = getInstanceOf().getSchema().validationErrors(instanceData);
+        if (!errors.isEmpty()) {
+          throw new RuntimeException("Can't create instanceNode, missing properties: " + errors);
         }
         data.putAll(getInstanceOf().getKv());
       }

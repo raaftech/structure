@@ -16,8 +16,8 @@ public class LeafNode<T> extends Node<T> {
 
   private InternalNode<T> parent;
   private Function<Set<T>, Set<T>> selection;
-  private Terminal success;
-  private Terminal failure;
+  private Terminal<T> success;
+  private Terminal<T> failure;
 
   /**
    * Our constructor.
@@ -26,8 +26,14 @@ public class LeafNode<T> extends Node<T> {
    * @param failure Terminal used when the selection produces null or an empty set.
    * @param selection A function implementing the selection.
    */
-  @SuppressWarnings("unchecked")
-  public LeafNode(InternalNode<T> parent, Terminal success, Terminal failure, Function<Set<T>, Set<T>> selection) {
+  // The parent only keeps this node, to give it input later
+  @SuppressWarnings("this-escape")
+  public LeafNode(
+    InternalNode<T> parent,
+    Terminal<T> success,
+    Terminal<T> failure,
+    Function<Set<T>, Set<T>> selection
+  ) {
     this.parent = parent;
     this.selection = selection;
     this.success = success;
@@ -42,7 +48,6 @@ public class LeafNode<T> extends Node<T> {
    * @param input
    */
   @Override
-  @SuppressWarnings("unchecked")
   public void consumeInput(Set<T> input) {
     Set<T> selectedSet = selection.apply(input);
 

@@ -45,19 +45,19 @@ public class NodeSerializerTest extends TypeSchemaTest {
     assertNotNull(entity.getFiles());
     JsonNode dataSchema = mapper.readTree((String) entity.getFiles().get("dataSchema"));
     assertNotNull(dataSchema);
-    assertEquals("text", dataSchema.get("encoding").asText());
-    assertEquals("json", dataSchema.get("format").asText());
-    assertEquals("../schemas/linux.schema.json", dataSchema.get("path").asText());
+    assertEquals("text", dataSchema.get("encoding").asString());
+    assertEquals("json", dataSchema.get("format").asString());
+    assertEquals("../schemas/linux.schema.json", dataSchema.get("path").asString());
   }
 
   @Test
   public void serializesTypeNamesInConstraintsAndInstanceRelations() {
     JsonNode controller = mapper.valueToTree(Context.getTypeRepository().findOneByName("Controller"));
-    assertEquals("Result", controller.at("/meta/constraints/PRODUCED/0/to").asText());
+    assertEquals("Result", controller.at("/meta/constraints/PRODUCED/0/to").asString());
 
     JsonNode invoke = mapper.valueToTree(Context.getInstrumentRepository().findOneByName("BashInvoke"));
-    assertEquals("Controller", invoke.at("/meta/relations/INSTANCE_OF/to/0").asText());
-    assertEquals("Bash", invoke.at("/meta/relations/PROVIDED_BY/to/0").asText());
+    assertEquals("Controller", invoke.at("/meta/relations/INSTANCE_OF/to/0").asString());
+    assertEquals("Bash", invoke.at("/meta/relations/PROVIDED_BY/to/0").asString());
   }
 
   @Test
@@ -82,6 +82,6 @@ public class NodeSerializerTest extends TypeSchemaTest {
     */
     assertTrue(!bashObj.get("meta").get("relations").has("PROVIDED_BY"));
     assertTrue(bashInvokeObj.get("meta").get("relations").has("PROVIDED_BY"));
-    assertEquals("outgoing", bashInvokeObj.get("meta").get("relations").get("PROVIDED_BY").get("direction").asText());
+    assertEquals("outgoing", bashInvokeObj.get("meta").get("relations").get("PROVIDED_BY").get("direction").asString());
   }
 }

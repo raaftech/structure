@@ -112,9 +112,9 @@ public class BundleConsistencyTest {
         for (JsonNode node : document.isArray() ? document : Arrays.asList(document)) {
           BundleEntity entity = new BundleEntity(path, node);
           entities.add(entity);
-          byUuid.put(node.path("meta").path("uuid").asText(), entity);
+          byUuid.put(node.path("meta").path("uuid").asString(), entity);
           if (entity.isType()) {
-            types.put(node.path("name").asText().toLowerCase(Locale.ROOT), entity);
+            types.put(node.path("name").asString().toLowerCase(Locale.ROOT), entity);
           }
         }
       }
@@ -131,7 +131,7 @@ public class BundleConsistencyTest {
   public void entityUuidsAreUniqueVersionFour() {
     Map<String, BundleEntity> seen = new LinkedHashMap<>();
     for (BundleEntity entity : entities) {
-      String value = entity.node.path("meta").path("uuid").asText();
+      String value = entity.node.path("meta").path("uuid").asString();
       try {
         UUID uuid = UUID.fromString(value);
         check(
@@ -152,7 +152,7 @@ public class BundleConsistencyTest {
     Map<String, BundleEntity> seen = new LinkedHashMap<>();
     for (BundleEntity entity : entities) {
       if (!entity.isType()) {
-        BundleEntity previous = seen.put(entity.node.path("name").asText(), entity);
+        BundleEntity previous = seen.put(entity.node.path("name").asString(), entity);
         check(previous == null, entity + ": duplicate instrument name, also in " + previous);
       }
     }
@@ -169,9 +169,9 @@ public class BundleConsistencyTest {
         .forEach(relation -> {
           JsonNode value = relation.getValue();
           boolean toType =
-            "outgoing".equals(value.path("direction").asText()) && Entity.outgoingToType.contains(relation.getKey());
+            "outgoing".equals(value.path("direction").asString()) && Entity.outgoingToType.contains(relation.getKey());
           for (JsonNode target : value.path("to")) {
-            checkTarget(entity, relation.getKey(), target.asText(), toType);
+            checkTarget(entity, relation.getKey(), target.asString(), toType);
           }
         });
       entity.node
@@ -180,7 +180,7 @@ public class BundleConsistencyTest {
         .properties()
         .forEach(constraint -> {
           for (JsonNode value : constraint.getValue()) {
-            checkTarget(entity, constraint.getKey(), value.path("to").asText(), true);
+            checkTarget(entity, constraint.getKey(), value.path("to").asString(), true);
           }
         });
     }
@@ -210,7 +210,7 @@ public class BundleConsistencyTest {
         .path("file")
         .properties()
         .forEach(file -> {
-          String value = file.getValue().path("path").asText();
+          String value = file.getValue().path("path").asString();
           Path path = entity.path.getParent().resolve(value).normalize();
           check(
             !value.isEmpty() && Files.isRegularFile(path),
@@ -230,7 +230,7 @@ public class BundleConsistencyTest {
   @Test
   public void schemaFileNamesMatchTypeNames() {
     for (BundleEntity type : types.values()) {
-      String expected = type.node.path("name").asText().toLowerCase(Locale.ROOT) + ".schema.json";
+      String expected = type.node.path("name").asString().toLowerCase(Locale.ROOT) + ".schema.json";
       check(
         type.schemaPath().getFileName().toString().equals(expected),
         type + ": expected schema file " + expected + ", got " + type.schemaPath().getFileName()
@@ -244,7 +244,7 @@ public class BundleConsistencyTest {
     String draft4 = SpecificationVersion.DRAFT_4.getDialectId();
     documents.forEach((path, schema) -> {
       if (path.toString().endsWith(".schema.json")) {
-        String value = schema.path("$schema").asText();
+        String value = schema.path("$schema").asString();
         check(draft4.equals(value), path + ": expected $schema " + draft4 + ", got " + value);
       }
     });
@@ -259,7 +259,7 @@ public class BundleConsistencyTest {
       check(errors.isEmpty(), type + ": invalid draft-04 schema: " + errors);
       walk(schema, "", (pointer, node) -> {
         if (node.has("$ref")) {
-          checkReference(type, schema, pointer, node.path("$ref").asText());
+          checkReference(type, schema, pointer, node.path("$ref").asString());
         }
       });
     }
@@ -271,12 +271,12 @@ public class BundleConsistencyTest {
     for (BundleEntity type : types.values()) {
       JsonNode properties = type.schema().path("properties");
       for (JsonNode required : type.schema().path("required")) {
-        check(properties.has(required.asText()), type + ": required property is absent: " + required.asText());
+        check(properties.has(required.asString()), type + ": required property is absent: " + required.asString());
       }
       JsonNode identity = type.node.path("meta").path("identity");
       if (!identity.isMissingNode()) {
         for (JsonNode name : identity.isArray() ? identity : Arrays.asList(identity)) {
-          check(properties.has(name.asText()), type + ": identity property is absent: " + name.asText());
+          check(properties.has(name.asString()), type + ": identity property is absent: " + name.asString());
         }
       }
     }
@@ -289,7 +289,7 @@ public class BundleConsistencyTest {
       if (path.toString().endsWith(".schema.json")) {
         walk(schema, "", (pointer, node) -> {
           if (node.has("pattern")) {
-            String pattern = node.path("pattern").asText();
+            String pattern = node.path("pattern").asString();
             check(
               !hasUngroupedAlternative(pattern),
               path + "#" + pointer + "/pattern: ungrouped alternative in " + pattern
@@ -326,9 +326,9 @@ public class BundleConsistencyTest {
   public void childSchemasIncludeParentPropertiesAndRequiredNames() {
     for (BundleEntity type : types.values()) {
       for (JsonNode target : type.node.path("meta").path("relations").path("ISA").path("to")) {
-        BundleEntity parent = findEntity(target.asText());
+        BundleEntity parent = findEntity(target.asString());
         if (parent == null || !parent.isType()) {
-          errors.add(type + ": missing parent type " + target.asText());
+          errors.add(type + ": missing parent type " + target.asString());
           continue;
         }
         JsonNode childSchema = type.schema();
@@ -339,15 +339,15 @@ public class BundleConsistencyTest {
           .forEach(name ->
             check(
               childSchema.path("properties").has(name),
-              type + ": missing property " + name + " from " + parent.node.path("name").asText()
+              type + ": missing property " + name + " from " + parent.node.path("name").asString()
             )
           );
         Set<String> required = new HashSet<>();
-        childSchema.path("required").forEach(name -> required.add(name.asText()));
+        childSchema.path("required").forEach(name -> required.add(name.asString()));
         for (JsonNode name : parentSchema.path("required")) {
           check(
-            required.contains(name.asText()),
-            type + ": missing required name " + name.asText() + " from " + parent.node.path("name").asText()
+            required.contains(name.asString()),
+            type + ": missing required name " + name.asString() + " from " + parent.node.path("name").asString()
           );
         }
       }
@@ -360,7 +360,7 @@ public class BundleConsistencyTest {
     check(entity != null, source + ": " + relation + " refers to missing entity " + target);
     if (toType) {
       check(
-        entity != null && entity.isType() && target.equals(entity.node.path("name").asText()),
+        entity != null && entity.isType() && target.equals(entity.node.path("name").asString()),
         source + ": " + relation + " must refer to a type by name, got " + target
       );
     }
@@ -468,7 +468,7 @@ public class BundleConsistencyTest {
     }
 
     private Path schemaPath() {
-      return path.getParent().resolve(node.path("file").path("dataSchema").path("path").asText()).normalize();
+      return path.getParent().resolve(node.path("file").path("dataSchema").path("path").asString()).normalize();
     }
 
     private JsonNode schema() {
@@ -479,7 +479,7 @@ public class BundleConsistencyTest {
 
     @Override
     public String toString() {
-      return RESOURCES.relativize(path) + " (" + node.path("name").asText() + ")";
+      return RESOURCES.relativize(path) + " (" + node.path("name").asString() + ")";
     }
   }
 }

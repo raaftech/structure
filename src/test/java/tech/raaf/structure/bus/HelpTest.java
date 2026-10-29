@@ -46,7 +46,7 @@ public class HelpTest extends TypeSchemaTest {
     for (GenericActor actor : actors) {
       JsonNode help = actor.help().exec(mapper.createObjectNode().put("msgh", "help")).path("result");
       for (String handler : actor.handlers.keySet()) {
-        if (!handler.equals(help.path(handler).path("name").asText())) {
+        if (!handler.equals(help.path(handler).path("name").asString())) {
           missing.add(actor.getClass().getSimpleName() + "." + handler);
         }
       }
