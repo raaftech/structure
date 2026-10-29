@@ -179,7 +179,7 @@ public final class Configuration {
 
   /**
    * Write the value of each setting to structure.json in state-dir, for
-   * the tools in ext. Only the owner can read the file, as it has the
+   * bundle payloads. Only the owner can read the file, as it has the
    * passwords.
    */
   public static void write() throws IOException {
@@ -442,7 +442,7 @@ public final class Configuration {
       "neo4j-http-uri",
       Type.TEXT,
       "http://localhost:7474",
-      "Neo4j Query API, for the tools in ext"
+      "Neo4j Query API"
     );
     public static final Setting<String> NEO4J_USER = new Setting<>("neo4j-user", Type.TEXT, "neo4j", "Neo4j user");
     public static final Setting<String> NEO4J_PASS = new Setting<>("neo4j-pass", Type.TEXT, null, "Neo4j password");

@@ -13,9 +13,7 @@ public class ProcessRunnerTest {
   public void runsInStateDir() throws Exception {
     final ProcessRunner runner = new ProcessRunner("pwd");
     runner.run();
-    while (runner.isRunning()) {
-      Thread.sleep(10);
-    }
+    assertEquals(0, runner.getProcess().waitFor());
     assertEquals(Configuration.get(Setting.STATE_DIR).toString(), runner.finish().stdout.get().trim());
   }
 

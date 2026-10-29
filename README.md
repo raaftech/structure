@@ -21,10 +21,17 @@ To build and run Structure, you need:
 
 - [Java](https://adoptium.net/) 25 or later.
 - [Maven](https://maven.apache.org/download.cgi), to build and run tests.
-- [Node.js](https://nodejs.org/) 22.4 or later with npm, to run the tools in
-  `ext/util`.
+- [Node.js](https://nodejs.org/) 22.4 or later on the Structure host, to run
+  bootstrap and the network, address and OS discovery instruments. npm installs
+  their JavaScript dependencies.
+- [Python](https://www.python.org/) on hosts where `PythonDiscover` runs. This
+  instrument uses bundle profiles to identify components through files, TCP
+  ports and command output. Its script supports Python 2 and Python 3.
 - [Neo4j](https://neo4j.com/download/) server 5.19 or later, to store the graph.
 - [Docker](https://docs.docker.com/get-docker/), to run the integration tests.
+
+Node.js and Python are needed only for these instruments. The Java backend,
+build and tests do not need them.
 
 ## Building
 
@@ -35,10 +42,12 @@ in `target/structure-*-fat.jar`:
 mvn package -DskipTests
 ```
 
-Then get the libraries of the tools in `ext`:
+Then install the dependencies of the bundle payloads:
 
 ```bash
-for dir in ext/util/*/; do (cd $dir && npm install); done
+for bundle in structure nmap os; do
+  (cd "src/main/resources/bundles/$bundle/payload" && npm ci)
+done
 ```
 
 ## Running
@@ -47,9 +56,8 @@ To run Structure, first start Neo4j and then Structure itself.
 
 ### Neo4j
 
-Structure needs a Neo4j server, version 5.19 or later for the Query API that the
-tools in `ext` use. Neo4j needs passwords of 8 or more characters. Set the
-password once, then start Neo4j:
+Structure needs a Neo4j server, version 5.19 or later. Neo4j needs passwords of
+8 or more characters. Set the password once, then start Neo4j:
 
 ```bash
 neo4j-admin dbms set-initial-password structure
@@ -71,14 +79,12 @@ keystore has a self-signed certificate for `localhost` and `https-host`.
 Structure exports the certificate to `structure.crt` and the key to
 `structure.key`, next to the keystore. Clients trust this certificate with
 `curl --cacert` or `NODE_EXTRA_CA_CERTS`. To make a new certificate, for example
-after you change `https-host`, delete the keystore. `mvn clean`
-also deletes it.
+after you change `https-host`, delete the keystore. `mvn clean` also deletes it.
 
 ### Structure REPL
 
-The old REPL in `ext/repl` requires the removed REST interface and cannot run.
-Issue [#468](https://github.com/raaftech/structure/issues/468) replaces it with
-a Java client for the event bus bridge.
+Issue [#468](https://github.com/raaftech/structure/issues/468) adds a Java
+client for the event bus bridge.
 
 ## Examples
 
@@ -101,14 +107,6 @@ which are the subclasses of `GraphTest`, and checks that line coverage is 60% or
 higher. The integration tests need Docker. They start their own Neo4j server
 from the image `neo4j:latest` with Testcontainers, and do not use the server of
 a normal run. Testcontainers removes the container when the tests stop.
-
-The address discovery tests need no services. Run them with
-`(cd ext/util/net-discovery && npm test)`.
-
-Run the shared utility tests with `node --test ext/util/*.test.js`. The HTTPS
-bridge test runs through `mvn verify` and needs the npm dependencies of all
-three utilities. It uses Neo4j and the real bridge, with fixed scan results
-in place of nmap and Ansible.
 
 ## Notes
 
@@ -138,17 +136,17 @@ has `addresses` and `handlers`. Each handler has `schemaUri`, its argument
 `schema` document and `help`, which is null if no help is available. Schema
 references are relative to `schemaUri`.
 
-Discovery includes node UUID addresses and type aliases. An actor registers
-its metadata when it starts and removes it when it stops. Call discovery again
-to refresh the command list. The `list` handler still returns deployment IDs.
+Discovery includes node UUID addresses and type aliases. An actor registers its
+metadata when it starts and removes it when it stops. Call discovery again to
+refresh the command list. The `list` handler still returns deployment IDs.
 
 ### User input
 
 The caller of an instrument can give values for the static arguments that have
 `canBeUserSupplied: true`, for example `username` of `OpenSshClientSendString`.
 Structure gives the other static arguments, and refuses a task when the caller
-gives one of these. Structure does not
-sanitize the values of the caller, but it quotes them:
+gives one of these. Structure does not sanitize the values of the caller, but it
+quotes them:
 
 - Templates for a Unix shell give each value through the `sh` helper, and
   templates for `cmd` through the `cmd` helper. Thus each value is one word of
@@ -198,7 +196,7 @@ first:
 | `--jks-file`       | `STRUCTURE_JKS_FILE`       | `structure.jks.file`       | `structure.jks`                     | JKS keystore for HTTPS, relative to `state-dir`; made if missing           |
 | `--jks-pass`       | `STRUCTURE_JKS_PASS`       | `structure.jks.pass`       | `changeit`                          | Keystore password                                                          |
 | `--neo4j-bolt-uri` | `STRUCTURE_NEO4J_BOLT_URI` | `structure.neo4j.bolt.uri` | `bolt://localhost:7687`             | Neo4j Bolt server                                                          |
-| `--neo4j-http-uri` | `STRUCTURE_NEO4J_HTTP_URI` | `structure.neo4j.http.uri` | `http://localhost:7474`             | Neo4j Query API, for the tools in ext                                      |
+| `--neo4j-http-uri` | `STRUCTURE_NEO4J_HTTP_URI` | `structure.neo4j.http.uri` | `http://localhost:7474`             | Neo4j Query API                                                            |
 | `--neo4j-user`     | `STRUCTURE_NEO4J_USER`     | `structure.neo4j.user`     | `neo4j`                             | Neo4j user                                                                 |
 | `--neo4j-pass`     | `STRUCTURE_NEO4J_PASS`     | `structure.neo4j.pass`     | required                            | Neo4j password                                                             |
 | `--https-host`     | `STRUCTURE_HTTPS_HOST`     | `structure.https.host`     | `localhost`                         | HTTPS server host; also used in schema URIs                                |
@@ -232,19 +230,19 @@ In all other cases, Structure runs in release mode.
 
 You can set Structure's home yourself, with `--home`, `STRUCTURE_HOME` or
 `-Dstructure.home`. Structure then uses that directory in place of the one of
-the jar, for all of this section: the mode, the bundles, the
-settings files and `state-dir`. A settings file can not set Structure's home, as
-Structure finds the settings files in Structure's home.
+the jar, for all of this section: the mode, the bundles, the settings files and
+`state-dir`. A settings file can not set Structure's home, as Structure finds
+the settings files in Structure's home.
 
 Relative paths in settings are relative to Structure's home. Structure never
 uses the current working directory, so you can start it from any directory. The
 mode tells Structure where its files are:
 
-|                     | Development mode                         | Release mode                                                                 |
-| ------------------- | ---------------------------------------- | ---------------------------------------------------------------------------- |
-| Bundles             | `src/main/resources` in Structure's home | Structure's home                                                             |
-| Settings files      | `src/main/resources` in Structure's home | `/etc/structure`, `etc` in Structure's home, `$XDG_CONFIG_HOME/structure`    |
-| `state-dir`         | `target` in Structure's home             | `/var/lib/structure`, `var` in Structure's home, `$XDG_STATE_HOME/structure` |
+|                | Development mode                         | Release mode                                                                 |
+| -------------- | ---------------------------------------- | ---------------------------------------------------------------------------- |
+| Bundles        | `src/main/resources` in Structure's home | Structure's home                                                             |
+| Settings files | `src/main/resources` in Structure's home | `/etc/structure`, `etc` in Structure's home, `$XDG_CONFIG_HOME/structure`    |
+| `state-dir`    | `target` in Structure's home             | `/var/lib/structure`, `var` in Structure's home, `$XDG_STATE_HOME/structure` |
 
 #### Settings files
 
@@ -282,43 +280,49 @@ Structure does not create `/var/lib/structure` or `var` in Structure's home. An
 installer or an administrator usually creates those, hopefully with correct
 owner and permission settings.
 
-#### Tools in ext
+#### Bundle payloads
 
-At each start, Structure writes the value of each setting to `structure.json` in
-`state-dir`. The tools in `ext` read their settings from this file, so start
-Structure first. A tool finds `state-dir` in this order, and uses the first
-match:
+At each start, Structure writes its settings to `structure.json` in `state-dir`.
+Payloads require `STRUCTURE_STATE_DIR` as an absolute path. They do not infer
+settings from the source directory. Structure sets this variable, `NODE_PATH`
+for the shared client in `core/payload`, and `NODE_EXTRA_CA_CERTS` for the
+server certificate when it starts a process.
 
-1. `STRUCTURE_STATE_DIR`, if it is set, relative to Structure's home;
-2. in development mode: `target` in Structure's home;
-3. the first of `/var/lib/structure` and `var` in Structure's home that has a
-   `structure.json` that the tool can read;
-4. `$XDG_STATE_HOME/structure`.
-
-If Structure uses another `state-dir`, set `STRUCTURE_STATE_DIR` for the tools
-too. Structure sets it for `ext/util/bootstrap`, which it starts itself.
+Templates use `bundleFile` to find a payload relative to the instrument JSON
+file. A rescan updates these paths, including for bundles outside Structure's
+home. Install each payload's npm dependencies after you place its bundle. The
+core bundle supplies the shared event bus client, settings and graph writer.
 
 #### Bootstrap and discovery
 
-The tools in `ext/util` connect directly to
-`wss://https-host:https-port/eventbus/websocket`. They use the settings in
-`structure.json` and trust the server certificate through `NODE_EXTRA_CA_CERTS`.
-Structure sets this variable when
-it starts a tool. For manual use, set it to the full path of `structure.crt`.
+Bootstrap creates the graph representation of the Structure host. The
+`StructureBootstrap` instrument is provided by the existing `Structure` type and
+gives `Detect`, the capability that discovers graph components. Before the host
+is registered, `selfDiscovery` starts this instrument's payload directly. It
+uses the bundle file path and the same process settings as normal instrument
+execution. After registration, normal instrument execution is available.
 
-Examples from Structure's home directory:
+`PythonDiscover` is also provided by `Structure`. It needs Python on its subject
+and uses bundle profiles to check files, TCP ports and command output.
+
+Payloads connect directly to `wss://https-host:https-port/eventbus/websocket`.
+For manual use from Structure's home, set the runtime paths explicitly:
 
 ```bash
-export NODE_EXTRA_CA_CERTS=$PWD/target/structure.crt
-node ext/util/bootstrap/main.js -c -h my-host.example
-node ext/util/net-discovery/main.js -c 192.0.2.0/24
-node ext/util/net-discovery/main.js -i 192.0.2.10
-node ext/util/os-discovery/main.js -i 192.0.2.10
+export STRUCTURE_STATE_DIR=$PWD/target
+export NODE_PATH=$PWD/src/main/resources/bundles/core/payload
+export NODE_EXTRA_CA_CERTS=$STRUCTURE_STATE_DIR/structure.crt
+node src/main/resources/bundles/structure/payload/main.js -c -h my-host.example
+node src/main/resources/bundles/nmap/payload/main.js -c 192.0.2.0/24
+node src/main/resources/bundles/nmap/payload/main.js -i 192.0.2.10
+node src/main/resources/bundles/os/payload/main.js -i 192.0.2.10
 ```
 
 The `-c` option of bootstrap uses compatibility mode without Ansible. OS
-discovery needs Ansible. Network and address discovery need nmap. A failed
-connection, scan or write makes the tool exit with a nonzero status.
+discovery runs on the Structure host and uses Ansible to inspect a remote host.
+Network discovery scans a CIDR range with nmap. Address discovery scans one
+existing IPv4 address. A failed connection, scan or write causes a nonzero exit
+status.
 
 #### Passwords
 

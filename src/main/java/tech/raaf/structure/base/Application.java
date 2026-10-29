@@ -109,7 +109,7 @@ public class Application {
       handleUnrecoverableLoadingError(e, 1, "Can't use keystore " + jks + ": " + e.getMessage());
     }
 
-    // The tools in ext read the settings from a file.
+    // Bundle payloads read the settings from a file.
     try {
       Configuration.write();
     } catch (IOException e) {

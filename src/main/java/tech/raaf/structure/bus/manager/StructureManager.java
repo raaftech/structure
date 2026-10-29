@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import tech.raaf.structure.annotations.SchemaPath;
 import tech.raaf.structure.base.Application;
 import tech.raaf.structure.base.Configuration;
-import tech.raaf.structure.base.Configuration.Setting;
 import tech.raaf.structure.base.Context;
 import tech.raaf.structure.bus.GenericActor;
 import tech.raaf.structure.bus.NodeActor;
@@ -19,6 +18,7 @@ import tech.raaf.structure.graph.Group;
 import tech.raaf.structure.graph.repositories.*;
 import tech.raaf.structure.helper.ProcessRunner;
 import tech.raaf.structure.helper.handlebars.Quote;
+import tech.raaf.structure.helper.loader.BundleFiles;
 import tech.raaf.structure.helper.loader.BundleLoader;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.node.ArrayNode;
@@ -186,22 +186,19 @@ public class StructureManager extends GenericActor {
   }
 
   private void discoverHost() {
-    // TODO: refactor, ugly as hell, but i had it ready so i'll reuse it.
     log.debug("Hostname is \"{}\"", Context.getHostname());
     Component host = Context.getInstanceRepository().findDnsName(Context.getHostname());
     if (host == null) {
       log.info("Structure is not registered in the database, now discovering itself");
-      final Path bootstrapLocation = Configuration.get(Setting.HOME).resolve("ext/util/bootstrap/main.js");
+      // Bootstrap runs directly until the host has a graph identity.
+      final Path bootstrapLocation = BundleFiles.resolve("03a764f2-a41f-47bb-bbe6-f28df84af398", "payload/main.js");
       if (!Files.exists(bootstrapLocation)) {
         final String error = "Bootstrap program not found at location \"" + bootstrapLocation + "\"";
         log.error(error);
         throw new RuntimeException(error);
       }
       ProcessRunner runner = new ProcessRunner(
-        "node " +
-          Quote.SH.quote(bootstrapLocation.toString()) +
-          " -c -h " +
-          Quote.SH.quote(Context.getHostname())
+        "node " + Quote.SH.quote(bootstrapLocation.toString()) + " -c -h " + Quote.SH.quote(Context.getHostname())
       );
       try {
         runner.run();

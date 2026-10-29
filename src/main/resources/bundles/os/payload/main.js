@@ -4,9 +4,9 @@ const cmd = require("command-line-args");
 const getUsage = require("command-line-usage");
 const ansibleLib = require("./ansibleLib");
 const Helper = require("./helper");
-const settings = require("./settings");
-const BusConnector = require("../busConnector");
-const persist = require("../persist");
+const settings = require("settings");
+const BusConnector = require("busConnector");
+const persist = require("persist");
 
 const optionDefs = [{ name: "ip", alias: "i", type: String }];
 const options = cmd(optionDefs);

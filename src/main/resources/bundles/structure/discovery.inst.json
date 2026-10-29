@@ -6,7 +6,7 @@
     "relations": {
       "PROVIDED_BY": {
         "direction": "outgoing",
-        "to": ["Python"]
+        "to": ["Structure"]
       },
       "APPLIES_TO": {
         "direction": "outgoing",
@@ -51,7 +51,7 @@
     "script": {
       "encoding": "text",
       "format": "script",
-      "path": "discovery.py"
+      "path": "payload/discovery.py"
     }
   }
 }

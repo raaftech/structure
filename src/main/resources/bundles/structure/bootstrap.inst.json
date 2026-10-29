@@ -1,0 +1,29 @@
+{
+  "name": "StructureBootstrap",
+  "desc": "Discover and register the Structure host.",
+  "meta": {
+    "uuid": "03a764f2-a41f-47bb-bbe6-f28df84af398",
+    "relations": {
+      "PROVIDED_BY": { "direction": "outgoing", "to": ["Structure"] },
+      "APPLIES_TO": { "direction": "outgoing", "to": ["Structure"] },
+      "GIVES_CAPABILITY": { "direction": "outgoing", "to": ["Detect"] },
+      "INSTANCE_OF": { "direction": "outgoing", "to": ["Controller"] }
+    }
+  },
+  "data": {
+    "instrumentType": "controller",
+    "subjectIsLocal": false,
+    "timeAllocated": 60000,
+    "arguments": {
+      "hostname": {
+        "value": { "from": "static", "type": "string", "strategy": "mustBeOne" },
+        "canBeUserSupplied": true,
+        "isOptional": false
+      }
+    }
+  },
+  "file": {
+    "dataSchema": { "encoding": "text", "format": "json", "path": "../core/schema/controller.schema.json" },
+    "templateFile": { "encoding": "text", "format": "hbs", "path": "bootstrap.hbs.sh" }
+  }
+}

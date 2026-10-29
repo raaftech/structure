@@ -4,8 +4,7 @@
   "description": "Structure network discovery with nmap",
   "main": "main.js",
   "scripts": {
-    "start": "node main.js",
-    "test": "node --test address.test.js"
+    "start": "node main.js"
   },
   "author": "Jasper Spoel <jasper@raaf.tech>",
   "license": "AGPL-3.0-only",

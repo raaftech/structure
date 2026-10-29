@@ -1,1 +1,1 @@
-node {{sh (structureHome)}}/ext/util/os-discovery/main.js -i {{sh ipaddress.addr}}
+node {{sh (bundleFile "../payload/main.js")}} -i {{sh ipaddress.addr}}

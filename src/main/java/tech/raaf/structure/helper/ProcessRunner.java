@@ -21,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tech.raaf.structure.base.Configuration;
 import tech.raaf.structure.base.Configuration.Setting;
+import tech.raaf.structure.helper.loader.BundleFiles;
 import tools.jackson.databind.node.ObjectNode;
 
 /**
@@ -41,6 +42,9 @@ public class ProcessRunner {
   public ProcessRunner(String command) {
     this.command = command;
     processBuilder.environment().put("STRUCTURE_STATE_DIR", Configuration.get(Setting.STATE_DIR).toString());
+    BundleFiles.clientDirectory().ifPresent(directory ->
+      processBuilder.environment().put("NODE_PATH", directory.toString())
+    );
     processBuilder
       .environment()
       .put("NODE_EXTRA_CA_CERTS", KeystoreHelper.crt(Configuration.get(Setting.JKS_FILE)).toString());

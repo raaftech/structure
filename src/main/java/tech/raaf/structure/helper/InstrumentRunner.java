@@ -34,6 +34,7 @@ import tech.raaf.structure.helper.classification.tree.RootNode;
 import tech.raaf.structure.helper.handlebars.Quote;
 import tech.raaf.structure.helper.handlebars.ReachableAddress;
 import tech.raaf.structure.helper.handlebars.SecretFile;
+import tech.raaf.structure.helper.loader.BundleFiles;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.node.ArrayNode;
@@ -504,7 +505,7 @@ public class InstrumentRunner {
     ObjectNode arguments = validateAndSelectArguments(sendFileController);
     final Optional<String> templateContent = sendFileController.getTemplateContent();
     if (arguments != null && templateContent.isPresent()) {
-      return applyTemplate(templateContent.get(), arguments);
+      return applyTemplate(templateContent.get(), arguments, Quote.SH, sendFileController);
     } else {
       throw new IllegalArgumentException(
         "Couldn't create a command to transfer the constructed file" +
@@ -758,7 +759,7 @@ public class InstrumentRunner {
     ObjectNode arguments = validateAndSelectArguments(sendStringInstrument);
     final Optional<String> templateContent = sendStringInstrument.getTemplateContent();
     if (arguments != null && templateContent.isPresent()) {
-      return applyTemplate(templateContent.get(), arguments);
+      return applyTemplate(templateContent.get(), arguments, Quote.SH, sendStringInstrument);
     } else {
       throw new IllegalArgumentException("Error while checking arguments.");
     }
@@ -802,7 +803,7 @@ public class InstrumentRunner {
     String script = applyTemplate(controllerTemplateContent.get(), context, quote);
     generatedArguments.put("script", script);
     context = validateAndSelectArguments(invokableInterpreter);
-    script = applyTemplate(interpreterTemplateContent.get(), context);
+    script = applyTemplate(interpreterTemplateContent.get(), context, Quote.SH, invokableInterpreter);
 
     final String scriptFilename = constructScriptFilename(
       origin.getName(),
@@ -860,10 +861,16 @@ public class InstrumentRunner {
 
   // As applyTemplate, but the sh helper quotes for the given shell
   private String applyTemplate(String template, JsonNode context, Quote sh) throws IOException {
+    return applyTemplate(template, context, sh, controller);
+  }
+
+  private String applyTemplate(String template, JsonNode context, Quote sh, Controller source) throws IOException {
     // Give each value as it is, the quote helpers make it safe for a shell
     Handlebars handlebars = new Handlebars().with(value -> value.toString());
     handlebars.registerHelper("reachable", ReachableAddress.INSTANCE);
-    handlebars.registerHelper("structureHome", (value, options) -> Configuration.get(Setting.HOME).toString());
+    handlebars.registerHelper("bundleFile", (value, options) ->
+      BundleFiles.resolve(source.getUuid(), value.toString()).toString()
+    );
     handlebars.registerHelper("sh", sh);
     handlebars.registerHelper("cmd", Quote.CMD);
     handlebars.registerHelper("secretFile", secretFile);

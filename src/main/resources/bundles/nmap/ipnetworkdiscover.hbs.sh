@@ -1,1 +1,1 @@
-node {{sh (structureHome)}}/ext/util/net-discovery/main.js -c {{sh ipnetwork.cidr}}
+node {{sh (bundleFile "payload/main.js")}} -c {{sh ipnetwork.cidr}}

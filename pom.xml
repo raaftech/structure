@@ -290,6 +290,7 @@
         <filtering>false</filtering>
         <excludes>
           <exclude>release.json</exclude>
+          <exclude>**/node_modules/**</exclude>
           <!-- Settings of a developer, with passwords; never in the jar. -->
           <exclude>config.properties</exclude>
         </excludes>

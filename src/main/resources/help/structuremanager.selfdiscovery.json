@@ -4,5 +4,5 @@
     "msgh": "selfDiscovery",
     "args": {}
   },
-  "description": "If the graph does not have the host of Structure, the selfDiscovery handler adds it with ext/util/bootstrap. It returns started and publishes completion or failure on the status address."
+  "description": "If the graph does not have the host of Structure, the selfDiscovery handler adds it with the StructureBootstrap payload. It returns started and publishes completion or failure on the status address."
 }

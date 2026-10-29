@@ -5,9 +5,9 @@ const getUsage = require("command-line-usage");
 const nmapLib = require("./nmapLib");
 const discoverAddress = require("./address");
 const Helper = require("./helper");
-const settings = require("./settings");
-const BusConnector = require("../busConnector");
-const persist = require("../persist");
+const settings = require("settings");
+const BusConnector = require("busConnector");
+const persist = require("persist");
 
 const optionDefs = [
   { name: "cidr", alias: "c", type: String },

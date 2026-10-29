@@ -264,7 +264,7 @@ public class BundleGraphTest extends TypeSchemaTest {
     assertJob(
       origin,
       instrument,
-      "node '" + home + "'/ext/util/net-discovery/main.js " + target,
+      "node '" + home + "/src/main/resources/bundles/nmap/payload/main.js' " + target,
       60000
     );
   }
@@ -331,18 +331,25 @@ public class BundleGraphTest extends TypeSchemaTest {
   // The discovery script runs on each Python, thus also on Python 2
   @Test
   public void pythonDiscoverNeedsPython() {
-    for (boolean python : Arrays.asList(false, true)) {
-      Component host = software("Linux");
-      if (python) {
-        host.addComponent(software("Python2x"));
+    for (boolean structure : Arrays.asList(false, true)) {
+      Component agentHost = software("Linux");
+      if (structure) {
+        agentHost.addComponent(software("Structure"));
       }
-      Group group = subject(host);
-      List<String> names = Context.getInstrumentRepository()
-        .findAvailableControllers(host.getUuid(), group.getUuid(), "Detect")
-        .stream()
-        .map(Controller::getName)
-        .collect(Collectors.toList());
-      assertEquals(python, names.contains("PythonDiscover"), "PythonDiscover with Python: " + python);
+      Group agent = subject(agentHost);
+      for (boolean python : Arrays.asList(false, true)) {
+        Component host = software("Linux");
+        if (python) {
+          host.addComponent(software("Python2x"));
+        }
+        subject(host);
+        List<String> names = Context.getInstrumentRepository()
+          .findAvailableControllers(host.getUuid(), agent.getUuid(), "Detect")
+          .stream()
+          .map(Controller::getName)
+          .collect(Collectors.toList());
+        assertEquals(structure && python, names.contains("PythonDiscover"));
+      }
     }
   }
 
