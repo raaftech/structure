@@ -1,8 +1,0 @@
-<div ng-click="$event.stopPropagation(); menuClicked = true; getInstruments(uuid)" style="float: right">
-  <span class="glyphicon glyphicon-menu-hamburger" aria-hidden="true"></span>
-</div>
-<ul class="tools" ng-show="menuClicked" ng-mouseleave="menuClicked = false">
-  <li ng-repeat="(instrument, uuidInstr) in instruments">
-    <a ng-click="$event.stopPropagation(); runInstrument({'uuid': uuid, 'uuidInstr': uuidInstr})">{{instrument}}</a>
-  </li>
-</ul>

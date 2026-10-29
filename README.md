@@ -23,7 +23,6 @@ To build and run Structure, you need:
 - [Maven](https://maven.apache.org/download.cgi), to build and run tests.
 - [Node.js](https://nodejs.org/) with npm, to run the REST server, the REPL and
   the tools in `ext`.
-- [Bower](https://bower.io/), to fetch the libs of the web frontend.
 - [Neo4j](https://neo4j.com/download/) server 5.19 or later, to store the graph.
 - [Docker](https://docs.docker.com/get-docker/), to run the integration tests.
 
@@ -36,10 +35,9 @@ in `target/structure-*-fat.jar`:
 mvn package -DskipTests
 ```
 
-Then get the libraries of the web frontend and of the tools in `ext`:
+Then get the libraries of the tools in `ext`:
 
 ```bash
-(cd src/main/resources/webroot && bower install)
 for dir in ext/rest ext/repl ext/util/*/; do (cd $dir && npm install); done
 ```
 
@@ -241,7 +239,7 @@ In all other cases, Structure runs in release mode.
 
 You can set Structure's home yourself, with `--home`, `STRUCTURE_HOME` or
 `-Dstructure.home`. Structure then uses that directory in place of the one of
-the jar, for all of this section: the mode, the bundles and the webroot, the
+the jar, for all of this section: the mode, the bundles, the
 settings files and `state-dir`. A settings file can not set Structure's home, as
 Structure finds the settings files in Structure's home.
 
@@ -251,7 +249,7 @@ mode tells Structure where its files are:
 
 |                     | Development mode                         | Release mode                                                                 |
 | ------------------- | ---------------------------------------- | ---------------------------------------------------------------------------- |
-| Bundles and webroot | `src/main/resources` in Structure's home | Structure's home                                                             |
+| Bundles             | `src/main/resources` in Structure's home | Structure's home                                                             |
 | Settings files      | `src/main/resources` in Structure's home | `/etc/structure`, `etc` in Structure's home, `$XDG_CONFIG_HOME/structure`    |
 | `state-dir`         | `target` in Structure's home             | `/var/lib/structure`, `var` in Structure's home, `$XDG_STATE_HOME/structure` |
 

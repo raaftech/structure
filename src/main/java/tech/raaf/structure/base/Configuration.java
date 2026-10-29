@@ -145,7 +145,7 @@ public final class Configuration {
   }
 
   /**
-   * The directory of the bundles and the webroot: src/main/resources in
+   * The directory of the bundles: src/main/resources in
    * home in development mode, and home in release mode.
    */
   public static Path resources() {

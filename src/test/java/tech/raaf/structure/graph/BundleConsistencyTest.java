@@ -76,7 +76,6 @@ public class BundleConsistencyTest {
     try (Stream<Path> paths = Files.walk(RESOURCES)) {
       files = paths
         .filter(Files::isRegularFile)
-        .filter(path -> !path.startsWith(RESOURCES.resolve("webroot")))
         .sorted()
         .collect(Collectors.toList());
     }

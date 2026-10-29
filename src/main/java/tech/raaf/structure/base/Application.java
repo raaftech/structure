@@ -164,8 +164,7 @@ public class Application {
       .addInboundPermitted(new PermittedOptions().setAddressRegex("tech\\.raaf\\.structure\\..*"))
       .addOutboundPermitted(new PermittedOptions().setAddressRegex("tech\\.raaf\\.structure\\..*"));
 
-    // If we're in unsafe mode allow direct access to everything
-    // on the eventbus and serve the debug page.
+    // In unsafe mode, allow access to all event bus addresses.
     if (Configuration.get(Setting.UNSAFE)) {
       log.debug("Setting InboundPermitted and OutboundPermitted to any address (\".*\")");
       bridgeOptions.addInboundPermitted(new PermittedOptions().setAddressRegex(".*"));
@@ -186,7 +185,6 @@ public class Application {
     router.route("/bundles/*").handler(files(Configuration.resources().resolve("bundles")));
     // The schema handler queries the graph, so it must not run on the event loop
     router.route("/schemas/:schema").blockingHandler(schemaManager::getSchema, false);
-    router.route("/*").handler(files(Configuration.resources().resolve("webroot")));
 
     // Setup indexes and constraints
     log.info("Creating indices.");

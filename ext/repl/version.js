@@ -30,7 +30,7 @@ const lock = {
 
 const json = pattern(/^(  "version": ")([^"]+)(")/m);
 
-const files = execFileSync("git", ["ls-files", "*package.json", "*package-lock.json", "*bower.json"], {
+const files = execFileSync("git", ["ls-files", "*package.json", "*package-lock.json"], {
   cwd: root,
   encoding: "utf8",
 })
