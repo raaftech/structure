@@ -2,9 +2,7 @@
   "name": "selfDiscovery",
   "synopsis": {
     "msgh": "selfDiscovery",
-    "args": {
-      "token": "REST API token"
-    }
+    "args": {}
   },
-  "description": "If the graph does not have the host of Structure, the selfDiscovery handler adds it with ext/util/bootstrap. It returns the token."
+  "description": "If the graph does not have the host of Structure, the selfDiscovery handler adds it with ext/util/bootstrap. It returns started and publishes completion or failure on the status address."
 }

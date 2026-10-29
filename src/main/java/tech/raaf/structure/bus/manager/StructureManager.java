@@ -124,16 +124,14 @@ public class StructureManager extends GenericActor {
     return new MessageHandler() {
       @Override
       public JsonNode exec(JsonNode request) {
-        JsonNode args = request.get("args");
         final ObjectNode result = mapper.createObjectNode();
-        final String token = args.get("token").asString();
 
-        // Unordered, so that the discovery does not stop the message handlers
+        // Run discovery jobs in order while message handlers continue.
         vertx
           .executeBlocking(() -> {
-            selfDiscovery(token);
+            discoverHost();
             return null;
-          }, false)
+          }, true)
           .onComplete(resultHandler -> {
             if (resultHandler.failed()) {
               if (Configuration.isTraceModeOn()) {
@@ -149,7 +147,7 @@ public class StructureManager extends GenericActor {
             }
           });
 
-        return response(request, result.put("data", token));
+        return response(request, result.put("data", "started"));
       }
 
       @Override
@@ -187,7 +185,7 @@ public class StructureManager extends GenericActor {
     };
   }
 
-  private void selfDiscovery(String token) {
+  private void discoverHost() {
     // TODO: refactor, ugly as hell, but i had it ready so i'll reuse it.
     log.debug("Hostname is \"{}\"", Context.getHostname());
     Component host = Context.getInstanceRepository().findDnsName(Context.getHostname());
@@ -203,9 +201,7 @@ public class StructureManager extends GenericActor {
         "node " +
           Quote.SH.quote(bootstrapLocation.toString()) +
           " -c -h " +
-          Quote.SH.quote(Context.getHostname()) +
-          " -t " +
-          Quote.SH.quote(token)
+          Quote.SH.quote(Context.getHostname())
       );
       try {
         runner.run();
@@ -215,9 +211,13 @@ public class StructureManager extends GenericActor {
           scriptFinishedWaitCycles++;
         }
         ProcessRunner.ProcessResult result = runner.finish();
-        System.out.println(result.stdout.get());
+        result.stdout.ifPresent(System.out::println);
+        if (result.returnCode.orElse(1) != 0) {
+          throw new IllegalStateException("Bootstrap failed: " + result.stderr.orElse("No error output"));
+        }
       } catch (IOException | InterruptedException e) {
-        e.printStackTrace();
+        if (e instanceof InterruptedException) Thread.currentThread().interrupt();
+        throw new IllegalStateException("Bootstrap failed", e);
       }
       // Wait a second so debug messages are done
       int newNodesWaitCycles = 0;

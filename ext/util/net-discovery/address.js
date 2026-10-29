@@ -3,8 +3,8 @@
 const graphLib = require("./graphLib");
 const nmapLib = require("./nmapLib");
 
-module.exports = async function discoverAddress(rest, helper, ip, args = "-p22,80") {
-  const address = await rest.getInstanceByPredicate("addr", ip);
+module.exports = async function discoverAddress(client, helper, ip, args = "-p22,80") {
+  const address = await client.getInstanceByPredicate("addr", ip);
   if (!address.meta) {
     throw new Error("No IP address found for " + ip);
   }
@@ -16,10 +16,10 @@ module.exports = async function discoverAddress(rest, helper, ip, args = "-p22,8
   address.data.reachable = reachable;
 
   if (host && host.hostname) {
-    let dns = await rest.getInstanceByPredicate("dnsname", host.hostname);
+    let dns = await client.getInstanceByPredicate("dnsname", host.hostname);
     if (!dns.meta) {
       dns = helper.createDnsname(host.hostname);
-      const created = await rest.createInstance({ entities: [dns] });
+      const created = await client.createInstance({ entities: [dns] });
       if (!Array.isArray(created) || !created.includes(dns.meta.uuid)) {
         throw new Error("Could not create DNS name: " + JSON.stringify(created));
       }
@@ -32,7 +32,7 @@ module.exports = async function discoverAddress(rest, helper, ip, args = "-p22,8
   }
 
   if (changed) {
-    const updated = await rest.updateInstance({ entities: [address] });
+    const updated = await client.updateInstance({ entities: [address] });
     if (!Array.isArray(updated) || !updated.includes(address.meta.uuid)) {
       throw new Error("Could not update IP address: " + JSON.stringify(updated));
     }

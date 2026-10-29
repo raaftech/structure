@@ -264,7 +264,7 @@ public class BundleGraphTest extends TypeSchemaTest {
     assertJob(
       origin,
       instrument,
-      "node '" + home + "'/ext/util/net-discovery/main.js " + target + " -t 'test-token'",
+      "node '" + home + "'/ext/util/net-discovery/main.js " + target,
       60000
     );
   }
@@ -273,7 +273,7 @@ public class BundleGraphTest extends TypeSchemaTest {
     origin.save();
     Controller controller = (Controller) Context.getInstrumentRepository().findOneByName(instrument);
     assertNotNull(controller);
-    ObjectNode arguments = mapper.createObjectNode().put("token", "test-token");
+    ObjectNode arguments = mapper.createObjectNode();
     InstrumentRunner runner = new InstrumentRunner(origin, controller, arguments, "discovery");
     assertEquals(1, runner.getJobs().size());
     assertEquals(command, runner.getJobs().get(0).getLeft());

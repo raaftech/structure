@@ -1,1 +1,1 @@
-node {{sh (structureHome)}}/ext/util/net-discovery/main.js -c {{sh ipnetwork.cidr}} -t {{sh token}}
+node {{sh (structureHome)}}/ext/util/net-discovery/main.js -c {{sh ipnetwork.cidr}}

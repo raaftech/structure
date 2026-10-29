@@ -37,15 +37,6 @@
         },
         "canBeUserSupplied": false,
         "isOptional": false
-      },
-      "token": {
-        "value": {
-          "from": "static",
-          "type": "string",
-          "strategy": "mustBeOne"
-        },
-        "canBeUserSupplied": true,
-        "isOptional": false
       }
     }
   },

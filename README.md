@@ -21,8 +21,8 @@ To build and run Structure, you need:
 
 - [Java](https://adoptium.net/) 25 or later.
 - [Maven](https://maven.apache.org/download.cgi), to build and run tests.
-- [Node.js](https://nodejs.org/) with npm, to run the REST server, the REPL and
-  the tools in `ext`.
+- [Node.js](https://nodejs.org/) 22.4 or later with npm, to run the REST server,
+  the REPL and the tools in `ext`.
 - [Neo4j](https://neo4j.com/download/) server 5.19 or later, to store the graph.
 - [Docker](https://docs.docker.com/get-docker/), to run the integration tests.
 
@@ -128,6 +128,11 @@ a normal run. Testcontainers removes the container when the tests stop.
 The address discovery tests need no services. Run them with
 `(cd ext/util/net-discovery && npm test)`.
 
+Run the shared utility tests with `node --test ext/util/*.test.js`. The HTTPS
+bridge test runs through `mvn verify` and needs the npm dependencies of all
+three utilities. It uses Neo4j and the real bridge, with fixed scan results
+in place of nmap and Ansible.
+
 ## Notes
 
 What follows are various notes about various aspects of Structure.
@@ -163,9 +168,9 @@ to refresh the command list. The `list` handler still returns deployment IDs.
 ### User input
 
 The caller of an instrument can give values for the static arguments that have
-`canBeUserSupplied: true`, for example `username` of `OpenSshClientSendString`
-or `token` of `IpNetworkDiscover`. Structure gives the other static arguments,
-and refuses a task when the caller gives one of these. Structure does not
+`canBeUserSupplied: true`, for example `username` of `OpenSshClientSendString`.
+Structure gives the other static arguments, and refuses a task when the caller
+gives one of these. Structure does not
 sanitize the values of the caller, but it quotes them:
 
 - Templates for a Unix shell give each value through the `sh` helper, and
@@ -319,6 +324,28 @@ If Structure uses another `state-dir`, set `STRUCTURE_STATE_DIR` for the tools
 too. Structure sets it for `ext/util/bootstrap`, which it starts itself. The
 REST server keeps its users in `state-dir`, so it must be able to write there.
 The REPL keeps its cache in `state-dir` too.
+
+#### Bootstrap and discovery
+
+The tools in `ext/util` connect directly to
+`wss://https-host:https-port/eventbus/websocket`. They need no REST server or
+REST API token. They use the settings in `structure.json` and trust the server
+certificate through `NODE_EXTRA_CA_CERTS`. Structure sets this variable when
+it starts a tool. For manual use, set it to the full path of `structure.crt`.
+
+Examples from Structure's home directory:
+
+```bash
+export NODE_EXTRA_CA_CERTS=$PWD/target/structure.crt
+node ext/util/bootstrap/main.js -c -h my-host.example
+node ext/util/net-discovery/main.js -c 192.0.2.0/24
+node ext/util/net-discovery/main.js -i 192.0.2.10
+node ext/util/os-discovery/main.js -i 192.0.2.10
+```
+
+The `-c` option of bootstrap uses compatibility mode without Ansible. OS
+discovery needs Ansible. Network and address discovery need nmap. A failed
+connection, scan or write makes the tool exit with a nonzero status.
 
 #### Passwords
 

@@ -358,7 +358,7 @@ vorpal.command("discover <cidr>", "Discover items in the network").action(functi
         }
       })
       .then((network) => {
-        return rest.runInstrument(network.meta.uuid, "IpNetworkDiscover", { token: rest.getToken() });
+        return rest.runInstrument(network.meta.uuid, "IpNetworkDiscover", {});
       })
       .then((result) => {
         self.log(result);

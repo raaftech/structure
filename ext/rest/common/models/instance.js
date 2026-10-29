@@ -205,7 +205,7 @@ module.exports = function (Instance) {
   Instance.runCapability = function (instanceUuid, capability, token, callback) {
     const nodeAddress = baseAddress(["node", instanceUuid]);
     evBus
-      .sendEvent(nodeAddress, "runCapability", { capability: capability, arguments: { token: token } })
+      .sendEvent(nodeAddress, "runCapability", { capability: capability, arguments: {} })
       .then((result) => callback(null, resultFetcher(result)))
       .catch((ex) => callback(ex));
   };

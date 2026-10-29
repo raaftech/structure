@@ -57,4 +57,11 @@ public class InstanceRepository extends GenericRepository<Instance> {
       ImmutableMap.of("hostname", hostname)
     );
   }
+
+  public Instance findOneByData(String property, String value) {
+    return one(
+      "MATCH (n:Instance) WHERE n[$property] = $value RETURN n LIMIT 1",
+      ImmutableMap.of("property", "data-" + property, "value", value)
+    );
+  }
 }

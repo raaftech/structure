@@ -31,7 +31,7 @@ function setup(t, hosts = [{ ip, hostname: "host.example" }]) {
     [addressUuid, address],
     [dnsUuid, dns],
   ]);
-  const rest = {
+  const client = {
     getInstanceByPredicate: t.mock.fn(async (property, value) =>
       structuredClone([...entities.values()].find((entity) => entity.data[property] === value) || {}),
     ),
@@ -51,12 +51,12 @@ function setup(t, hosts = [{ ip, hostname: "host.example" }]) {
     }),
   };
   const scan = t.mock.method(nmapLib, "nmapScan", async () => hosts);
-  const run = () => discoverAddress(rest, new Helper([dnsType]), ip, "-p22,80");
-  return { entities, address, dns, rest, scan, run };
+  const run = () => discoverAddress(client, new Helper([dnsType]), ip, "-p22,80");
+  return { entities, address, dns, client, scan, run };
 }
 
 test("address discovery updates its origin and attaches the discovered DNS name", async (t) => {
-  const { entities, rest, scan, run } = setup(t);
+  const { entities, client, scan, run } = setup(t);
   assert.deepEqual(await run(), [addressUuid]);
   assert.deepEqual(scan.mock.calls[0].arguments, [ip, "-p22,80"]);
   const address = entities.get(addressUuid);
@@ -66,84 +66,84 @@ test("address discovery updates its origin and attaches the discovered DNS name"
   const dns = [...entities.values()].find((entity) => entity.data.dnsname === "host.example");
   assert.deepEqual(address.meta.relations.HAS.to, [dnsUuid, dns.meta.uuid]);
   assert.equal(entities.size, 3);
-  assert.equal(rest.createInstance.mock.callCount(), 1);
-  assert.equal(rest.updateInstance.mock.callCount(), 1);
+  assert.equal(client.createInstance.mock.callCount(), 1);
+  assert.equal(client.updateInstance.mock.callCount(), 1);
 });
 
 test("repeated discovery reuses the DNS name and keeps one relation", async (t) => {
-  const { entities, rest, run } = setup(t);
+  const { entities, client, run } = setup(t);
   await run();
   const first = structuredClone([...entities.values()]);
   await run();
   assert.deepEqual([...entities.values()], first);
-  assert.equal(rest.createInstance.mock.callCount(), 1);
-  assert.equal(rest.updateInstance.mock.callCount(), 1);
+  assert.equal(client.createInstance.mock.callCount(), 1);
+  assert.equal(client.updateInstance.mock.callCount(), 1);
 });
 
 test("an address with no DNS name gets no placeholder DNS node", async (t) => {
-  const { entities, rest, run } = setup(t, [{ ip }]);
+  const { entities, client, run } = setup(t, [{ ip }]);
   await run();
   assert.equal(entities.get(addressUuid).data.reachable, true);
   assert.deepEqual(entities.get(addressUuid).meta.relations.HAS.to, [dnsUuid]);
-  assert.equal(rest.createInstance.mock.callCount(), 0);
+  assert.equal(client.createInstance.mock.callCount(), 0);
 });
 
 test("an empty scan marks the existing address unreachable", async (t) => {
-  const { entities, address, rest, run } = setup(t, []);
+  const { entities, address, client, run } = setup(t, []);
   address.data.reachable = true;
   await run();
   assert.equal(entities.get(addressUuid).data.reachable, false);
   assert.equal(entities.size, 2);
-  assert.equal(rest.createInstance.mock.callCount(), 0);
+  assert.equal(client.createInstance.mock.callCount(), 0);
 });
 
 test("an absent scan target is marked unreachable and keeps its relations", async (t) => {
-  const { entities, address, rest, run } = setup(t, [{ ip: "192.0.2.11", hostname: "other.example" }]);
+  const { entities, address, client, run } = setup(t, [{ ip: "192.0.2.11", hostname: "other.example" }]);
   address.data.reachable = true;
   await run();
   assert.equal(entities.get(addressUuid).data.reachable, false);
   assert.deepEqual(entities.get(addressUuid).meta.relations, address.meta.relations);
   assert.equal(entities.size, 2);
-  assert.equal(rest.createInstance.mock.callCount(), 0);
+  assert.equal(client.createInstance.mock.callCount(), 0);
 });
 
 test("a missing origin stops discovery before the scan", async (t) => {
-  const { entities, rest, scan, run } = setup(t);
+  const { entities, client, scan, run } = setup(t);
   entities.delete(addressUuid);
   await assert.rejects(run(), /No IP address found/);
   assert.equal(scan.mock.callCount(), 0);
-  assert.equal(rest.createInstance.mock.callCount(), 0);
-  assert.equal(rest.updateInstance.mock.callCount(), 0);
+  assert.equal(client.createInstance.mock.callCount(), 0);
+  assert.equal(client.updateInstance.mock.callCount(), 0);
 });
 
 test("a scan failure leaves the origin unchanged", async (t) => {
-  const { entities, rest, scan, run } = setup(t);
+  const { entities, client, scan, run } = setup(t);
   const before = structuredClone([...entities.values()]);
   scan.mock.mockImplementation(async () => {
     throw new Error("Scan failed");
   });
   await assert.rejects(run(), /Scan failed/);
   assert.deepEqual([...entities.values()], before);
-  assert.equal(rest.createInstance.mock.callCount(), 0);
-  assert.equal(rest.updateInstance.mock.callCount(), 0);
+  assert.equal(client.createInstance.mock.callCount(), 0);
+  assert.equal(client.updateInstance.mock.callCount(), 0);
 });
 
 test("a failed DNS creation cannot add a relation to a missing node", async (t) => {
-  const { rest, run } = setup(t);
-  rest.createInstance.mock.mockImplementation(async () => "DNS creation failed");
+  const { client, run } = setup(t);
+  client.createInstance.mock.mockImplementation(async () => "DNS creation failed");
   await assert.rejects(run(), /DNS creation failed/);
-  assert.equal(rest.updateInstance.mock.callCount(), 0);
+  assert.equal(client.updateInstance.mock.callCount(), 0);
 });
 
 test("an address update error fails discovery", async (t) => {
-  const { rest, run } = setup(t, [{ ip }]);
-  rest.updateInstance.mock.mockImplementation(async () => ["Address update failed"]);
+  const { client, run } = setup(t, [{ ip }]);
+  client.updateInstance.mock.mockImplementation(async () => ["Address update failed"]);
   await assert.rejects(run(), /Address update failed/);
 });
 
 test("the CLI requires one nonempty scan target", () => {
   for (const args of [[], ["-i", ip, "-c", "192.0.2.0/24"], ["-i", ""]]) {
-    const result = spawnSync(process.execPath, [require.resolve("./main"), ...args, "-t", "test-token"], {
+    const result = spawnSync(process.execPath, [require.resolve("./main"), ...args], {
       encoding: "utf8",
     });
     assert.equal(result.status, 1, result.stderr);

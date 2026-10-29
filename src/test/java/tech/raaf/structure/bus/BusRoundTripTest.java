@@ -182,7 +182,7 @@ public class BusRoundTripTest extends TypeSchemaTest {
         }
       });
     try {
-      JsonNode reply = send(STRUCTURE, "selfDiscovery", "{\"token\": \"bus-token\"}");
+      JsonNode reply = send(STRUCTURE, "selfDiscovery", "{}");
       assertTrue(reply.path("result").path("error").isMissingNode(), reply.toString());
       assertEquals("done", done.get(10, TimeUnit.SECONDS).getString("status"));
     } finally {

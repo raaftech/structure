@@ -13,7 +13,6 @@
     "command-line-args": "^3.0.4",
     "command-line-usage": "^3.0.8",
     "fuzzy-matching": "^0.4.3",
-    "node-fetch": "^1.6.3",
     "node-nmap": "^3.0.3",
     "ramda": "^0.23.0",
     "uuid": "^3.0.1"

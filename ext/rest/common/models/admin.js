@@ -16,7 +16,7 @@ const getStatusData = helper.getResultData(["body", "result"]);
 module.exports = function (Admin) {
   Admin.bootstrap = function (token, callback) {
     evBus
-      .sendEvent(managerAddress, "selfDiscovery", { token: token })
+      .sendEvent(managerAddress, "selfDiscovery", {})
       .then((result) => callback(null, getResultData(result)))
       .catch((ex) => callback(ex));
   };
