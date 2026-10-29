@@ -36,6 +36,20 @@ public class StructureManager extends GenericActor {
   ComponentRepository componentRepository = Context.getComponentRepository();
   InstrumentRepository instrumentRepository = Context.getInstrumentRepository();
 
+  public MessageHandler discover() {
+    return new MessageHandler() {
+      @Override
+      public JsonNode exec(JsonNode request) {
+        return response(request, mapper.createObjectNode().set("data", actorMetadata()));
+      }
+
+      @Override
+      public JsonNode help(JsonNode request) {
+        return jsonFromResource("help/structuremanager.discover.json");
+      }
+    };
+  }
+
   public MessageHandler list() {
     return new MessageHandler() {
       public JsonNode exec(JsonNode request) {

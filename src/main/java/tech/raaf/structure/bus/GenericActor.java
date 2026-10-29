@@ -48,6 +48,7 @@ public abstract class GenericActor extends AbstractVerticle {
   private static final String statusAddress = "tech.raaf.structure.bus.status";
   // The worker pool of the actors that use the graph.
   private static final String POOL = "structure-actors";
+  private static final String ACTORS = "structure-command-discovery";
 
   // Options to deploy an actor that uses the graph.
   public static DeploymentOptions worker() {
@@ -138,6 +139,42 @@ public abstract class GenericActor extends AbstractVerticle {
   // Get the name of the bus (used with registerHandler).
   public String getActorName() {
     return this.getClass().getName().toLowerCase();
+  }
+
+  protected List<String> addresses() {
+    return List.of(getActorName());
+  }
+
+  // Read metadata from each active deployment in this Vert.x instance.
+  protected JsonNode actorMetadata() {
+    ObjectNode actors = mapper.createObjectNode();
+    vertx
+      .sharedData()
+      .<String, JsonObject>getLocalMap(ACTORS)
+      .entrySet()
+      .stream()
+      .sorted(Map.Entry.comparingByKey())
+      .forEach(entry -> actors.set(entry.getKey(), convertFromJsonObject(entry.getValue())));
+    return actors;
+  }
+
+  private JsonObject metadata() {
+    ObjectNode actor = mapper.createObjectNode();
+    actor.set("addresses", mapper.valueToTree(addresses()));
+    ObjectNode commands = actor.putObject("handlers");
+    JsonNode request = mapper.createObjectNode().put("msgh", "help");
+    handlers
+      .entrySet()
+      .stream()
+      .sorted(Map.Entry.comparingByKey())
+      .forEach(entry -> {
+        HandlerSchema handler = entry.getValue();
+        ObjectNode command = commands.putObject(entry.getKey());
+        command.put("schemaUri", handler.schemaPath.toString());
+        command.set("schema", jsonFromResource(handler.schemaPath.getPath().substring(1)));
+        command.set("help", handler.handler.help(request));
+      });
+    return new JsonObject(actor.toString());
   }
 
   // The response helper.
@@ -241,8 +278,17 @@ public abstract class GenericActor extends AbstractVerticle {
   // Logs and registers the actors on the bus.
   @Override
   public void start() {
-    log.debug("Listen for {} on addr: {}", this.getClass().getSimpleName(), getActorName());
-    vertx.eventBus().consumer(getActorName(), this::handleMessage);
+    JsonObject metadata = metadata();
+    for (String address : addresses()) {
+      log.debug("Listen for {} on addr: {}", this.getClass().getSimpleName(), address);
+      vertx.eventBus().consumer(address, this::handleMessage);
+    }
+    vertx.sharedData().<String, JsonObject>getLocalMap(ACTORS).put(deploymentID(), metadata);
+  }
+
+  @Override
+  public void stop() {
+    vertx.sharedData().getLocalMap(ACTORS).remove(deploymentID());
   }
 
   // Our message handler.

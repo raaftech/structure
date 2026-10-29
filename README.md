@@ -147,6 +147,19 @@ Bundle loading adds new entities and updates entities whose checksum changed. It
 retains graph entities that are absent from disk. Removal of a bundle file does
 not delete its entities or their instances from the graph.
 
+### Command discovery
+
+Send `{"msgh":"discover","args":{}}` to
+`tech.raaf.structure.bus.manager.structuremanager` through the event bus bridge.
+The reply has `result.data`, an object keyed by deployment ID. Each deployment
+has `addresses` and `handlers`. Each handler has `schemaUri`, its argument
+`schema` document and `help`, which is null if no help is available. Schema
+references are relative to `schemaUri`.
+
+Discovery includes node UUID addresses and type aliases. An actor registers
+its metadata when it starts and removes it when it stops. Call discovery again
+to refresh the command list. The `list` handler still returns deployment IDs.
+
 ### User input
 
 The caller of an instrument can give values for the static arguments that have

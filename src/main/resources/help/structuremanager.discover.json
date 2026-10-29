@@ -1,0 +1,8 @@
+{
+  "name": "discover",
+  "synopsis": {
+    "msgh": "discover",
+    "args": {}
+  },
+  "description": "Returns active actor deployments with their callable addresses and handlers. Each handler has its argument schema URI, schema document and help. Missing help is null. Metadata is removed when an actor stops."
+}

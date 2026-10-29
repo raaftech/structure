@@ -1,7 +1,7 @@
 package tech.raaf.structure.bus;
 
 import io.vertx.core.Verticle;
-import io.vertx.core.eventbus.MessageConsumer;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import org.apache.commons.lang3.Validate;
@@ -22,14 +22,6 @@ public abstract class NodeActor<T extends Node> extends GenericActor {
   protected static final String startOfAddress = "tech.raaf.structure.bus.node.";
   public static final String SHAREDMAP_ID = "nodeActors";
 
-  // We keep a reference to the consumers in case we
-  // need to reconfigure or close them later
-  @SuppressWarnings("unused")
-  private MessageConsumer<Object> primaryConsumer;
-
-  @SuppressWarnings("unused")
-  private MessageConsumer<Object> secondaryConsumer;
-
   private NodeRepository nodeRepository = Context.getNodeRepository();
 
   protected String uuid;
@@ -44,14 +36,22 @@ public abstract class NodeActor<T extends Node> extends GenericActor {
 
   @Override
   public void start() {
-    primaryConsumer = vertx.eventBus().consumer(primaryConsumerAddress, this::handleMessage);
+    super.start();
     vertx.sharedData().getLocalMap(SHAREDMAP_ID).put(primaryConsumerAddress, deploymentID());
-    log.debug("Listen for {} on addr: {}", this.getClass().getSimpleName(), primaryConsumerAddress);
-    if (getSecondaryAddress() != null) {
-      String secondaryConsumerAddress = startOfAddress + getSecondaryAddress();
-      secondaryConsumer = vertx.eventBus().consumer(secondaryConsumerAddress, this::handleMessage);
-      log.debug("Listen for {} on addr: {}", this.getClass().getSimpleName(), secondaryConsumerAddress);
-    }
+  }
+
+  @Override
+  protected List<String> addresses() {
+    String secondary = getSecondaryAddress();
+    return secondary == null
+      ? List.of(primaryConsumerAddress)
+      : List.of(primaryConsumerAddress, startOfAddress + secondary);
+  }
+
+  @Override
+  public void stop() {
+    super.stop();
+    vertx.sharedData().getLocalMap(SHAREDMAP_ID).remove(primaryConsumerAddress, deploymentID());
   }
 
   @SuppressWarnings("unchecked")
