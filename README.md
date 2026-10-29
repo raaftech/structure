@@ -21,8 +21,8 @@ To build and run Structure, you need:
 
 - [Java](https://adoptium.net/) 25 or later.
 - [Maven](https://maven.apache.org/download.cgi), to build and run tests.
-- [Node.js](https://nodejs.org/) 22.4 or later with npm, to run the REST server,
-  the REPL and the tools in `ext`.
+- [Node.js](https://nodejs.org/) 22.4 or later with npm, to run the tools in
+  `ext/util`.
 - [Neo4j](https://neo4j.com/download/) server 5.19 or later, to store the graph.
 - [Docker](https://docs.docker.com/get-docker/), to run the integration tests.
 
@@ -38,13 +38,12 @@ mvn package -DskipTests
 Then get the libraries of the tools in `ext`:
 
 ```bash
-for dir in ext/rest ext/repl ext/util/*/; do (cd $dir && npm install); done
+for dir in ext/util/*/; do (cd $dir && npm install); done
 ```
 
 ## Running
 
-To run Structure we need to first start Neo4j and after that Structure itself,
-the REST server and optionally the REPL.
+To run Structure, first start Neo4j and then Structure itself.
 
 ### Neo4j
 
@@ -68,46 +67,24 @@ java -jar target/structure-*-fat.jar --log-level debug --unsafe
 
 Structure always uses HTTPS. At the first start, it makes the keystore
 `structure.jks` in `state-dir`, which is `target` in development mode. The
-keystore has a self-signed certificate for `localhost`, `https-host` and
-`rest-host`. Structure exports the certificate to `structure.crt` and the key to
+keystore has a self-signed certificate for `localhost` and `https-host`.
+Structure exports the certificate to `structure.crt` and the key to
 `structure.key`, next to the keystore. Clients trust this certificate with
 `curl --cacert` or `NODE_EXTRA_CA_CERTS`. To make a new certificate, for example
-after you change `https-host` or `rest-host`, delete the keystore. `mvn clean`
+after you change `https-host`, delete the keystore. `mvn clean`
 also deletes it.
-
-### Structure REST Server
-
-Start the REST server in a second terminal. It listens at `rest-host` and
-`rest-port`, with the key and certificate of Structure:
-
-```bash
-export NODE_EXTRA_CA_CERTS=$PWD/target/structure.crt
-cd ext/rest && npm start
-```
 
 ### Structure REPL
 
-Start the REPL in a third terminal, and type `help` for its commands:
-
-```bash
-export NODE_EXTRA_CA_CERTS=$PWD/target/structure.crt
-cd ext/repl && npm start
-```
+The old REPL in `ext/repl` requires the removed REST interface and cannot run.
+Issue [#468](https://github.com/raaftech/structure/issues/468) replaces it with
+a Java client for the event bus bridge.
 
 ## Examples
 
 Some requests to try:
 
 ```bash
-# The names of all types, from the REST server
-curl -s --cacert target/structure.crt https://localhost:3443/api/Entities | jq -r '.[].name'
-
-# One type, by name
-curl -s --cacert target/structure.crt https://localhost:3443/api/Entities/name/Linux | jq '{name, desc}'
-
-# The five newest instances
-curl -s --cacert target/structure.crt https://localhost:3443/api/Instances/last/5 | jq -r '.[].name'
-
 # The JSON schema of a type, from Structure
 curl -s --cacert target/structure.crt https://localhost:8443/schemas/linux.schema.json | jq .
 
@@ -226,8 +203,6 @@ first:
 | `--neo4j-pass`     | `STRUCTURE_NEO4J_PASS`     | `structure.neo4j.pass`     | required                            | Neo4j password                                                             |
 | `--https-host`     | `STRUCTURE_HTTPS_HOST`     | `structure.https.host`     | `localhost`                         | HTTPS server host; also used in schema URIs                                |
 | `--https-port`     | `STRUCTURE_HTTPS_PORT`     | `structure.https.port`     | `8443`                              | HTTPS server port                                                          |
-| `--rest-host`      | `STRUCTURE_REST_HOST`      | `structure.rest.host`      | `localhost`                         | Host of the REST server in ext/rest                                        |
-| `--rest-port`      | `STRUCTURE_REST_PORT`      | `structure.rest.port`      | `3443`                              | Port of the REST server in ext/rest                                        |
 | `--worker-timeout` | `STRUCTURE_WORKER_TIMEOUT` | `structure.worker.timeout` | `300`                               | Maximum worker run time, in seconds                                        |
 | `--job-pool`       | `STRUCTURE_JOB_POOL`       | `structure.job.pool`       | 4 × CPU cores                       | Maximum number of jobs that run at the same time                           |
 
@@ -321,16 +296,14 @@ match:
 4. `$XDG_STATE_HOME/structure`.
 
 If Structure uses another `state-dir`, set `STRUCTURE_STATE_DIR` for the tools
-too. Structure sets it for `ext/util/bootstrap`, which it starts itself. The
-REST server keeps its users in `state-dir`, so it must be able to write there.
-The REPL keeps its cache in `state-dir` too.
+too. Structure sets it for `ext/util/bootstrap`, which it starts itself.
 
 #### Bootstrap and discovery
 
 The tools in `ext/util` connect directly to
-`wss://https-host:https-port/eventbus/websocket`. They need no REST server or
-REST API token. They use the settings in `structure.json` and trust the server
-certificate through `NODE_EXTRA_CA_CERTS`. Structure sets this variable when
+`wss://https-host:https-port/eventbus/websocket`. They use the settings in
+`structure.json` and trust the server certificate through `NODE_EXTRA_CA_CERTS`.
+Structure sets this variable when
 it starts a tool. For manual use, set it to the full path of `structure.crt`.
 
 Examples from Structure's home directory:

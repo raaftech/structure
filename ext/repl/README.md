@@ -1,26 +1,5 @@
 # Structure REPL
 
-## How to run
-
-    From the directory where main.js lives do:
-
-    npm i
-    npm start
-
-The REPL reads the settings of Structure, such as the hosts and ports of
-Structure and the REST server, and the Neo4j user and password, from
-structure.json in the state-dir of Structure (see the README of Structure).
-Structure writes this file at each start, so start Structure first. The REPL
-keeps its cache, tui.cache, in the same state-dir.
-
-Structure and the REST server have the self-signed certificate of Structure. To
-trust it, set NODE_EXTRA_CA_CERTS to structure.crt:
-
-    NODE_EXTRA_CA_CERTS=../../target/structure.crt npm start
-
-## Notes:
-
-- type help inside the REPL for the available commands
-- the REPL supports tab-completion (even for options to a command)
-- the REPL supports persistent history
-  - subsequently arrow-up is a relevant key ;)
+This REPL requires the removed REST interface and cannot run.
+Issue [#468](https://github.com/raaftech/structure/issues/468) replaces it with
+a Java client for the event bus bridge.

@@ -169,7 +169,8 @@ public class ConfigurationTest {
     assertEquals("secret", json.get("neo4j-pass").asString());
     assertEquals("http://localhost:7474", json.get("neo4j-http-uri").asString());
     assertEquals(8443, json.get("https-port").asInt());
-    assertEquals(3443, json.get("rest-port").asInt());
+    assertFalse(json.has("rest-host"));
+    assertFalse(json.has("rest-port"));
     assertEquals(
       Configuration.get(Setting.HOME).resolve("target/structure.jks").toString(),
       json.get("jks-file").asString()
@@ -184,14 +185,14 @@ public class ConfigurationTest {
   public void load() throws Exception {
     final Path system = Files.createFile(folder.resolve("system.properties"));
     final Path user = Files.createFile(folder.resolve("user.properties"));
-    Files.write(system, Arrays.asList("structure.https.port=9443", "structure.rest.port=9444"));
+    Files.write(system, Arrays.asList("structure.https.port=9443", "structure.https.host=example.org"));
     Files.write(user, Arrays.asList("structure.https.port=10443"));
     // A later file has priority, and a missing file is no error.
     final Path missing = folder.resolve("missing.properties");
     final List<Path> loadedFiles = new ArrayList<>();
     final Properties properties = Configuration.load(Arrays.asList(system, user, missing), loadedFiles);
     assertEquals("10443", properties.getProperty("structure.https.port"));
-    assertEquals("9444", properties.getProperty("structure.rest.port"));
+    assertEquals("example.org", properties.getProperty("structure.https.host"));
     assertEquals(Arrays.asList(system, user), loadedFiles);
   }
 
@@ -245,6 +246,8 @@ public class ConfigurationTest {
   @Test
   public void unknownOption() {
     assertThrows(ParseException.class, () -> Configuration.parse(new String[] { "-h" }));
+    assertThrows(ParseException.class, () -> Configuration.parse(new String[] { "--rest-host", "localhost" }));
+    assertThrows(ParseException.class, () -> Configuration.parse(new String[] { "--rest-port", "3443" }));
   }
 
   @Test

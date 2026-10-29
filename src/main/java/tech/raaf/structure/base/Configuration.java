@@ -458,18 +458,6 @@ public final class Configuration {
       "8443",
       "HTTPS server port"
     );
-    public static final Setting<String> REST_HOST = new Setting<>(
-      "rest-host",
-      Type.TEXT,
-      "localhost",
-      "Host of the REST server in ext/rest"
-    );
-    public static final Setting<Integer> REST_PORT = new Setting<>(
-      "rest-port",
-      Type.INTEGER,
-      "3443",
-      "Port of the REST server in ext/rest"
-    );
     // Vert.x takes nanoseconds.
     public static final Setting<Long> WORKER_TIMEOUT = new Setting<>(
       "worker-timeout",
@@ -503,8 +491,6 @@ public final class Configuration {
         NEO4J_PASS,
         HTTPS_HOST,
         HTTPS_PORT,
-        REST_HOST,
-        REST_PORT,
         WORKER_TIMEOUT,
         JOB_POOL
       )

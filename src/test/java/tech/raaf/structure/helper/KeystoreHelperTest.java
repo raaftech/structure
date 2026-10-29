@@ -41,14 +41,10 @@ public class KeystoreHelperTest {
   public void make() throws Exception {
     // Also makes the missing directory.
     final Path jks = folder.resolve("target/structure.jks");
-    KeystoreHelper.make(jks, "changeit", "structure.example", "rest.example", "localhost", "structure.example");
+    KeystoreHelper.make(jks, "changeit", "structure.example", "localhost", "structure.example");
     assertEquals("rw-------", PosixFilePermissions.toString(Files.getPosixFilePermissions(jks)));
     assertEquals(
-      Arrays.asList(
-        Arrays.asList(2, "localhost"),
-        Arrays.asList(2, "structure.example"),
-        Arrays.asList(2, "rest.example")
-      ),
+      Arrays.asList(Arrays.asList(2, "localhost"), Arrays.asList(2, "structure.example")),
       names(jks)
     );
     // The exported key is the key in the keystore.

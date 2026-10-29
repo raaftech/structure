@@ -101,7 +101,7 @@ public class Application {
     final int port = Configuration.get(Setting.HTTPS_PORT);
     try {
       if (!Files.exists(jks)) {
-        KeystoreHelper.make(jks, jksPass, host, Configuration.get(Setting.REST_HOST));
+        KeystoreHelper.make(jks, jksPass, host);
         log.info("Made keystore {}; clients can trust {}", jks, KeystoreHelper.crt(jks));
       }
       KeystoreHelper.trust(jks, jksPass);

@@ -34,11 +34,9 @@ import tech.raaf.structure.schema.TypeSchemaTest;
 import tools.jackson.databind.JsonNode;
 
 /**
- * Sends each address and msgh pair that the REST models in
- * ext/rest/common/models send, and checks that the reply passes
- * response.schema.json and has no error. The managers, the
- * repositories and a few NodeActors run on the test Vert.x
- * instance. The writes commit.
+ * Sends requests to managers, repositories and nodes. Checks each reply
+ * against response.schema.json and checks that it has no error.
+ * The actors run on the test Vert.x instance. The writes commit.
  */
 public class BusRoundTripTest extends TypeSchemaTest {
 
