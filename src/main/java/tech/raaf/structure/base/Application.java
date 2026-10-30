@@ -153,16 +153,7 @@ public class Application {
       })
     );
 
-    // Setup vertx with the maximum worker run time, in ns.
-    // Vert.x caches files in state-dir, not in the working directory.
-    vertx = Vertx.vertx(
-      new VertxOptions()
-        .setMaxWorkerExecuteTime(Configuration.get(Setting.WORKER_TIMEOUT))
-        .setFileSystemOptions(
-          new FileSystemOptions().setFileCacheDir(Configuration.get(Setting.STATE_DIR).resolve("vertx").toString())
-        )
-    );
-
+    vertx = createVertx();
     Context.setVertx(vertx);
 
     // Enable bridging on /eventbus, and add some in- and outbound permissions.
@@ -224,6 +215,20 @@ public class Application {
 
     init(vertx);
     log.info("Structure is running at {}", Context.getSchemaNamespace());
+  }
+
+  /**
+   * A Vert.x instance with the maximum worker run time, in ns. Vert.x
+   * caches files in state-dir, not in java.io.tmpdir.
+   */
+  public static Vertx createVertx() {
+    return Vertx.vertx(
+      new VertxOptions()
+        .setMaxWorkerExecuteTime(Configuration.get(Setting.WORKER_TIMEOUT))
+        .setFileSystemOptions(
+          new FileSystemOptions().setFileCacheDir(Configuration.get(Setting.STATE_DIR).resolve("vertx").toString())
+        )
+    );
   }
 
   // A handler that serves the files in a directory.

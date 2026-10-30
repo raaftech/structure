@@ -23,6 +23,7 @@ import java.util.Base64;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import tech.raaf.structure.base.Application;
 
 public class KeystoreHelperTest {
 
@@ -73,7 +74,7 @@ public class KeystoreHelperTest {
     final Path jks = folder.resolve("structure.jks");
     KeystoreHelper.make(jks, "changeit", "localhost");
     KeystoreHelper.trust(jks, "changeit");
-    final Vertx vertx = Vertx.vertx();
+    final Vertx vertx = Application.createVertx();
     try {
       final HttpServer listening = vertx
         .createHttpServer(

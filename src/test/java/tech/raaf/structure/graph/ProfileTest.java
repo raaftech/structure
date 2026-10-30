@@ -24,7 +24,7 @@ public class ProfileTest extends GraphTest {
 
   @BeforeEach
   public void setup() throws Exception {
-    final Vertx vertx = Vertx.vertx();
+    final Vertx vertx = Application.createVertx();
     Context.setVertx(vertx);
     HttpServer httpServer = vertx.createHttpServer();
     Router router = Router.router(vertx);

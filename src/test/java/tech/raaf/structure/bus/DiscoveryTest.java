@@ -13,6 +13,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import tech.raaf.structure.annotations.SchemaPath;
+import tech.raaf.structure.base.Application;
 import tech.raaf.structure.bus.manager.StructureManager;
 import tech.raaf.structure.graph.Type;
 import tech.raaf.structure.helper.JsonHelper;
@@ -46,7 +47,7 @@ public class DiscoveryTest {
 
   @BeforeEach
   public void start() {
-    vertx = Vertx.vertx();
+    vertx = Application.createVertx();
     StructureManager manager = new StructureManager();
     managerAddress = manager.getActorName();
     vertx.deployVerticle(manager, GenericActor.worker()).await();
