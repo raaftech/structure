@@ -2,14 +2,12 @@ package tech.raaf.structure.helper.loader;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -47,7 +45,7 @@ public class NaiveSorter {
   private final ObjectMapper mapper = JsonMapper.builder()
     .enable(DeserializationFeature.FAIL_ON_TRAILING_TOKENS)
     .build();
-  private final Set<Path> bundlePaths;
+  private final Path bundleDir;
   public static final Map<String, Path> checksumToFiles = new HashMap<>();
   private final NodeRepository nodeRepository = Context.getNodeRepository();
 
@@ -59,16 +57,10 @@ public class NaiveSorter {
   private static final String UUID = "uuid";
   private static final String NAME = "name";
 
-  public NaiveSorter(Set<Path> bundlePaths) {
+  public NaiveSorter(Path bundleDir) {
     // Relative to home, never to the working directory.
     final Path home = Configuration.get(Setting.HOME);
-    this.bundlePaths =
-      bundlePaths == null
-        ? Collections.emptySet()
-        : bundlePaths
-            .stream()
-            .map(path -> home.resolve(path).normalize())
-            .collect(Collectors.toSet());
+    this.bundleDir = home.resolve(bundleDir).normalize();
   }
 
   /**
@@ -99,13 +91,7 @@ public class NaiveSorter {
   }
 
   private ObjectNode putPath(ObjectNode node, Path file) {
-    // Never absolute, so that the graph stays valid when Structure moves:
-    // relative to home, or else to the bundle path of the file.
-    final Path home = Configuration.get(Setting.HOME);
-    final Path base = file.startsWith(home)
-      ? home
-      : bundlePaths.stream().filter(file::startsWith).findFirst().orElse(file.getParent());
-    final Path path = base.relativize(file);
+    final Path path = bundleDir.relativize(file);
     if (node.has(META)) {
       ((ObjectNode) node.get(META)).put(PATH, path.toString());
     } else {
@@ -313,34 +299,19 @@ public class NaiveSorter {
   }
 
   /**
-   * Split bundlePath into Paths and for each path perform globfile
+   * Read all entity JSON files in the bundle directory.
    *
-   * @return an ArrayNode containing all json found under the bundle-paths
+   * @return The entities from the bundle directory.
    */
   public List<JsonNode> readAllJson() {
     ArrayList<JsonNode> unsorted = new ArrayList<>();
-    Set<Path> jsonFilePaths = new LinkedHashSet<>();
+    List<Path> jsonFilePaths = globFiles(bundleDir, "**/*.{type,inst}.json");
     Map<String, Path> uuidToFiles = new HashMap<>();
-
-    for (Path bundlePathEntry : bundlePaths) {
-      jsonFilePaths.addAll(globFiles(bundlePathEntry, "**/*.{type,inst}.json"));
-    }
 
     for (Path jsonFilePath : jsonFilePaths) {
       try {
         JsonNode jsonFile = mapper.readTree(jsonFilePath.toFile());
-        String fromBundle = null;
-        // the next piece of code finds the bundle name where the json originates from
-        for (Path s : bundlePaths) {
-          if (jsonFilePath.startsWith(s)) {
-            int bundleIndex = s.endsWith(File.separator) ? 0 : 1;
-            fromBundle = jsonFilePath
-              .toString()
-              .replace(s.toString(), "")
-              .split(Pattern.quote(File.separator))[bundleIndex];
-            break;
-          }
-        }
+        String fromBundle = bundleDir.relativize(jsonFilePath).getName(0).toString();
 
         // array of tokens
         if (jsonFile != null && jsonFile.isArray()) {
@@ -473,7 +444,10 @@ public class NaiveSorter {
       .filter(n -> nodeRepository.findByUuid(n.get(META).get(UUID).asString()) != null)
       .filter(n -> {
         Node node = nodeRepository.findByUuid(n.get(META).get(UUID).asString());
-        return !node.getChecksum().equals(n.get(META).get("checksum").asString());
+        return (
+          !Objects.equals(node.getChecksum(), n.get(META).get("checksum").asString()) ||
+          !Objects.equals(node.getPath(), n.get(META).get(PATH).asString())
+        );
       })
       .collect(Collectors.toList());
 

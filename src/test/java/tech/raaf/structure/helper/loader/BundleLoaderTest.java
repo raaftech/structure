@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import tech.raaf.structure.GraphTest;
+import tech.raaf.structure.base.Context;
 import tech.raaf.structure.graph.Graph;
 import tech.raaf.structure.helper.JsonHelper;
 import tools.jackson.databind.ObjectMapper;
@@ -34,7 +35,7 @@ public class BundleLoaderTest extends GraphTest {
       mapper.writeValue(bundle.resolve(entity.path("name").asString() + ".type.json").toFile(), entity);
     }
 
-    new BundleLoader(ImmutableSet.of(temporaryFolder)).loadTypes();
+    new BundleLoader(temporaryFolder).loadTypes();
 
     Set<String> actual = Graph.query(
       "MATCH (a:Type)-[c:CONSTRAINTS]->(b:Type) " +
@@ -51,6 +52,20 @@ public class BundleLoaderTest extends GraphTest {
       ),
       actual
     );
+  }
+
+  @Test
+  public void reloadUpdatesStoredPathWithUnchangedChecksum() throws Exception {
+    ObjectNode root = (ObjectNode) JsonHelper.jsonFromResource("bundles/simple/root.type.json");
+    ((ObjectNode) root.path("file").path("dataSchema")).remove("path");
+    Path bundle = Files.createDirectory(temporaryFolder.resolve("simple"));
+    new ObjectMapper().writeValue(bundle.resolve("root.type.json").toFile(), root);
+    new BundleLoader(temporaryFolder).loadTypes();
+    Graph.query("MATCH (n:Type {name: 'Type'}) SET n.path = 'old/bundles/simple/root.type.json'");
+
+    new BundleLoader(temporaryFolder).loadTypes();
+
+    assertEquals("simple/root.type.json", Context.getNodeRepository().findOneByName("Type").getPath());
   }
 
   private void constraint(ObjectNode entity, String relation, String target) {

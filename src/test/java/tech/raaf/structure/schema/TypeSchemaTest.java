@@ -1,6 +1,5 @@
 package tech.raaf.structure.schema;
 
-import com.google.common.collect.ImmutableSet;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServer;
 import io.vertx.ext.web.Router;
@@ -50,7 +49,7 @@ public abstract class TypeSchemaTest extends GraphTest {
     // The location of the bundle to test
     if (bundleLoader == null) {
       final Path testBundle = Paths.get("src/main/resources/bundles/");
-      bundleLoader = new BundleLoader(ImmutableSet.of(testBundle));
+      bundleLoader = new BundleLoader(testBundle);
     }
     bundleLoader.load();
   }

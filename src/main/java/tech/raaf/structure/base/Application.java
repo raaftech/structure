@@ -126,7 +126,7 @@ public class Application {
       Configuration.get(Setting.HOME),
       Configuration.isDevEnv() ? "development" : "release"
     );
-    log.info("Bundle paths are {}", String.join(", ", Configuration.get(Setting.BUNDLE_PATH)));
+    log.info("Bundle directory is {}", Configuration.get(Setting.BUNDLE_DIR));
     log.info("State directory is {}", Configuration.get(Setting.STATE_DIR));
     if (!Configuration.loadedFiles().isEmpty()) {
       log.info(

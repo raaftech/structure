@@ -23,7 +23,6 @@ import tools.jackson.databind.ObjectMapper;
  */
 public class StoreFormatTest extends TypeSchemaTest {
 
-  private static final String BUNDLES = "src/main/resources/bundles/";
   private static final String BASH = "6d467b28-449f-498c-9ca5-8660f522897f";
   private static final String CONTROLLER = "f482204e-7d63-45ca-96c9-10a7cc2783da";
   private static final String BASH_INVOKE = "8cabd118-dcc2-4bc6-bf0e-11cecfce4a5b";
@@ -68,7 +67,7 @@ public class StoreFormatTest extends TypeSchemaTest {
     assertEquals("Bash", n.properties.get("name"));
     assertEquals("The Bourne Again Shell.", n.properties.get("desc"));
     assertEquals("bash", n.properties.get("bundle"));
-    assertEquals(BUNDLES + "bash/bash.type.json", n.properties.get("path"));
+    assertEquals("bash/bash.type.json", n.properties.get("path"));
     assertEquals(false, n.properties.get("isAbstract"));
     assertEquals(0L, n.properties.get("glyphId"));
     assertTrue(n.properties.get("created") instanceof Long);
@@ -97,7 +96,7 @@ public class StoreFormatTest extends TypeSchemaTest {
     );
     assertEquals("Controller", n.properties.get("name"));
     assertEquals("core", n.properties.get("bundle"));
-    assertEquals(BUNDLES + "core/types/instrument.type.json", n.properties.get("path"));
+    assertEquals("core/types/instrument.type.json", n.properties.get("path"));
     assertEquals(false, n.properties.get("isAbstract"));
     assertEquals(0L, n.properties.get("glyphId"));
     assertFile(n, "file-dataSchema", "text", "json", "../schema/controller.schema.json");
@@ -146,7 +145,7 @@ public class StoreFormatTest extends TypeSchemaTest {
     assertEquals("BashInvoke", n.properties.get("name"));
     assertEquals("Run a script with Bash.", n.properties.get("desc"));
     assertEquals("bash", n.properties.get("bundle"));
-    assertEquals(BUNDLES + "bash/bashinvoke.inst.json", n.properties.get("path"));
+    assertEquals("bash/bashinvoke.inst.json", n.properties.get("path"));
     assertEquals(true, n.properties.get("data-subjectIsLocal"));
     assertEquals("controller", n.properties.get("data-instrumentType"));
     assertEquals(50L, n.properties.get("data-weight"));
@@ -179,7 +178,7 @@ public class StoreFormatTest extends TypeSchemaTest {
     assertEquals("LinuxProfile", n.properties.get("name"));
     assertEquals("A profile that detects Linux.", n.properties.get("desc"));
     assertEquals("linux", n.properties.get("bundle"));
-    assertEquals(BUNDLES + "linux/profiles/linux.inst.json", n.properties.get("path"));
+    assertEquals("linux/profiles/linux.inst.json", n.properties.get("path"));
     assertJson("{\"uname\": {\"command\": \"uname\", \"matches\": \"Linux\"}}", n.properties.get("data-commands"));
     assertEquals(
       ImmutableSet.of(

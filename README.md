@@ -174,10 +174,13 @@ What follows are various notes about various aspects of Structure.
 
 ### Bundle loading
 
-Each bundle path must be a directory. An empty directory is valid. Each entity
-in a `.type.json` or `.inst.json` file must have a `meta.uuid`. UUIDs must be
-unique across all configured bundle paths, including entities in the same file.
-The loader reads files in overlapping bundle paths once.
+The `bundle-dir` setting selects one directory. An empty directory is valid.
+Each entity in a `.type.json` or `.inst.json` file must have a `meta.uuid`.
+UUIDs must be unique across the bundle directory, including entities in the same file.
+The graph stores entity paths relative to this directory, for example
+`svcmgr/servicemanager.type.json`.
+Use `bundle-dir` in place of the old `bundle-path` setting. A bundle reload
+updates stored paths, including when the entity content has no changes.
 
 If a bundle file cannot be read, Structure stops and reports the file name. If
 dependencies cannot be resolved, it reports each unsorted entity and its missing
@@ -248,7 +251,7 @@ first:
 | `--help`           | `STRUCTURE_HELP`           | `structure.help`           |                                     | Print usage and exit                                                       |
 | `--log-level`      | `STRUCTURE_LOG_LEVEL`      | `structure.log.level`      | `info`                              | `info`, `debug` or `trace`; `trace` also prints stack traces               |
 | `--unsafe`         | `STRUCTURE_UNSAFE`         | `structure.unsafe`         |                                     | Allow all event bus addresses and log argument values                      |
-| `--bundle-path`    | `STRUCTURE_BUNDLE_PATH`    | `structure.bundle.path`    | [Home and mode](#home-and-mode)     | Comma-separated bundle paths, relative to Structure's home                 |
+| `--bundle-dir`     | `STRUCTURE_BUNDLE_DIR`     | `structure.bundle.dir`     | [Home and mode](#home-and-mode)     | Bundle directory, relative to Structure's home                             |
 | `--home`           | `STRUCTURE_HOME`           | `structure.home`           | [Home and mode](#home-and-mode)     | Structure's home directory                                                 |
 | `--state-dir`      | `STRUCTURE_STATE_DIR`      | `structure.state.dir`      | [State directory](#state-directory) | Directory of the files that Structure writes, relative to Structure's home |
 | `--jks-file`       | `STRUCTURE_JKS_FILE`       | `structure.jks.file`       | `structure.jks`                     | JKS keystore for HTTPS, relative to `state-dir`; made if missing           |
@@ -299,7 +302,7 @@ mode tells Structure where its files are:
 
 |                | Development mode                         | Release mode                                                                 |
 | -------------- | ---------------------------------------- | ---------------------------------------------------------------------------- |
-| Bundles        | `src/main/resources` in Structure's home | Structure's home                                                             |
+| `bundle-dir`   | `src/main/resources/bundles` in Structure's home | `bundles` in Structure's home                                          |
 | Settings files | `src/main/resources` in Structure's home | `/etc/structure`, `etc` in Structure's home, `$XDG_CONFIG_HOME/structure`    |
 | `state-dir`    | `target` in Structure's home             | `/var/lib/structure`, `var` in Structure's home, `$XDG_STATE_HOME/structure` |
 

@@ -250,7 +250,7 @@ public class BundleGraphTest extends TypeSchemaTest {
 
   @Test
   public void unchangedBundlesNeedNoUpdates() throws Exception {
-    NaiveSorter sorter = new NaiveSorter(Collections.singleton(BUNDLES));
+    NaiveSorter sorter = new NaiveSorter(BUNDLES);
     List<JsonNode> updates = sorter.getUpdateList(sorter.sortIt(sorter.readAllJson()));
     List<String> names = updates
       .stream()

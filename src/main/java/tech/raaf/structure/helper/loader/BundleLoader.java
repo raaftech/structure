@@ -2,7 +2,6 @@ package tech.raaf.structure.helper.loader;
 
 import com.google.common.collect.ImmutableMap;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.Validate;
@@ -18,7 +17,7 @@ import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 
 /**
- * BundleLoader sorts all entities found in the bundle paths and loads them.
+ * BundleLoader sorts all entities in the bundle directory and loads them.
  */
 public class BundleLoader {
 
@@ -31,12 +30,12 @@ public class BundleLoader {
   private static final Logger log = LoggerFactory.getLogger(BundleLoader.class);
 
   /**
-   * Create a new BundleLoader using the configured bundle path.
+   * Create a new BundleLoader using the configured bundle directory.
    * @throws Exception Exceptions may occur when the list of entities is unsortable
    * because of cyclic dependencies.
    */
   public BundleLoader() throws Exception {
-    this(Configuration.get(Setting.BUNDLE_PATH).stream().map(Paths::get).collect(Collectors.toSet()));
+    this(Configuration.get(Setting.BUNDLE_DIR));
   }
 
   /**
@@ -44,8 +43,8 @@ public class BundleLoader {
    * @throws Exception Exceptions may occur when the list of entities is unsortable
    * because of cyclic dependencies.
    */
-  public BundleLoader(Set<Path> bundlePaths) throws Exception {
-    NaiveSorter naiveSorter = new NaiveSorter(bundlePaths);
+  public BundleLoader(Path bundleDir) throws Exception {
+    NaiveSorter naiveSorter = new NaiveSorter(bundleDir);
     sortedNodes = naiveSorter.getUpdateList(naiveSorter.sortIt(naiveSorter.readAllJson()));
 
     // Find all the type entities

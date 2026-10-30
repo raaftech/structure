@@ -30,7 +30,7 @@ public class NodeSerializerTest extends TypeSchemaTest {
     assertEquals("The Linux Operating System.", entity.getDesc());
     assertEquals("a5613527-2f64-4481-83f2-80b0cb427e28", entity.getUuid());
     assertEquals("linux", entity.getBundle());
-    assertEquals("src/main/resources/bundles/linux/types/linux.type.json", entity.getPath());
+    assertEquals("linux/types/linux.type.json", entity.getPath());
 
     // test relationships
     assertEquals(1, entity.getRelations().size());

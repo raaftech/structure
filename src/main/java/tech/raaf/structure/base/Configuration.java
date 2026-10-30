@@ -23,7 +23,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
@@ -393,16 +392,12 @@ public final class Configuration {
       "Allow all event bus addresses and log argument values"
     );
     // A relative path is relative to home.
-    public static final Setting<List<String>> BUNDLE_PATH = new Setting<>(
-      "bundle-path",
-      Type.LIST,
+    public static final Setting<Path> BUNDLE_DIR = new Setting<>(
+      "bundle-dir",
+      Type.PATH,
       () -> isDevEnv() ? "src/main/resources/bundles" : "bundles",
-      "Comma-separated bundle paths, relative to Structure's home",
-      paths ->
-        paths
-          .stream()
-          .map(path -> Configuration.get(Setting.HOME).resolve(path).toString())
-          .collect(Collectors.toList())
+      "Bundle directory, relative to Structure's home",
+      path -> Configuration.get(Setting.HOME).resolve(path).normalize()
     );
     public static final Setting<Path> HOME = new Setting<>(
       "home",
@@ -488,7 +483,7 @@ public final class Configuration {
         HELP,
         LOG_LEVEL,
         UNSAFE,
-        BUNDLE_PATH,
+        BUNDLE_DIR,
         HOME,
         STATE_DIR,
         JKS_FILE,
@@ -537,7 +532,6 @@ public final class Configuration {
       static final Type<Long> LONG = new Type<>("long", Long::valueOf);
       static final Type<Double> DECIMAL = new Type<>("decimal", Double::valueOf);
       static final Type<Path> PATH = new Type<>("path", value -> Paths.get(value));
-      static final Type<List<String>> LIST = new Type<>("list", Type::list);
 
       private final String name;
       private final Function<String, T> parser;
@@ -552,13 +546,6 @@ public final class Configuration {
           throw new IllegalArgumentException("Not true or false: " + value);
         }
         return Boolean.valueOf(value);
-      }
-
-      private static List<String> list(String value) {
-        return Stream.of(value.split(","))
-          .map(String::trim)
-          .filter(item -> !item.isEmpty())
-          .collect(Collectors.toList());
       }
     }
   }

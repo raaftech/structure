@@ -1,7 +1,6 @@
 package tech.raaf.structure.helper.loader;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -15,9 +14,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 import mockit.Mocked;
 import mockit.integration.junit5.JMockitExtension;
@@ -128,23 +127,20 @@ public class NaiveSorterTest {
 
   @Test
   public void storesRelativePaths(@Mocked Context context) throws Exception {
-    // A relative bundle path is relative to home, and so is the stored path.
-    final List<JsonNode> inHome = new NaiveSorter(
-      Collections.singleton(Paths.get("src/main/resources/bundles"))
-    ).readAllJson();
+    final List<JsonNode> inHome = new NaiveSorter(Paths.get("src/test/resources/bundles")).readAllJson();
     assertFalse(inHome.isEmpty());
     for (JsonNode node : inHome) {
-      assertTrue(node.get("meta").get("path").asString().startsWith("src/main/resources/bundles/"));
+      assertTrue(node.get("meta").get("path").asString().startsWith("simple/"));
     }
-    // Outside home, the stored path is relative to the bundle path.
     final Path outside = folder;
     final Path simple = Configuration.get(Setting.HOME).resolve("src/test/resources/bundles/simple");
     FileUtils.copyDirectory(simple.toFile(), outside.resolve("simple").toFile());
-    final List<JsonNode> elsewhere = new NaiveSorter(Collections.singleton(outside)).readAllJson();
+    final List<JsonNode> elsewhere = new NaiveSorter(outside).readAllJson();
     assertFalse(elsewhere.isEmpty());
     for (JsonNode node : elsewhere) {
       assertTrue(node.get("meta").get("path").asString().startsWith("simple/"));
     }
+    assertEquals(Set.copyOf(inHome), Set.copyOf(elsewhere));
   }
 
   @Test
@@ -154,14 +150,14 @@ public class NaiveSorterTest {
 
     assertThrowsWith(
       Exception.class,
-      () -> new NaiveSorter(Collections.singleton(folder)).readAllJson(),
+      () -> new NaiveSorter(folder).readAllJson(),
       file.getFileName().toString()
     );
   }
 
   @Test
   public void emptyWorklistReturnsEmptyList() throws Exception {
-    NaiveSorter sorter = new NaiveSorter(Collections.emptySet());
+    NaiveSorter sorter = new NaiveSorter(folder);
     assertTrue(sorter.sortIt(Collections.emptyList()).isEmpty());
   }
 
@@ -171,7 +167,7 @@ public class NaiveSorterTest {
 
     assertThrowsWith(
       Exception.class,
-      () -> new NaiveSorter(Collections.singleton(missing)).readAllJson(),
+      () -> new NaiveSorter(missing).readAllJson(),
       missing.toString()
     );
   }
@@ -182,14 +178,14 @@ public class NaiveSorterTest {
 
     assertThrowsWith(
       IllegalArgumentException.class,
-      () -> new NaiveSorter(Collections.singleton(file)).readAllJson(),
+      () -> new NaiveSorter(file).readAllJson(),
       file.toString()
     );
   }
 
   @Test
   public void emptyBundleDirectoryReturnsEmptyList() throws Exception {
-    NaiveSorter sorter = new NaiveSorter(Collections.singleton(folder));
+    NaiveSorter sorter = new NaiveSorter(folder);
     assertTrue(sorter.sortIt(sorter.readAllJson()).isEmpty());
   }
 
@@ -239,15 +235,6 @@ public class NaiveSorterTest {
       root.path("meta").path("uuid").asString(),
       file.toString()
     );
-  }
-
-  @Test
-  public void overlappingBundlePathsReadEachFileOnce() throws Exception {
-    writeBundle("types/root.type.json", rootType());
-    Path directory = folder;
-    NaiveSorter sorter = new NaiveSorter(new HashSet<>(Arrays.asList(directory, directory.resolve("bundle"))));
-
-    assertEquals(1, sorter.readAllJson().size());
   }
 
   @Test
@@ -339,7 +326,7 @@ public class NaiveSorterTest {
   }
 
   private NaiveSorter sorter() {
-    return new NaiveSorter(Collections.singleton(folder));
+    return new NaiveSorter(folder);
   }
 
   @Test

@@ -87,9 +87,10 @@ public class ConfigurationTest {
     assertEquals(Paths.get("/opt/structure"), file("structure.home", "/opt/structure").resolve(Setting.HOME));
     final Path home = Configuration.get(Setting.HOME);
     assertEquals(
-      Arrays.asList(home.resolve("a").toString(), "/b"),
-      file("structure.bundle.path", " a, /b ,,").resolve(Setting.BUNDLE_PATH)
+      home.resolve("a"),
+      file("structure.bundle.dir", "a").resolve(Setting.BUNDLE_DIR)
     );
+    assertEquals(Paths.get("/b"), file("structure.bundle.dir", "/b").resolve(Setting.BUNDLE_DIR));
   }
 
   @Test
@@ -193,7 +194,7 @@ public class ConfigurationTest {
     );
     assertEquals(
       Configuration.get(Setting.HOME).resolve("src/main/resources/bundles").toString(),
-      json.get("bundle-path").get(0).asString()
+      json.get("bundle-dir").asString()
     );
   }
 

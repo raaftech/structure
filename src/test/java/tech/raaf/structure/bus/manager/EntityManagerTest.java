@@ -226,7 +226,7 @@ public class EntityManagerTest extends TypeSchemaTest {
     // the update keeps the bundle and the path
     Assertions.assertEquals("linux", nodeRepository.findByUuid(linuxType.getUuid()).getBundle());
     Assertions.assertEquals(
-      "src/main/resources/bundles/linux/types/linux.type.json",
+      "linux/types/linux.type.json",
       nodeRepository.findByUuid(linuxType.getUuid()).getPath()
     );
 
