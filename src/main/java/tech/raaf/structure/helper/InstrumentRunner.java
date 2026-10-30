@@ -406,7 +406,7 @@ public class InstrumentRunner {
       } else {
         log.debug("Valid, non-local path");
         try {
-          // TODO: create method
+          // TODO: Create method
           ObjectNode args = validateAndSelectArguments(controller);
 
           // If timeAllocated has no value assigned, use getTimeAllocated, else use timeAllocated

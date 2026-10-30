@@ -77,7 +77,6 @@ public class Instances extends Repository<Instance> {
    * @return A data array with at most the requested number of nodes.
    */
   @SchemaPath("resource:/schema/repository/instances/nLastCreated.schema.json")
-  @SuppressWarnings("unused")
   public MessageHandler nLastCreated() {
     return new MessageHandler() {
       @Override
@@ -106,7 +105,6 @@ public class Instances extends Repository<Instance> {
    * or an error field if something went wrong.
    */
   @SchemaPath("resource:/schema/repository/instances/putNode.schema.json")
-  @SuppressWarnings("unused")
   public MessageHandler putNode() {
     return new MessageHandler() {
       @Override
@@ -142,7 +140,7 @@ public class Instances extends Repository<Instance> {
             });
             result.put("data", uuid);
           } else {
-            // TODO: add support for other Instances
+            // TODO: Add support for other Instances
           }
         } catch (RuntimeException e) {
           log.error(e.getMessage());

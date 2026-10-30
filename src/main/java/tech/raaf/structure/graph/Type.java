@@ -96,7 +96,7 @@ public class Type extends Node {
   // Private Methods
 
   private void initSchema() {
-    // TODO: Entity, this can go, i think
+    // TODO: Entity, this can go, I think
   }
 
   // Public Methods
@@ -352,7 +352,7 @@ public class Type extends Node {
   }
 
   public Type setIsa(Type isa) {
-    // TODO: Entity, This can go, i think
+    // TODO: Entity, This can go, I think
     return this;
   }
 

@@ -32,7 +32,6 @@ public abstract class Repository<T extends Node> extends GenericActor {
    * didn't find a match.
    */
   @SchemaPath("resource:/schema/repository/findByName.schema.json")
-  @SuppressWarnings("unused")
   public MessageHandler findByName() {
     return new MessageHandler() {
       @Override
@@ -94,7 +93,6 @@ public abstract class Repository<T extends Node> extends GenericActor {
    * but if we didn't find a typenode, the error field will be set with a message.
    */
   @SchemaPath("resource:/schema/repository/findOne.schema.json")
-  @SuppressWarnings("unused")
   public MessageHandler findOne() {
     return new MessageHandler() {
       @Override

@@ -26,7 +26,7 @@ public class InstrumentManager extends GenericActor {
   private final InstrumentRepository instrumentRepository = Context.getInstrumentRepository();
 
   private void loadInstruments() {
-    // TODO: load the instruments from the bundles again, see BundleLoader.
+    // TODO: Load the instruments from the bundles again, see BundleLoader
   }
 
   private void purgeInstruments() {
@@ -35,7 +35,6 @@ public class InstrumentManager extends GenericActor {
     Context.setInstrumentsLoaded(false);
   }
 
-  @SuppressWarnings("unused")
   public MessageHandler reloadInstruments() {
     return new MessageHandler() {
       @Override
@@ -43,7 +42,7 @@ public class InstrumentManager extends GenericActor {
         ObjectNode result = mapper.createObjectNode();
 
         purgeInstruments();
-        // TODO: this needs to be a vertx thread
+        // TODO: This needs to be a Vert.x thread
         new Thread() {
           public void run() {
             loadInstruments();
@@ -61,7 +60,6 @@ public class InstrumentManager extends GenericActor {
     };
   }
 
-  @SuppressWarnings("unused")
   public MessageHandler removeInstruments() {
     return new MessageHandler() {
       @Override
@@ -90,7 +88,6 @@ public class InstrumentManager extends GenericActor {
    * IMPORTANT: Take note that we assume all UUIDs belong to the same grouping.
    */
   @SchemaPath("resource:/schema/manager/instrumentmanager/runCapability.schema.json")
-  @SuppressWarnings("unused")
   public MessageHandler runCapability() {
     return new MessageHandler() {
       @Override

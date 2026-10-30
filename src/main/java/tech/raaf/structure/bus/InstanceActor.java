@@ -70,7 +70,6 @@ public class InstanceActor extends NodeActor<Instance> {
    * @return An array containing the found components.
    */
   @SchemaPath("resource:/schema/node/instance/getcomponentsbytype.schema.json")
-  @SuppressWarnings("unused")
   public MessageHandler getComponentsByType() {
     return new MessageHandler() {
       @Override
@@ -232,7 +231,6 @@ public class InstanceActor extends NodeActor<Instance> {
   }
 
   @SchemaPath("resource:/schema/node/instance/runCapability.schema.json")
-  @SuppressWarnings("unused")
   public MessageHandler runCapability() {
     return new MessageHandler() {
       @Override

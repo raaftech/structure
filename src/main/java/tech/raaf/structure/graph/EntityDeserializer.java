@@ -173,7 +173,7 @@ public class EntityDeserializer extends StdDeserializer<Entity> {
         log.debug("Setting bundle to \"{}\"", bundle);
         entity.setBundle(bundle);
       } else {
-        // TODO: replace this guard code with actual retrieve bundle code
+        // TODO: Replace this guard code with actual retrieve bundle code
         log.debug("Setting default bundle name [core]");
         entity.setBundle("core");
       }
@@ -315,7 +315,7 @@ public class EntityDeserializer extends StdDeserializer<Entity> {
         data = new HashMap<>();
 
         dataJson = entityJson.get("data");
-        //FIXME the full schema validation should already do this, so i'm thinking this piece of code is obsolete
+        //TODO: The full schema validation should already do this, this might be obsolete
         // if this entity was provided with a dataSchema, make sure the data object validates against that
         // if (dataSchema != null) {
         //   if (!JsonHelper.validationErrors(dataSchema, dataJson).isEmpty()) {

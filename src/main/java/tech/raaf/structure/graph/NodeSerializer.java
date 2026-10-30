@@ -3,7 +3,6 @@ package tech.raaf.structure.graph;
 import static tech.raaf.structure.helper.JsonHelper.mapper;
 
 import com.google.common.collect.ImmutableMap;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

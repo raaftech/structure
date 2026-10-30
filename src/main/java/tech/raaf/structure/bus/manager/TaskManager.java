@@ -25,8 +25,7 @@ import tools.jackson.databind.node.ObjectNode;
  * A job is a process encapsulated by a ProcessRunner coupled with a status.
  */
 
-// TODO: timeout for jobs/tasks
-
+// TODO: Timeout for jobs/tasks
 public class TaskManager extends GenericActor {
 
   /**
@@ -421,7 +420,6 @@ public class TaskManager extends GenericActor {
    * Cancel a specific job.
    * @return A JSON object containing an error field if something went wrong.
    */
-  @SuppressWarnings("unused")
   @SchemaPath("resource:/schema/manager/taskmanager/canceljob.schema.json")
   public MessageHandler cancelJob() {
     return new MessageHandler() {
@@ -466,7 +464,6 @@ public class TaskManager extends GenericActor {
    * @return A JSON object containing a data-array of all the cancelled jobs in this task, or an error field
    * if something went wrong.
    */
-  @SuppressWarnings("unused")
   @SchemaPath("resource:/schema/manager/taskmanager/task.schema.json")
   public MessageHandler cancelTask() {
     return new MessageHandler() {
@@ -506,7 +503,6 @@ public class TaskManager extends GenericActor {
    * Get task information from the queue.
    * @return A JSON object containing an array of objects. Each object represents a task.
    */
-  @SuppressWarnings("unused")
   public MessageHandler queueStatus() {
     return new MessageHandler() {
       @Override
@@ -537,7 +533,6 @@ public class TaskManager extends GenericActor {
    * Queue a task to be run by the TaskManager.
    * @return A response, containing the task id, or an error.
    */
-  @SuppressWarnings("unused")
   @SchemaPath("resource:/schema/manager/taskmanager/queuetask.schema.json")
   public MessageHandler queueTask() {
     return new MessageHandler() {
@@ -595,7 +590,6 @@ public class TaskManager extends GenericActor {
    * @return A JSON object containing information about a particular task, or an error-field if a given task
    * doesn't exist.
    */
-  @SuppressWarnings("unused")
   @SchemaPath("resource:/schema/manager/taskmanager/task.schema.json")
   public MessageHandler taskStatus() {
     return new MessageHandler() {
@@ -627,7 +621,6 @@ public class TaskManager extends GenericActor {
    * @return A JSON object containing the current status of the task, or an error-field if a given task
    * doesn't exist.
    */
-  @SuppressWarnings("unused")
   @SchemaPath("resource:/schema/manager/taskmanager/task.schema.json")
   public MessageHandler toggleTaskPause() {
     return new MessageHandler() {

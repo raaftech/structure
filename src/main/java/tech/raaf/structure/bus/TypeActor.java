@@ -62,7 +62,6 @@ public class TypeActor extends NodeActor<Type> {
   }
 
   // Get an array of all the types one level below
-  @SuppressWarnings("unused")
   public MessageHandler getSubtypes() {
     return new MessageHandler() {
       @Override

@@ -84,7 +84,7 @@ const createComputer = (db, osType, ipEntity, dnsData, ssh, smb) => {
     os = relateTo(s);
   }
 
-  //TODO this is a workaround for the time being, remove later
+  //TODO: This is a workaround for the time being, remove later
   //Python2x software relation
   let py = createPythonInterpreter(db);
   computer.push(py);

@@ -28,7 +28,6 @@ import tech.raaf.structure.exceptions.EntityDeserializationException;
 import tech.raaf.structure.exceptions.IllegalEntityType;
 import tech.raaf.structure.exceptions.JsonValidationException;
 import tech.raaf.structure.graph.repositories.NodeRepository;
-import tech.raaf.structure.graph.repositories.TypeRepository;
 import tech.raaf.structure.helper.Triple;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.node.ObjectNode;
@@ -36,7 +35,6 @@ import tools.jackson.databind.node.ObjectNode;
 public class EntityTest extends GraphTest {
 
   // relationship names
-  private static final String REL_ROOT = "root";
   private static final String REL_ISA = "ISA";
   // keys for file object
   private static final String ENTITY_FILE_DATASCHEMA = "dataSchema";
@@ -47,7 +45,6 @@ public class EntityTest extends GraphTest {
   private static final String ENTITY_FILE_CHECKSUM = "checksum";
 
   private final NodeRepository nodeRepository = Context.getNodeRepository();
-  private final TypeRepository typeRepository = Context.getTypeRepository();
 
   private String createJson(String name, String desc, String meta, String file, String data) {
     if (data == null) return String.format(
