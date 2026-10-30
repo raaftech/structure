@@ -323,9 +323,6 @@
         <version>${maven.surefire.plugin.version}</version>
         <configuration>
           <excludedGroups>graph</excludedGroups>
-          <systemPropertyVariables>
-            <vertx.cacheDirBase>${project.build.directory}/vertx</vertx.cacheDirBase>
-          </systemPropertyVariables>
         </configuration>
       </plugin>
 
@@ -347,9 +344,6 @@
             <include>**/*Test.java</include>
           </includes>
           <groups>graph</groups>
-          <systemPropertyVariables>
-            <vertx.cacheDirBase>${project.build.directory}/vertx</vertx.cacheDirBase>
-          </systemPropertyVariables>
         </configuration>
       </plugin>
 

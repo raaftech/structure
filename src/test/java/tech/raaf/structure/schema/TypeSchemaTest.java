@@ -8,6 +8,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import org.junit.jupiter.api.BeforeEach;
 import tech.raaf.structure.GraphTest;
+import tech.raaf.structure.base.Application;
 import tech.raaf.structure.base.Context;
 import tech.raaf.structure.bus.manager.SchemaManager;
 import tech.raaf.structure.helper.loader.BundleLoader;
@@ -28,9 +29,9 @@ public abstract class TypeSchemaTest extends GraphTest {
     // Setup the http endpoint for querying type schema's
     if (vertx == null) {
       // Setup vertx and http+router
-      vertx = Vertx.vertx();
+      vertx = Application.createVertx();
       // Bus actors can wait for HTTP schema requests on their event loop.
-      final Vertx schemaVertx = Vertx.vertx();
+      final Vertx schemaVertx = Application.createVertx();
       final HttpServer httpServer = schemaVertx.createHttpServer();
       final Router router = Router.router(schemaVertx);
       SchemaManager schemaManager = new SchemaManager();

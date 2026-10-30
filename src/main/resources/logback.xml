@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <configuration>
+  <!-- Logback finds HOSTNAME itself; it is fine -->
   <contextName>${HOSTNAME}</contextName>
   <contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator">
     <resetJUL>true</resetJUL>
