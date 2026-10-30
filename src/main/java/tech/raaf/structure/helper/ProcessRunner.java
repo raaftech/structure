@@ -40,7 +40,7 @@ public class ProcessRunner {
 
   public ProcessRunner(String command) {
     this.command = command;
-    processBuilder.environment().put("STRUCTURE_STATE_DIR", Configuration.get(Setting.STATE_DIR).toString());
+    processBuilder.environment().putAll(Configuration.payloadEnvironment());
   }
 
   private static String readFile(String path) throws IOException {

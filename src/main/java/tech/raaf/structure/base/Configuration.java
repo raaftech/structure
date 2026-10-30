@@ -200,6 +200,11 @@ public final class Configuration {
     new ObjectMapper().writerWithDefaultPrettyPrinter().writeValue(file.toFile(), values);
   }
 
+  // The environment that tells bundle payloads where structure.json is.
+  public static Map<String, String> payloadEnvironment() {
+    return Collections.singletonMap(variable(Setting.STATE_DIR), get(Setting.STATE_DIR).toString());
+  }
+
   // True when the log level is trace.
   public static boolean isTraceModeOn() {
     return "trace".equalsIgnoreCase(get(Setting.LOG_LEVEL));
