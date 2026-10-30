@@ -1,36 +1,99 @@
 # Structure
 
-Structure models computing environments in a Neo4j graph. All knowledge is data:
-types for operating systems, services, addresses and nodes, plus instances for
-each item in use.
+Structure is a systems management platform in which capabilities emerge from an
+environment's components and their relationships. You request a capability, such
+as `Start` or `Execute`, but you don't say how. Structure then uses its model to
+select and combine the tools needed to perform it, including the full command
+construction, transport, and result collection.
 
-Bundles define types in JSON with various relational links, constraints and
-associated schemas. Instruments are instances too, and each one states what it
-applies to and which capability it gives. New systems thus mean new bundles,
-with no change to the backend. The backend interacts with the graph, runs tasks
-and serves results.
+A typed Neo4j graph represents both the environment and the knowledge used to
+manage it. Operating systems, services, addresses and installed tools share this
+model with types, protocols, capabilities and instruments. Each instrument
+declares which component provides it, what it applies to and which capability it
+gives. Type inheritance and relationship constraints let these definitions apply
+across families of systems.
 
-The following sections below show you how to [build](#building) Structure, how
-to [run](#running) it, some [example](#examples) calls using `curl` and how to
-run [tests](#testing). We also have an extensive [notes](#notes) section with
-various details about Structure.
+For example, the `Start` capability for a remote service can combine a service
+manager, a command interpreter and available command transfer client/server
+tools on the two hosts. Structure uses the graph to select these parts and
+assemble the steps to transfer and run the command. The `Start` capability can
+use different compatible interpreters and transports without a separate
+implementation for each combination.
+
+The `Detect` capability updates the graph with discovered components and
+relationships, which can make further, new capabilities available. Bundles
+supply type definitions, schemas, discovery profiles and instruments as JSON,
+together with command templates and scripts. Support for new tools and services
+can build on existing definitions and execution mechanisms without changes to
+the Java backend.
+
+The following section starts with giving a short explanation about how these
+[capabilities](#capabilities) work, and then continues with showing you how to
+[build](#building) Structure, how to [run](#running) it, how to do some
+[example](#examples) commands, and finally how to run our [tests](#testing). 
+We also have an extensive [notes](#notes) section with various details about 
+Structure.
+
+## Capabilities
+
+Structure initially defines these capabilities:
+
+| Capability      | Purpose                                                              |
+| --------------- | -------------------------------------------------------------------- |
+| `State`         | Check the state of an entity.                                        |
+| `Start`         | Start an entity.                                                     |
+| `Stop`          | Stop an entity.                                                      |
+| `Restart`       | Restart an entity.                                                   |
+| `Create`        | Create related entities.                                             |
+| `Destroy`       | Destroy an entity or its children.                                   |
+| `Execute`       | Run commands.                                                        |
+| `Detect`        | Detect a component.                                                  |
+| `List`          | List child entities.                                                 |
+| `Identify`      | Identify details such as a name or version.                          |
+| `SendString`    | Send a string over a protocol.                                       |
+| `ReceiveString` | Receive a string over a protocol.                                    |
+| `SendFile`      | Send a file over a protocol.                                         |
+| `ReceiveFile`   | Receive a file over a protocol.                                      |
+| `Invoke`        | Invoke a command for execution.                                      |
+| `Verify`        | Check whether an entity's type is correct.                           |
+| `Show`          | Return an entity's current graph representation.                     |
+| `Update`        | Verify and identify an entity, then update its graph representation. |
+| `Guess`         | Infer an abstract entity that cannot yet be detected directly.       |
+
+Capabilities can work together to perform an operation. For example, `Execute`
+runs a command, and `Invoke` lets an interpreter run a script. To run a command
+on a (remote or local) subject, Structure can combine them as follows:
+
+0. Structure executes a query between the source and target systems to figure
+   out what they have. What they have gives you a list of capabilities that you
+   can run.
+1. An `Execute` instrument puts a command you want to run in a template.
+2. An `Invoke` instrument, such as `BashInvoke`, wraps the command in a script.
+3. A `SendFile` instrument transfers the script, and a `SendString` instrument
+   sends a command to run it. The subject must have matching receive
+   capabilities for the protocols used.
+
+Other operations, such as `Start` (starting a service, or a virtual machine, or
+a container), can use the same interpreter and transport capabilities. Structure
+selects compatible instruments from the graph and combines them through its
+execution logic.
 
 ## Requirements
 
 To build and run Structure, you need:
 
-- [Java](https://adoptium.net/) 25 or later.
-- [Maven](https://maven.apache.org/download.cgi), to build and run tests.
-- [Python 3](https://www.python.org/) on the Structure host, to run bootstrap
+- [Maven](https://maven.apache.org/download.cgi) to build, and to run tests.
+- [Java](https://adoptium.net/) 25 or later, to compile and run the code.
+- [Python](https://www.python.org/) on the Structure host, to run bootstrap
   and the network, address and OS discovery instruments.
-- [nmap](https://nmap.org/) on the Structure host, for network and address
-  scanning and discovery.
 - [Ansible](https://docs.ansible.com/) on the Structure host, for OS discovery.
-  Its `setup` module needs Python 2 or Python 3 on remote hosts.
-- [Neo4j](https://neo4j.com/download/) server 5.19 or later, to store the graph.
-  Note that you can also run Neo4j using Docker, as we do later on.
-- [Docker](https://docs.docker.com/get-docker/), to run the integration tests,
+  Note that its `setup` module needs Python 2 or Python 3 on remote hosts.
+- [Nmap](https://nmap.org/) on the Structure host, for network and address
+  scanning and discovery.
+- [Docker](https://docs.docker.com/get-docker/) to run the integration tests,
   and (optionally) to run a Neo4j container image.
+- [Neo4j](https://neo4j.com/download/) (optional, you can also use Docker). You
+  need version 5.19 or later. Used to store the Structure graph.
 
 ## Building
 
