@@ -3,6 +3,7 @@
 **/id_dsa*
 **/id_rsa*
 **/__pycache__
+**/node_modules
 **/vendors
 **/*.iml
 .idea
