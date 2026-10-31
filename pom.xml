@@ -316,18 +316,18 @@
         </configuration>
       </plugin>
 
-      <!-- Unit tests: all tests, except the graph tests -->
+      <!-- Unit tests: all tests, except the integration tests -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <version>${maven.surefire.plugin.version}</version>
         <configuration>
-          <excludedGroups>graph</excludedGroups>
+          <excludedGroups>integration</excludedGroups>
           <redirectTestOutputToFile>true</redirectTestOutputToFile>
         </configuration>
       </plugin>
 
-      <!-- Integration tests: the graph tests, which need Docker -->
+      <!-- Integration tests: the tests that need Docker -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-failsafe-plugin</artifactId>
@@ -344,7 +344,7 @@
           <includes>
             <include>**/*Test.java</include>
           </includes>
-          <groups>graph</groups>
+          <groups>integration</groups>
           <redirectTestOutputToFile>true</redirectTestOutputToFile>
         </configuration>
       </plugin>

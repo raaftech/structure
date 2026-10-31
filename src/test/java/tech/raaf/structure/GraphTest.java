@@ -10,10 +10,10 @@ import tech.raaf.structure.graph.Graph;
 /**
  * Base class of the tests that use the graph. Starts one Neo4j container
  * for all the tests in the JVM, and deletes all data before each test.
- * Testcontainers removes the container when the JVM stops. The tag graph
- * marks these tests: failsafe runs them, surefire does not.
+ * Testcontainers removes the container when the JVM stops. The tag
+ * integration marks these tests: failsafe runs them, surefire does not.
  */
-@Tag("graph")
+@Tag("integration")
 public abstract class GraphTest {
 
   private static final Neo4jContainer NEO4J = new Neo4jContainer("neo4j:latest");
