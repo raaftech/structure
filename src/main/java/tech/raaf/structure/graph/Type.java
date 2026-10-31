@@ -22,7 +22,6 @@ import tech.raaf.structure.graph.repositories.TypeRepository;
 import tech.raaf.structure.helper.JsonSchemaBuilder;
 import tech.raaf.structure.helper.Triple;
 import tools.jackson.core.JacksonException;
-import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.node.ObjectNode;
 
 /**
@@ -52,10 +51,6 @@ public class Type extends Node {
 
   Map<String, Object> kv = new HashMap<>();
 
-  // isaUuid exists only to temporarily save a UUID of a Type's parent
-  // in case the parent doesn't exist in the database yet.
-  private String isaUuid;
-
   private TypeRepository typeRepository = Context.getTypeRepository();
 
   // Constructors
@@ -65,38 +60,27 @@ public class Type extends Node {
   public Type(String name, String desc, int glyphId) {
     super(name, desc);
     this.glyphId = glyphId;
-    initSchema();
   }
 
   public Type(String name, String desc, int glyphId, String checksum) {
     super(name, desc);
     this.glyphId = glyphId;
     this.checksum = checksum;
-    initSchema();
   }
 
   public Type(String name, String desc, String uuid) {
     super(name, desc, uuid);
-    initSchema();
   }
 
   public Type(String name, String desc, String uuid, int glyphId) {
     super(name, desc, uuid);
     this.glyphId = glyphId;
-    initSchema();
   }
 
   public Type(String name, String desc, String uuid, int glyphId, String checksum) {
     super(name, desc, uuid, checksum);
     this.glyphId = glyphId;
     this.checksum = checksum;
-    initSchema();
-  }
-
-  // Private Methods
-
-  private void initSchema() {
-    // TODO: Entity, this can go, I think
   }
 
   // Public Methods
@@ -351,32 +335,6 @@ public class Type extends Node {
     return persisted ? relatedOne("-[:ISA]->(b:Type)") : null;
   }
 
-  public Type setIsa(Type isa) {
-    // TODO: Entity, This can go, I think
-    return this;
-  }
-
-  public Type setIsa(String isa) {
-    // We can't assume our parentNode has been persisted to the database yet at this point.
-    // If the parentNode doesn't exist in the database yet, we just save it's UUID to a
-    // transient field for later use (at createNode time).
-    // If it does exist, we create the relations and inherit constraints in setIsa(Type isa).
-
-    Type parentNode = typeRepository.findByUuid(isa);
-    if (parentNode != null) {
-      setIsa(parentNode);
-    } else {
-      // This means our parent node hasn't been persisted to DB yet. Save UUID for later.
-      setIsaUuid(isa);
-    }
-
-    return this;
-  }
-
-  public void setIsaUuid(String isaUuid) {
-    this.isaUuid = isaUuid;
-  }
-
   public Map<String, Object> getKv() {
     return kv;
   }
@@ -432,13 +390,7 @@ public class Type extends Node {
   }
 
   public ObjectNode toJson() {
-    ObjectMapper mapper = new ObjectMapper();
     ObjectNode json = mapper.createObjectNode();
-
-    List<String> childIsaUuids = null;
-    if (getChildIsaSet() != null) {
-      getChildIsaSet().stream().map(Node::getUuid).collect(Collectors.toList());
-    }
 
     json.put("name", getName());
     json.put("uuid", getUuid());
@@ -448,19 +400,8 @@ public class Type extends Node {
     }
     json.put("desc", getDesc());
     json.put("checksum", getChecksum());
-    try {
-      if (getSchema() != null) {
-        json.set("schema", getSchema().getAsObjectNode());
-      }
-      if (childIsaUuids != null) {
-        json.put("children", mapper.writeValueAsString(childIsaUuids));
-      }
-    } catch (JacksonException e) {
-      log.error(e.getMessage());
-
-      if (Configuration.isTraceModeOn()) {
-        e.printStackTrace();
-      }
+    if (getSchema() != null) {
+      json.set("schema", getSchema().getAsObjectNode());
     }
 
     json.put("_nodeType", getNodeType());

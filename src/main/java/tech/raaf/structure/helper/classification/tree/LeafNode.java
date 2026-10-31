@@ -14,7 +14,6 @@ import java.util.function.Function;
  */
 public class LeafNode<T> extends Node<T> {
 
-  private InternalNode<T> parent;
   private Function<Set<T>, Set<T>> selection;
   private Terminal<T> success;
   private Terminal<T> failure;
@@ -34,7 +33,6 @@ public class LeafNode<T> extends Node<T> {
     Terminal<T> failure,
     Function<Set<T>, Set<T>> selection
   ) {
-    this.parent = parent;
     this.selection = selection;
     this.success = success;
     this.failure = failure;

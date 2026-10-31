@@ -32,17 +32,11 @@ import tools.jackson.databind.node.ObjectNode;
 
 public class EntityDeserializer extends StdDeserializer<Entity> {
 
-  /* Serializable class version field. */
-  private static final long serialVersionUID = 1L;
-
   /* Logging object. */
   private static final Logger log = LoggerFactory.getLogger(EntityDeserializer.class);
 
   /* URI of JSON Schema for Entity objects. */
   private final URI entitySchema = URI.create("resource:/schema/entity.schema.json");
-
-  /* key names for entity JSON */
-  private static final String FILE_DATASCHEMA = "dataSchema";
 
   private String bundle;
   private String name;
@@ -53,7 +47,6 @@ public class EntityDeserializer extends StdDeserializer<Entity> {
 
   private JsonNode metaJson;
   private JsonNode relationsJson;
-  private JsonNode dataSchema;
 
   private String checksum;
 
@@ -299,12 +292,6 @@ public class EntityDeserializer extends StdDeserializer<Entity> {
               );
             }
           }
-
-          // all is well. does this key match the dataSchema key? then we keep track of it, because
-          // we might use it later on for validating the data object
-          if (FILE_DATASCHEMA.equals(key)) {
-            dataSchema = mapper.readTree(value.get("content").asString());
-          }
         }
 
         entity.setFile(file);
@@ -315,14 +302,6 @@ public class EntityDeserializer extends StdDeserializer<Entity> {
         data = new HashMap<>();
 
         dataJson = entityJson.get("data");
-        //TODO: The full schema validation should already do this, this might be obsolete
-        // if this entity was provided with a dataSchema, make sure the data object validates against that
-        // if (dataSchema != null) {
-        //   if (!JsonHelper.validationErrors(dataSchema, dataJson).isEmpty()) {
-        //     throw new EntityDeserializationException("Provided data for entity \"" + name + "\" doesn't " +
-        //         "validate against dataSchema.");
-        //   }
-        // }
         Iterator<Map.Entry<String, JsonNode>> dataIterator = dataJson.properties().iterator();
 
         while (dataIterator.hasNext()) {

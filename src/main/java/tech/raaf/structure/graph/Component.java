@@ -7,8 +7,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import tech.raaf.structure.base.Context;
 import tech.raaf.structure.exceptions.JsonValidationException;
 import tech.raaf.structure.graph.repositories.InstanceRepository;
@@ -23,8 +21,6 @@ public final class Component extends Instance implements Groupable {
   private Set<Component> components;
 
   private static final InstanceRepository instanceRepository = Context.getInstanceRepository();
-
-  private Logger log = LoggerFactory.getLogger(Component.class);
 
   /**
    * No-arg constructor for NodeMapper

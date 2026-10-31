@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
 public class BranchNode<T> extends InternalNode<T> {
 
   protected Predicate<T> predicate;
-  InternalNode<T> parent;
 
   /**
    * The constructor.
@@ -23,7 +22,6 @@ public class BranchNode<T> extends InternalNode<T> {
   // The parent only keeps this node, to give it input later
   @SuppressWarnings("this-escape")
   public BranchNode(InternalNode<T> parent, Predicate<T> predicate) {
-    this.parent = parent;
     this.predicate = predicate;
     parent.addChild(this);
   }
