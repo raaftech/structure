@@ -41,19 +41,19 @@ public class EntityManager extends GenericActor {
   private static final TypeRepository typeRepository = Context.getTypeRepository();
 
   private static final String META = "meta";
-  private static final String UUlD = "uuid";
+  private static final String UUID = "uuid";
   private static final String CHECKSUM = "checksum";
   private static final String ERROR = "error";
   private static final String START = "start";
   private static final String INCLUDESTART = "includeStart";
   private static final String LABELS = "labels";
 
-  // An entity is new when it has no UUlD, or the UUlD is unknown in the database
+  // An entity is new when it has no UUID, or the UUID is unknown in the database
   private Predicate<ObjectNode> isNewEntity = json -> {
-    if (json.has(META) && !json.get(META).has(UUlD)) {
+    if (json.has(META) && !json.get(META).has(UUID)) {
       return true;
     }
-    String uuid = json.get(META).get(UUlD).asString();
+    String uuid = json.get(META).get(UUID).asString();
 
     return nodeRepository.findByUuid(uuid) == null;
   };
@@ -65,7 +65,7 @@ public class EntityManager extends GenericActor {
   /**
    * Create takes an array containing entities as input. It'll check which of them
    * are new, and insert the new ones in the database in the proper order.
-   * An entity is new when it has no UUlD defined, or its UUlD doesn't exist in the database.
+   * An entity is new when it has no UUID defined, or its UUID doesn't exist in the database.
    *
    * @return A list containing the UUIDs of the created entities, in the order they were persisted.
    */
@@ -96,7 +96,7 @@ public class EntityManager extends GenericActor {
               })
               // Validation successful, cast to ObjectNode
               .map(json -> (ObjectNode) json)
-              // Remove all the objects whose UUlD already exist in the database
+              // Remove all the objects whose UUID already exist in the database
               .filter(isNewEntity)
               // Map those objects to an Entity instance
               .map(json ->
@@ -111,7 +111,7 @@ public class EntityManager extends GenericActor {
                 .peek(Entity::toGraph)
                 // Deploy them as actors after the commit
                 .peek(entity -> Graph.afterCommit(() -> NodeActor.deploy(entity)))
-                // Map to the new UUlD's
+                // Map to the new UUID's
                 .map(Entity::getUuid)
                 // Collect
                 .collect(Collectors.toList())
@@ -136,7 +136,7 @@ public class EntityManager extends GenericActor {
   /**
    * Read uses a start node and a collection of labels to create a traversal, see
    * {@link #labelBasedTraversal(Set, Node, boolean) labelBasedTraversal} for more information.
-   * Read takes an array of labels, a UUlD for the start node and a boolean whether the start node should
+   * Read takes an array of labels, a UUID for the start node and a boolean whether the start node should
    * be included in the result as arguments.
    *
    * @return An array containing the vertices that could be reached with the traversal.
@@ -188,7 +188,7 @@ public class EntityManager extends GenericActor {
   /**
    * Update takes an array containing entities as input. It'll check which of them
    * are updated, and persist those updates to the graph.
-   * An entity is updated when it has a UUlD that is known in the graph, and its checksum is changed.
+   * An entity is updated when it has a UUID that is known in the graph, and its checksum is changed.
    * Optionally, {@code update} can be provided with an {@code oldEntities} array that contains
    * the entities in their original state, used to see if entities were updated while we were editing them.
    *
@@ -206,7 +206,7 @@ public class EntityManager extends GenericActor {
 
         if (args.has("oldEntities")) {
           oldEntitiesUuidToChecksum = StreamSupport.stream(args.get("oldEntities").spliterator(), false).collect(
-            Collectors.toMap(e -> e.get(META).get(UUlD).asString(), e -> e.get(META).get(CHECKSUM).asString())
+            Collectors.toMap(e -> e.get(META).get(UUID).asString(), e -> e.get(META).get(CHECKSUM).asString())
           );
         } else {
           oldEntitiesUuidToChecksum = ImmutableMap.of();
@@ -287,10 +287,10 @@ public class EntityManager extends GenericActor {
   }
 
   /**
-   * Given a UUlD of an entity and an array of labels, check if we can safely delete it, and act accordingly.
+   * Given a UUID of an entity and an array of labels, check if we can safely delete it, and act accordingly.
    * For a description of what "safe deletion" means, see {@link #safeDeleteTraversal(List, Node)}.
    *
-   * @return Returns the UUlD of the entity in case of deletion, an empty result otherwise.
+   * @return Returns the UUID of the entity in case of deletion, an empty result otherwise.
    */
   @SchemaPath("resource:/schema/manager/entitymanager/delete.schema.json")
   public MessageHandler delete() {
@@ -416,11 +416,15 @@ public class EntityManager extends GenericActor {
         final Node groupee = nodeRepository.findByUuid(groupeeUuid);
 
         if (group == null) {
-          result.put("error", "Group with UUlD \"" + groupingUuid + "\" not found.");
+          result.put("error", "Group with UUID \"" + groupingUuid + "\" not found.");
           return response(request, result);
         }
         if (groupee == null) {
-          result.put("error", "Node with UUlD \"" + groupeeUuid + "\" not found.");
+          result.put("error", "Node with UUID \"" + groupeeUuid + "\" not found.");
+          return response(request, result);
+        }
+        if (!(groupee instanceof Groupable groupable)) {
+          result.put("error", "Node with UUID \"" + groupeeUuid + "\" is not groupable.");
           return response(request, result);
         }
 
@@ -437,8 +441,8 @@ public class EntityManager extends GenericActor {
         }
         final String groupRelName = "MEMBER_OF";
         // The entity has only outgoing relations, so ask the group
-        final boolean changed = !group.getGroupees().contains(groupee);
-        groupingEntity.addRelations(groupRelName, Direction.INCOMING, ImmutableSet.of(UUID.fromString(groupeeUuid)));
+        final boolean changed = !group.getGroupees().contains(groupable);
+        groupingEntity.addRelations(groupRelName, Direction.INCOMING, ImmutableSet.of(java.util.UUID.fromString(groupeeUuid)));
 
         Graph.transaction(groupingEntity::toGraph);
 
@@ -469,11 +473,11 @@ public class EntityManager extends GenericActor {
         final Node groupee = nodeRepository.findByUuid(groupeeUuid);
 
         if (group == null) {
-          result.put("error", "Group with UUlD \"" + groupingUuid + "\" not found.");
+          result.put("error", "Group with UUID \"" + groupingUuid + "\" not found.");
           return response(request, result);
         }
         if (groupee == null) {
-          result.put("error", "Node with UUlD \"" + groupeeUuid + "\" not found.");
+          result.put("error", "Node with UUID \"" + groupeeUuid + "\" not found.");
           return response(request, result);
         }
 

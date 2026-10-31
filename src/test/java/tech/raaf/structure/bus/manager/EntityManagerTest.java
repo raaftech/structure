@@ -13,7 +13,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -364,7 +363,7 @@ public class EntityManagerTest extends TypeSchemaTest {
       result.get("error").asString()
     );
 
-    String unknown = UUID.randomUUID().toString();
+    String unknown = java.util.UUID.randomUUID().toString();
     result = exec(
       entityManager.specialize(),
       "specialize",
@@ -420,7 +419,7 @@ public class EntityManagerTest extends TypeSchemaTest {
     EntityManager entityManager = new EntityManager();
     String host = instance(OPERATING_SYSTEM, OS_DATA);
     String group = instance(COMPONENT_GROUP, "{}");
-    String unknown = UUID.randomUUID().toString();
+    String unknown = java.util.UUID.randomUUID().toString();
 
     for (GenericActor.MessageHandler handler : ImmutableList.of(entityManager.group(), entityManager.ungroup())) {
       ObjectNode result = exec(
@@ -428,10 +427,16 @@ public class EntityManagerTest extends TypeSchemaTest {
         "group",
         mapper.createObjectNode().put("grouping", unknown).put("groupee", host)
       );
-      assertEquals("Group with UUlD \"" + unknown + "\" not found.", result.get("error").asString());
+      assertEquals("Group with UUID \"" + unknown + "\" not found.", result.get("error").asString());
       result = exec(handler, "group", mapper.createObjectNode().put("grouping", group).put("groupee", unknown));
-      assertEquals("Node with UUlD \"" + unknown + "\" not found.", result.get("error").asString());
+      assertEquals("Node with UUID \"" + unknown + "\" not found.", result.get("error").asString());
     }
+    ObjectNode result = exec(
+      entityManager.group(),
+      "group",
+      mapper.createObjectNode().put("grouping", group).put("groupee", OPERATING_SYSTEM)
+    );
+    assertEquals("Node with UUID \"" + OPERATING_SYSTEM + "\" is not groupable.", result.get("error").asString());
     assertEquals(ImmutableList.of("INSTANCE_OF -> " + OPERATING_SYSTEM), outgoing(host));
   }
 
@@ -479,7 +484,7 @@ public class EntityManagerTest extends TypeSchemaTest {
 
   // Makes an instance of the type isa and returns its uuid
   private static String instance(String isa, String data) throws Exception {
-    String uuid = UUID.randomUUID().toString();
+    String uuid = java.util.UUID.randomUUID().toString();
     mapper
       .readValue(
         String.format(
