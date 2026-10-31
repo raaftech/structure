@@ -63,7 +63,7 @@ public class BusRoundTripTest extends TypeSchemaTest {
   private static final String UNIX_LIKE = "6a1eea8b-1462-4439-8c60-12edbee6c397";
   private static final String COMPONENT_GROUP = "ee92c308-80f4-40b2-af3a-77d26cd99517";
   private static final String DNS_NAME = "99c0da37-3599-418d-8ecc-de36d37ae9f4";
-  private static final String STATUS = BUS + "status";
+  private static final String EVENTS = BUS + "events";
   private static final URI RESPONSE = URI.create("resource:/schema/base/response.schema.json");
 
   private final String host = UUID.randomUUID().toString();
@@ -121,7 +121,11 @@ public class BusRoundTripTest extends TypeSchemaTest {
       { INSTANCES, "nLastCreated", "{'amount': 5}", null },
       { INSTANCES, "findByName", "{'name': 'bus-host'}", null },
       { STRUCTURE, "reload", "{}", null },
-      { STRUCTURE, "discover", "{}", null },
+      { STRUCTURE, "introspect", "{}", null },
+      { STRUCTURE, "help", "{}", null },
+      { STRUCTURE, "version", "{}", null },
+      { typeAddress, "help", "{}", null },
+      { hostAddress, "version", "{}", null },
       { typeAddress, "getSubtypes", "{}", null },
       { typeAddress, "getConstraints", "{}", null },
       { hostAddress, "json", "{}", null },
@@ -197,9 +201,9 @@ public class BusRoundTripTest extends TypeSchemaTest {
       Map.of("os", host, "dns", dnsUuid, "group", group)
     );
     CompletableFuture<JsonObject> done = new CompletableFuture<>();
-    MessageConsumer<JsonObject> status = Context.getVertx()
+    MessageConsumer<JsonObject> events = Context.getVertx()
       .eventBus()
-      .consumer(STATUS, message -> {
+      .consumer(EVENTS, message -> {
         if ("selfDiscovery".equals(message.body().getString("event"))) {
           done.complete(message.body().getJsonObject("data"));
         }
@@ -209,7 +213,7 @@ public class BusRoundTripTest extends TypeSchemaTest {
       assertTrue(reply.path("result").path("error").isMissingNode(), reply.toString());
       assertEquals("done", done.get(10, TimeUnit.SECONDS).getString("status"));
     } finally {
-      status.unregister().await();
+      events.unregister().await();
     }
   }
 
@@ -299,9 +303,9 @@ public class BusRoundTripTest extends TypeSchemaTest {
     };
     for (int i = 0; i < 2; i++) {
       CompletableFuture<JsonObject> done = new CompletableFuture<>();
-      MessageConsumer<JsonObject> status = Context.getVertx()
+      MessageConsumer<JsonObject> events = Context.getVertx()
         .eventBus()
-        .consumer(STATUS, message -> {
+        .consumer(EVENTS, message -> {
           if ("selfDiscovery".equals(message.body().getString("event"))) {
             done.complete(message.body().getJsonObject("data"));
           }
@@ -311,7 +315,7 @@ public class BusRoundTripTest extends TypeSchemaTest {
         JsonObject response = done.get(10, TimeUnit.SECONDS);
         assertEquals("done", response.getString("status"), response.toString());
       } finally {
-        status.unregister().await();
+        events.unregister().await();
       }
       assertEquals(group, Context.getSelfIdentifier());
       assertEquals(host, Context.getInstanceRepository().findOperatingSystem(dnsUuid).getUuid());

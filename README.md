@@ -30,7 +30,7 @@ the Java backend.
 The following section starts with giving a short explanation about how these
 [capabilities](#capabilities) work, and then continues with showing you how to
 [build](#building) Structure, how to [run](#running) it, how to do some
-[example](#examples) commands, and finally how to run our [tests](#testing). 
+[example](#examples) commands, and finally how to run our [tests](#testing).
 
 ## Capabilities
 
@@ -132,13 +132,14 @@ java -jar target/structure-*-fat.jar --unsafe
 Some requests to try:
 
 ```bash
-# The JSON schema of a type, from Structure
-curl -s --cacert target/structure.crt https://localhost:8443/schemas/linux.schema.json | jq .
+cd repl
+NODE_EXTRA_CA_CERTS=../target/structure.crt node
+# Within node
+const { Bus } = await import("./src/bus.ts")
+const bus = await Bus.connect("wss://localhost:8443/eventbus/websocket")
+const S = "tech.raaf.structure.bus.manager.structuremanager"
+await bus.request(S, "selfDiscovery")
 
-# The number of types in the graph, from the Neo4j Query API
-curl -s -u neo4j:structure -H 'Content-Type: application/json' \
-  -d '{"statement": "MATCH (t:Type) RETURN count(t)"}' \
-  http://localhost:7474/db/neo4j/query/v2 | jq .data.values
 ```
 
 ## Testing

@@ -44,7 +44,7 @@ public class StructureManager extends GenericActor {
   ComponentRepository componentRepository = Context.getComponentRepository();
   InstrumentRepository instrumentRepository = Context.getInstrumentRepository();
 
-  public MessageHandler discover() {
+  public MessageHandler introspect() {
     return new MessageHandler() {
       @Override
       public JsonNode exec(JsonNode request) {
@@ -53,7 +53,7 @@ public class StructureManager extends GenericActor {
 
       @Override
       public JsonNode help(JsonNode request) {
-        return jsonFromResource("help/structuremanager.discover.json");
+        return jsonFromResource("help/structuremanager.introspect.json");
       }
     };
   }
@@ -87,7 +87,7 @@ public class StructureManager extends GenericActor {
         ObjectNode result = mapper.createObjectNode();
 
         log.info("Starting reinitialization of Structure");
-        publishStatus("structureReinitialization", mapper.createObjectNode().put("data", "started"));
+        publishEvent("structureReinitialization", mapper.createObjectNode().put("data", "started"));
         // First undeploy all the NodeActors
         final JsonObject message = new JsonObject().put("msgh", "undeploy");
         LocalMap<String, String> nodeActors = vertx.sharedData().getLocalMap(NodeActor.SHAREDMAP_ID);
@@ -110,7 +110,7 @@ public class StructureManager extends GenericActor {
             return null;
           }, false)
           .onComplete(res -> {
-            publishStatus("structureReinitialization", mapper.createObjectNode().put("data", "finished"));
+            publishEvent("structureReinitialization", mapper.createObjectNode().put("data", "finished"));
             log.info("Successfully reinitialized the database");
           });
         log.info("Started database reinitialization");
@@ -144,12 +144,12 @@ public class StructureManager extends GenericActor {
                 resultHandler.cause().printStackTrace();
               }
               log.error(resultHandler.cause().getMessage());
-              publishStatus(
+              publishEvent(
                 "selfDiscovery",
                 mapper.createObjectNode().put("error", resultHandler.cause().getMessage())
               );
             } else {
-              publishStatus("selfDiscovery", mapper.createObjectNode().put("status", "done"));
+              publishEvent("selfDiscovery", mapper.createObjectNode().put("status", "done"));
             }
           });
 
@@ -306,9 +306,9 @@ public class StructureManager extends GenericActor {
         throw new IllegalStateException("Discovery timed out");
       }
       final ProcessRunner.ProcessResult result = runner.finish();
-      result.stdout.ifPresent(log::info);
+      result.stdout.map(String::strip).ifPresent(log::info);
       if (result.returnCode.orElse(1) != 0) {
-        throw new IllegalStateException("Discovery failed: " + result.stderr.orElse("No error output"));
+        throw new IllegalStateException("Discovery failed: " + result.stderr.orElse("No error output").strip());
       }
     } catch (IOException e) {
       throw new IllegalStateException("Could not start discovery", e);

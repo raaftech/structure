@@ -7,5 +7,5 @@
       "jobId": "job number"
     }
   },
-  "description": "The cancelJob handler cancels one job of the task."
+  "description": "The cancelJob handler cancels one job of the task. It returns the new status of the job, CANCELLED."
 }

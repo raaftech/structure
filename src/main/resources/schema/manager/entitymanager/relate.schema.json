@@ -1,0 +1,25 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Schema for EntityManager's relate and unrelate methods.",
+  "type": "object",
+  "properties": {
+    "from": {
+      "$ref": "#/definitions/uuid"
+    },
+    "relation": {
+      "type": "string",
+      "pattern": "^[A-Z][A-Z0-9_]*$"
+    },
+    "to": {
+      "$ref": "#/definitions/uuid"
+    }
+  },
+  "additionalProperties": false,
+  "required": ["from", "relation", "to"],
+  "definitions": {
+    "uuid": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89aAbB][a-f0-9]{3}-[a-f0-9]{12}$"
+    }
+  }
+}
