@@ -48,7 +48,7 @@ public class InstanceRepositoryTest extends TypeSchemaTest {
         .put("longName", "parent"),
       parentType
     );
-    group.getGroupees().add(parent);
+    group.getMembers().add(parent);
     child01 = new Component(
       mapper
         .createObjectNode()

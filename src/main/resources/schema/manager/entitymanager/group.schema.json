@@ -3,15 +3,15 @@
   "description": "Schema for StructureManager's group method.",
   "type": "object",
   "properties": {
-    "grouping": {
+    "group": {
       "$ref": "#/definitions/uuid"
     },
-    "groupee": {
+    "member": {
       "$ref": "#/definitions/uuid"
     }
   },
   "additionalProperties": false,
-  "required": ["grouping", "groupee"],
+  "required": ["group", "member"],
   "definitions": {
     "uuid": {
       "type": "string",

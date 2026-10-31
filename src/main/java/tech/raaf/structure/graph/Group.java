@@ -13,7 +13,7 @@ import tools.jackson.databind.node.ObjectNode;
 public final class Group extends Instance implements Groupable {
 
   // The members of a new group. A persisted group reads them from the graph.
-  private Set<Groupable> groupees;
+  private Set<Groupable> members;
 
   public Group() {}
 
@@ -43,16 +43,16 @@ public final class Group extends Instance implements Groupable {
     setProperties(instanceDataCopy);
   }
 
-  public Set<Groupable> getGroupees() {
+  public Set<Groupable> getMembers() {
     if (persisted) {
-      final Set<Groupable> members = new HashSet<>();
-      this.<Node>related("<-[:MEMBER_OF]-(b)").forEach(n -> members.add((Groupable) n));
-      return Collections.unmodifiableSet(members);
+      final Set<Groupable> result = new HashSet<>();
+      this.<Node>related("<-[:MEMBER_OF]-(b)").forEach(n -> result.add((Groupable) n));
+      return Collections.unmodifiableSet(result);
     }
-    if (groupees == null) {
-      groupees = new HashSet<>();
+    if (members == null) {
+      members = new HashSet<>();
     }
-    return groupees;
+    return members;
   }
 
   public Set<Group> getMemberOf() {
@@ -61,17 +61,17 @@ public final class Group extends Instance implements Groupable {
 
   // Add a member to a new group; save() writes the membership
   public void addMember(Groupable groupable) {
-    getGroupees().add(groupable);
+    getMembers().add(groupable);
   }
 
   @Override
   protected Entity toEntity() {
     final Entity entity = super.toEntity();
-    if (!persisted && groupees != null && !groupees.isEmpty()) {
+    if (!persisted && members != null && !members.isEmpty()) {
       entity.addRelations(
         "MEMBER_OF",
         Direction.INCOMING,
-        groupees
+        members
           .stream()
           .map(g -> UUID.fromString(((Node) g).getUuid()))
           .collect(Collectors.toSet())
@@ -83,8 +83,8 @@ public final class Group extends Instance implements Groupable {
   @Override
   protected Set<Instance> getNewPeers() {
     final Set<Instance> peers = new HashSet<>();
-    if (!persisted && groupees != null) {
-      groupees.forEach(g -> peers.add((Instance) g));
+    if (!persisted && members != null) {
+      members.forEach(g -> peers.add((Instance) g));
     }
     return peers;
   }
@@ -99,9 +99,9 @@ public final class Group extends Instance implements Groupable {
   //
   //   arguments.add(toJson());
   //   BiConsumer<BiConsumer, Component> consumeArgsHelper = (f, node) -> {
-  //     Set<Component> groupees = node.getGroupees();
-  //     if (groupees.size() > 0) {
-  //       groupees.parallelStream().forEach(n -> f.accept(f, n));
+  //     Set<Component> members = node.getMembers();
+  //     if (members.size() > 0) {
+  //       members.parallelStream().forEach(n -> f.accept(f, n));
   //     }
   //     arguments.add(node.toJson());
   //   };
@@ -113,7 +113,7 @@ public final class Group extends Instance implements Groupable {
   //   // the lambda.
   //   Consumer<Component> consumeArgs = node -> consumeArgsHelper.accept(consumeArgsHelper, node);
   //
-  //   getGroupees().stream().forEach(consumeArgs);
+  //   getMembers().stream().forEach(consumeArgs);
   //
   //   return arguments;
   // }
@@ -123,7 +123,7 @@ public final class Group extends Instance implements Groupable {
    * @return JSON representation that can be used as an argument for a instrument.
    */
   public Set<JsonNode> toArguments() {
-    return getGroupees()
+    return getMembers()
       .stream()
       .flatMap(g -> Component.arguments((Instance) g).stream())
       .collect(Collectors.toSet());

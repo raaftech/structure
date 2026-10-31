@@ -409,28 +409,28 @@ public class EntityManager extends GenericActor {
         final JsonNode args = request.get("args");
         final ObjectNode result = mapper.createObjectNode();
 
-        final String groupingUuid = args.get("grouping").asString();
-        final String groupeeUuid = args.get("groupee").asString();
+        final String groupUuid = args.get("group").asString();
+        final String memberUuid = args.get("member").asString();
 
-        final Group group = Context.getGroupingRepository().findByUuid(groupingUuid);
-        final Node groupee = nodeRepository.findByUuid(groupeeUuid);
+        final Group group = Context.getGroupingRepository().findByUuid(groupUuid);
+        final Node member = nodeRepository.findByUuid(memberUuid);
 
         if (group == null) {
-          result.put("error", "Group with UUID \"" + groupingUuid + "\" not found.");
+          result.put("error", "Group with UUID \"" + groupUuid + "\" not found.");
           return response(request, result);
         }
-        if (groupee == null) {
-          result.put("error", "Node with UUID \"" + groupeeUuid + "\" not found.");
+        if (member == null) {
+          result.put("error", "Node with UUID \"" + memberUuid + "\" not found.");
           return response(request, result);
         }
-        if (!(groupee instanceof Groupable groupable)) {
-          result.put("error", "Node with UUID \"" + groupeeUuid + "\" is not groupable.");
+        if (!(member instanceof Groupable groupable)) {
+          result.put("error", "Node with UUID \"" + memberUuid + "\" is not groupable.");
           return response(request, result);
         }
 
-        final Entity groupingEntity;
+        final Entity groupEntity;
         try {
-          groupingEntity = mapper.treeToValue(mapper.valueToTree(group), Entity.class);
+          groupEntity = mapper.treeToValue(mapper.valueToTree(group), Entity.class);
         } catch (JacksonException e) {
           if (Configuration.isTraceModeOn()) {
             e.printStackTrace();
@@ -441,10 +441,10 @@ public class EntityManager extends GenericActor {
         }
         final String groupRelName = "MEMBER_OF";
         // The entity has only outgoing relations, so ask the group
-        final boolean changed = !group.getGroupees().contains(groupable);
-        groupingEntity.addRelations(groupRelName, Direction.INCOMING, ImmutableSet.of(java.util.UUID.fromString(groupeeUuid)));
+        final boolean changed = !group.getMembers().contains(groupable);
+        groupEntity.addRelations(groupRelName, Direction.INCOMING, ImmutableSet.of(java.util.UUID.fromString(memberUuid)));
 
-        Graph.transaction(groupingEntity::toGraph);
+        Graph.transaction(groupEntity::toGraph);
 
         result.set("data", mapper.createObjectNode().put("changed", changed));
 
@@ -466,18 +466,18 @@ public class EntityManager extends GenericActor {
         final JsonNode args = request.get("args");
         final ObjectNode result = mapper.createObjectNode();
 
-        final String groupingUuid = args.get("grouping").asString();
-        final String groupeeUuid = args.get("groupee").asString();
+        final String groupUuid = args.get("group").asString();
+        final String memberUuid = args.get("member").asString();
 
-        final Group group = Context.getGroupingRepository().findByUuid(groupingUuid);
-        final Node groupee = nodeRepository.findByUuid(groupeeUuid);
+        final Group group = Context.getGroupingRepository().findByUuid(groupUuid);
+        final Node member = nodeRepository.findByUuid(memberUuid);
 
         if (group == null) {
-          result.put("error", "Group with UUID \"" + groupingUuid + "\" not found.");
+          result.put("error", "Group with UUID \"" + groupUuid + "\" not found.");
           return response(request, result);
         }
-        if (groupee == null) {
-          result.put("error", "Node with UUID \"" + groupeeUuid + "\" not found.");
+        if (member == null) {
+          result.put("error", "Node with UUID \"" + memberUuid + "\" not found.");
           return response(request, result);
         }
 
@@ -485,7 +485,7 @@ public class EntityManager extends GenericActor {
           (Number) Graph.query(
             "MATCH (m:Node {uuid: $member})-[r:MEMBER_OF]->(g:Group {uuid: $group}) " +
               "DELETE r RETURN count(*) AS removed",
-            ImmutableMap.of("member", groupeeUuid, "group", groupingUuid)
+            ImmutableMap.of("member", memberUuid, "group", groupUuid)
           )
             .get(0)
             .get("removed")

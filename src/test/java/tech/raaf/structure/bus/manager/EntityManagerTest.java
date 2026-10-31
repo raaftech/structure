@@ -388,7 +388,7 @@ public class EntityManagerTest extends TypeSchemaTest {
     String host = instance(OPERATING_SYSTEM, OS_DATA);
     String other = instance(OPERATING_SYSTEM, OS_DATA);
     String group = instance(COMPONENT_GROUP, "{}");
-    ObjectNode args = mapper.createObjectNode().put("grouping", group).put("groupee", host);
+    ObjectNode args = mapper.createObjectNode().put("group", group).put("member", host);
     List<String> member = ImmutableList.of("INSTANCE_OF -> " + OPERATING_SYSTEM, "MEMBER_OF -> " + group);
 
     ObjectNode result = exec(entityManager.group(), "group", args);
@@ -396,7 +396,7 @@ public class EntityManagerTest extends TypeSchemaTest {
     assertEquals(member, outgoing(host));
 
     // A second member does not remove the first
-    exec(entityManager.group(), "group", mapper.createObjectNode().put("grouping", group).put("groupee", other));
+    exec(entityManager.group(), "group", mapper.createObjectNode().put("group", group).put("member", other));
     assertEquals(member, outgoing(host));
     assertEquals(member, outgoing(other));
 
@@ -425,16 +425,16 @@ public class EntityManagerTest extends TypeSchemaTest {
       ObjectNode result = exec(
         handler,
         "group",
-        mapper.createObjectNode().put("grouping", unknown).put("groupee", host)
+        mapper.createObjectNode().put("group", unknown).put("member", host)
       );
       assertEquals("Group with UUID \"" + unknown + "\" not found.", result.get("error").asString());
-      result = exec(handler, "group", mapper.createObjectNode().put("grouping", group).put("groupee", unknown));
+      result = exec(handler, "group", mapper.createObjectNode().put("group", group).put("member", unknown));
       assertEquals("Node with UUID \"" + unknown + "\" not found.", result.get("error").asString());
     }
     ObjectNode result = exec(
       entityManager.group(),
       "group",
-      mapper.createObjectNode().put("grouping", group).put("groupee", OPERATING_SYSTEM)
+      mapper.createObjectNode().put("group", group).put("member", OPERATING_SYSTEM)
     );
     assertEquals("Node with UUID \"" + OPERATING_SYSTEM + "\" is not groupable.", result.get("error").asString());
     assertEquals(ImmutableList.of("INSTANCE_OF -> " + OPERATING_SYSTEM), outgoing(host));
@@ -462,7 +462,7 @@ public class EntityManagerTest extends TypeSchemaTest {
     EntityManager entityManager = new EntityManager();
     String host = instance(OPERATING_SYSTEM, OS_DATA);
     String group = instance(COMPONENT_GROUP, "{}");
-    exec(entityManager.group(), "group", mapper.createObjectNode().put("grouping", group).put("groupee", host));
+    exec(entityManager.group(), "group", mapper.createObjectNode().put("group", group).put("member", host));
 
     // A member without the Group label makes the delete unsafe.
     ObjectNode result = exec(entityManager.delete(), "delete", deleteArgs(group, "Group"));
