@@ -323,6 +323,7 @@
         <version>${maven.surefire.plugin.version}</version>
         <configuration>
           <excludedGroups>graph</excludedGroups>
+          <redirectTestOutputToFile>true</redirectTestOutputToFile>
         </configuration>
       </plugin>
 
@@ -344,6 +345,7 @@
             <include>**/*Test.java</include>
           </includes>
           <groups>graph</groups>
+          <redirectTestOutputToFile>true</redirectTestOutputToFile>
         </configuration>
       </plugin>
 

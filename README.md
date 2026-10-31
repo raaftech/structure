@@ -165,3 +165,9 @@ To run all of the above, including coverage report:
 ```bash
 mvn verify
 ```
+
+The tests write their output to one file for each test class. Unit tests write
+to `target/surefire-reports`, and integration tests write to
+`target/failsafe-reports`. The file name is the name of the test class followed
+by `-output.txt`. Some tests cause failures on purpose, thus warnings and errors
+in these files are not always a problem.
