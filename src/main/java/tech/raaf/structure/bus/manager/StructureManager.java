@@ -306,9 +306,9 @@ public class StructureManager extends GenericActor {
         throw new IllegalStateException("Discovery timed out");
       }
       final ProcessRunner.ProcessResult result = runner.finish();
-      result.stdout.ifPresent(log::info);
+      result.stdout.map(String::strip).ifPresent(log::info);
       if (result.returnCode.orElse(1) != 0) {
-        throw new IllegalStateException("Discovery failed: " + result.stderr.orElse("No error output"));
+        throw new IllegalStateException("Discovery failed: " + result.stderr.orElse("No error output").strip());
       }
     } catch (IOException e) {
       throw new IllegalStateException("Could not start discovery", e);
