@@ -646,6 +646,12 @@ public class Entity {
 
     params.put("props", properties);
     Graph.query("MERGE (n:Node {uuid: $uuid}) " + "ON CREATE SET n.created = timestamp() " + "SET n += $props", params);
+    // Each node has the Node label, thus no labels means a new node
+    if (oldLabels.isEmpty()) {
+      final String kind = isInstance() ? getInstanceOf().map(Type::getName).orElse("instance") : "type";
+      // A rollback removes the node again, thus log after the commit
+      Graph.afterCommit(() -> log.info("Created {} {} {}", kind, name, uuid));
+    }
     return oldLabels;
   }
 
