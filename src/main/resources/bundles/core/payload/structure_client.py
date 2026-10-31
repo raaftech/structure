@@ -203,6 +203,11 @@ class BusClient:
             raise RuntimeError("Could not update entity: " + json.dumps(result))
         return result
 
+    def relate(self, source, name, target):
+        return self.request("manager.entitymanager", "relate", {
+            "from": source, "relation": name, "to": target,
+        })
+
     def persist(self, entities, related=()):
         identifiers = []
         for entity in entities:

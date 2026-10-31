@@ -1,0 +1,12 @@
+{
+  "name": "relate",
+  "synopsis": {
+    "msgh": "relate",
+    "args": {
+      "from": "UUID of the node that the relation starts at",
+      "relation": "name of the relation, for example HAS",
+      "to": "UUID of the node that the relation goes to"
+    }
+  },
+  "description": "The relate handler adds the relation from the first node to the second node. The type constraints of the first node must permit the relation. The result tells if the graph changed. Use specialize for INSTANCE_OF, and group for MEMBER_OF. The bundles give ISA and CONSTRAINTS."
+}

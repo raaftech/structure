@@ -251,6 +251,12 @@ words to use for each one.
 - **Reinitialize**: The `reinitialize` handler of `StructureManager`. It stops
   all node actors, deletes all nodes from the graph and loads the bundles again.
 
+- **Relate, unrelate**: The `relate` and `unrelate` handlers of `EntityManager`.
+  They add and remove one relation from a node to another node, for example
+  `HAS`. The type constraints of the first node must permit the result. Use
+  specialize for `INSTANCE_OF` and group for `MEMBER_OF`. The bundles give `ISA`
+  and `CONSTRAINTS`.
+
 - **Reload**: The `reload` handler of `StructureManager`. It loads the types and
   instances of the bundles again.
 
@@ -316,6 +322,10 @@ words to use for each one.
 
 - **Unsafe mode**: The `unsafe` setting. The bridge then permits all bus
   addresses.
+
+- **Update**: The `update` handler of `EntityManager`. It changes the name, the
+  description, the data and the files of nodes. It does not change relations;
+  see **Relate, unrelate**, **Specialize** and **Group**.
 
 - **Verticle**: A unit of code that Vert.x deploys and runs. Each actor is a
   verticle.

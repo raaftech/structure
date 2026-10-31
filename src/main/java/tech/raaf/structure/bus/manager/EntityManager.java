@@ -34,6 +34,18 @@ import tools.jackson.databind.node.ObjectNode;
 
 public class EntityManager extends GenericActor {
 
+  // The relations that relate and unrelate leave to other handlers
+  private static final Map<String, String> OWNERS = ImmutableMap.of(
+    "INSTANCE_OF",
+    "specialize",
+    "MEMBER_OF",
+    "group and ungroup",
+    "ISA",
+    "the bundles",
+    "CONSTRAINTS",
+    "the bundles"
+  );
+
   private static final Logger log = LoggerFactory.getLogger(EntityManager.class);
   private static final NodeRepository nodeRepository = Context.getNodeRepository();
   private static final InstanceRepository instanceRepository = Context.getInstanceRepository();
@@ -188,7 +200,7 @@ public class EntityManager extends GenericActor {
   /**
    * Update takes an array containing entities as input. It'll check which of them
    * are updated, and persist those updates to the graph.
-   * An entity is updated when it has a UUID that is known in the graph, and its checksum is changed.
+   * Each entity must have a UUID that is known in the graph. An entity is updated when its checksum is changed.
    * Optionally, {@code update} can be provided with an {@code oldEntities} array that contains
    * the entities in their original state, used to see if entities were updated while we were editing them.
    *
@@ -226,8 +238,15 @@ public class EntityManager extends GenericActor {
         try {
           updatedEntities = entities
             .map(e -> (ObjectNode) e)
-            // only keep existing entities
-            .filter(isNewEntity.negate())
+            // update does not create entities
+            .peek(entity -> {
+              if (isNewEntity.test(entity)) {
+                throw new IllegalArgumentException(
+                  "Update does not create entities; use create. Entity: " +
+                    entity.path(META).path(UUID).asString(entity.path("name").asString())
+                );
+              }
+            })
             // calculate and inject checksum
             .peek(entity ->
               ((ObjectNode) entity.get("meta")).put(
@@ -237,6 +256,16 @@ public class EntityManager extends GenericActor {
             )
             // deserialize to Entity, an entity that is not valid stops the update
             .map(e -> LambdaHelper.wrapWithExceptionPropagation(() -> mapper.treeToValue(e, Entity.class)).get())
+            // update does not change relations
+            .peek(entity -> {
+              if (entity.changesRelations()) {
+                throw new IllegalArgumentException(
+                  "Update does not change relations; use relate, unrelate, specialize, group or ungroup. " +
+                    "Entity: " +
+                    entity.getUuid()
+                );
+              }
+            })
             // do the checksums differ?
             .filter(wasUpdated)
             // then collect
@@ -268,7 +297,7 @@ public class EntityManager extends GenericActor {
               exception.printStackTrace();
             }
             log.error(exception.getMessage());
-            result.put(ERROR, "Error while persisting updated entities to database.");
+            result.put(ERROR, "Error while persisting updated entities to database: " + exception.getMessage());
             return response(request, result);
           }
         }
@@ -501,6 +530,109 @@ public class EntityManager extends GenericActor {
         return jsonFromResource("help/entitymanager.ungroup.json");
       }
     };
+  }
+
+  @SchemaPath("resource:/schema/manager/entitymanager/relate.schema.json")
+  public MessageHandler relate() {
+    return new MessageHandler() {
+      @Override
+      public JsonNode exec(JsonNode request) {
+        final JsonNode args = request.get("args");
+        final ObjectNode result = mapper.createObjectNode();
+        final String from = args.get("from").asString();
+        final String relation = args.get("relation").asString();
+        final String to = args.get("to").asString();
+
+        try {
+          checkRelation(from, relation, to);
+          final boolean changed = Graph.transaction(() -> {
+            final boolean exists = relationCount(from, relation, to, "") > 0;
+            // toGraph checks the type constraints and adds the relation
+            final Entity entity = entity(from);
+            entity.addRelations(relation, Direction.OUTGOING, ImmutableSet.of(java.util.UUID.fromString(to)));
+            entity.toGraph();
+            return !exists;
+          });
+          result.set("data", mapper.createObjectNode().put("changed", changed));
+        } catch (RuntimeException e) {
+          result.put(ERROR, e.getMessage());
+        }
+
+        return response(request, result);
+      }
+
+      @Override
+      public JsonNode help(JsonNode request) {
+        return jsonFromResource("help/entitymanager.relate.json");
+      }
+    };
+  }
+
+  @SchemaPath("resource:/schema/manager/entitymanager/relate.schema.json")
+  public MessageHandler unrelate() {
+    return new MessageHandler() {
+      @Override
+      public JsonNode exec(JsonNode request) {
+        final JsonNode args = request.get("args");
+        final ObjectNode result = mapper.createObjectNode();
+        final String from = args.get("from").asString();
+        final String relation = args.get("relation").asString();
+        final String to = args.get("to").asString();
+
+        try {
+          checkRelation(from, relation, to);
+          final boolean changed = Graph.transaction(() -> {
+            final boolean removed = relationCount(from, relation, to, "DELETE r ") > 0;
+            // A required relation stops the change, and the rollback restores it
+            entity(from).toGraph();
+            return removed;
+          });
+          result.set("data", mapper.createObjectNode().put("changed", changed));
+        } catch (RuntimeException e) {
+          result.put(ERROR, e.getMessage());
+        }
+
+        return response(request, result);
+      }
+
+      @Override
+      public JsonNode help(JsonNode request) {
+        return jsonFromResource("help/entitymanager.unrelate.json");
+      }
+    };
+  }
+
+  // Throw if relate and unrelate cannot change the relation
+  private void checkRelation(String from, String relation, String to) {
+    if (OWNERS.containsKey(relation)) {
+      throw new IllegalArgumentException("Change " + relation + " with " + OWNERS.get(relation) + ".");
+    }
+    for (String uuid : List.of(from, to)) {
+      if (nodeRepository.findByUuid(uuid) == null) {
+        throw new IllegalArgumentException("Node with UUID \"" + uuid + "\" not found.");
+      }
+    }
+  }
+
+  // Count the relations from one node to another, and optionally delete them
+  private long relationCount(String from, String relation, String to, String delete) {
+    return (
+      (Number) Graph.query(
+        "MATCH (:Node {uuid: $from})-[r:" +
+          Graph.escape(relation) +
+          "]->(:Node {uuid: $to}) " +
+          delete +
+          "RETURN count(r) AS n",
+        ImmutableMap.of("from", from, "to", to)
+      )
+        .get(0)
+        .get("n")
+    ).longValue();
+  }
+
+  // The entity of a node, as the graph has it now
+  private Entity entity(String uuid) {
+    return mapper.treeToValue(mapper.valueToTree(nodeRepository.findByUuid(uuid)), Entity.class);
   }
 
   /**

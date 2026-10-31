@@ -1,5 +1,4 @@
 import argparse
-import copy
 import ipaddress
 import json
 from pathlib import Path
@@ -33,14 +32,12 @@ def scan(target, arguments):
 
 
 def update_address(client, graph, address, reachable, hostname):
-    before = copy.deepcopy(address)
-    address["data"]["reachable"] = reachable
-    if hostname:
-        dns = graph.dns(hostname)
-        client.persist([dns], [address])
-        relate(address, "HAS", dns)
-    if address != before:
+    if address["data"].get("reachable") != reachable:
+        address["data"]["reachable"] = reachable
         client.update(address)
+    if hostname:
+        [dns] = client.persist([graph.dns(hostname)])
+        client.relate(address["meta"]["uuid"], "HAS", dns)
     return address["meta"]["uuid"]
 
 
@@ -72,23 +69,24 @@ def main():
                 "name": options.net, "desc": "An IPv4 network", "cidr": options.cidr,
             })
             network["name"] = options.net
-        before = copy.deepcopy(network)
+        addresses = []
         for ip, hostname in scan(options.cidr, options.args):
             address = client.find("addr", ip)
             if address.get("meta"):
-                update_address(client, graph, address, True, hostname)
+                addresses.append(update_address(client, graph, address, True, hostname))
             else:
                 address = graph.address(ip)
                 if hostname:
                     dns = graph.dns(hostname)
                     client.persist([dns], [address])
                     relate(address, "HAS", dns)
-                client.persist([address], [network])
-            relate(network, "HAS", address)
+                addresses.extend(client.persist([address]))
         if not exists:
+            for identifier in addresses:
+                relate(network, "HAS", {"meta": {"uuid": identifier}})
             return client.persist([network])
-        if network != before:
-            return client.update(network)
+        for identifier in addresses:
+            client.relate(network["meta"]["uuid"], "HAS", identifier)
         return [network["meta"]["uuid"]]
 
 

@@ -7,5 +7,5 @@
       "oldEntities": "array of entities (optional)"
     }
   },
-  "description": "The update handler writes the changed entities to the graph and returns their UUIDs. An entity is changed if the graph has its UUID and its checksum is different. If you give oldEntities, an entity changes only if its old version is the same as the version in the graph."
+  "description": "The update handler writes the changed entities to the graph and returns their UUIDs. Each entity must exist in the graph; use create for new entities. An entity is changed if its checksum is different. If you give oldEntities, an entity changes only if its old version is the same as the version in the graph. The update handler does not change relations: the relations of each entity must be the same as in the graph. Use relate, unrelate, specialize, group or ungroup to change relations."
 }
