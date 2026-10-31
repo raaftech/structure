@@ -359,7 +359,7 @@ public class EntityManager extends GenericActor {
 
             if (isa == null) {
               result.put(ERROR, "Could not find a type with uuid " + isaUuid);
-            } else if (!instanceType.getChildIsaSet().contains(isa)) {
+            } else if (!isa.isOfType(instanceType.getName())) {
               result.put(
                 ERROR,
                 "Invalid specialization requested. Type [" +

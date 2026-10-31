@@ -347,24 +347,48 @@ public class EntityManagerTest extends TypeSchemaTest {
     assertEquals(labels, labels(os));
   }
 
+  // A type four levels below, for example a release of a distribution
+  @Test
+  public void testSpecializeBelowChildren() throws Exception {
+    EntityManager entityManager = new EntityManager();
+    String archLinux = type("ArchLinux", LINUX);
+    String archLinux2026 = type("ArchLinux2026", archLinux);
+    String os = instance(OPERATING_SYSTEM, OS_DATA);
+
+    ObjectNode result = exec(
+      entityManager.specialize(),
+      "specialize",
+      mapper.createObjectNode().put("instance", os).put("isa", archLinux2026)
+    );
+    assertFalse(result.has("error"), result.toString());
+    assertEquals("Instance [OperatingSystem] specialized to [ArchLinux2026]", result.get("data").asString());
+    assertEquals(ImmutableList.of("INSTANCE_OF -> " + archLinux2026), outgoing(os));
+  }
+
   @Test
   public void testSpecializeErrors() throws Exception {
     EntityManager entityManager = new EntityManager();
     String os = instance(OPERATING_SYSTEM, OS_DATA);
+    String linux = instance(LINUX, OS_DATA);
 
-    // Linux is a subtype of UnixLike, not a direct subtype of OperatingSystem
-    ObjectNode result = exec(
-      entityManager.specialize(),
-      "specialize",
-      mapper.createObjectNode().put("instance", os).put("isa", LINUX)
-    );
-    assertEquals(
-      "Invalid specialization requested. Type [Linux] is not in the specialization set of: " + "[OperatingSystem]",
-      result.get("error").asString()
-    );
+    // A type above the current type, or the current type itself
+    for (String isa : ImmutableList.of(UNIX_LIKE, LINUX)) {
+      ObjectNode result = exec(
+        entityManager.specialize(),
+        "specialize",
+        mapper.createObjectNode().put("instance", linux).put("isa", isa)
+      );
+      assertEquals(
+        "Invalid specialization requested. Type [" +
+          nodeRepository.findByUuid(isa).getName() +
+          "] is not in the specialization set of: [Linux]",
+        result.get("error").asString()
+      );
+    }
+    assertEquals(ImmutableList.of("INSTANCE_OF -> " + LINUX), outgoing(linux));
 
     String unknown = java.util.UUID.randomUUID().toString();
-    result = exec(
+    ObjectNode result = exec(
       entityManager.specialize(),
       "specialize",
       mapper.createObjectNode().put("instance", os).put("isa", unknown)
@@ -480,6 +504,22 @@ public class EntityManagerTest extends TypeSchemaTest {
     ObjectNode args = mapper.createObjectNode().put("uuid", uuid).put("includeStart", true);
     args.putArray("labels").add(label);
     return args;
+  }
+
+  // Makes a type below the type isa and returns its uuid
+  private static String type(String name, String isa) throws Exception {
+    String uuid = java.util.UUID.randomUUID().toString();
+    ObjectNode type = mapper.createObjectNode().put("name", name).put("desc", "A specialization test type.");
+    ObjectNode meta = type.putObject("meta").put("uuid", uuid);
+    meta.putObject("relations").putObject("ISA").put("direction", "outgoing").putArray("to").add(isa);
+    type
+      .putObject("file")
+      .putObject("dataSchema")
+      .put("encoding", "text")
+      .put("format", "json")
+      .put("content", "{\"type\": \"object\"}");
+    mapper.treeToValue(type, Entity.class).toGraph();
+    return uuid;
   }
 
   // Makes an instance of the type isa and returns its uuid
