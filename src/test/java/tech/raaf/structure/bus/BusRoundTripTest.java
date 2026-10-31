@@ -121,7 +121,7 @@ public class BusRoundTripTest extends TypeSchemaTest {
       { INSTANCES, "nLastCreated", "{'amount': 5}", null },
       { INSTANCES, "findByName", "{'name': 'bus-host'}", null },
       { STRUCTURE, "reload", "{}", null },
-      { STRUCTURE, "discover", "{}", null },
+      { STRUCTURE, "introspect", "{}", null },
       { typeAddress, "getSubtypes", "{}", null },
       { typeAddress, "getConstraints", "{}", null },
       { hostAddress, "json", "{}", null },

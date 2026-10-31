@@ -5,6 +5,7 @@ import io.vertx.core.DeploymentOptions;
 import io.vertx.core.ThreadingModel;
 import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.eventbus.Message;
+import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -13,6 +14,9 @@ import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +52,9 @@ public abstract class GenericActor extends AbstractVerticle {
   private static final String statusAddress = "tech.raaf.structure.bus.status";
   // The worker pool of the actors that use the graph.
   private static final String POOL = "structure-actors";
-  private static final String ACTORS = "structure-command-discovery";
+  // Shared maps for introspection: handlers by class, and active actors.
+  private static final String CLASSES = "structure-introspection-classes";
+  private static final String ACTORS = "structure-introspection-actors";
 
   // Options to deploy an actor that uses the graph.
   public static DeploymentOptions worker() {
@@ -145,22 +151,25 @@ public abstract class GenericActor extends AbstractVerticle {
     return List.of(getActorName());
   }
 
-  // Read metadata from each active deployment in this Vert.x instance.
+  // Read the active actors, and the handlers of their classes.
   protected JsonNode actorMetadata() {
-    ObjectNode actors = mapper.createObjectNode();
-    vertx
-      .sharedData()
-      .<String, JsonObject>getLocalMap(ACTORS)
-      .entrySet()
-      .stream()
-      .sorted(Map.Entry.comparingByKey())
-      .forEach(entry -> actors.set(entry.getKey(), convertFromJsonObject(entry.getValue())));
-    return actors;
+    ObjectNode metadata = mapper.createObjectNode();
+    ObjectNode classes = metadata.putObject("classes");
+    ObjectNode actors = metadata.putObject("actors");
+    Map<String, JsonObject> handlers = vertx.sharedData().getLocalMap(CLASSES);
+    Map<String, JsonObject> active = new TreeMap<>(vertx.sharedData().getLocalMap(ACTORS));
+    Set<String> names = new TreeSet<>();
+    active.forEach((id, actor) -> {
+      actors.set(id, convertFromJsonObject(actor));
+      names.add(actor.getString("class"));
+    });
+    names.forEach(name -> classes.set(name, convertFromJsonObject(handlers.get(name))));
+    return metadata;
   }
 
-  private JsonObject metadata() {
+  // The handlers of the class of this actor, with their schemas and help.
+  private JsonObject handlerMetadata() {
     ObjectNode actor = mapper.createObjectNode();
-    actor.set("addresses", mapper.valueToTree(addresses()));
     ObjectNode commands = actor.putObject("handlers");
     JsonNode request = mapper.createObjectNode().put("msgh", "help");
     handlers
@@ -278,12 +287,17 @@ public abstract class GenericActor extends AbstractVerticle {
   // Logs and registers the actors on the bus.
   @Override
   public void start() {
-    JsonObject metadata = metadata();
     for (String address : addresses()) {
       log.debug("Listen for {} on addr: {}", this.getClass().getSimpleName(), address);
       vertx.eventBus().consumer(address, this::handleMessage);
     }
-    vertx.sharedData().<String, JsonObject>getLocalMap(ACTORS).put(deploymentID(), metadata);
+    // The handlers are the same for each actor of a class, thus share them
+    vertx
+      .sharedData()
+      .<String, JsonObject>getLocalMap(CLASSES)
+      .computeIfAbsent(getActorName(), name -> handlerMetadata());
+    JsonObject actor = new JsonObject().put("class", getActorName()).put("addresses", new JsonArray(addresses()));
+    vertx.sharedData().<String, JsonObject>getLocalMap(ACTORS).put(deploymentID(), actor);
   }
 
   @Override

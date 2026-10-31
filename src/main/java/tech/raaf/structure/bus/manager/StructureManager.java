@@ -44,7 +44,7 @@ public class StructureManager extends GenericActor {
   ComponentRepository componentRepository = Context.getComponentRepository();
   InstrumentRepository instrumentRepository = Context.getInstrumentRepository();
 
-  public MessageHandler discover() {
+  public MessageHandler introspect() {
     return new MessageHandler() {
       @Override
       public JsonNode exec(JsonNode request) {
@@ -53,7 +53,7 @@ public class StructureManager extends GenericActor {
 
       @Override
       public JsonNode help(JsonNode request) {
-        return jsonFromResource("help/structuremanager.discover.json");
+        return jsonFromResource("help/structuremanager.introspect.json");
       }
     };
   }
