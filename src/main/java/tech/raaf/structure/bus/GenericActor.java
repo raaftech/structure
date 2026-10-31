@@ -205,10 +205,17 @@ public abstract class GenericActor extends AbstractVerticle {
     }
   }
 
-  // Log why a response is not valid; that is a fault of Structure
-  public JsonNode validate(URI schemaDoc, JsonNode jsonDoc) {
-    JsonHelper.validationErrors(schemaDoc, jsonDoc).forEach(error -> log.error("Invalid response: {}", error));
-    return jsonDoc;
+  // Replace a response that is not valid with an error response
+  private JsonNode checked(JsonNode request, JsonNode response) {
+    final List<String> errors =
+      response == null
+        ? List.of("the handler gave no response")
+        : JsonHelper.validationErrors(schemaForResponse, response);
+    if (errors.isEmpty()) {
+      return response;
+    }
+    log.error("Invalid response to {}: {}", request.path("msgh").asString(), errors);
+    return response(request, JsonNodeFactory.instance.objectNode().put("error", "Invalid response: " + errors));
   }
 
   // Publish an event on the events address
@@ -241,12 +248,13 @@ public abstract class GenericActor extends AbstractVerticle {
       @Override
       public JsonNode exec(JsonNode request) {
         ObjectNode result = JsonNodeFactory.instance.objectNode();
+        ObjectNode data = result.putObject("data");
 
         for (String msgh : handlers.keySet()) {
           try {
             JsonNode help = handlers.get(msgh).handler.help(request);
             if (help != null) {
-              result.set(msgh, help);
+              data.set(msgh, help);
             }
           } catch (NullPointerException e) {
             log.error(e.getMessage());
@@ -272,7 +280,8 @@ public abstract class GenericActor extends AbstractVerticle {
     return new MessageHandler() {
       @Override
       public JsonNode exec(JsonNode request) {
-        JsonNode result = jsonFromResource("release.json");
+        ObjectNode result = JsonNodeFactory.instance.objectNode();
+        result.set("data", jsonFromResource("release.json"));
         return response(request, result);
       }
 
@@ -306,19 +315,21 @@ public abstract class GenericActor extends AbstractVerticle {
 
   // Our message handler.
   public void handleMessage(Message<Object> message) {
-    // Request!
-    JsonObject body = (JsonObject) message.body();
-    JsonNode request = convertFromJsonObject(body);
-    JsonObject response;
+    // A body that is not a JSON object gives a request without msgh
+    JsonNode request =
+      message.body() instanceof JsonObject body ? convertFromJsonObject(body) : mapper.createObjectNode();
+    message.reply(new JsonObject(checked(request, dispatch(request)).toString()));
+  }
 
+  // Give the request to its message handler, and return the response
+  private JsonNode dispatch(JsonNode request) {
     // Without a valid msgh and args we can't dispatch, reply with an error
     final List<String> requestErrors = JsonHelper.validationErrors(schemaForRequest, request);
     if (!requestErrors.isEmpty()) {
       JsonNode error = JsonNodeFactory.instance
         .objectNode()
         .put("error", "Request didn't validate against schema: " + requestErrors);
-      message.reply(new JsonObject(validate(schemaForResponse, response(request, error)).toString()));
-      return;
+      return response(request, error);
     }
 
     String msgh = request.get("msgh").asString();
@@ -342,26 +353,20 @@ public abstract class GenericActor extends AbstractVerticle {
       }
       final List<String> argsErrors = JsonHelper.validationErrors(schema, args);
       if (argsErrors.isEmpty()) {
-        JsonNode result;
         try {
-          result = handlerAndSchema.handler.exec(request);
+          return handlerAndSchema.handler.exec(request);
         } catch (Exception e) {
           // Reply with the error, else the client waits until its timeout
           log.error("Handler {} failed", msgh, e);
-          result = response(request, JsonNodeFactory.instance.objectNode().put("error", e.toString()));
+          return response(request, JsonNodeFactory.instance.objectNode().put("error", e.toString()));
         }
-        // Response! Convert "Jackson JsonNode" to "Vert.x JsonObject".
-        response = new JsonObject(validate(schemaForResponse, result).toString());
-      } else {
-        JsonNode error = JsonNodeFactory.instance
-          .objectNode()
-          .put("error", "Arguments didn't validate against schema: " + argsErrors);
-        response = new JsonObject(validate(schemaForResponse, response(request, error)).toString());
       }
-    } else {
-      JsonNode error = JsonNodeFactory.instance.objectNode().put("error", "No handler for called method.");
-      response = new JsonObject(validate(schemaForResponse, response(request, error)).toString());
+      JsonNode error = JsonNodeFactory.instance
+        .objectNode()
+        .put("error", "Arguments didn't validate against schema: " + argsErrors);
+      return response(request, error);
     }
-    message.reply(response);
+    JsonNode error = JsonNodeFactory.instance.objectNode().put("error", "No handler for called method.");
+    return response(request, error);
   }
 }

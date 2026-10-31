@@ -141,6 +141,7 @@ public class Instances extends Repository<Instance> {
             result.put("data", uuid);
           } else {
             // TODO: Add support for other Instances
+            result.put("error", "Type [" + type.getName() + "] is not a Component.");
           }
         } catch (RuntimeException e) {
           log.error(e.getMessage());

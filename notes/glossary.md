@@ -264,7 +264,8 @@ words to use for each one.
 
 - **Response**: The reply to a request, in the format of
   `base/response.schema.json`. It has the `request`, and a `result` with `data`
-  or `error`. Vert.x calls it a reply.
+  or an `error` text, never both. If a handler gives a response that is not
+  valid, `GenericActor` replies with an error. Vert.x calls it a reply.
 
 - **Result**: Three meanings. A Result node holds the outcome of a run of a
   controller, with a state (`stateCode`, `stateInterpretation`,

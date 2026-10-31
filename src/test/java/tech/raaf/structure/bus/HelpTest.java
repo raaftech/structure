@@ -44,7 +44,7 @@ public class HelpTest extends TypeSchemaTest {
     );
     List<String> missing = new ArrayList<>();
     for (GenericActor actor : actors) {
-      JsonNode help = actor.help().exec(mapper.createObjectNode().put("msgh", "help")).path("result");
+      JsonNode help = actor.help().exec(mapper.createObjectNode().put("msgh", "help")).path("result").path("data");
       for (String handler : actor.handlers.keySet()) {
         if (!handler.equals(help.path(handler).path("name").asString())) {
           missing.add(actor.getClass().getSimpleName() + "." + handler);

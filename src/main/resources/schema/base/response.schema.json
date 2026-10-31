@@ -1,25 +1,23 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "description": "Schema for Structure responses to requests.",
+  "description": "Schema for Structure responses to requests. The result has data or an error.",
   "type": "object",
   "required": ["request", "result"],
+  "additionalProperties": false,
   "properties": {
     "request": {
       "type": "object"
     },
     "result": {
-      "type": "object"
-    },
-    "stats": {
-      "type": "object"
-    },
-    "error": {
-      "type": "object"
-    },
-    "exit": {
-      "type": "integer",
-      "minimum": 0,
-      "maximum": 255
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "data": {},
+        "error": {
+          "type": "string"
+        }
+      },
+      "oneOf": [{ "required": ["data"] }, { "required": ["error"] }]
     }
   }
 }

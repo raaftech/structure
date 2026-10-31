@@ -5,7 +5,6 @@ import com.google.common.collect.ImmutableSet;
 import java.net.URI;
 import java.util.*;
 import java.util.function.BiPredicate;
-import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -162,11 +161,12 @@ public class EntityManager extends GenericActor {
 
           if (start != null) {
             try {
-              ArrayNode data = result.putArray("data");
+              ArrayNode data = mapper.createArrayNode();
               labelBasedTraversal(labels, start, includeStart)
                 .stream()
                 .map(mapper::valueToTree)
                 .forEach(t -> data.add((JsonNode) t));
+              result.set("data", data);
             } catch (EntitySerializationException e) {
               result.put(ERROR, e.getMessage());
             }
@@ -212,13 +212,6 @@ public class EntityManager extends GenericActor {
           oldEntitiesUuidToChecksum = ImmutableMap.of();
         }
 
-        final Consumer<Throwable> exceptionHandler = e -> {
-          if (!result.has(ERROR)) {
-            result.putArray(ERROR);
-          }
-          ((ArrayNode) result.get(ERROR)).add(e.getMessage());
-        };
-
         /*
           Checks whether an entity was updated between the read operation and the update operation,
           simply by checking if an entity's checksum before editing it is still the same as its checksum
@@ -229,26 +222,31 @@ public class EntityManager extends GenericActor {
           return !Objects.equals(oldEntitiesUuidToChecksum.get(uuid), persistedChecksum);
         };
 
-        final List<Entity> updatedEntities = entities
-          .map(e -> (ObjectNode) e)
-          // only keep existing entities
-          .filter(isNewEntity.negate())
-          // calculate and inject checksum
-          .peek(entity ->
-            ((ObjectNode) entity.get("meta")).put(
-              "checksum",
-              NaiveSorter.calculateChecksum(entity, NaiveSorter.ChecksumAlgorithm.SHA1)
+        final List<Entity> updatedEntities;
+        try {
+          updatedEntities = entities
+            .map(e -> (ObjectNode) e)
+            // only keep existing entities
+            .filter(isNewEntity.negate())
+            // calculate and inject checksum
+            .peek(entity ->
+              ((ObjectNode) entity.get("meta")).put(
+                "checksum",
+                NaiveSorter.calculateChecksum(entity, NaiveSorter.ChecksumAlgorithm.SHA1)
+              )
             )
-          )
-          // deserialize to Entity
-          .map(e -> LambdaHelper.wrapWithExceptionHandler(() -> mapper.treeToValue(e, Entity.class), exceptionHandler))
-          .filter(Optional::isPresent)
-          .map(Optional::get)
-          // do the checksums differ?
-          .filter(wasUpdated)
-          // then collect
-          .collect(Collectors.toList());
+            // deserialize to Entity, an entity that is not valid stops the update
+            .map(e -> LambdaHelper.wrapWithExceptionPropagation(() -> mapper.treeToValue(e, Entity.class)).get())
+            // do the checksums differ?
+            .filter(wasUpdated)
+            // then collect
+            .collect(Collectors.toList());
+        } catch (RuntimeException e) {
+          result.put(ERROR, e.getMessage());
+          return response(request, result);
+        }
 
+        final ArrayNode data = mapper.createArrayNode();
         if (!updatedEntities.isEmpty()) {
           if (oldEntitiesUuidToChecksum.size() > 0) {
             if (
@@ -263,7 +261,6 @@ public class EntityManager extends GenericActor {
             }
           }
           try {
-            final ArrayNode data = result.putArray("data");
             Graph.transaction(() -> updatedEntities.forEach(Entity::toGraph));
             updatedEntities.stream().map(Entity::getUuid).forEach(data::add);
           } catch (Exception exception) {
@@ -271,11 +268,12 @@ public class EntityManager extends GenericActor {
               exception.printStackTrace();
             }
             log.error(exception.getMessage());
-            // This overwrites any existing error property, which is ok.
             result.put(ERROR, "Error while persisting updated entities to database.");
+            return response(request, result);
           }
         }
 
+        result.set("data", data);
         return response(request, result);
       }
 
@@ -388,7 +386,8 @@ public class EntityManager extends GenericActor {
           });
         } catch (RuntimeException e) {
           log.error(e.getMessage());
-          result.put(ERROR, e.getMessage());
+          // The commit can fail after the data is set
+          result.removeAll().put(ERROR, e.getMessage());
         }
 
         return response(request, result);

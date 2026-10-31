@@ -438,6 +438,7 @@ public class TaskManager extends GenericActor {
               job.status = JobStatus.CANCELLED;
               // Notify interested parties
               publishEvent("jobCancelled", mapper.createObjectNode().put("taskId", task.id).put("jobId", jobId));
+              result.put("data", job.status.name());
             } else {
               // This shouldn't happen.
               result.put("error", "Job was null. This shouldn't happen.");

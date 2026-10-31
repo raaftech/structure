@@ -270,6 +270,31 @@ public class EntityManagerTest extends TypeSchemaTest {
     assertTrue(result.has("error"), result.toString());
   }
 
+  // An entity that is not valid stops the whole update
+  @Test
+  public void testUpdateIsAllOrNothing() throws Exception {
+    EntityManager entityManager = new EntityManager();
+    String os = instance(OPERATING_SYSTEM, OS_DATA);
+    ObjectNode changed = mapper.valueToTree(nodeRepository.findByUuid(os));
+    changed.put("desc", "Changed.");
+    ObjectNode broken = mapper.valueToTree(nodeRepository.findByUuid(instance(OPERATING_SYSTEM, OS_DATA)));
+    broken.remove("name");
+    ObjectNode args = mapper.createObjectNode();
+    args.putArray("entities").add(changed).add(broken);
+
+    ObjectNode result = exec(entityManager.update(), "update", args);
+    assertTrue(result.has("error"), result.toString());
+    assertFalse(result.has("data"), result.toString());
+    assertEquals("A write path test node.", nodeRepository.findByUuid(os).getDesc());
+
+    // An update without changes updates no entities
+    args = mapper.createObjectNode();
+    args.putArray("entities").add(mapper.valueToTree(nodeRepository.findByUuid(UNIX_LIKE)));
+    result = exec(entityManager.update(), "update", args);
+    assertFalse(result.has("error"), result.toString());
+    assertEquals(mapper.createArrayNode(), result.get("data"));
+  }
+
   @Test
   public void testDelete() throws Exception {
     EntityManager entityManager = new EntityManager();
