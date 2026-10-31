@@ -1,0 +1,14 @@
+{
+  "name": "structure-repl",
+  "version": "0.1.0",
+  "description": "A REPL for the event bus of Structure",
+  "license": "AGPL-3.0-only",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.19"
+  },
+  "scripts": {
+    "test": "node --test \"test/*.test.ts\""
+  }
+}
