@@ -127,11 +127,6 @@ export STRUCTURE_NEO4J_PASS=structure
 java -jar target/structure-*-fat.jar --unsafe
 ```
 
-### Structure REPL
-
-Issue [#468](https://github.com/raaftech/structure/issues/468) adds a Java
-client for the event bus bridge.
-
 ## Examples
 
 Some requests to try:
