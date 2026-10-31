@@ -205,7 +205,7 @@ public class TaskManager extends GenericActor {
                     runningJobs.remove(job);
                     task.finishedOne();
                     // Notify interested parties
-                    publishStatus(
+                    publishEvent(
                       "jobError",
                       mapper.createObjectNode().put("taskId", task.id).put("jobId", task.jobs.indexOf(job))
                     );
@@ -222,7 +222,7 @@ public class TaskManager extends GenericActor {
                   runningJobs.remove(job);
                   task.finishedOne();
                   // Notify
-                  publishStatus(
+                  publishEvent(
                     "jobCancelled",
                     mapper.createObjectNode().put("taskId", task.id).put("jobId", task.jobs.indexOf(job))
                   );
@@ -275,7 +275,7 @@ public class TaskManager extends GenericActor {
         }
       }
       // Notify interested parties
-      publishStatus("taskFinished", mapper.createObjectNode().put("taskId", task.id).set("taskObj", task.toJson()));
+      publishEvent("taskFinished", mapper.createObjectNode().put("taskId", task.id).set("taskObj", task.toJson()));
 
       final Entity.ResultBuilder resultBuilder = new Entity.ResultBuilder()
         .taskId(job.taskId)
@@ -360,7 +360,7 @@ public class TaskManager extends GenericActor {
 
     // Notify interested parties
     int jobId = task.jobs.indexOf(job);
-    publishStatus("jobRunning", mapper.createObjectNode().put("taskId", job.taskId).put("jobId", jobId));
+    publishEvent("jobRunning", mapper.createObjectNode().put("taskId", job.taskId).put("jobId", jobId));
 
     // Create a timer that polls the process. This approach is used so we can monitor
     // the status of the process without blocking. This in turn results in us being able to destroy the
@@ -373,7 +373,7 @@ public class TaskManager extends GenericActor {
         // Remove the job from the running jobs list.
         runningJobs.remove(job);
         // Notify interested parties
-        publishStatus(
+        publishEvent(
           "jobFinished",
           mapper.createObjectNode().put("taskId", task.id).put("jobId", task.jobs.indexOf(job))
         );
@@ -437,7 +437,7 @@ public class TaskManager extends GenericActor {
             if (job != null) {
               job.status = JobStatus.CANCELLED;
               // Notify interested parties
-              publishStatus("jobCancelled", mapper.createObjectNode().put("taskId", task.id).put("jobId", jobId));
+              publishEvent("jobCancelled", mapper.createObjectNode().put("taskId", task.id).put("jobId", jobId));
             } else {
               // This shouldn't happen.
               result.put("error", "Job was null. This shouldn't happen.");
@@ -485,7 +485,7 @@ public class TaskManager extends GenericActor {
               resultData.add(taskId + "." + task.jobs.indexOf(job));
             });
           // Notify interested parties
-          publishStatus("taskCancelled", mapper.createObjectNode().put("taskId", task.id));
+          publishEvent("taskCancelled", mapper.createObjectNode().put("taskId", task.id));
         } else {
           result.put("error", "Couldn't find task with id " + taskId + ".");
         }
@@ -573,7 +573,7 @@ public class TaskManager extends GenericActor {
         }
 
         // Notify interested parties
-        publishStatus("taskScheduled", task.toJson());
+        publishEvent("taskScheduled", task.toJson());
 
         return response(request, result);
       }
@@ -639,7 +639,7 @@ public class TaskManager extends GenericActor {
           }
           result.put("data", task.status.name());
           // Notify interested parties
-          publishStatus(
+          publishEvent(
             "taskPaused",
             mapper.createObjectNode().put("taskId", task.id).put("status", task.status.name())
           );

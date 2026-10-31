@@ -87,7 +87,7 @@ public class StructureManager extends GenericActor {
         ObjectNode result = mapper.createObjectNode();
 
         log.info("Starting reinitialization of Structure");
-        publishStatus("structureReinitialization", mapper.createObjectNode().put("data", "started"));
+        publishEvent("structureReinitialization", mapper.createObjectNode().put("data", "started"));
         // First undeploy all the NodeActors
         final JsonObject message = new JsonObject().put("msgh", "undeploy");
         LocalMap<String, String> nodeActors = vertx.sharedData().getLocalMap(NodeActor.SHAREDMAP_ID);
@@ -110,7 +110,7 @@ public class StructureManager extends GenericActor {
             return null;
           }, false)
           .onComplete(res -> {
-            publishStatus("structureReinitialization", mapper.createObjectNode().put("data", "finished"));
+            publishEvent("structureReinitialization", mapper.createObjectNode().put("data", "finished"));
             log.info("Successfully reinitialized the database");
           });
         log.info("Started database reinitialization");
@@ -144,12 +144,12 @@ public class StructureManager extends GenericActor {
                 resultHandler.cause().printStackTrace();
               }
               log.error(resultHandler.cause().getMessage());
-              publishStatus(
+              publishEvent(
                 "selfDiscovery",
                 mapper.createObjectNode().put("error", resultHandler.cause().getMessage())
               );
             } else {
-              publishStatus("selfDiscovery", mapper.createObjectNode().put("status", "done"));
+              publishEvent("selfDiscovery", mapper.createObjectNode().put("status", "done"));
             }
           });
 

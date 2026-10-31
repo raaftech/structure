@@ -9,7 +9,7 @@ words to use for each one.
 
 - **Actor**: An object on the event bus. It receives requests on its bus
   addresses and sends a response to each request. An actor can also send
-  requests to other actors, and publish events on the status address. Each actor
+  requests to other actors, and publish events on the events address. Each actor
   is a subclass of `GenericActor` and is a verticle. The actor ID is its Vert.x
   deployment ID. There are managers, repository actors and node actors. See
   **Actor class**.
@@ -128,7 +128,12 @@ words to use for each one.
 
 - **Event bus**: The Vert.x message bus in Structure. Actors listen on bus
   addresses, and clients outside Structure use it through the bridge. Messages
-  are JSON requests and responses. The status address carries events.
+  are JSON requests and responses, and events on the events address.
+
+- **Events address**: The bus address `tech.raaf.structure.bus.events`, where
+  actors publish events, for example `taskScheduled` or `selfDiscovery`. Each
+  event has a `source`, an `event` and `data`. Clients register on this address
+  to follow what Structure does.
 
 - **GIVES_CAPABILITY**: The relation from an instrument to the capability that
   it gives.
@@ -289,10 +294,8 @@ words to use for each one.
 - **State directory**: The directory where Structure writes its runtime files,
   set with the `state-dir` setting.
 
-- **Status**: Two meanings. A task or a job has a status, for example READY or
-  RUNNING. The status address, `tech.raaf.structure.bus.status`, is where actors
-  publish events, for example `taskScheduled`. Each event has a `source`, an
-  `event` and `data`.
+- **Status**: The status of a task or a job, for example READY or RUNNING. For
+  components and Result nodes, write "state".
 
 - **Subject**: The group that the origin is in, for example the host of a
   service. If a controller has `subjectIsLocal`, its command runs on the

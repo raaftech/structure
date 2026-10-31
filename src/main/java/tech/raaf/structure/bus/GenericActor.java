@@ -47,9 +47,8 @@ public abstract class GenericActor extends AbstractVerticle {
   Map<String, HandlerSchema> handlers = new HashMap<>();
   protected ObjectMapper mapper = new ObjectMapper();
 
-  // statusAddress is used to push notifications of events within Structure
-  // that the GUI may be interested about.
-  private static final String statusAddress = "tech.raaf.structure.bus.status";
+  // The bus address where actors publish events, for clients to follow.
+  private static final String EVENTS = "tech.raaf.structure.bus.events";
   // The worker pool of the actors that use the graph.
   private static final String POOL = "structure-actors";
   // Shared maps for introspection: handlers by class, and active actors.
@@ -212,11 +211,11 @@ public abstract class GenericActor extends AbstractVerticle {
     return jsonDoc;
   }
 
-  // Publish a status on the status channel
-  protected void publishStatus(String event, JsonNode data) {
+  // Publish an event on the events address
+  protected void publishEvent(String event, JsonNode data) {
     EventBus eventBus = getVertx().eventBus();
     eventBus.publish(
-      statusAddress,
+      EVENTS,
       new JsonObject(
         "{\"source\":\"" +
           this.getClass().getSimpleName() +
