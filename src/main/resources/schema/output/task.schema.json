@@ -1,0 +1,61 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "One task with its jobs.",
+  "type": "object",
+  "required": ["status", "id", "jobs"],
+  "additionalProperties": false,
+  "properties": {
+    "status": {
+      "$ref": "#/definitions/taskStatus"
+    },
+    "id": {
+      "type": "string"
+    },
+    "jobs": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/job"
+      }
+    }
+  },
+  "definitions": {
+    "taskStatus": {
+      "type": "string",
+      "enum": ["SCHEDULED", "PAUSED", "FINISHED"]
+    },
+    "jobStatus": {
+      "type": "string",
+      "enum": ["CANCELLED", "ERROR", "FINISHED", "QUEUED", "RUNNING"]
+    },
+    "job": {
+      "description": "One job. It also has each metadata property of the job.",
+      "type": "object",
+      "required": ["status"],
+      "properties": {
+        "status": {
+          "$ref": "#/definitions/jobStatus"
+        },
+        "result": {
+          "description": "The job result, when the process is done.",
+          "type": "object",
+          "required": ["process"],
+          "additionalProperties": false,
+          "properties": {
+            "process": {
+              "type": "string"
+            },
+            "returnCode": {
+              "type": "integer"
+            },
+            "stdout": {
+              "type": "string"
+            },
+            "stderr": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+}

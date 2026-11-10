@@ -1,0 +1,8 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "The help of each message handler of an actor, by handler name.",
+  "type": "object",
+  "additionalProperties": {
+    "$ref": "../base/manual.schema.json"
+  }
+}

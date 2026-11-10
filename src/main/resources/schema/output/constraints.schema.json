@@ -1,0 +1,45 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "The type constraints of a type, by direction.",
+  "type": "object",
+  "required": ["incoming", "outgoing"],
+  "additionalProperties": false,
+  "properties": {
+    "incoming": {
+      "$ref": "#/definitions/constraints"
+    },
+    "outgoing": {
+      "$ref": "#/definitions/constraints"
+    }
+  },
+  "definitions": {
+    "constraints": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/constraint"
+      }
+    },
+    "constraint": {
+      "description": "One type constraint, by relation name.",
+      "type": "object",
+      "minProperties": 1,
+      "maxProperties": 1,
+      "additionalProperties": {
+        "type": "object",
+        "required": ["cardinality", "from", "to"],
+        "additionalProperties": false,
+        "properties": {
+          "cardinality": {
+            "$ref": "../entity.schema.json#/definitions/cardinality"
+          },
+          "from": {
+            "$ref": "../common.schema.json#/definitions/uuid"
+          },
+          "to": {
+            "$ref": "../common.schema.json#/definitions/uuid"
+          }
+        }
+      }
+    }
+  }
+}

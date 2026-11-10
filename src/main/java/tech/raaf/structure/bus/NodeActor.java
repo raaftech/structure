@@ -7,6 +7,7 @@ import java.util.concurrent.CompletableFuture;
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import tech.raaf.structure.annotations.SchemaPath;
 import tech.raaf.structure.base.Context;
 import tech.raaf.structure.graph.Entity;
 import tech.raaf.structure.graph.Graph;
@@ -63,6 +64,7 @@ public abstract class NodeActor<T extends Node> extends GenericActor {
   protected abstract String getSecondaryAddress();
 
   // Default methods every NodeActor exposes on the eventbus
+  @SchemaPath(output = "resource:/schema/output/uuid.schema.json")
   public MessageHandler uuid() {
     return new MessageHandler() {
       @Override
@@ -83,6 +85,7 @@ public abstract class NodeActor<T extends Node> extends GenericActor {
    * Serialize node to entity JSON and return it to the caller.
    * @return Serialized entity in the data property of the response.
    */
+  @SchemaPath(output = "resource:/schema/entity.schema.json")
   public MessageHandler json() {
     return new MessageHandler() {
       @Override
@@ -99,6 +102,7 @@ public abstract class NodeActor<T extends Node> extends GenericActor {
     };
   }
 
+  @SchemaPath(output = "resource:/schema/output/string.schema.json")
   public MessageHandler undeploy() {
     return new MessageHandler() {
       @Override

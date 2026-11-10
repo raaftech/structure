@@ -1,0 +1,74 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "The active actors, and the message handlers of their actor classes.",
+  "type": "object",
+  "required": ["classes", "actors"],
+  "additionalProperties": false,
+  "properties": {
+    "classes": {
+      "description": "Each actor class that has an active actor, by class name.",
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/definitions/class"
+      }
+    },
+    "actors": {
+      "description": "Each active actor, by actor ID.",
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/definitions/actor"
+      }
+    }
+  },
+  "definitions": {
+    "actor": {
+      "type": "object",
+      "required": ["class", "addresses"],
+      "additionalProperties": false,
+      "properties": {
+        "class": {
+          "type": "string"
+        },
+        "addresses": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1
+        }
+      }
+    },
+    "class": {
+      "type": "object",
+      "required": ["handlers"],
+      "additionalProperties": false,
+      "properties": {
+        "handlers": {
+          "description": "Each message handler, by handler name.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/handler"
+          }
+        }
+      }
+    },
+    "handler": {
+      "type": "object",
+      "required": ["schemaUri", "schema", "help"],
+      "additionalProperties": false,
+      "properties": {
+        "schemaUri": {
+          "type": "string",
+          "description": "The URI of the argument schema."
+        },
+        "schema": {
+          "type": "object",
+          "description": "The argument schema."
+        },
+        "help": {
+          "$ref": "../base/manual.schema.json"
+        }
+      }
+    }
+  }
+}

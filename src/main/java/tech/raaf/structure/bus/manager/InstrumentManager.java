@@ -35,6 +35,7 @@ public class InstrumentManager extends GenericActor {
     Context.setInstrumentsLoaded(false);
   }
 
+  @SchemaPath(output = "resource:/schema/output/string.schema.json")
   public MessageHandler reloadInstruments() {
     return new MessageHandler() {
       @Override
@@ -60,6 +61,7 @@ public class InstrumentManager extends GenericActor {
     };
   }
 
+  @SchemaPath(output = "resource:/schema/output/string.schema.json")
   public MessageHandler removeInstruments() {
     return new MessageHandler() {
       @Override
@@ -87,7 +89,10 @@ public class InstrumentManager extends GenericActor {
    *
    * IMPORTANT: Take note that we assume all UUIDs belong to the same grouping.
    */
-  @SchemaPath(input = "resource:/schema/manager/instrumentmanager/runCapability.schema.json")
+  @SchemaPath(
+    input = "resource:/schema/manager/instrumentmanager/runCapability.schema.json",
+    output = "resource:/schema/output/uuid.schema.json"
+  )
   public MessageHandler runCapability() {
     return new MessageHandler() {
       @Override

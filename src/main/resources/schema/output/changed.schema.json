@@ -1,0 +1,12 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Tells if the handler changed the graph.",
+  "type": "object",
+  "required": ["changed"],
+  "additionalProperties": false,
+  "properties": {
+    "changed": {
+      "type": "boolean"
+    }
+  }
+}

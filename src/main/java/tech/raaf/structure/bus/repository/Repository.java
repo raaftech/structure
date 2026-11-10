@@ -31,7 +31,10 @@ public abstract class Repository<T extends Node> extends GenericActor {
    * objects of type T, or an empty array if we
    * didn't find a match.
    */
-  @SchemaPath(input = "resource:/schema/repository/findByName.schema.json")
+  @SchemaPath(
+    input = "resource:/schema/repository/findByName.schema.json",
+    output = "resource:/schema/output/nodeList.schema.json"
+  )
   public MessageHandler findByName() {
     return new MessageHandler() {
       @Override
@@ -59,7 +62,10 @@ public abstract class Repository<T extends Node> extends GenericActor {
    * @return JSON representation of an object
    * of type T if we have a match, else null.
    */
-  @SchemaPath(input = "resource:/schema/repository/findOneByName.schema.json")
+  @SchemaPath(
+    input = "resource:/schema/repository/findOneByName.schema.json",
+    output = "resource:/schema/output/node.schema.json"
+  )
   public MessageHandler findOneByName() {
     return new MessageHandler() {
       @Override
@@ -92,7 +98,10 @@ public abstract class Repository<T extends Node> extends GenericActor {
    * @return If we find a typenode we'll set the data field to its UUID,
    * but if we didn't find a typenode, the error field will be set with a message.
    */
-  @SchemaPath(input = "resource:/schema/repository/findOne.schema.json")
+  @SchemaPath(
+    input = "resource:/schema/repository/findOne.schema.json",
+    output = "resource:/schema/output/node.schema.json"
+  )
   public MessageHandler findOne() {
     return new MessageHandler() {
       @Override

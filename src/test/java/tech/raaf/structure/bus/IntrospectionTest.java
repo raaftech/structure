@@ -27,7 +27,7 @@ public class IntrospectionTest {
   public static class Probe extends GenericActorTest.Probe {
 
     @Override
-    @SchemaPath(input = "resource:/schema/repository/findOneByName.schema.json")
+    @SchemaPath(input = "resource:/schema/repository/findOneByName.schema.json", output = GenericActorTest.OUTPUT)
     public MessageHandler silent() {
       return super.silent();
     }
@@ -59,7 +59,7 @@ public class IntrospectionTest {
   }
 
   @Test
-  public void listsHandlersWithoutHelpAndTheirArgumentSchemas() {
+  public void listsHandlersWithTheirHelpAndArgumentSchemas() {
     Probe probe = new Probe();
     String id = vertx.deployVerticle(probe).await();
     JsonNode data = introspect();
@@ -67,7 +67,7 @@ public class IntrospectionTest {
     assertEquals(probe.getActorName(), actor.path("class").asString());
     assertEquals(probe.getActorName(), actor.path("addresses").get(0).asString());
     JsonNode handlers = data.path("classes").path(probe.getActorName()).path("handlers");
-    assertTrue(handlers.path("silent").path("help").isNull());
+    assertEquals("probe", handlers.path("silent").path("help").path("name").asString());
     assertEquals("help", handlers.path("help").path("help").path("name").asString());
     assertEquals("object", handlers.path("help").path("schema").path("type").asString());
     JsonNode command = handlers.path("silent");
