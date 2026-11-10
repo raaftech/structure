@@ -1,0 +1,12 @@
+{
+  "name": "unrelate",
+  "synopsis": {
+    "msgh": "unrelate",
+    "args": {
+      "from": "UUID of the node that the relation starts at",
+      "relation": "name of the relation, for example HAS",
+      "to": "UUID of the node that the relation goes to"
+    }
+  },
+  "description": "The unrelate handler removes the relation from the first node to the second node. If the type constraints of the first node require the relation, nothing changes. The result tells if the graph changed. Use ungroup for MEMBER_OF."
+}

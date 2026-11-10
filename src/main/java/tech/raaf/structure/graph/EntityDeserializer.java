@@ -65,9 +65,10 @@ public class EntityDeserializer extends StdDeserializer<Entity> {
   @Override
   @SuppressWarnings("unchecked")
   public Entity deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) {
-    log.info("Creating entity from JSON data");
     Entity entity = new Entity();
     ObjectNode entityJson = (ObjectNode) deserializationContext.readTree(jsonParser);
+    // This reads JSON into an object; it does not change the graph
+    log.debug("Reading entity {} from JSON", entityJson.path("meta").path("uuid").asString());
 
     /*
      * Validate schema and go. The exception below gives the reasons.

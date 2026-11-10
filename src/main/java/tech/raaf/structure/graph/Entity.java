@@ -8,7 +8,6 @@ import com.google.common.collect.ImmutableSet;
 import io.vertx.core.json.JsonObject;
 import java.net.URI;
 import java.util.*;
-import java.util.function.BiPredicate;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
@@ -647,6 +646,12 @@ public class Entity {
 
     params.put("props", properties);
     Graph.query("MERGE (n:Node {uuid: $uuid}) " + "ON CREATE SET n.created = timestamp() " + "SET n += $props", params);
+    // Each node has the Node label, thus no labels means a new node
+    if (oldLabels.isEmpty()) {
+      final String kind = isInstance() ? getInstanceOf().map(Type::getName).orElse("instance") : "type";
+      // A rollback removes the node again, thus log after the commit
+      Graph.afterCommit(() -> log.info("Created {} {} {}", kind, name, uuid));
+    }
     return oldLabels;
   }
 
@@ -765,48 +770,70 @@ public class Entity {
     }
   }
 
+  // True if the relations differ from the outgoing relations of the node
+  public boolean changesRelations() {
+    final Set<Triple<String, String, String>> own = new HashSet<>();
+    if (relations != null) {
+      relations
+        .stream()
+        .flatMap(triple -> triple.<String>flatten())
+        .forEach(triple ->
+          own.add(
+            Triple.of(
+              triple.getLeft(),
+              triple.getMiddle(),
+              peer(triple.getMiddle(), triple.getLeft(), triple.getRight())
+            )
+          )
+        );
+    }
+    // NodeSerializer gives the constraints of a type outside the relations
+    final Set<Triple<String, String, String>> stored = new HashSet<>();
+    Graph.query(
+      "MATCH (:Node {uuid: $uuid})-[r]->(b) WHERE type(r) <> 'CONSTRAINTS' RETURN type(r) AS name, b.uuid AS peer",
+      ImmutableMap.of("uuid", uuid)
+    ).forEach(row -> stored.add(Triple.of((String) row.get("name"), "outgoing", (String) row.get("peer"))));
+    return !own.equals(stored);
+  }
+
+  // True if the peer of the relation is a type, which has a unique name
+  private static boolean isQueryableByName(String direction, String relation) {
+    return ("outgoing".equals(direction) ? outgoingToType : incomingFromType).contains(relation);
+  }
+
+  // The UUID of a peer, also when the relation gives the name of a type
+  private String peer(String direction, String relation, String identifier) {
+    if (!isQueryableByName(direction, relation) || GenericActor.isUuid(identifier)) {
+      return identifier;
+    }
+    final Type type = typeRepository.findOneByName(identifier);
+    return type == null ? identifier : type.getUuid();
+  }
+
   private void persistRelations() {
     if (relations == null) {
-      log.error(
-        "Failed to persist relations for entity \"{}\". Are you sure the entity is in a persisted state?",
-        name
-      );
-      return;
+      throw new IllegalEntityType(createErrorMessage(500, "", "The entity has no relations"));
     }
 
-    // Returns whether a relationship with a given direction implies the the entity can be queried by name
-    BiPredicate<String, String> isQueryableByName = (direction, relName) ->
-      ("outgoing".equals(direction) ? outgoingToType : incomingFromType).contains(relName);
-
     // Check that all peers of all relations exist
-    final boolean peersExist = relations
+    final Optional<String> missing = relations
       .stream()
       .flatMap(triple -> triple.<String>flatten())
-      .allMatch(triple ->
-        doesPeerExist(triple.getRight(), isQueryableByName.test(triple.getMiddle(), triple.getLeft()))
-      );
-    if (!peersExist) {
-      log.error("One of the peers that entity \"{}\" would be related to, does not exist in the graph", name);
-      return;
+      .filter(triple -> !doesPeerExist(triple.getRight(), isQueryableByName(triple.getMiddle(), triple.getLeft())))
+      .map(Triple::getRight)
+      .findFirst();
+    if (missing.isPresent()) {
+      throw new IllegalEntityType(createErrorMessage(404, missing.get(), "A peer of a relation does not exist"));
     }
 
     relations.forEach(relation -> {
       final String rname = relation.getLeft();
       final boolean outgoing = "outgoing".equals(relation.getMiddle());
-      /*
-        When a relation points towards a type it is possible to query that
-        type by name as well as by uuid, which is the default. This is because
-        types have a unique constraint on their names.
-      */
-      final boolean queryableByName = isQueryableByName.test(relation.getMiddle(), rname);
       final String query =
         "MATCH (a:Node {uuid: $from}), (b:Node {uuid: $to}) " + "MERGE (a)-[:" + Graph.escape(rname) + "]->(b)";
 
       relation.getRight().forEach(identifier -> {
-        final String peer =
-          queryableByName && !GenericActor.isUuid(identifier)
-            ? typeRepository.findOneByName(identifier).getUuid()
-            : identifier;
+        final String peer = peer(relation.getMiddle(), rname, identifier);
         log.debug("Merging {} \"{}\" relation between \"{}\" and \"{}\"", relation.getMiddle(), rname, uuid, peer);
         Graph.query(query, ImmutableMap.of("from", outgoing ? uuid : peer, "to", outgoing ? peer : uuid));
       });

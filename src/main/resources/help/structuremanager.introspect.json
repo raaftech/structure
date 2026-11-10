@@ -1,0 +1,8 @@
+{
+  "name": "introspect",
+  "synopsis": {
+    "msgh": "introspect",
+    "args": {}
+  },
+  "description": "Returns the active actors and their classes. Each actor has its class and bus addresses, by actor ID. Each class has its handlers once, with their argument schema URI, schema document and help. Missing help is null. An actor is removed when it stops, and a class when it has no actors."
+}

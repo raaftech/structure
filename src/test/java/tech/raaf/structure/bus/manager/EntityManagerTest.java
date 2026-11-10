@@ -37,6 +37,7 @@ public class EntityManagerTest extends TypeSchemaTest {
   private static final String UNIX_LIKE = "6a1eea8b-1462-4439-8c60-12edbee6c397";
   private static final String LINUX = "a5613527-2f64-4481-83f2-80b0cb427e28";
   private static final String COMPONENT_GROUP = "ee92c308-80f4-40b2-af3a-77d26cd99517";
+  private static final String DNS_NAME = "99c0da37-3599-418d-8ecc-de36d37ae9f4";
   private static final String OS_DATA = "{\"ver\": \"1\", \"shortName\": \"os\", \"longName\": \"Operating system\"}";
 
   @Test
@@ -270,6 +271,164 @@ public class EntityManagerTest extends TypeSchemaTest {
     assertTrue(result.has("error"), result.toString());
   }
 
+  // An entity that is not valid stops the whole update
+  @Test
+  public void testUpdateIsAllOrNothing() throws Exception {
+    EntityManager entityManager = new EntityManager();
+    String os = instance(OPERATING_SYSTEM, OS_DATA);
+    ObjectNode changed = mapper.valueToTree(nodeRepository.findByUuid(os));
+    changed.put("desc", "Changed.");
+    ObjectNode broken = mapper.valueToTree(nodeRepository.findByUuid(instance(OPERATING_SYSTEM, OS_DATA)));
+    broken.remove("name");
+    ObjectNode args = mapper.createObjectNode();
+    args.putArray("entities").add(changed).add(broken);
+
+    ObjectNode result = exec(entityManager.update(), "update", args);
+    assertTrue(result.has("error"), result.toString());
+    assertFalse(result.has("data"), result.toString());
+    assertEquals("A write path test node.", nodeRepository.findByUuid(os).getDesc());
+
+    // An update without changes updates no entities
+    args = mapper.createObjectNode();
+    args.putArray("entities").add(mapper.valueToTree(nodeRepository.findByUuid(UNIX_LIKE)));
+    result = exec(entityManager.update(), "update", args);
+    assertFalse(result.has("error"), result.toString());
+    assertEquals(mapper.createArrayNode(), result.get("data"));
+  }
+
+  // A relation to a node that does not exist stops the create. The
+  // constraints do not check incoming relations, so use one.
+  @Test
+  public void testCreateWithUnknownPeer() throws Exception {
+    EntityManager entityManager = new EntityManager();
+    String uuid = java.util.UUID.randomUUID().toString();
+    String unknown = java.util.UUID.randomUUID().toString();
+    ObjectNode entity = (ObjectNode) mapper.readTree(entity(uuid, OPERATING_SYSTEM, OS_DATA));
+    relations(entity).putObject("HAS").put("direction", "incoming").putArray("to").add(unknown);
+    ObjectNode args = mapper.createObjectNode();
+    args.putArray("entities").add(entity);
+
+    ObjectNode result = exec(entityManager.create(), "create", args);
+    assertTrue(result.path("error").asString().contains(unknown), result.toString());
+    assertNull(nodeRepository.findByUuid(uuid));
+  }
+
+  @Test
+  public void testUpdateDoesNotCreate() throws Exception {
+    EntityManager entityManager = new EntityManager();
+    String uuid = java.util.UUID.randomUUID().toString();
+    ObjectNode unknown = (ObjectNode) mapper.readTree(entity(uuid, OPERATING_SYSTEM, OS_DATA));
+    ObjectNode nameless = (ObjectNode) mapper.readTree(entity(uuid, OPERATING_SYSTEM, OS_DATA));
+    ((ObjectNode) nameless.path("meta")).remove("uuid");
+    // The UUID, or else the name, tells which entity it is
+    for (ObjectNode entity : ImmutableList.of(unknown, nameless)) {
+      ObjectNode result = exec(entityManager.update(), "update", entities(entity));
+      assertEquals(
+        "Update does not create entities; use create. Entity: " + (entity == unknown ? uuid : "write-" + uuid),
+        result.path("error").asString()
+      );
+    }
+    assertNull(nodeRepository.findByUuid(uuid));
+  }
+
+  @Test
+  public void testUpdateDoesNotChangeRelations() throws Exception {
+    EntityManager entityManager = new EntityManager();
+    String os = instance(OPERATING_SYSTEM, OS_DATA);
+    String group = instance(COMPONENT_GROUP, "{}");
+    exec(entityManager.group(), "group", mapper.createObjectNode().put("group", group).put("member", os));
+    List<String> relations = outgoing(os);
+
+    ObjectNode added = mapper.valueToTree(nodeRepository.findByUuid(os));
+    relations(added).putObject("HAS").put("direction", "outgoing").putArray("to").add(dns());
+    ObjectNode removed = mapper.valueToTree(nodeRepository.findByUuid(os));
+    relations(removed).remove("MEMBER_OF");
+    ObjectNode retyped = mapper.valueToTree(nodeRepository.findByUuid(os));
+    relations(retyped).putObject("INSTANCE_OF").put("direction", "outgoing").putArray("to").add(UNIX_LIKE);
+    for (ObjectNode entity : ImmutableList.of(added, removed, retyped)) {
+      entity.put("desc", "Changed.");
+      ObjectNode result = exec(entityManager.update(), "update", entities(entity));
+      assertTrue(result.path("error").asString().startsWith("Update does not change relations"), result.toString());
+    }
+    assertEquals(relations, outgoing(os));
+    assertEquals("A write path test node.", nodeRepository.findByUuid(os).getDesc());
+
+    // The same relations, with the type by its name, as the graph gives them
+    ObjectNode same = mapper.valueToTree(nodeRepository.findByUuid(os));
+    same.put("desc", "Changed.");
+    ObjectNode result = exec(entityManager.update(), "update", entities(same));
+    assertEquals(os, result.path("data").path(0).asString(), result.toString());
+    assertEquals("Changed.", nodeRepository.findByUuid(os).getDesc());
+    assertEquals(relations, outgoing(os));
+  }
+
+  @Test
+  public void testRelateAndUnrelate() throws Exception {
+    EntityManager entityManager = new EntityManager();
+    String os = instance(OPERATING_SYSTEM, OS_DATA);
+    String dns = dns();
+    ObjectNode args = mapper.createObjectNode().put("from", os).put("relation", "HAS").put("to", dns);
+
+    for (boolean changed : ImmutableList.of(true, false)) {
+      ObjectNode result = exec(entityManager.relate(), "relate", args);
+      assertEquals(changed, result.path("data").path("changed").asBoolean(), result.toString());
+      assertEquals(ImmutableList.of("HAS -> " + dns, "INSTANCE_OF -> " + OPERATING_SYSTEM), outgoing(os));
+    }
+    for (boolean changed : ImmutableList.of(true, false)) {
+      ObjectNode result = exec(entityManager.unrelate(), "unrelate", args);
+      assertEquals(changed, result.path("data").path("changed").asBoolean(), result.toString());
+      assertEquals(ImmutableList.of("INSTANCE_OF -> " + OPERATING_SYSTEM), outgoing(os));
+    }
+  }
+
+  @Test
+  public void testRelateErrors() throws Exception {
+    EntityManager entityManager = new EntityManager();
+    String os = instance(OPERATING_SYSTEM, OS_DATA);
+    String dns = dns();
+    String unknown = java.util.UUID.randomUUID().toString();
+    // The relation, the node that it goes to, and the expected error
+    String[][] rows = {
+      { "INSTANCE_OF", UNIX_LIKE, "Change INSTANCE_OF with specialize." },
+      { "MEMBER_OF", dns, "Change MEMBER_OF with group and ungroup." },
+      { "ISA", UNIX_LIKE, "Change ISA with the bundles." },
+      { "HAS", unknown, "Node with UUID \"" + unknown + "\" not found." },
+    };
+    for (String[] row : rows) {
+      ObjectNode args = mapper.createObjectNode().put("from", os).put("relation", row[0]).put("to", row[1]);
+      for (GenericActor.MessageHandler handler : ImmutableList.of(entityManager.relate(), entityManager.unrelate())) {
+        assertEquals(row[2], exec(handler, "relate", args).path("error").asString());
+      }
+    }
+    // No type constraint permits this relation
+    ObjectNode args = mapper.createObjectNode().put("from", os).put("relation", "RUNS_ON").put("to", dns);
+    ObjectNode result = exec(entityManager.relate(), "relate", args);
+    assertTrue(result.path("error").asString().contains("\"code\":400"), result.toString());
+    assertEquals(ImmutableList.of("INSTANCE_OF -> " + OPERATING_SYSTEM), outgoing(os));
+  }
+
+  // A relation that a type constraint requires stays
+  @Test
+  public void testUnrelateKeepsARequiredRelation() throws Exception {
+    EntityManager entityManager = new EntityManager();
+    String required = type("RequiredOs", OPERATING_SYSTEM);
+    Graph.query(
+      "MATCH (a:Type {uuid: $from}), (b:Type {uuid: $to}) " +
+        "MERGE (a)-[c:CONSTRAINTS {forRelationship: 'HAS'}]->(b) SET c.cardinality = 'REQUIRED_TO_ONE'",
+      ImmutableMap.of("from", required, "to", DNS_NAME)
+    );
+    String dns = dns();
+    String os = java.util.UUID.randomUUID().toString();
+    ObjectNode entity = (ObjectNode) mapper.readTree(entity(os, required, OS_DATA));
+    relations(entity).putObject("HAS").put("direction", "outgoing").putArray("to").add(dns);
+    mapper.treeToValue(entity, Entity.class).toGraph();
+
+    ObjectNode args = mapper.createObjectNode().put("from", os).put("relation", "HAS").put("to", dns);
+    ObjectNode result = exec(entityManager.unrelate(), "unrelate", args);
+    assertTrue(result.path("error").asString().contains("REQUIRED_TO_ONE"), result.toString());
+    assertEquals(ImmutableList.of("HAS -> " + dns, "INSTANCE_OF -> " + required), outgoing(os));
+  }
+
   @Test
   public void testDelete() throws Exception {
     EntityManager entityManager = new EntityManager();
@@ -347,24 +506,48 @@ public class EntityManagerTest extends TypeSchemaTest {
     assertEquals(labels, labels(os));
   }
 
+  // A type four levels below, for example a release of a distribution
+  @Test
+  public void testSpecializeBelowChildren() throws Exception {
+    EntityManager entityManager = new EntityManager();
+    String archLinux = type("ArchLinux", LINUX);
+    String archLinux2026 = type("ArchLinux2026", archLinux);
+    String os = instance(OPERATING_SYSTEM, OS_DATA);
+
+    ObjectNode result = exec(
+      entityManager.specialize(),
+      "specialize",
+      mapper.createObjectNode().put("instance", os).put("isa", archLinux2026)
+    );
+    assertFalse(result.has("error"), result.toString());
+    assertEquals("Instance [OperatingSystem] specialized to [ArchLinux2026]", result.get("data").asString());
+    assertEquals(ImmutableList.of("INSTANCE_OF -> " + archLinux2026), outgoing(os));
+  }
+
   @Test
   public void testSpecializeErrors() throws Exception {
     EntityManager entityManager = new EntityManager();
     String os = instance(OPERATING_SYSTEM, OS_DATA);
+    String linux = instance(LINUX, OS_DATA);
 
-    // Linux is a subtype of UnixLike, not a direct subtype of OperatingSystem
-    ObjectNode result = exec(
-      entityManager.specialize(),
-      "specialize",
-      mapper.createObjectNode().put("instance", os).put("isa", LINUX)
-    );
-    assertEquals(
-      "Invalid specialization requested. Type [Linux] is not in the specialization set of: " + "[OperatingSystem]",
-      result.get("error").asString()
-    );
+    // A type above the current type, or the current type itself
+    for (String isa : ImmutableList.of(UNIX_LIKE, LINUX)) {
+      ObjectNode result = exec(
+        entityManager.specialize(),
+        "specialize",
+        mapper.createObjectNode().put("instance", linux).put("isa", isa)
+      );
+      assertEquals(
+        "Invalid specialization requested. Type [" +
+          nodeRepository.findByUuid(isa).getName() +
+          "] is not in the specialization set of: [Linux]",
+        result.get("error").asString()
+      );
+    }
+    assertEquals(ImmutableList.of("INSTANCE_OF -> " + LINUX), outgoing(linux));
 
     String unknown = java.util.UUID.randomUUID().toString();
-    result = exec(
+    ObjectNode result = exec(
       entityManager.specialize(),
       "specialize",
       mapper.createObjectNode().put("instance", os).put("isa", unknown)
@@ -482,24 +665,58 @@ public class EntityManagerTest extends TypeSchemaTest {
     return args;
   }
 
+  // Makes a type below the type isa and returns its uuid
+  private static String type(String name, String isa) throws Exception {
+    String uuid = java.util.UUID.randomUUID().toString();
+    ObjectNode type = mapper.createObjectNode().put("name", name).put("desc", "A specialization test type.");
+    ObjectNode meta = type.putObject("meta").put("uuid", uuid);
+    meta.putObject("relations").putObject("ISA").put("direction", "outgoing").putArray("to").add(isa);
+    type
+      .putObject("file")
+      .putObject("dataSchema")
+      .put("encoding", "text")
+      .put("format", "json")
+      .put("content", "{\"type\": \"object\"}");
+    mapper.treeToValue(type, Entity.class).toGraph();
+    return uuid;
+  }
+
   // Makes an instance of the type isa and returns its uuid
   private static String instance(String isa, String data) throws Exception {
     String uuid = java.util.UUID.randomUUID().toString();
-    mapper
-      .readValue(
-        String.format(
-          "{\"name\": \"write-%s\", \"desc\": \"A write path test node.\", " +
-            "\"meta\": {\"uuid\": \"%s\", \"relations\": {\"INSTANCE_OF\": {\"direction\": \"outgoing\", " +
-            "\"to\": [\"%s\"]}}}, \"data\": %s}",
-          uuid,
-          uuid,
-          isa,
-          data
-        ),
-        Entity.class
-      )
-      .toGraph();
+    mapper.readValue(entity(uuid, isa, data), Entity.class).toGraph();
     return uuid;
+  }
+
+  // The entity of an instance of the type isa
+  private static String entity(String uuid, String isa, String data) {
+    return String.format(
+      "{\"name\": \"write-%s\", \"desc\": \"A write path test node.\", " +
+        "\"meta\": {\"uuid\": \"%s\", \"relations\": {\"INSTANCE_OF\": {\"direction\": \"outgoing\", " +
+        "\"to\": [\"%s\"]}}}, \"data\": %s}",
+      uuid,
+      uuid,
+      isa,
+      data
+    );
+  }
+
+  // Makes a DnsName with a name of its own, as the name is its identity
+  private static String dns() throws Exception {
+    return instance(DNS_NAME, "{\"dnsname\": \"" + java.util.UUID.randomUUID() + ".example\"}");
+  }
+
+  private static ObjectNode relations(ObjectNode entity) {
+    return (ObjectNode) entity.path("meta").path("relations");
+  }
+
+  private static ObjectNode entities(ObjectNode... entities) {
+    ObjectNode args = mapper.createObjectNode();
+    ArrayNode array = args.putArray("entities");
+    for (ObjectNode entity : entities) {
+      array.add(entity);
+    }
+    return args;
   }
 
   // The outgoing relationships of a node in the raw graph, sorted

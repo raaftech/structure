@@ -5,6 +5,7 @@ import io.vertx.core.DeploymentOptions;
 import io.vertx.core.ThreadingModel;
 import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.eventbus.Message;
+import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -13,6 +14,9 @@ import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,12 +47,13 @@ public abstract class GenericActor extends AbstractVerticle {
   Map<String, HandlerSchema> handlers = new HashMap<>();
   protected ObjectMapper mapper = new ObjectMapper();
 
-  // statusAddress is used to push notifications of events within Structure
-  // that the GUI may be interested about.
-  private static final String statusAddress = "tech.raaf.structure.bus.status";
+  // The bus address where actors publish events, for clients to follow.
+  private static final String EVENTS = "tech.raaf.structure.bus.events";
   // The worker pool of the actors that use the graph.
   private static final String POOL = "structure-actors";
-  private static final String ACTORS = "structure-command-discovery";
+  // Shared maps for introspection: handlers by class, and active actors.
+  private static final String CLASSES = "structure-introspection-classes";
+  private static final String ACTORS = "structure-introspection-actors";
 
   // Options to deploy an actor that uses the graph.
   public static DeploymentOptions worker() {
@@ -145,22 +150,25 @@ public abstract class GenericActor extends AbstractVerticle {
     return List.of(getActorName());
   }
 
-  // Read metadata from each active deployment in this Vert.x instance.
+  // Read the active actors, and the handlers of their classes.
   protected JsonNode actorMetadata() {
-    ObjectNode actors = mapper.createObjectNode();
-    vertx
-      .sharedData()
-      .<String, JsonObject>getLocalMap(ACTORS)
-      .entrySet()
-      .stream()
-      .sorted(Map.Entry.comparingByKey())
-      .forEach(entry -> actors.set(entry.getKey(), convertFromJsonObject(entry.getValue())));
-    return actors;
+    ObjectNode metadata = mapper.createObjectNode();
+    ObjectNode classes = metadata.putObject("classes");
+    ObjectNode actors = metadata.putObject("actors");
+    Map<String, JsonObject> handlers = vertx.sharedData().getLocalMap(CLASSES);
+    Map<String, JsonObject> active = new TreeMap<>(vertx.sharedData().getLocalMap(ACTORS));
+    Set<String> names = new TreeSet<>();
+    active.forEach((id, actor) -> {
+      actors.set(id, convertFromJsonObject(actor));
+      names.add(actor.getString("class"));
+    });
+    names.forEach(name -> classes.set(name, convertFromJsonObject(handlers.get(name))));
+    return metadata;
   }
 
-  private JsonObject metadata() {
+  // The handlers of the class of this actor, with their schemas and help.
+  private JsonObject handlerMetadata() {
     ObjectNode actor = mapper.createObjectNode();
-    actor.set("addresses", mapper.valueToTree(addresses()));
     ObjectNode commands = actor.putObject("handlers");
     JsonNode request = mapper.createObjectNode().put("msgh", "help");
     handlers
@@ -197,17 +205,24 @@ public abstract class GenericActor extends AbstractVerticle {
     }
   }
 
-  // Log why a response is not valid; that is a fault of Structure
-  public JsonNode validate(URI schemaDoc, JsonNode jsonDoc) {
-    JsonHelper.validationErrors(schemaDoc, jsonDoc).forEach(error -> log.error("Invalid response: {}", error));
-    return jsonDoc;
+  // Replace a response that is not valid with an error response
+  private JsonNode checked(JsonNode request, JsonNode response) {
+    final List<String> errors =
+      response == null
+        ? List.of("the handler gave no response")
+        : JsonHelper.validationErrors(schemaForResponse, response);
+    if (errors.isEmpty()) {
+      return response;
+    }
+    log.error("Invalid response to {}: {}", request.path("msgh").asString(), errors);
+    return response(request, JsonNodeFactory.instance.objectNode().put("error", "Invalid response: " + errors));
   }
 
-  // Publish a status on the status channel
-  protected void publishStatus(String event, JsonNode data) {
+  // Publish an event on the events address
+  protected void publishEvent(String event, JsonNode data) {
     EventBus eventBus = getVertx().eventBus();
     eventBus.publish(
-      statusAddress,
+      EVENTS,
       new JsonObject(
         "{\"source\":\"" +
           this.getClass().getSimpleName() +
@@ -233,12 +248,13 @@ public abstract class GenericActor extends AbstractVerticle {
       @Override
       public JsonNode exec(JsonNode request) {
         ObjectNode result = JsonNodeFactory.instance.objectNode();
+        ObjectNode data = result.putObject("data");
 
         for (String msgh : handlers.keySet()) {
           try {
             JsonNode help = handlers.get(msgh).handler.help(request);
             if (help != null) {
-              result.set(msgh, help);
+              data.set(msgh, help);
             }
           } catch (NullPointerException e) {
             log.error(e.getMessage());
@@ -264,7 +280,8 @@ public abstract class GenericActor extends AbstractVerticle {
     return new MessageHandler() {
       @Override
       public JsonNode exec(JsonNode request) {
-        JsonNode result = jsonFromResource("release.json");
+        ObjectNode result = JsonNodeFactory.instance.objectNode();
+        result.set("data", jsonFromResource("release.json"));
         return response(request, result);
       }
 
@@ -278,12 +295,17 @@ public abstract class GenericActor extends AbstractVerticle {
   // Logs and registers the actors on the bus.
   @Override
   public void start() {
-    JsonObject metadata = metadata();
     for (String address : addresses()) {
       log.debug("Listen for {} on addr: {}", this.getClass().getSimpleName(), address);
       vertx.eventBus().consumer(address, this::handleMessage);
     }
-    vertx.sharedData().<String, JsonObject>getLocalMap(ACTORS).put(deploymentID(), metadata);
+    // The handlers are the same for each actor of a class, thus share them
+    vertx
+      .sharedData()
+      .<String, JsonObject>getLocalMap(CLASSES)
+      .computeIfAbsent(getActorName(), name -> handlerMetadata());
+    JsonObject actor = new JsonObject().put("class", getActorName()).put("addresses", new JsonArray(addresses()));
+    vertx.sharedData().<String, JsonObject>getLocalMap(ACTORS).put(deploymentID(), actor);
   }
 
   @Override
@@ -293,19 +315,21 @@ public abstract class GenericActor extends AbstractVerticle {
 
   // Our message handler.
   public void handleMessage(Message<Object> message) {
-    // Request!
-    JsonObject body = (JsonObject) message.body();
-    JsonNode request = convertFromJsonObject(body);
-    JsonObject response;
+    // A body that is not a JSON object gives a request without msgh
+    JsonNode request =
+      message.body() instanceof JsonObject body ? convertFromJsonObject(body) : mapper.createObjectNode();
+    message.reply(new JsonObject(checked(request, dispatch(request)).toString()));
+  }
 
+  // Give the request to its message handler, and return the response
+  private JsonNode dispatch(JsonNode request) {
     // Without a valid msgh and args we can't dispatch, reply with an error
     final List<String> requestErrors = JsonHelper.validationErrors(schemaForRequest, request);
     if (!requestErrors.isEmpty()) {
       JsonNode error = JsonNodeFactory.instance
         .objectNode()
         .put("error", "Request didn't validate against schema: " + requestErrors);
-      message.reply(new JsonObject(validate(schemaForResponse, response(request, error)).toString()));
-      return;
+      return response(request, error);
     }
 
     String msgh = request.get("msgh").asString();
@@ -329,26 +353,20 @@ public abstract class GenericActor extends AbstractVerticle {
       }
       final List<String> argsErrors = JsonHelper.validationErrors(schema, args);
       if (argsErrors.isEmpty()) {
-        JsonNode result;
         try {
-          result = handlerAndSchema.handler.exec(request);
+          return handlerAndSchema.handler.exec(request);
         } catch (Exception e) {
           // Reply with the error, else the client waits until its timeout
           log.error("Handler {} failed", msgh, e);
-          result = response(request, JsonNodeFactory.instance.objectNode().put("error", e.toString()));
+          return response(request, JsonNodeFactory.instance.objectNode().put("error", e.toString()));
         }
-        // Response! Convert "Jackson JsonNode" to "Vert.x JsonObject".
-        response = new JsonObject(validate(schemaForResponse, result).toString());
-      } else {
-        JsonNode error = JsonNodeFactory.instance
-          .objectNode()
-          .put("error", "Arguments didn't validate against schema: " + argsErrors);
-        response = new JsonObject(validate(schemaForResponse, response(request, error)).toString());
       }
-    } else {
-      JsonNode error = JsonNodeFactory.instance.objectNode().put("error", "No handler for called method.");
-      response = new JsonObject(validate(schemaForResponse, response(request, error)).toString());
+      JsonNode error = JsonNodeFactory.instance
+        .objectNode()
+        .put("error", "Arguments didn't validate against schema: " + argsErrors);
+      return response(request, error);
     }
-    message.reply(response);
+    JsonNode error = JsonNodeFactory.instance.objectNode().put("error", "No handler for called method.");
+    return response(request, error);
   }
 }

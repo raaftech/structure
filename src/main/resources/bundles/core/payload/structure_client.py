@@ -31,6 +31,7 @@ class BusClient:
         context = ssl.create_default_context()
         context.load_verify_locations(cafile=settings["ca-cert"])
         self.socket = None
+        self.upgraded = False
         self.stopped = threading.Event()
         self.lock = threading.Lock()
         self.error = None
@@ -67,6 +68,7 @@ class BusClient:
                     or "upgrade" not in {value.strip() for value in headers.get("connection", "").lower().split(",")}
                     or headers.get("sec-websocket-accept") != accept):
                 raise RuntimeError("Event bus WebSocket upgrade failed")
+            self.upgraded = True
             threading.Thread(target=self.heartbeat, daemon=True).start()
             return self
         except BaseException:
@@ -79,6 +81,16 @@ class BusClient:
     def close(self):
         self.stopped.set()
         if self.socket:
+            if self.upgraded:
+                self.upgraded = False
+                try:
+                    self.send(8, struct.pack("!H", 1000))
+                    # Wait until the bridge closes its side
+                    self.socket.settimeout(1)
+                    while self.socket.recv(4096):
+                        pass
+                except Exception:
+                    pass
             try:
                 self.socket.shutdown(socket.SHUT_RDWR)
             except OSError:
@@ -190,6 +202,11 @@ class BusClient:
         if not isinstance(result, list) or entity["meta"]["uuid"] not in result:
             raise RuntimeError("Could not update entity: " + json.dumps(result))
         return result
+
+    def relate(self, source, name, target):
+        return self.request("manager.entitymanager", "relate", {
+            "from": source, "relation": name, "to": target,
+        })
 
     def persist(self, entities, related=()):
         identifiers = []

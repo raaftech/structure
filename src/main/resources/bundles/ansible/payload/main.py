@@ -58,8 +58,10 @@ def discover(client, graph, ip, self_id):
     entities = [] if known_address else [address]
     for child in children:
         child_type = child["meta"]["relations"]["INSTANCE_OF"]["to"][0]
+        # The graph gives the type of an instance by its name
         previous = next((item for item in previous_children
-                         if item["meta"]["relations"]["INSTANCE_OF"]["to"][0] == child_type), None)
+                         if graph.type(item["meta"]["relations"]["INSTANCE_OF"]["to"][0])["meta"]["uuid"] == child_type),
+                        None)
         if previous:
             child["meta"]["uuid"] = previous["meta"]["uuid"]
         else:
@@ -80,9 +82,11 @@ def discover(client, graph, ip, self_id):
         existing["meta"]["relations"]["INSTANCE_OF"]["to"] = [graph.type(selected)["meta"]["uuid"]]
         current = graph.type(selected)
     existing["data"].update(graph.software(current["name"], operating_system["data"]["ver"])["data"])
+    if existing != before:
+        client.update(existing)
     for identifier in operating_system["meta"]["relations"]["HAS"]["to"]:
-        relate(existing, "HAS", {"meta": {"uuid": identifier}})
-    return client.update(existing) if existing != before else [existing["meta"]["uuid"]]
+        client.relate(existing["meta"]["uuid"], "HAS", identifier)
+    return [existing["meta"]["uuid"]]
 
 
 def main():
