@@ -80,7 +80,7 @@ public class EntityManager extends GenericActor {
    *
    * @return A list containing the UUIDs of the created entities, in the order they were persisted.
    */
-  @SchemaPath("resource:/schema/manager/entitymanager/create.schema.json")
+  @SchemaPath(input = "resource:/schema/manager/entitymanager/create.schema.json")
   public MessageHandler create() {
     return new MessageHandler() {
       @Override
@@ -152,7 +152,7 @@ public class EntityManager extends GenericActor {
    *
    * @return An array containing the vertices that could be reached with the traversal.
    */
-  @SchemaPath("resource:/schema/manager/entitymanager/read.schema.json")
+  @SchemaPath(input = "resource:/schema/manager/entitymanager/read.schema.json")
   public MessageHandler read() {
     return new MessageHandler() {
       @Override
@@ -206,7 +206,7 @@ public class EntityManager extends GenericActor {
    *
    * @return A list containing the UUIDs of the updated entities, in the order they were persisted.
    */
-  @SchemaPath("resource:/schema/manager/entitymanager/update.schema.json")
+  @SchemaPath(input = "resource:/schema/manager/entitymanager/update.schema.json")
   public MessageHandler update() {
     return new MessageHandler() {
       @Override
@@ -319,7 +319,7 @@ public class EntityManager extends GenericActor {
    *
    * @return Returns the UUID of the entity in case of deletion, an empty result otherwise.
    */
-  @SchemaPath("resource:/schema/manager/entitymanager/delete.schema.json")
+  @SchemaPath(input = "resource:/schema/manager/entitymanager/delete.schema.json")
   public MessageHandler delete() {
     return new MessageHandler() {
       @Override
@@ -364,7 +364,7 @@ public class EntityManager extends GenericActor {
     };
   }
 
-  @SchemaPath("resource:/schema/manager/entitymanager/specialize.schema.json")
+  @SchemaPath(input = "resource:/schema/manager/entitymanager/specialize.schema.json")
   public MessageHandler specialize() {
     return new MessageHandler() {
       @Override
@@ -429,7 +429,7 @@ public class EntityManager extends GenericActor {
     };
   }
 
-  @SchemaPath("resource:/schema/manager/entitymanager/group.schema.json")
+  @SchemaPath(input = "resource:/schema/manager/entitymanager/group.schema.json")
   public MessageHandler group() {
     return new MessageHandler() {
       @Override
@@ -486,7 +486,7 @@ public class EntityManager extends GenericActor {
     };
   }
 
-  @SchemaPath("resource:/schema/manager/entitymanager/group.schema.json")
+  @SchemaPath(input = "resource:/schema/manager/entitymanager/group.schema.json")
   public MessageHandler ungroup() {
     return new MessageHandler() {
       @Override
@@ -532,7 +532,7 @@ public class EntityManager extends GenericActor {
     };
   }
 
-  @SchemaPath("resource:/schema/manager/entitymanager/relate.schema.json")
+  @SchemaPath(input = "resource:/schema/manager/entitymanager/relate.schema.json")
   public MessageHandler relate() {
     return new MessageHandler() {
       @Override
@@ -568,7 +568,7 @@ public class EntityManager extends GenericActor {
     };
   }
 
-  @SchemaPath("resource:/schema/manager/entitymanager/relate.schema.json")
+  @SchemaPath(input = "resource:/schema/manager/entitymanager/relate.schema.json")
   public MessageHandler unrelate() {
     return new MessageHandler() {
       @Override

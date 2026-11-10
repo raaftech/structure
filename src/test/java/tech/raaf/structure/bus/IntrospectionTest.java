@@ -27,7 +27,7 @@ public class IntrospectionTest {
   public static class Probe extends GenericActorTest.Probe {
 
     @Override
-    @SchemaPath("resource:/schema/repository/findOneByName.schema.json")
+    @SchemaPath(input = "resource:/schema/repository/findOneByName.schema.json")
     public MessageHandler silent() {
       return super.silent();
     }

@@ -60,63 +60,44 @@ public abstract class GenericActor extends AbstractVerticle {
     return new DeploymentOptions().setThreadingModel(ThreadingModel.WORKER).setWorkerPoolName(POOL);
   }
 
-  class HandlerSchema {
-
-    URI schemaPath;
-    MessageHandler handler;
-
-    public HandlerSchema(URI schemaPath, MessageHandler handler) {
-      this.schemaPath = schemaPath;
-      this.handler = handler;
-    }
-  }
+  // A message handler with the schemas of its args and its result data.
+  // The output is null when the handler does not declare one.
+  record HandlerSchema(URI input, URI output, MessageHandler handler) {}
 
   // Constructor. It gets the handlers of the subclass by reflection.
   @SuppressWarnings("this-escape")
   protected GenericActor() {
-    // Initialize arrays.
-    Method methods[] = this.getClass().getMethods();
-    Map<Method, URI> messageHandlersAndSchemas = new HashMap<>();
+    for (Method method : this.getClass().getMethods()) {
+      if (!method.getReturnType().equals(MessageHandler.class)) {
+        continue;
+      }
+      String name = method.getName();
+      SchemaPath path = method.getAnnotation(SchemaPath.class);
+      URI input = path == null ? fallbackSchema : schemaUri(path.input(), fallbackSchema);
+      URI output = path == null ? null : schemaUri(path.output(), null);
+      try {
+        handlers.put(name, new HandlerSchema(input, output, (MessageHandler) method.invoke(this)));
+      } catch (IllegalAccessException | InvocationTargetException e) {
+        log.error("Failed to access or invoke method " + name + ": " + e.getMessage());
 
-    // Fill messageHandlers.
-    for (Method method : methods) {
-      if (method.getReturnType().equals(MessageHandler.class)) {
-        if (method.isAnnotationPresent(SchemaPath.class)) {
-          SchemaPath schemaPath = method.getAnnotation(SchemaPath.class);
-          try {
-            messageHandlersAndSchemas.put(method, new URI(schemaPath.value()));
-          } catch (URISyntaxException e) {
-            if (Configuration.isTraceModeOn()) {
-              e.printStackTrace();
-            }
-            log.error("Error while parsing @SchemaPath value as URI");
-            messageHandlersAndSchemas.put(method, fallbackSchema);
-          }
-        } else {
-          messageHandlersAndSchemas.put(method, fallbackSchema);
+        if (Configuration.isTraceModeOn()) {
+          e.printStackTrace();
         }
       }
     }
+  }
 
-    messageHandlersAndSchemas
-      .entrySet()
-      .stream()
-      .forEach(entry -> {
-        Method mh = entry.getKey();
-        URI schema = entry.getValue();
-        String s = entry.getKey().getName();
-
-        try {
-          HandlerSchema handlerAndSchema = new HandlerSchema(schema, (MessageHandler) mh.invoke(this));
-          handlers.put(s, handlerAndSchema);
-        } catch (IllegalAccessException | InvocationTargetException e) {
-          log.error("Failed to access or invoke method " + s + ": " + e.getMessage());
-
-          if (Configuration.isTraceModeOn()) {
-            e.printStackTrace();
-          }
-        }
-      });
+  // The URI of a @SchemaPath field, or the fallback if it is empty.
+  private URI schemaUri(String path, URI fallback) {
+    try {
+      return path.isEmpty() ? fallback : new URI(path);
+    } catch (URISyntaxException e) {
+      if (Configuration.isTraceModeOn()) {
+        e.printStackTrace();
+      }
+      log.error("Error while parsing @SchemaPath value as URI: {}", path);
+      return fallback;
+    }
   }
 
   // A json file loader (looks in your classpath/resources.)
@@ -178,9 +159,9 @@ public abstract class GenericActor extends AbstractVerticle {
       .forEach(entry -> {
         HandlerSchema handler = entry.getValue();
         ObjectNode command = commands.putObject(entry.getKey());
-        command.put("schemaUri", handler.schemaPath.toString());
-        command.set("schema", jsonFromResource(handler.schemaPath.getPath().substring(1)));
-        command.set("help", handler.handler.help(request));
+        command.put("schemaUri", handler.input().toString());
+        command.set("schema", jsonFromResource(handler.input().getPath().substring(1)));
+        command.set("help", handler.handler().help(request));
       });
     return new JsonObject(actor.toString());
   }
@@ -252,7 +233,7 @@ public abstract class GenericActor extends AbstractVerticle {
 
         for (String msgh : handlers.keySet()) {
           try {
-            JsonNode help = handlers.get(msgh).handler.help(request);
+            JsonNode help = handlers.get(msgh).handler().help(request);
             if (help != null) {
               data.set(msgh, help);
             }
@@ -342,19 +323,10 @@ public abstract class GenericActor extends AbstractVerticle {
         args = mapper.createObjectNode();
       }
       HandlerSchema handlerAndSchema = handlers.get(msgh);
-      URI schema = handlerAndSchema.schemaPath;
-      if (schema == null) {
-        log.warn(
-          "Couldn't load " +
-            handlerAndSchema.schemaPath +
-            " using empty schema as default. Validation will always pass."
-        );
-        schema = fallbackSchema;
-      }
-      final List<String> argsErrors = JsonHelper.validationErrors(schema, args);
+      final List<String> argsErrors = JsonHelper.validationErrors(handlerAndSchema.input(), args);
       if (argsErrors.isEmpty()) {
         try {
-          return handlerAndSchema.handler.exec(request);
+          return handlerAndSchema.handler().exec(request);
         } catch (Exception e) {
           // Reply with the error, else the client waits until its timeout
           log.error("Handler {} failed", msgh, e);

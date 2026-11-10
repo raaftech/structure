@@ -18,7 +18,7 @@ public class Types extends Repository<Type> {
     this.repository = repository;
   }
 
-  @SchemaPath("resource:/schema/repository/findOneByName.schema.json")
+  @SchemaPath(input = "resource:/schema/repository/findOneByName.schema.json")
   public MessageHandler findOneByCaseInsensitiveName() {
     return new MessageHandler() {
       @Override

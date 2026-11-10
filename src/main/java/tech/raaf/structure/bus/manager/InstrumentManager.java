@@ -87,7 +87,7 @@ public class InstrumentManager extends GenericActor {
    *
    * IMPORTANT: Take note that we assume all UUIDs belong to the same grouping.
    */
-  @SchemaPath("resource:/schema/manager/instrumentmanager/runCapability.schema.json")
+  @SchemaPath(input = "resource:/schema/manager/instrumentmanager/runCapability.schema.json")
   public MessageHandler runCapability() {
     return new MessageHandler() {
       @Override

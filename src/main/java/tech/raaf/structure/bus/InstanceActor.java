@@ -40,7 +40,7 @@ public class InstanceActor extends NodeActor<Instance> {
    * filter on a particular task.
    * @return An array containing the queried results.
    */
-  @SchemaPath("resource:/schema/node/instance/getresults.schema.json")
+  @SchemaPath(input = "resource:/schema/node/instance/getresults.schema.json")
   public MessageHandler getResults() {
     return new MessageHandler() {
       @Override
@@ -69,7 +69,7 @@ public class InstanceActor extends NodeActor<Instance> {
    * child components of that Instance of a particular type.
    * @return An array containing the found components.
    */
-  @SchemaPath("resource:/schema/node/instance/getcomponentsbytype.schema.json")
+  @SchemaPath(input = "resource:/schema/node/instance/getcomponentsbytype.schema.json")
   public MessageHandler getComponentsByType() {
     return new MessageHandler() {
       @Override
@@ -135,7 +135,7 @@ public class InstanceActor extends NodeActor<Instance> {
     };
   }
 
-  @SchemaPath("resource:/schema/node/instance/runInstrument.schema.json")
+  @SchemaPath(input = "resource:/schema/node/instance/runInstrument.schema.json")
   @SuppressWarnings("unused")
   public MessageHandler runInstrument() {
     return new MessageHandler() {
@@ -230,7 +230,7 @@ public class InstanceActor extends NodeActor<Instance> {
     };
   }
 
-  @SchemaPath("resource:/schema/node/instance/runCapability.schema.json")
+  @SchemaPath(input = "resource:/schema/node/instance/runCapability.schema.json")
   public MessageHandler runCapability() {
     return new MessageHandler() {
       @Override

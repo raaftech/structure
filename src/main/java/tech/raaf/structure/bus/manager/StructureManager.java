@@ -125,7 +125,7 @@ public class StructureManager extends GenericActor {
     };
   }
 
-  @SchemaPath("resource:/schema/manager/structuremanager/selfdiscovery.schema.json")
+  @SchemaPath(input = "resource:/schema/manager/structuremanager/selfdiscovery.schema.json")
   public MessageHandler selfDiscovery() {
     return new MessageHandler() {
       @Override
