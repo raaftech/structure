@@ -11,7 +11,7 @@
     "id": { "type": "string" }
   },
   "definitions": {
-    "local": { "type": "integer", "enum": [{ "$ref": "ignored.schema.json" }] },
+    "local": { "type": "integer", "enum": [1, { "$ref": "ignored.schema.json" }] },
     "named": { "id": "#named", "type": "boolean" },
     "scope": {
       "id": "scope/inner.schema.json",

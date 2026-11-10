@@ -6,6 +6,7 @@ import com.networknt.schema.Schema;
 import com.networknt.schema.SchemaException;
 import com.networknt.schema.SchemaLocation;
 import com.networknt.schema.SchemaRegistry;
+import com.networknt.schema.SchemaRegistryConfig;
 import com.networknt.schema.SpecificationVersion;
 import java.io.InputStream;
 import java.net.URI;
@@ -51,11 +52,15 @@ public class JsonHelper {
   );
   // The host of the standard meta-schemas, which a client has itself
   private static final String metaSchemaHost = "http://json-schema.org/";
-  // Type schemas come from the graph and can change, thus no cache
+  // Type schemas come from the graph and can change, thus no cache.
+  // No preload: it overflows the stack on a circular $ref without cache.
   private static final SchemaRegistry registry = SchemaRegistry.withDefaultDialect(
     SpecificationVersion.DRAFT_4,
     builder ->
-      builder.schemaCacheEnabled(false).schemaLoader(loader -> loader.fetchRemoteResources().allow(JsonHelper::allowed))
+      builder
+        .schemaCacheEnabled(false)
+        .schemaRegistryConfig(SchemaRegistryConfig.builder().preloadSchema(false).build())
+        .schemaLoader(loader -> loader.fetchRemoteResources().allow(JsonHelper::allowed))
   );
   // The draft-04 meta-schema, to check the syntax of a schema
   private static final Schema metaSchema = registry.getSchema(

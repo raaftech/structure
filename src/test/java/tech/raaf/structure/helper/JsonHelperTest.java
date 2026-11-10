@@ -116,4 +116,13 @@ public class JsonHelperTest {
       assertTrue(e.getMessage().contains(problem), e.getMessage());
     });
   }
+
+  // The validator follows a circular reference only as far as the data
+  @Test
+  public void validatesAgainstSchemasWithACircularReference() {
+    final JsonNode valid = JsonHelper.mapper.readTree("{\"second\":{\"first\":{\"local\":1,\"shared\":\"x\"}}}");
+    final JsonNode invalid = JsonHelper.mapper.readTree("{\"second\":{\"first\":{\"local\":2}}}");
+    assertTrue(JsonHelper.validationErrors(collectionUri("first"), valid).isEmpty());
+    assertFalse(JsonHelper.validationErrors(collectionUri("first"), invalid).isEmpty());
+  }
 }
