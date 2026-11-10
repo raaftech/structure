@@ -5,11 +5,15 @@ import static org.junit.jupiter.api.Assertions.*;
 import com.sun.net.httpserver.HttpServer;
 import java.net.InetSocketAddress;
 import java.net.URI;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import tech.raaf.structure.base.Context;
+import tech.raaf.structure.exceptions.JsonValidationException;
 import tools.jackson.databind.JsonNode;
 
 public class JsonHelperTest {
@@ -65,5 +69,51 @@ public class JsonHelperTest {
     assertFalse(validates(host + "/schemas/../other.schema.json"));
     assertFalse(validates(host + "/schemas/%2E%2e/other.schema.json"));
     assertEquals(0, requests.get());
+  }
+
+  private static URI collectionUri(String name) {
+    return URI.create("resource:/schema/collection/" + name + ".schema.json");
+  }
+
+  // Relative and local references, fragments, id scopes and a circle
+  @Test
+  public void collectsEachReferencedDocumentOnce() {
+    final Map<URI, JsonNode> documents = JsonHelper.schemaCollection(List.of(collectionUri("first")));
+    assertEquals(
+      List.of(collectionUri("first"), collectionUri("second"), collectionUri("shared")),
+      List.copyOf(documents.keySet())
+    );
+    // The documents keep their references and fragments
+    final JsonNode properties = documents.get(collectionUri("first")).path("properties");
+    assertEquals("shared.schema.json#/definitions/text", properties.path("shared").path("$ref").asString());
+  }
+
+  // A root with a fragment gives its document
+  @Test
+  public void collectsTheDocumentOfARootWithAFragment() {
+    final URI root = URI.create(collectionUri("shared") + "#/definitions/text");
+    assertEquals(Set.of(collectionUri("shared")), JsonHelper.schemaCollection(List.of(root)).keySet());
+  }
+
+  @Test
+  public void reportsWhatIsWrongInTheCollection() {
+    final Map<String, String> problems = Map.of(
+      "missing",
+      "missing document resource:/schema/collection/nothere.schema.json",
+      "pointer",
+      "invalid reference resource:/schema/collection/shared.schema.json#/definitions/nothere",
+      "syntax",
+      "invalid reference or id in resource:/schema/collection/syntax.schema.json",
+      "conflict",
+      "conflicting id resource:/schema/collection/same.schema.json",
+      "taken",
+      "conflicting id resource:/schema/collection/shared.schema.json"
+    );
+    problems.forEach((name, problem) -> {
+      final JsonValidationException e = assertThrows(JsonValidationException.class, () ->
+        JsonHelper.schemaCollection(List.of(collectionUri(name)))
+      );
+      assertTrue(e.getMessage().contains(problem), e.getMessage());
+    });
   }
 }

@@ -1,0 +1,5 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Refers to a document that does not exist.",
+  "$ref": "nothere.schema.json"
+}

@@ -1,0 +1,8 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Has two schemas with the same id.",
+  "definitions": {
+    "one": { "id": "same.schema.json", "type": "string" },
+    "two": { "id": "same.schema.json", "type": "integer" }
+  }
+}

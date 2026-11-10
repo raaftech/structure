@@ -59,7 +59,7 @@ public abstract class GenericActor extends AbstractVerticle {
     return new DeploymentOptions().setThreadingModel(ThreadingModel.WORKER).setWorkerPoolName(POOL);
   }
 
-  // The actor classes with verified schema documents and help.
+  // The actor classes with verified schemas and help.
   private static final Set<Class<?>> VERIFIED = ConcurrentHashMap.newKeySet();
 
   // A message handler with the schemas of its args and its result data.
@@ -69,7 +69,7 @@ public abstract class GenericActor extends AbstractVerticle {
   // A handler declaration that is not complete stops the actor.
   @SuppressWarnings("this-escape")
   protected GenericActor() {
-    // The documents and help are the same for each actor of a class.
+    // The schemas and help are the same for each actor of a class.
     final boolean verify = !VERIFIED.contains(getClass());
     final JsonNode helpRequest = mapper.createObjectNode().put("msgh", "help");
     for (Method method : getClass().getMethods()) {
@@ -93,19 +93,23 @@ public abstract class GenericActor extends AbstractVerticle {
       // URI.create throws if the path is not a valid URI.
       final URI input = path.input().isEmpty() ? fallbackSchema : URI.create(path.input());
       final URI output = URI.create(path.output());
-      if (verify) {
-        for (URI schema : List.of(input, output)) {
-          if (schema.getPath() == null || jsonFromResource(schema.getPath().substring(1)) == null) {
-            throw new IllegalStateException("Handler " + name + " has no schema document " + schema);
-          }
-        }
-        if (handler.help(helpRequest) == null) {
-          throw new IllegalStateException("Handler " + name + " has no help");
-        }
+      if (verify && handler.help(helpRequest) == null) {
+        throw new IllegalStateException("Handler " + name + " has no help");
       }
       handlers.put(method.getName(), new HandlerSchema(input, output, handler));
     }
+    if (verify) {
+      // This throws if a document is missing or a reference is not valid.
+      JsonHelper.schemaCollection(schemaUris());
+    }
     VERIFIED.add(getClass());
+  }
+
+  // The URIs of the schemas of the messages and of each handler.
+  private Set<URI> schemaUris() {
+    final Set<URI> uris = new TreeSet<>(Set.of(schemaForRequest, schemaForResponse));
+    handlers.values().forEach(handler -> uris.addAll(List.of(handler.input(), handler.output())));
+    return uris;
   }
 
   // A json file loader (looks in your classpath/resources.)

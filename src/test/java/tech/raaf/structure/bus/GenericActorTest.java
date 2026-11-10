@@ -11,6 +11,7 @@ import java.util.function.UnaryOperator;
 import org.junit.jupiter.api.Test;
 import tech.raaf.structure.annotations.SchemaPath;
 import tech.raaf.structure.bus.GenericActor.MessageHandler;
+import tech.raaf.structure.exceptions.JsonValidationException;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.node.JsonNodeFactory;
 import tools.jackson.databind.node.ObjectNode;
@@ -116,8 +117,8 @@ public class GenericActorTest {
   @Test
   public void failsAtStartupOnAnIncompleteHandler() {
     assertThrows(IllegalStateException.class, NoOutput::new);
-    assertThrows(IllegalStateException.class, NoInputDocument::new);
-    assertThrows(IllegalStateException.class, NoOutputDocument::new);
+    assertThrows(JsonValidationException.class, NoInputDocument::new);
+    assertThrows(JsonValidationException.class, NoOutputDocument::new);
     assertThrows(IllegalArgumentException.class, InvalidPath::new);
     assertThrows(IllegalStateException.class, NullHandler::new);
     assertThrows(IllegalStateException.class, NoHelp::new);

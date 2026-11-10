@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Refers to itself, to a shared document and to a circular partner.",
+  "type": "object",
+  "properties": {
+    "local": { "$ref": "#/definitions/local" },
+    "shared": { "$ref": "shared.schema.json#/definitions/text" },
+    "second": { "$ref": "second.schema.json" },
+    "named": { "$ref": "#named" },
+    "scoped": { "$ref": "scope/inner.schema.json" },
+    "id": { "type": "string" }
+  },
+  "definitions": {
+    "local": { "type": "integer", "enum": [{ "$ref": "ignored.schema.json" }] },
+    "named": { "id": "#named", "type": "boolean" },
+    "scope": {
+      "id": "scope/inner.schema.json",
+      "properties": {
+        "up": { "$ref": "../shared.schema.json" }
+      }
+    }
+  }
+}
