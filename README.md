@@ -129,18 +129,38 @@ java -jar target/structure-*-fat.jar --unsafe
 
 ## Examples
 
-Some requests to try:
+The REPL in `repl/` sends requests to the event bus. A command is a target and
+a handler, and options, for example `types.findOneByName --name Linux`. Node.js
+must trust the certificate of Structure:
 
 ```bash
 cd repl
-NODE_EXTRA_CA_CERTS=../target/structure.crt node
-# Within node
-const { Bus } = await import("./src/bus.ts")
-const bus = await Bus.connect("wss://localhost:8443/eventbus/websocket")
-const S = "tech.raaf.structure.bus.manager.structuremanager"
-await bus.request(S, "selfDiscovery")
-
+export NODE_EXTRA_CA_CERTS=../target/structure.crt
 ```
+
+Get information about Structure. Before bootstrap, `bootstrapped` is `false`,
+and the graph has no groups and no components:
+
+```bash
+node src/main.ts structuremanager.info
+```
+
+Bootstrap Structure. The handler starts the bootstrap and replies `started`:
+
+```bash
+node src/main.ts structuremanager.selfDiscovery
+```
+
+When the bootstrap is done, get the information again. Now `bootstrapped` is
+`true`, and the graph has the self group and the components that the bootstrap
+found:
+
+```bash
+node src/main.ts structuremanager.info
+```
+
+The REPL connects to `wss://localhost:8443/eventbus/websocket`. Set
+`STRUCTURE_URL` to use a different bridge.
 
 ## Testing
 

@@ -1,0 +1,94 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "The bootstrap and the host of Structure, the number of nodes in the graph, and data about the JVM.",
+  "type": "object",
+  "required": ["structure", "graph", "jvm"],
+  "additionalProperties": false,
+  "properties": {
+    "structure": {
+      "type": "object",
+      "required": ["bootstrapped", "host"],
+      "additionalProperties": false,
+      "properties": {
+        "bootstrapped": {
+          "description": "True if the self group is in the graph.",
+          "type": "boolean"
+        },
+        "host": {
+          "description": "The hostname of the Structure host.",
+          "type": "string"
+        }
+      }
+    },
+    "graph": {
+      "description": "The number of nodes with each label.",
+      "type": "object",
+      "required": ["types", "groups", "results", "components", "instruments"],
+      "additionalProperties": false,
+      "properties": {
+        "types": {
+          "$ref": "#/definitions/count"
+        },
+        "groups": {
+          "$ref": "#/definitions/count"
+        },
+        "results": {
+          "$ref": "#/definitions/count"
+        },
+        "components": {
+          "$ref": "#/definitions/count"
+        },
+        "instruments": {
+          "$ref": "#/definitions/count"
+        }
+      }
+    },
+    "jvm": {
+      "type": "object",
+      "required": ["javaVersion", "vmVersion", "processors", "memory"],
+      "additionalProperties": false,
+      "properties": {
+        "javaVersion": {
+          "description": "The feature release of Java, for example 25.",
+          "type": "integer",
+          "minimum": 1
+        },
+        "vmVersion": {
+          "description": "The full version of Java, for example 25+36-LTS.",
+          "type": "string"
+        },
+        "processors": {
+          "description": "The number of processors that the JVM can use.",
+          "type": "integer",
+          "minimum": 1
+        },
+        "memory": {
+          "description": "The memory of the JVM, in bytes.",
+          "type": "object",
+          "required": ["max", "total", "free", "used"],
+          "additionalProperties": false,
+          "properties": {
+            "max": {
+              "$ref": "#/definitions/count"
+            },
+            "total": {
+              "$ref": "#/definitions/count"
+            },
+            "free": {
+              "$ref": "#/definitions/count"
+            },
+            "used": {
+              "$ref": "#/definitions/count"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "count": {
+      "type": "integer",
+      "minimum": 0
+    }
+  }
+}

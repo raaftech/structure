@@ -174,6 +174,10 @@ words to use for each one.
 - **IMPLEMENTS**: The relation from a type to a protocol that it implements, for
   example `SshClient IMPLEMENTS SSH`.
 
+- **Info**: The `info` handler of `StructureManager`. It returns if Structure is
+  bootstrapped, the hostname, the number of types, groups, results, components
+  and instruments in the graph, and data about the JVM.
+
 - **Instance**: A node that is `INSTANCE_OF` a type. Components, groups,
   profiles, instruments and Result nodes are instances. Write "Vert.x instance"
   for the running Vert.x.

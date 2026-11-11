@@ -1,0 +1,8 @@
+{
+  "name": "info",
+  "synopsis": {
+    "msgh": "info",
+    "args": {}
+  },
+  "description": "The info handler returns if Structure is bootstrapped, and the hostname of the Structure host. It also returns the number of types, groups, results, components and instruments in the graph, and the Java version, the JVM version, the number of processors and the memory of the JVM, in bytes."
+}

@@ -197,6 +197,44 @@ public class StructureManager extends GenericActor {
     };
   }
 
+  @SchemaPath(output = "resource:/schema/output/info.schema.json")
+  public MessageHandler info() {
+    return new MessageHandler() {
+      @Override
+      public JsonNode exec(JsonNode request) {
+        ObjectNode data = mapper.createObjectNode();
+        ObjectNode structure = data.putObject("structure");
+        structure.put("bootstrapped", Context.getSelfGroup() != null);
+        structure.put("host", Context.getHostname());
+
+        ObjectNode graph = data.putObject("graph");
+        graph.put("types", typeRepository.count());
+        graph.put("groups", groupingRepository.count());
+        graph.put("results", resultRepository.count());
+        graph.put("components", componentRepository.count());
+        graph.put("instruments", instrumentRepository.count());
+
+        ObjectNode jvm = data.putObject("jvm");
+        Runtime runtime = Runtime.getRuntime();
+        jvm.put("javaVersion", Runtime.version().feature());
+        jvm.put("vmVersion", Runtime.version().toString());
+        jvm.put("processors", runtime.availableProcessors());
+        ObjectNode memory = jvm.putObject("memory");
+        memory.put("max", runtime.maxMemory());
+        memory.put("total", runtime.totalMemory());
+        memory.put("free", runtime.freeMemory());
+        memory.put("used", runtime.totalMemory() - runtime.freeMemory());
+
+        return response(request, mapper.createObjectNode().set("data", data));
+      }
+
+      @Override
+      public JsonNode help(JsonNode request) {
+        return jsonFromResource("help/structuremanager.info.json");
+      }
+    };
+  }
+
   private void discoverHost() {
     final String hostname = Context.getHostname();
     Component host = Context.getInstanceRepository().findDnsName(hostname);

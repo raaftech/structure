@@ -89,7 +89,7 @@ public class BusRoundTripTest extends TypeSchemaTest {
 
   @BeforeEach
   public void deploy() throws Exception {
-    // Application sets these, status and reload need them
+    // Application sets these, info and reload need them
     Context.setHostname("bus-test-host");
     for (Verticle verticle : Arrays.asList(
       new EntityManager(),
@@ -150,6 +150,7 @@ public class BusRoundTripTest extends TypeSchemaTest {
       { STRUCTURE, "reload", "{}", null },
       { STRUCTURE, "list", "{}", null },
       { STRUCTURE, "introspect", "{}", null },
+      { STRUCTURE, "info", "{}", null },
       { STRUCTURE, "help", "{}", null },
       { STRUCTURE, "version", "{}", null },
       { typeAddress, "help", "{}", null },
@@ -247,6 +248,19 @@ public class BusRoundTripTest extends TypeSchemaTest {
   }
 
   @Test
+  public void infoDescribesStructureTheGraphAndTheJvm() throws Exception {
+    JsonNode reply = send(STRUCTURE, "info", "{}");
+    assertFalse(reply.path("result").has("error"), reply.toString());
+    JsonNode data = reply.path("result").path("data");
+    assertEquals(Context.getSelfGroup() != null, data.path("structure").path("bootstrapped").asBoolean());
+    assertEquals(Context.getHostname(), data.path("structure").path("host").asString());
+    assertEquals(Context.getTypeRepository().count(), data.path("graph").path("types").asLong());
+    assertEquals(Context.getInstrumentRepository().count(), data.path("graph").path("instruments").asLong());
+    assertEquals(Runtime.version().feature(), data.path("jvm").path("javaVersion").asInt());
+    assertTrue(data.path("jvm").path("processors").asInt() > 0);
+  }
+
+  @Test
   public void resolvesPublishedContractsOverWebSocket() throws Exception {
     Router router = Router.router(Context.getVertx());
     SockJSBridgeOptions options = new SockJSBridgeOptions().addInboundPermitted(
@@ -281,6 +295,7 @@ public class BusRoundTripTest extends TypeSchemaTest {
       });
       String[][] rows = {
         { STRUCTURE, STRUCTURE, "introspect", "{}" },
+        { STRUCTURE, STRUCTURE, "info", "{}" },
         { STRUCTURE, STRUCTURE, "help", "{}" },
         { STRUCTURE, STRUCTURE, "version", "{}" },
         { TYPES, TYPES, "findOneByName", "{\"name\":\"OperatingSystem\"}" },
