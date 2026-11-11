@@ -65,7 +65,7 @@ describe("REPL with a bridge", { skip: await reachable() }, () => {
   });
 
   it("gives the help of one handler", async () => {
-    const { code, stdout } = await main(["types.help", "--name", "getAll"]);
+    const { code, stdout } = await main(["types.help", "--handler", "getAll"]);
     assert.equal(code, 0);
     assert.deepEqual(Object.keys(JSON.parse(stdout)), ["getAll"]);
   });

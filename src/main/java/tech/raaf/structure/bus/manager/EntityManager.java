@@ -343,8 +343,8 @@ public class EntityManager extends GenericActor {
           .map(JsonNode::asString)
           .collect(Collectors.toList());
 
-        final String uuid = args.get("uuid").asString();
-        Node toDelete = nodeRepository.findByUuid(args.get("uuid").asString());
+        final String uuid = args.get("node").asString();
+        Node toDelete = nodeRepository.findByUuid(uuid);
         if (toDelete == null) {
           result.put(ERROR, "Couldn't find node with UUID \"" + uuid + "\".");
           return response(request, result);

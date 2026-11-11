@@ -4,8 +4,8 @@
   "type": "object",
   "additionalProperties": false,
   "properties": {
-    "name": {
-      "description": "The name of one handler. Without a name, help gives each handler.",
+    "handler": {
+      "description": "The name of one handler. Without it, help gives each handler.",
       "type": "string"
     }
   }

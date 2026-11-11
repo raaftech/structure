@@ -159,7 +159,7 @@ Structure is a new command in the REPL:
   JSON, for example `--entities '{"name": "Linux", ...}'`. Structure checks the
   values.
 - Each target has the `help` handler: `types.help` gives the help of each
-  handler of `types`, and `types.help --name getAll` gives the help of
+  handler of `types`, and `types.help --handler getAll` gives the help of
   `getAll`.
 
 In the shell, Tab completes targets, handlers and options. Ctrl-C clears the

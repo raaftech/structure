@@ -4,7 +4,7 @@ import type * as commonSchema from "../../common.ts";
 
 /** Schema for the Instance repository's putNode method. */
 export type PutNode = {
-  node: commonSchema.Uuid;
+  type: commonSchema.Uuid;
   name: string;
   desc: string;
 };

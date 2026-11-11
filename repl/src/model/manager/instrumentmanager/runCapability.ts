@@ -6,7 +6,7 @@ import type * as commonSchema from "../../common.ts";
 /** Schema for InstrumentManager's runCapability method. */
 export type RunCapability = {
   capability: string;
-  uuids: commonSchema.Uuid[];
+  instances: commonSchema.Uuid[];
   timeAllocated?: number;
   arguments?: {
     "/"?: Json;

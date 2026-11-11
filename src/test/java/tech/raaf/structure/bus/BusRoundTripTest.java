@@ -136,7 +136,7 @@ public class BusRoundTripTest extends TypeSchemaTest {
       { ENTITIES, "specialize", "{'instance': '" + created + "', 'isa': '" + UNIX_LIKE + "'}", null },
       { ENTITIES, "group", "{'group': '" + group + "', 'member': '" + host + "'}", null },
       { ENTITIES, "ungroup", "{'group': '" + group + "', 'member': '" + host + "'}", null },
-      { ENTITIES, "delete", "{'labels': ['Instance'], 'uuid': '" + created + "', 'includeStart': true}", null },
+      { ENTITIES, "delete", "{'labels': ['Instance'], 'node': '" + created + "', 'includeStart': true}", null },
       { INSTANCES, "nLastCreated", "{'amount': 5}", null },
       { INSTANCES, "findByName", "{'name': 'bus-host'}", null },
       { INSTANCES, "findOneByData", "{'property': 'shortName', 'value': 'os'}", null },
@@ -144,7 +144,7 @@ public class BusRoundTripTest extends TypeSchemaTest {
       {
         INSTANCES,
         "putNode",
-        "{'node': '" + DNS_NAME + "', 'name': 'dns', 'desc': '', 'dnsname': 'test.example'}",
+        "{'type': '" + DNS_NAME + "', 'name': 'dns', 'desc': '', 'dnsname': 'test.example'}",
         null,
       },
       { STRUCTURE, "reload", "{}", null },
@@ -152,9 +152,9 @@ public class BusRoundTripTest extends TypeSchemaTest {
       { STRUCTURE, "introspect", "{}", null },
       { STRUCTURE, "info", "{}", null },
       { STRUCTURE, "help", "{}", null },
-      { STRUCTURE, "help", "{'name': 'info'}", null },
-      { STRUCTURE, "help", "{'name': 'noSuchHandler'}", "No handler named noSuchHandler." },
-      { STRUCTURE, "help", "{'name': 1}", "Arguments didn't validate against schema: [" },
+      { STRUCTURE, "help", "{'handler': 'info'}", null },
+      { STRUCTURE, "help", "{'handler': 'noSuchHandler'}", "No handler named noSuchHandler." },
+      { STRUCTURE, "help", "{'handler': 1}", "Arguments didn't validate against schema: [" },
       { STRUCTURE, "version", "{}", null },
       { typeAddress, "help", "{}", null },
       { hostAddress, "version", "{}", null },
@@ -372,7 +372,7 @@ public class BusRoundTripTest extends TypeSchemaTest {
     JsonNode data = send(
       INSTRUMENTS,
       "runCapability",
-      "{\"capability\": \"NoSuchCapability\", \"uuids\": [\"" + host + "\"]}"
+      "{\"capability\": \"NoSuchCapability\", \"instances\": [\"" + host + "\"]}"
     )
       .path("result")
       .path("data");

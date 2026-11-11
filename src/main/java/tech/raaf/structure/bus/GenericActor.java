@@ -259,14 +259,14 @@ public abstract class GenericActor extends AbstractVerticle {
       @Override
       public JsonNode exec(JsonNode request) {
         ObjectNode result = JsonNodeFactory.instance.objectNode();
-        JsonNode name = request.path("args").path("name");
-        if (!name.isMissingNode() && !handlers.containsKey(name.asString())) {
-          return response(request, result.put("error", "No handler named " + name.asString() + "."));
+        JsonNode wanted = request.path("args").path("handler");
+        if (!wanted.isMissingNode() && !handlers.containsKey(wanted.asString())) {
+          return response(request, result.put("error", "No handler named " + wanted.asString() + "."));
         }
         ObjectNode data = result.putObject("data");
 
         handlers.forEach((msgh, handler) -> {
-          if (name.isMissingNode() || msgh.equals(name.asString())) {
+          if (wanted.isMissingNode() || msgh.equals(wanted.asString())) {
             data.set(msgh, handler.handler().help(request));
           }
         });

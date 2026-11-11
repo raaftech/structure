@@ -4,7 +4,7 @@
     "msgh": "runCapability",
     "args": {
       "capability": "capability name",
-      "uuids": "array of instance UUIDs",
+      "instances": "array of instance UUIDs",
       "timeAllocated": "time in ms (optional)",
       "arguments": "object with the arguments of the instrument (optional)"
     }

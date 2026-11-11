@@ -6,6 +6,6 @@ import type * as commonSchema from "../../common.ts";
 /** Schema for EntityManager's delete method. */
 export type Delete = {
   labels: Json[];
-  uuid: commonSchema.Uuid;
+  node: commonSchema.Uuid;
   includeStart?: boolean;
 };

@@ -3,8 +3,8 @@
   "synopsis": {
     "msgh": "help",
     "args": {
-      "name": "name of one handler (optional)"
+      "handler": "name of one handler (optional)"
     }
   },
-  "description": "The help handler returns the help messages of the handlers of the actor, by handler name. With name, it returns only the help message of that handler, or an error if the actor has no handler with that name."
+  "description": "The help handler returns the help messages of the handlers of the actor, by handler name. With handler, it returns only the help message of that handler, or an error if the actor has no handler with that name."
 }

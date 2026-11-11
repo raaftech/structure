@@ -56,14 +56,14 @@ public class HelpTest extends TypeSchemaTest {
     assertTrue(missing.isEmpty(), "Handlers without help: " + missing);
   }
 
-  // With a name, the help reply has only the handler with that name
+  // With a handler name, the help reply has only that handler
   @Test
   public void helpGivesTheNamedHandler() {
     StructureManager actor = new StructureManager();
-    JsonNode one = actor.help().exec(mapper.readTree("{\"msgh\":\"help\",\"args\":{\"name\":\"info\"}}"));
+    JsonNode one = actor.help().exec(mapper.readTree("{\"msgh\":\"help\",\"args\":{\"handler\":\"info\"}}"));
     assertEquals(List.of("info"), List.copyOf(one.path("result").path("data").propertyNames()));
     assertEquals("info", one.path("result").path("data").path("info").path("name").asString());
-    JsonNode none = actor.help().exec(mapper.readTree("{\"msgh\":\"help\",\"args\":{\"name\":\"nope\"}}"));
+    JsonNode none = actor.help().exec(mapper.readTree("{\"msgh\":\"help\",\"args\":{\"handler\":\"nope\"}}"));
     assertEquals("No handler named nope.", none.path("result").path("error").asString());
     assertFalse(none.path("result").has("data"));
   }
