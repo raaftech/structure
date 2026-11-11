@@ -135,6 +135,22 @@ public class GenericActorTest {
     }
   }
 
+  public static class InvalidInputPath extends GenericActor {
+
+    @SchemaPath(input = "not a uri", output = OUTPUT)
+    public MessageHandler probe() {
+      return GenericActorTest.probe(request -> null);
+    }
+  }
+
+  public static class MissingReference extends GenericActor {
+
+    @SchemaPath(output = "resource:/schema/collection/missing.schema.json")
+    public MessageHandler probe() {
+      return GenericActorTest.probe(request -> null);
+    }
+  }
+
   public static class NoHelp extends GenericActor {
 
     @SchemaPath(output = OUTPUT)
@@ -150,6 +166,8 @@ public class GenericActorTest {
     assertThrows(JsonValidationException.class, NoInputDocument::new);
     assertThrows(JsonValidationException.class, NoOutputDocument::new);
     assertThrows(IllegalArgumentException.class, InvalidPath::new);
+    assertThrows(IllegalArgumentException.class, InvalidInputPath::new);
+    assertThrows(JsonValidationException.class, MissingReference::new);
     assertThrows(IllegalStateException.class, NullHandler::new);
     assertThrows(IllegalStateException.class, NoHelp::new);
     // The checks that run once for a class run again after a failure

@@ -100,7 +100,9 @@ words to use for each one.
 
 - **Data schema**: The JSON schema of the `data` of the instances of a type, in
   `bundles/*/schema/`. The `file.dataSchema` of a type points to it. Structure
-  serves data schemas at `/schemas/`.
+  stores the file content on the type node and serves it at `/schemas/`.
+  Instances use their type's stored schema. A change to the file on disk alone
+  does not change that stored content.
 
 - **Deployment**: Two meanings. A Vert.x deployment is one verticle that Vert.x
   runs, with a deployment ID. Each actor is one Vert.x deployment, and its
@@ -276,8 +278,10 @@ words to use for each one.
 
 - **Response**: The reply to a request, in the format of
   `base/response.schema.json`. It has the `request`, and a `result` with `data`
-  or an `error` text, never both. If a handler gives a response that is not
-  valid, `GenericActor` replies with an error. Vert.x calls it a reply.
+  or an `error` text, never both. `GenericActor` checks the response envelope,
+  then checks successful `data` against the handler's output schema. It checks
+  error responses against the envelope only. If a response is not valid, it
+  logs the failure and replies with an error. Vert.x calls it a reply.
 
 - **Result**: Three meanings. A Result node holds the outcome of a run of a
   controller, with a state (`stateCode`, `stateInterpretation`,
