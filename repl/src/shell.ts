@@ -1,15 +1,23 @@
 // An interactive shell for the commands of the event bus. Each line is
 // a command, as on the command line. Tab completes targets, handlers
-// and options. Ctrl-C clears the line, and Ctrl-D ends the shell.
+// and options. Ctrl-C clears the line, and Ctrl-D ends the shell. When
+// actors start or stop, the shell gets the commands again.
 
 import { clearLine, createInterface, cursorTo } from "node:readline";
 import type { Readable, Writable } from "node:stream";
 import type { Bus } from "./bus.ts";
-import { type Commands, EVENTS } from "./commands.ts";
+import { Commands, EVENTS } from "./commands.ts";
+import type { Json } from "./model/json.ts";
 import { colours, error, event, handler, json } from "./output.ts";
 import { words } from "./words.ts";
 
 const PROMPT = "structure> ";
+
+// After these events, get the commands again when no such event came for
+// QUIET ms, or at the latest LONGEST ms after the first one.
+const ACTOR_EVENTS = new Set(["actorStarted", "actorStopped"]);
+const QUIET = 1000;
+const LONGEST = 5000;
 
 // A stream that can be a terminal.
 type Terminal = { isTTY?: boolean; hasColors?: () => boolean; columns?: number };
@@ -32,6 +40,9 @@ export async function shell(
   });
   let busy = false;
   let closed = false;
+  let ended = false;
+  let quiet: ReturnType<typeof setTimeout> | undefined;
+  let longest: ReturnType<typeof setTimeout> | undefined;
   // Write a line above the prompt, and then the prompt again.
   const write = (stream: Writable & Terminal, text: string) => {
     if (terminal && !busy) {
@@ -43,7 +54,29 @@ export async function shell(
       lines.prompt(true);
     }
   };
-  const stop = bus.register(EVENTS, (body) => write(output, event(body, colours(output))));
+  // Get the commands again, once for each burst of actor events.
+  const refresh = async () => {
+    clearTimeout(quiet);
+    clearTimeout(longest);
+    quiet = longest = undefined;
+    try {
+      commands = await Commands.introspect(bus);
+    } catch (failure) {
+      if (!ended) {
+        write(errors, error((failure as Error).message, colours(errors)));
+      }
+    }
+  };
+  // The shell does not write actor events, as there can be hundreds.
+  const stop = bus.register(EVENTS, (body) => {
+    if (actor(body)) {
+      clearTimeout(quiet);
+      quiet = setTimeout(refresh, QUIET);
+      longest ??= setTimeout(refresh, LONGEST);
+    } else {
+      write(output, event(body, colours(output)));
+    }
+  });
   bus.onerror = (failure) => write(errors, error(failure.message, colours(errors)));
   bus.onclose = () => {
     closed = true;
@@ -88,9 +121,17 @@ export async function shell(
   if (terminal) {
     output.write("\n");
   }
+  ended = true;
+  clearTimeout(quiet);
+  clearTimeout(longest);
   bus.onclose = () => {};
   stop();
   return closed ? 1 : 0;
+}
+
+// True for an event that tells that an actor started or stopped.
+function actor(body: Json): boolean {
+  return typeof body === "object" && body !== null && !Array.isArray(body) && ACTOR_EVENTS.has(String(body.event));
 }
 
 // The completions of the last word of a line, as readline needs them:

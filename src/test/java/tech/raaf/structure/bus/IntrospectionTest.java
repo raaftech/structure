@@ -10,6 +10,9 @@ import io.vertx.core.eventbus.DeliveryOptions;
 import io.vertx.core.json.JsonObject;
 import java.net.URI;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -66,6 +69,32 @@ public class IntrospectionTest {
   @AfterEach
   public void stop() {
     vertx.close().await();
+  }
+
+  // An actor publishes an event when it starts and when it stops
+  @Test
+  public void publishesAnEventWhenAnActorStartsAndStops() throws Exception {
+    List<JsonObject> events = new CopyOnWriteArrayList<>();
+    CountDownLatch received = new CountDownLatch(2);
+    vertx
+      .eventBus()
+      .<JsonObject>consumer("tech.raaf.structure.bus.events", message -> {
+        events.add(message.body());
+        received.countDown();
+      })
+      .completion()
+      .await();
+    Probe probe = new Probe();
+    String id = vertx.deployVerticle(probe).await();
+    vertx.undeploy(id).await();
+    assertTrue(received.await(5, TimeUnit.SECONDS), events.toString());
+    assertEquals(List.of("actorStarted", "actorStopped"), events.stream().map(e -> e.getString("event")).toList());
+    for (JsonObject event : events) {
+      JsonObject data = event.getJsonObject("data");
+      assertEquals(id, data.getString("id"));
+      assertEquals(probe.getActorName(), data.getString("class"));
+      assertEquals(List.of(probe.getActorName()), data.getJsonArray("addresses").getList());
+    }
   }
 
   @Test

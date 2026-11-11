@@ -137,7 +137,9 @@ words to use for each one.
 - **Events address**: The bus address `tech.raaf.structure.bus.events`, where
   actors publish events, for example `taskScheduled` or `selfDiscovery`. Each
   event has a `source`, an `event` and `data`. Clients register on this address
-  to follow what Structure does.
+  to follow what Structure does. Each actor publishes `actorStarted` when it
+  starts and `actorStopped` when it stops, with its actor ID, actor class and
+  bus addresses. A client can then introspect again.
 
 - **GIVES_CAPABILITY**: The relation from an instrument to the capability that
   it gives.

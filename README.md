@@ -30,7 +30,8 @@ the Java backend.
 The following section starts with giving a short explanation about how these
 [capabilities](#capabilities) work, and then continues with showing you how to
 [build](#building) Structure, how to [run](#running) it, how to do some
-[example](#examples) commands, and finally how to run our [tests](#testing).
+[example](#examples) commands, how to [query](#querying) the graph, and finally
+how to run our [tests](#testing).
 
 ## Capabilities
 
@@ -165,8 +166,10 @@ handler in Structure is a new command in the REPL:
 
 In the shell, Tab completes targets one part at a time, then handlers and
 options. Ctrl-C clears the line, and Ctrl-D ends the shell. Events, for example
-of a bootstrap, show above the prompt. If the input is not a terminal, the shell
-reads commands from it, with no prompt and no colour.
+of a bootstrap, show above the prompt. When actors start or stop, for example
+for new nodes, the shell gets the commands again, one second after the last of
+these events. It does not show these events. If the input is not a terminal,
+the shell reads commands from it, with no prompt and no colour.
 
 With arguments, the REPL runs one command, for example
 `node src/main.ts repository.types.getAll`. It writes the data to stdout, and
@@ -198,6 +201,60 @@ found:
 ```bash
 node src/main.ts manager.structuremanager.info
 ```
+
+If Ansible is available, the bootstrap also adds the IPv4 network of each
+interface of the host. Find a network by its CIDR, for example `192.168.1.0/24`,
+and keep its UUID, which is in `meta.uuid` of the reply. The REPL writes only
+the data to stdout, thus the shell can read a field of it:
+
+```bash
+export UUID=$(node src/main.ts repository.instances.findOneByData \
+  --property cidr --value 172.17.2.0/24 \
+  | node -pe 'JSON.parse(require("fs").readFileSync(0)).meta.uuid')
+echo $UUID
+```
+
+Discover the network. On an IP network, `Detect` uses `NmapNetworkDiscover`,
+which scans the network with Nmap. The handler replies with the task ID, and
+the scan takes up to one minute. In the REPL shell, the `taskFinished` event
+shows when the scan is done:
+
+```bash
+node src/main.ts node.$UUID.runCapability --capability Detect
+```
+
+Get the result of the scan, and the addresses that the network has now. Each
+host that the scan found has a group with an operating system named `Unknown`,
+until an OS discovery finds which operating system it is:
+
+```bash
+node src/main.ts node.$UUID.getResults
+node src/main.ts node.$UUID.getComponentsByType --type Ipv4Address
+```
+
+## Querying
+
+You can see the graph in Neo4j Browser. Open https://browser.neo4j.io/, or
+http://localhost:7474/ if you run Neo4j with Docker as in [Neo4j](#neo4j), and
+connect to `neo4j://localhost:7687`. The user is `neo4j`, and the password is
+the value of `STRUCTURE_NEO4J_PASS`.
+
+The style sheet `notes/structure.grass` gives each kind of node a colour, for
+example groups, software, IP addresses and networks, and shows the names of the
+nodes. To use it, run `:style` and use the **Upload** button in the result.
+
+Show the instances and the relations between them:
+
+```cypher
+MATCH p = (:Instance)-[]->(:Instance)
+RETURN p
+```
+
+If the result shows a table, select the **Graph** view on the left side of the
+result.
+
+![an example graph after self discovery and network discovery have executed](notes/visualisation.svg)
+_an example graph after self discovery and network discovery have executed_
 
 ## Testing
 

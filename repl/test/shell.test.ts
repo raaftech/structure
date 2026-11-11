@@ -1,19 +1,21 @@
 import assert from "node:assert/strict";
 import { PassThrough } from "node:stream";
-import { describe, it } from "node:test";
+import { afterEach, describe, it, mock } from "node:test";
 import { stripVTControlCharacters } from "node:util";
 import type { Bus } from "../src/bus.ts";
 import { Commands, EVENTS } from "../src/commands.ts";
 import type { Json } from "../src/model/json.ts";
+import type { Introspection } from "../src/model/output/introspection.ts";
 import { columns, complete, shell } from "../src/shell.ts";
 import { BUS, INTROSPECTION, UUID } from "./introspection.ts";
 
 const commands = new Commands(INTROSPECTION);
 
-// A bus that keeps the requests. It replies with the handler name, or
-// with an error for the instance.
+// A bus that keeps the requests. It replies with the introspection, the
+// handler name, or an error for the instance.
 class FakeBus {
   requests: [string, string, Json][] = [];
+  introspection: Introspection = INTROSPECTION;
   registered: string[] = [];
   stopped = false;
   listener: (body: Json) => void = () => {};
@@ -22,6 +24,9 @@ class FakeBus {
 
   async request(address: string, msgh: string, args: Json) {
     this.requests.push([address, msgh, args]);
+    if (msgh === "introspect") {
+      return { request: {}, result: { data: this.introspection } };
+    }
     return { request: {}, result: address.endsWith(UUID) ? { error: "It failed." } : { data: [msgh] } };
   }
 
@@ -102,6 +107,55 @@ describe("shell", () => {
     const { code, errors } = await result;
     assert.equal(code, 1);
     assert.equal(errors, "The connection is closed\n");
+  });
+});
+
+describe("shell after actor events", () => {
+  const started = { source: "TypeActor", event: "actorStarted", data: { id: "x" } };
+  const introspections = (bus: FakeBus) => bus.requests.filter(([, msgh]) => msgh === "introspect").length;
+  // Let the requests of the shell complete, as the timers are not real.
+  const settle = () => new Promise((resolve) => setImmediate(resolve));
+
+  afterEach(() => mock.timers.reset());
+
+  it("gets the commands again a second after the last actor event, and does not write them", async () => {
+    mock.timers.enable({ apis: ["setTimeout"] });
+    const bus = new FakeBus();
+    bus.introspection = {
+      ...INTROSPECTION,
+      actors: { ...INTROSPECTION.actors, f: { class: `${BUS}.typeactor`, addresses: [`${BUS}.node.c0ffee00`] } },
+    };
+    const input = new PassThrough();
+    const result = run(bus, input);
+    bus.listener(started);
+    mock.timers.tick(600);
+    bus.listener(started);
+    mock.timers.tick(999);
+    await settle();
+    assert.equal(introspections(bus), 0);
+    mock.timers.tick(1);
+    await settle();
+    assert.equal(introspections(bus), 1);
+    input.end("node.c0ffee00.getSubtypes\n");
+    const { output, errors } = await result;
+    assert.deepEqual(bus.requests.at(-1), [`${BUS}.node.c0ffee00`, "getSubtypes", {}]);
+    assert.equal(output, `${JSON.stringify(["getSubtypes"], null, 2)}\n`);
+    assert.equal(errors, "");
+  });
+
+  it("gets the commands again at the latest five seconds after the first actor event", async () => {
+    mock.timers.enable({ apis: ["setTimeout"] });
+    const bus = new FakeBus();
+    const input = new PassThrough();
+    const result = run(bus, input);
+    for (let time = 0; time < 5000; time += 500) {
+      bus.listener(started);
+      mock.timers.tick(500);
+    }
+    await settle();
+    assert.equal(introspections(bus), 1);
+    input.end();
+    await result;
   });
 });
 

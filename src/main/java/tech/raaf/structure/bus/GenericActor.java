@@ -313,11 +313,21 @@ public abstract class GenericActor extends AbstractVerticle {
       .computeIfAbsent(getActorName(), name -> handlerMetadata());
     JsonObject actor = new JsonObject().put("class", getActorName()).put("addresses", new JsonArray(addresses()));
     vertx.sharedData().<String, JsonObject>getLocalMap(ACTORS).put(deploymentID(), actor);
+    publishEvent("actorStarted", actorEvent());
   }
 
   @Override
   public void stop() {
     vertx.sharedData().getLocalMap(ACTORS).remove(deploymentID());
+    publishEvent("actorStopped", actorEvent());
+  }
+
+  // The data of an actorStarted or actorStopped event: the actor ID, the
+  // actor class and the bus addresses. Clients use it to introspect again.
+  private JsonNode actorEvent() {
+    ObjectNode data = mapper.createObjectNode().put("id", deploymentID()).put("class", getActorName());
+    addresses().forEach(data.putArray("addresses")::add);
+    return data;
   }
 
   // Our message handler.
