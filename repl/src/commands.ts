@@ -34,6 +34,9 @@ export class CommandError extends Error {}
 
 const STRUCTURE = "tech.raaf.structure.bus.manager.structuremanager";
 
+// The bus address where actors publish events.
+export const EVENTS = "tech.raaf.structure.bus.events";
+
 export class Commands {
   // Each target, by the shortest unique suffix of its address.
   readonly targets = new Map<string, Target>();
@@ -89,10 +92,9 @@ export class Commands {
     );
   }
 
-  // The call of a command. A handler name has no dot, thus the last dot
-  // of the first word comes before the handler.
-  parse(words: string[]): Call {
-    const [word = "", ...rest] = words;
+  // The target and the handler name of the first word of a command. A
+  // handler name has no dot, thus the last dot comes before it.
+  command(word: string): { target: Target; msgh: string } {
     const dot = word.lastIndexOf(".");
     const name = word.slice(0, dot);
     const msgh = word.slice(dot + 1);
@@ -104,6 +106,13 @@ export class Commands {
     if (!handler) {
       throw new CommandError(`Unknown handler of ${name}: ${msgh}`);
     }
+    return { target, msgh: handler };
+  }
+
+  // The call of a command: the first word, and options.
+  parse(words: string[]): Call {
+    const [word = "", ...rest] = words;
+    const { target, msgh: handler } = this.command(word);
     const options = this.options(target.handlers[handler]);
     const config: ParseArgsOptionsConfig = {};
     for (const [key, { type, multiple }] of options) {
@@ -122,6 +131,16 @@ export class Commands {
       args[key] = Array.isArray(value) ? value.map(convert) : convert(value!);
     }
     return { address: target.address, request: { msgh: handler, args } };
+  }
+
+  // Send the call of a command, and give the data of the response.
+  async call(bus: Bus, words: string[]): Promise<Json> {
+    const { address, request } = this.parse(words);
+    const { result } = await bus.request(address, request.msgh, request.args);
+    if (result.error !== undefined) {
+      throw new Error(result.error);
+    }
+    return result.data ?? null;
   }
 
   // A schema with each $ref followed, and the URI of its document.
