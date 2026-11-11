@@ -45,7 +45,9 @@ words to use for each one.
 - **Bootstrap**: The first detection of the Structure host. The `selfDiscovery`
   handler runs the payload of the `StructureBootstrap` instrument. This payload
   adds the host, its OS, an IPv4 address, Structure and the tools that it finds
-  to the graph. Structure can run instruments only after bootstrap.
+  to the graph. If Ansible is available, the handler then runs `OsDiscover`,
+  which also adds the IPv4 address of each interface and its network. Structure
+  can run instruments only after bootstrap.
 
 - **Bridge**: The SockJS event bus bridge at `/eventbus`. Clients outside
   Structure use it to send and receive event bus messages over a WebSocket, at

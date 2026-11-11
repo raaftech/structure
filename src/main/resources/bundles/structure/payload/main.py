@@ -20,7 +20,11 @@ def main():
         })
         root["name"] = options.hostname
         operating_system = graph.software("OperatingSystem", "unknown")
-        entities = [graph.dns(options.hostname), graph.address("127.0.0.1"), graph.software("Structure", "unknown")]
+        # A DNS name belongs to an address, as in a network discovery
+        dns = graph.dns(options.hostname)
+        address = graph.address("127.0.0.1")
+        relate(address, "HAS", dns)
+        entities = [address, graph.software("Structure", "unknown")]
         for command, name in (
             ("sh", "Sh"), ("python3", "Python3x"), ("python2", "Python2x"),
             ("nmap", "Nmap"), ("ansible", "Ansible"), ("ssh", "OpenSshClient"), ("ping", "Iputils"),
@@ -30,7 +34,7 @@ def main():
         for entity in entities:
             relate(operating_system, "HAS", entity)
         relate(operating_system, "MEMBER_OF", root)
-        return client.persist([*entities, root, operating_system])
+        return client.persist([dns, *entities, root, operating_system])
 
 
 if __name__ == "__main__":

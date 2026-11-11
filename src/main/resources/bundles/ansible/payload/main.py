@@ -29,6 +29,21 @@ def match(graph, name, base):
     return candidates[matches[0]] if matches else base
 
 
+def interfaces(facts):
+    """Each IPv4 address of the interfaces in the facts, with its network,
+    except loopback addresses."""
+    found = {}
+    for fact in facts.values():
+        if not isinstance(fact, dict) or "device" not in fact:
+            continue
+        for ipv4 in [fact.get("ipv4"), *fact.get("ipv4_secondaries", [])]:
+            if isinstance(ipv4, dict) and ipv4.get("address") and ipv4.get("netmask"):
+                interface = ipaddress.IPv4Interface(ipv4["address"] + "/" + ipv4["netmask"])
+                if not interface.is_loopback:
+                    found[str(interface.ip)] = str(interface.network)
+    return sorted(found.items())
+
+
 def discover(client, graph, ip, self_id):
     address = client.find("addr", ip)
     known_address = bool(address.get("meta"))
@@ -69,11 +84,39 @@ def discover(client, graph, ip, self_id):
     for child in [address, *children]:
         relate(operating_system, "HAS", child)
     relate(operating_system, "MEMBER_OF", root)
+
+    # The addresses of the interfaces, and the networks that have them
+    known_networks, new_networks, links = {}, {}, []
+    for interface_ip, cidr in interfaces(facts):
+        other = address if interface_ip == ip else client.find("addr", interface_ip)
+        if not other.get("meta"):
+            other = graph.address(interface_ip)
+            entities.append(other)
+        relate(operating_system, "HAS", other)
+        if cidr not in known_networks and cidr not in new_networks:
+            network = client.find("cidr", cidr)
+            if network.get("meta"):
+                known_networks[cidr] = network["meta"]["uuid"]
+            else:
+                network = graph.instance("Ipv4Network", {"name": cidr, "desc": "An IPv4 network", "cidr": cidr})
+                network["name"] = cidr
+                new_networks[cidr] = network
+        if cidr in new_networks:
+            relate(new_networks[cidr], "HAS", other)
+        else:
+            links.append((known_networks[cidr], other))
+    entities.extend(new_networks.values())
+
     if not existing.get("meta"):
-        return client.persist([*entities, root, operating_system])
+        identifiers = client.persist([*entities, root, operating_system])
+        for network, other in links:
+            client.relate(network, "HAS", other["meta"]["uuid"])
+        return identifiers
 
     before = copy.deepcopy(existing)
     client.persist(entities, [operating_system])
+    for network, other in links:
+        client.relate(network, "HAS", other["meta"]["uuid"])
     current = graph.type(existing["meta"]["relations"]["INSTANCE_OF"]["to"][0])
     if current["name"] != selected and graph.is_type(graph.type(selected), current["name"]):
         client.request("manager.entitymanager", "specialize", {
@@ -82,6 +125,8 @@ def discover(client, graph, ip, self_id):
         existing["meta"]["relations"]["INSTANCE_OF"]["to"] = [graph.type(selected)["meta"]["uuid"]]
         current = graph.type(selected)
     existing["data"].update(graph.software(current["name"], operating_system["data"]["ver"])["data"])
+    # The node has the name of its type, for example Linux, as its data has
+    existing["name"], existing["desc"] = existing["data"]["name"], existing["data"]["desc"]
     if existing != before:
         client.update(existing)
     for identifier in operating_system["meta"]["relations"]["HAS"]["to"]:
