@@ -1,10 +1,11 @@
 import assert from "node:assert/strict";
 import { PassThrough } from "node:stream";
 import { describe, it } from "node:test";
+import { stripVTControlCharacters } from "node:util";
 import type { Bus } from "../src/bus.ts";
 import { Commands, EVENTS } from "../src/commands.ts";
 import type { Json } from "../src/model/json.ts";
-import { complete, shell } from "../src/shell.ts";
+import { columns, complete, shell } from "../src/shell.ts";
 import { BUS, INTROSPECTION, UUID } from "./introspection.ts";
 
 const commands = new Commands(INTROSPECTION);
@@ -110,26 +111,23 @@ describe("complete", () => {
   it("completes a target one part at a time, with a dot", () => {
     assert.deepEqual(completions(""), [["manager.", "node.", "repository."], ""]);
     assert.deepEqual(completions("m"), [["manager."], "m"]);
-    assert.deepEqual(completions("manager."), [["manager.entitymanager."], "manager."]);
-    assert.deepEqual(completions("node."), [
-      [`node.${UUID}.`, "node.a79ce509.", "node.b1bc963a.", "node.type."],
-      "node.",
-    ]);
-    assert.deepEqual(completions("Node.4c"), [[`node.${UUID}.`], "Node.4c"]);
+    assert.deepEqual(completions("manager."), [["entitymanager."], ""]);
+    assert.deepEqual(completions("node."), [[`${UUID}.`, "a79ce509.", "b1bc963a.", "type."], ""]);
+    assert.deepEqual(completions("Node.4c"), [[`${UUID}.`], "4c"]);
   });
 
   it("completes a handler after the dot of a target", () => {
-    assert.deepEqual(completions("node.type.types."), [["node.type.types.getSubtypes"], "node.type.types."]);
-    assert.deepEqual(completions("NODE.TYPE.get"), [["NODE.TYPE.getSubtypes"], "NODE.TYPE.get"]);
-    assert.deepEqual(completions("repository.types.g"), [["repository.types.getAll"], "repository.types.g"]);
+    assert.deepEqual(completions("node.type.types."), [["getSubtypes"], ""]);
+    assert.deepEqual(completions("NODE.TYPE.get"), [["getSubtypes"], "get"]);
+    assert.deepEqual(completions("repository.types.g"), [["getAll"], "g"]);
   });
 
   it("completes the handlers and the next parts of a target", () => {
-    assert.deepEqual(completions("node.type."), [["node.type.getSubtypes", "node.type.types."], "node.type."]);
+    assert.deepEqual(completions("node.type."), [["getSubtypes", "types."], ""]);
   });
 
   it("completes nothing for an unknown target", () => {
-    assert.deepEqual(completions("nope.g"), [[], "nope.g"]);
+    assert.deepEqual(completions("nope.g"), [[], "g"]);
     assert.deepEqual(completions("nope.getAll --"), [[], "--"]);
   });
 
@@ -143,5 +141,20 @@ describe("complete", () => {
   it("completes nothing where an option needs a value", () => {
     assert.deepEqual(completions("manager.entitymanager.run --name "), [[], ""]);
     assert.deepEqual(completions("manager.entitymanager.run --name Li"), [[], "Li"]);
+  });
+});
+
+describe("columns", () => {
+  const items = ["getPath", "help", "json", "doslike.", "unixlike."];
+
+  it("puts the completions in columns that fit the width", () => {
+    assert.equal(columns(items, 33, false), "getPath    help       json\ndoslike.   unixlike.");
+    assert.equal(columns(items, 5, false), items.join("\n"));
+  });
+
+  it("gives the handlers a colour, but not the parts of a target or the options", () => {
+    const text = columns([...items, "--name"], 80, true);
+    assert.deepEqual([...text.matchAll(/\x1b\[32m(.*?)\x1b\[39m/g)].map(([, item]) => item), ["getPath", "help", "json"]);
+    assert.equal(stripVTControlCharacters(text), columns([...items, "--name"], 80, false));
   });
 });

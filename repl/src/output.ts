@@ -32,6 +32,11 @@ export function error(message: string, colour: boolean): string {
   return style("red", message, colour);
 }
 
+// The name of a handler, for example in a list of completions.
+export function handler(name: string, colour: boolean): string {
+  return style("green", name, colour);
+}
+
 // An event, for example: StructureManager selfDiscovery {"status":"done"}.
 export function event(body: Json, colour: boolean): string {
   if (typeof body !== "object" || body === null || Array.isArray(body)) {

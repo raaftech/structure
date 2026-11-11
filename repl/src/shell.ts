@@ -6,13 +6,13 @@ import { clearLine, createInterface, cursorTo } from "node:readline";
 import type { Readable, Writable } from "node:stream";
 import type { Bus } from "./bus.ts";
 import { type Commands, EVENTS } from "./commands.ts";
-import { colours, error, event, json } from "./output.ts";
+import { colours, error, event, handler, json } from "./output.ts";
 import { words } from "./words.ts";
 
 const PROMPT = "structure> ";
 
 // A stream that can be a terminal.
-type Terminal = { isTTY?: boolean; hasColors?: () => boolean };
+type Terminal = { isTTY?: boolean; hasColors?: () => boolean; columns?: number };
 
 // Run the shell until the input ends. Gives the exit code.
 export async function shell(
@@ -28,7 +28,7 @@ export async function shell(
     output,
     terminal,
     prompt: PROMPT,
-    completer: (line: string) => complete(commands, line),
+    completer: (line: string) => show(complete(commands, line)),
   });
   let busy = false;
   let closed = false;
@@ -52,6 +52,17 @@ export async function shell(
       write(errors, error("The connection is closed", colours(errors)));
     }
     lines.close();
+  };
+  // Readline shows completions without colour, thus show them here. If
+  // all completions start the same, insert that start, as bash does.
+  const show = ([items, part]: [string[], string]): [string[], string] => {
+    const start = common(items);
+    if (items.length < 2 || (start.length > part.length && start.startsWith(part))) {
+      return [items.length < 2 ? items : [start], part];
+    }
+    output.write(`\n${columns(items, output.columns || 80, colours(output))}\n`);
+    lines.prompt(true);
+    return [[], part];
   };
   lines.on("SIGINT", () => {
     lines.write(null, { ctrl: true, name: "e" });
@@ -82,29 +93,59 @@ export async function shell(
   return closed ? 1 : 0;
 }
 
-// The completions of the last word of a line, as readline needs them.
+// The completions of the last word of a line, as readline needs them:
+// the completions, and the part of the line that they complete. In the
+// first word, this is the part after the last dot.
 export function complete(commands: Commands, line: string): [string[], string] {
   const current = /\S*$/.exec(line)![0];
   const before = line.slice(0, line.length - current.length).trim().split(/\s+/).filter(Boolean);
-  return [before.length ? options(commands, before, current) : targets(commands, current), current];
+  if (before.length) {
+    return [options(commands, before, current), current];
+  }
+  return [targets(commands, current), current.slice(current.lastIndexOf(".") + 1)];
 }
 
-// The first word, one part at a time: the next part of a target name,
-// and the handlers if the text before the last dot is a target.
+// Completions in columns that fit the width, with handlers in colour.
+// A handler is a completion without a dot at the end, and not an option.
+export function columns(items: string[], width: number, colour: boolean): string {
+  const size = Math.max(...items.map((item) => item.length)) + 2;
+  const count = Math.max(1, Math.floor(width / size));
+  return items
+    .map((item, index) => {
+      const text = item.endsWith(".") || item.startsWith("-") ? item : handler(item, colour);
+      const end = index === items.length - 1 ? "" : (index + 1) % count === 0 ? "\n" : " ".repeat(size - item.length);
+      return text + end;
+    })
+    .join("");
+}
+
+// The start that all items have.
+function common(items: string[]): string {
+  return items.reduce((start, item) => {
+    let length = 0;
+    while (length < start.length && start[length] === item[length]) {
+      length++;
+    }
+    return start.slice(0, length);
+  }, items[0] ?? "");
+}
+
+// The first word, one part at a time: the handlers if the text before
+// the last dot is a target, and the next parts of the target names.
 function targets(commands: Commands, current: string): string[] {
   const prefix = current.toLowerCase();
+  const dot = prefix.lastIndexOf(".");
   const parts = new Set<string>();
   for (const name of commands.targets.keys()) {
     if (name.startsWith(prefix)) {
-      const dot = name.indexOf(".", prefix.length);
-      parts.add(dot === -1 ? `${name}.` : name.slice(0, dot + 1));
+      const end = name.indexOf(".", prefix.length);
+      parts.add(end === -1 ? `${name.slice(dot + 1)}.` : name.slice(dot + 1, end + 1));
     }
   }
-  const dot = current.lastIndexOf(".");
   const target = dot > 0 ? commands.targets.get(prefix.slice(0, dot)) : undefined;
-  const handlers = Object.keys(target?.handlers ?? {})
-    .filter((handler) => handler.toLowerCase().startsWith(prefix.slice(dot + 1)))
-    .map((handler) => `${current.slice(0, dot)}.${handler}`);
+  const handlers = Object.keys(target?.handlers ?? {}).filter((handler) =>
+    handler.toLowerCase().startsWith(prefix.slice(dot + 1)),
+  );
   return [...handlers, ...[...parts].sort()];
 }
 
