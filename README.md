@@ -95,6 +95,8 @@ To build and run Structure, you need:
   need version 5.19 or later. Used to store the Structure graph.
 - [Node.js](https://nodejs.org/) 22.19 or later, to run the REPL. The REPL needs
   no other packages.
+- [jq](https://jqlang.org/), to read fields of the JSON that the REPL writes, as
+  in the [examples](#examples).
 
 ## Building
 
@@ -210,7 +212,7 @@ the data to stdout, thus the shell can read a field of it:
 ```bash
 export UUID=$(node src/main.ts repository.instances.findOneByData \
   --property cidr --value 172.17.2.0/24 \
-  | node -pe 'JSON.parse(require("fs").readFileSync(0)).meta.uuid')
+  | jq -r .meta.uuid)
 echo $UUID
 ```
 
@@ -223,12 +225,13 @@ shows when the scan is done:
 node src/main.ts node.$UUID.runCapability --capability Detect
 ```
 
-Get the result of the scan, and the addresses that the network has now. Each
-host that the scan found has a group with an operating system named `Unknown`,
-until an OS discovery finds which operating system it is:
+Show what the newest scan did, which its payload writes to stderr and its
+result keeps, and the addresses that the network has now. Each host that the
+scan found has a group with an operating system named `Unknown`, until an OS
+discovery finds which operating system it is:
 
 ```bash
-node src/main.ts node.$UUID.getResults
+node src/main.ts node.$UUID.getResults | jq -r '.[0].stderr'
 node src/main.ts node.$UUID.getComponentsByType --type Ipv4Address
 ```
 
