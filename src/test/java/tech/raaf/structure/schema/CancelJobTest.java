@@ -19,6 +19,6 @@ public class CancelJobTest extends SchemaTest {
 
   @Override
   protected String schema() {
-    return "resource:/schema/manager/taskmanager/canceljob.schema.json";
+    return "resource:/schema/manager/taskmanager/cancelJob.schema.json";
   }
 }

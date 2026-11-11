@@ -33,7 +33,7 @@
         }
       ]
     },
-    "uuidOrNameArray": {
+    "uuidOrNameList": {
       "type": "array",
       "items": {
         "$ref": "#/definitions/uuidOrName"
@@ -41,14 +41,7 @@
       "minItems": 1,
       "uniqueItems": true
     },
-    "paths": {
-      "type": "array",
-      "minItems": 1,
-      "items": {
-        "type": "string"
-      }
-    },
-    "stringOrStringArray": {
+    "stringOrStringList": {
       "type": ["string", "array"],
       "minItems": 1,
       "items": {

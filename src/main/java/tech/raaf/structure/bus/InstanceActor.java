@@ -41,7 +41,7 @@ public class InstanceActor extends NodeActor<Instance> {
    * @return An array containing the queried results.
    */
   @SchemaPath(
-    input = "resource:/schema/node/instance/getresults.schema.json",
+    input = "resource:/schema/node/instance/getResults.schema.json",
     output = "resource:/schema/output/nodeList.schema.json"
   )
   public MessageHandler getResults() {
@@ -73,7 +73,7 @@ public class InstanceActor extends NodeActor<Instance> {
    * @return An array containing the found components.
    */
   @SchemaPath(
-    input = "resource:/schema/node/instance/getcomponentsbytype.schema.json",
+    input = "resource:/schema/node/instance/getComponentsByType.schema.json",
     output = "resource:/schema/output/nodeList.schema.json"
   )
   public MessageHandler getComponentsByType() {
@@ -106,7 +106,7 @@ public class InstanceActor extends NodeActor<Instance> {
    * @return An array containing the UUID's of components that have instruments, with the
    * instruments categorized by capability type.
    */
-  @SchemaPath(output = "resource:/schema/output/nameToUuid.schema.json")
+  @SchemaPath(output = "resource:/schema/output/uuidMap.schema.json")
   public MessageHandler getInstruments() {
     return new MessageHandler() {
       @Override
@@ -204,7 +204,7 @@ public class InstanceActor extends NodeActor<Instance> {
    * Other arguments are the same as for "runInstrument", and they'll simply be passed along to the instrument runner.
    */
 
-  @SchemaPath(output = "resource:/schema/output/nameToUuid.schema.json")
+  @SchemaPath(output = "resource:/schema/output/uuidMap.schema.json")
   public MessageHandler getCapabilities() {
     return new MessageHandler() {
       @Override

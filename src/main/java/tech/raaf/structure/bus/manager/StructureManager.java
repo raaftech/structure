@@ -129,7 +129,7 @@ public class StructureManager extends GenericActor {
   }
 
   @SchemaPath(
-    input = "resource:/schema/manager/structuremanager/selfdiscovery.schema.json",
+    input = "resource:/schema/manager/structuremanager/selfDiscovery.schema.json",
     output = "resource:/schema/output/string.schema.json"
   )
   public MessageHandler selfDiscovery() {
