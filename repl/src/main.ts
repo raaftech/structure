@@ -3,11 +3,11 @@
 // the URL of the bridge.
 
 import { Bus } from "./bus.ts";
-import { Commands, EVENTS } from "./commands.ts";
+import { BRIDGE, Commands, EVENTS } from "./commands.ts";
 import { colours, error, event, json } from "./output.ts";
 import { shell } from "./shell.ts";
 
-const url = process.env.STRUCTURE_URL ?? "wss://localhost:8443/eventbus/websocket";
+const url = process.env.STRUCTURE_URL ?? BRIDGE;
 const args = process.argv.slice(2);
 
 let bus: Bus | undefined;

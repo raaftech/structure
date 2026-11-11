@@ -37,6 +37,9 @@ const STRUCTURE = "tech.raaf.structure.bus.manager.structuremanager";
 // The bus address where actors publish events.
 export const EVENTS = "tech.raaf.structure.bus.events";
 
+// The URL of the bridge of a Structure on this host.
+export const BRIDGE = "wss://localhost:8443/eventbus/websocket";
+
 export class Commands {
   // Each target, by the shortest unique suffix of its address.
   readonly targets = new Map<string, Target>();
