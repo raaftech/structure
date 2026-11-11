@@ -50,11 +50,11 @@ public class InstanceActor extends NodeActor<Instance> {
       public JsonNode exec(JsonNode request) {
         ObjectNode result = mapper.createObjectNode();
         JsonNode args = request.get("args");
-        Component component = (Component) getNode();
+        Instance instance = getNode();
 
         ArrayNode allResults = result.putArray("data");
-        if (component != null) {
-          component.getResults(args.path("task").stringValue(null)).forEach(r -> allResults.add(r.toJson()));
+        if (instance != null) {
+          instance.getResults(args.path("task").stringValue(null)).forEach(r -> allResults.add(r.toJson()));
         }
 
         return response(request, result);

@@ -4,8 +4,10 @@ import static tech.raaf.structure.helper.JsonHelper.mapper;
 
 import com.google.common.collect.ImmutableSet;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -103,6 +105,23 @@ public abstract class Instance extends Node {
   public Instance runController(Controller controller, ObjectNode arguments, String taskId, long timeAllocated) {
     new InstrumentRunner(this, controller, arguments, taskId, timeAllocated).startInstrument();
     return this;
+  }
+
+  // The results of the runs on this instance, newest first; a null task
+  // gives all
+  public List<Result> getResults(String task) {
+    final Map<String, Object> params = new HashMap<>();
+    params.put("uuid", getUuid());
+    params.put("task", task);
+    return NodeMapper.mapAll(
+      Graph.query(
+        "MATCH (:Instance {uuid: $uuid})-[:HAS_RESULT]->(n:Result) " +
+          "WHERE $task IS NULL OR n.`data-task` = $task " +
+          "RETURN n ORDER BY n.created DESC, n.uuid DESC",
+        params
+      ),
+      "n"
+    );
   }
 
   /**
