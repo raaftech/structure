@@ -1,14 +1,10 @@
 // A client of the SockJS event bus bridge, on a raw WebSocket.
 
-export type Json = null | boolean | number | string | Json[] | { [key: string]: Json };
+import type { Request } from "./model/base/request.ts";
+import type { Response } from "./model/base/response.ts";
+import type { Json } from "./model/json.ts";
 
-// The body of a response: the request, and a result with data or error.
-export interface Response {
-  request: { [key: string]: Json };
-  result: { [key: string]: Json };
-}
-
-// A frame of the bridge.
+// A frame of the bridge. Vert.x gives no schema for it.
 interface Frame {
   type: string;
   address?: string;
@@ -68,7 +64,7 @@ export class Bus {
   }
 
   // Send a request and wait for the response. The bridge waits 30 s.
-  request(address: string, msgh: string, args: Json = {}, timeout = 30000): Promise<Response> {
+  request(address: string, msgh: string, args: Request["args"] = {}, timeout = 30000): Promise<Response> {
     return new Promise((resolve, reject) => {
       if (this.#closed) {
         return reject(new BusError("The connection is closed"));
@@ -79,7 +75,8 @@ export class Bus {
         timeout,
       );
       this.#pending.set(replyAddress, { resolve, reject, timer });
-      this.#write({ type: "send", address, body: { msgh, args }, replyAddress });
+      const body: Request = { msgh, args };
+      this.#write({ type: "send", address, body, replyAddress });
     });
   }
 

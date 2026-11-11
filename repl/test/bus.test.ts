@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { afterEach, beforeEach, describe, it, mock } from "node:test";
-import { Bus, BusError, type Json } from "../src/bus.ts";
+import { Bus, BusError } from "../src/bus.ts";
+import type { Json } from "../src/model/json.ts";
 
 // A socket that keeps the frames that Bus sends.
 class FakeSocket {

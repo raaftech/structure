@@ -10,6 +10,7 @@
   },
   "scripts": {
     "check": "tsc -p .",
+    "model": "node scripts/model.ts ../src/main/resources/schema src/model",
     "test": "node --test \"test/*.test.ts\""
   },
   "devDependencies": {
