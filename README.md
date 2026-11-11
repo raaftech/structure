@@ -92,6 +92,8 @@ To build and run Structure, you need:
   and (optionally) to run a Neo4j container image.
 - [Neo4j](https://neo4j.com/download/) (optional, you can also use Docker). You
   need version 5.19 or later. Used to store the Structure graph.
+- [Node.js](https://nodejs.org/) 22.19 or later, to run the REPL. The REPL needs
+  no other packages.
 
 ## Building
 
@@ -127,18 +129,55 @@ export STRUCTURE_NEO4J_PASS=structure
 java -jar target/structure-*-fat.jar --unsafe
 ```
 
-## Examples
+### REPL
 
-The REPL in `repl/` sends requests to the event bus. A command is a target and
-a handler, and options, for example `types.findOneByName --name Linux`. Node.js
-must trust the certificate of Structure:
+The REPL in `repl/` sends requests to the event bus of Structure. Node.js must
+trust the certificate of Structure:
 
 ```bash
 cd repl
 export NODE_EXTRA_CA_CERTS=../target/structure.crt
+node src/main.ts
 ```
 
-Get information about Structure. Before bootstrap, `bootstrapped` is `false`,
+Without arguments, the REPL starts a shell. Each line is a command:
+
+```text
+<target>.<handler> [--<option> <value>]...
+```
+
+For example `types.findOneByName --name Linux`. The REPL gets the targets, the
+handlers and the options from the `introspect` handler, thus a new handler in
+Structure is a new command in the REPL:
+
+- The target is a part at the end of a bus address, for example `types`,
+  `linux` or the UUID of a node. If two addresses end with the same part, give
+  a longer part, for example `repository.types`.
+- The options are the properties of the argument schema of the handler. A
+  boolean option has no value: `--includeStart` or `--no-includeStart`. For an
+  array, give the option again for each item. A value that is not a string is
+  JSON, for example `--entities '{"name": "Linux", ...}'`. Structure checks the
+  values.
+- Each target has the `help` handler: `types.help` gives the help of each
+  handler of `types`, and `types.help --name getAll` gives the help of
+  `getAll`.
+
+In the shell, Tab completes targets, handlers and options. Ctrl-C clears the
+line, and Ctrl-D ends the shell. Events, for example of a bootstrap, show above
+the prompt. If the input is not a terminal, the shell reads commands from it,
+with no prompt and no colour.
+
+With arguments, the REPL runs one command, for example
+`node src/main.ts types.getAll`. It writes the data to stdout, and events and
+errors to stderr. If the command fails, the exit code is 1.
+
+The REPL connects to `wss://localhost:8443/eventbus/websocket`. Set
+`STRUCTURE_URL` to use a different bridge.
+
+## Examples
+
+These examples use the [REPL](#repl), from the `repl/` directory. Get
+information about Structure. Before bootstrap, `bootstrapped` is `false`,
 and the graph has no groups and no components:
 
 ```bash
@@ -158,9 +197,6 @@ found:
 ```bash
 node src/main.ts structuremanager.info
 ```
-
-The REPL connects to `wss://localhost:8443/eventbus/websocket`. Set
-`STRUCTURE_URL` to use a different bridge.
 
 ## Testing
 
@@ -187,3 +223,36 @@ to `target/surefire-reports`, and integration tests write to
 `target/failsafe-reports`. The file name is the name of the test class followed
 by `-output.txt`. Some tests cause failures on purpose, thus warnings and errors
 in these files are not always a problem.
+
+### REPL
+
+To run the unit tests of the REPL:
+
+```bash
+cd repl
+npm test
+```
+
+The integration tests of the REPL need a running Structure, at `STRUCTURE_URL`
+or at the default bridge. Without it, these tests are skipped. They do not
+change the graph:
+
+```bash
+NODE_EXTRA_CA_CERTS=../target/structure.crt npm run test:integration
+```
+
+The types in `repl/src/model` come from the JSON schemas in
+`src/main/resources/schema`. After a change to these schemas, generate them
+again, else the unit tests fail:
+
+```bash
+npm run model
+```
+
+To check the types, you need the TypeScript compiler, `tsc`, and the type
+definitions of Node.js:
+
+```bash
+npm install
+npm run check
+```
