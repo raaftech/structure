@@ -38,8 +38,8 @@ words to use for each one.
   that has `canBeUserSupplied`.
 
 - **Argument schema**: The JSON schema of the `args` of a message handler. The
-  `@SchemaPath` annotation of the handler selects it from
-  `src/main/resources/schema/`. A handler without `@SchemaPath` uses
+  `input` field of the handler's `@SchemaPath` annotation selects it from
+  `src/main/resources/schema/`. If `input` is omitted, the handler uses
   `base/args.schema.json`.
 
 - **Bootstrap**: The first detection of the Structure host. The `selfDiscovery`
@@ -189,8 +189,10 @@ words to use for each one.
 
 - **Introspect**: The `introspect` handler of `StructureManager`. It returns the
   actors on the event bus, each with its actor class and bus addresses. It also
-  returns the message handlers of each actor class once, with the argument
-  schema and the help of each handler.
+  returns the message handlers of each actor class once, with `inputSchemaUri`,
+  `outputSchemaUri` and help. Its `schemas` map contains the common request and
+  response schemas, handler schemas and all referenced application schema
+  documents, by absolute document URI.
 
 - **ISA**: The relation from a type to its parent type. What applies to a type
   also applies to the types below it, for example its instruments.
@@ -229,6 +231,10 @@ words to use for each one.
   Structure starts a node actor for each node.
 
 - **Origin**: The instance that a run acts on, for example the service to start.
+
+- **Output schema**: The JSON schema of successful `result.data` from a message
+  handler. Each handler must declare it in the `output` field of `@SchemaPath`.
+  It does not describe error responses or the response envelope.
 
 - **Parser**: An instrument that parses raw results into graph data, with the
   `PARSED` and `PRODUCED` relations. The bundles have no parsers at this time.

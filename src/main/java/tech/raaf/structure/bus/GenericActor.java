@@ -148,6 +148,8 @@ public abstract class GenericActor extends AbstractVerticle {
     ObjectNode metadata = mapper.createObjectNode();
     ObjectNode classes = metadata.putObject("classes");
     ObjectNode actors = metadata.putObject("actors");
+    ObjectNode schemas = metadata.putObject("schemas");
+    Set<URI> uris = new TreeSet<>(Set.of(schemaForRequest, schemaForResponse));
     Map<String, JsonObject> handlers = vertx.sharedData().getLocalMap(CLASSES);
     Map<String, JsonObject> active = new TreeMap<>(vertx.sharedData().getLocalMap(ACTORS));
     Set<String> names = new TreeSet<>();
@@ -155,7 +157,15 @@ public abstract class GenericActor extends AbstractVerticle {
       actors.set(id, convertFromJsonObject(actor));
       names.add(actor.getString("class"));
     });
-    names.forEach(name -> classes.set(name, convertFromJsonObject(handlers.get(name))));
+    names.forEach(name -> {
+      JsonNode actorClass = convertFromJsonObject(handlers.get(name));
+      classes.set(name, actorClass);
+      actorClass.path("handlers").values().forEach(handler -> {
+        uris.add(URI.create(handler.path("inputSchemaUri").asString()));
+        uris.add(URI.create(handler.path("outputSchemaUri").asString()));
+      });
+    });
+    JsonHelper.schemaCollection(uris).forEach((uri, schema) -> schemas.set(uri.toString(), schema));
     return metadata;
   }
 
@@ -171,8 +181,8 @@ public abstract class GenericActor extends AbstractVerticle {
       .forEach(entry -> {
         HandlerSchema handler = entry.getValue();
         ObjectNode command = commands.putObject(entry.getKey());
-        command.put("schemaUri", handler.input().toString());
-        command.set("schema", jsonFromResource(handler.input().getPath().substring(1)));
+        command.put("inputSchemaUri", handler.input().toString());
+        command.put("outputSchemaUri", handler.output().toString());
         command.set("help", handler.handler().help(request));
       });
     return new JsonObject(actor.toString());

@@ -1,10 +1,17 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "description": "The active actors, and the message handlers of their actor classes.",
+  "description": "The active actors, their message handlers and their schema documents.",
   "type": "object",
-  "required": ["classes", "actors"],
+  "required": ["classes", "actors", "schemas"],
   "additionalProperties": false,
   "properties": {
+    "schemas": {
+      "description": "The request, response and handler schemas with all referenced documents, by absolute document URI.",
+      "type": "object",
+      "additionalProperties": {
+        "type": "object"
+      }
+    },
     "classes": {
       "description": "Each actor class that has an active actor, by class name.",
       "type": "object",
@@ -54,16 +61,18 @@
     },
     "handler": {
       "type": "object",
-      "required": ["schemaUri", "schema", "help"],
+      "required": ["inputSchemaUri", "outputSchemaUri", "help"],
       "additionalProperties": false,
       "properties": {
-        "schemaUri": {
+        "inputSchemaUri": {
           "type": "string",
+          "format": "uri",
           "description": "The URI of the argument schema."
         },
-        "schema": {
-          "type": "object",
-          "description": "The argument schema."
+        "outputSchemaUri": {
+          "type": "string",
+          "format": "uri",
+          "description": "The URI of the schema for successful result.data."
         },
         "help": {
           "$ref": "../base/manual.schema.json"
