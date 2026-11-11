@@ -210,10 +210,14 @@ public abstract class GenericActor extends AbstractVerticle {
 
   // Replace a response that is not valid with an error response
   private JsonNode checked(JsonNode request, JsonNode response) {
-    final List<String> errors =
+    List<String> errors =
       response == null
         ? List.of("the handler gave no response")
         : JsonHelper.validationErrors(schemaForResponse, response);
+    if (errors.isEmpty() && response.path("result").has("data")) {
+      HandlerSchema handler = handlers.get(request.path("msgh").asString());
+      errors = JsonHelper.validationErrors(handler.output(), response.path("result").get("data"));
+    }
     if (errors.isEmpty()) {
       return response;
     }

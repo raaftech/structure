@@ -6,12 +6,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
+import java.net.URI;
 import java.util.List;
+import java.util.Map;
 import java.util.function.UnaryOperator;
 import org.junit.jupiter.api.Test;
 import tech.raaf.structure.annotations.SchemaPath;
 import tech.raaf.structure.bus.GenericActor.MessageHandler;
 import tech.raaf.structure.exceptions.JsonValidationException;
+import tech.raaf.structure.helper.JsonHelper;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.node.JsonNodeFactory;
 import tools.jackson.databind.node.ObjectNode;
@@ -44,6 +47,33 @@ public class GenericActorTest {
     @SchemaPath(output = OUTPUT)
     public MessageHandler nothing() {
       return probe(request -> null);
+    }
+  }
+
+  public static class OutputProbe extends Probe {
+
+    @SchemaPath(output = "resource:/schema/output/string.schema.json")
+    public MessageHandler text() {
+      return echo();
+    }
+
+    @SchemaPath(output = "resource:/schema/nullable.schema.json")
+    public MessageHandler nullable() {
+      return echo();
+    }
+
+    @SchemaPath(output = "resource:/schema/output/nodeList.schema.json")
+    public MessageHandler nodes() {
+      return echo();
+    }
+
+    @SchemaPath(output = OUTPUT)
+    public MessageHandler any() {
+      return echo();
+    }
+
+    private MessageHandler echo() {
+      return probe(request -> response(request, request.get("args")));
     }
   }
 
@@ -157,6 +187,74 @@ public class GenericActorTest {
 
   private static JsonObject result(Vertx vertx, Probe probe, Object body) {
     JsonObject reply = (JsonObject) vertx.eventBus().request(probe.getActorName(), body).await().body();
+    List<String> errors = JsonHelper.validationErrors(
+      URI.create("resource:/schema/base/response.schema.json"),
+      JsonHelper.mapper.readTree(reply.encode())
+    );
+    assertTrue(errors.isEmpty(), errors.toString());
     return reply.getJsonObject("result");
+  }
+
+  @Test
+  public void acceptsDataThatMatchesTheOutputSchema() {
+    Vertx vertx = Vertx.vertx();
+    try {
+      OutputProbe probe = new OutputProbe();
+      vertx.deployVerticle(probe).await();
+      Map<String, List<String>> outputs = Map.of(
+        "text", List.of("\"hello\""),
+        "nullable", List.of("null", "\"hello\""),
+        "nodes", List.of("[]", "[{\"name\":\"node\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\"}]"),
+        "any", List.of("null", "true", "42", "\"hello\"", "[]", "{}")
+      );
+      outputs.forEach((handler, values) -> values.forEach(value -> {
+        JsonObject expected = new JsonObject("{\"data\":" + value + "}");
+        assertEquals(expected, output(vertx, probe, handler, expected));
+      }));
+    } finally {
+      vertx.close().await();
+    }
+  }
+
+  @Test
+  public void replacesDataThatDoesNotMatchTheOutputSchema() {
+    Vertx vertx = Vertx.vertx();
+    try {
+      OutputProbe probe = new OutputProbe();
+      vertx.deployVerticle(probe).await();
+      Map<String, List<String>> outputs = Map.of(
+        "text", List.of("null", "42", "{}", "[]"),
+        "nullable", List.of("false"),
+        "nodes", List.of("{}", "[{}]", "[{\"name\":\"node\",\"uuid\":\"invalid\"}]")
+      );
+      outputs.forEach((handler, values) -> values.forEach(value -> {
+        JsonObject result = output(vertx, probe, handler, new JsonObject("{\"data\":" + value + "}"));
+        assertEquals(1, result.size());
+        assertTrue(result.getString("error").startsWith("Invalid response: "), result.encode());
+      }));
+    } finally {
+      vertx.close().await();
+    }
+  }
+
+  @Test
+  public void checksErrorResponsesOnlyAgainstTheEnvelope() {
+    Vertx vertx = Vertx.vertx();
+    try {
+      OutputProbe probe = new OutputProbe();
+      vertx.deployVerticle(probe).await();
+      JsonObject error = new JsonObject().put("error", "Failed.");
+      assertEquals(error, output(vertx, probe, "text", error));
+      JsonObject invalid = output(vertx, probe, "text", new JsonObject().put("error", 1));
+      assertTrue(invalid.getString("error").startsWith("Invalid response: "));
+      JsonObject unknown = output(vertx, probe, "unknown", new JsonObject());
+      assertEquals("No handler for called method.", unknown.getString("error"));
+    } finally {
+      vertx.close().await();
+    }
+  }
+
+  private static JsonObject output(Vertx vertx, OutputProbe probe, String handler, JsonObject output) {
+    return result(vertx, probe, new JsonObject().put("msgh", handler).put("args", output));
   }
 }

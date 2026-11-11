@@ -1,0 +1,5 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "A string or an explicit null result.",
+  "type": ["string", "null"]
+}
