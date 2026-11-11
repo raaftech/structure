@@ -249,16 +249,27 @@ public abstract class GenericActor extends AbstractVerticle {
     JsonNode help(JsonNode request);
   }
 
-  // The default usage handler.
-  @SchemaPath(output = "resource:/schema/output/help.schema.json")
+  // The default usage handler, for each handler or for the named one.
+  @SchemaPath(
+    input = "resource:/schema/base/help.schema.json",
+    output = "resource:/schema/output/help.schema.json"
+  )
   public MessageHandler help() {
     return new MessageHandler() {
       @Override
       public JsonNode exec(JsonNode request) {
         ObjectNode result = JsonNodeFactory.instance.objectNode();
+        JsonNode name = request.path("args").path("name");
+        if (!name.isMissingNode() && !handlers.containsKey(name.asString())) {
+          return response(request, result.put("error", "No handler named " + name.asString() + "."));
+        }
         ObjectNode data = result.putObject("data");
 
-        handlers.forEach((msgh, handler) -> data.set(msgh, handler.handler().help(request)));
+        handlers.forEach((msgh, handler) -> {
+          if (name.isMissingNode() || msgh.equals(name.asString())) {
+            data.set(msgh, handler.handler().help(request));
+          }
+        });
 
         return response(request, result);
       }

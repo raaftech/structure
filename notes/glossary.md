@@ -156,10 +156,11 @@ words to use for each one.
 
 - **HAS_RESULT**: The relation from the origin of a run to its Result node.
 
-- **Help**: Two meanings. Each message handler has help: a JSON document in
-  `src/main/resources/help/` with a name, a synopsis and a description, in the
-  format of `base/manual.schema.json`. The `help` handler, which each actor has,
-  returns the help of all message handlers of the actor.
+- **Help**: Two meanings. Each message handler must have help: a JSON document
+  in `src/main/resources/help/` with a name, a synopsis and a description, in
+  the format of `base/manual.schema.json`. The `help` handler, which each actor
+  has, returns the help of all message handlers of the actor, or with `name`,
+  the help of one message handler.
 
 - **Hierarchy path**: The path of a type from the root type, in lowercase, for
   example `type.component.software.service`. Controller arguments use it to
