@@ -2,30 +2,27 @@
 
 Structure is a systems management platform in which capabilities emerge from an
 environment's components and their relationships. You request a capability, such
-as `Start` or `Execute`, but you don't say how. Structure then uses its model to
-select and combine the tools needed to perform it, including the full command
-construction, transport, and result collection.
+as `Start` or `Execute`, but you don't need to say "how". Structure then uses
+its model to select and combine the tools needed to perform the capability,
+including the full command construction, transport, and result collection.
 
-A typed Neo4j graph represents both the environment and the knowledge used to
-manage it. Operating systems, services, addresses and installed tools share this
-model with types, protocols, capabilities and instruments. Each instrument
-declares which component provides it, what it applies to and which capability it
-gives. Type inheritance and relationship constraints let these definitions apply
-across families of systems.
+The backend of Structure is a property graph stored in Neo4j. In the graph you
+can find things like Operating systems, services, addresses and installed tools,
+and abstract things like types, protocols, capabilities and instruments.
 
 For example, the `Start` capability for a remote service can combine a service
 manager, a command interpreter and available command transfer client/server
-tools on the two hosts. Structure uses the graph to select these parts and
-assemble the steps to transfer and run the command. The `Start` capability can
-use different compatible interpreters and transports without a separate
-implementation for each combination.
+tools on two hosts. Structure uses the graph to select these parts and assemble
+the steps to transfer and run the command. The `Start` capability can use
+different interpreters and transports without a separate implementation for each
+combination.
 
-The `Detect` capability updates the graph with discovered components and
+A `Detect` capability updates the graph with discovered components and
 relationships, which can make further, new capabilities available. Bundles
-supply type definitions, schemas, discovery profiles and instruments as JSON,
-together with command templates and scripts. Support for new tools and services
-can build on existing definitions and execution mechanisms without changes to
-the Java backend.
+supply type definitions, schemas, discovery profiles and instruments, together
+with command templates and scripts. Support for new tools and services can build
+on existing definitions and execution mechanisms without changes to the Java
+backend.
 
 The following section starts with giving a short explanation about how these
 [capabilities](#capabilities) work, and then continues with showing you how to
@@ -37,27 +34,27 @@ how to run our [tests](#testing).
 
 Structure initially defines these capabilities:
 
-| Capability      | Purpose                                                              |
-| --------------- | -------------------------------------------------------------------- |
-| `State`         | Check the state of an entity.                                        |
-| `Start`         | Start an entity.                                                     |
-| `Stop`          | Stop an entity.                                                      |
-| `Restart`       | Restart an entity.                                                   |
-| `Create`        | Create related entities.                                             |
-| `Destroy`       | Destroy an entity or its children.                                   |
-| `Execute`       | Run commands.                                                        |
-| `Detect`        | Detect a component.                                                  |
-| `List`          | List child entities.                                                 |
-| `Identify`      | Identify details such as a name or version.                          |
-| `SendString`    | Send a string over a protocol.                                       |
-| `ReceiveString` | Receive a string over a protocol.                                    |
-| `SendFile`      | Send a file over a protocol.                                         |
-| `ReceiveFile`   | Receive a file over a protocol.                                      |
-| `Invoke`        | Invoke a command for execution.                                      |
-| `Verify`        | Check whether an entity's type is correct.                           |
-| `Show`          | Return an entity's current graph representation.                     |
-| `Update`        | Verify and identify an entity, then update its graph representation. |
-| `Guess`         | Infer an abstract entity that cannot yet be detected directly.       |
+| Capability      | Purpose                                                    |
+| --------------- | ---------------------------------------------------------- |
+| `State`         | Check the state of an entity.                              |
+| `Start`         | Start an entity.                                           |
+| `Stop`          | Stop an entity.                                            |
+| `Restart`       | Restart an entity.                                         |
+| `Create`        | Create related entities.                                   |
+| `Destroy`       | Destroy an entity or its children.                         |
+| `Execute`       | Run commands.                                              |
+| `Detect`        | Detect a component.                                        |
+| `List`          | List child entities.                                       |
+| `Identify`      | Identify details such as a name or version.                |
+| `SendString`    | Send a string over a protocol.                             |
+| `ReceiveString` | Receive a string over a protocol.                          |
+| `SendFile`      | Send a file over a protocol.                               |
+| `ReceiveFile`   | Receive a file over a protocol.                            |
+| `Invoke`        | Invoke a command for execution.                            |
+| `Verify`        | Check whether an entity's type is correct.                 |
+| `Show`          | Return an entity's current graph representation.           |
+| `Update`        | Verify and identify an entity, then update the graph.      |
+| `Guess`         | Infer an abstract entity that cannot be detected directly. |
 
 Capabilities can work together to perform an operation. For example, `Execute`
 runs a command, and `Invoke` lets an interpreter run a script. To run a command
@@ -113,8 +110,7 @@ To run Structure, first start Neo4j and then Structure itself.
 
 ### Neo4j
 
-Structure needs a Neo4j server, version 5.19 or later; let's start one using
-Docker:
+Structure needs a Neo4j server; let's start one using Docker:
 
 ```bash
 docker run -d --rm --name neo4j -p 7474:7474 -p 7687:7687 \
@@ -150,64 +146,60 @@ Without arguments, the REPL starts a shell. Each line is a command:
 ```
 
 For example `repository.types.findOneByName --name Linux`. The REPL gets the
-targets, the handlers and the options from the `introspect` handler, thus a new
-handler in Structure is a new command in the REPL:
+targets, the handlers and the options from the `introspect` handler. A new
+handler on the event bus is a new command in the REPL:
 
-- The target is a bus address without `tech.raaf.structure.bus.`, for example
-  `manager.structuremanager`, `repository.types` or `node.<uuid>`. A type also
-  has its hierarchy path as a target, for example
+- The target is a bus address without the `tech.raaf.structure.bus.` prefix,
+  for example `manager.structuremanager`, `repository.types` or `node.<uuid>`.
+  A type also has its hierarchy path as a target, for example:
   `node.type.component.software.operatingsystem.unixlike.linux`.
-- The options are the properties of the argument schema of the handler. A
-  boolean option has no value: `--includeStart` or `--no-includeStart`. For an
-  array, give the option again for each item. A value that is not a string is
-  JSON, for example `--entities '{"name": "Linux", ...}'`. Structure checks the
-  values.
-- Each target has the `help` handler: `repository.types.help` gives the help of
-  each handler of `repository.types`, and
-  `repository.types.help --handler getAll` gives the help of `getAll`.
+- The options are the properties of the argument schema of a handler. A boolean
+option has no value: `--includeStart` or `--no-includeStart`. For an array, give
+  the option again for each item. A value that is not a string is JSON, for
+  example `--entities '{"name": "Linux", ...}'`.
+- Each target has a `help` handler: `repository.types.help` gives the help of
+  each handler of `repository.types`, and something like
+  `repository.types.help --handler getAll` shows the help of `getAll`.
 
 In the shell, Tab completes targets one part at a time, then handlers and
 options. Ctrl-C clears the line, and Ctrl-D ends the shell. Events, for example
-of a bootstrap, show above the prompt. When actors start or stop, for example
-for new nodes, the shell gets the commands again, one second after the last of
-these events. It does not show these events. If the input is not a terminal,
-the shell reads commands from it, with no prompt and no colour.
+of a bootstrap, show above the prompt.
 
-With arguments, the REPL runs one command, for example
-`node src/main.ts repository.types.getAll`. It writes the data to stdout, and
-events and errors to stderr. If the command fails, the exit code is 1.
+With arguments, the REPL runs one command, for example:
+`node src/main.ts repository.types.getAll`. It writes the data to `stdout`, and
+events and errors to `stderr`. If the command fails, the exit code is `1`.
 
 The REPL connects to `wss://localhost:8443/eventbus/websocket`. Set
 `STRUCTURE_URL` to use a different bridge.
 
 ## Examples
 
-These examples use the [REPL](#repl), from the `repl/` directory. Get
-information about Structure. Before bootstrap, `bootstrapped` is `false`,
-and the graph has no groups and no components:
+These examples use the [REPL](#repl), from the `repl/` directory.
+
+To get information about Structure, you can run the following command:
 
 ```bash
 node src/main.ts manager.structuremanager.info
 ```
 
-Bootstrap Structure. The handler starts the bootstrap and replies `started`:
+You can "bootstrap" Structure, which builds a representation of the machine
+running Structure in the graph:
 
 ```bash
 node src/main.ts manager.structuremanager.selfDiscovery
 ```
 
-When the bootstrap is done, get the information again. Now `bootstrapped` is
-`true`, and the graph has the self group and the components that the bootstrap
-found:
+When the bootstrap is done, try running the `info` command again. You will see
+that `bootstrapped` is now `true`, and the graph has a couple of components and
+a component group extra:
 
 ```bash
 node src/main.ts manager.structuremanager.info
 ```
 
 If Ansible is available, the bootstrap also adds the IPv4 network of each
-interface of the host. Find a network by its CIDR, for example `192.168.1.0/24`,
-and keep its UUID, which is in `meta.uuid` of the reply. The REPL writes only
-the data to stdout, thus the shell can read a field of it:
+interface of the host. Find a network by its CIDR, for example `172.17.2.0/24`,
+and put its UUID in an environment variable:
 
 ```bash
 export UUID=$(node src/main.ts repository.instances.findOneByData \
@@ -216,19 +208,16 @@ export UUID=$(node src/main.ts repository.instances.findOneByData \
 echo $UUID
 ```
 
-Discover the network. On an IP network, `Detect` uses `NmapNetworkDiscover`,
-which scans the network with Nmap. The handler replies with the task ID, and
-the scan takes up to one minute. In the REPL shell, the `taskFinished` event
-shows when the scan is done:
+On an IP network, `Detect` uses `NmapNetworkDiscover`, which scans the network
+with Nmap. The handler replies with a task ID and usually takes a few seconds
+to run (30ish):
 
 ```bash
 node src/main.ts node.$UUID.runCapability --capability Detect
 ```
 
-Show what the newest scan did, which its payload writes to stderr and its
-result keeps, and the addresses that the network has now. Each host that the
-scan found has a group with an operating system named `Unknown`, until an OS
-discovery finds which operating system it is:
+To show what the scan did and what nodes in the graph it created, you can run
+the following:
 
 ```bash
 node src/main.ts node.$UUID.getResults | jq -r '.[0].stderr'
@@ -237,16 +226,19 @@ node src/main.ts node.$UUID.getComponentsByType --type Ipv4Address
 
 ## Querying
 
-You can see the graph in Neo4j Browser. Open https://browser.neo4j.io/, or
-http://localhost:7474/ if you run Neo4j with Docker as in [Neo4j](#neo4j), and
-connect to `neo4j://localhost:7687`. The user is `neo4j`, and the password is
+You can see the graph in a Neo4j Browser. Open https://browser.neo4j.io/, and
+connect to `bolt://localhost:7687`. The user is `neo4j`, and the password is
 the value of `STRUCTURE_NEO4J_PASS`.
 
 The style sheet `notes/structure.grass` gives each kind of node a colour, for
 example groups, software, IP addresses and networks, and shows the names of the
-nodes. To use it, run `:style` and use the **Upload** button in the result.
+nodes.
 
-Show the instances and the relations between them:
+To use it, run `:style` and use the **Upload** button. The resulting style page
+does not update, but from experience, the styles *do* apply.
+
+Here is an example Cypher qeury to show the instances and the relations between
+them:
 
 ```cypher
 MATCH p = (:Instance)-[]->(:Instance)
@@ -254,7 +246,8 @@ RETURN p
 ```
 
 If the result shows a table, select the **Graph** view on the left side of the
-result.
+result. Note that you can also double-click on nodes; they will then dynamically
+expand and show more relations. In our graph, those are often Type relations.
 
 ![an example graph after self discovery and network discovery have executed](notes/visualisation.svg)
 _an example graph after self discovery and network discovery have executed_
