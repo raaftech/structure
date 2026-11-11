@@ -1,0 +1,19 @@
+node {
+  diameter: 50px;
+  color: #A5ABB6;
+  border-color: #9AA1AC;
+  border-width: 2px;
+  text-color-internal: #FFFFFF;
+  font-size: 10px;
+  caption: '{name}';
+}
+node.Group { color: #C990C0; border-color: #B261A5; diameter: 65px; }
+node.type:Software { color: #4C8EDA; border-color: #2870C2; }
+node.type:OperatingSystem { color: #FFC454; border-color: #D7A013; diameter: 60px; }
+node.type:IpAddress { color: #F79767; border-color: #F36924; }
+node.type:IpNetwork { color: #DA7194; border-color: #CC3C6C; }
+node.type:DnsName { color: #8DCC93; border-color: #5DB665; }
+node.type:Instrument { color: #57C7E3; border-color: #23B3D7; }
+node.type:Result { color: #D9C8AE; border-color: #C0A378; text-color-internal: #333333; }
+node.Type { color: #E0E0E0; border-color: #B0B0B0; text-color-internal: #333333; diameter: 40px; }
+relationship { color: #A5ABB6; shaft-width: 1px; caption: '<type>'; }
