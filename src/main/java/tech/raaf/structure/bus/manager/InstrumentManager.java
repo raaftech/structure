@@ -107,7 +107,7 @@ public class InstrumentManager extends GenericActor {
 
         final String instanceActorFormat = "tech.raaf.structure.bus.node.%s";
         final JsonNode args = request.get("args");
-        final ArrayNode uuids = (ArrayNode) args.get("uuids");
+        final ArrayNode instances = (ArrayNode) args.get("instances");
         final UUID taskId = UUID.randomUUID();
 
         // Construct the message to pass to the instances
@@ -125,7 +125,7 @@ public class InstrumentManager extends GenericActor {
         }
 
         // For every UUID send the message to its address on the bus
-        for (final Iterator<JsonNode> iter = uuids.values().iterator(); iter.hasNext(); ) {
+        for (final Iterator<JsonNode> iter = instances.values().iterator(); iter.hasNext(); ) {
           final UUID uuid = UUID.fromString(iter.next().asString());
           final String address = String.format(instanceActorFormat, uuid);
           log.info("Sending message to " + address);

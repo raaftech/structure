@@ -89,7 +89,7 @@ public class BusRoundTripTest extends TypeSchemaTest {
 
   @BeforeEach
   public void deploy() throws Exception {
-    // Application sets these, status and reload need them
+    // Application sets these, info and reload need them
     Context.setHostname("bus-test-host");
     for (Verticle verticle : Arrays.asList(
       new EntityManager(),
@@ -136,7 +136,7 @@ public class BusRoundTripTest extends TypeSchemaTest {
       { ENTITIES, "specialize", "{'instance': '" + created + "', 'isa': '" + UNIX_LIKE + "'}", null },
       { ENTITIES, "group", "{'group': '" + group + "', 'member': '" + host + "'}", null },
       { ENTITIES, "ungroup", "{'group': '" + group + "', 'member': '" + host + "'}", null },
-      { ENTITIES, "delete", "{'labels': ['Instance'], 'uuid': '" + created + "', 'includeStart': true}", null },
+      { ENTITIES, "delete", "{'labels': ['Instance'], 'node': '" + created + "', 'includeStart': true}", null },
       { INSTANCES, "nLastCreated", "{'amount': 5}", null },
       { INSTANCES, "findByName", "{'name': 'bus-host'}", null },
       { INSTANCES, "findOneByData", "{'property': 'shortName', 'value': 'os'}", null },
@@ -144,13 +144,17 @@ public class BusRoundTripTest extends TypeSchemaTest {
       {
         INSTANCES,
         "putNode",
-        "{'node': '" + DNS_NAME + "', 'name': 'dns', 'desc': '', 'dnsname': 'test.example'}",
+        "{'type': '" + DNS_NAME + "', 'name': 'dns', 'desc': '', 'dnsname': 'test.example'}",
         null,
       },
       { STRUCTURE, "reload", "{}", null },
       { STRUCTURE, "list", "{}", null },
       { STRUCTURE, "introspect", "{}", null },
+      { STRUCTURE, "info", "{}", null },
       { STRUCTURE, "help", "{}", null },
+      { STRUCTURE, "help", "{'handler': 'info'}", null },
+      { STRUCTURE, "help", "{'handler': 'noSuchHandler'}", "No handler named noSuchHandler." },
+      { STRUCTURE, "help", "{'handler': 1}", "Arguments didn't validate against schema: [" },
       { STRUCTURE, "version", "{}", null },
       { typeAddress, "help", "{}", null },
       { hostAddress, "version", "{}", null },
@@ -247,6 +251,19 @@ public class BusRoundTripTest extends TypeSchemaTest {
   }
 
   @Test
+  public void infoDescribesStructureTheGraphAndTheJvm() throws Exception {
+    JsonNode reply = send(STRUCTURE, "info", "{}");
+    assertFalse(reply.path("result").has("error"), reply.toString());
+    JsonNode data = reply.path("result").path("data");
+    assertEquals(Context.getSelfGroup() != null, data.path("structure").path("bootstrapped").asBoolean());
+    assertEquals(Context.getHostname(), data.path("structure").path("host").asString());
+    assertEquals(Context.getTypeRepository().count(), data.path("graph").path("types").asLong());
+    assertEquals(Context.getInstrumentRepository().count(), data.path("graph").path("instruments").asLong());
+    assertEquals(Runtime.version().feature(), data.path("jvm").path("javaVersion").asInt());
+    assertTrue(data.path("jvm").path("processors").asInt() > 0);
+  }
+
+  @Test
   public void resolvesPublishedContractsOverWebSocket() throws Exception {
     Router router = Router.router(Context.getVertx());
     SockJSBridgeOptions options = new SockJSBridgeOptions().addInboundPermitted(
@@ -281,6 +298,7 @@ public class BusRoundTripTest extends TypeSchemaTest {
       });
       String[][] rows = {
         { STRUCTURE, STRUCTURE, "introspect", "{}" },
+        { STRUCTURE, STRUCTURE, "info", "{}" },
         { STRUCTURE, STRUCTURE, "help", "{}" },
         { STRUCTURE, STRUCTURE, "version", "{}" },
         { TYPES, TYPES, "findOneByName", "{\"name\":\"OperatingSystem\"}" },
@@ -354,7 +372,7 @@ public class BusRoundTripTest extends TypeSchemaTest {
     JsonNode data = send(
       INSTRUMENTS,
       "runCapability",
-      "{\"capability\": \"NoSuchCapability\", \"uuids\": [\"" + host + "\"]}"
+      "{\"capability\": \"NoSuchCapability\", \"instances\": [\"" + host + "\"]}"
     )
       .path("result")
       .path("data");

@@ -134,10 +134,22 @@ public class TaskManagerTest extends TypeSchemaTest {
   public void getResultsFiltersByTask() throws Exception {
     String origin = origin();
     for (String task : queueResults(origin).keySet()) {
-      JsonNode results = getResults(origin, mapper.createObjectNode().put("task", task));
+      JsonNode results = getResults(origin, mapper.createObjectNode().put("taskId", task));
       assertEquals(1, results.size(), "Results for task " + task);
       assertEquals(task, results.get(0).path("task").asString());
     }
+  }
+
+  // Each instance can be an origin, for example a profile
+  @Test
+  public void getResultsWorksForEachInstance() throws Exception {
+    String profile = Context.getInstanceRepository().findOneByName("CshProfile").getUuid();
+    assertEquals(0, getResults(profile, mapper.createObjectNode()).size());
+    String task = UUID.randomUUID().toString();
+    queue(task, profile, NO_SUCH_COMMAND, mapper.createObjectNode());
+    awaitResult(profile, task);
+    JsonNode results = getResults(profile, mapper.createObjectNode().put("taskId", task));
+    assertEquals(1, results.size(), results.toString());
   }
 
   @Test

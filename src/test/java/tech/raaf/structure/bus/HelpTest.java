@@ -1,5 +1,7 @@
 package tech.raaf.structure.bus;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
@@ -52,5 +54,17 @@ public class HelpTest extends TypeSchemaTest {
       }
     }
     assertTrue(missing.isEmpty(), "Handlers without help: " + missing);
+  }
+
+  // With a handler name, the help reply has only that handler
+  @Test
+  public void helpGivesTheNamedHandler() {
+    StructureManager actor = new StructureManager();
+    JsonNode one = actor.help().exec(mapper.readTree("{\"msgh\":\"help\",\"args\":{\"handler\":\"info\"}}"));
+    assertEquals(List.of("info"), List.copyOf(one.path("result").path("data").propertyNames()));
+    assertEquals("info", one.path("result").path("data").path("info").path("name").asString());
+    JsonNode none = actor.help().exec(mapper.readTree("{\"msgh\":\"help\",\"args\":{\"handler\":\"nope\"}}"));
+    assertEquals("No handler named nope.", none.path("result").path("error").asString());
+    assertFalse(none.path("result").has("data"));
   }
 }

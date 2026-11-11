@@ -456,7 +456,7 @@ public class EntityManagerTest extends TypeSchemaTest {
     ObjectNode args = message.putObject("args");
     ArrayNode labels = args.putArray("labels");
     labels.add("type:Component");
-    args.put("uuid", operatingSystemUuid);
+    args.put("node", operatingSystemUuid);
 
     // send the message constructed above and get the result
     JsonNode response = entityManager.delete().exec(message);
@@ -467,7 +467,7 @@ public class EntityManagerTest extends TypeSchemaTest {
     assertNotNull(nodeRepository.findByUuid(operatingSystemUuid));
 
     // Now try again, but pick a leaf node
-    args.put("uuid", leafUuid);
+    args.put("node", leafUuid);
     labels.removeAll();
     // We won't have an outgoing rel to anything with label Foo, so this will succeed
     labels.add("Foo");
@@ -660,7 +660,7 @@ public class EntityManagerTest extends TypeSchemaTest {
   }
 
   private static ObjectNode deleteArgs(String uuid, String label) {
-    ObjectNode args = mapper.createObjectNode().put("uuid", uuid).put("includeStart", true);
+    ObjectNode args = mapper.createObjectNode().put("node", uuid).put("includeStart", true);
     args.putArray("labels").add(label);
     return args;
   }

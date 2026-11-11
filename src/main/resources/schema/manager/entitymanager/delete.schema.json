@@ -7,12 +7,12 @@
     "labels": {
       "type": "array"
     },
-    "uuid": {
+    "node": {
       "$ref": "../../common.schema.json#/definitions/uuid"
     },
     "includeStart": {
       "type": "boolean"
     }
   },
-  "required": ["labels", "uuid"]
+  "required": ["labels", "node"]
 }

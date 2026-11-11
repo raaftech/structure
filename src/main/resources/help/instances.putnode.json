@@ -3,7 +3,7 @@
   "synopsis": {
     "msgh": "putNode",
     "args": {
-      "node": "UUID of the type",
+      "type": "UUID of the type",
       "name": "name of the instance",
       "desc": "description of the instance"
     }

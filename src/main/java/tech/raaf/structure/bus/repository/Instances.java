@@ -123,10 +123,10 @@ public class Instances extends Repository<Instance> {
       public JsonNode exec(JsonNode request) {
         ObjectNode result = mapper.createObjectNode();
         ObjectNode args = (ObjectNode) request.get("args");
-        String isa = args.get("node").asString();
+        String isa = args.get("type").asString();
         Type type = TYPE_REPOSITORY.findByUuid(isa);
-        // Remove the node field so it won't interfere with the Type schema.
-        args.remove("node");
+        // The other arguments are the data of the instance
+        args.remove("type");
 
         try {
           if (type.isOfType("Component")) {

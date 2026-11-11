@@ -80,8 +80,13 @@ public class IntrospectionTest {
     assertEquals("probe", handlers.path("silent").path("help").path("name").asString());
     assertEquals("help", handlers.path("help").path("help").path("name").asString());
     assertEquals(
-      "resource:/schema/base/args.schema.json",
+      "resource:/schema/base/help.schema.json",
       handlers.path("help").path("inputSchemaUri").asString()
+    );
+    // A handler without an input schema gets the default argument schema
+    assertEquals(
+      "resource:/schema/base/args.schema.json",
+      handlers.path("version").path("inputSchemaUri").asString()
     );
     assertEquals(
       "resource:/schema/output/help.schema.json",

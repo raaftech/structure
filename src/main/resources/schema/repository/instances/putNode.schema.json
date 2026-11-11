@@ -4,7 +4,7 @@
   "type": "object",
   "additionalProperties": true,
   "properties": {
-    "node": {
+    "type": {
       "$ref": "../../common.schema.json#/definitions/uuid"
     },
     "name": {
@@ -14,5 +14,5 @@
       "type": "string"
     }
   },
-  "required": ["node", "name", "desc"]
+  "required": ["type", "name", "desc"]
 }

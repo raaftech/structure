@@ -1,0 +1,12 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Schema for the help method every actor inherits.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "handler": {
+      "description": "The name of one handler. Without it, help gives each handler.",
+      "type": "string"
+    }
+  }
+}
