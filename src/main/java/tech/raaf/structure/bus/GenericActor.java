@@ -7,10 +7,8 @@ import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +16,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tech.raaf.structure.annotations.SchemaPath;
@@ -60,63 +59,57 @@ public abstract class GenericActor extends AbstractVerticle {
     return new DeploymentOptions().setThreadingModel(ThreadingModel.WORKER).setWorkerPoolName(POOL);
   }
 
-  class HandlerSchema {
+  // The actor classes with verified schemas and help.
+  private static final Set<Class<?>> VERIFIED = ConcurrentHashMap.newKeySet();
 
-    URI schemaPath;
-    MessageHandler handler;
-
-    public HandlerSchema(URI schemaPath, MessageHandler handler) {
-      this.schemaPath = schemaPath;
-      this.handler = handler;
-    }
-  }
+  // A message handler with the schemas of its args and its result data.
+  record HandlerSchema(URI input, URI output, MessageHandler handler) {}
 
   // Constructor. It gets the handlers of the subclass by reflection.
+  // A handler declaration that is not complete stops the actor.
   @SuppressWarnings("this-escape")
   protected GenericActor() {
-    // Initialize arrays.
-    Method methods[] = this.getClass().getMethods();
-    Map<Method, URI> messageHandlersAndSchemas = new HashMap<>();
-
-    // Fill messageHandlers.
-    for (Method method : methods) {
-      if (method.getReturnType().equals(MessageHandler.class)) {
-        if (method.isAnnotationPresent(SchemaPath.class)) {
-          SchemaPath schemaPath = method.getAnnotation(SchemaPath.class);
-          try {
-            messageHandlersAndSchemas.put(method, new URI(schemaPath.value()));
-          } catch (URISyntaxException e) {
-            if (Configuration.isTraceModeOn()) {
-              e.printStackTrace();
-            }
-            log.error("Error while parsing @SchemaPath value as URI");
-            messageHandlersAndSchemas.put(method, fallbackSchema);
-          }
-        } else {
-          messageHandlersAndSchemas.put(method, fallbackSchema);
-        }
+    // The schemas and help are the same for each actor of a class.
+    final boolean verify = !VERIFIED.contains(getClass());
+    final JsonNode helpRequest = mapper.createObjectNode().put("msgh", "help");
+    for (Method method : getClass().getMethods()) {
+      if (!method.getReturnType().equals(MessageHandler.class)) {
+        continue;
       }
+      final String name = getClass().getSimpleName() + "." + method.getName();
+      final SchemaPath path = method.getAnnotation(SchemaPath.class);
+      if (path == null || path.output().isEmpty()) {
+        throw new IllegalStateException("Handler " + name + " declares no output schema");
+      }
+      final MessageHandler handler;
+      try {
+        handler = (MessageHandler) method.invoke(this);
+      } catch (ReflectiveOperationException e) {
+        throw new IllegalStateException("Cannot get handler " + name, e);
+      }
+      if (handler == null) {
+        throw new IllegalStateException("Handler " + name + " is null");
+      }
+      // URI.create throws if the path is not a valid URI.
+      final URI input = path.input().isEmpty() ? fallbackSchema : URI.create(path.input());
+      final URI output = URI.create(path.output());
+      if (verify && handler.help(helpRequest) == null) {
+        throw new IllegalStateException("Handler " + name + " has no help");
+      }
+      handlers.put(method.getName(), new HandlerSchema(input, output, handler));
     }
+    if (verify) {
+      // This throws if a document is missing or a reference is not valid.
+      JsonHelper.schemaCollection(schemaUris());
+    }
+    VERIFIED.add(getClass());
+  }
 
-    messageHandlersAndSchemas
-      .entrySet()
-      .stream()
-      .forEach(entry -> {
-        Method mh = entry.getKey();
-        URI schema = entry.getValue();
-        String s = entry.getKey().getName();
-
-        try {
-          HandlerSchema handlerAndSchema = new HandlerSchema(schema, (MessageHandler) mh.invoke(this));
-          handlers.put(s, handlerAndSchema);
-        } catch (IllegalAccessException | InvocationTargetException e) {
-          log.error("Failed to access or invoke method " + s + ": " + e.getMessage());
-
-          if (Configuration.isTraceModeOn()) {
-            e.printStackTrace();
-          }
-        }
-      });
+  // The URIs of the schemas of the messages and of each handler.
+  private Set<URI> schemaUris() {
+    final Set<URI> uris = new TreeSet<>(Set.of(schemaForRequest, schemaForResponse));
+    handlers.values().forEach(handler -> uris.addAll(List.of(handler.input(), handler.output())));
+    return uris;
   }
 
   // A json file loader (looks in your classpath/resources.)
@@ -155,6 +148,8 @@ public abstract class GenericActor extends AbstractVerticle {
     ObjectNode metadata = mapper.createObjectNode();
     ObjectNode classes = metadata.putObject("classes");
     ObjectNode actors = metadata.putObject("actors");
+    ObjectNode schemas = metadata.putObject("schemas");
+    Set<URI> uris = new TreeSet<>(Set.of(schemaForRequest, schemaForResponse));
     Map<String, JsonObject> handlers = vertx.sharedData().getLocalMap(CLASSES);
     Map<String, JsonObject> active = new TreeMap<>(vertx.sharedData().getLocalMap(ACTORS));
     Set<String> names = new TreeSet<>();
@@ -162,7 +157,15 @@ public abstract class GenericActor extends AbstractVerticle {
       actors.set(id, convertFromJsonObject(actor));
       names.add(actor.getString("class"));
     });
-    names.forEach(name -> classes.set(name, convertFromJsonObject(handlers.get(name))));
+    names.forEach(name -> {
+      JsonNode actorClass = convertFromJsonObject(handlers.get(name));
+      classes.set(name, actorClass);
+      actorClass.path("handlers").values().forEach(handler -> {
+        uris.add(URI.create(handler.path("inputSchemaUri").asString()));
+        uris.add(URI.create(handler.path("outputSchemaUri").asString()));
+      });
+    });
+    JsonHelper.schemaCollection(uris).forEach((uri, schema) -> schemas.set(uri.toString(), schema));
     return metadata;
   }
 
@@ -178,9 +181,9 @@ public abstract class GenericActor extends AbstractVerticle {
       .forEach(entry -> {
         HandlerSchema handler = entry.getValue();
         ObjectNode command = commands.putObject(entry.getKey());
-        command.put("schemaUri", handler.schemaPath.toString());
-        command.set("schema", jsonFromResource(handler.schemaPath.getPath().substring(1)));
-        command.set("help", handler.handler.help(request));
+        command.put("inputSchemaUri", handler.input().toString());
+        command.put("outputSchemaUri", handler.output().toString());
+        command.set("help", handler.handler().help(request));
       });
     return new JsonObject(actor.toString());
   }
@@ -207,10 +210,14 @@ public abstract class GenericActor extends AbstractVerticle {
 
   // Replace a response that is not valid with an error response
   private JsonNode checked(JsonNode request, JsonNode response) {
-    final List<String> errors =
+    List<String> errors =
       response == null
         ? List.of("the handler gave no response")
         : JsonHelper.validationErrors(schemaForResponse, response);
+    if (errors.isEmpty() && response.path("result").has("data")) {
+      HandlerSchema handler = handlers.get(request.path("msgh").asString());
+      errors = JsonHelper.validationErrors(handler.output(), response.path("result").get("data"));
+    }
     if (errors.isEmpty()) {
       return response;
     }
@@ -243,6 +250,7 @@ public abstract class GenericActor extends AbstractVerticle {
   }
 
   // The default usage handler.
+  @SchemaPath(output = "resource:/schema/output/help.schema.json")
   public MessageHandler help() {
     return new MessageHandler() {
       @Override
@@ -250,20 +258,7 @@ public abstract class GenericActor extends AbstractVerticle {
         ObjectNode result = JsonNodeFactory.instance.objectNode();
         ObjectNode data = result.putObject("data");
 
-        for (String msgh : handlers.keySet()) {
-          try {
-            JsonNode help = handlers.get(msgh).handler.help(request);
-            if (help != null) {
-              data.set(msgh, help);
-            }
-          } catch (NullPointerException e) {
-            log.error(e.getMessage());
-
-            if (Configuration.isTraceModeOn()) {
-              e.printStackTrace();
-            }
-          }
-        }
+        handlers.forEach((msgh, handler) -> data.set(msgh, handler.handler().help(request)));
 
         return response(request, result);
       }
@@ -276,6 +271,7 @@ public abstract class GenericActor extends AbstractVerticle {
   }
 
   // The default version handler.
+  @SchemaPath(output = "resource:/schema/output/version.schema.json")
   public MessageHandler version() {
     return new MessageHandler() {
       @Override
@@ -342,19 +338,10 @@ public abstract class GenericActor extends AbstractVerticle {
         args = mapper.createObjectNode();
       }
       HandlerSchema handlerAndSchema = handlers.get(msgh);
-      URI schema = handlerAndSchema.schemaPath;
-      if (schema == null) {
-        log.warn(
-          "Couldn't load " +
-            handlerAndSchema.schemaPath +
-            " using empty schema as default. Validation will always pass."
-        );
-        schema = fallbackSchema;
-      }
-      final List<String> argsErrors = JsonHelper.validationErrors(schema, args);
+      final List<String> argsErrors = JsonHelper.validationErrors(handlerAndSchema.input(), args);
       if (argsErrors.isEmpty()) {
         try {
-          return handlerAndSchema.handler.exec(request);
+          return handlerAndSchema.handler().exec(request);
         } catch (Exception e) {
           // Reply with the error, else the client waits until its timeout
           log.error("Handler {} failed", msgh, e);

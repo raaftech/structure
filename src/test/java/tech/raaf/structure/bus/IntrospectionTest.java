@@ -2,6 +2,7 @@ package tech.raaf.structure.bus;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.vertx.core.Vertx;
@@ -27,7 +28,7 @@ public class IntrospectionTest {
   public static class Probe extends GenericActorTest.Probe {
 
     @Override
-    @SchemaPath("resource:/schema/repository/findOneByName.schema.json")
+    @SchemaPath(input = "resource:/schema/repository/findOneByName.schema.json", output = GenericActorTest.OUTPUT)
     public MessageHandler silent() {
       return super.silent();
     }
@@ -45,6 +46,15 @@ public class IntrospectionTest {
     }
   }
 
+  public static class CollectionProbe extends GenericActorTest.Probe {
+
+    @Override
+    @SchemaPath(output = "resource:/schema/collection/first.schema.json")
+    public MessageHandler silent() {
+      return super.silent();
+    }
+  }
+
   @BeforeEach
   public void start() {
     vertx = Application.createVertx();
@@ -59,7 +69,7 @@ public class IntrospectionTest {
   }
 
   @Test
-  public void listsHandlersWithoutHelpAndTheirArgumentSchemas() {
+  public void listsHandlersWithTheirHelpAndSchemaUris() {
     Probe probe = new Probe();
     String id = vertx.deployVerticle(probe).await();
     JsonNode data = introspect();
@@ -67,16 +77,48 @@ public class IntrospectionTest {
     assertEquals(probe.getActorName(), actor.path("class").asString());
     assertEquals(probe.getActorName(), actor.path("addresses").get(0).asString());
     JsonNode handlers = data.path("classes").path(probe.getActorName()).path("handlers");
-    assertTrue(handlers.path("silent").path("help").isNull());
+    assertEquals("probe", handlers.path("silent").path("help").path("name").asString());
     assertEquals("help", handlers.path("help").path("help").path("name").asString());
-    assertEquals("object", handlers.path("help").path("schema").path("type").asString());
+    assertEquals(
+      "resource:/schema/base/args.schema.json",
+      handlers.path("help").path("inputSchemaUri").asString()
+    );
+    assertEquals(
+      "resource:/schema/output/help.schema.json",
+      handlers.path("help").path("outputSchemaUri").asString()
+    );
     JsonNode command = handlers.path("silent");
-    String schemaUri = command.path("schemaUri").asString();
+    String schemaUri = command.path("inputSchemaUri").asString();
     assertEquals("resource:/schema/repository/findOneByName.schema.json", schemaUri);
-    assertEquals(JsonHelper.jsonFromResource(URI.create(schemaUri).getPath().substring(1)), command.path("schema"));
+    assertEquals(GenericActorTest.OUTPUT, command.path("outputSchemaUri").asString());
+    assertEquals(
+      JsonHelper.jsonFromResource(URI.create(schemaUri).getPath().substring(1)),
+      data.path("schemas").path(schemaUri)
+    );
     assertTrue(request(probe.getActorName(), "silent").path("result").has("error"));
     JsonNode reply = request(probe.getActorName(), "silent", new JsonObject().put("name", "test"));
     assertFalse(reply.path("result").has("error"));
+  }
+
+  @Test
+  public void publishesReferencedDocumentsOnlyWhileTheirActorsAreActive() {
+    JsonNode original = introspect().path("schemas");
+    String first = vertx.deployVerticle(new CollectionProbe()).await();
+    String second = vertx.deployVerticle(new CollectionProbe()).await();
+    JsonNode schemas = introspect().path("schemas");
+    // Three collection documents and the inherited probe output schema.
+    assertEquals(original.size() + 4, schemas.size());
+    for (String name : List.of("first", "second", "shared")) {
+      String path = "schema/collection/" + name + ".schema.json";
+      assertEquals(JsonHelper.jsonFromResource(path), schemas.path("resource:/" + path));
+    }
+    assertTrue(schemas.has("resource:/schema/base/request.schema.json"));
+    assertTrue(schemas.has("resource:/schema/base/response.schema.json"));
+    assertFalse(schemas.has("http://json-schema.org/draft-04/schema"));
+    vertx.undeploy(first).await();
+    assertEquals(schemas, introspect().path("schemas"));
+    vertx.undeploy(second).await();
+    assertEquals(original, introspect().path("schemas"));
   }
 
   @Test
@@ -131,7 +173,27 @@ public class IntrospectionTest {
     JsonNode reply = request(managerAddress, "introspect");
     assertTrue(JsonHelper.validationErrors(URI.create("resource:/schema/base/response.schema.json"), reply).isEmpty());
     assertFalse(reply.path("result").has("error"), reply.toString());
-    return reply.path("result").path("data");
+    JsonNode data = reply.path("result").path("data");
+    List<String> errors = JsonHelper.validationErrors(
+      URI.create("resource:/schema/output/introspection.schema.json"),
+      data
+    );
+    assertTrue(errors.isEmpty(), errors.toString());
+    JsonNode schemas = data.path("schemas");
+    schemas.properties().forEach(entry -> {
+      URI uri = URI.create(entry.getKey());
+      assertTrue(uri.isAbsolute());
+      assertNull(uri.getFragment());
+    });
+    data.path("classes").values().forEach(actorClass -> {
+      actorClass.path("handlers").values().forEach(handler -> {
+        assertFalse(handler.has("schemaUri"));
+        assertFalse(handler.has("schema"));
+        assertTrue(schemas.has(handler.path("inputSchemaUri").asString()));
+        assertTrue(schemas.has(handler.path("outputSchemaUri").asString()));
+      });
+    });
+    return data;
   }
 
   private JsonNode actors() {

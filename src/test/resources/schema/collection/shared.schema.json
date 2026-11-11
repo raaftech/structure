@@ -1,0 +1,7 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "A document that two documents refer to.",
+  "definitions": {
+    "text": { "type": "string" }
+  }
+}

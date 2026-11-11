@@ -1,0 +1,8 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "A list of texts, for example IDs or bus addresses.",
+  "type": "array",
+  "items": {
+    "type": "string"
+  }
+}

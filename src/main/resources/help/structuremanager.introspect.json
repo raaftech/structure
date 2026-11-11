@@ -4,5 +4,5 @@
     "msgh": "introspect",
     "args": {}
   },
-  "description": "Returns the active actors and their classes. Each actor has its class and bus addresses, by actor ID. Each class has its handlers once, with their argument schema URI, schema document and help. Missing help is null. An actor is removed when it stops, and a class when it has no actors."
+  "description": "Returns the active actors, their classes and schemas. Each actor has its class and bus addresses, by actor ID. Each class has its handlers once, with inputSchemaUri for args, outputSchemaUri for successful result.data, and help. The schemas map contains the common request and response schemas, handler schemas and all referenced documents, by absolute document URI. Clients can resolve application schema references from this map. Clients must provide standard draft-04 meta-schema support. An actor is removed when it stops, and a class when it has no actors."
 }

@@ -12,10 +12,12 @@ import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import tech.raaf.structure.base.Context;
 import tech.raaf.structure.bus.manager.TaskManager;
 import tech.raaf.structure.graph.Component;
+import tech.raaf.structure.graph.Controller;
 import tech.raaf.structure.graph.Graph;
 import tech.raaf.structure.graph.Group;
 import tech.raaf.structure.graph.repositories.TypeRepository;
@@ -53,8 +55,9 @@ public class ControllerRunTest extends TypeSchemaTest {
     Context.setSelfIdentifier(null);
   }
 
-  @Test
-  public void pingAddsResult() throws Exception {
+  @ParameterizedTest
+  @ValueSource(strings = { "runInstrument", "runCapability" })
+  public void pingAddsResult(String handler) throws Exception {
     // Structure runs on a host that has iputils and the address
     Group structure = new Group(
       json("{\"name\": \"Computer\", \"desc\": \"The Structure host.\"}"),
@@ -96,9 +99,15 @@ public class ControllerRunTest extends TypeSchemaTest {
     Context.setSelfIdentifier(structure.getUuid());
 
     NodeActor.deploy(address).get();
-    ObjectNode args = mapper.createObjectNode().put("instrument", PING);
+    Controller controller = (Controller) Context.getInstrumentRepository().findByUuid(PING);
+    ObjectNode args = mapper.createObjectNode();
+    if (handler.equals("runInstrument")) {
+      args.put("instrument", PING);
+    } else {
+      args.put("capability", controller.getCapability().getName());
+    }
     args.putObject("arguments").put("count", "1");
-    JsonNode reply = send(NODE + address.getUuid(), "runInstrument", args);
+    JsonNode reply = send(NODE + address.getUuid(), handler, args);
     assertFalse(reply.path("result").has("error"), reply.toString());
     String task = reply.path("result").path("data").asString();
 

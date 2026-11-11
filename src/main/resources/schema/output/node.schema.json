@@ -1,0 +1,56 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "The short form of one node. A type, an instance and a component each add properties. An instance also has each data property as a string.",
+  "type": "object",
+  "required": ["name", "uuid"],
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "uuid": {
+      "$ref": "../common.schema.json#/definitions/uuid"
+    },
+    "desc": {
+      "type": ["string", "null"]
+    },
+    "checksum": {
+      "type": ["string", "null"]
+    },
+    "glyphId": {
+      "type": "string",
+      "description": "The glyph of the type, as a hexadecimal number."
+    },
+    "isa": {
+      "$ref": "../common.schema.json#/definitions/uuid"
+    },
+    "instanceof": {
+      "$ref": "../common.schema.json#/definitions/uuid"
+    },
+    "schema": {
+      "type": "object",
+      "description": "The data schema of a type."
+    },
+    "components": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "uuid"],
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "uuid": {
+            "$ref": "../common.schema.json#/definitions/uuid"
+          }
+        }
+      }
+    },
+    "_nodeType": {
+      "type": "string"
+    },
+    "_hierarchyPath": {
+      "type": "string"
+    }
+  }
+}

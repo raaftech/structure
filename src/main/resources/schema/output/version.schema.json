@@ -1,0 +1,31 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "The release of Structure.",
+  "type": "object",
+  "required": ["release"],
+  "additionalProperties": false,
+  "properties": {
+    "release": {
+      "type": "object",
+      "required": ["name", "version", "copyright", "license", "description"],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "copyright": {
+          "type": "string"
+        },
+        "license": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

@@ -29,7 +29,10 @@ public class Instances extends Repository<Instance> {
     this.repository = repository;
   }
 
-  @SchemaPath("resource:/schema/repository/instances/findOneByData.schema.json")
+  @SchemaPath(
+    input = "resource:/schema/repository/instances/findOneByData.schema.json",
+    output = "resource:/schema/output/entityOrEmpty.schema.json"
+  )
   public MessageHandler findOneByData() {
     return new MessageHandler() {
       @Override
@@ -51,7 +54,10 @@ public class Instances extends Repository<Instance> {
     };
   }
 
-  @SchemaPath("resource:/schema/repository/findOne.schema.json")
+  @SchemaPath(
+    input = "resource:/schema/repository/findOne.schema.json",
+    output = "resource:/schema/output/entityOrEmpty.schema.json"
+  )
   public MessageHandler findOperatingSystem() {
     return new MessageHandler() {
       @Override
@@ -76,7 +82,10 @@ public class Instances extends Repository<Instance> {
    * Get the latest instances, with an optional class label filter.
    * @return A data array with at most the requested number of nodes.
    */
-  @SchemaPath("resource:/schema/repository/instances/nLastCreated.schema.json")
+  @SchemaPath(
+    input = "resource:/schema/repository/instances/nLastCreated.schema.json",
+    output = "resource:/schema/output/nodeList.schema.json"
+  )
   public MessageHandler nLastCreated() {
     return new MessageHandler() {
       @Override
@@ -104,7 +113,10 @@ public class Instances extends Repository<Instance> {
    * @return A JSON object containing the UUID of the new Instance
    * or an error field if something went wrong.
    */
-  @SchemaPath("resource:/schema/repository/instances/putNode.schema.json")
+  @SchemaPath(
+    input = "resource:/schema/repository/instances/putNode.schema.json",
+    output = "resource:/schema/output/uuid.schema.json"
+  )
   public MessageHandler putNode() {
     return new MessageHandler() {
       @Override

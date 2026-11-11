@@ -1,0 +1,8 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "A list of nodes in the short form.",
+  "type": "array",
+  "items": {
+    "$ref": "node.schema.json"
+  }
+}

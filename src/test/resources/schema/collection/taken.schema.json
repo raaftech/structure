@@ -1,0 +1,10 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Has a schema with the id of another document.",
+  "properties": {
+    "shared": { "$ref": "shared.schema.json" }
+  },
+  "definitions": {
+    "one": { "id": "shared.schema.json", "type": "string" }
+  }
+}

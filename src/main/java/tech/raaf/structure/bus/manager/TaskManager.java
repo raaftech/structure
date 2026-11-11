@@ -420,7 +420,10 @@ public class TaskManager extends GenericActor {
    * Cancel a specific job.
    * @return A JSON object containing an error field if something went wrong.
    */
-  @SchemaPath("resource:/schema/manager/taskmanager/canceljob.schema.json")
+  @SchemaPath(
+    input = "resource:/schema/manager/taskmanager/canceljob.schema.json",
+    output = "resource:/schema/output/jobStatus.schema.json"
+  )
   public MessageHandler cancelJob() {
     return new MessageHandler() {
       @Override
@@ -465,7 +468,10 @@ public class TaskManager extends GenericActor {
    * @return A JSON object containing a data-array of all the cancelled jobs in this task, or an error field
    * if something went wrong.
    */
-  @SchemaPath("resource:/schema/manager/taskmanager/task.schema.json")
+  @SchemaPath(
+    input = "resource:/schema/manager/taskmanager/task.schema.json",
+    output = "resource:/schema/output/stringList.schema.json"
+  )
   public MessageHandler cancelTask() {
     return new MessageHandler() {
       @Override
@@ -504,6 +510,7 @@ public class TaskManager extends GenericActor {
    * Get task information from the queue.
    * @return A JSON object containing an array of objects. Each object represents a task.
    */
+  @SchemaPath(output = "resource:/schema/output/taskMap.schema.json")
   public MessageHandler queueStatus() {
     return new MessageHandler() {
       @Override
@@ -534,7 +541,10 @@ public class TaskManager extends GenericActor {
    * Queue a task to be run by the TaskManager.
    * @return A response, containing the task id, or an error.
    */
-  @SchemaPath("resource:/schema/manager/taskmanager/queuetask.schema.json")
+  @SchemaPath(
+    input = "resource:/schema/manager/taskmanager/queuetask.schema.json",
+    output = "resource:/schema/output/uuid.schema.json"
+  )
   public MessageHandler queueTask() {
     return new MessageHandler() {
       @Override
@@ -591,7 +601,10 @@ public class TaskManager extends GenericActor {
    * @return A JSON object containing information about a particular task, or an error-field if a given task
    * doesn't exist.
    */
-  @SchemaPath("resource:/schema/manager/taskmanager/task.schema.json")
+  @SchemaPath(
+    input = "resource:/schema/manager/taskmanager/task.schema.json",
+    output = "resource:/schema/output/task.schema.json"
+  )
   public MessageHandler taskStatus() {
     return new MessageHandler() {
       @Override
@@ -622,7 +635,10 @@ public class TaskManager extends GenericActor {
    * @return A JSON object containing the current status of the task, or an error-field if a given task
    * doesn't exist.
    */
-  @SchemaPath("resource:/schema/manager/taskmanager/task.schema.json")
+  @SchemaPath(
+    input = "resource:/schema/manager/taskmanager/task.schema.json",
+    output = "resource:/schema/output/taskStatus.schema.json"
+  )
   public MessageHandler toggleTaskPause() {
     return new MessageHandler() {
       @Override

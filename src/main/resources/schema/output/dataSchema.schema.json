@@ -1,0 +1,5 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "The data schema of a type, which is a JSON schema.",
+  "type": "object"
+}

@@ -1,0 +1,83 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "The active actors, their message handlers and their schema documents.",
+  "type": "object",
+  "required": ["classes", "actors", "schemas"],
+  "additionalProperties": false,
+  "properties": {
+    "schemas": {
+      "description": "The request, response and handler schemas with all referenced documents, by absolute document URI.",
+      "type": "object",
+      "additionalProperties": {
+        "type": "object"
+      }
+    },
+    "classes": {
+      "description": "Each actor class that has an active actor, by class name.",
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/definitions/class"
+      }
+    },
+    "actors": {
+      "description": "Each active actor, by actor ID.",
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/definitions/actor"
+      }
+    }
+  },
+  "definitions": {
+    "actor": {
+      "type": "object",
+      "required": ["class", "addresses"],
+      "additionalProperties": false,
+      "properties": {
+        "class": {
+          "type": "string"
+        },
+        "addresses": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1
+        }
+      }
+    },
+    "class": {
+      "type": "object",
+      "required": ["handlers"],
+      "additionalProperties": false,
+      "properties": {
+        "handlers": {
+          "description": "Each message handler, by handler name.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/handler"
+          }
+        }
+      }
+    },
+    "handler": {
+      "type": "object",
+      "required": ["inputSchemaUri", "outputSchemaUri", "help"],
+      "additionalProperties": false,
+      "properties": {
+        "inputSchemaUri": {
+          "type": "string",
+          "format": "uri",
+          "description": "The URI of the argument schema."
+        },
+        "outputSchemaUri": {
+          "type": "string",
+          "format": "uri",
+          "description": "The URI of the schema for successful result.data."
+        },
+        "help": {
+          "$ref": "../base/manual.schema.json"
+        }
+      }
+    }
+  }
+}

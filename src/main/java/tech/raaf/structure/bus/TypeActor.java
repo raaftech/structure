@@ -1,5 +1,6 @@
 package tech.raaf.structure.bus;
 
+import tech.raaf.structure.annotations.SchemaPath;
 import tech.raaf.structure.graph.Type;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.node.ArrayNode;
@@ -28,6 +29,7 @@ public class TypeActor extends NodeActor<Type> {
   // Next methods are exposed on the eventbus
 
   // Get the hierarchical path of the Type
+  @SchemaPath(output = "resource:/schema/output/string.schema.json")
   public MessageHandler getPath() {
     return new MessageHandler() {
       @Override
@@ -45,6 +47,7 @@ public class TypeActor extends NodeActor<Type> {
   }
 
   // Get the Type's schema
+  @SchemaPath(output = "resource:/schema/output/dataSchema.schema.json")
   public MessageHandler getSchema() {
     return new MessageHandler() {
       @Override
@@ -62,6 +65,7 @@ public class TypeActor extends NodeActor<Type> {
   }
 
   // Get an array of all the types one level below
+  @SchemaPath(output = "resource:/schema/output/nodeList.schema.json")
   public MessageHandler getSubtypes() {
     return new MessageHandler() {
       @Override
@@ -85,6 +89,7 @@ public class TypeActor extends NodeActor<Type> {
   }
 
   // Get all the incoming and outgoing constraints for a type.
+  @SchemaPath(output = "resource:/schema/output/constraints.schema.json")
   public MessageHandler getConstraints() {
     return new MessageHandler() {
       @Override

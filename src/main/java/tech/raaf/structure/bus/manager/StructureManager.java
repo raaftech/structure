@@ -44,6 +44,7 @@ public class StructureManager extends GenericActor {
   ComponentRepository componentRepository = Context.getComponentRepository();
   InstrumentRepository instrumentRepository = Context.getInstrumentRepository();
 
+  @SchemaPath(output = "resource:/schema/output/introspection.schema.json")
   public MessageHandler introspect() {
     return new MessageHandler() {
       @Override
@@ -58,6 +59,7 @@ public class StructureManager extends GenericActor {
     };
   }
 
+  @SchemaPath(output = "resource:/schema/output/stringList.schema.json")
   public MessageHandler list() {
     return new MessageHandler() {
       public JsonNode exec(JsonNode request) {
@@ -80,6 +82,7 @@ public class StructureManager extends GenericActor {
    * purging the database from all vertices and edges and then reloading the bundles.
    * @return All the NodeActor addresses that are being undeployed.
    */
+  @SchemaPath(output = "resource:/schema/output/stringList.schema.json")
   public MessageHandler reinitialize() {
     return new MessageHandler() {
       @Override
@@ -125,7 +128,10 @@ public class StructureManager extends GenericActor {
     };
   }
 
-  @SchemaPath("resource:/schema/manager/structuremanager/selfdiscovery.schema.json")
+  @SchemaPath(
+    input = "resource:/schema/manager/structuremanager/selfdiscovery.schema.json",
+    output = "resource:/schema/output/string.schema.json"
+  )
   public MessageHandler selfDiscovery() {
     return new MessageHandler() {
       @Override
@@ -163,6 +169,7 @@ public class StructureManager extends GenericActor {
     };
   }
 
+  @SchemaPath(output = "resource:/schema/output/string.schema.json")
   public MessageHandler reload() {
     return new MessageHandler() {
       @Override

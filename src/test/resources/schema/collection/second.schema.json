@@ -1,0 +1,9 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "The circular partner of the first document.",
+  "type": "object",
+  "properties": {
+    "first": { "$ref": "first.schema.json#" },
+    "shared": { "$ref": "./shared.schema.json" }
+  }
+}

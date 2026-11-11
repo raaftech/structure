@@ -1,15 +1,32 @@
 package tech.raaf.structure.bus;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static tech.raaf.structure.helper.JsonHelper.mapper;
 
+import com.networknt.schema.AbsoluteIri;
+import com.networknt.schema.SchemaLocation;
+import com.networknt.schema.SchemaRegistry;
+import com.networknt.schema.SpecificationVersion;
+import com.networknt.schema.resource.InputStreamSource;
+import com.networknt.schema.resource.SchemaLoader;
 import io.vertx.core.Verticle;
 import io.vertx.core.eventbus.DeliveryOptions;
 import io.vertx.core.eventbus.MessageConsumer;
+import io.vertx.core.http.HttpServer;
+import io.vertx.core.http.WebSocket;
+import io.vertx.core.http.WebSocketClient;
 import io.vertx.core.json.JsonObject;
+import io.vertx.ext.bridge.PermittedOptions;
+import io.vertx.ext.web.Router;
+import io.vertx.ext.web.handler.sockjs.SockJSBridgeOptions;
+import io.vertx.ext.web.handler.sockjs.SockJSHandler;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -47,7 +64,7 @@ import tools.jackson.databind.JsonNode;
 
 /**
  * Sends requests to managers, repositories and nodes. Checks each reply
- * against response.schema.json and checks that it has no error.
+ * against the response envelope and the declared handler output.
  * The actors run on the test Vert.x instance. The writes commit.
  */
 @ExtendWith(JMockitExtension.class)
@@ -106,11 +123,13 @@ public class BusRoundTripTest extends TypeSchemaTest {
     String hostAddress = BUS + "node." + host;
     String typeAddress = BUS + "node." + OPERATING_SYSTEM;
     // Address, msgh, args and the expected error, if there is one.
-    // The table leaves out reinitialize, because it purges the graph,
-    // and selfDiscovery, which has its own test.
+    // Reinitialize and selfDiscovery each have their own test.
     String[][] rows = {
       { TYPES, "getAll", "{}", null },
       { TYPES, "findOneByName", "{'name': 'ComponentGroup'}", null },
+      { TYPES, "findOneByCaseInsensitiveName", "{'name': 'componentgroup'}", null },
+      { TYPES, "findAllTypeGlyphs", "{}", null },
+      { TYPES, "findOne", "{'node': '" + OPERATING_SYSTEM + "'}", null },
       { ENTITIES, "read", "{'labels': ['Type'], 'start': '" + OPERATING_SYSTEM + "', 'includeStart': true}", null },
       { ENTITIES, "create", "{'entities': [" + os(created, "bus-created", "Created.") + "]}", null },
       { ENTITIES, "update", "{'entities': [" + os(created, "bus-created", "Updated.") + "]}", null },
@@ -120,13 +139,25 @@ public class BusRoundTripTest extends TypeSchemaTest {
       { ENTITIES, "delete", "{'labels': ['Instance'], 'uuid': '" + created + "', 'includeStart': true}", null },
       { INSTANCES, "nLastCreated", "{'amount': 5}", null },
       { INSTANCES, "findByName", "{'name': 'bus-host'}", null },
+      { INSTANCES, "findOneByData", "{'property': 'shortName', 'value': 'os'}", null },
+      { INSTANCES, "findOneByData", "{'property': 'shortName', 'value': 'missing'}", null },
+      {
+        INSTANCES,
+        "putNode",
+        "{'node': '" + DNS_NAME + "', 'name': 'dns', 'desc': '', 'dnsname': 'test.example'}",
+        null,
+      },
       { STRUCTURE, "reload", "{}", null },
+      { STRUCTURE, "list", "{}", null },
       { STRUCTURE, "introspect", "{}", null },
       { STRUCTURE, "help", "{}", null },
       { STRUCTURE, "version", "{}", null },
       { typeAddress, "help", "{}", null },
       { hostAddress, "version", "{}", null },
       { typeAddress, "getSubtypes", "{}", null },
+      { typeAddress, "getSchema", "{}", null },
+      { typeAddress, "getPath", "{}", null },
+      { typeAddress, "uuid", "{}", null },
       { typeAddress, "getConstraints", "{}", null },
       { hostAddress, "json", "{}", null },
       { hostAddress, "getInstruments", "{}", null },
@@ -149,6 +180,9 @@ public class BusRoundTripTest extends TypeSchemaTest {
       { ENTITIES, null, "{}", "Request didn't validate against schema: [" },
       { ENTITIES, "no.such.handler", "{}", "Request didn't validate against schema: [" },
       { ENTITIES, "read", "[]", "Request didn't validate against schema: [" },
+      { INSTRUMENTS, "removeInstruments", "{}", null },
+      { INSTRUMENTS, "reloadInstruments", "{}", null },
+      { hostAddress, "undeploy", "{}", null },
     };
     List<String> failures = new ArrayList<>();
     for (String[] row : rows) {
@@ -166,6 +200,152 @@ public class BusRoundTripTest extends TypeSchemaTest {
       }
     }
     assertTrue(failures.isEmpty(), String.join("\n", failures));
+  }
+
+  @Test
+  public void relationResponsesMatchTheirContract() throws Exception {
+    String dns = UUID.randomUUID().toString();
+    mapper
+      .readValue(entity(dns, "dns", "A DNS name.", DNS_NAME, "{\"dnsname\":\"test.example\"}"), Entity.class)
+      .toGraph();
+    String args = new JsonObject().put("from", host).put("relation", "HAS").put("to", dns).encode();
+    for (String handler : List.of("relate", "unrelate")) {
+      for (boolean changed : List.of(true, false)) {
+        JsonNode reply = send(ENTITIES, handler, args);
+        assertFalse(reply.path("result").has("error"), reply.toString());
+        assertEquals(changed, reply.path("result").path("data").path("changed").asBoolean());
+        if (handler.equals("relate") && changed) {
+          JsonNode children = send(BUS + "node." + host, "getComponentsByType", "{\"type\":\"DnsName\"}");
+          assertFalse(children.path("result").has("error"), children.toString());
+          assertEquals(1, children.path("result").path("data").size());
+        }
+      }
+    }
+  }
+
+  @Test
+  public void reinitializeResponseMatchesItsContract() throws Exception {
+    CompletableFuture<JsonObject> done = new CompletableFuture<>();
+    MessageConsumer<JsonObject> events = Context.getVertx()
+      .eventBus()
+      .consumer(EVENTS, message -> {
+        if (
+          "structureReinitialization".equals(message.body().getString("event")) &&
+          "finished".equals(message.body().getJsonObject("data").getString("data"))
+        ) {
+          done.complete(message.body());
+        }
+      });
+    try {
+      JsonNode reply = send(STRUCTURE, "reinitialize", "{}");
+      assertFalse(reply.path("result").has("error"), reply.toString());
+      assertTrue(reply.path("result").path("data").isArray());
+      done.get(30, TimeUnit.SECONDS);
+    } finally {
+      events.unregister().await();
+    }
+  }
+
+  @Test
+  public void resolvesPublishedContractsOverWebSocket() throws Exception {
+    Router router = Router.router(Context.getVertx());
+    SockJSBridgeOptions options = new SockJSBridgeOptions().addInboundPermitted(
+      new PermittedOptions().setAddressRegex("tech\\.raaf\\.structure\\..*")
+    );
+    router.route("/eventbus/*").subRouter(SockJSHandler.create(Context.getVertx()).bridge(options));
+    HttpServer server = Context.getVertx().createHttpServer().requestHandler(router).listen(0, "localhost").await();
+    WebSocketClient client = Context.getVertx().createWebSocketClient();
+    try {
+      WebSocket socket = client.connect(server.actualPort(), "localhost", "/eventbus/websocket").await();
+      JsonNode discovery = send(socket, STRUCTURE, "introspect", "{}");
+      JsonNode metadata = discovery.path("result").path("data");
+      JsonNode documents = metadata.path("schemas");
+      SchemaRegistry registry = SchemaRegistry.withDefaultDialect(SpecificationVersion.DRAFT_4, builder ->
+        builder.schemaLoader(
+          new SchemaLoader(iri -> null) {
+            @Override
+            public InputStreamSource getSchemaResource(AbsoluteIri iri) {
+              if (iri.toString().equals("http://json-schema.org/draft-04/schema")) {
+                return super.getSchemaResource(iri);
+              }
+              JsonNode document = documents.get(iri.toString());
+              assertNotNull(document, "Unpublished schema: " + iri);
+              return () -> new ByteArrayInputStream(document.toString().getBytes(StandardCharsets.UTF_8));
+            }
+          }
+        )
+      );
+      documents.properties().forEach(entry -> {
+        assertValid(registry, "http://json-schema.org/draft-04/schema", entry.getValue());
+        registry.getSchema(SchemaLocation.of(entry.getKey()));
+      });
+      String[][] rows = {
+        { STRUCTURE, STRUCTURE, "introspect", "{}" },
+        { STRUCTURE, STRUCTURE, "help", "{}" },
+        { STRUCTURE, STRUCTURE, "version", "{}" },
+        { TYPES, TYPES, "findOneByName", "{\"name\":\"OperatingSystem\"}" },
+        { TYPES, TYPES, "findByName", "{\"name\":\"OperatingSystem\"}" },
+        {
+          ENTITIES,
+          ENTITIES,
+          "read",
+          "{\"labels\":[\"Type\"],\"start\":\"" + OPERATING_SYSTEM + "\",\"includeStart\":true}",
+        },
+        { BUS + "node." + host, BUS + "instanceactor", "json", "{}" },
+        { BUS + "node." + OPERATING_SYSTEM, BUS + "typeactor", "getConstraints", "{}" },
+      };
+      for (String[] row : rows) {
+        JsonNode handler = metadata.path("classes").path(row[1]).path("handlers").path(row[2]);
+        JsonNode reply = send(socket, row[0], row[2], row[3]);
+        assertFalse(reply.path("result").has("error"), reply.toString());
+        assertValid(registry, "resource:/schema/base/request.schema.json", reply.path("request"));
+        assertValid(registry, RESPONSE.toString(), reply);
+        assertValid(registry, handler.path("inputSchemaUri").asString(), mapper.readTree(row[3]));
+        assertValid(registry, handler.path("outputSchemaUri").asString(), reply.path("result").path("data"));
+      }
+      // A known invalid input and output must fail with this same registry.
+      JsonNode find = metadata.path("classes").path(TYPES).path("handlers").path("findOneByName");
+      assertFalse(
+        registry
+          .getSchema(SchemaLocation.of(find.path("inputSchemaUri").asString()))
+          .validate(mapper.createObjectNode())
+          .isEmpty()
+      );
+      assertFalse(
+        registry
+          .getSchema(SchemaLocation.of(find.path("outputSchemaUri").asString()))
+          .validate(mapper.createObjectNode())
+          .isEmpty()
+      );
+      socket.close().await();
+    } finally {
+      client.close().await();
+      server.close().await();
+    }
+  }
+
+  private static void assertValid(SchemaRegistry registry, String uri, JsonNode value) {
+    var errors = registry.getSchema(SchemaLocation.of(uri)).validate(value);
+    assertTrue(errors.isEmpty(), uri + ": " + errors);
+  }
+
+  private static JsonNode send(WebSocket socket, String address, String handler, String args) throws Exception {
+    CompletableFuture<JsonObject> reply = new CompletableFuture<>();
+    socket.binaryMessageHandler(buffer -> reply.complete(buffer.toJsonObject()));
+    socket.exceptionHandler(reply::completeExceptionally);
+    socket
+      .writeTextMessage(
+        new JsonObject()
+          .put("type", "send")
+          .put("address", address)
+          .put("replyAddress", UUID.randomUUID().toString())
+          .put("body", new JsonObject().put("msgh", handler).put("args", new JsonObject(args)))
+          .encode()
+      )
+      .await();
+    JsonObject message = reply.get(10, TimeUnit.SECONDS);
+    assertEquals("rec", message.getString("type"), message.encode());
+    return mapper.readTree(message.getJsonObject("body").encode());
   }
 
   // The reply has the task ID that each instance gets

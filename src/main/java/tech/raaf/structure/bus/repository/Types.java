@@ -18,7 +18,10 @@ public class Types extends Repository<Type> {
     this.repository = repository;
   }
 
-  @SchemaPath("resource:/schema/repository/findOneByName.schema.json")
+  @SchemaPath(
+    input = "resource:/schema/repository/findOneByName.schema.json",
+    output = "resource:/schema/entity.schema.json"
+  )
   public MessageHandler findOneByCaseInsensitiveName() {
     return new MessageHandler() {
       @Override
@@ -46,6 +49,7 @@ public class Types extends Repository<Type> {
     };
   }
 
+  @SchemaPath(output = "resource:/schema/output/entityList.schema.json")
   public MessageHandler getAll() {
     return new MessageHandler() {
       @Override
@@ -71,6 +75,7 @@ public class Types extends Repository<Type> {
     };
   }
 
+  @SchemaPath(output = "resource:/schema/output/glyphList.schema.json")
   public MessageHandler findAllTypeGlyphs() {
     return new MessageHandler() {
       @Override

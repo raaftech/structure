@@ -1,0 +1,8 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Each task in the queue, by task ID.",
+  "type": "object",
+  "additionalProperties": {
+    "$ref": "task.schema.json"
+  }
+}
