@@ -55,7 +55,10 @@ public class NodeSerializer extends StdSerializer<Node> {
     if (value instanceof Type) {
       gen.writeBooleanProperty("abstract", ((Type) value).isAbstract());
     }
-    gen.writeStringProperty("checksum", value.getChecksum());
+    // Only nodes from a bundle have a checksum
+    if (value.getChecksum() != null) {
+      gen.writeStringProperty("checksum", value.getChecksum());
+    }
     if (value.getBundle() != null) {
       gen.writeStringProperty("bundle", value.getBundle());
     }

@@ -3,10 +3,13 @@ package tech.raaf.structure.graph;
 import static org.junit.jupiter.api.Assertions.*;
 import static tech.raaf.structure.helper.JsonHelper.mapper;
 
+import java.net.URI;
+import java.util.List;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
 import tech.raaf.structure.base.Context;
 import tech.raaf.structure.graph.repositories.NodeRepository;
+import tech.raaf.structure.helper.JsonHelper;
 import tech.raaf.structure.helper.Triple;
 import tech.raaf.structure.schema.TypeSchemaTest;
 import tools.jackson.databind.JsonNode;
@@ -48,6 +51,19 @@ public class NodeSerializerTest extends TypeSchemaTest {
     assertEquals("text", dataSchema.get("encoding").asString());
     assertEquals("json", dataSchema.get("format").asString());
     assertEquals("../schemas/linux.schema.json", dataSchema.get("path").asString());
+  }
+
+  // A node that is not from a bundle has no checksum, thus no field
+  @Test
+  public void serializesANodeWithoutChecksumAsAValidEntity() {
+    Component component = new Component(
+      mapper.createObjectNode().put("name", "unbundled").put("desc", "A component."),
+      Context.getTypeRepository().findOneByName("Component")
+    );
+    component.save();
+    JsonNode entity = mapper.valueToTree(nodeRepository.findByUuid(component.getUuid()));
+    assertFalse(entity.path("meta").has("checksum"), entity.toString());
+    assertEquals(List.of(), JsonHelper.validationErrors(URI.create("resource:/schema/entity.schema.json"), entity));
   }
 
   @Test
