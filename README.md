@@ -237,7 +237,7 @@ nodes.
 To use it, run `:style` and use the **Upload** button. The resulting style page
 does not update, but from experience, the styles *do* apply.
 
-Here is an example Cypher qeury to show the instances and the relations between
+Here is an example Cypher query to show the instances and the relations between
 them:
 
 ```cypher
