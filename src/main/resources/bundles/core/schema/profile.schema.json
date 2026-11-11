@@ -14,16 +14,16 @@
       "$ref": "#/definitions/caseInsensitiveAlphaNum"
     },
     "appliesTo": {
-      "$ref": "#/definitions/strictStringOrStringArray"
+      "$ref": "#/definitions/strictStringOrStringList"
     },
     "packageNames": {
-      "$ref": "#/definitions/stringOrStringArray"
+      "$ref": "#/definitions/stringOrStringList"
     },
     "serviceNames": {
-      "$ref": "#/definitions/stringOrStringArray"
+      "$ref": "#/definitions/stringOrStringList"
     },
     "ports": {
-      "$ref": "#/definitions/numberOrNumberArray"
+      "$ref": "#/definitions/numberOrNumberList"
     },
     "commands": {
       "type": "object",
@@ -33,10 +33,10 @@
           "additionalProperties": false,
           "properties": {
             "command": {
-              "$ref": "#/definitions/stringOrStringArray"
+              "$ref": "#/definitions/stringOrStringList"
             },
             "matches": {
-              "$ref": "#/definitions/stringOrStringArray"
+              "$ref": "#/definitions/stringOrStringList"
             }
           }
         }
@@ -132,7 +132,7 @@
         "type": "string"
       }
     },
-    "numberOrNumberArray": {
+    "numberOrNumberList": {
       "type": ["integer", "array"],
       "minimum": 1,
       "maximum": 65535,
@@ -142,14 +142,14 @@
         "maximum": 65535
       }
     },
-    "stringOrStringArray": {
+    "stringOrStringList": {
       "type": ["string", "array"],
       "minItems": 1,
       "items": {
         "type": "string"
       }
     },
-    "strictStringOrStringArray": {
+    "strictStringOrStringList": {
       "type": ["string", "array"],
       "minItems": 1,
       "items": {

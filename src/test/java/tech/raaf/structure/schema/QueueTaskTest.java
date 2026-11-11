@@ -19,6 +19,6 @@ public class QueueTaskTest extends SchemaTest {
 
   @Override
   protected String schema() {
-    return "resource:/schema/manager/taskmanager/queuetask.schema.json";
+    return "resource:/schema/manager/taskmanager/queueTask.schema.json";
   }
 }

@@ -75,7 +75,7 @@
                   "$ref": "#/definitions/direction"
                 },
                 "to": {
-                  "$ref": "common.schema.json#/definitions/uuidOrNameArray"
+                  "$ref": "common.schema.json#/definitions/uuidOrNameList"
                 }
               }
             }
@@ -96,7 +96,7 @@
           }
         },
         "identity": {
-          "$ref": "common.schema.json#/definitions/stringOrStringArray"
+          "$ref": "common.schema.json#/definitions/stringOrStringList"
         },
         "checksum": {
           "$ref": "#/definitions/checksum"

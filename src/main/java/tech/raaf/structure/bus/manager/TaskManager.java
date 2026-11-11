@@ -421,7 +421,7 @@ public class TaskManager extends GenericActor {
    * @return A JSON object containing an error field if something went wrong.
    */
   @SchemaPath(
-    input = "resource:/schema/manager/taskmanager/canceljob.schema.json",
+    input = "resource:/schema/manager/taskmanager/cancelJob.schema.json",
     output = "resource:/schema/output/jobStatus.schema.json"
   )
   public MessageHandler cancelJob() {
@@ -542,7 +542,7 @@ public class TaskManager extends GenericActor {
    * @return A response, containing the task id, or an error.
    */
   @SchemaPath(
-    input = "resource:/schema/manager/taskmanager/queuetask.schema.json",
+    input = "resource:/schema/manager/taskmanager/queueTask.schema.json",
     output = "resource:/schema/output/uuid.schema.json"
   )
   public MessageHandler queueTask() {
