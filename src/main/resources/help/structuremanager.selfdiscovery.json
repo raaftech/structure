@@ -4,5 +4,5 @@
     "msgh": "selfDiscovery",
     "args": {}
   },
-  "description": "If the graph does not have the host of Structure, the selfDiscovery handler adds it with the StructureBootstrap payload. It returns started and publishes completion or failure on the events address."
+  "description": "If the graph does not have the host of Structure, the selfDiscovery handler adds it with the StructureBootstrap payload. If the host has an Ansible component, it then discovers the operating system of the host with OsDiscover. Each runs as a task of the TaskManager, thus each gives a result: the bootstrap for the Structure component, and OsDiscover for the address. It returns started and publishes completion or failure on the events address."
 }

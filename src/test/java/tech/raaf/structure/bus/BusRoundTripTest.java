@@ -24,7 +24,6 @@ import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.sockjs.SockJSBridgeOptions;
 import io.vertx.ext.web.handler.sockjs.SockJSHandler;
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -35,10 +34,11 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-import mockit.Expectations;
 import mockit.Invocation;
 import mockit.Mock;
 import mockit.MockUp;
@@ -52,6 +52,7 @@ import tech.raaf.structure.base.Context;
 import tech.raaf.structure.bus.manager.EntityManager;
 import tech.raaf.structure.bus.manager.InstrumentManager;
 import tech.raaf.structure.bus.manager.StructureManager;
+import tech.raaf.structure.bus.manager.TaskManager;
 import tech.raaf.structure.bus.repository.Instances;
 import tech.raaf.structure.bus.repository.Types;
 import tech.raaf.structure.graph.Entity;
@@ -95,6 +96,7 @@ public class BusRoundTripTest extends TypeSchemaTest {
       new EntityManager(),
       new StructureManager(),
       new InstrumentManager(),
+      new TaskManager(1),
       new Types(Context.getTypeRepository()),
       new Instances(Context.getInstanceRepository())
     )) {
@@ -379,13 +381,15 @@ public class BusRoundTripTest extends TypeSchemaTest {
     assertEquals(data.asString(), UUID.fromString(data.asString()).toString());
   }
 
-  // The graph has the name of the host, thus the job does not run the bootstrap
+  // The graph has the name of the host, thus the job does not run the
+  // bootstrap. The host has no Ansible, thus no OS discovery runs either.
   @Test
   public void selfDiscoveryFindsTheHost() throws Exception {
+    List<String> commands = new ArrayList<>();
     new MockUp<ProcessRunner>() {
       @Mock
-      public void run() throws IOException {
-        throw new IOException("Ansible is not installed");
+      public void run(Invocation invocation) {
+        commands.add(((ProcessRunner) invocation.getInvokedInstance()).getCommand());
       }
     };
     // Context keeps the first hostname that a test sets
@@ -413,6 +417,7 @@ public class BusRoundTripTest extends TypeSchemaTest {
     } finally {
       events.unregister().await();
     }
+    assertEquals(List.of(), commands);
   }
 
   @Test
@@ -466,10 +471,15 @@ public class BusRoundTripTest extends TypeSchemaTest {
         Entity.class
       )
       .toGraph();
+    // The bootstrap adds Ansible if it finds it
+    String ansibleUuid = UUID.randomUUID().toString();
+    String ansibleType = Context.getTypeRepository().findOneByName("Ansible").getUuid();
+    String ansible = "{\"ver\": \"unknown\", \"shortName\": \"ansible\", \"longName\": \"Ansible\"}";
+    mapper.readValue(entity(ansibleUuid, "Ansible", "Ansible.", ansibleType, ansible), Entity.class).toGraph();
     Graph.query(
-      "MATCH (os {uuid: $os}), (dns {uuid: $dns}), (g {uuid: $group}) " +
-        "MERGE (os)-[:HAS]->(dns) MERGE (os)-[:MEMBER_OF]->(g)",
-      Map.of("os", host, "dns", dnsUuid, "group", group)
+      "MATCH (os {uuid: $os}), (dns {uuid: $dns}), (ansible {uuid: $ansible}), (g {uuid: $group}) " +
+        "MERGE (os)-[:HAS]->(dns) MERGE (os)-[:HAS]->(ansible) MERGE (os)-[:MEMBER_OF]->(g)",
+      Map.of("os", host, "dns", dnsUuid, "ansible", ansibleUuid, "group", group)
     );
     List<String> commands = new ArrayList<>();
     new MockUp<ProcessRunner>() {
@@ -485,6 +495,11 @@ public class BusRoundTripTest extends TypeSchemaTest {
       }
 
       @Mock
+      public boolean isRunning() {
+        return false;
+      }
+
+      @Mock
       public ProcessRunner.ProcessResult finish() {
         ProcessRunner.ProcessResult result = new ProcessRunner.ProcessResult();
         result.returnCode = Optional.of(0);
@@ -493,12 +508,7 @@ public class BusRoundTripTest extends TypeSchemaTest {
         return result;
       }
     };
-    new Expectations() {
-      {
-        process.waitFor(anyLong, (TimeUnit) any);
-        result = true;
-      }
-    };
+    long results = results("MATCH (a {`data-addr`: '127.0.0.1'})", "OsDiscover");
     for (int i = 0; i < 2; i++) {
       CompletableFuture<JsonObject> done = new CompletableFuture<>();
       MessageConsumer<JsonObject> events = Context.getVertx()
@@ -518,13 +528,109 @@ public class BusRoundTripTest extends TypeSchemaTest {
       assertEquals(group, Context.getSelfIdentifier());
       assertEquals(host, Context.getInstanceRepository().findOperatingSystem(dnsUuid).getUuid());
     }
-    assertEquals(4, commands.size());
-    assertEquals("ansible --version", commands.get(0));
-    assertTrue(commands.get(1).startsWith("python3 '"));
-    assertTrue(commands.get(1).endsWith("/bundles/ansible/payload/main.py' -i '127.0.0.1' --self-id '" + group + "'"));
-    assertEquals(commands.subList(0, 2), commands.subList(2, 4));
+    assertEquals(2, commands.size(), commands.toString());
+    assertTrue(commands.get(0).startsWith("python3 '"));
+    assertTrue(commands.get(0).endsWith("/bundles/ansible/payload/main.py' -i '127.0.0.1' --self-id '" + group + "'"));
+    assertEquals(commands.get(0), commands.get(1));
     assertEquals(1, Context.getGroupingRepository().getChildrenOfType(group, "Ansible").size());
     assertEquals(1, Context.getGroupingRepository().getChildrenOfType(group, "Ipv4Address").size());
+    // Each OS discovery is a task with a result for the address
+    awaitResults(results + 2, "MATCH (a {`data-addr`: '127.0.0.1'})", "OsDiscover");
+  }
+
+  // Without the host in the graph, the bootstrap runs as a task. Its result
+  // belongs to the Structure component that it makes, with the given UUID.
+  @Test
+  public void selfDiscoveryRunsTheBootstrapAsATask(@Mocked Process process) throws Exception {
+    Graph.query(
+      "MATCH (n:`type:DnsName` {`data-dnsname`: $hostname}) DETACH DELETE n",
+      Map.of("hostname", Context.getHostname())
+    );
+    String structureType = Context.getTypeRepository().findOneByName("Structure").getUuid();
+    List<String> commands = new ArrayList<>();
+    new MockUp<ProcessRunner>() {
+      @Mock
+      public void run(Invocation invocation) {
+        String command = ((ProcessRunner) invocation.getInvokedInstance()).getCommand();
+        commands.add(command);
+        // Make what the bootstrap payload makes, without Ansible
+        Matcher origin = Pattern.compile("-u '([^']+)'").matcher(command);
+        assertTrue(origin.find(), command);
+        String dns = UUID.randomUUID().toString();
+        String data = "{\"ver\": \"unknown\", \"shortName\": \"Structure\", \"longName\": \"Structure\"}";
+        mapper.readValue(entity(origin.group(1), "Structure", "Structure.", structureType, data), Entity.class).toGraph();
+        mapper
+          .readValue(
+            entity(dns, "dns", "The test host.", DNS_NAME, "{\"dnsname\": \"" + Context.getHostname() + "\"}"),
+            Entity.class
+          )
+          .toGraph();
+        Graph.query(
+          "MATCH (os {uuid: $os}), (s {uuid: $s}), (dns {uuid: $dns}), (g {uuid: $group}) " +
+            "MERGE (os)-[:HAS]->(s) MERGE (os)-[:HAS]->(dns) MERGE (os)-[:MEMBER_OF]->(g)",
+          Map.of("os", host, "s", origin.group(1), "dns", dns, "group", group)
+        );
+      }
+
+      @Mock
+      public Process getProcess() {
+        return process;
+      }
+
+      @Mock
+      public boolean isRunning() {
+        return false;
+      }
+
+      @Mock
+      public ProcessRunner.ProcessResult finish() {
+        ProcessRunner.ProcessResult result = new ProcessRunner.ProcessResult();
+        result.returnCode = Optional.of(0);
+        result.stdout = Optional.of("[]");
+        result.stderr = Optional.of("Bootstrap of the Structure host");
+        return result;
+      }
+    };
+    CompletableFuture<JsonObject> done = new CompletableFuture<>();
+    MessageConsumer<JsonObject> events = Context.getVertx()
+      .eventBus()
+      .consumer(EVENTS, message -> {
+        if ("selfDiscovery".equals(message.body().getString("event"))) {
+          done.complete(message.body().getJsonObject("data"));
+        }
+      });
+    try {
+      send(STRUCTURE, "selfDiscovery", "{}");
+      JsonObject response = done.get(10, TimeUnit.SECONDS);
+      assertEquals("done", response.getString("status"), response.toString());
+    } finally {
+      events.unregister().await();
+    }
+    assertEquals(1, commands.size(), commands.toString());
+    assertTrue(commands.get(0).contains("/bundles/structure/payload/main.py' -h '" + Context.getHostname() + "' -u '"));
+    assertEquals(group, Context.getSelfIdentifier());
+    Matcher origin = Pattern.compile("-u '([^']+)'").matcher(commands.get(0));
+    assertTrue(origin.find());
+    awaitResults(1, "MATCH (a {uuid: '" + origin.group(1) + "'})", "StructureBootstrap");
+  }
+
+  // The number of results of the origins that a match gives, from a controller
+  private static long results(String match, String controller) {
+    return (long) Graph.query(
+      match + "-[:HAS_RESULT]->(r:Result)<-[:PRODUCED]-(:Controller {name: $controller}) RETURN count(r) AS n",
+      Map.of("controller", controller)
+    )
+      .get(0)
+      .get("n");
+  }
+
+  // The TaskManager stores a result after its taskFinished event, thus wait
+  private static void awaitResults(long expected, String match, String controller) throws InterruptedException {
+    long deadline = System.currentTimeMillis() + 5000;
+    while (results(match, controller) < expected && System.currentTimeMillis() < deadline) {
+      Thread.sleep(50);
+    }
+    assertEquals(expected, results(match, controller));
   }
 
   @Test

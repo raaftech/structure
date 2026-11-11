@@ -7,6 +7,7 @@ from pathlib import Path
 import socket
 import ssl
 import struct
+import sys
 import threading
 import time
 import uuid
@@ -234,6 +235,12 @@ class BusClient:
                     ))
             identifiers.append(replacement)
         return identifiers
+
+
+def log(message):
+    """Write a line about what the payload does to stderr. The result of a
+    run keeps it, next to the data that the payload writes to stdout."""
+    print(message, file=sys.stderr, flush=True)
 
 
 def relate(entity, name, target):

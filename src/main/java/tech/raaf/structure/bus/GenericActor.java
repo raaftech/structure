@@ -47,7 +47,7 @@ public abstract class GenericActor extends AbstractVerticle {
   protected ObjectMapper mapper = new ObjectMapper();
 
   // The bus address where actors publish events, for clients to follow.
-  private static final String EVENTS = "tech.raaf.structure.bus.events";
+  protected static final String EVENTS = "tech.raaf.structure.bus.events";
   // The worker pool of the actors that use the graph.
   private static final String POOL = "structure-actors";
   // Shared maps for introspection: handlers by class, and active actors.

@@ -8,18 +8,18 @@ import sys
 import xml.etree.ElementTree as ET
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "core" / "payload"))
-from structure_client import BusClient, Graph, relate
+from structure_client import BusClient, Graph, log, relate
 
 
 def scan(target, arguments):
-    result = subprocess.run(
-        ["nmap", *shlex.split(arguments), "-oX", "-", target],
-        check=True, capture_output=True, text=True, timeout=50,
-    )
+    command = ["nmap", *shlex.split(arguments), "-oX", "-", target]
+    log(shlex.join(command))
+    result = subprocess.run(command, check=True, capture_output=True, text=True, timeout=50)
     report = ET.fromstring(result.stdout)
     finished = report.find("runstats/finished")
     if finished is None or finished.get("exit") != "success":
         raise RuntimeError("nmap scan failed: " + result.stdout)
+    log(finished.get("summary") or "Nmap is done")
     hosts = []
     for host in report.findall("host"):
         status = host.find("status")
@@ -44,10 +44,10 @@ def update_address(client, graph, address, reachable, hostname):
 def unknown_host(client, graph, address, name):
     """Give an address without an operating system an operating system
     that is not known yet, in a group for its host. The OS discovery can
-    then specialize it, for example to Linux."""
+    then specialize it, for example to Linux. Gives True if it did."""
     found = client.request("repository.instances", "findOperatingSystem", {"node": address})
     if found.get("meta"):
-        return
+        return False
     group = graph.instance("ComponentGroup", {"name": name, "desc": "A discovered host"})
     group["name"] = name
     operating_system = graph.software("OperatingSystem", "unknown")
@@ -55,6 +55,7 @@ def unknown_host(client, graph, address, name):
     relate(operating_system, "HAS", {"meta": {"uuid": address}})
     relate(operating_system, "MEMBER_OF", group)
     client.persist([group, operating_system])
+    return True
 
 
 def main():
@@ -62,7 +63,7 @@ def main():
     target = parser.add_mutually_exclusive_group(required=True)
     target.add_argument("-c", "--cidr")
     target.add_argument("-i", "--ip")
-    parser.add_argument("-n", "--net", default="Ipv4Network")
+    parser.add_argument("-n", "--net", help="Name of a new network, else its CIDR")
     parser.add_argument("-a", "--args", default="-p22,80")
     options = parser.parse_args()
     if options.ip:
@@ -76,35 +77,47 @@ def main():
             if not address.get("meta"):
                 raise ValueError("No IP address found for " + options.ip)
             hosts = dict(scan(options.ip, options.args))
+            log(options.ip + (": reachable" if options.ip in hosts else ": not reachable"))
             return [update_address(client, graph, address, options.ip in hosts, hosts.get(options.ip))]
 
         network = client.find("cidr", options.cidr)
         exists = bool(network.get("meta"))
         if not exists:
+            name = options.net or options.cidr
             network = graph.instance("Ipv4Network", {
-                "name": options.net, "desc": "An IPv4 network", "cidr": options.cidr,
+                "name": name, "desc": "An IPv4 network", "cidr": options.cidr,
             })
-            network["name"] = options.net
+            network["name"] = name
         addresses = []
         for ip, hostname in scan(options.cidr, options.args):
             address = client.find("addr", ip)
             if address.get("meta"):
+                notes = ["known address" if address["data"].get("reachable") else "known address, now reachable"]
                 identifier = update_address(client, graph, address, True, hostname)
             else:
+                notes = ["new address"]
                 address = graph.address(ip)
                 if hostname:
                     dns = graph.dns(hostname)
                     client.persist([dns], [address])
                     relate(address, "HAS", dns)
                 [identifier] = client.persist([address])
-            unknown_host(client, graph, identifier, hostname or ip)
+            if hostname:
+                notes.append("DNS name " + hostname)
+            if unknown_host(client, graph, identifier, hostname or ip):
+                notes.append("new host with an unknown operating system")
+            else:
+                notes.append("has an operating system")
+            log(ip + ": " + ", ".join(notes))
             addresses.append(identifier)
         if not exists:
             for identifier in addresses:
                 relate(network, "HAS", {"meta": {"uuid": identifier}})
+            log("New network " + options.cidr + " with " + str(len(addresses)) + " addresses")
             return client.persist([network])
         for identifier in addresses:
             client.relate(network["meta"]["uuid"], "HAS", identifier)
+        log("Known network " + options.cidr + ", related to " + str(len(addresses)) + " addresses")
         return [network["meta"]["uuid"]]
 
 

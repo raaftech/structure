@@ -4,18 +4,20 @@ import difflib
 import ipaddress
 import json
 from pathlib import Path
+import shlex
 import subprocess
 import sys
 import tempfile
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "core" / "payload"))
-from structure_client import BusClient, Graph, relate
+from structure_client import BusClient, Graph, log, relate
 
 
 def setup(ip, local):
     with tempfile.TemporaryDirectory(prefix="structure-ansible-") as directory:
         command = ["ansible", ip, "-i", ip + ",", "-m", "ansible.builtin.setup", "--tree", directory]
         command += ["-c", "local"] if local else ["-c", "ssh", "-u", "root"]
+        log(shlex.join(command))
         subprocess.run(command, check=True, capture_output=True, text=True, timeout=50)
         result = json.loads((Path(directory) / ip).read_text())
         if result.get("failed") or result.get("unreachable") or not result.get("ansible_facts"):
@@ -54,6 +56,10 @@ def discover(client, graph, ip, self_id):
         address = graph.address(ip)
     local = self_id in existing.get("meta", {}).get("relations", {}).get("MEMBER_OF", {}).get("to", [])
     facts = setup(ip, local)
+    log("Facts of " + ip + ": " + ", ".join(
+        key + " " + str(facts.get("ansible_" + key))
+        for key in ("distribution", "distribution_version", "fqdn", "user_shell", "service_mgr")
+    ))
     selected = match(graph, facts.get("ansible_distribution"), "OperatingSystem")
     operating_system = graph.software(selected, facts.get("ansible_distribution_version", "unknown"))
     root = graph.instance("ComponentGroup", {
@@ -89,6 +95,7 @@ def discover(client, graph, ip, self_id):
     known_networks, new_networks, links = {}, {}, []
     for interface_ip, cidr in interfaces(facts):
         other = address if interface_ip == ip else client.find("addr", interface_ip)
+        notes = ["known address" if other.get("meta") else "new address"]
         if not other.get("meta"):
             other = graph.address(interface_ip)
             entities.append(other)
@@ -101,13 +108,21 @@ def discover(client, graph, ip, self_id):
                 network = graph.instance("Ipv4Network", {"name": cidr, "desc": "An IPv4 network", "cidr": cidr})
                 network["name"] = cidr
                 new_networks[cidr] = network
+        notes.append(("new network " if cidr in new_networks else "known network ") + cidr)
+        log("Interface address " + interface_ip + ": " + ", ".join(notes))
         if cidr in new_networks:
             relate(new_networks[cidr], "HAS", other)
         else:
             links.append((known_networks[cidr], other))
     entities.extend(new_networks.values())
 
+    log("Types: operating system " + selected + ", " + ", ".join(
+        "new " + graph.type(child["meta"]["relations"]["INSTANCE_OF"]["to"][0])["name"] if child in entities
+        else "known " + graph.type(child["meta"]["relations"]["INSTANCE_OF"]["to"][0])["name"]
+        for child in children
+    ))
     if not existing.get("meta"):
+        log("New host " + root["name"] + " with the operating system " + selected)
         identifiers = client.persist([*entities, root, operating_system])
         for network, other in links:
             client.relate(network, "HAS", other["meta"]["uuid"])
@@ -118,7 +133,9 @@ def discover(client, graph, ip, self_id):
     for network, other in links:
         client.relate(network, "HAS", other["meta"]["uuid"])
     current = graph.type(existing["meta"]["relations"]["INSTANCE_OF"]["to"][0])
+    log("Known host, with the operating system " + existing["name"] + " of type " + current["name"])
     if current["name"] != selected and graph.is_type(graph.type(selected), current["name"]):
+        log("Specialized the operating system from " + current["name"] + " to " + selected)
         client.request("manager.entitymanager", "specialize", {
             "instance": existing["meta"]["uuid"], "isa": graph.type(selected)["meta"]["uuid"],
         })

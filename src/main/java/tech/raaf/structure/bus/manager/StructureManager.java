@@ -1,13 +1,16 @@
 package tech.raaf.structure.bus.manager;
 
+import io.vertx.core.Future;
+import io.vertx.core.Promise;
+import io.vertx.core.eventbus.MessageConsumer;
+import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.shareddata.LocalMap;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tech.raaf.structure.annotations.SchemaPath;
@@ -24,7 +27,6 @@ import tech.raaf.structure.graph.Graph;
 import tech.raaf.structure.graph.Group;
 import tech.raaf.structure.graph.repositories.*;
 import tech.raaf.structure.helper.InstrumentRunner;
-import tech.raaf.structure.helper.ProcessRunner;
 import tech.raaf.structure.helper.handlebars.Quote;
 import tech.raaf.structure.helper.loader.BundleFiles;
 import tech.raaf.structure.helper.loader.BundleLoader;
@@ -43,6 +45,12 @@ public class StructureManager extends GenericActor {
   ResultRepository resultRepository = Context.getResultRepository();
   ComponentRepository componentRepository = Context.getComponentRepository();
   InstrumentRepository instrumentRepository = Context.getInstrumentRepository();
+
+  // The bootstrap instrument, the time that it can take, and the bus
+  // address of the TaskManager that runs it.
+  private static final String BOOTSTRAP = "03a764f2-a41f-47bb-bbe6-f28df84af398";
+  private static final long BOOTSTRAP_TIME = 60000L;
+  private static final String TASKS = TaskManager.class.getName().toLowerCase();
 
   @SchemaPath(output = "resource:/schema/output/introspection.schema.json")
   public MessageHandler introspect() {
@@ -138,12 +146,8 @@ public class StructureManager extends GenericActor {
       public JsonNode exec(JsonNode request) {
         final ObjectNode result = mapper.createObjectNode();
 
-        // Run discovery jobs in order while message handlers continue.
-        vertx
-          .executeBlocking(() -> {
-            discoverHost();
-            return null;
-          }, true)
+        // The discovery runs while message handlers continue.
+        discoverHost()
           .onComplete(resultHandler -> {
             if (resultHandler.failed()) {
               if (Configuration.isTraceModeOn()) {
@@ -235,18 +239,67 @@ public class StructureManager extends GenericActor {
     };
   }
 
-  private void discoverHost() {
+  // A task to start, and the time that its jobs can take.
+  private record Run(String taskId, long timeout, Supplier<Future<?>> start) {}
+
+  // Bootstrap Structure if the graph has no host with its name, and then
+  // discover the operating system of the host. Each runs as a task of the
+  // TaskManager, thus each gives a result.
+  private Future<Void> discoverHost() {
     final String hostname = Context.getHostname();
-    Component host = Context.getInstanceRepository().findDnsName(hostname);
-    if (host == null) {
-      log.info("Registering the Structure host");
-      final Path bootstrap = BundleFiles.resolve("03a764f2-a41f-47bb-bbe6-f28df84af398", "payload/main.py");
-      if (!Files.isRegularFile(bootstrap)) {
-        throw new IllegalStateException("Bootstrap program not found: " + bootstrap);
-      }
-      runDiscovery("python3 " + Quote.SH.quote(bootstrap.toString()) + " -h " + Quote.SH.quote(hostname), 60000);
-      host = Context.getInstanceRepository().findDnsName(hostname);
+    return vertx
+      .executeBlocking(() -> Context.getInstanceRepository().findDnsName(hostname) == null ? bootstrap(hostname) : null)
+      .compose(this::run)
+      .compose(bootstrapped -> vertx.executeBlocking(() -> osDiscovery(hostname)))
+      .compose(this::run);
+  }
+
+  // The bootstrap registers the host. The origin of its run is the
+  // Structure component that it makes, thus Structure gives its UUID.
+  private Run bootstrap(String hostname) {
+    log.info("Registering the Structure host");
+    final Path payload = BundleFiles.resolve(BOOTSTRAP, "payload/main.py");
+    if (!Files.isRegularFile(payload)) {
+      throw new IllegalStateException("Bootstrap program not found: " + payload);
     }
+    final String origin = UUID.randomUUID().toString();
+    final String taskId = UUID.randomUUID().toString();
+    final ObjectNode message = mapper.createObjectNode().put("msgh", "queueTask");
+    final ObjectNode job = message
+      .putObject("args")
+      .put("taskId", taskId)
+      .put("sequential", true)
+      .putArray("jobs")
+      .addObject()
+      .put(
+        "command",
+        "python3 " + Quote.SH.quote(payload.toString()) + " -h " + Quote.SH.quote(hostname) + " -u " + Quote.SH.quote(origin)
+      );
+    job
+      .putObject("metadata")
+      .put("originName", "Structure")
+      .put("originUuid", origin)
+      .put("instrumentName", "StructureBootstrap")
+      .put("instrumentUuid", BOOTSTRAP)
+      .put("capability", "Detect")
+      .put("timeAllocated", BOOTSTRAP_TIME);
+    return new Run(taskId, BOOTSTRAP_TIME, () ->
+      vertx
+        .eventBus()
+        .<JsonObject>request(TASKS, new JsonObject(message.toString()))
+        .compose(reply -> {
+          final JsonObject result = reply.body().getJsonObject("result", new JsonObject());
+          return result.containsKey("error")
+            ? Future.failedFuture(result.getString("error"))
+            : Future.succeededFuture();
+        })
+    );
+  }
+
+  // Set the self group, and give the OS discovery of the host. Without
+  // Ansible, there is no OS discovery.
+  private Run osDiscovery(String hostname) {
+    final Component host = Context.getInstanceRepository().findDnsName(hostname);
     if (host == null) {
       throw new IllegalStateException("Bootstrap did not register the Structure host");
     }
@@ -261,29 +314,15 @@ public class StructureManager extends GenericActor {
     if (os == null) {
       throw new IllegalStateException("The Structure host has no operating system");
     }
-    if (!ansibleAvailable()) {
-      log.info("Ansible is unavailable; keeping the minimal host registration");
-      return;
-    }
+    // The bootstrap adds Ansible if it finds it, thus the graph tells
     if (
       os
         .getComponents()
         .stream()
         .noneMatch(component -> component.isOfType("Ansible"))
     ) {
-      registerComponent(
-        os,
-        new Component(
-          mapper
-            .createObjectNode()
-            .put("name", "Ansible")
-            .put("desc", "The local Ansible installation")
-            .put("ver", "unknown")
-            .put("shortName", "ansible")
-            .put("longName", "Ansible"),
-          typeRepository.findOneByName("Ansible")
-        )
-      );
+      log.info("The Structure host has no Ansible; keeping the minimal host registration");
+      return null;
     }
     final Component address = os
       .getComponents()
@@ -304,33 +343,68 @@ public class StructureManager extends GenericActor {
         return local;
       });
     final Controller controller = (Controller) instrumentRepository.findOneByName("OsDiscover");
-    final InstrumentRunner runner = new InstrumentRunner(address, controller, null, UUID.randomUUID().toString());
+    final String taskId = UUID.randomUUID().toString();
+    final InstrumentRunner runner = new InstrumentRunner(address, controller, null, taskId);
     if (runner.getJobs().isEmpty()) {
       throw new IllegalStateException("No Ansible OS discovery instrument is available");
     }
-    for (var job : runner.getJobs()) {
-      runDiscovery(job.getLeft(), job.getRight().orElse(60000L));
-    }
+    final long timeout = runner
+      .getJobs()
+      .stream()
+      .mapToLong(job -> job.getRight().orElse(BOOTSTRAP_TIME))
+      .sum();
+    return new Run(taskId, timeout, () -> {
+      runner.startInstrument();
+      return Future.succeededFuture();
+    });
   }
 
-  private boolean ansibleAvailable() {
-    final ProcessRunner runner = new ProcessRunner("ansible --version");
-    try {
-      runner.run();
-      if (!runner.getProcess().waitFor(5, TimeUnit.SECONDS)) {
-        runner.cancel();
-        throw new IllegalStateException("Ansible availability check timed out");
-      }
-      if (runner.finish().returnCode.orElse(1) != 0) {
-        throw new IllegalStateException("Ansible availability check failed: " + runner.finish().stderr.orElse(""));
-      }
-      return true;
-    } catch (IOException e) {
-      return false;
-    } catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new IllegalStateException("Ansible availability check interrupted", e);
+  // Start a task, and wait until the TaskManager finishes it. Fails if a
+  // job did not end with exit code 0.
+  private Future<Void> run(Run run) {
+    if (run == null) {
+      return Future.succeededFuture();
     }
+    final Promise<Void> finished = Promise.promise();
+    final MessageConsumer<JsonObject> events = vertx
+      .eventBus()
+      .consumer(EVENTS, message -> {
+        if (
+          "taskFinished".equals(message.body().getString("event")) &&
+          message.body().getValue("data") instanceof JsonObject data &&
+          run.taskId().equals(data.getString("taskId"))
+        ) {
+          final String error = failure(data.getJsonObject("taskObj"));
+          if (error == null) {
+            finished.tryComplete();
+          } else {
+            finished.tryFail(error);
+          }
+        }
+      });
+    final long timer = vertx.setTimer(run.timeout() + 30000L, id ->
+      finished.tryFail("Task " + run.taskId() + " did not finish")
+    );
+    return events
+      .completion()
+      .compose(registered -> run.start().get())
+      .compose(started -> finished.future())
+      .onComplete(done -> {
+        vertx.cancelTimer(timer);
+        events.unregister();
+      });
+  }
+
+  // The error of the first job that did not end with exit code 0, or null.
+  private static String failure(JsonObject task) {
+    for (Object item : task.getJsonArray("jobs", new JsonArray())) {
+      final JsonObject job = (JsonObject) item;
+      final JsonObject result = job.getJsonObject("result", new JsonObject());
+      if (!"FINISHED".equals(job.getString("status")) || result.getInteger("returnCode", 1) != 0) {
+        return "Discovery failed: " + result.getString("stderr", job.getString("error", "No error output")).strip();
+      }
+    }
+    return null;
   }
 
   private void registerComponent(Component os, Component component) {
@@ -340,27 +414,5 @@ public class StructureManager extends GenericActor {
       entity.addRelations("HAS", Direction.OUTGOING, Set.of(UUID.fromString(component.getUuid())));
       entity.toGraph();
     });
-  }
-
-  private void runDiscovery(String command, long timeout) {
-    final ProcessRunner runner = new ProcessRunner(command);
-    try {
-      runner.run();
-      if (!runner.getProcess().waitFor(timeout, TimeUnit.MILLISECONDS)) {
-        runner.cancel();
-        throw new IllegalStateException("Discovery timed out");
-      }
-      final ProcessRunner.ProcessResult result = runner.finish();
-      result.stdout.map(String::strip).ifPresent(log::info);
-      if (result.returnCode.orElse(1) != 0) {
-        throw new IllegalStateException("Discovery failed: " + result.stderr.orElse("No error output").strip());
-      }
-    } catch (IOException e) {
-      throw new IllegalStateException("Could not start discovery", e);
-    } catch (InterruptedException e) {
-      runner.cancel();
-      Thread.currentThread().interrupt();
-      throw new IllegalStateException("Discovery interrupted", e);
-    }
   }
 }
