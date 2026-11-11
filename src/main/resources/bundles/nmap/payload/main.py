@@ -41,6 +41,22 @@ def update_address(client, graph, address, reachable, hostname):
     return address["meta"]["uuid"]
 
 
+def unknown_host(client, graph, address, name):
+    """Give an address without an operating system an operating system
+    that is not known yet, in a group for its host. The OS discovery can
+    then specialize it, for example to Linux."""
+    found = client.request("repository.instances", "findOperatingSystem", {"node": address})
+    if found.get("meta"):
+        return
+    group = graph.instance("ComponentGroup", {"name": name, "desc": "A discovered host"})
+    group["name"] = name
+    operating_system = graph.software("OperatingSystem", "unknown")
+    operating_system["name"] = operating_system["data"]["name"] = "Unknown"
+    relate(operating_system, "HAS", {"meta": {"uuid": address}})
+    relate(operating_system, "MEMBER_OF", group)
+    client.persist([group, operating_system])
+
+
 def main():
     parser = argparse.ArgumentParser(description="Discover a network or an existing IPv4 address")
     target = parser.add_mutually_exclusive_group(required=True)
@@ -73,14 +89,16 @@ def main():
         for ip, hostname in scan(options.cidr, options.args):
             address = client.find("addr", ip)
             if address.get("meta"):
-                addresses.append(update_address(client, graph, address, True, hostname))
+                identifier = update_address(client, graph, address, True, hostname)
             else:
                 address = graph.address(ip)
                 if hostname:
                     dns = graph.dns(hostname)
                     client.persist([dns], [address])
                     relate(address, "HAS", dns)
-                addresses.extend(client.persist([address]))
+                [identifier] = client.persist([address])
+            unknown_host(client, graph, identifier, hostname or ip)
+            addresses.append(identifier)
         if not exists:
             for identifier in addresses:
                 relate(network, "HAS", {"meta": {"uuid": identifier}})
