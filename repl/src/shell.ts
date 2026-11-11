@@ -89,22 +89,23 @@ export function complete(commands: Commands, line: string): [string[], string] {
   return [before.length ? options(commands, before, current) : targets(commands, current), current];
 }
 
-// The first word: a target, or a handler after the dot of a target.
+// The first word, one part at a time: the next part of a target name,
+// and the handlers if the text before the last dot is a target.
 function targets(commands: Commands, current: string): string[] {
-  const dot = current.lastIndexOf(".");
-  if (dot > 0) {
-    try {
-      const target = commands.target(current.slice(0, dot));
-      const prefix = current.slice(dot + 1).toLowerCase();
-      return Object.keys(target.handlers)
-        .filter((handler) => handler.toLowerCase().startsWith(prefix))
-        .map((handler) => `${current.slice(0, dot)}.${handler}`);
-    } catch {
-      // Not a target, thus maybe the start of a longer target name.
+  const prefix = current.toLowerCase();
+  const parts = new Set<string>();
+  for (const name of commands.targets.keys()) {
+    if (name.startsWith(prefix)) {
+      const dot = name.indexOf(".", prefix.length);
+      parts.add(dot === -1 ? `${name}.` : name.slice(0, dot + 1));
     }
   }
-  const prefix = current.toLowerCase();
-  return [...commands.targets.keys()].filter((name) => name.startsWith(prefix)).map((name) => `${name}.`);
+  const dot = current.lastIndexOf(".");
+  const target = dot > 0 ? commands.targets.get(prefix.slice(0, dot)) : undefined;
+  const handlers = Object.keys(target?.handlers ?? {})
+    .filter((handler) => handler.toLowerCase().startsWith(prefix.slice(dot + 1)))
+    .map((handler) => `${current.slice(0, dot)}.${handler}`);
+  return [...handlers, ...[...parts].sort()];
 }
 
 // The options of the handler, except where an option needs a value.

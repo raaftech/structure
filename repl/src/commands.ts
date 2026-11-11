@@ -1,6 +1,6 @@
 // The commands of the event bus, from the introspect handler. A command
 // is a target and a handler, and options, for example:
-// types.findOneByName --name Linux.
+// repository.types.findOneByName --name Linux.
 
 import { type ParseArgsOptionsConfig, parseArgs } from "node:util";
 import type { Bus } from "./bus.ts";
@@ -32,31 +32,29 @@ export interface Call {
 // A command that is not valid.
 export class CommandError extends Error {}
 
-const STRUCTURE = "tech.raaf.structure.bus.manager.structuremanager";
+// The start of each bus address of Structure.
+const PREFIX = "tech.raaf.structure.bus.";
+
+const STRUCTURE = `${PREFIX}manager.structuremanager`;
 
 // The bus address where actors publish events.
-export const EVENTS = "tech.raaf.structure.bus.events";
+export const EVENTS = `${PREFIX}events`;
 
 // The URL of the bridge of a Structure on this host.
 export const BRIDGE = "wss://localhost:8443/eventbus/websocket";
 
 export class Commands {
-  // Each target, by the shortest unique suffix of its address.
+  // Each target, by its bus address without the prefix, for example
+  // repository.types or node.<uuid>.
   readonly targets = new Map<string, Target>();
   readonly #schemas: Introspection["schemas"];
 
   constructor({ classes, actors, schemas }: Introspection) {
     this.#schemas = schemas;
-    const targets = Object.values(actors).flatMap((actor) =>
-      actor.addresses.map((address) => ({ address, handlers: classes[actor.class].handlers })),
-    );
-    const counts = new Map<string, number>();
-    for (const suffix of targets.flatMap(({ address }) => suffixes(address))) {
-      counts.set(suffix, (counts.get(suffix) ?? 0) + 1);
-    }
-    for (const target of targets) {
-      const name = suffixes(target.address).find((suffix) => counts.get(suffix) === 1) ?? target.address;
-      this.targets.set(name, target);
+    for (const actor of Object.values(actors)) {
+      for (const address of actor.addresses) {
+        this.targets.set(name(address), { address, handlers: classes[actor.class].handlers });
+      }
     }
   }
 
@@ -69,17 +67,13 @@ export class Commands {
     return new Commands(result.data as unknown as Introspection);
   }
 
-  // The only target with an address that ends with the name, any case.
-  target(name: string): Target {
-    const key = name.toLowerCase();
-    const matches = [...this.targets].filter(([, { address }]) => address === key || address.endsWith(`.${key}`));
-    if (matches.length === 0) {
-      throw new CommandError(`Unknown target: ${name}`);
+  // The target with a name or a bus address, in any case.
+  target(text: string): Target {
+    const target = this.targets.get(name(text.toLowerCase()));
+    if (!target) {
+      throw new CommandError(`Unknown target: ${text}`);
     }
-    if (matches.length > 1) {
-      throw new CommandError(`Target ${name} is ambiguous: ${matches.map(([short]) => short).join(", ")}`);
-    }
-    return matches[0][1];
+    return target;
   }
 
   // The options of a handler, from the properties of its argument schema.
@@ -102,7 +96,7 @@ export class Commands {
     const name = word.slice(0, dot);
     const msgh = word.slice(dot + 1);
     if (dot < 1 || !msgh) {
-      throw new CommandError("Give a target and a handler, for example: types.getAll");
+      throw new CommandError("Give a target and a handler, for example: repository.types.getAll");
     }
     const target = this.target(name);
     const handler = Object.keys(target.handlers).find((key) => key.toLowerCase() === msgh.toLowerCase());
@@ -159,10 +153,9 @@ export class Commands {
   }
 }
 
-// The suffixes of an address, shortest first: c, b.c and a.b.c.
-function suffixes(address: string): string[] {
-  const parts = address.split(".");
-  return parts.map((_, index) => parts.slice(-1 - index).join("."));
+// The name of a bus address: the address without the prefix.
+function name(address: string): string {
+  return address.startsWith(PREFIX) ? address.slice(PREFIX.length) : address;
 }
 
 // The value at the JSON pointer of a fragment, for example #/a/b.

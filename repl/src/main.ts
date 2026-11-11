@@ -1,6 +1,6 @@
-// Run the command in the arguments, for example: types.getAll. Without
-// arguments, start a shell. The STRUCTURE_URL environment variable sets
-// the URL of the bridge.
+// Run the command in the arguments, for example
+// repository.types.getAll. Without arguments, start a shell. The
+// STRUCTURE_URL environment variable sets the URL of the bridge.
 
 import { Bus } from "./bus.ts";
 import { BRIDGE, Commands, EVENTS } from "./commands.ts";

@@ -7,35 +7,35 @@ import { ARGS, BUS, handler, INTROSPECTION, RUN, UUID } from "./introspection.ts
 const commands = new Commands(INTROSPECTION);
 
 describe("Commands", () => {
-  it("names each target by the shortest unique suffix of its address", () => {
+  it("names each target by its bus address without the prefix", () => {
     assert.deepEqual(
       [...commands.targets.keys()].sort(),
-      ["a79ce509", "b1bc963a", UUID, "entitymanager", "repository.types", "type", "type.types"].sort(),
+      [
+        "manager.entitymanager",
+        "node.a79ce509",
+        "node.b1bc963a",
+        `node.${UUID}`,
+        "node.type",
+        "node.type.types",
+        "repository.types",
+      ].sort(),
     );
-    assert.equal(commands.targets.get("type.types")!.address, `${BUS}.node.type.types`);
+    assert.equal(commands.targets.get("node.type.types")!.address, `${BUS}.node.type.types`);
   });
 
   it("gives each target the handlers of its class", () => {
-    assert.deepEqual(Object.keys(commands.target("type").handlers), ["getSubtypes"]);
-    assert.deepEqual(Object.keys(commands.target(UUID).handlers), ["getCapabilities"]);
+    assert.deepEqual(Object.keys(commands.target("node.type").handlers), ["getSubtypes"]);
+    assert.deepEqual(Object.keys(commands.target(`node.${UUID}`).handlers), ["getCapabilities"]);
   });
 
-  it("finds a target by any unique suffix of its address, in any case", () => {
-    assert.equal(commands.target("EntityManager").address, `${BUS}.manager.entitymanager`);
-    assert.equal(commands.target("node.type.types").address, `${BUS}.node.type.types`);
+  it("finds a target by its name or its bus address, in any case", () => {
+    assert.equal(commands.target("Manager.EntityManager").address, `${BUS}.manager.entitymanager`);
     assert.equal(commands.target(`${BUS}.repository.types`).address, `${BUS}.repository.types`);
   });
 
   it("gives an error for an unknown target", () => {
-    assert.throws(() => commands.target("nodes"), new CommandError("Unknown target: nodes"));
-    assert.throws(() => commands.target("ntitymanager"), new CommandError("Unknown target: ntitymanager"));
-  });
-
-  it("gives an error for a suffix of more than one address", () => {
-    assert.throws(
-      () => commands.target("types"),
-      new CommandError("Target types is ambiguous: repository.types, type.types"),
-    );
+    assert.throws(() => commands.target("types"), new CommandError("Unknown target: types"));
+    assert.throws(() => commands.target("entitymanager"), new CommandError("Unknown target: entitymanager"));
   });
 
   it("gives the options of a handler, with the types of the argument schema", () => {
@@ -61,7 +61,7 @@ describe("Commands", () => {
   });
 
   it("makes a call with the address and the request", () => {
-    assert.deepEqual(commands.parse(["type.GETSUBTYPES"]), {
+    assert.deepEqual(commands.parse(["node.type.GETSUBTYPES"]), {
       address: `${BUS}.node.type`,
       request: { msgh: "getSubtypes", args: {} },
     });
@@ -74,7 +74,7 @@ describe("Commands", () => {
 
   it("converts the options to the types of the argument schema", () => {
     const { args } = commands.parse([
-      "entitymanager.run",
+      "manager.entitymanager.run",
       "--name=12",
       "--start",
       "1234",
@@ -107,27 +107,27 @@ describe("Commands", () => {
   });
 
   it("sets a boolean option to false with --no-", () => {
-    assert.deepEqual(commands.parse(["entitymanager.run", "--no-all"]).request.args, { all: false });
+    assert.deepEqual(commands.parse(["manager.entitymanager.run", "--no-all"]).request.args, { all: false });
   });
 
   it("gives the text of a value that is not valid JSON to Structure", () => {
-    assert.deepEqual(commands.parse(["entitymanager.run", "--amount", "many"]).request.args, { amount: "many" });
+    assert.deepEqual(commands.parse(["manager.entitymanager.run", "--amount", "many"]).request.args, { amount: "many" });
   });
 
   it("gives an error for an unknown handler", () => {
-    assert.throws(() => commands.parse(["type.read"]), new CommandError("Unknown handler of type: read"));
+    assert.throws(() => commands.parse(["node.type.read"]), new CommandError("Unknown handler of node.type: read"));
   });
 
   it("gives an error for an unknown option", () => {
-    assert.throws(() => commands.parse(["type.getSubtypes", "--all"]), CommandError);
+    assert.throws(() => commands.parse(["node.type.getSubtypes", "--all"]), CommandError);
   });
 
   it("gives an error for a positional argument", () => {
-    assert.throws(() => commands.parse(["entitymanager.run", "Linux"]), CommandError);
+    assert.throws(() => commands.parse(["manager.entitymanager.run", "Linux"]), CommandError);
   });
 
   it("gives an error without a target and a handler", () => {
-    const error = new CommandError("Give a target and a handler, for example: types.getAll");
+    const error = new CommandError("Give a target and a handler, for example: repository.types.getAll");
     for (const words of [[], ["type"], [".getSubtypes"], ["type."]]) {
       assert.throws(() => commands.parse(words), error);
     }

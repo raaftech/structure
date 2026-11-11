@@ -54,7 +54,7 @@ describe("shell", () => {
   it("runs each line as a command, and writes the data or the error", async () => {
     const bus = new FakeBus();
     const input = new PassThrough();
-    input.end("repository.types.getAll\n\n  \nnope.getAll\nentitymanager.run --name 'a b' --all\n");
+    input.end("repository.types.getAll\n\n  \nnope.getAll\nmanager.entitymanager.run --name 'a b' --all\n");
     const { code, output, errors } = await run(bus, input);
     assert.equal(code, 0);
     assert.deepEqual(bus.requests, [
@@ -68,7 +68,7 @@ describe("shell", () => {
   it("writes the error of a handler", async () => {
     const bus = new FakeBus();
     const input = new PassThrough();
-    input.end(`${UUID}.getCapabilities\n`);
+    input.end(`node.${UUID}.getCapabilities\n`);
     assert.equal((await run(bus, input)).errors, "It failed.\n");
   });
 
@@ -107,17 +107,25 @@ describe("shell", () => {
 describe("complete", () => {
   const completions = (line: string) => complete(commands, line);
 
-  it("completes a target, with a dot", () => {
-    assert.deepEqual(completions("en"), [["entitymanager."], "en"]);
-    assert.deepEqual(completions("ty"), [["type.", "type.types."], "ty"]);
-    assert.deepEqual(completions("4c"), [[`${UUID}.`], "4c"]);
-    assert.equal(completions("")[0].length, commands.targets.size);
+  it("completes a target one part at a time, with a dot", () => {
+    assert.deepEqual(completions(""), [["manager.", "node.", "repository."], ""]);
+    assert.deepEqual(completions("m"), [["manager."], "m"]);
+    assert.deepEqual(completions("manager."), [["manager.entitymanager."], "manager."]);
+    assert.deepEqual(completions("node."), [
+      [`node.${UUID}.`, "node.a79ce509.", "node.b1bc963a.", "node.type."],
+      "node.",
+    ]);
+    assert.deepEqual(completions("Node.4c"), [[`node.${UUID}.`], "Node.4c"]);
   });
 
   it("completes a handler after the dot of a target", () => {
-    assert.deepEqual(completions("type."), [["type.getSubtypes"], "type."]);
-    assert.deepEqual(completions("TYPE.get"), [["TYPE.getSubtypes"], "TYPE.get"]);
+    assert.deepEqual(completions("node.type.types."), [["node.type.types.getSubtypes"], "node.type.types."]);
+    assert.deepEqual(completions("NODE.TYPE.get"), [["NODE.TYPE.getSubtypes"], "NODE.TYPE.get"]);
     assert.deepEqual(completions("repository.types.g"), [["repository.types.getAll"], "repository.types.g"]);
+  });
+
+  it("completes the handlers and the next parts of a target", () => {
+    assert.deepEqual(completions("node.type."), [["node.type.getSubtypes", "node.type.types."], "node.type."]);
   });
 
   it("completes nothing for an unknown target", () => {
@@ -126,14 +134,14 @@ describe("complete", () => {
   });
 
   it("completes the options of the handler", () => {
-    assert.deepEqual(completions("entitymanager.run --a"), [["--amount", "--all", "--arguments"], "--a"]);
-    assert.deepEqual(completions("entitymanager.run --no"), [["--no-all"], "--no"]);
-    assert.equal(completions("entitymanager.run ")[0].length, 9);
-    assert.equal(completions("entitymanager.run --all ")[0].length, 9);
+    assert.deepEqual(completions("manager.entitymanager.run --a"), [["--amount", "--all", "--arguments"], "--a"]);
+    assert.deepEqual(completions("manager.entitymanager.run --no"), [["--no-all"], "--no"]);
+    assert.equal(completions("manager.entitymanager.run ")[0].length, 9);
+    assert.equal(completions("manager.entitymanager.run --all ")[0].length, 9);
   });
 
   it("completes nothing where an option needs a value", () => {
-    assert.deepEqual(completions("entitymanager.run --name "), [[], ""]);
-    assert.deepEqual(completions("entitymanager.run --name Li"), [[], "Li"]);
+    assert.deepEqual(completions("manager.entitymanager.run --name "), [[], ""]);
+    assert.deepEqual(completions("manager.entitymanager.run --name Li"), [[], "Li"]);
   });
 });

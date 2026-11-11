@@ -146,30 +146,31 @@ Without arguments, the REPL starts a shell. Each line is a command:
 <target>.<handler> [--<option> <value>]...
 ```
 
-For example `types.findOneByName --name Linux`. The REPL gets the targets, the
-handlers and the options from the `introspect` handler, thus a new handler in
-Structure is a new command in the REPL:
+For example `repository.types.findOneByName --name Linux`. The REPL gets the
+targets, the handlers and the options from the `introspect` handler, thus a new
+handler in Structure is a new command in the REPL:
 
-- The target is a part at the end of a bus address, for example `types`,
-  `linux` or the UUID of a node. If two addresses end with the same part, give
-  a longer part, for example `repository.types`.
+- The target is a bus address without `tech.raaf.structure.bus.`, for example
+  `manager.structuremanager`, `repository.types` or `node.<uuid>`. A type also
+  has its hierarchy path as a target, for example
+  `node.type.component.software.operatingsystem.unixlike.linux`.
 - The options are the properties of the argument schema of the handler. A
   boolean option has no value: `--includeStart` or `--no-includeStart`. For an
   array, give the option again for each item. A value that is not a string is
   JSON, for example `--entities '{"name": "Linux", ...}'`. Structure checks the
   values.
-- Each target has the `help` handler: `types.help` gives the help of each
-  handler of `types`, and `types.help --handler getAll` gives the help of
-  `getAll`.
+- Each target has the `help` handler: `repository.types.help` gives the help of
+  each handler of `repository.types`, and
+  `repository.types.help --handler getAll` gives the help of `getAll`.
 
-In the shell, Tab completes targets, handlers and options. Ctrl-C clears the
-line, and Ctrl-D ends the shell. Events, for example of a bootstrap, show above
-the prompt. If the input is not a terminal, the shell reads commands from it,
-with no prompt and no colour.
+In the shell, Tab completes targets one part at a time, then handlers and
+options. Ctrl-C clears the line, and Ctrl-D ends the shell. Events, for example
+of a bootstrap, show above the prompt. If the input is not a terminal, the shell
+reads commands from it, with no prompt and no colour.
 
 With arguments, the REPL runs one command, for example
-`node src/main.ts types.getAll`. It writes the data to stdout, and events and
-errors to stderr. If the command fails, the exit code is 1.
+`node src/main.ts repository.types.getAll`. It writes the data to stdout, and
+events and errors to stderr. If the command fails, the exit code is 1.
 
 The REPL connects to `wss://localhost:8443/eventbus/websocket`. Set
 `STRUCTURE_URL` to use a different bridge.
@@ -181,13 +182,13 @@ information about Structure. Before bootstrap, `bootstrapped` is `false`,
 and the graph has no groups and no components:
 
 ```bash
-node src/main.ts structuremanager.info
+node src/main.ts manager.structuremanager.info
 ```
 
 Bootstrap Structure. The handler starts the bootstrap and replies `started`:
 
 ```bash
-node src/main.ts structuremanager.selfDiscovery
+node src/main.ts manager.structuremanager.selfDiscovery
 ```
 
 When the bootstrap is done, get the information again. Now `bootstrapped` is
@@ -195,7 +196,7 @@ When the bootstrap is done, get the information again. Now `bootstrapped` is
 found:
 
 ```bash
-node src/main.ts structuremanager.info
+node src/main.ts manager.structuremanager.info
 ```
 
 ## Testing
